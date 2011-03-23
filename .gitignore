@@ -1,7 +1,10 @@
-#GTNA
+# GTNA
 data
 plots
 temp
+
+# deploy
+deploy
 
 # Eclipse
 .settings
