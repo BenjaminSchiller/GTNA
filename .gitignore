@@ -1,3 +1,13 @@
+#GTNA
 data
 plots
 temp
+
+# Eclipse
+.settings
+.metadata
+.project
+.classpath
+Servers
+bin
+target
