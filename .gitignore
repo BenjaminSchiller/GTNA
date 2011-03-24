@@ -2,6 +2,7 @@
 data
 plots
 temp
+resources
 
 # deploy
 deploy
