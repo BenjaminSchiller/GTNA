@@ -44,8 +44,8 @@ public class Communities extends MetricImpl {
 	}
 
 	public boolean writeData(String folder) {
-		DataWriter.write("COMMUNITIES", folder, this.com);
-		DataWriter.write("COMMUNITIES_SHORT", folder, this.comShort);
+		DataWriter.writeWithIndex(this.com, "COMMUNITIES", folder);
+		DataWriter.writeWithIndex(this.comShort, "COMMUNITIES_SHORT", folder);
 		return true;
 	}
 }

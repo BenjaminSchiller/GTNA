@@ -126,11 +126,11 @@ public class IdentifierSpace extends MetricImpl implements Metric {
 	}
 
 	public boolean writeData(String folder) {
-		DataWriter.writeWithoutIndex("ID_SPACE_DISTANCES", folder,
-				this.distances);
-		DataWriter.writeWithoutIndex("ID_SPACE_DISTANCES_BY_R1", folder,
-				this.distancesByR1);
-		DataWriter.writeWithoutIndex("ID_SPACE_IDS", folder, this.ids);
+		DataWriter.writeWithoutIndex(this.distances, "ID_SPACE_DISTANCES",
+				folder);
+		DataWriter.writeWithoutIndex(this.distancesByR1, "ID_SPACE_DISTANCES_BY_R1",
+				folder);
+		DataWriter.writeWithoutIndex(this.ids, "ID_SPACE_IDS", folder);
 		return true;
 	}
 

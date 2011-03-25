@@ -73,7 +73,7 @@ public class ConfidenceData {
 				data[j][4] = ci[1];
 				data[j][5] = max;
 			}
-			DataWriter.writeWithoutIndex(DATA[i], destFolder, data);
+			DataWriter.writeWithoutIndex(data, DATA[i], destFolder);
 		}
 	}
 

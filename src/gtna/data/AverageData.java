@@ -47,7 +47,7 @@ public class AverageData {
 					avg[j][1] = Double.NaN;
 				}
 			}
-			DataWriter.writeWithoutIndex(data[i], destFolder, avg);
+			DataWriter.writeWithoutIndex(avg, data[i], destFolder);
 		}
 	}
 

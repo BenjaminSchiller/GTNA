@@ -501,22 +501,22 @@ public class Motif_4_Undirected extends MetricImpl implements Metric {
 			}
 
 			for (int i = 0; i < n.length; i++) {
-				DataWriter.write("SEQUENZ4_" + i, folder, n[i]);
+				DataWriter.writeWithIndex(n[i], "SEQUENZ4_" + i, folder);
 			}
-			DataWriter.write("MOTIF4_ROLE0M", folder, motif4RoleM[0]);
-			DataWriter.write("MOTIF4_ROLE1M", folder, motif4RoleM[1]);
-			DataWriter.write("MOTIF4_ROLE2M", folder, motif4RoleM[2]);
-			DataWriter.write("MOTIF4_ROLE3M", folder, motif4RoleM[3]);
-			DataWriter.write("MOTIF4_ROLE4M", folder, motif4RoleM[4]);
-			DataWriter.write("MOTIF4_ROLE5M", folder, motif4RoleM[5]);
-			DataWriter.write("MOTIF4_TOTAL", folder, motif4Total);
-			DataWriter.write("MOTIF4_ROLE0", folder, motif4Role[0]);
-			DataWriter.write("MOTIF4_ROLE1", folder, motif4Role[1]);
-			DataWriter.write("MOTIF4_ROLE2", folder, motif4Role[2]);
-			DataWriter.write("MOTIF4_ROLE3", folder, motif4Role[3]);
-			DataWriter.write("MOTIF4_ROLE4", folder, motif4Role[4]);
-			DataWriter.write("MOTIF4_ROLE5", folder, motif4Role[5]);
-			DataWriter.write("MOTIF4_ROLE6", folder, motif4Role[6]);
+			DataWriter.writeWithIndex(motif4RoleM[0], "MOTIF4_ROLE0M", folder);
+			DataWriter.writeWithIndex(motif4RoleM[1], "MOTIF4_ROLE1M", folder);
+			DataWriter.writeWithIndex(motif4RoleM[2], "MOTIF4_ROLE2M", folder);
+			DataWriter.writeWithIndex(motif4RoleM[3], "MOTIF4_ROLE3M", folder);
+			DataWriter.writeWithIndex(motif4RoleM[4], "MOTIF4_ROLE4M", folder);
+			DataWriter.writeWithIndex(motif4RoleM[5], "MOTIF4_ROLE5M", folder);
+			DataWriter.writeWithIndex(motif4Total, "MOTIF4_TOTAL", folder);
+			DataWriter.writeWithIndex(motif4Role[0], "MOTIF4_ROLE0", folder);
+			DataWriter.writeWithIndex(motif4Role[1], "MOTIF4_ROLE1", folder);
+			DataWriter.writeWithIndex(motif4Role[2], "MOTIF4_ROLE2", folder);
+			DataWriter.writeWithIndex(motif4Role[3], "MOTIF4_ROLE3", folder);
+			DataWriter.writeWithIndex(motif4Role[4], "MOTIF4_ROLE4", folder);
+			DataWriter.writeWithIndex(motif4Role[5], "MOTIF4_ROLE5", folder);
+			DataWriter.writeWithIndex(motif4Role[6], "MOTIF4_ROLE6", folder);
 			return false;
 		} catch (IOException e) {
 			return false;

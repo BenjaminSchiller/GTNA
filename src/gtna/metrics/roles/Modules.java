@@ -830,7 +830,7 @@ public class Modules extends MetricImpl implements Metric {
 			role[i] = (double) roles.get(i).size();
 		}
 
-		DataWriter.write("ROLE", folder, role);
+		DataWriter.writeWithIndex(role, "ROLE", folder);
 		// File test = new File(folder);
 		try {
 			FileWriter FW = new FileWriter(folder + "roles.txt");

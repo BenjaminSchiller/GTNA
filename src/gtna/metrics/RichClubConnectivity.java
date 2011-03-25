@@ -54,8 +54,8 @@ public class RichClubConnectivity extends MetricImpl implements Metric {
 	}
 
 	public boolean writeData(String folder) {
-		DataWriter.write("RCC", folder, this.rcc);
-		DataWriter.write("RCC_SHORT", folder, this.rccShort);
+		DataWriter.writeWithIndex(this.rcc, "RCC", folder);
+		DataWriter.writeWithIndex(this.rccShort, "RCC_SHORT", folder);
 		return true;
 	}
 }

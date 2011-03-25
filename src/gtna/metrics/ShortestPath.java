@@ -118,10 +118,10 @@ public class ShortestPath extends MetricImpl implements Metric {
 	}
 
 	public boolean writeData(String folder) {
-		DataWriter.write("LCPL", folder, this.lcpl);
-		DataWriter.write("LCPL_SHORT", folder, this.lcplShort);
-		DataWriter.write("SPLD", folder, this.spld);
-		DataWriter.write("EXP", folder, this.exp);
+		DataWriter.writeWithIndex(this.lcpl, "LCPL", folder);
+		DataWriter.writeWithIndex(this.lcplShort, "LCPL_SHORT", folder);
+		DataWriter.writeWithIndex(this.spld, "SPLD", folder);
+		DataWriter.writeWithIndex(this.exp, "EXP", folder);
 		return true;
 	}
 

@@ -48,15 +48,15 @@ public class Routing extends MetricImpl implements Metric {
 	private double[] msgsShort;
 
 	public boolean writeData(String folder) {
-		DataWriter.write("RL_LCRL", folder, this.lcrl);
-		DataWriter.write("RL_LCRL_SHORT", folder, this.lcrlShort);
-		DataWriter.write("RL_RLD", folder, this.rld);
-		DataWriter.write("RL_CRLD", folder, this.crld);
-		DataWriter.write("RL_PROG", folder, this.prog);
-		DataWriter.write("RL_COPIES", folder, this.copies);
-		DataWriter.write("RL_COPIES_SHORT", folder, this.copiesShort);
-		DataWriter.write("RL_MSGS", folder, this.msgs);
-		DataWriter.write("RL_MSGS_SHORT", folder, this.msgsShort);
+		DataWriter.writeWithIndex(this.lcrl, "RL_LCRL", folder);
+		DataWriter.writeWithIndex(this.lcrlShort, "RL_LCRL_SHORT", folder);
+		DataWriter.writeWithIndex(this.rld, "RL_RLD", folder);
+		DataWriter.writeWithIndex(this.crld, "RL_CRLD", folder);
+		DataWriter.writeWithIndex(this.prog, "RL_PROG", folder);
+		DataWriter.writeWithIndex(this.copies, "RL_COPIES", folder);
+		DataWriter.writeWithIndex(this.copiesShort, "RL_COPIES_SHORT", folder);
+		DataWriter.writeWithIndex(this.msgs, "RL_MSGS", folder);
+		DataWriter.writeWithIndex(this.msgsShort, "RL_MSGS_SHORT", folder);
 		return true;
 	}
 

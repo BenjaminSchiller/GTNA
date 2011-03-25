@@ -297,7 +297,7 @@ public class Plot {
 					name = name + " " + app;
 				}
 
-				DataWriter.write(values[sv][i], filename);
+				DataWriter.write(values[sv][i], filename, false);
 				plotData[index1] = new PlotData(filename, name,
 						PlotData.POINTS, i + 1, pointWidth);
 				if (line) {
@@ -368,8 +368,8 @@ public class Plot {
 					name = name + " " + app;
 				}
 
-				DataWriter.write(conf[sv][i], filenameConf);
-				DataWriter.write(avg[sv][i], filenameAvg);
+				DataWriter.write(conf[sv][i], filenameConf, false);
+				DataWriter.write(avg[sv][i], filenameAvg, false);
 				int index1 = i * conf.length + sv;
 				int index2 = index1 + conf.length * series.length;
 				plotData[index1] = new PlotData(filenameConf, null,
@@ -587,7 +587,7 @@ public class Plot {
 		for (int i = 0; i < data.length; i++) {
 			String file = Config.get("TEMP_FOLDER") + (i)
 					+ Config.get("DATA_EXTENSION");
-			DataWriter.write(data[i], file);
+			DataWriter.write(data[i], file, true);
 			pd[i] = new PlotData(file, labels[i], type, i + 1, width);
 		}
 		GNUPlot.plot(dest, pd, title, x, y, key, false, false);

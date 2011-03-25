@@ -226,9 +226,9 @@ public abstract class NetworkFragmentation extends MetricImpl implements Metric 
 	}
 
 	public boolean writeData(String folder) {
-		DataWriter.write(this.key() + "_AICS", folder, this.aics);
-		DataWriter.write(this.key() + "_MCS", folder, this.mcs);
-		DataWriter.write(this.key() + "_NOC", folder, this.noc);
+		DataWriter.writeWithIndex(this.aics, this.key() + "_AICS", folder);
+		DataWriter.writeWithIndex(this.mcs, this.key() + "_MCS", folder);
+		DataWriter.writeWithIndex(this.noc, this.key() + "_NOC", folder);
 		return false;
 	}
 }

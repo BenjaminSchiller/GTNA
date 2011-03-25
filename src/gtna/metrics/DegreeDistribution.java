@@ -93,12 +93,12 @@ public class DegreeDistribution extends MetricImpl implements Metric {
 	}
 
 	public boolean writeData(String folder) {
-		DataWriter.write("DD", folder, this.dd);
-		DataWriter.write("DDI", folder, this.ddi);
-		DataWriter.write("DDO", folder, this.ddo);
-		DataWriter.write("ECD", folder, this.ecd);
-		DataWriter.write("ECDI", folder, this.ecdi);
-		DataWriter.write("ECDO", folder, this.ecdo);
+		DataWriter.writeWithIndex(this.dd, "DD", folder);
+		DataWriter.writeWithIndex(this.ddi, "DDI", folder);
+		DataWriter.writeWithIndex(this.ddo, "DDO", folder);
+		DataWriter.writeWithIndex(this.ecd, "ECD", folder);
+		DataWriter.writeWithIndex(this.ecdi, "ECDI", folder);
+		DataWriter.writeWithIndex(this.ecdo, "ECDO", folder);
 		return true;
 	}
 }

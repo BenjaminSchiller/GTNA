@@ -138,9 +138,9 @@ public abstract class SPUnderAttack extends MetricImpl implements Metric {
 	}
 
 	public boolean writeData(String folder) {
-		DataWriter.write(this.key() + "_CPL", folder, this.cpl);
-		DataWriter.write(this.key() + "_DIAM", folder, this.diam);
-		DataWriter.write(this.key() + "_CONN", folder, this.conn);
+		DataWriter.writeWithIndex(this.cpl, this.key() + "_CPL", folder);
+		DataWriter.writeWithIndex(this.diam, this.key() + "_DIAM", folder);
+		DataWriter.writeWithIndex(this.conn, this.key() + "_CONN", folder);
 		return true;
 	}
 }

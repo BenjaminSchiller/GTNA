@@ -123,8 +123,8 @@ public class ClusteringCoefficient extends MetricImpl implements Metric {
 	}
 
 	public boolean writeData(String folder) {
-		DataWriter.write("LCC", folder, this.lcc);
-		DataWriter.write("LCC_SHORT", folder, this.lccShort);
+		DataWriter.writeWithIndex(this.lcc, "LCC", folder);
+		DataWriter.writeWithIndex(this.lccShort, "LCC_SHORT", folder);
 		return true;
 	}
 

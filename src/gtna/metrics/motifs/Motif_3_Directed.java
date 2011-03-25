@@ -443,29 +443,29 @@ public class Motif_3_Directed extends MetricImpl implements Metric {
 
 		// write data to given output folder
 		for (int i = 0; i < n.length; i++) {
-			DataWriter.write("SEQUENZ3_" + i, folder, n[i]);
+			DataWriter.writeWithIndex(n[i], "SEQUENZ3_" + i, folder);
 		}
-		DataWriter.write("MOTIF3_ROLE0M", folder, motif3RoleM[0]);
-		DataWriter.write("MOTIF3_ROLE1M", folder, motif3RoleM[1]);
-		DataWriter.write("MOTIF3_ROLE2M", folder, motif3RoleM[2]);
-		DataWriter.write("MOTIF3_ROLE3M", folder, motif3RoleM[3]);
-		DataWriter.write("MOTIF3_ROLE4M", folder, motif3RoleM[4]);
-		DataWriter.write("MOTIF3_ROLE5M", folder, motif3RoleM[5]);
-		DataWriter.write("MOTIF3_ROLE6M", folder, motif3RoleM[6]);
-		DataWriter.write("MOTIF3_ROLE7M", folder, motif3RoleM[7]);
-		DataWriter.write("MOTIF3_ROLE8M", folder, motif3RoleM[8]);
-		DataWriter.write("MOTIF3_ROLE9M", folder, motif3RoleM[9]);
-		DataWriter.write("MOTIF3_ROLE10M", folder, motif3RoleM[10]);
-		DataWriter.write("MOTIF3_ROLE11M", folder, motif3RoleM[11]);
-		DataWriter.write("MOTIF3_ROLE12M", folder, motif3RoleM[12]);
-		DataWriter.write("MOTIF3_TOTAL", folder, motif3Total);
-		DataWriter.write("MOTIF3_ROLE0", folder, motif3Role[0]);
-		DataWriter.write("MOTIF3_ROLE1", folder, motif3Role[1]);
-		DataWriter.write("MOTIF3_ROLE2", folder, motif3Role[2]);
-		DataWriter.write("MOTIF3_ROLE3", folder, motif3Role[3]);
-		DataWriter.write("MOTIF3_ROLE4", folder, motif3Role[4]);
-		DataWriter.write("MOTIF3_ROLE5", folder, motif3Role[5]);
-		DataWriter.write("MOTIF3_ROLE6", folder, motif3Role[6]);
+		DataWriter.writeWithIndex(motif3RoleM[0], "MOTIF3_ROLE0M", folder);
+		DataWriter.writeWithIndex(motif3RoleM[1], "MOTIF3_ROLE1M", folder);
+		DataWriter.writeWithIndex(motif3RoleM[2], "MOTIF3_ROLE2M", folder);
+		DataWriter.writeWithIndex(motif3RoleM[3], "MOTIF3_ROLE3M", folder);
+		DataWriter.writeWithIndex(motif3RoleM[4], "MOTIF3_ROLE4M", folder);
+		DataWriter.writeWithIndex(motif3RoleM[5], "MOTIF3_ROLE5M", folder);
+		DataWriter.writeWithIndex(motif3RoleM[6], "MOTIF3_ROLE6M", folder);
+		DataWriter.writeWithIndex(motif3RoleM[7], "MOTIF3_ROLE7M", folder);
+		DataWriter.writeWithIndex(motif3RoleM[8], "MOTIF3_ROLE8M", folder);
+		DataWriter.writeWithIndex(motif3RoleM[9], "MOTIF3_ROLE9M", folder);
+		DataWriter.writeWithIndex(motif3RoleM[10], "MOTIF3_ROLE10M", folder);
+		DataWriter.writeWithIndex(motif3RoleM[11], "MOTIF3_ROLE11M", folder);
+		DataWriter.writeWithIndex(motif3RoleM[12], "MOTIF3_ROLE12M", folder);
+		DataWriter.writeWithIndex(motif3Total, "MOTIF3_TOTAL", folder);
+		DataWriter.writeWithIndex(motif3Role[0], "MOTIF3_ROLE0", folder);
+		DataWriter.writeWithIndex(motif3Role[1], "MOTIF3_ROLE1", folder);
+		DataWriter.writeWithIndex(motif3Role[2], "MOTIF3_ROLE2", folder);
+		DataWriter.writeWithIndex(motif3Role[3], "MOTIF3_ROLE3", folder);
+		DataWriter.writeWithIndex(motif3Role[4], "MOTIF3_ROLE4", folder);
+		DataWriter.writeWithIndex(motif3Role[5], "MOTIF3_ROLE5", folder);
+		DataWriter.writeWithIndex(motif3Role[6], "MOTIF3_ROLE6", folder);
 		return false;
 		} catch (IOException e) {
 			return false;
