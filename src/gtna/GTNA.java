@@ -3,9 +3,6 @@ package gtna;
 import gtna.data.Series;
 import gtna.io.GraphReader;
 import gtna.networks.Network;
-import gtna.networks.canonical.Complete;
-import gtna.networks.model.Communities3;
-import gtna.networks.model.Gilbert;
 import gtna.networks.p2p.CAN;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plot;
@@ -26,15 +23,16 @@ import gtna.util.Stats;
 
 public class GTNA {
 	// register at 0.5 * id as well
-	// X % der größten bleiben fest (vorher gleichverteilt / gleicher abstand)
+	// X % der gr√∂√üten bleiben fest (vorher gleichverteilt / gleicher abstand)
 
 	public static void main(String[] args) throws Exception {
 		if (true) {
 			Stats stats = new Stats();
-			Network nw = new Communities3(new int[] { 5000, 5000 },
-					new int[][] { new int[] { 0, 100 }, new int[] { 100, 0 } },
-					true, null, null);
-			System.out.println(nw.generate());
+			Config.overwrite("METRICS", "DD");
+			Network nw = new CAN(1000, 2, 1, null, null);
+			Series s = Series.generate(nw, 4);
+			Plot.allMulti(s, "CAN-test/");
+			Plot.allSingle(new Series[] { s }, "CAN-test-s/");
 			stats.end();
 			return;
 		}

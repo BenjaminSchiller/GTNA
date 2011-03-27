@@ -155,7 +155,7 @@ public class Bubblecast extends RoutingAlgorithmImpl implements
 			r--;
 		}
 		// if (ttl == 0) {
-		// System.out.println("TTL @ÊR");
+		// System.out.println("TTL @ R");
 		// return;
 		// }
 		int[] split = this.split(r, Math.min(this.DS, node.out().length));
@@ -194,7 +194,7 @@ public class Bubblecast extends RoutingAlgorithmImpl implements
 					r - 1, rand, ttl - 1);
 		}
 		// if (ttl == 0) {
-		// System.out.println("TTL @ÊQ");
+		// System.out.println("TTL @ Q");
 		// return Integer.MAX_VALUE;
 		// }
 		int[] split = this.split(r - 1, Math.min(this.QS, node.out().length));

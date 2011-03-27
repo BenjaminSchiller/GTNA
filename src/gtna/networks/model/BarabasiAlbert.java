@@ -17,7 +17,7 @@ import gtna.util.Timer;
  * Barabasi and Albert in their publication
  * "Emergence of scaling in random networks" (1999).
  * 
- * http://en.wikipedia.org/wiki/Barab‡siÐAlbert_model
+ * http://en.wikipedia.org/wiki/Barabasiâ€“Albert_model
  * 
  * Parameters are the initial network size and the number of edges per added
  * node.

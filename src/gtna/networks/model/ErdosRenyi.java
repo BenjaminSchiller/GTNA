@@ -21,7 +21,7 @@ import gtna.util.Timer;
  * uniformly at random and an edge between them is created if it does not
  * already exist.
  * 
- * http://en.wikipedia.org/wiki/Erdos–Renyi_model
+ * http://en.wikipedia.org/wiki/Erdos-Renyi_model
  * 
  * The parameters are the average node degree (= 2 * edges / nodes) as well as a
  * flag for the bidirectionality of edges.

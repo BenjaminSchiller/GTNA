@@ -124,7 +124,7 @@ public class HybridKleinberg extends NetworkImpl implements Network {
 	// }
 	// }
 	// if (none > 1000) {
-	// // System.out.println("none @Ê" + i + " @Ê"
+	// // System.out.println("none @ " + i + " @ "
 	// // + edges.outDegree(nodes[i]) + " / " + outDegree[i]);
 	// break;
 	// }
