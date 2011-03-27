@@ -224,7 +224,7 @@ public class Bubblecast extends RoutingAlgorithmImpl implements
 				set.add(random);
 			}
 		}
-		return Util.toArray(set);
+		return Util.toNodeArray(set);
 	}
 
 	private int[] split(int r, int s) {

@@ -233,7 +233,7 @@ public class Routing extends MetricImpl implements Metric {
 				msgs.add((double) routes.get(i).messages());
 			}
 		}
-		return Util.toArray(msgs);
+		return Util.toDoubleArray(msgs);
 	}
 
 	private double crl(ArrayList<Route> routes) {
@@ -243,7 +243,7 @@ public class Routing extends MetricImpl implements Metric {
 				rl.add(routes.get(i).path().size() - 1);
 			}
 		}
-		return Util.avg(Util.toArray(rl));
+		return Util.avg(Util.toIntegerArray(rl));
 	}
 
 	private double mrl(ArrayList<Route> routes) {
@@ -268,7 +268,7 @@ public class Routing extends MetricImpl implements Metric {
 	}
 
 	private double[] getProgression(IDRoute route) {
-		Node[] path = Util.toArray(route.path());
+		Node[] path = Util.toNodeArray(route.path());
 		double[] p = new double[path.length];
 		IDNode dest = (IDNode) path[path.length - 1];
 		double total = ((IDNode) path[0]).dist(dest);

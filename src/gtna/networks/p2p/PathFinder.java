@@ -237,7 +237,7 @@ public class PathFinder extends NetworkImpl implements Network {
 				list.add(newId);
 			}
 		}
-		return Util.toArray(list);
+		return Util.toIntegerArray(list);
 	}
 
 	private static VirtualNode[] getVirtualNeighbors(int[] ids,

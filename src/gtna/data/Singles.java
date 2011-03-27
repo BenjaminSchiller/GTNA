@@ -27,14 +27,14 @@ public class Singles {
 		this.name = name;
 		ArrayList<Value> values = new ArrayList<Value>();
 		for (int i = 0; i < metrics.length; i++) {
-			Value[] current = metrics[i].getValues(Util.toArray(values));
+			Value[] current = metrics[i].getValues(Util.toValueArray(values));
 			for (int j = 0; j < current.length; j++) {
 				if (current[j] != null && !Double.isNaN(current[j].value)) {
 					values.add(current[j]);
 				}
 			}
 		}
-		this.values = Util.toArray(values);
+		this.values = Util.toValueArray(values);
 	}
 
 	public Singles(String filename) {

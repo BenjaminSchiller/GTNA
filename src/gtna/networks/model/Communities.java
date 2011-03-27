@@ -54,7 +54,7 @@ public class Communities extends NetworkImpl implements Network {
 					}
 				}
 			}
-			this.sizes = Util.toArray(sizes);
+			this.sizes = Util.toIntegerArray(sizes);
 			// this.sizes = new int[(int) Math.ceil((double) n /
 			// avgCommunitySize)];
 			// for (int i = 0; i < this.sizes.length - 1; i++) {

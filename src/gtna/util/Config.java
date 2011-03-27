@@ -107,7 +107,7 @@ public class Config {
 				}
 			}
 		}
-		initWithFiles(Util.toArray(v));
+		initWithFiles(Util.toStringArray(v));
 	}
 
 	public static void initWithFile(String file) throws IOException {
@@ -129,7 +129,7 @@ public class Config {
 				v.add(list[j].getAbsolutePath());
 			}
 		}
-		initWithFolders(Util.toArray(v));
+		initWithFolders(Util.toStringArray(v));
 	}
 
 	public static boolean containsMetric(String key) {

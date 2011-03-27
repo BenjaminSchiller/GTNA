@@ -80,6 +80,6 @@ public class GiantConnectedComponent extends TransformationImpl implements
 				largest = clusters.get(i);
 			}
 		}
-		return Util.toArray(largest);
+		return Util.toNodeImplArray(largest);
 	}
 }

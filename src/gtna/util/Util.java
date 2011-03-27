@@ -257,7 +257,7 @@ public class Util {
 	// ///////////////////////
 	// ArrayList to Array
 	// ///////////////////////
-	public static Node[] toArray(ArrayList<Node> list) {
+	public static Node[] toNodeArray(ArrayList<Node> list) {
 		Node[] array = new Node[list.size()];
 		for (int i = 0; i < array.length; i++) {
 			array[i] = list.get(i);
@@ -265,7 +265,7 @@ public class Util {
 		return array;
 	}
 
-	public static Node[] toArray(HashSet<Node> set) {
+	public static Node[] toNodeArray(HashSet<Node> set) {
 		Iterator<Node> iter = set.iterator();
 		Node[] array = new Node[set.size()];
 		int i = 0;
@@ -275,7 +275,7 @@ public class Util {
 		return array;
 	}
 
-	public static String[] toArray(Vector<String> v) {
+	public static String[] toStringArray(Vector<String> v) {
 		String[] array = new String[v.size()];
 		Iterator<String> iter = v.listIterator();
 		int index = 0;
@@ -285,7 +285,7 @@ public class Util {
 		return array;
 	}
 
-	public static String[] toArray(ArrayList<String> list) {
+	public static String[] toStringArray(ArrayList<String> list) {
 		String[] array = new String[list.size()];
 		for (int i = 0; i < array.length; i++) {
 			array[i] = list.get(i);
@@ -293,7 +293,7 @@ public class Util {
 		return array;
 	}
 
-	public static double[] toArray(ArrayList<Double> list) {
+	public static double[] toDoubleArray(ArrayList<Double> list) {
 		double[] array = new double[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			array[i] = list.get(i);
@@ -301,7 +301,7 @@ public class Util {
 		return array;
 	}
 
-	public static int[] toArray(ArrayList<Integer> list) {
+	public static int[] toIntegerArray(ArrayList<Integer> list) {
 		int[] array = new int[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			array[i] = list.get(i);
@@ -309,7 +309,7 @@ public class Util {
 		return array;
 	}
 
-	public static long[] toArray(ArrayList<Long> list) {
+	public static long[] toLongArray(ArrayList<Long> list) {
 		long[] array = new long[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			array[i] = list.get(i);
@@ -317,7 +317,7 @@ public class Util {
 		return array;
 	}
 
-	public static PlotData[] toArray(ArrayList<PlotData> list) {
+	public static PlotData[] toPlotDataArray(ArrayList<PlotData> list) {
 		PlotData[] array = new PlotData[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			array[i] = list.get(i);
@@ -325,7 +325,7 @@ public class Util {
 		return array;
 	}
 
-	public static Singles[] toArray(ArrayList<Singles> list) {
+	public static Singles[] toSinglesArray(ArrayList<Singles> list) {
 		Singles[] array = new Singles[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			array[i] = list.get(i);
@@ -333,7 +333,7 @@ public class Util {
 		return array;
 	}
 
-	public static Edge[] toArray(ArrayList<Edge> list) {
+	public static Edge[] toEdgeArray(ArrayList<Edge> list) {
 		Edge[] array = new Edge[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			array[i] = list.get(i);
@@ -341,7 +341,7 @@ public class Util {
 		return array;
 	}
 
-	public static NodeImpl[] toArray(ArrayList<NodeImpl> list) {
+	public static NodeImpl[] toNodeImplArray(ArrayList<NodeImpl> list) {
 		NodeImpl[] array = new NodeImpl[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			array[i] = list.get(i);
@@ -349,7 +349,7 @@ public class Util {
 		return array;
 	}
 
-	public static Value[] toArray(ArrayList<Value> list) {
+	public static Value[] toValueArray(ArrayList<Value> list) {
 		Value[] array = new Value[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			array[i] = list.get(i);
@@ -724,6 +724,6 @@ public class Util {
 		for (int i = 0; i < removed.size(); i++) {
 			removed.get(i).setIndex(i);
 		}
-		return Util.toArray(removed);
+		return Util.toNodeImplArray(removed);
 	}
 }

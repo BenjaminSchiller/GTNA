@@ -165,7 +165,7 @@ public class Chord extends NetworkImpl implements Network {
 				list.add(next);
 			}
 		}
-		long[] array = Util.toArray(list);
+		long[] array = Util.toLongArray(list);
 		Arrays.sort(array);
 		return array;
 	}

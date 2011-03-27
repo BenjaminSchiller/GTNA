@@ -91,7 +91,7 @@ public class ClusteringCoefficient extends MetricImpl implements Metric {
 				neighborhood.add(in[i]);
 			}
 		}
-		return Util.toArray(neighborhood);
+		return Util.toNodeImplArray(neighborhood);
 	}
 
 	private double computeCC(double[] lcc) {

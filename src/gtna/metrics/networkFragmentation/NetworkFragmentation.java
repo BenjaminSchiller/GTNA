@@ -137,7 +137,7 @@ public abstract class NetworkFragmentation extends MetricImpl implements Metric 
 			}
 			sizes.add(size);
 		}
-		return Util.toArray(sizes);
+		return Util.toIntegerArray(sizes);
 	}
 
 	private int[] clusterSizesUnidirectional(NodeImpl[] nodes, boolean[] removed) {
@@ -187,7 +187,7 @@ public abstract class NetworkFragmentation extends MetricImpl implements Metric 
 			}
 			sizes.add(size);
 		}
-		return Util.toArray(sizes);
+		return Util.toIntegerArray(sizes);
 	}
 
 	private boolean[] removed(int number, Node[] sorted) {
