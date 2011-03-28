@@ -97,6 +97,22 @@ public class Util {
 		return buff.toString();
 	}
 
+	public static String toFolderStringDouble(double[][] values) {
+		StringBuffer buff = new StringBuffer();
+		for (int i = 0; i < values.length; i++) {
+			for (int j = 0; j < values[i].length; j++) {
+				if (i == 0 && j == 0) {
+					buff.append(values[i][j]);
+				} else if (j == 0) {
+					buff.append("--" + values[i][j]);
+				} else {
+					buff.append("-" + values[i][j]);
+				}
+			}
+		}
+		return buff.toString();
+	}
+
 	public static String toFolderString(double[] values) {
 		StringBuffer buff = new StringBuffer("" + values[0]);
 		for (int i = 1; i < values.length; i++) {
