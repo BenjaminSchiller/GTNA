@@ -58,7 +58,10 @@ public class WOTReader {
 		
 		// skip the "signatures/" line
 		String signaturesLine = file.readLine();
-		assert signaturesLine.startsWith("signatures/");
+		if (!signaturesLine.startsWith("signatures/")) {
+			// FIXME an IllegalArgumentException isn't really semantically correct
+			throw new IllegalArgumentException("A line starting with \"signatures/\" was expected.");
+		}
 		
 		// read signatures
 		for (index = 0; index < wotNodes.size(); index++) {
@@ -82,7 +85,10 @@ public class WOTReader {
 				
 				// get the target key
 				int targetIndex = signature & SIGNATURE_INDEX_MASK;
-				assert targetIndex < wotNodes.size();
+				if (targetIndex >= wotNodes.size()) {
+					// FIXME an IllegalArgumentException isn't really semantically correct
+					throw new IllegalArgumentException("A target index that matches a node was expected.");
+				}
 				
 				// retrieve the target node
 				WOTNode target = wotNodes.get(targetIndex);
@@ -91,7 +97,10 @@ public class WOTReader {
 		}
 		// skip the "debug/" line
 		String debugLine = file.readLine();
-		assert debugLine.startsWith("debug/");
+		if (!debugLine.startsWith("debug/")) {
+			// FIXME an IllegalArgumentException isn't really semantically correct
+			throw new IllegalArgumentException("A line starting with \"debug/was expected.");
+		}
 		
 		file.close();
 		timer.end();
