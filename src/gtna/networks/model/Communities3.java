@@ -59,6 +59,18 @@ public class Communities3 extends NetworkImpl implements Network {
 		this.p = p;
 		this.bidirectional = bidirectional;
 	}
+	
+	public int[] getSizes(){
+		return this.sizes;
+	}
+	
+	public double[][] getP(){
+		return this.p;
+	}
+	
+	public boolean isBidirectional(){
+		return this.bidirectional;
+	}
 
 	public Graph generate() {
 		Timer timer = new Timer();
