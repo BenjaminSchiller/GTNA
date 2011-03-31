@@ -23,8 +23,18 @@ import java.util.Random;
  * lead to duplicate entries if p[i][j] != 0 && p[j][i] != 0 && bidirectional ==
  * true. Therefore, only fill one part of the matrix to avoid such problems.
  * 
- * The internal flag LESS_MEMORY can be set to choose a generation procedure
- * that uses less memory but requires more computation time.
+ * The flag LESS_MEMORY can be set to choose a generation procedure that uses
+ * less memory but requires more computation time.
+ * 
+ * The flag ALTERNATE_NODES can be used to change the position of the nodes in
+ * the main node array of the generated graph object. If it is set false, the
+ * main array contains first all nodes from the first community, then the nodes
+ * from the second community, and so on. In case the flag is true, the first
+ * node is assigned to the first community, the second node to the second and so
+ * on. If the communities do not have the same size, the smaller communities are
+ * simply discarded after they received all their nodes. E.g., sizes = {2, 3}
+ * would lead to the communities with node indices {0, 2} {1, 3, 4}. sizes = {3,
+ * 1, 3} would result in the node assignments {0, 3, 5} {1} {2, 4, 6}.
  * 
  * @author benni
  * 
@@ -36,7 +46,9 @@ public class Communities3 extends NetworkImpl implements Network {
 
 	private boolean bidirectional;
 
-	private static final boolean LESS_MEMORY = false;
+	public static final boolean LESS_MEMORY = false;
+
+	public static final boolean ALTERNATE_NODES = true;
 
 	public Communities3(int[] sizes, double[][] p, boolean bidirectional,
 			RoutingAlgorithm r, Transformation[] t) {
@@ -54,11 +66,34 @@ public class Communities3 extends NetworkImpl implements Network {
 		Random rand = new Random(System.currentTimeMillis());
 		NodeImpl[][] communities = new NodeImpl[this.sizes.length][];
 		// fill communities
-		int index = 0;
+		if (ALTERNATE_NODES) {
+			int[] indices = new int[communities.length];
+			for (int i = 0; i < communities.length; i++) {
+				communities[i] = new NodeImpl[this.sizes[i]];
+			}
+			for (int i = 0; i < nodes.length;) {
+				for (int j = 0; j < communities.length; j++) {
+					if (indices[j] < communities[j].length) {
+						communities[j][indices[j]++] = nodes[i++];
+					}
+					if (i >= nodes.length) {
+						break;
+					}
+				}
+			}
+		} else {
+			int index = 0;
+			for (int i = 0; i < communities.length; i++) {
+				communities[i] = new NodeImpl[this.sizes[i]];
+				for (int j = 0; j < communities[i].length; j++) {
+					communities[i][j] = nodes[index++];
+				}
+			}
+		}
 		for (int i = 0; i < communities.length; i++) {
-			communities[i] = new NodeImpl[this.sizes[i]];
 			for (int j = 0; j < communities[i].length; j++) {
-				communities[i][j] = nodes[index++];
+				System.out.println(i + " => " + communities[i][j].index()
+						+ " @ " + communities[i].length);
 			}
 		}
 		// create inter-community links
@@ -79,7 +114,6 @@ public class Communities3 extends NetworkImpl implements Network {
 		// create internal links
 		for (int i = 0; i < communities.length; i++) {
 			for (int j = 0; j < communities[i].length; j++) {
-				index = 0;
 				NodeImpl n = communities[i][j];
 				NodeImpl[] inOld = n.in();
 				NodeImpl[] outOld = n.out();
