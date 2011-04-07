@@ -19,6 +19,8 @@ public abstract class NetworkImpl implements Network {
 
 	private String[] configKeys;
 
+	private String[] folderValues;
+
 	private String folder;
 
 	private int nodes;
@@ -62,26 +64,59 @@ public abstract class NetworkImpl implements Network {
 	public NetworkImpl(String key, int nodes, String[] configKeys,
 			String[] configValues, RoutingAlgorithm ra, Transformation[] t) {
 		this(key, Config.get(key + "_FOLDER"), nodes, configKeys, configValues,
-				ra, t);
+				configValues, ra, t);
+		this.key = key;
+	}
+
+	/**
+	 * Constructor that must be used by any implementation of a network
+	 * generator.
+	 * 
+	 * @param key
+	 *            key of the network generator, used for the configuration of
+	 *            the network generator
+	 * @param nodes
+	 *            number of nodes in the network
+	 * @param configKeys
+	 *            keys of the network's parameters, also used for the
+	 *            configuration
+	 * @param configValues
+	 *            value for each parameter
+	 * @param folderValues
+	 *            values used for generating the deterministic storage location
+	 *            of the series - in the other constructor, configValcues is
+	 *            used for this!
+	 * @param ra
+	 *            routing algorithm used by the routing metric
+	 * @param t
+	 *            transformations to be performed after the generation of a
+	 *            specific network instance
+	 */
+	public NetworkImpl(String key, int nodes, String[] configKeys,
+			String[] configValues, String[] folderValues, RoutingAlgorithm ra,
+			Transformation[] t) {
+		this(key, Config.get(key + "_FOLDER"), nodes, configKeys, configValues,
+				folderValues, ra, t);
 		this.key = key;
 	}
 
 	private NetworkImpl(String key, String folder, int nodes,
-			String[] configKeys, String[] configValues, RoutingAlgorithm ra,
-			Transformation[] t) {
+			String[] configKeys, String[] configValues, String[] folderValues,
+			RoutingAlgorithm ra, Transformation[] t) {
 		this.nodes = nodes;
 		this.key = key;
 		this.name = Config.get(key + "_NAME");
 		this.configKeys = configKeys;
 		this.configValues = configValues;
+		this.folderValues = configValues;
 		this.ra = ra;
 		this.t = t;
 		if (this.t == null) {
 			this.t = new Transformation[] {};
 		}
 		this.folder = folder;
-		for (int i = 0; i < this.configValues.length; i++) {
-			this.folder += "-" + this.configValues[i];
+		for (int i = 0; i < this.folderValues.length; i++) {
+			this.folder += "-" + this.folderValues[i];
 		}
 		if (this.ra != null) {
 			this.folder += "-" + this.ra.folder();
@@ -158,6 +193,10 @@ public abstract class NetworkImpl implements Network {
 
 	public String[] configValues() {
 		return this.configValues;
+	}
+	
+	public String[] folderValues(){
+		return this.folderValues;
 	}
 
 	public RoutingAlgorithm routingAlgorithm() {
