@@ -10,15 +10,15 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 /**
- * Extracts the giant connected component of the given graph, i.e., the largest
+ * Extracts the largest connected component of the given graph, i.e., the largest
  * subset of nodes that form a connected cluster.
  * 
  * @author benni
  * 
  */
-public class GiantConnectedComponent extends TransformationImpl implements
+public class LargestConnectedComponent extends TransformationImpl implements
 		Transformation {
-	public GiantConnectedComponent() {
+	public LargestConnectedComponent() {
 		super("GIANT_CONNECTED_COMPONENT", new String[] {}, new String[] {});
 	}
 

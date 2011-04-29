@@ -11,7 +11,7 @@ import gtna.routing.greedy.Greedy;
 import gtna.routing.twoPhase.TwoPhaseGreedyRegistration;
 import gtna.routing.twoPhase.TwoPhaseGreedyRegistrationMultiR;
 import gtna.transformation.Transformation;
-import gtna.transformation.connectivity.GiantConnectedComponent;
+import gtna.transformation.connectivity.LargestConnectedComponent;
 import gtna.transformation.degree.MinDegree;
 import gtna.transformation.degree.RandomWithSameDD;
 import gtna.transformation.degree.RemoveSmallDegreeNodes;
@@ -67,7 +67,7 @@ public class GTNA {
 			RoutingAlgorithm r2 = new TwoPhaseGreedyRegistrationMultiR(50, 20,
 					2);
 
-			Transformation lc = new GiantConnectedComponent();
+			Transformation lc = new LargestConnectedComponent();
 			Transformation riR = new RandomID(RandomID.RING_NODE, 1);
 			Transformation os1 = new OutlierSorting(1);
 			Transformation osC = new OutlierSorting(-1);
@@ -152,7 +152,7 @@ public class GTNA {
 
 		Transformation md = new MinDegree(3, 3, true);
 		Transformation rsdn = new RemoveSmallDegreeNodes(2, 2);
-		Transformation lc = new GiantConnectedComponent();
+		Transformation lc = new LargestConnectedComponent();
 		Transformation rwsdd = new RandomWithSameDD(true);
 		Transformation riR = new RandomID(RandomID.RING_NODE, 1);
 		Transformation riRmR = new RandomID(RandomID.RING_NODE_MULTI_R, 5);
