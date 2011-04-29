@@ -1,6 +1,9 @@
 package gtna;
 
 import gtna.data.Series;
+import gtna.graph.Graph;
+import gtna.graph.Node;
+import gtna.graph.sorting.NodeSorting;
 import gtna.io.GraphReader;
 import gtna.networks.Network;
 import gtna.networks.p2p.CAN;
@@ -18,27 +21,111 @@ import gtna.transformation.degree.RemoveSmallDegreeNodes;
 import gtna.transformation.identifier.OutlierSorting;
 import gtna.transformation.identifier.OutlierSortingMultiR;
 import gtna.transformation.identifier.RandomID;
+import gtna.transformation.identifier.SpanningTreeSorting;
 import gtna.util.Config;
 import gtna.util.Stats;
+
+import java.util.Random;
 
 public class GTNA {
 	// register at 0.5 * id as well
 	// X % der größten bleiben fest (vorher gleichverteilt / gleicher abstand)
 
 	public static void main(String[] args) throws Exception {
-		if (true) {
-			Stats stats = new Stats();
-			Config.overwrite("METRICS", "DD");
-			Network nw = new CAN(1000, 2, 1, null, null);
-			Series s = Series.generate(nw, 4);
-			Plot.allMulti(s, "CAN-test/");
-			Plot.allSingle(new Series[] { s }, "CAN-test-s/");
-			stats.end();
+		String SPI = "./resources/spi-buddy-graph.txt";
+		String WOT = "./resources/WOT/2005-02-25-graph-bi.txt";
+
+		if (false) {
+			Graph g = GraphReader.read(SPI);
+			Node[] nodes1 = NodeSorting.degreeDesc(g.nodes, new Random(System
+					.currentTimeMillis() + 1));
+			Node[] nodes2 = NodeSorting.degreeDesc(g.nodes, new Random(System
+					.currentTimeMillis() + 2));
+			Node[] nodes3 = NodeSorting.degreeDesc(g.nodes, new Random(System
+					.currentTimeMillis() + 3));
+			Node[] nodes4 = NodeSorting.degreeDesc(g.nodes, new Random(System
+					.currentTimeMillis() + 4));
+			Node[] nodes5 = NodeSorting.degreeDesc(g.nodes, new Random(System
+					.currentTimeMillis() + 5));
+			Node[] nodes6 = NodeSorting.degreeDesc(g.nodes, new Random(System
+					.currentTimeMillis() + 6));
+			for (int i = 0; i < 100; i++) {
+				System.out
+						.print((nodes1[i].in().length + nodes1[i].out().length)
+								+ ":	");
+				System.out.print(nodes1[i].index() + "	");
+				System.out.print(nodes2[i].index() + "	");
+				System.out.print(nodes3[i].index() + "	");
+				System.out.print(nodes4[i].index() + "	");
+				System.out.print(nodes5[i].index() + "	");
+				System.out.print(nodes6[i].index() + "	");
+				System.out.println();
+			}
+
 			return;
 		}
 
-		String SPI = "./data/__graphs/spi-buddy-graph.txt";
-		String WOT = "./data/__graphs/WOT/2005-02-25-graph-bi.txt";
+		// if(true){
+		// Graph g = GraphReader.read(SPI);
+		// Transformation stt = new SpanningTreeSorting();
+		// stt.transform(g);
+		// return;
+		// }
+
+		if (true) {
+			Stats stats = new Stats();
+			Config.overwrite("MAIN_DATA_FOLDER", "./data/hierarchicalSorting/");
+			Config
+					.overwrite("MAIN_PLOT_FOLDER",
+							"./plots/hierarchicalSorting/");
+			Config.overwrite("METRICS", "RL");
+			Config.overwrite("RL_ROUTES_PER_NODE", "5");
+			int times = 1;
+
+			RoutingAlgorithm r1 = new TwoPhaseGreedyRegistration(50, 20, 0);
+			RoutingAlgorithm r2 = new TwoPhaseGreedyRegistration(50, 20, 1);
+			RoutingAlgorithm r3 = new TwoPhaseGreedyRegistration(50, 20, 2);
+
+			Transformation lc = new GiantConnectedComponent();
+			Transformation riR = new RandomID(RandomID.RING_NODE, 1);
+			Transformation os1 = new OutlierSorting(1);
+			Transformation osC = new OutlierSorting(-1);
+			Transformation riRmR = new RandomID(RandomID.RING_NODE_MULTI_R, 5);
+			Transformation osmR1 = new OutlierSortingMultiR(1);
+			Transformation osmRC = new OutlierSortingMultiR(-1);
+			Transformation sts = new SpanningTreeSorting(0);
+			Transformation[] t1 = new Transformation[] { lc, sts };
+			// Transformation[] t2 = new Transformation[] { lc, riR, os1 };
+			// Transformation[] t2 = new Transformation[] { lc, riRmR, osmR1 };
+			// Transformation[] t3 = new Transformation[] { lc, riR, osC };
+			// Transformation[] t4 = new Transformation[] { lc, riRmR, osmRC };
+
+			// i= 1141 problem...
+			Transformation[][] t = new Transformation[9222][];
+			for (int i = 0; i < t.length; i++) {
+				t[i] = new Transformation[] { lc, new SpanningTreeSorting(i) };
+			}
+			RoutingAlgorithm[] r = new RoutingAlgorithm[] { r1 };
+
+			Network[] n = new Network[t.length * r.length];
+			int index = 0;
+			for (int i = 0; i < r.length; i++) {
+				for (int j = 0; j < t.length; j++) {
+					n[index++] = new ReadableFile("SPI", "spi", SPI,
+							GraphReader.OWN_FORMAT, r[i], t[j]);
+				}
+			}
+
+//			Series[] s = Series.generate(n, times);
+			 Series[] s = Series.get(n);
+			Config.overwrite("GNUPLOT_CMD_TERMINAL", "set terminal jpeg");
+			Config.overwrite("PLOT_EXTENSION", ".jpeg");
+			Config.overwrite("RL_FR_PLOT_MODE_AVG", "DOTS_ONLY");
+			Plot.singlesAvg(s, "singles/");
+
+			stats.end();
+			return;
+		}
 
 		if (false) {
 			Stats stats = new Stats();

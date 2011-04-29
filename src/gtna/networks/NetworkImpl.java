@@ -194,8 +194,8 @@ public abstract class NetworkImpl implements Network {
 	public String[] configValues() {
 		return this.configValues;
 	}
-	
-	public String[] folderValues(){
+
+	public String[] folderValues() {
 		return this.folderValues;
 	}
 
@@ -237,7 +237,11 @@ public abstract class NetworkImpl implements Network {
 			return Config.get("NETWORK_COMPARE_NODES_NAME" + key);
 		}
 		if (this.ra != null && nw.routingAlgorithm() != null) {
-			return this.ra.compareName(nw.routingAlgorithm(), key);
+			String compared = this.ra.compareName(nw.routingAlgorithm(), key);
+			if (!compared.equals(Config
+					.get("ROUTING_ALGORITHM_COMPARE_SAME_NAME"))) {
+				return compared;
+			}
 		}
 		for (int i = 0; i < Math
 				.min(this.t.length, nw.transformations().length); i++) {
@@ -264,7 +268,11 @@ public abstract class NetworkImpl implements Network {
 			return "" + this.nodes;
 		}
 		if (this.ra != null && nw.routingAlgorithm() != null) {
-			return this.ra.compareValue(nw.routingAlgorithm());
+			String compared = this.ra.compareValue(nw.routingAlgorithm());
+			if (!compared.equals(Config
+					.get("ROUTING_ALGORITHM_COMPARE_SAME_VALUE"))) {
+				return compared;
+			}
 		}
 		for (int i = 0; i < Math
 				.min(this.t.length, nw.transformations().length); i++) {
