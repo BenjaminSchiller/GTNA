@@ -3,6 +3,7 @@ data
 plots
 temp
 resources
+src/gtna/GTNA2.java
 
 # deploy
 deploy
