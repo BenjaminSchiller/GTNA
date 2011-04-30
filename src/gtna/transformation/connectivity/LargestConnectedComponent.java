@@ -19,7 +19,7 @@ import java.util.Stack;
 public class LargestConnectedComponent extends TransformationImpl implements
 		Transformation {
 	public LargestConnectedComponent() {
-		super("GIANT_CONNECTED_COMPONENT", new String[] {}, new String[] {});
+		super("LARGEST_CONNECTED_COMPONENT", new String[] {}, new String[] {});
 	}
 
 	public boolean applicable(Graph g) {
