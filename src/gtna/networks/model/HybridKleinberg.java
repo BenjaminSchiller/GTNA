@@ -1,32 +1,24 @@
 package gtna.networks.model;
 
 import gtna.data.Series;
-import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.metrics.DegreeDistribution;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
-import gtna.routing.node.GridNode;
-import gtna.routing.node.identifier.GridIDManhattan;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
-import gtna.util.Timer;
-import gtna.util.Util;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 public class HybridKleinberg extends NetworkImpl implements Network {
-	private Series series;
-
-	private int dimensions;
-
-	private double ratio;
-
-	private double clusteringExponent;
-
-	private boolean bidirectional;
+	// TODO "reimplement" to fit current interfaces
+//	private Series series;
+//
+//	private int dimensions;
+//
+//	private double ratio;
+//
+//	private double clusteringExponent;
+//
+//	private boolean bidirectional;
 
 	public HybridKleinberg(Series series, int dimensions, double ratio,
 			double clusteringExponent, boolean bidirectional,
@@ -38,11 +30,11 @@ public class HybridKleinberg extends NetworkImpl implements Network {
 						Config.get("FILESYSTEM_FOLDER_DELIMITER"), ""),
 				dimensions + "", ratio + "", clusteringExponent + "",
 				bidirectional + "" }, ra, t);
-		this.series = series;
-		this.dimensions = dimensions;
-		this.ratio = ratio;
-		this.clusteringExponent = clusteringExponent;
-		this.bidirectional = bidirectional;
+//		this.series = series;
+//		this.dimensions = dimensions;
+//		this.ratio = ratio;
+//		this.clusteringExponent = clusteringExponent;
+//		this.bidirectional = bidirectional;
 	}
 
 	public Graph generate() {
@@ -105,8 +97,6 @@ public class HybridKleinberg extends NetworkImpl implements Network {
 	// }
 	// }
 	//
-	// // TODO fill according to the nodes's degree so that large nodes have
-	// // all nodes?!?
 	// for (int i = 0; i < nodes.length; i++) {
 	// double[] prob = this.computeProb(nodes[i], nodes);
 	// int none = 0;
