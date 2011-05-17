@@ -17,8 +17,6 @@ public class GraphWriter {
 
 	public static final int DOT_FORMAT = 4;
 
-	public static final int GML_WITH_COORDINATES_FORMAT = 5;
-
 	public static void write(Graph g, String filename, int type) {
 		if (type == OWN_FORMAT) {
 			write(g, filename);
@@ -28,8 +26,6 @@ public class GraphWriter {
 			info(g, filename);
 		} else if (type == DOT_FORMAT) {
 			dot(g, filename);
-		} else if (type == GML_WITH_COORDINATES_FORMAT) {
-			gmlCoordinates(g, filename);
 		}
 	}
 
@@ -112,54 +108,5 @@ public class GraphWriter {
 		}
 		fw.writeln("}");
 		fw.close();
-	}
-
-	// TODO reimplement or remove?!?
-	public static void gmlCoordinates(Graph g, String filename) {
-		// String x;
-		// String y;
-		// double w = 25.0;
-		// double h = 25.0;
-		// int fontSize = 10;
-		// int width_edge = 1;
-
-		// Filewriter fw = new Filewriter(filename);
-		// fw.writeln("comment \"" + filename + "\"");
-		// fw.writeln("comment \"" + g.name + "\"");
-		//
-		// fw.write("graph [ \n \t hierarchic 1 \n \t directed 1");
-		//
-		// for (int i = 0; i < g.nodes.length; i++) {
-		// IDNode node = (IDNode) g.nodes[i];
-		// GridID id = (GridID) node.id();
-		//
-		// StringTokenizer st = new StringTokenizer(id.toString(), "/");
-		//
-		// x = st.nextToken().substring(1);
-		// y = st.nextToken();
-		// y = y.substring(0, y.length() - 2);
-		//
-		// String graphics = " graphics \n \t \t [ \n \t \t \t x " + x
-		// + "\n \t \t \t y " + y + "\n \t \t \t w " + w
-		// + "\n \t \t \t h " + h + "\n \t \t ]";
-		// String LabelGraphics =
-		// "\n \t \t LabelGraphics \n \t \t [ \n \t \t \t text \""
-		// + i + "\"\n \t \t \t fontSize " + fontSize + "\n \t \t ]";
-		//
-		// fw.write("\n \t node [ \n \t \t id \t" + i + "\n \t \t" + graphics
-		// + LabelGraphics + "\n \t ]");
-		// }
-		// for (Edge edge : g.edges()) {
-		//
-		// String graphics = "\n \t \t graphics \n \t \t [ \n \t \t \t width "
-		// + width_edge + "\n \t \t ]";
-		//
-		// fw.writeln("\n \t edge \n \t [ \n \t \t source " + edge.dst.index()
-		// + "\n \t \t target " + edge.src.index() + graphics
-		// + "\n \t ]");
-		// }
-		//
-		// fw.write("]");
-		// fw.close();
 	}
 }
