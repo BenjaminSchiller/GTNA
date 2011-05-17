@@ -46,7 +46,6 @@ public class WOTReader {
 				index += 1;
 			}
 		}
-		System.out.println(wotNodes.size() + " Nodes");
 		
 		// read keys
 		for (index = 0; index < wotNodes.size(); index++) {
