@@ -27,11 +27,13 @@
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  * 
- * Original Author: Benjamin Schiller;
- * Contributors:    -;
+ * Original Author: Zoran Zaric;
+ * Contributors:    Benjamin Schiller;
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2011-05-18 : added support for downloading and reading of multiple files (BS);
+ * 
  */
 package gtna.io.networks;
 
@@ -40,6 +42,9 @@ import gtna.graph.Graph;
 import gtna.graph.NodeImpl;
 import gtna.io.GraphWriter;
 import gtna.io.Output;
+import gtna.util.Config;
+import gtna.util.Timer;
+import gtna.util.Util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,10 +52,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
-
-import gtna.util.Config;
-import gtna.util.Timer;
-import gtna.util.Util;
+import java.util.Calendar;
 import java.util.Vector;
 
 /**
@@ -187,59 +189,100 @@ public class WOTReader {
 		}
 	}
 
-	private static final boolean PRINT_ERRORS = Config.getBoolean("WOT_READER_PRINT_ERRORS");
+	private static final boolean PRINT_ERRORS = Config
+			.getBoolean("WOT_READER_PRINT_ERRORS");
+
+	public static void getWOTBetween(int Y1, int M1, int D1, int Y2, int M2,
+			int D2) {
+		int millisInDay = 1000 * 60 * 60 * 24;
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.YEAR, Y2);
+		c.set(Calendar.MONTH, M2 - 1);
+		c.set(Calendar.DAY_OF_MONTH, D2);
+		long end = c.getTimeInMillis();
+		c.set(Calendar.YEAR, Y1);
+		c.set(Calendar.MONTH, M1 - 1);
+		c.set(Calendar.DAY_OF_MONTH, D1);
+		while (c.getTimeInMillis() <= end) {
+			int Y = c.get(Calendar.YEAR);
+			int M = c.get(Calendar.MONTH) + 1;
+			int D = c.get(Calendar.DAY_OF_MONTH);
+			System.out.println(Y + "-" + M + "-" + D);
+			System.out.println("   " + getWOT(Y, M, D));
+			c.setTimeInMillis(c.getTimeInMillis() + millisInDay);
+		}
+	}
 
 	public static boolean getWOT(int y, int m, int d) {
-		// String WGET = "/usr/local/bin/wget";
-		// String BZIP2 = "/sw/bin/bzip2";
-		String WGET = "/usr/bin/wget";
-		String BZIP2 = "/bin/bzip2";
+		String Y = "" + y;
+		String M = m < 10 ? "0" + m : "" + m;
+		String D = d < 10 ? "0" + d : "" + d;
 
-		String year = "" + y;
-		String month = m < 10 ? "0" + m : "" + m;
-		String day = d < 10 ? "0" + d : "" + d;
-		String date = year + "-" + month + "-" + day;
-		String original = "http://www.lysator.liu.se/~jc/wotsap/wots2/" + year
-				+ "/" + month + "/" + date + ".wot";
-		String wot = "resources/WOT/" + date + ".wot";
-		String unzipped = "resources/WOT/" + date + ".wot.out";
-		String graph = "resources/WOT/graphs/" + date + ".wot.txt";
-		execute(WGET + " " + original, "resources/WOT/");
-		if ((new File(wot)).exists()) {
-			execute(BZIP2 + " -d " + wot, null);
-		}
-		if ((new File(unzipped)).exists()) {
-			Graph g = null;
-			try {
-				g = WOTReader.read(unzipped);
-				GraphWriter.write(g, graph);
-				System.out.println(date + ": " + g);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return true;
-		} else if ((new File(wot)).exists()) {
-			System.out.println(date + ": unable to decompress");
+		String fetchOut = Config.get("WOT_READER_FETCH_OUT");
+		String fetchFolder = Config.get("WOT_READER_FETCH_FOLDER");
+		String fetchCmd = Config.get("WOT_READER_FETCH_CMD");
+		fetchOut = replace(fetchOut, Y, M, D);
+		fetchFolder = replace(fetchFolder, Y, M, D);
+		fetchCmd = replace(fetchCmd, Y, M, D);
+		fetchCmd = fetchCmd.replace("%OUT", fetchOut);
+
+		String unzipOut = Config.get("WOT_READER_UNZIP_OUT");
+		String unzipFolder = Config.get("WOT_READER_UNZIP_FOLDER");
+		String unzipCmd = Config.get("WOT_READER_UNZIP_CMD");
+		unzipOut = replace(unzipOut, Y, M, D);
+		unzipFolder = replace(unzipFolder, Y, M, D);
+		unzipCmd = replace(unzipCmd, Y, M, D);
+		unzipCmd = unzipCmd.replace("%WOT", fetchOut);
+		unzipCmd = unzipCmd.replace("%OUT", unzipOut);
+
+		String wot = fetchFolder + fetchOut;
+		String unzipped = unzipFolder + unzipOut;
+		String graph = Config.get("WOT_READER_GRAPH_OUT");
+		graph = replace(graph, Y, M, D);
+
+		execute(fetchCmd, fetchFolder);
+		if (!(new File(wot)).exists()) {
 			return false;
 		}
+
+		execute(unzipCmd, unzipFolder);
+		if (!(new File(unzipped)).exists()) {
+			return false;
+		}
+
+		try {
+			Graph g = WOTReader.read(unzipped);
+			GraphWriter.write(g, graph);
+			if (Config.getBoolean("WOT_READER_DELETE_WOT_FILE")) {
+				String deleteFolder = Config
+						.get("WOT_READER_DELETE_WOT_FOLDER");
+				String deleteCmd = Config.get("WOT_READER_DELETE_WOT_CMD");
+				deleteCmd = replace(deleteCmd, Y, M, D);
+				execute(deleteCmd, deleteFolder);
+			}
+			if (Config.getBoolean("WOT_READER_DELETE_UNZIPPED_FILE")) {
+				String deleteFolder = Config
+						.get("WOT_READER_DELETE_UNZIPPED_FOLDER");
+				String deleteCmd = Config.get("WOT_READER_DELETE_UNZIPPED_CMD");
+				deleteCmd = replace(deleteCmd, Y, M, D);
+				execute(deleteCmd, deleteFolder);
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		return false;
 	}
 
-	// public static void getAllWOT(int startY, int startM, int startD) {
-	// for (int year = startY; year <= 2011; year++) {
-	// for (int month = startM; month <= 12; month++) {
-	// for (int day = startD; day <= 31; day++) {
-	// getWOT(year, month, day);
-	// }
-	// }
-	// }
-	// }
-
-	// public static void getAllWOT() {
-	// getAllWOT(2005, 1, 1);
-	// }
+	private static String replace(String str, String Y, String M, String D) {
+		return str.replace("%Y", Y).replace("%M", M).replace("%D", D);
+	}
 
 	private static boolean execute(String cmd, String dir) {
+		if (PRINT_ERRORS) {
+			System.out.println("EXECUTING " + cmd + " IN " + dir);
+		}
 		try {
 			Process p = null;
 			if (dir == null) {
