@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.io;
 
 import gtna.data.Series;
@@ -134,8 +134,8 @@ public class LaTex {
 			}
 			for (int j = 0; j < keys[i].length; j++) {
 				for (int k = 0; k < s.length; k++) {
-					table[k + 1][j + 1] = formatNumber(s[k].avgSingles().getValue(
-							keys[i][j]), decimals);
+					table[k + 1][j + 1] = formatNumber(s[k].avgSingles()
+							.getValue(keys[i][j]), decimals);
 				}
 			}
 			fw.writeln("\n");
@@ -144,10 +144,16 @@ public class LaTex {
 			}
 			first = false;
 			writeTable(fw, table, null, metrics[i].name());
+			fw.writeln("\n");
+			fw.writeln("\\vspace{1em}");
+			writeTable(fw, invert(table), null, metrics[i].name());
 			String fn = folder + metrics[i].key()
 					+ Config.get("LATEX_EXTENSION");
 			Filewriter fw2 = new Filewriter(fn);
 			writeTable(fw2, table, null, null);
+			fw2.writeln("\n");
+			fw2.writeln("\\vspace{1em}");
+			writeTable(fw2, invert(table), null, null);
 			fw2.close();
 		}
 		fw.close();
@@ -169,7 +175,8 @@ public class LaTex {
 		Filewriter fw = new Filewriter(filename);
 		String x = s[0][0].network().compareNameShort(
 				s[0][1 % s[0].length].network());
-		String y = s[0][0].network().compareNameShort(s[1 % s.length][0].network());
+		String y = s[0][0].network().compareNameShort(
+				s[1 % s.length][0].network());
 		String name = s[0][0].network().description(
 				Config.get("LATEX_TABLE_DESCRIPTION_TYPE"),
 				s[0][1 % s[0].length].network(), s[1 % s.length][0].network());
@@ -201,9 +208,15 @@ public class LaTex {
 				}
 				first = false;
 				writeTable(fw, table, "label", makeIndex(key));
+				fw.writeln("\n");
+				fw.writeln("\\vspace{1em}");
+				writeTable(fw, invert(table), "label", makeIndex(key));
 				String fn = folder + keys[i][j] + Config.get("LATEX_EXTENSION");
 				Filewriter fw2 = new Filewriter(fn);
 				writeTable(fw2, table, null, null);
+				fw2.writeln("\n");
+				fw2.writeln("\\vspace{1em}");
+				writeTable(fw2, invert(table), null, null);
 				fw2.close();
 			}
 		}
@@ -213,8 +226,17 @@ public class LaTex {
 	/**
 	 * TABLES util
 	 */
+	public static String[][] invert(String[][] table) {
+		String[][] inverted = new String[table[0].length][table.length];
+		for (int i = 0; i < table.length; i++) {
+			for (int j = 0; j < table[i].length; j++) {
+				inverted[j][i] = table[i][j];
+			}
+		}
+		return inverted;
+	}
 
-	public static void writeTable(Filewriter fw, String[][] table,
+	private static void writeTable(Filewriter fw, String[][] table,
 			String label, String caption) {
 		if (Config.getBoolean("LATEX_TABLE_USE_BOOKTABS")) {
 			fw.writeln("\\scriptsize");
@@ -222,7 +244,7 @@ public class LaTex {
 				fw.writeln("\\subsubsection*{" + caption + "}");
 			}
 			fw.write("\\begin{tabular}{l");
-//			fw.write("\\begin{tabular*}{\\textwidth}{l");
+			// fw.write("\\begin{tabular*}{\\textwidth}{l");
 			for (int i = 1; i < table[0].length; i++) {
 				fw.write("r");
 			}
@@ -240,13 +262,13 @@ public class LaTex {
 					}
 				}
 				fw.writeln("\\\\");
-				if(i == 0){
+				if (i == 0) {
 					fw.writeln("\\midrule");
 				}
 			}
 			fw.writeln("\\bottomrule");
 			fw.writeln("\\end{tabular}");
-//			fw.writeln("\\end{tabular*}");
+			// fw.writeln("\\end{tabular*}");
 			fw.writeln("\\normalsize");
 		} else {
 			fw.writeln("\\scriptsize");
@@ -291,15 +313,17 @@ public class LaTex {
 		name = name.replace("%%%", "$_{") + "}$";
 		return name;
 	}
-	
-	private static final DecimalFormat showAllDigitsFormat = new DecimalFormat("0.0#####################################");
-	
+
+	private static final DecimalFormat showAllDigitsFormat = new DecimalFormat(
+			"0.0#####################################");
+
 	public static String formatNumber(double d, int decimalPlaces) {
-		 
+
 		if (decimalPlaces < 0) {
-			throw new IllegalArgumentException("Cannot have negative decimal places.");
+			throw new IllegalArgumentException(
+					"Cannot have negative decimal places.");
 		}
- 
+
 		if (decimalPlaces == 0) {
 			long rounded = Math.round(d);
 			return addCommas(rounded + "");
@@ -311,10 +335,10 @@ public class LaTex {
 			}
 			String s = showAllDigitsFormat.format(d);
 			int decimalIndex = s.indexOf('.');
- 
+
 			String leftSide = s.substring(0, decimalIndex);
 			String rightSide = s.substring(decimalIndex + 1);
- 
+
 			leftSide = addCommas(leftSide);
 			if (decimalPlaces < rightSide.length()) {
 				rightSide = rightSide.substring(0, decimalPlaces);
@@ -325,12 +349,12 @@ public class LaTex {
 				}
 				rightSide = sb.toString();
 			}
- 
+
 			return leftSide + "." + rightSide;
 		}
- 
+
 	}
-	
+
 	private static String addCommas(String s) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = s.length() - 1; i >= 0; i--) {
