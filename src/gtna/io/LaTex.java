@@ -334,7 +334,12 @@ public class LaTex {
 				d /= 10.0d;
 			}
 			String s = showAllDigitsFormat.format(d);
-			int decimalIndex = s.indexOf('.');
+			int decimalIndex = 0;
+			if (s.contains(".")) {
+				decimalIndex = s.indexOf('.');
+			} else if (s.contains(",")) {
+				decimalIndex = s.indexOf(',');
+			}
 
 			String leftSide = s.substring(0, decimalIndex);
 			String rightSide = s.substring(decimalIndex + 1);
