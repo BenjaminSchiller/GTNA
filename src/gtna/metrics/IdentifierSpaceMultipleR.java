@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  * 
  * ---------------------------------------
- * IdentifierSpace.java
+ * IdentifierSpaceMultipleR.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -32,6 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2011-06-01 : appended multipleR to all names / keywords (BS)
 */
 package gtna.metrics;
 
@@ -45,15 +46,15 @@ import gtna.routing.node.RingNodeMultiR;
 
 import java.util.Hashtable;
 
-public class IdentifierSpace extends MetricImpl implements Metric {
+public class IdentifierSpaceMultipleR extends MetricImpl implements Metric {
 	double[][] distances;
 	
 	double[][] distancesByR1;
 
 	double[][] ids;
 
-	public IdentifierSpace() {
-		super("ID_SPACE");
+	public IdentifierSpaceMultipleR() {
+		super("ID_SPACE_MR");
 	}
 
 	private void initEmpty() {
@@ -161,11 +162,11 @@ public class IdentifierSpace extends MetricImpl implements Metric {
 	}
 
 	public boolean writeData(String folder) {
-		DataWriter.writeWithoutIndex(this.distances, "ID_SPACE_DISTANCES",
+		DataWriter.writeWithoutIndex(this.distances, "ID_SPACE_MR_DISTANCES",
 				folder);
-		DataWriter.writeWithoutIndex(this.distancesByR1, "ID_SPACE_DISTANCES_BY_R1",
+		DataWriter.writeWithoutIndex(this.distancesByR1, "ID_SPACE_MR_DISTANCES_BY_R1",
 				folder);
-		DataWriter.writeWithoutIndex(this.ids, "ID_SPACE_IDS", folder);
+		DataWriter.writeWithoutIndex(this.ids, "ID_SPACE_MR_IDS", folder);
 		return true;
 	}
 
