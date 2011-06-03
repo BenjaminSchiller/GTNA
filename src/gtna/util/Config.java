@@ -32,7 +32,8 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ * 2011-06-03 : adding containsKey method (BS)
+ */
 package gtna.util;
 
 import gtna.metrics.Metric;
@@ -208,6 +209,10 @@ public class Config {
 		return false;
 	}
 
+	public static boolean containsKey(String key) {
+		return properties.containsKey(key);
+	}
+
 	public static String[] getData() {
 		Metric[] metrics = getMetrics();
 		int counter = 0;
@@ -235,7 +240,8 @@ public class Config {
 	}
 
 	public static String[] keys(String from) {
-		String[] keys = Config.get(from).split(Config.get("CONFIG_LIST_SEPARATOR"));
+		String[] keys = Config.get(from).split(
+				Config.get("CONFIG_LIST_SEPARATOR"));
 		for (int i = 0; i < keys.length; i++) {
 			keys[i] = keys[i].trim();
 		}
