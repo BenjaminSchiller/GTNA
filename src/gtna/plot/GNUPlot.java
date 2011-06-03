@@ -32,6 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2011-06-03 : adding configurable offsets to plots (BS)
 */
 package gtna.plot;
 
@@ -144,6 +145,8 @@ public class GNUPlot {
 		} else if (data.type == PlotData.WHISKER) {
 			TYPE = Config.get("GNUPLOT_CMD_DATA_TYPE_WHISKER");
 		}
+		TYPE = TYPE.replace("%OFFSETX", data.offsetX + "");
+		TYPE = TYPE.replace("%OFFSETY", data.offsetY + "");
 
 		String TITLE = null;
 		if (data.title != null) {

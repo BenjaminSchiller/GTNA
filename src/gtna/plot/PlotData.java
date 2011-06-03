@@ -32,6 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2011-06-03 : adding configurable offsets to plots (BS)
 */
 package gtna.plot;
 
@@ -60,14 +61,20 @@ public class PlotData {
 	public int lineType;
 
 	public int lineWidth;
+	
+	public double offsetX;
+	
+	public double offsetY;
 
 	public PlotData(String file, String title, int type, int lineType,
-			int lineWidth) {
+			int lineWidth, double offsetX, double offsetY) {
 		this.file = file;
 		this.title = title;
 		this.type = type;
 		this.lineType = lineType;
 		this.lineWidth = lineWidth;
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
 	}
 	
 	public String toString(){

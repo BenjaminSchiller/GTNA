@@ -32,7 +32,8 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ * 2011-06-03 : adding configurable offsets to plots (BS)
+ */
 package gtna.plot;
 
 import gtna.data.ConfidenceData;
@@ -175,7 +176,7 @@ public class Plot {
 	/**
 	 * SINGLES
 	 */
-	
+
 	// TODO add plot modes for sinlges as well
 
 	private static void singles(Series[][] series, String folder,
@@ -312,6 +313,13 @@ public class Plot {
 		if (!line) {
 			plotData = new PlotData[series.length * values.length];
 		}
+		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
+				.getDouble(plotKey + "_PLOT_OFFSET_X")
+				: 0;
+		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
+				.getDouble(plotKey + "_PLOT_OFFSET_Y")
+				: 0;
+		int counter = 0;
 		for (int i = 0; i < series.length; i++) {
 			for (int sv = 0; sv < values.length; sv++) {
 				int index1 = i * values.length + sv;
@@ -334,11 +342,14 @@ public class Plot {
 
 				DataWriter.write(values[sv][i], filename, false);
 				plotData[index1] = new PlotData(filename, name,
-						PlotData.POINTS, i + 1, pointWidth);
+						PlotData.POINTS, i + 1, pointWidth, offsetX * counter,
+						offsetY * counter);
 				if (line) {
 					plotData[index2] = new PlotData(filename, null,
-							PlotData.LINE, i + 1, lineWidth);
+							PlotData.LINE, i + 1, lineWidth, offsetX * counter,
+							offsetY * counter);
 				}
+				counter++;
 			}
 		}
 		boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
@@ -383,6 +394,13 @@ public class Plot {
 		if (!line) {
 			plotData = new PlotData[series.length * conf.length];
 		}
+		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
+				.getDouble(plotKey + "_PLOT_OFFSET_X")
+				: 0;
+		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
+				.getDouble(plotKey + "_PLOT_OFFSET_Y")
+				: 0;
+		int counter = 0;
 		for (int i = 0; i < series.length; i++) {
 			for (int sv = 0; sv < conf.length; sv++) {
 				String filenameConf = Config.get("TEMP_FOLDER")
@@ -408,11 +426,14 @@ public class Plot {
 				int index1 = i * conf.length + sv;
 				int index2 = index1 + conf.length * series.length;
 				plotData[index1] = new PlotData(filenameConf, null,
-						PlotData.WHISKER, i + 1, whiskerWidth);
+						PlotData.WHISKER, i + 1, whiskerWidth, offsetX
+								* counter, offsetY * counter);
 				if (line) {
 					plotData[index2] = new PlotData(filenameAvg, name,
-							PlotData.LINE, i + 1, lineWidth);
+							PlotData.LINE, i + 1, lineWidth, offsetX * counter,
+							offsetY * counter);
 				}
+				counter++;
 			}
 		}
 		boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
@@ -485,6 +506,13 @@ public class Plot {
 		if (whiskersOnly) {
 			plotData = new PlotData[series.length * data.length];
 		}
+		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
+				.getDouble(plotKey + "_PLOT_OFFSET_X")
+				: 0;
+		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
+				.getDouble(plotKey + "_PLOT_OFFSET_Y")
+				: 0;
+		int counter = 0;
 		for (int d = 0; d < data.length; d++) {
 			for (int i = 0; i < series.length; i++) {
 				String filenameConf = series[i].confDataFolder()
@@ -507,15 +535,19 @@ public class Plot {
 				if (whiskersOnly) {
 					int index1 = i * data.length + d;
 					plotData[index1] = new PlotData(filenameConf, null,
-							PlotData.WHISKER, i + 1, whiskerWidth);
+							PlotData.WHISKER, i + 1, whiskerWidth, offsetX
+									* counter, offsetY * counter);
 				} else {
 					int index1 = i * data.length + d;
 					int index2 = index1 + data.length * series.length;
 					plotData[index1] = new PlotData(filenameConf, null,
-							PlotData.WHISKER, i + 1, whiskerWidth);
+							PlotData.WHISKER, i + 1, whiskerWidth, offsetX
+									* counter, offsetY * counter);
 					plotData[index2] = new PlotData(filenameAvg, name,
-							PlotData.LINE, i + 1, lineWidth + d);
+							PlotData.LINE, i + 1, lineWidth + d, offsetX
+									* counter, offsetY * counter);
 				}
+				counter++;
 			}
 		}
 		boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
@@ -565,6 +597,13 @@ public class Plot {
 		if (pointsOnly || dotsOnly || lineOnly) {
 			plotData = new PlotData[series.length * data.length];
 		}
+		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
+				.getDouble(plotKey + "_PLOT_OFFSET_X")
+				: 0;
+		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
+				.getDouble(plotKey + "_PLOT_OFFSET_Y")
+				: 0;
+		int counter = 0;
 		for (int d = 0; d < data.length; d++) {
 			for (int i = 0; i < series.length; i++) {
 				String file = series[i].avgDataFolder()
@@ -583,23 +622,29 @@ public class Plot {
 				if (pointsOnly) {
 					int index1 = i * data.length + d;
 					plotData[index1] = new PlotData(file, name,
-							PlotData.POINTS, i + 1, pointWidth);
+							PlotData.POINTS, i + 1, pointWidth, offsetX
+									* counter, offsetY * counter);
 				} else if (dotsOnly) {
 					int index1 = i * data.length + d;
 					plotData[index1] = new PlotData(file, name, PlotData.DOTS,
-							i + 1, dotWidth);
+							i + 1, dotWidth, offsetX * counter, offsetY
+									* counter);
 				} else if (lineOnly) {
 					int index1 = i * data.length + d;
 					plotData[index1] = new PlotData(file, name, PlotData.LINE,
-							i + 1, pointWidth);
+							i + 1, pointWidth, offsetX * counter, offsetY
+									* counter);
 				} else {
 					int index1 = i * data.length + d;
 					int index2 = index1 + data.length * series.length;
 					plotData[index1] = new PlotData(file, name,
-							PlotData.POINTS, i + 1, pointWidth);
+							PlotData.POINTS, i + 1, pointWidth, offsetX
+									* counter, offsetY * counter);
 					plotData[index2] = new PlotData(file, null, PlotData.LINE,
-							i + 1, lineWidth);
+							i + 1, lineWidth, offsetX * counter, offsetY
+									* counter);
 				}
+				counter++;
 			}
 		}
 		boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
@@ -623,7 +668,7 @@ public class Plot {
 			String file = Config.get("TEMP_FOLDER") + (i)
 					+ Config.get("DATA_EXTENSION");
 			DataWriter.write(data[i], file, true);
-			pd[i] = new PlotData(file, labels[i], type, i + 1, width);
+			pd[i] = new PlotData(file, labels[i], type, i + 1, width, 0, 0);
 		}
 		GNUPlot.plot(dest, pd, title, x, y, key, false, false);
 	}
