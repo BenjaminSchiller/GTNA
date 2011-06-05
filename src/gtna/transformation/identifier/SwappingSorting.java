@@ -27,133 +27,123 @@
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  * 
- * Original Author: Benjamin Schiller;
- * Contributors:    -;
+ * Original Author: Stefanie Roos;
+ * Contributors:    Benjamin Schiller;
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
-package gtna.transformation.identifier;
-
-
-/**
- * original FreeNet sorting
- * 
- * @author Stef
+ * 2011-06-05 : implemented Transformation interface correctly (BS)
+ * 2011-06-05 : exchanged use of FreenetNode with RingNode (BS)
  * 
  */
+package gtna.transformation.identifier;
 
-public class SwappingSorting{
+import gtna.graph.Graph;
+import gtna.graph.NodeImpl;
+import gtna.routing.node.RingNode;
+import gtna.routing.node.identifier.RingID;
+import gtna.transformation.Transformation;
+import gtna.transformation.TransformationImpl;
 
-//public class SwappingSorting extends TransformationImpl implements
-//		Transformation {
-//
-//	// three versions of swapping:
-//	// 0 = select partner randomly
-//	// 1 = select partner by random walk of length 6
-//	// 2 = only neighbors
-//	private int version;
-//	// nr of iterations (in size of graph)
-//	private int iterations;
-//	// nodes of network that is sorted
-//	private NodeImpl[] curNodes;
-//	private Random rand;
-//
-//	public SwappingSorting(int version, int maxIter) {
-//		super("SWAPPING", new String[] { "VERSION", "ITERATIONS" },
-//				new String[] { "" + version, "" + maxIter });
-//		this.version = version;
-//		this.iterations = maxIter;
-//		rand = new Random();
-//	}
-//
-//	public void init(NodeImpl[] nodes) {
-//		curNodes = nodes;
-//
-//	}
-//
-//	public boolean isApllicable(NodeImpl node) {
-//		return node instanceof FreeNetNode;
-//	}
-//
-//	public void sort() {
-//		FreeNetNode initiator, partner;
-//		CircleID placeHolder;
-//		for (int i = 0; i < iterations * this.curNodes.length; i++) {
-//			initiator = (FreeNetNode) curNodes[rand.nextInt(curNodes.length)];
-//			switch (version) {
-//			case 0:
-//				partner = getPartnerRandomly();
-//				break;
-//			case 1:
-//				partner = getPartnerByRandomWalk(initiator);
-//				break;
-//			case 2:
-//				partner = getPartnerNeighbor(initiator);
-//				break;
-//			default:
-//				throw new IllegalArgumentException(
-//						"This version of choosing swapping partners is unknown!");
-//			}
-//
-//			// compute switching coefficient
-//			NodeImpl[] friends = initiator.out();
-//			double before = 1;
-//			double after = 1;
-//			for (int j = 0; j < friends.length; j++) {
-//				before = before
-//						* initiator.dist(((FreeNetNode) friends[j]).id(),
-//								initiator);
-//				if (!friends[j].equals(partner)) {
-//					after = after
-//							* partner.dist(((FreeNetNode) friends[j]).id(),
-//									partner);
-//				} else {
-//					after = after * initiator.dist(partner.id(), initiator);
-//				}
-//			}
-//			friends = partner.out();
-//			for (int j = 0; j < friends.length; j++) {
-//				before = before
-//						* partner
-//								.dist(((FreeNetNode) friends[j]).id(), partner);
-//				if (!friends[j].equals(partner)) {
-//					after = after
-//							* initiator.dist(((FreeNetNode) friends[j]).id(),
-//									initiator);
-//				} else {
-//					after = after * initiator.dist(partner.id(), initiator);
-//				}
-//			}
-//
-//			// decide if a switch is performed
-//			if (rand.nextDouble() < before / after) {
-//				placeHolder = initiator.myId;
-//				initiator.changeId(partner.myId);
-//				partner.changeId(placeHolder);
-//			}
-//
-//		}
-//
-//	}
-//
-//	private FreeNetNode getPartnerRandomly() {
-//		return (FreeNetNode) this.curNodes[rand.nextInt(curNodes.length)];
-//	}
-//
-//	private FreeNetNode getPartnerByRandomWalk(FreeNetNode cur) {
-//		for (int i = 0; i < 6; i++) {
-//			cur = (FreeNetNode) cur.out()[rand.nextInt(cur.out().length)];
-//		}
-//		return cur;
-//	}
-//
-//	private FreeNetNode getPartnerNeighbor(FreeNetNode cur) {
-//		return (FreeNetNode) cur.out()[rand.nextInt(cur.out().length)];
-//	}
-//
-//	@Override
-//	public int getCount() {
-//		return iterations;
-//	}
+import java.util.Random;
+
+public class SwappingSorting extends TransformationImpl implements
+		Transformation {
+
+	// three versions of swapping:
+	// 0 = select partner randomly
+	// 1 = select partner by random walk of length log_2(N) / 2
+	// 2 = only neighbors
+	private int version;
+	// nr of iterations (per node)
+	private int iterations;
+
+	public SwappingSorting(int version, int iterations) {
+		super("SWAPPING_SORTING", new String[] { "VERSION", "ITERATIONS" },
+				new String[] { "" + version, "" + iterations });
+		this.version = version;
+		this.iterations = iterations;
+	}
+
+	public boolean applicable(Graph g) {
+		return g.nodes[0] instanceof RingNode;
+	}
+
+	public Graph transform(Graph g) {
+		Random rand = new Random(System.currentTimeMillis());
+		RingNode initiator, partner;
+		RingID placeHolder;
+		int steps = (int) Math
+				.floor(Math.log(g.nodes.length) / Math.log(2) / 2);
+		for (int i = 0; i < iterations * g.nodes.length; i++) {
+			initiator = (RingNode) g.nodes[rand.nextInt(g.nodes.length)];
+			switch (version) {
+			case 0:
+				partner = getPartnerRandomly(g, rand);
+				break;
+			case 1:
+				partner = getPartnerByRandomWalk(initiator, steps, rand);
+				break;
+			case 2:
+				partner = getPartnerNeighbor(initiator, rand);
+				break;
+			default:
+				throw new IllegalArgumentException(
+						"This version of choosing swapping partners is unknown!");
+			}
+
+			// compute switching coefficient
+			NodeImpl[] friends = initiator.out();
+			double before = 1;
+			double after = 1;
+			for (int j = 0; j < friends.length; j++) {
+				before = before
+						* initiator.dist(((RingNode) friends[j]).getID());
+				if (!friends[j].equals(partner)) {
+					after = after
+							* partner.dist(((RingNode) friends[j]).getID());
+				} else {
+					after = after * initiator.dist(partner.getID());
+				}
+			}
+			friends = partner.out();
+			for (int j = 0; j < friends.length; j++) {
+				before = before * partner.dist(((RingNode) friends[j]).getID());
+				if (!friends[j].equals(partner)) {
+					after = after
+							* initiator.dist(((RingNode) friends[j]).getID());
+				} else {
+					after = after * initiator.dist(partner.getID());
+				}
+			}
+
+			// decide if a switch is performed
+			if (rand.nextDouble() < before / after) {
+				placeHolder = initiator.getID();
+				initiator.setID(partner.getID());
+				partner.setID(placeHolder);
+			}
+
+		}
+		return g;
+	}
+
+	private RingNode getPartnerRandomly(Graph g, Random rand) {
+		return (RingNode) g.nodes[rand.nextInt(g.nodes.length)];
+	}
+
+	private RingNode getPartnerByRandomWalk(RingNode cur, int steps, Random rand) {
+		for (int i = 1; i <= steps; i++) {
+			cur = (RingNode) cur.out()[rand.nextInt(cur.out().length)];
+		}
+		return cur;
+	}
+
+	private RingNode getPartnerNeighbor(RingNode cur, Random rand) {
+		return (RingNode) cur.out()[rand.nextInt(cur.out().length)];
+	}
+
+	public int getCount() {
+		return iterations;
+	}
 }
