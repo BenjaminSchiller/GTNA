@@ -4,6 +4,7 @@ plots
 temp
 resources
 src/gtna/GTNA2.java
+src/gtna/IDSorting.java
 
 # deploy
 deploy
