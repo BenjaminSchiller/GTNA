@@ -39,29 +39,33 @@ package gtna.transformation.sorting.lmc;
 import gtna.graph.NodeImpl;
 import gtna.transformation.sorting.SortingNode;
 
+import java.util.Random;
+
 /**
  * @author "Benjamin Schiller"
  * 
  */
 public class LMCNode extends SortingNode {
+	protected LMC lmc;
 
-	public LMCNode(int index, double pos) {
+	public LMCNode(int index, double pos, LMC lmc) {
 		super(index, pos);
+		this.lmc = lmc;
 	}
 
-	public void updateNeighbors() {
+	public void updateNeighbors(Random rand) {
 		NodeImpl[] out = this.out();
 		for (int i = 0; i < out.length; i++) {
-			this.knownIDs[i] = ((LMCNode) out[i]).ask(this);
+			this.knownIDs[i] = ((LMCNode) out[i]).ask(this, rand);
 		}
 	}
 
-	public void turn() {
+	public void turn(Random rand) {
 		// TODO implement
-		System.out.println("performing turn @ node " + this.toString());
+		System.out.println("performing turn @ LMCNode " + this.index());
 	}
 
-	protected double ask(LMCNode caller) {
+	protected double ask(LMCNode caller, Random rand) {
 		return this.getID().pos;
 	}
 }

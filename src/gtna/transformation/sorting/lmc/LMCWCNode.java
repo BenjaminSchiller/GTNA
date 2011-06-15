@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * SwappingNode.java
+ * LMCNodeWC.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -34,7 +34,7 @@
  * 2011-06-14 : v1 (BS)
  *
  */
-package gtna.transformation.sorting.swapping;
+package gtna.transformation.sorting.lmc;
 
 import gtna.graph.NodeImpl;
 import gtna.transformation.sorting.SortingNode;
@@ -45,52 +45,31 @@ import java.util.Random;
  * @author "Benjamin Schiller"
  * 
  */
-public class SwappingNode extends SortingNode {
-	public static final double NO_SWAP = Double.MIN_VALUE;
+public class LMCWCNode extends SortingNode {
+	protected LMC lmc;
 
-	protected Swapping swapping;
-
-	public SwappingNode(int index, double pos, Swapping swapping) {
+	public LMCWCNode(int index, double pos, LMC lmc) {
 		super(index, pos);
-		this.swapping = swapping;
+		this.lmc = lmc;
 	}
 
 	public void updateNeighbors(Random rand) {
 		NodeImpl[] out = this.out();
 		for (int i = 0; i < out.length; i++) {
-			this.knownIDs[i] = ((SwappingNode) out[i]).ask(this, rand);
+			LMCWCNode OUT = (LMCWCNode) out[i];
+			this.knownIDs[i] = OUT.ask(this, this.getID().pos, this.knownIDs,
+					rand);
 		}
 	}
 
 	public void turn(Random rand) {
-		// TODO implement
-		System.out.println("performing turn @ SwappingNode " + this.toString());
+		// TODO Auto-generated method stub
+		System.out.println("performing turn @ LMCWCNode " + this.index());
 	}
 
-	protected double ask(SwappingNode caller, Random rand) {
+	protected double ask(LMCWCNode caller, double callerID,
+			double[] callerNeighborIDs, Random rand) {
 		return this.getID().pos;
-	}
-
-	/**
-	 * 
-	 * @param caller
-	 * @param callerNeighbors
-	 * @param ttl
-	 * @return ID to change for; or Double.MIN_VALUE in case of no swap
-	 */
-	protected double swap(double callerID, double[] callerNeighborIDs, int ttl,
-			Random rand) {
-		// TODO implement
-		if (ttl - 1 <= 0) {
-			// compute D1 & D2
-			// check if D1*D2 >= P
-			// if to return this.getID().pos
-			// return NO_SWAP otherwise
-		} else {
-			((SwappingNode) this.out()[rand.nextInt(this.out().length)]).swap(
-					callerID, callerNeighborIDs, ttl - 1, rand);
-		}
-		return SwappingNode.NO_SWAP;
 	}
 
 }

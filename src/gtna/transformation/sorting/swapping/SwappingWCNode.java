@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * SwappingNode.java
+ * SwappingNodeExt.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -45,12 +45,10 @@ import java.util.Random;
  * @author "Benjamin Schiller"
  * 
  */
-public class SwappingNode extends SortingNode {
-	public static final double NO_SWAP = Double.MIN_VALUE;
-
+public class SwappingWCNode extends SortingNode {
 	protected Swapping swapping;
 
-	public SwappingNode(int index, double pos, Swapping swapping) {
+	public SwappingWCNode(int index, double pos, Swapping swapping) {
 		super(index, pos);
 		this.swapping = swapping;
 	}
@@ -58,16 +56,28 @@ public class SwappingNode extends SortingNode {
 	public void updateNeighbors(Random rand) {
 		NodeImpl[] out = this.out();
 		for (int i = 0; i < out.length; i++) {
-			this.knownIDs[i] = ((SwappingNode) out[i]).ask(this, rand);
+			SwappingWCNode OUT = (SwappingWCNode) out[i];
+			this.knownIDs[i] = OUT.ask(this, this.getID().pos, this.knownIDs,
+					rand);
 		}
 	}
 
 	public void turn(Random rand) {
 		// TODO implement
-		System.out.println("performing turn @ SwappingNode " + this.toString());
+		System.out.println("performing turn @ SwappingWCNode "
+				+ this.toString());
 	}
 
-	protected double ask(SwappingNode caller, Random rand) {
+	protected double ask(SwappingWCNode caller, double callerID,
+			double[] callerNeighborIDs, Random rand) {
+		// TODO implement
+		return this.getID().pos;
+	}
+
+	protected double ask(SwappingWCNode caller, double callerID,
+			double[] callerNeighborIDs, double initiatorID,
+			double[] initiatorNeighborIDs, Random rand) {
+		// TODO implement
 		return this.getID().pos;
 	}
 
@@ -87,10 +97,11 @@ public class SwappingNode extends SortingNode {
 			// if to return this.getID().pos
 			// return NO_SWAP otherwise
 		} else {
-			((SwappingNode) this.out()[rand.nextInt(this.out().length)]).swap(
-					callerID, callerNeighborIDs, ttl - 1, rand);
+			NodeImpl[] out = this.out();
+			int index = rand.nextInt(out.length);
+			SwappingWCNode target = (SwappingWCNode) out[index];
+			target.swap(callerID, callerNeighborIDs, ttl - 1, rand);
 		}
 		return SwappingNode.NO_SWAP;
 	}
-
 }

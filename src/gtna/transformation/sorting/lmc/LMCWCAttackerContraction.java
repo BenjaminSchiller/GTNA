@@ -21,47 +21,42 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * LMCNodeWC.java
+ * LMCWCAttackerContraction.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
  * Original Author: "Benjamin Schiller";
- * Contributors:    "Stefanie Roos";
+ * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- * 2011-06-14 : v1 (BS)
  *
  */
-package gtna.transformation.sorting.lmcWC;
+package gtna.transformation.sorting.lmc;
 
-import gtna.graph.NodeImpl;
-import gtna.transformation.sorting.SortingNode;
+
+import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-public class LMCWCNode extends SortingNode {
+public class LMCWCAttackerContraction extends LMCWCNode {
 
-	public LMCWCNode(int index, double pos) {
-		super(index, pos);
+	public LMCWCAttackerContraction(int index, double pos, LMC lmc) {
+		super(index, pos, lmc);
 	}
 
-	public void updateNeighbors() {
-		NodeImpl[] out = this.out();
-		for (int i = 0; i < out.length; i++) {
-			LMCWCNode OUT = (LMCWCNode) out[i];
-			this.knownIDs[i] = OUT.ask(this, this.getID().pos, this.knownIDs);
-		}
-	}
-
-	public void turn() {
+	public void turn(Random rand) {
 		// TODO Auto-generated method stub
+		System.out.println("performing turn @ LMCWCAttackerContraction "
+				+ this.index());
 	}
 
-	protected double ask(LMCWCNode caller, double callerID, double[] callerNeighborIDs) {
+	protected double ask(LMCWCNode caller, double callerID,
+			double[] callerNeighborIDs, Random rand) {
+		// TODO implement
 		return this.getID().pos;
 	}
 

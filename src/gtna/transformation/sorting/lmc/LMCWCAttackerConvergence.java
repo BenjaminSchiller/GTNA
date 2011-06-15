@@ -21,23 +21,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * SwappingNode.java
+ * LMCWCAttackerConvergence.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
  * Original Author: "Benjamin Schiller";
- * Contributors:    "Stefanie Roos";
+ * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- * 2011-06-14 : v1 (BS)
  *
  */
-package gtna.transformation.sorting.swapping;
+package gtna.transformation.sorting.lmc;
 
-import gtna.graph.NodeImpl;
-import gtna.transformation.sorting.SortingNode;
 
 import java.util.Random;
 
@@ -45,52 +42,22 @@ import java.util.Random;
  * @author "Benjamin Schiller"
  * 
  */
-public class SwappingNode extends SortingNode {
-	public static final double NO_SWAP = Double.MIN_VALUE;
+public class LMCWCAttackerConvergence extends LMCWCNode {
 
-	protected Swapping swapping;
-
-	public SwappingNode(int index, double pos, Swapping swapping) {
-		super(index, pos);
-		this.swapping = swapping;
-	}
-
-	public void updateNeighbors(Random rand) {
-		NodeImpl[] out = this.out();
-		for (int i = 0; i < out.length; i++) {
-			this.knownIDs[i] = ((SwappingNode) out[i]).ask(this, rand);
-		}
+	public LMCWCAttackerConvergence(int index, double pos, LMC lmc) {
+		super(index, pos, lmc);
 	}
 
 	public void turn(Random rand) {
-		// TODO implement
-		System.out.println("performing turn @ SwappingNode " + this.toString());
+		// TODO Auto-generated method stub
+		System.out.println("performing turn @ LMCWCAttackerConvergence "
+				+ this.index());
 	}
 
-	protected double ask(SwappingNode caller, Random rand) {
+	protected double ask(LMCWCNode caller, double callerID,
+			double[] callerNeighborIDs, Random rand) {
+		// TODO implement
 		return this.getID().pos;
-	}
-
-	/**
-	 * 
-	 * @param caller
-	 * @param callerNeighbors
-	 * @param ttl
-	 * @return ID to change for; or Double.MIN_VALUE in case of no swap
-	 */
-	protected double swap(double callerID, double[] callerNeighborIDs, int ttl,
-			Random rand) {
-		// TODO implement
-		if (ttl - 1 <= 0) {
-			// compute D1 & D2
-			// check if D1*D2 >= P
-			// if to return this.getID().pos
-			// return NO_SWAP otherwise
-		} else {
-			((SwappingNode) this.out()[rand.nextInt(this.out().length)]).swap(
-					callerID, callerNeighborIDs, ttl - 1, rand);
-		}
-		return SwappingNode.NO_SWAP;
 	}
 
 }

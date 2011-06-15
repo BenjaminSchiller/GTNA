@@ -40,6 +40,7 @@ import gtna.graph.NodeImpl;
 import gtna.routing.node.RingNode;
 
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
@@ -52,6 +53,12 @@ public abstract class SortingNode extends RingNode {
 
 	public SortingNode(int index, double pos) {
 		super(index, pos);
+	}
+
+	/**
+	 * must be called after creating the outgoing edges of this node
+	 */
+	public void initKnownIDs() {
 		this.position = new HashMap<SortingNode, Integer>(this.out().length);
 		NodeImpl[] out = this.out();
 		this.knownIDs = new double[out().length];
@@ -60,8 +67,8 @@ public abstract class SortingNode extends RingNode {
 		}
 	}
 
-	public abstract void updateNeighbors();
+	public abstract void updateNeighbors(Random rand);
 
-	public abstract void turn();
+	public abstract void turn(Random rand);
 
 }
