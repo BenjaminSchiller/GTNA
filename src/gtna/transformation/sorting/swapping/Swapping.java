@@ -67,6 +67,8 @@ public class Swapping extends Sorting {
 
 	public static final String ATTACK_CONTRACTION_WC = "CONTRACTION_WC";
 
+	public static final String ATTACK_NONE = "NONE";
+
 	protected int interations;
 
 	protected String mode;
@@ -86,8 +88,8 @@ public class Swapping extends Sorting {
 	}
 
 	protected SortingNode[] generateNodes(Graph g, Random rand) {
-		HashSet<NodeImpl> attackers = this.selectNodesRandomly(g.nodes,
-				this.attackers, rand);
+		HashSet<NodeImpl> attackers = ATTACK_NONE.equals(this.attack) ? new HashSet<NodeImpl>()
+				: this.selectNodesRandomly(g.nodes, this.attackers, rand);
 		SortingNode[] nodes = new SortingNode[g.nodes.length];
 		for (int i = 0; i < g.nodes.length; i++) {
 			double pos = ((RingNode) g.nodes[i]).getID().pos;
@@ -110,7 +112,8 @@ public class Swapping extends Sorting {
 							+ " is an unknown attack in LMC");
 				}
 			} else {
-				if (ATTACK_CONTRACTION.equals(this.attack)
+				if (ATTACK_NONE.equals(this.attack)
+						|| ATTACK_CONTRACTION.equals(this.attack)
 						|| ATTACK_CONVERGENCE.equals(this.attack)
 						|| ATTACK_KLEINBERG.equals(this.attack)) {
 					nodes[i] = new SwappingNode(i, pos, this);
