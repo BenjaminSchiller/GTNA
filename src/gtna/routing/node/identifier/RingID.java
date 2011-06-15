@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.routing.node.identifier;
 
 /**
@@ -69,5 +69,11 @@ public class RingID implements Identifier {
 
 	public String toString() {
 		return "RID(" + this.pos + ")";
+	}
+
+	public static RingID parse(String str) {
+		double pos = Double.parseDouble(str.replace("RID(", "")
+				.replace(")", ""));
+		return new RingID(pos);
 	}
 }

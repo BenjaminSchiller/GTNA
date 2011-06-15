@@ -144,6 +144,8 @@ public class GNUPlot {
 			TYPE = Config.get("GNUPLOT_CMD_DATA_TYPE_POINTS");
 		} else if (data.type == PlotData.WHISKER) {
 			TYPE = Config.get("GNUPLOT_CMD_DATA_TYPE_WHISKER");
+		} else if (data.type == PlotData.VARIANCE) {
+			TYPE = Config.get("GNUPLOT_CMD_DATA_TYPE_VARIANCE");
 		}
 		TYPE = TYPE.replace("%OFFSETX", data.offsetX + "");
 		TYPE = TYPE.replace("%OFFSETY", data.offsetY + "");

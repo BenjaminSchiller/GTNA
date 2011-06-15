@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.io;
 
 import gtna.graph.Edge;
@@ -52,6 +52,8 @@ public class GraphWriter {
 
 	public static final int DOT_FORMAT = 4;
 
+	public static final int TO_STRING_FORMAT = 5;
+
 	public static void write(Graph g, String filename, int type) {
 		if (type == OWN_FORMAT) {
 			write(g, filename);
@@ -61,6 +63,8 @@ public class GraphWriter {
 			info(g, filename);
 		} else if (type == DOT_FORMAT) {
 			dot(g, filename);
+		} else if (type == TO_STRING_FORMAT) {
+			toString(g, filename);
 		}
 	}
 
@@ -99,6 +103,26 @@ public class GraphWriter {
 			for (int j = 0; j < out.length; j++) {
 				String from = "" + ((IDNode) g.nodes[i]).toString();
 				String to = "" + ((IDNode) out[j]).toString();
+				fw.writeln(from + DELIMITER + to);
+			}
+		}
+		fw.close();
+	}
+
+	public static void toString(Graph g, String filename) {
+		Filewriter fw = new Filewriter(filename);
+		fw.writeComment(Config.get("GRAPH_WRITER_NAME"));
+		fw.writeln(g.name);
+		fw.writeComment(Config.get("GRAPH_WRITER_NODES"));
+		fw.writeln(g.nodes.length);
+		fw.writeComment(Config.get("GRAPH_WRITER_EDGES"));
+		fw.writeln(g.edges);
+		fw.writeln();
+		for (int i = 0; i < g.nodes.length; i++) {
+			Node[] out = g.nodes[i].out();
+			for (int j = 0; j < out.length; j++) {
+				String from = "" + g.nodes[i].toString();
+				String to = "" + out[j].toString();
 				fw.writeln(from + DELIMITER + to);
 			}
 		}

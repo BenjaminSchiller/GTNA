@@ -21,22 +21,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * LocalMC.java
+ * LocalMC2.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Stefanie Roos;
- * Contributors:    Benjamin Schiller;
+ * Original Author: "Benjamin Schiller";
+ * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- * 2011-06-05 :  (BS)
+ * 2011-06-07 : v1 (BS)
  *
  */
 package gtna.transformation.identifier;
-
-import java.util.Random;
 
 import gtna.graph.Graph;
 import gtna.graph.NodeImpl;
@@ -45,165 +43,103 @@ import gtna.routing.node.identifier.RingID;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 
+import java.util.Random;
+
 public class LocalMC extends TransformationImpl implements Transformation {
-
-	// number of iterations (per node)
-	int iterations;
-	// probability to select an ID adjusted to an neighbor
-	// contrary to just a random ID
+	// public static int interval = 1;
+	// public static int intervalAccept = 100;
+	int it = 0;
+	// NodeImpl[] curNodes;
+	int count;
+	int maxit;
 	double prandom;
-	// minimal distance to neighbor
 	double minDist;
-	/*
-	 * modi 1: any distance to neighbor is allowed 2: do not allow a new
-	 * location with a neighbor in distance delta 3: any distance to neighbor is
-	 * allowed, but nodes that are closer than minDist are not excluded from any
-	 * calculation 4: any distance to neighbor is allowed, but nodes that are
-	 * closer than minDist are treated as if they had distance minDist
-	 * 
-	 * MAINLY USED: mode 1, sometimes mode 2 for comparison
-	 */
-	int mode;
-	// nodes try to get within distance C*minDist when adjusting
-	int C;
-	// flag if nodes of degree 1 are included in algorithm
-	// or simply adjust to their neighbor (improved version)
-	boolean useDeg1;
-
-	// for calculating acceptance rate and change of distance
-	// NOT NEEDED FOR ACTUAL ALGORITHM
 	public double[] acceptanceRate;
 	public double[] distanceRate;
 	public double[] acceptanceRateNode;
 	public double[] distanceRateNode;
 	public double[] distanceRatePur;
 	public double[] distanceRatePurNode;
+	/*
+	 * modi 1: accept any distance & include into calculations 2: do not accept
+	 * a new location with a neighbor in distance 1/n 3: do accept all
+	 * distances, but do not include distances < 1/ n in calculations
+	 */
+	int modus;
+	int C;
+	boolean useDeg1;
 	String myFile;
 
-	/**
-	 * all parameters
-	 * 
-	 * @param maxIter
-	 * @param mode
-	 * @param pRand
-	 * @param delta
-	 * @param C
-	 * @param deg1
-	 * @param file
+	/*
+	 * Vector<Vector<Double>> distances; Vector<Vector<Double>> acceptances;
+	 * Vector<double[][]> allAccepts; Vector<double[][]> allDists;
+	 * Vector<int[][]> allAcceptsNodes; Vector<int[][]> allDistsNodes;
 	 */
-	public LocalMC(int iterations, int mode, double prandom, double delta,
-			int C, boolean deg1, String file) {
-		super("LOCALMC", new String[] { "ITERATIONS", "MODE", "PRANDOM",
-				"DELTA", "DEG1" }, new String[] { "" + iterations, "" + mode,
-				"" + prandom, "" + delta, "" + deg1 });
-		this.iterations = iterations;
-		this.mode = mode;
-		this.prandom = prandom;
-		minDist = delta;
-		this.C = C;
-		useDeg1 = deg1;
-		acceptanceRate = new double[this.iterations];
-		myFile = file;
 
-	}
-
-	/**
-	 * no file == no acceptance rates
-	 * 
-	 * @param maxIter
-	 * @param mode
-	 * @param pRand
-	 * @param delta
-	 * @param C
-	 * @param deg1
-	 */
-	public LocalMC(int iterations, int mode, double prandom, double delta,
-			int C, boolean deg1) {
-		super("LOCALMC", new String[] { "MAXITER", "MODE", "PRANDOM", "DELTA",
-				"DEG1" }, new String[] { "" + iterations, "" + mode,
-				"" + prandom, "" + delta, "" + deg1 });
-		this.iterations = iterations;
-		this.mode = mode;
-		this.prandom = prandom;
-		minDist = delta;
-		this.C = C;
-		useDeg1 = deg1;
-		acceptanceRate = new double[this.iterations];
-	}
-
-	/**
-	 * set delta = 1/graphsize, C=7
-	 * 
-	 * @param maxIter
-	 * @param mode
-	 * @param pRand
-	 * @param C
-	 * @param deg1
-	 * @param file
-	 */
-	public LocalMC(int iterations, int mode, double pRand, boolean deg1,
-			String file) {
-		super("LOCALMC", new String[] { "MAXITER", "MODE", "PRANDOM", "DELTA",
-				"DEG1" }, new String[] { "" + iterations, "" + mode,
-				"" + pRand, "" + -1, "" + deg1 });
-		this.iterations = iterations;
-		this.mode = mode;
+	public LocalMC(int maxIter, int mode, double pRand, double delta, int C,
+			boolean deg1, String file) {
+		super("LOCALMC", new String[] { "MAXITER", "MODE", "PRANDOM",
+				"DELTA", "DEG1" }, new String[] { "" + maxIter, "" + mode,
+				"" + pRand, "" + delta, "" + deg1 });
+		maxit = maxIter;
+		modus = mode;
 		pRand = prandom;
-		this.C = 7;
-		minDist = -1;
+		minDist = delta;
+		this.C = C;
 		useDeg1 = deg1;
-		acceptanceRate = new double[this.iterations];
+		acceptanceRate = new double[maxIter];
 		myFile = file;
-
+		/*
+		 * allAccepts = new Vector<double[][]>(); allDists = new
+		 * Vector<double[][]>(); allAcceptsNodes = new Vector<int[][]>();
+		 * allDistsNodes = new Vector<int[][]>();
+		 */
 	}
 
-	public boolean applicable(Graph g) {
-		return g.nodes[0] instanceof RingNode;
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.transformation.Transformation#transform(gtna.graph.Graph)
+	 */
+	@Override
 	public Graph transform(Graph g) {
-		// in case minDist is not given set to 1/graphsize
-		if (minDist == -1) {
-			minDist = (double) 1 / g.nodes.length;
-		}
-		this.sort(g.nodes);
-		g.computeDegrees();
-		g.computeEdges();
-		return g;
-	}
-
-	public void sort(NodeImpl[] curNodes) {
-		// random IDs for all nodes
-		Random rand = new Random();
-		for (int i = 0; i < curNodes.length; i++) {
-			((RingNode) curNodes[i]).getID().pos = rand.nextDouble();
+		if (this.minDist <= 0) {
+			this.minDist = (double) 1 / (double) (g.nodes.length);
 		}
 
-		// initialize variables
-		int count = 0;
+		NodeImpl[] curNodes = g.nodes;
+		// Random raN = new Random();
+		// for (int i = 0; i < curNodes.length; i++) {
+		// ((RingNode) curNodes[i]).getID().pos = raN.nextDouble();
+		// }
+		count = 0;
 		RingNode cur, neighbor;
+		Random rand = new Random();
 		int n = curNodes.length;
-
-		// begin: NOT NEEDED
+		int accept = 0;
 		int pos = 0;
+		/*
+		 * distances = new Vector<Vector<Double>>(); acceptances = new
+		 * Vector<Vector<Double>>();
+		 */
 		int[] countsAll = new int[n];
-		acceptanceRate = new double[this.iterations];
-		distanceRate = new double[this.iterations];
-		distanceRatePur = new double[this.iterations];
+		acceptanceRate = new double[maxit];
+		distanceRate = new double[maxit];
+		distanceRatePur = new double[maxit];
 		acceptanceRateNode = new double[n];
 		distanceRateNode = new double[n];
 		distanceRatePurNode = new double[n];
-		// end: NOT NEEDED
-
-		while (count < this.iterations * curNodes.length) {
+		/*
+		 * for (int i= 0; i < n; i++){ distances.add(new Vector<Double>());
+		 * acceptances.add(new Vector<Double>()); }
+		 */
+		while (count < this.maxit * curNodes.length) {
 			cur = (RingNode) curNodes[rand.nextInt(n)];
-			countsAll[cur.index()]++; // NOT NEEDED
+			countsAll[cur.index()]++;
 			if (cur.out().length == 1 && !useDeg1) {
 				continue;
 			}
 			count++;
-
-			// calculate product before
 			double before = 1;
 			for (int i = 0; i < cur.out().length; i++) {
 				neighbor = (RingNode) cur.out()[i];
@@ -214,18 +150,15 @@ public class LocalMC extends TransformationImpl implements Transformation {
 				}
 			}
 			double oldLoc = cur.getID().pos;
-
-			// decide which side of neighbor to take
 			int sign;
+			// if (rand.nextBoolean() || cur.myId instanceof AntiCircleID) {
 			if (rand.nextBoolean()) {
 				sign = 1;
 			} else {
 				sign = -1;
 			}
-
 			neighbor = (RingNode) cur.out()[rand.nextInt(cur.out().length)];
 			if (rand.nextDouble() < prandom) {
-				// adjust to neighbor
 				cur.getID().pos = neighbor.getID().pos + sign * minDist + sign
 						* rand.nextDouble() * C * minDist;
 				while (cur.getID().pos > 1) {
@@ -235,18 +168,15 @@ public class LocalMC extends TransformationImpl implements Transformation {
 					cur.getID().pos++;
 				}
 			} else {
-				// choose random ID
 				cur.getID().pos = rand.nextDouble();
 			}
-
-			// calculate product afterwards
 			double after = 1;
 			double curDist;
 			for (int i = 0; i < cur.out().length; i++) {
 				if (useDeg1 || cur.out()[i].out().length > 1) {
 					curDist = cur.dist(((RingNode) cur.out()[i]).getID());
 					if (curDist < minDist) {
-						switch (this.mode) {
+						switch (modus) {
 						case 1:
 							after = after * curDist;
 							break;
@@ -266,26 +196,22 @@ public class LocalMC extends TransformationImpl implements Transformation {
 					}
 				}
 			}
-
-			// switch back, if new ID not better
 			if (rand.nextDouble() > before / after) {
 				cur.getID().pos = oldLoc;
 			} else {
-				// begin NOT NEEDED
 				acceptanceRate[pos]++;
-				RingID cid = new RingID(oldLoc);
-				distanceRate[pos] = distanceRate[pos] + cur.dist(cid);
-				distanceRatePur[pos] = distanceRatePur[pos] + cur.dist(cid);
+				distanceRate[pos] = distanceRate[pos]
+						+ cur.dist(new RingID(oldLoc));
+				distanceRatePur[pos] = distanceRatePur[pos]
+						+ cur.dist(new RingID(oldLoc));
 				acceptanceRateNode[cur.index()]++;
 				distanceRateNode[cur.index()] = distanceRateNode[cur.index()]
-						+ cur.dist(cid);
+						+ cur.dist(new RingID(oldLoc));
 				distanceRatePurNode[cur.index()] = distanceRatePurNode[cur
 						.index()]
-						+ cur.dist(cid);
-				// end: NOT NEEDED
+						+ cur.dist(new RingID(oldLoc));
 			}
 
-			// begin NOT NEEDED
 			if (count % curNodes.length == 0) {
 				distanceRate[pos] = (double) distanceRate[pos]
 						/ curNodes.length;
@@ -296,11 +222,22 @@ public class LocalMC extends TransformationImpl implements Transformation {
 						/ curNodes.length;
 				pos++;
 			}
-			// end NOT NEEDED
+			/*
+			 * if (countsD[cur.index()] == interval){
+			 * distances.get(cur.index()).
+			 * add((double)dists[cur.index()]/interval); countsD[cur.index()] =
+			 * 0; dists[cur.index()] = 0; } if (countsAll[cur.index()] ==
+			 * intervalAccept){ countsAll[cur.index()] = 0;
+			 * acceptances.get(cur.index
+			 * ()).add((double)countsA[cur.index()]/intervalAccept);
+			 * countsA[cur.index()] = 0; }
+			 */
 
 		}
-
-		// begin NOT NEEDED
+		/*
+		 * if (myFile != null){ this.writeMetric(acceptances, "Accept");
+		 * this.writeMetric(distances, "Dist"); it++; }
+		 */
 		for (int i = 0; i < curNodes.length; i++) {
 			if (countsAll[i] > 0) {
 				distanceRateNode[i] = (double) distanceRateNode[i]
@@ -312,9 +249,6 @@ public class LocalMC extends TransformationImpl implements Transformation {
 						/ countsAll[i];
 			}
 		}
-		// end NOT NEEDED
-
-		// adjust degree 1 nodes
 		if (!useDeg1) {
 			for (int i = 0; i < curNodes.length; i++) {
 				cur = (RingNode) curNodes[i];
@@ -331,6 +265,10 @@ public class LocalMC extends TransformationImpl implements Transformation {
 				}
 			}
 		}
+		return g;
 	}
 
+	public boolean applicable(Graph g) {
+		return g.nodes[0] instanceof RingNode;
+	}
 }

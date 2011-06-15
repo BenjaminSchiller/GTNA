@@ -94,6 +94,18 @@ public class RingNode extends NodeImpl implements RegistrationNode {
 	}
 
 	public String toString() {
-		return this.index() + " @ " + this.id.toString();
+		return this.index() + "_" + this.id.toString();
+	}
+	
+	public static RingNode parse(String str){
+		String[] parts = str.split("_");
+		int index = Integer.parseInt(parts[0]);
+		RingID id = RingID.parse(parts[1]);
+		return new RingNode(index, id.pos);
+	}
+	
+	public static int parseIndex(String str){
+		String[] parts = str.split("_");
+		return Integer.parseInt(parts[0]);
 	}
 }

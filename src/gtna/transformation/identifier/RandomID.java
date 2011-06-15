@@ -131,7 +131,7 @@ public class RandomID extends TransformationImpl implements Transformation {
 			n = rand.nextDouble();
 		}
 		ids.add(n + "");
-		return n;
+		return n;	
 	}
 
 	private double[] uniqueID(Set<String> ids, Random rand) {

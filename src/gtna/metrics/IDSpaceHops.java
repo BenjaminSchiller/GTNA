@@ -43,6 +43,7 @@ import gtna.io.DataWriter;
 import gtna.networks.Network;
 import gtna.routing.node.RingNode;
 import gtna.util.Statistics;
+import gtna.util.Util;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -58,6 +59,8 @@ public class IDSpaceHops extends MetricImpl implements Metric {
 
 	private double[][] successorEDF;
 
+	private double average;
+
 	public IDSpaceHops() {
 		super("ID_SPACE_HOPS");
 	}
@@ -65,6 +68,7 @@ public class IDSpaceHops extends MetricImpl implements Metric {
 	private void initEmpty() {
 		this.successor = new double[][] { new double[] { 0.0, 0.0 } };
 		this.successorEDF = new double[][] { new double[] { 0.0, 0.0 } };
+		this.average = 0.0;
 	}
 
 	public void computeData(Graph g, Network n, Hashtable<String, Metric> m) {
@@ -75,6 +79,7 @@ public class IDSpaceHops extends MetricImpl implements Metric {
 		this.successor = Statistics.probabilityDistribution(hops, 0, 1);
 		this.successorEDF = Statistics.empiricalDistributionFunction(
 				this.successor, 0, 1);
+		this.average = Util.avg(hops);
 	}
 
 	private double[] computeSuccessorHops(Graph g) {
@@ -117,7 +122,8 @@ public class IDSpaceHops extends MetricImpl implements Metric {
 	}
 
 	public Value[] getValues(Value[] values) {
-		return new Value[] {};
+		Value averageHops = new Value("ID_SPACE_HOPS_AVERAGE", this.average);
+		return new Value[] { averageHops };
 	}
 
 	public boolean writeData(String folder) {

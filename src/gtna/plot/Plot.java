@@ -142,7 +142,7 @@ public class Plot {
 	}
 
 	public static void multiAvg(Series[] series, String folder) {
-		multi(series, folder, false);
+		multi(series, folder, "AVG");
 	}
 
 	public static void multiAvg(Series series, String folder) {
@@ -150,11 +150,19 @@ public class Plot {
 	}
 
 	public static void multiConf(Series[] series, String folder) {
-		multi(series, folder, true);
+		multi(series, folder, "CONF");
 	}
 
 	public static void multiConf(Series series, String folder) {
 		multiConf(new Series[] { series }, folder);
+	}
+
+	public static void multiVar(Series[] series, String folder) {
+		multi(series, folder, "VAR");
+	}
+
+	public static void multiVar(Series series, String folder) {
+		multiVar(new Series[] { series }, folder);
 	}
 
 	public static void allMulti(Series series, String folder) {
@@ -164,6 +172,7 @@ public class Plot {
 	public static void allMulti(Series[] series, String folder) {
 		multiAvg(series, folder + Config.get("PLOT_ALL_MULTI_AVG_FOLDER"));
 		multiConf(series, folder + Config.get("PLOT_ALL_MULTI_CONF_FOLDER"));
+		multiVar(series, folder + Config.get("PLOT_ALL_MULTI_VAR_FOLDER"));
 		if (Config.getBoolean("PLOT_ALL_MULTI_TABLE_WRITE")) {
 			String fn = Config.get("MAIN_PLOT_FOLDER") + folder
 					+ Config.get("PLOT_ALL_MULTI_TABLE_FILENAME");
@@ -446,12 +455,14 @@ public class Plot {
 	 * MULTI
 	 */
 
-	private static void multi(Series[] series, String folder, boolean conf) {
+	private static void multi(Series[] series, String folder, String type) {
 		String name = "";
-		if (conf) {
+		if (type.equals("CONF")) {
 			name = "PLOT_MULTI_CONF";
-		} else {
+		} else if (type.equals("AVG")) {
 			name = "PLOT_MULTI_AVG";
+		} else if (type.equals("VAR")) {
+			name = "PLOT_MULTI_VAR";
 		}
 		Timer timer = new Timer(Config.get(name).replace("%SERIES",
 				series.length + "").replace("%DEST", folder));
@@ -460,10 +471,12 @@ public class Plot {
 		String[][] keys = Config.allKeys("_DATA_PLOTS");
 		for (int i = 0; i < keys.length; i++) {
 			for (int j = 0; j < keys[i].length; j++) {
-				if (conf) {
+				if (type.equals("CONF")) {
 					multiConf(series, folder, keys[i][j]);
-				} else {
+				} else if (type.equals("AVG")) {
 					multiAvg(series, folder, keys[i][j]);
+				} else if (type.equals("VAR")) {
+					multiVar(series, folder, keys[i][j]);
 				}
 			}
 		}
@@ -644,6 +657,62 @@ public class Plot {
 							i + 1, lineWidth, offsetX * counter, offsetY
 									* counter);
 				}
+				counter++;
+			}
+		}
+		boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
+		boolean logscaleY = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_Y");
+		GNUPlot.plot(dest, plotData, title, xLabel, yLabel, key, logscaleX,
+				logscaleY);
+	}
+
+	/**
+	 * MULTI VAR
+	 */
+
+	private static void multiVar(Series[] series, String folder, String plotKey) {
+		String[] data = Config.keys(plotKey + "_PLOT_DATA");
+		for (int i = 0; i < data.length; i++) {
+			if (!Config.containsData(data[i])) {
+				return;
+			}
+		}
+		// TODO adapt configuration parameters
+		String filename = Config.get(plotKey + "_PLOT_FILENAME");
+		String ext = Config.get("PLOT_EXTENSION");
+		String title = Config.get(plotKey + "_PLOT_TITLE");
+		String xLabel = Config.get(plotKey + "_PLOT_X");
+		String yLabel = Config.get(plotKey + "_PLOT_Y");
+		String key = Config.get(plotKey + "_PLOT_KEY");
+		String dest = folder + filename + ext;
+		int pointWidth = Config.getInt("AVERAGE_PLOT_POINT_WIDTH");
+		PlotData[] plotData = new PlotData[series.length * data.length];
+		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
+				.getDouble(plotKey + "_PLOT_OFFSET_X")
+				: 0;
+		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
+				.getDouble(plotKey + "_PLOT_OFFSET_Y")
+				: 0;
+		int counter = 0;
+		for (int d = 0; d < data.length; d++) {
+			for (int i = 0; i < series.length; i++) {
+				String file = series[i].varianceDataFolder()
+						+ Config.get(data[d] + "_DATA_FILENAME")
+						+ Config.get("DATA_EXTENSION");
+				String name = series[i].network().description();
+
+				String pre = Config.get(plotKey + "_PLOT_PRE_" + data[d]);
+				String app = Config.get(plotKey + "_PLOT_APP_" + data[d]);
+				if (pre != null && pre.trim().length() > 0) {
+					name = pre + " " + name;
+				}
+				if (app != null && app.trim().length() > 0) {
+					name = name + " " + app;
+				}
+				int index1 = i * data.length + d;
+				plotData[index1] = new PlotData(file, name, PlotData.VARIANCE,
+						i + 1, pointWidth, offsetX * counter, offsetY * counter);
+
 				counter++;
 			}
 		}

@@ -51,6 +51,8 @@ public class PlotData {
 	public static final int WHISKER = 4;
 
 	public static final int FUNCTION = 5;
+	
+	public static final int VARIANCE = 6;
 
 	public String file;
 

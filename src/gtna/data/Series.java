@@ -32,11 +32,10 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.data;
 
 import gtna.graph.Graph;
-import gtna.io.GraphWriter;
 import gtna.io.Output;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -45,6 +44,8 @@ import gtna.util.Config;
 import gtna.util.Timer;
 
 import java.io.File;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.Hashtable;
 
 public class Series {
@@ -60,6 +61,8 @@ public class Series {
 
 	private String confidenceDataFolder;
 
+	private String varianceDataFolder;
+
 	private String singlesFilename;
 
 	private Singles averageSingles;
@@ -72,6 +75,8 @@ public class Series {
 				+ Config.get("SERIES_AVERAGE_DATA_FOLDER");
 		this.confidenceDataFolder = this.folder
 				+ Config.get("SERIES_CONFIDENCE_DATA_FOLDER");
+		this.varianceDataFolder = this.folder
+				+ Config.get("SERIES_VARIANCE_DATA_FOLDER");
 		this.singlesFilename = this.folder
 				+ Config.get("SERIES_SINGLES_FILENAME");
 		if ((new File(this.folder + Config.get("SERIES_AVERAGE_FILENAME")))
@@ -179,6 +184,8 @@ public class Series {
 				times + "");
 		String confidenceOutput = Config.get("CONFIDENCE_DATA").replace(
 				"%GRAPHS", times + "");
+		String varianceOutput = Config.get("VARIANCE_DATA").replace("%GRAPHS",
+				times + "");
 		String avgSumOutput = Config.get("SINGLES_WRITER_OUTPUT").replace(
 				"%FILENAME", averageFilename);
 		String summaryOutput = Config.get("SINGLES_WRITER_OUTPUT").replace(
@@ -240,6 +247,13 @@ public class Series {
 					+ Config.get("FILESYSTEM_FOLDER_DELIMITER");
 			s.dataFolders[i] = s.graphFolders[i]
 					+ Config.get("GRAPH_DATA_FOLDER");
+			
+			// TODO remove again - BEGIN
+			if ((new File(s.dataFolders[i])).exists()) {
+				Output.writeln("skipping " + s.dataFolders[i]);
+				continue;
+			}
+			// TODO remove again - END
 
 			String singlesFilename = s.graphFolders[i]
 					+ Config.get("GRAPH_SINGLES_FILENAME");
@@ -278,6 +292,10 @@ public class Series {
 				Output.writeln("");
 			}
 
+			System.out
+					.println((new Date(System.currentTimeMillis())).toString()
+							+ " / "
+							+ (new Time(System.currentTimeMillis())).toString());
 			Timer networkTimer = new Timer(networkOutput
 					+ fill(maxLength - networkOutput.length()));
 			Graph g = n.generate();
@@ -306,14 +324,16 @@ public class Series {
 			singles.write(singlesFilename);
 			swTimer.end();
 
-			Timer gTimer = new Timer(graphOutput
-					+ fill(maxLength - graphOutput.length()));
-			GraphWriter.write(g, graphFilename);
-			gTimer.end();
-			Timer gInfoTimer = new Timer(graphInfoOutput
-					+ fill(maxLength - graphInfoOutput.length()));
-			GraphWriter.write(g, graphInfoFilename, GraphWriter.INFO_FORMAT);
-			gInfoTimer.end();
+			// TODO include again / make configurable
+			// Timer gTimer = new Timer(graphOutput
+			// + fill(maxLength - graphOutput.length()));
+			// GraphWriter.write(g, graphFilename);
+			// gTimer.end();
+			// TODO include again.... (make configurable
+			// Timer gInfoTimer = new Timer(graphInfoOutput
+			// + fill(maxLength - graphInfoOutput.length()));
+			// GraphWriter.write(g, graphInfoFilename, GraphWriter.INFO_FORMAT);
+			// gInfoTimer.end();
 			// TODO remove???
 			// if (g.nodes[i] instanceof IDNode
 			// && (((IDNode) g.nodes[i]).id() instanceof GridID)
@@ -341,6 +361,12 @@ public class Series {
 				+ fill(maxLength - confidenceOutput.length()));
 		ConfidenceData.generate(s.confidenceDataFolder, s.dataFolders);
 		confTimer.end();
+
+		Output.writeIndent();
+		Timer varianceTimer = new Timer(varianceOutput
+				+ fill(maxLength - varianceOutput.length()));
+		VarianceData.generate(s.varianceDataFolder, s.dataFolders);
+		varianceTimer.end();
 
 		Singles[][] summaries = new Singles[1][times];
 		for (int i = 0; i < times; i++) {
@@ -398,6 +424,10 @@ public class Series {
 
 	public String confDataFolder() {
 		return this.confidenceDataFolder;
+	}
+
+	public String varianceDataFolder() {
+		return this.varianceDataFolder;
 	}
 
 	public Network network() {

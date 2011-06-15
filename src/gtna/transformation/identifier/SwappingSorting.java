@@ -73,8 +73,8 @@ public class SwappingSorting extends TransformationImpl implements
 		Random rand = new Random(System.currentTimeMillis());
 		RingNode initiator, partner;
 		RingID placeHolder;
-		int steps = (int) Math
-				.floor(Math.log(g.nodes.length) / Math.log(2) / 2);
+//		int steps = (int) Math
+//				.floor(Math.log(g.nodes.length) / Math.log(2) / 2);
 		for (int i = 0; i < iterations * g.nodes.length; i++) {
 			initiator = (RingNode) g.nodes[rand.nextInt(g.nodes.length)];
 			switch (version) {
@@ -82,7 +82,7 @@ public class SwappingSorting extends TransformationImpl implements
 				partner = getPartnerRandomly(g, rand);
 				break;
 			case 1:
-				partner = getPartnerByRandomWalk(initiator, steps, rand);
+				partner = getPartnerByRandomWalk(initiator, rand);
 				break;
 			case 2:
 				partner = getPartnerNeighbor(initiator, rand);
@@ -132,8 +132,8 @@ public class SwappingSorting extends TransformationImpl implements
 		return (RingNode) g.nodes[rand.nextInt(g.nodes.length)];
 	}
 
-	private RingNode getPartnerByRandomWalk(RingNode cur, int steps, Random rand) {
-		for (int i = 1; i <= steps; i++) {
+	private RingNode getPartnerByRandomWalk(RingNode cur, Random rand) {
+		for (int i = 1; i <= 6; i++) {
 			cur = (RingNode) cur.out()[rand.nextInt(cur.out().length)];
 		}
 		return cur;

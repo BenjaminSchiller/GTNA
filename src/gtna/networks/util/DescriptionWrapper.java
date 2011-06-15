@@ -73,7 +73,7 @@ public class DescriptionWrapper implements Network {
 	}
 
 	public String compareValue(Network nw) {
-		return this.compareValue(nw);
+		return this.nw.compareValue(nw);
 	}
 
 	public String[] configKeys() {

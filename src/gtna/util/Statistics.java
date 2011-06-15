@@ -39,6 +39,8 @@ package gtna.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.commons.math.stat.descriptive.moment.Variance;
+
 /**
  * @author "Benjamin Schiller"
  * 
@@ -86,5 +88,32 @@ public class Statistics {
 			edf[i][1] = pd[i][1] + edf[i - 1][1];
 		}
 		return edf;
+	}
+
+	public static double variance(double[] values, double avg) {
+		Variance v = new Variance();
+		return v.evaluate(values, avg);
+	}
+
+	public static double[][] binning(double[] values, double start, double end,
+			double step) {
+		Arrays.sort(values);
+		int steps = (int) Math.ceil((end - start) / step);
+		double s = start;
+		double e = s + step;
+		int index = 0;
+		double[][] binned = new double[steps][];
+		for (int i = 0; i < binned.length; i++) {
+			ArrayList<Double> list = new ArrayList<Double>();
+			while (index < values.length && s <= values[index]
+					&& values[index] < e) {
+				list.add(values[index]);
+				index++;
+			}
+			s = e;
+			e = s + step;
+			binned[i] = Util.toDoubleArray(list);
+		}
+		return binned;
 	}
 }

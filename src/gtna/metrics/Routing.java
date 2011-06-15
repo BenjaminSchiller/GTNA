@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.metrics;
 
 import gtna.data.Value;
@@ -56,10 +56,10 @@ import java.util.Random;
 
 public class Routing extends MetricImpl implements Metric {
 	// local characteristic routing length
-	private double[] lcrl;
+	// private double[] lcrl;
 
 	// local characteristic routing length (SHORT)
-	private double[] lcrlShort;
+//	private double[] lcrlShort;
 
 	// routing length distribution
 	private double[] rld;
@@ -68,30 +68,31 @@ public class Routing extends MetricImpl implements Metric {
 	private double[] crld;
 
 	// routing progression
-	private double[] prog;
+	// private double[] prog;
 
 	// copies stored at each node
-	private double[] copies;
+	// private double[] copies;
 
 	// copies stored at each node (SHORT)
-	private double[] copiesShort;
+	// private double[] copiesShort;
 
 	// messages per routing
-	private double[] msgs;
+	// private double[] msgs;
 
 	// messages per routing (SHORT)
-	private double[] msgsShort;
+	// private double[] msgsShort;
 
 	public boolean writeData(String folder) {
-		DataWriter.writeWithIndex(this.lcrl, "RL_LCRL", folder);
-		DataWriter.writeWithIndex(this.lcrlShort, "RL_LCRL_SHORT", folder);
+		// DataWriter.writeWithIndex(this.lcrl, "RL_LCRL", folder);
+//		DataWriter.writeWithIndex(this.lcrlShort, "RL_LCRL_SHORT", folder);
 		DataWriter.writeWithIndex(this.rld, "RL_RLD", folder);
 		DataWriter.writeWithIndex(this.crld, "RL_CRLD", folder);
-		DataWriter.writeWithIndex(this.prog, "RL_PROG", folder);
-		DataWriter.writeWithIndex(this.copies, "RL_COPIES", folder);
-		DataWriter.writeWithIndex(this.copiesShort, "RL_COPIES_SHORT", folder);
-		DataWriter.writeWithIndex(this.msgs, "RL_MSGS", folder);
-		DataWriter.writeWithIndex(this.msgsShort, "RL_MSGS_SHORT", folder);
+		// DataWriter.writeWithIndex(this.prog, "RL_PROG", folder);
+		// DataWriter.writeWithIndex(this.copies, "RL_COPIES", folder);
+		// DataWriter.writeWithIndex(this.copiesShort, "RL_COPIES_SHORT",
+		// folder);
+		// DataWriter.writeWithIndex(this.msgs, "RL_MSGS", folder);
+		// DataWriter.writeWithIndex(this.msgsShort, "RL_MSGS_SHORT", folder);
 		return true;
 	}
 
@@ -105,10 +106,10 @@ public class Routing extends MetricImpl implements Metric {
 	private double fr;
 
 	// average number of copies stored at each node
-	private double averageCopies;
+//	private double averageCopies;
 
 	// average number of messages per routing
-	private double avgMsgs;
+//	private double avgMsgs;
 
 	// timer
 	private Timer timer;
@@ -120,27 +121,28 @@ public class Routing extends MetricImpl implements Metric {
 		Value crl = new Value("RL_CRL", this.crl);
 		Value mrl = new Value("RL_MRL", this.mrl);
 		Value fr = new Value("RL_FR", this.fr);
-		Value avgCopies = new Value("RL_AVG_COPIES", this.averageCopies);
-		Value avgMsgs = new Value("RL_AVG_MSGS", this.avgMsgs);
+//		Value avgCopies = new Value("RL_AVG_COPIES", this.averageCopies);
+//		Value avgMsgs = new Value("RL_AVG_MSGS", this.avgMsgs);
 		Value rt = new Value("RL_RT", this.timer.rt());
-		return new Value[] { crl, mrl, fr, avgCopies, avgMsgs, rt };
+//		return new Value[] { crl, mrl, fr, avgCopies, avgMsgs, rt };
+		return new Value[] { crl, mrl, fr, rt };
 	}
 
 	private void initEmpty() {
-		this.lcrl = new double[] { 0.0 };
-		this.lcrlShort = new double[] { 0.0 };
+		// this.lcrl = new double[] { 0.0 };
+//		this.lcrlShort = new double[] { 0.0 };
 		this.rld = new double[] { 0.0 };
 		this.crld = new double[] { 0.0 };
-		this.prog = new double[] { 0.0 };
-		this.copies = new double[] { 0.0 };
-		this.copiesShort = new double[] { 0.0 };
-		this.msgs = new double[] { 0.0 };
-		this.msgsShort = new double[] { 0.0 };
+		// this.prog = new double[] { 0.0 };
+		// this.copies = new double[] { 0.0 };
+		// this.copiesShort = new double[] { 0.0 };
+		// this.msgs = new double[] { 0.0 };
+		// this.msgsShort = new double[] { 0.0 };
 		this.crl = 0.0;
 		this.mrl = 0.0;
 		this.fr = 0.0;
-		this.averageCopies = 0.0;
-		this.avgMsgs = 0.0;
+//		this.averageCopies = 0.0;
+//		this.avgMsgs = 0.0;
 		this.timer = new Timer();
 		timer.end();
 		this.routes = new ArrayList<Route>();
@@ -169,30 +171,30 @@ public class Routing extends MetricImpl implements Metric {
 			}
 		}
 
-		this.lcrl = this.lcrl(routes, g.nodes.length, times);
-		Arrays.sort(this.lcrl);
-		int lcrlShort = Config.getInt("RL_LCRL_SHORT_MAX_VALUES");
-		this.lcrlShort = Util.avgArray(this.lcrl, lcrlShort);
+//		this.lcrl = this.lcrl(routes, g.nodes.length, times);
+//		Arrays.sort(this.lcrl);
+//		int lcrlShort = Config.getInt("RL_LCRL_SHORT_MAX_VALUES");
+//		this.lcrlShort = Util.avgArray(this.lcrl, lcrlShort);
 		this.rld = this.rld(routes);
 		this.crld = Util.cumulative(this.rld);
-		if (g.nodes[0] instanceof IDNode) {
-			this.prog = this.prog(routes);
-		}
-		if (g.nodes[0] instanceof RegistrationNode) {
-			this.copies = this.copies(g.nodes);
-			Arrays.sort(this.copies);
-			int copiesShort = Config.getInt("RL_COPIES_SHORT_MAX_VALUES");
-			this.copiesShort = Util.avgArray(this.copies, copiesShort);
-			this.averageCopies = Util.avg(this.copies);
-		}
-		this.msgs = this.msgs(routes);
-		Arrays.sort(this.msgs);
-		int msgsShort = Config.getInt("RL_MSGS_SHORT_MAX_VALUES");
-		this.msgsShort = Util.avgArray(this.msgs, msgsShort);
+//		if (g.nodes[0] instanceof IDNode) {
+//			this.prog = this.prog(routes);
+//		}
+//		if (g.nodes[0] instanceof RegistrationNode) {
+//			this.copies = this.copies(g.nodes);
+//			Arrays.sort(this.copies);
+//			int copiesShort = Config.getInt("RL_COPIES_SHORT_MAX_VALUES");
+//			this.copiesShort = Util.avgArray(this.copies, copiesShort);
+//			this.averageCopies = Util.avg(this.copies);
+//		}
+//		this.msgs = this.msgs(routes);
+//		Arrays.sort(this.msgs);
+//		int msgsShort = Config.getInt("RL_MSGS_SHORT_MAX_VALUES");
+//		this.msgsShort = Util.avgArray(this.msgs, msgsShort);
 		this.crl = this.crl(routes);
 		this.mrl = this.mrl(routes);
 		this.fr = this.fr(routes);
-		this.avgMsgs = Util.avg(this.msgs);
+//		this.avgMsgs = Util.avg(this.msgs);
 		this.timer.end();
 	}
 

@@ -32,12 +32,13 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.io;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.NodeImpl;
+import gtna.routing.node.RingNode;
 import gtna.util.Config;
 import gtna.util.Timer;
 
@@ -57,6 +58,8 @@ public class GraphReader {
 
 	public static final int ARBITRARY_IDS = 7;
 
+	public static final int RING_NODES = 8;
+
 	public static Graph read(String filename, int TYPE, String name) {
 		Graph g = null;
 		if (TYPE == OWN_FORMAT) {
@@ -71,6 +74,8 @@ public class GraphReader {
 			g = bidirectionalEdgesOnly(filename, name);
 		} else if (TYPE == ARBITRARY_IDS) {
 			g = arbitraryIDs(filename, name);
+		} else if (TYPE == RING_NODES) {
+			g = ringNodes(filename);
 		}
 		return g;
 	}
@@ -85,6 +90,8 @@ public class GraphReader {
 			nodes = nodesEdgesOnlyStartingAt1(filename);
 		} else if (TYPE == BIDIRECTIONAL_EDGES_ONLY_FORMAT) {
 			nodes = nodesEdgesOnly(filename);
+		} else if (TYPE == RING_NODES) {
+			nodes = nodesRingNodes(filename);
 		}
 		return nodes;
 	}
@@ -112,6 +119,41 @@ public class GraphReader {
 	}
 
 	private static int nodes(String filename) {
+		Filereader fr = new Filereader(filename);
+		fr.readLine();
+		int numberOfNodes = Integer.parseInt(fr.readLine());
+		fr.close();
+		return numberOfNodes;
+	}
+
+	public static Graph ringNodes(String filename) {
+		Timer timer = new Timer();
+		Filereader fr = new Filereader(filename);
+		String name = fr.readLine();
+		int numberOfNodes = Integer.parseInt(fr.readLine());
+		int numberOfEdges = Integer.parseInt(fr.readLine());
+		RingNode[] nodes = new RingNode[numberOfNodes];
+		for (int i = 0; i < nodes.length; i++) {
+			nodes[i] = new RingNode(i, -1);
+		}
+		Edges edges = new Edges(nodes, numberOfEdges);
+		String line = "";
+		while ((line = fr.readLine()) != null) {
+			String n[] = line.split(GraphWriter.DELIMITER);
+			RingNode u = RingNode.parse(n[0]);
+			RingNode v = RingNode.parse(n[1]);
+			edges.add(nodes[u.index()], nodes[v.index()]);
+			nodes[u.index()].getID().pos = u.getID().pos;
+			nodes[v.index()].getID().pos = v.getID().pos;
+		}
+		fr.close();
+		edges.fill();
+		timer.end();
+		Graph graph = new Graph(name, nodes, timer);
+		return graph;
+	}
+
+	private static int nodesRingNodes(String filename) {
 		Filereader fr = new Filereader(filename);
 		fr.readLine();
 		int numberOfNodes = Integer.parseInt(fr.readLine());
