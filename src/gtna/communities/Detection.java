@@ -37,6 +37,7 @@ package gtna.communities;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.graph.NodeImpl;
 import gtna.graph.sorting.NodeSorting;
 import gtna.util.Config;
 
@@ -69,7 +70,7 @@ public class Detection {
     
     public static CommunityList lpa(Graph graph){
         long start = System.currentTimeMillis();
-        Node[] nodes = graph.nodes;
+        NodeImpl[] nodes = graph.nodes;
         int[] labels  = new int[nodes.length];
         for(int i = 0; i < labels.length; i++){
             labels[i] = i;
@@ -82,7 +83,7 @@ public class Detection {
         while(!finished){
             finished = true;
             t++;
-            Node[] X = NodeSorting.random(nodes, rand);
+            NodeImpl[] X = NodeSorting.random(nodes, rand);
             for (Node x : X){
                 List<Integer> maxLabel = selectMax(x.out(), labels);
                 if (maxLabel.size() > 0){
@@ -150,7 +151,7 @@ public class Detection {
 
     public static CommunityList lpaExtended(Graph graph, EdgeWeight w, NodeCharacteristic f, double m, double d){
         long start = System.currentTimeMillis();
-        Node[] nodes = graph.nodes;
+        NodeImpl[] nodes = graph.nodes;
         int[] labels  = new int[nodes.length];
         double[] scores = new double[nodes.length];
         for(int i = 0; i < labels.length; i++){
@@ -165,7 +166,7 @@ public class Detection {
         while(finished < nodes.length){
             finished = 0;
             t++;
-            Node[] X = NodeSorting.random(nodes, rand);
+            NodeImpl[] X = NodeSorting.random(nodes, rand);
             for (Node x : X){
                 int maxLabel = selectMaxExtended(x, x.out(), labels, scores, w, f , m);
                 if (maxLabel != labels[x.index()]){

@@ -35,7 +35,6 @@
 */
 package gtna.graph.sorting;
 
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 
 import java.util.Arrays;
@@ -43,7 +42,7 @@ import java.util.Comparator;
 import java.util.Random;
 
 public class NodeSorting {
-	public static Node[] degreeDesc(NodeImpl[] nodes, Random rand) {
+	public static NodeImpl[] degreeDesc(NodeImpl[] nodes, Random rand) {
 		NodeImpl[] sorted = nodes.clone();
 		Arrays.sort(sorted, new DegreeDesc());
 		int value = sorted[0].in().length + sorted[0].out().length;
@@ -73,7 +72,7 @@ public class NodeSorting {
 		}
 	}
 
-	public static Node[] inDegreeDesc(NodeImpl[] nodes, Random rand) {
+	public static NodeImpl[] inDegreeDesc(NodeImpl[] nodes, Random rand) {
 		NodeImpl[] sorted = nodes.clone();
 		Arrays.sort(sorted, new InDegreeDesc());
 		int value = sorted[0].in().length;
@@ -103,7 +102,7 @@ public class NodeSorting {
 		}
 	}
 
-	public static Node[] outDegreeDesc(NodeImpl[] nodes, Random rand) {
+	public static NodeImpl[] outDegreeDesc(NodeImpl[] nodes, Random rand) {
 		NodeImpl[] sorted = nodes.clone();
 		Arrays.sort(sorted, new OutDegreeDesc());
 		int value = sorted[0].out().length;
@@ -133,23 +132,23 @@ public class NodeSorting {
 		}
 	}
 
-	public static Node[] random(Node[] nodes, Random rand) {
-		Node[] sorted = nodes.clone();
+	public static NodeImpl[] random(NodeImpl[] nodes, Random rand) {
+		NodeImpl[] sorted = nodes.clone();
 		randomize(sorted, rand, 0,
 				sorted.length - 1);
 		return sorted;
 	}
 
-	private static void randomize(Node[] nodes, Random rand, int from, int to) {
+	private static void randomize(NodeImpl[] nodes, Random rand, int from, int to) {
 		for (int i = to - from; i > 1; i--) {
 			int index = rand.nextInt(i) + from;
-			Node temp = nodes[index];
+			NodeImpl temp = nodes[index];
 			nodes[index] = nodes[i + from];
 			nodes[i + from] = temp;
 		}
 	}
 
-	public static int[] byDegreeDesc(Node[] nodes, Random rand) {
+	public static int[] byDegreeDesc(NodeImpl[] nodes, Random rand) {
 		int[] degree = new int[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
 			degree[i] = nodes[i].in().length + nodes[i].out().length;
