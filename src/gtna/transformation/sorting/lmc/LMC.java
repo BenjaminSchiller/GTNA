@@ -90,6 +90,11 @@ public class LMC extends Sorting {
 	protected int attackers;
 
 	public LMC(int iterations, String mode, double P, String deltaMode, int C,
+			boolean includeDegree1) {
+		this(iterations, mode, P, deltaMode, C, includeDegree1, ATTACK_NONE, 0);
+	}
+
+	public LMC(int iterations, String mode, double P, String deltaMode, int C,
 			boolean includeDegree1, String attack, int attackers) {
 		super(iterations, "LMC", new String[] { "ITERATIONS", "MODE", "P",
 				"DELTA", "C", "INCLUDE_DEGREE_1", "ATTACK", "ATTACKERS" },

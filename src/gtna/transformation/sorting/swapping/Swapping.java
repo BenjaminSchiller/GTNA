@@ -76,6 +76,10 @@ public class Swapping extends Sorting {
 	protected String attack;
 
 	protected int attackers;
+	
+	public Swapping(int iterations, String mode){
+		this(iterations, mode, ATTACK_NONE, 0);
+	}
 
 	public Swapping(int iterations, String mode, String attack, int attackers) {
 		super(iterations, "Swapping", new String[] { "ITERATIONS", "MODE",
