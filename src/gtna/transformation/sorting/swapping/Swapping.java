@@ -128,7 +128,7 @@ public class Swapping extends Sorting {
 				}
 			}
 		}
-		this.init(g, null);
+		this.init(g, nodes);
 		return nodes;
 	}
 
