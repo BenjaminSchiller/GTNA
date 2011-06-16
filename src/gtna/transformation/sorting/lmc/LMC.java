@@ -112,6 +112,8 @@ public class LMC extends Sorting {
 
 	protected SortingNode[] generateNodes(Graph g, Random rand) {
 		this.setDelta(g);
+		// FIXME exclude nods of degree 1 from becomming an attacker depending
+		// on includeDegree1
 		HashSet<NodeImpl> attackers = ATTACK_NONE.equals(this.attack) ? new HashSet<NodeImpl>()
 				: this.selectNodesRandomly(g.nodes, this.attackers, rand);
 		SortingNode[] nodes = new SortingNode[g.nodes.length];
