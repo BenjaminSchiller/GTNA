@@ -6,5 +6,8 @@ resources
 src/gtna/GTNA2.java
 #src/gtna/IDSorting.java
 
+# Exceptions
+!src/gtna/data
+
 # deploy
 deploy
