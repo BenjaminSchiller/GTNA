@@ -73,6 +73,16 @@ public class LMC extends Sorting {
 
 	public static final String ATTACK_NONE = "NONE";
 
+	public static final String ATTACKER_SELECTION_LARGEST = "LARGEST";
+
+	public static final String ATTACKER_SELECTION_SMALLEST = "SMALLEST";
+
+	public static final String ATTACKER_SELECTION_MEDIAN = "MEDIAN";
+
+	public static final String ATTACKER_SELECTION_RANDOM = "RANDOM";
+
+	public static final String ATTACKER_SELECTION_NONE = "NONE";
+
 	protected String mode;
 
 	protected double P;
@@ -85,36 +95,66 @@ public class LMC extends Sorting {
 
 	protected String attack;
 
+	protected String attackerSelection;
+
 	protected int attackers;
 
+	public static int MEDIAN_SET_SIZE = 500;
+
 	public LMC(int iterations, String mode, double P, String deltaMode, int C) {
-		this(iterations, mode, P, deltaMode, C, ATTACK_NONE, 0);
+		this(iterations, mode, P, deltaMode, C, ATTACK_NONE,
+				ATTACKER_SELECTION_NONE, 0);
 	}
 
 	public LMC(int iterations, String mode, double P, String deltaMode, int C,
-			String attack, int attackers) {
+			String attack, String attackerSelection, int attackers) {
 		super(iterations, "LMC", new String[] { "ITERATIONS", "MODE", "P",
-				"DELTA", "C", "ATTACK", "ATTACKERS" }, new String[] {
-				"" + iterations, mode, "" + P, deltaMode, "" + C, attack,
-				"" + attackers });
+				"DELTA", "C", "ATTACK", "ATTACKER_SELECTION", "ATTACKERS" },
+				new String[] { "" + iterations, mode, "" + P, deltaMode,
+						"" + C, attack, attackerSelection, "" + attackers });
 		this.mode = mode;
 		this.P = P;
 		this.deltaMode = deltaMode;
 		this.delta = 0;
 		this.C = C;
 		this.attack = attack;
+		this.attackerSelection = attackerSelection;
 		this.attackers = attackers;
 	}
 
 	protected SortingNode[] generateNodes(Graph g, Random rand) {
 		this.setDelta(g);
-		HashSet<NodeImpl> attackers = ATTACK_NONE.equals(this.attack) ? new HashSet<NodeImpl>()
-				: this.selectNodesRandomly(g.nodes, this.attackers, rand);
+		HashSet<NodeImpl> attackers = new HashSet<NodeImpl>();
+		if (!ATTACK_NONE.equals(this.attack)
+				&& !ATTACKER_SELECTION_NONE.equals(this.attackerSelection)) {
+			if (ATTACKER_SELECTION_LARGEST.equals(this.attackerSelection)) {
+				attackers = this.selectNodesByDegreeDesc(g.nodes,
+						this.attackers, rand);
+				System.out.println("largest: " + attackers.toString());
+			} else if (ATTACKER_SELECTION_SMALLEST
+					.equals(this.attackerSelection)) {
+				attackers = this.selectNodesByDegreeAsc(g.nodes,
+						this.attackers, rand);
+				System.out.println("smallest: " + attackers.toString());
+			} else if (ATTACKER_SELECTION_MEDIAN.equals(this.attackerSelection)) {
+				attackers = this.selectNodesAroundMedian(g.nodes,
+						this.attackers, rand, MEDIAN_SET_SIZE);
+				System.out.println("median: " + attackers.toString());
+			} else if (ATTACKER_SELECTION_RANDOM.equals(this.attackerSelection)) {
+				attackers = this.selectNodesRandomly(g.nodes, this.attackers,
+						rand);
+				System.out.println("random: " + attackers.toString());
+			} else {
+				throw new IllegalArgumentException(this.attackerSelection
+						+ " is an unknown attacker selection in LMC");
+			}
+		}
 		SortingNode[] nodes = new SortingNode[g.nodes.length];
 		for (int i = 0; i < g.nodes.length; i++) {
 			double pos = ((RingNode) g.nodes[i]).getID().pos;
 			if (attackers.contains(g.nodes[i])) {
-				System.out.println("adding attacker @ " + i);
+				System.out.println("adding attacker @ " + i + " (D="
+						+ g.nodes[i].out().length * 2 + ")");
 				if (ATTACK_CONTRACTION.equals(this.attack)) {
 					nodes[i] = new LMCAttackerContraction(i, pos, this);
 				} else if (ATTACK_CONVERGENCE.equals(this.attack)) {
