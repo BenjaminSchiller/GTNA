@@ -79,8 +79,10 @@ public abstract class Sorting extends TransformationImpl implements
 		SortingNode[] selectionSet = this.generateSelectionSet(nodes, rand);
 		for (int i = 0; i < this.iterations * selectionSet.length; i++) {
 			int index = rand.nextInt(selectionSet.length);
-			selectionSet[index].updateNeighbors(rand);
-			selectionSet[index].turn(rand);
+			if (selectionSet[index].out().length > 0){
+			  selectionSet[index].updateNeighbors(rand);
+			  selectionSet[index].turn(rand);
+			}
 		}
 		return new Graph(g.name, nodes, g.timer);
 	}
