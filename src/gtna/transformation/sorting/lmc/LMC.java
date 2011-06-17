@@ -53,7 +53,7 @@ public class LMC extends Sorting {
 
 	public static final String MODE_2 = "RESTRICTED";
 
-	//public static final String MODE_Z = "Z";
+	// public static final String MODE_Z = "Z";
 
 	public static final String DELTA_1_N = "1_N";
 
@@ -83,37 +83,31 @@ public class LMC extends Sorting {
 
 	protected int C;
 
-	protected boolean includeDegree1;
-
 	protected String attack;
 
 	protected int attackers;
 
-	public LMC(int iterations, String mode, double P, String deltaMode, int C,
-			boolean includeDegree1) {
-		this(iterations, mode, P, deltaMode, C, includeDegree1, ATTACK_NONE, 0);
+	public LMC(int iterations, String mode, double P, String deltaMode, int C) {
+		this(iterations, mode, P, deltaMode, C, ATTACK_NONE, 0);
 	}
 
 	public LMC(int iterations, String mode, double P, String deltaMode, int C,
-			boolean includeDegree1, String attack, int attackers) {
+			String attack, int attackers) {
 		super(iterations, "LMC", new String[] { "ITERATIONS", "MODE", "P",
-				"DELTA", "C", "INCLUDE_DEGREE_1", "ATTACK", "ATTACKERS" },
-				new String[] { "" + iterations, mode, "" + P, deltaMode,
-						"" + C, "" + includeDegree1, attack, "" + attackers });
+				"DELTA", "C", "ATTACK", "ATTACKERS" }, new String[] {
+				"" + iterations, mode, "" + P, deltaMode, "" + C, attack,
+				"" + attackers });
 		this.mode = mode;
 		this.P = P;
 		this.deltaMode = deltaMode;
 		this.delta = 0;
 		this.C = C;
-		this.includeDegree1 = includeDegree1;
 		this.attack = attack;
 		this.attackers = attackers;
 	}
 
 	protected SortingNode[] generateNodes(Graph g, Random rand) {
 		this.setDelta(g);
-		// FIXME exclude nods of degree 1 from becomming an attacker depending
-		// on includeDegree1
 		HashSet<NodeImpl> attackers = ATTACK_NONE.equals(this.attack) ? new HashSet<NodeImpl>()
 				: this.selectNodesRandomly(g.nodes, this.attackers, rand);
 		SortingNode[] nodes = new SortingNode[g.nodes.length];
@@ -175,7 +169,5 @@ public class LMC extends Sorting {
 			this.delta = Double.parseDouble(this.deltaMode);
 		}
 	}
-	
-	
 
 }
