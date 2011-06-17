@@ -212,6 +212,43 @@ public abstract class Sorting extends TransformationImpl implements
 		return attackers;
 	}
 
+	protected HashSet<NodeImpl> selectNodesAroundMedian(NodeImpl[] nodes,
+			int number, Random rand, int setSize) {
+		NodeImpl[] sorted = NodeSorting.degreeDesc(nodes, rand);
+		int median = sorted[sorted.length / 2].out().length
+				+ sorted[sorted.length / 2].in().length;
+		int medianStart = 0;
+		int medianEnd = sorted.length;
+		for (int i = 0; i < sorted.length; i++) {
+			int degree = sorted[i].out().length + sorted[i].in().length;
+			if (degree == median) {
+				medianStart = i;
+				break;
+			}
+		}
+		for (int i = sorted.length - 1; i >= 0; i--) {
+			int degree = sorted[i].out().length + sorted[i].in().length;
+			if (degree == median) {
+				medianEnd = i;
+				break;
+			}
+		}
+		int medianIndex = medianStart + (medianEnd - medianStart) / 2;
+		int startIndex = medianIndex - (setSize / 2);
+		int endIndex = medianIndex + (setSize / 2);
+		ArrayList<NodeImpl> potential = new ArrayList<NodeImpl>(setSize);
+		for (int i = startIndex; i < endIndex; i++) {
+			potential.add(sorted[i]);
+		}
+		HashSet<NodeImpl> attackers = new HashSet<NodeImpl>();
+		number = Math.min(number, setSize);
+		while (attackers.size() < number) {
+			int index = rand.nextInt(potential.size());
+			attackers.add(potential.get(index));
+		}
+		return attackers;
+	}
+
 	/**
 	 * initializes the edges for the newly created SortingNodes using the edges
 	 * from the given graph (assuming the indices of both node arrays as
