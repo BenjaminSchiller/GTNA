@@ -42,7 +42,6 @@ import gtna.io.Filewriter;
 import gtna.io.GraphReader;
 import gtna.io.GraphWriter;
 import gtna.networks.Network;
-import gtna.networks.model.ErdosRenyi;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.networks.util.ReadableFile;
 import gtna.networks.util.ReadableFolder;
@@ -50,18 +49,18 @@ import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.GreedyNextBestBacktracking;
 import gtna.transformation.Transformation;
+import gtna.transformation.identifier.LocalMC;
 import gtna.transformation.identifier.RandomID;
-import gtna.transformation.sorting.Sorting;
 import gtna.transformation.sorting.lmc.LMC;
 import gtna.transformation.sorting.swapping.Swapping;
 import gtna.util.Config;
+import gtna.util.Stats;
 import gtna.util.Timer;
 
 import java.io.File;
 import java.sql.Time;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
@@ -90,7 +89,7 @@ public class IDSorting {
 
 	private static final boolean TEST = false;
 	private static final boolean JPEG = true;
-	private static final boolean PLOT_EACH = true;
+	private static final boolean PLOT_EACH = false;
 
 	private static final boolean GENERATE_GRAPHS = true;
 	private static final boolean GENERATE_DATA = true;
@@ -107,10 +106,14 @@ public class IDSorting {
 	private static final int MAX_TIMES = 1;
 
 	public static void main(String[] args) {
-		// execute(LMC.MODE_1, "0.0", LMC.ATTACKER_SELECTION_SMALLEST);
+		Stats stats = new Stats();
+		
 		execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_MEDIAN);
-		// execute(LMC.MODE_1, "0.0", LMC.ATTACKER_SELECTION_LARGEST);
-		// execute(LMC.MODE_1, "0.0", LMC.ATTACKER_SELECTION_RANDOM);
+
+		// execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_SMALLEST);
+		// execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_MEDIAN);
+		// execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_LARGEST);
+		// execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_RANDOM);
 
 		// execute(LMC.MODE_2, "0.001", LMC.ATTACKER_SELECTION_SMALLEST);
 		// execute(LMC.MODE_2, "0.001", LMC.ATTACKER_SELECTION_MEDIAN);
@@ -118,7 +121,7 @@ public class IDSorting {
 		// execute(LMC.MODE_2, "0.001", LMC.ATTACKER_SELECTION_RANDOM);
 
 		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_SMALLEST);
-		execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_MEDIAN);
+		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_MEDIAN);
 		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_LARGEST);
 		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_RANDOM);
 
@@ -126,15 +129,15 @@ public class IDSorting {
 		// execute(LMC.MODE_2, "0.000001", LMC.ATTACKER_SELECTION_MEDIAN);
 		// execute(LMC.MODE_2, "0.000001", LMC.ATTACKER_SELECTION_LARGEST);
 		// execute(LMC.MODE_2, "0.000001", LMC.ATTACKER_SELECTION_RANDOM);
+		
+		stats.end();
 	}
 
 	public static void execute(String LMC_M, String D, String LMC_AS) {
 		// if (true) {
 		// Graph g = GraphReader.read(SPI);
 		// Transformation r = new RandomID(RandomID.RING_NODE, 0);
-		// Transformation lmc = new LMC(12, LMC.MODE_1, 0.5, LMC.DELTA_1_N,
-		// 10, LMC.ATTACK_CONTRACTION, LMC.ATTACKER_SELECTION_RANDOM,
-		// 10);
+		// Transformation lmc = new LMC(10, LMC.MODE_1, 0.5, "0.0001", 10);
 		// g = r.transform(g);
 		// g = lmc.transform(g);
 		//
@@ -179,16 +182,37 @@ public class IDSorting {
 		 * Basics
 		 */
 
-		Transformation[] r, lmc, sw;
-		r = new Transformation[] { new RandomID(RandomID.RING_NODE, 0) };
-		lmc = new Transformation[] { r[0], new LMC(LMC_I, LMC_M, P, D, C) };
-		sw = new Transformation[] { r[0], new Swapping(SW_I) };
+		// Transformation[] r, lmc, sw;
+		// r = new Transformation[] { new RandomID(RandomID.RING_NODE, 0) };
+		// lmc = new Transformation[] { r[0], new LMC(LMC_I, LMC_M, P, D, C) };
+		// sw = new Transformation[] { r[0], new Swapping(SW_I) };
+		//
+		// names.put(r, "Random");
+		// names.put(lmc, "LMC-" + LMC_M + "-" + D);
+		// names.put(sw, "Swapping");
+		//
+		// Transformation[][] basic = new Transformation[][] { r, lmc, sw };
 
-		names.put(r, "Random");
-		names.put(lmc, "LMC-" + LMC_M + "-" + D);
-		names.put(sw, "Swapping");
+		Transformation[] lmcR, lmcU, lmcOldR, lmcOldU;
+		Transformation r = new RandomID(RandomID.RING_NODE, 0);
+		lmcR = new Transformation[] { r, new LMC(LMC_I, LMC.MODE_2, P, D, C) };
+		lmcU = new Transformation[] { r, new LMC(LMC_I, LMC.MODE_1, P, D, C) };
+		lmcOldR = new Transformation[] { r,
+				new LocalMC(LMC_I, 2, P, Double.parseDouble(D), C, false, null) };
+		lmcOldU = new Transformation[] { r,
+				new LocalMC(LMC_I, 1, P, Double.parseDouble(D), C, false, null) };
 
-		Transformation[][] basic = new Transformation[][] { r, lmc, sw };
+		names.put(lmcR, "LMC-R");
+		names.put(lmcU, "LMC-U");
+		names.put(lmcOldR, "LMC-OLD-R");
+		names.put(lmcOldU, "LMC-OLD-U");
+
+		// public LocalMC(int maxIter, int mode, double pRand, double delta, int
+		// C,
+		// boolean deg1, String file) {
+
+		Transformation[][] basic = new Transformation[][] { lmcR, lmcU,
+				lmcOldR, lmcOldU };
 
 		/*
 		 * LMC Attacks
@@ -240,9 +264,9 @@ public class IDSorting {
 			// generateGraphFrom(lmc_cont, TIMES, names, lmc, GRAPH_FOLDER);
 			// generateGraphFrom(lmc_conv, TIMES, names, lmc, GRAPH_FOLDER);
 			// generateGraphFrom(lmc_klei, TIMES, names, lmc, GRAPH_FOLDER);
-			// generateGraphFrom(sw_cont, TIMES, names, lmc, GRAPH_FOLDER);
-			// generateGraphFrom(sw_conv, TIMES, names, lmc, GRAPH_FOLDER);
-			// generateGraphFrom(sw_klei, TIMES, names, lmc, GRAPH_FOLDER);
+			// generateGraphFrom(sw_cont, TIMES, names, sw, GRAPH_FOLDER);
+			// generateGraphFrom(sw_conv, TIMES, names, sw, GRAPH_FOLDER);
+			// generateGraphFrom(sw_klei, TIMES, names, sw, GRAPH_FOLDER);
 		}
 
 		if (GENERATE_DATA) {
