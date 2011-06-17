@@ -67,14 +67,18 @@ public class LMCNode extends SortingNode {
 	 */
 	public void turn(Random rand) {
 		// System.out.println("performing turn @ LMCNode " + this.index());
-		this.updateNeighbors(rand);
 
 		NodeImpl[] out = this.out();
 		// degree 1 treatment
 		if (out.length < 2) {
 			if (out.length == 1) {
-				this.getID().pos = ((LMCNode) out[0]).ask(this, rand)
-						+ rand.nextDouble() * lmc.delta;
+				if (rand.nextBoolean()) {
+					this.getID().pos = ((LMCNode) out[0]).ask(this, rand)
+							+ rand.nextDouble() * lmc.delta;
+				} else {
+					this.getID().pos = ((LMCNode) out[0]).ask(this, rand)
+							- rand.nextDouble() * lmc.delta;
+				}
 			}
 			return;
 		}
@@ -99,7 +103,7 @@ public class LMCNode extends SortingNode {
 			loc += 1;
 		}
 
-		RingID id = new RingID(loc);
+		RingID newID = new RingID(loc);
 		RingID neighborID = new RingID(this.knownIDs[0]);
 
 		// step 2
@@ -112,14 +116,14 @@ public class LMCNode extends SortingNode {
 			}
 			neighborID.pos = knownIDs[i];
 			before = before * this.dist(neighborID);
-			dist = id.dist(neighborID);
+			dist = newID.dist(neighborID);
+			after = after * dist;
 			if (lmc.mode.equals(LMC.MODE_2) && dist < lmc.delta) {
 				return;
 			}
-			after = after * dist;
 		}
 		if (rand.nextDouble() <= before / after) {
-			this.setID(id);
+			this.setID(newID);
 			for (int i = 0; i < out.length; i++) {
 				if (out[i].out().length == 1) {
 					((LMCNode) out[i]).turn(rand);
