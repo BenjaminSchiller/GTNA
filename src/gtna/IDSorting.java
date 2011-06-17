@@ -92,8 +92,8 @@ public class IDSorting {
 	private static final boolean JPEG = true;
 	private static final boolean PLOT_EACH = true;
 
-	private static final boolean GENERATE_GRAPHS = false;
-	private static final boolean GENERATE_DATA = false;
+	private static final boolean GENERATE_GRAPHS = true;
+	private static final boolean GENERATE_DATA = true;
 	private static final boolean PLOT_DATA = true;
 
 	private static final RoutingAlgorithm RA = new GreedyNextBestBacktracking(
@@ -108,7 +108,7 @@ public class IDSorting {
 
 	public static void main(String[] args) {
 		// execute(LMC.MODE_1, "0.0", LMC.ATTACKER_SELECTION_SMALLEST);
-		execute(LMC.MODE_1, "0.0", LMC.ATTACKER_SELECTION_MEDIAN);
+		execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_MEDIAN);
 		// execute(LMC.MODE_1, "0.0", LMC.ATTACKER_SELECTION_LARGEST);
 		// execute(LMC.MODE_1, "0.0", LMC.ATTACKER_SELECTION_RANDOM);
 
@@ -118,7 +118,7 @@ public class IDSorting {
 		// execute(LMC.MODE_2, "0.001", LMC.ATTACKER_SELECTION_RANDOM);
 
 		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_SMALLEST);
-		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_MEDIAN);
+		execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_MEDIAN);
 		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_LARGEST);
 		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_RANDOM);
 
@@ -145,6 +145,7 @@ public class IDSorting {
 		// }
 
 		// String MAIN_FOLDER = "test-" + LMC_M + "-" + D + "-" + LMC_AS + "/";
+		// String MAIN_FOLDER = "TEST-" + System.currentTimeMillis() + "/";
 		String MAIN_FOLDER = "TEST/";
 
 		System.out.println("\n\n\n\n\n");
