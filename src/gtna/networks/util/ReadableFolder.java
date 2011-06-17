@@ -72,7 +72,11 @@ public class ReadableFolder extends NetworkImpl implements Network {
 			}
 		}
 		this.index = -1;
-		super.setNodes(GraphReader.nodes(this.files[0], this.type));
+		if (this.files.length == 0) {
+			super.setNodes(0);
+		} else {
+			super.setNodes(GraphReader.nodes(this.files[0], this.type));
+		}
 	}
 
 	public static String key(String name, String folder) {
