@@ -48,13 +48,26 @@ public class LMCAttackerKleinberg extends LMCNode {
 	}
 
 	public void turn(Random rand) {
-		// TODO implement
-		System.out.println("performing turn @ LMCAttackerKleinberg " + this.index());
+		// nothing to do 
+		//System.out.println("performing turn @ LMCAttackerKleinberg " + this.index());
+	    
 	}
 
+	/**
+	 * return ID close to neighbor to keep it from changing IDs
+	 */
 	protected double ask(LMCNode caller, Random rand) {
-		// TODO implement
-		return this.getID().pos;
+		
+		int index = this.position.get(caller);
+		
+		  double loc = this.knownIDs[index] + this.lmc.delta*rand.nextDouble();
+		  if (lmc.mode.equals(lmc.MODE_2)){
+			  loc = loc + lmc.delta;
+		  }
+		  if (loc > 1){
+			 loc--;
+		  }
+		return loc;
 	}
 
 }

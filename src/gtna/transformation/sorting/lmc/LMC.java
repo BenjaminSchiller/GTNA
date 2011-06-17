@@ -49,11 +49,11 @@ import java.util.Random;
  * 
  */
 public class LMC extends Sorting {
-	public static final String MODE_X = "X";
+	public static final String MODE_1 = "UNRESTRICTED";
 
-	public static final String MODE_Y = "Y";
+	public static final String MODE_2 = "RESTRICTED";
 
-	public static final String MODE_Z = "Z";
+	//public static final String MODE_Z = "Z";
 
 	public static final String DELTA_1_N = "1_N";
 
@@ -175,5 +175,7 @@ public class LMC extends Sorting {
 			this.delta = Double.parseDouble(this.deltaMode);
 		}
 	}
+	
+	
 
 }

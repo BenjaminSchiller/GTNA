@@ -82,7 +82,7 @@ public class Swapping extends Sorting {
 	}
 
 	public Swapping(int iterations, String mode, String attack, int attackers) {
-		super(iterations, "Swapping", new String[] { "ITERATIONS", "MODE",
+		super(iterations, "SWAPPING", new String[] { "ITERATIONS", "MODE",
 				"ATTACK", "ATTACKERS" }, new String[] { "" + iterations, mode,
 				attack, "" + attackers });
 		this.iterations = iterations;

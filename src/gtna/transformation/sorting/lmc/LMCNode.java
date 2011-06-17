@@ -37,6 +37,7 @@
 package gtna.transformation.sorting.lmc;
 
 import gtna.graph.NodeImpl;
+import gtna.routing.node.identifier.RingID;
 import gtna.transformation.sorting.SortingNode;
 
 import java.util.Random;
@@ -60,9 +61,50 @@ public class LMCNode extends SortingNode {
 		}
 	}
 
+	/**
+	 * regular LMC: turn; two steps:
+	 * 1) propose new ID
+	 * 2) check if new ID is accepted
+	 */
 	public void turn(Random rand) {
-		// TODO implement
-		System.out.println("performing turn @ LMCNode " + this.index());
+		//System.out.println("performing turn @ LMCNode " + this.index());
+		
+		NodeImpl[] out = this.out();
+		//degree 1 treatment
+		if (!lmc.includeDegree1 && out.length < 2){
+			if (this.out().length == 1){
+				this.getID().pos = ((LMCNode)out[0]).ask(this, rand) +rand.nextDouble()*lmc.delta;
+			}
+			return;
+		}
+		
+		//step 1:
+		double loc;
+		if (rand.nextDouble() < lmc.P){
+			loc = this.knownIDs[rand.nextInt(knownIDs.length)] + lmc.delta 
+			+ rand.nextDouble()*lmc.delta*lmc.C;
+		} else {
+			loc = rand.nextDouble();
+		}
+		
+		RingID id = new RingID(loc);
+		RingID neighborID = new RingID(this.knownIDs[0]);
+		
+		//step 2
+		double before = 1;
+		double after = 1;
+		double dist;
+		for (int i = 0; i < knownIDs.length; i++){
+			neighborID.pos = knownIDs[i];
+			before = before*this.dist(neighborID);
+			dist = id.dist(neighborID);
+			if (lmc.mode.equals(LMC.MODE_2) && dist < lmc.delta){
+				return ;
+			}
+		}
+		if (rand.nextDouble() < before/after){
+			this.setID(id);
+		}
 	}
 
 	protected double ask(LMCNode caller, Random rand) {

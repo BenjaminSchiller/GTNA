@@ -35,32 +35,111 @@
  */
 package gtna.transformation.sorting.swapping;
 
+import gtna.graph.NodeImpl;
+import gtna.transformation.sorting.SortingNode;
+
 import java.util.Random;
+import java.util.Vector;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
 public class SwappingAttackerContraction extends SwappingNode {
+	//length of random walk;
+	private int length;
+	Vector<Boolean> report;
+	private static final int m = 50;
+	private static final double per = 0.5;
+	private int count = 0;
+	int neighborIndex = -1;
 
 	public SwappingAttackerContraction(int index, double pos, Swapping swapping) {
 		super(index, pos, swapping);
+		length = 2;
+		report = new Vector<Boolean>();
 	}
 	
+	/**
+	 * try to distribute ID of a neighbor
+	 */
 	public void turn(Random rand) {
-		// TODO implement
-		System.out.println("performing turn @ SwappingAttackerContraction " + this.toString());
+		//System.out.println("performing turn @ SwappingAttackerContraction " + this.toString());
+		
+		
+		//in first turn => choose neighbor
+		if (neighborIndex == -1){
+			neighborIndex = rand.nextInt(this.out().length);
+		}
+		
+		/**
+		 * start random walk offering ID
+		 */
+		double loc = this.knownIDs[neighborIndex] + rand.nextDouble()*SwappingNode.epsilon;
+		if (loc > 1){
+			loc--;
+		}
+		double[] locs = new double[this.out().length];
+		for (int i = 0; i < locs.length; i++){
+			locs[i] = loc +0.5 + rand.nextDouble()*SwappingNode.epsilon;
+			if (locs[i] > 1){
+				locs[i]--;
+			}
+		}
+		
+		/**
+		 * check if ID is accepted
+		 * eventually increase random walk length
+		 */
+		double res = ((SwappingNode)this.out()[neighborIndex]).swap(loc, locs, length, rand);
+		if (res == SwappingNode.NO_SWAP || Math.abs(res-loc)<2*SwappingNode.epsilon){
+			report.add(false);
+		} else {
+			report.add(true);
+		}
+		if (report.size() >= m && length < 6){
+			int countPos = 0;
+			for (int i = 0; i < report.size(); i++){
+				if (report.get(i)){
+					countPos++;
+				}
+			}
+			double q = (double)countPos/report.size();
+			if (q < per){
+				report = new Vector<Boolean>();
+				length++;
+			} else {
+				report.remove(0);
+			}
+		}
 	}
 
+	/**
+	 * return id close to neighbor
+	 */
 	protected double ask(SwappingNode caller, Random rand) {
-		// TODO implement
-		return this.getID().pos;
+		//in first turn => choose neighbor
+		if (neighborIndex == -1){
+			neighborIndex = rand.nextInt(this.out().length);
+		}
+		
+		double loc = this.knownIDs[neighborIndex] + rand.nextDouble()*SwappingNode.epsilon;
+		if (loc > 1){
+			loc--;
+		}
+		return loc;
 	}
 
+	/**
+	 * return ID close to neighbor
+	 */
 	protected double swap(double callerID, double[] callerNeighborIDs, int ttl,
 			Random rand) {
 		// TODO implement
-		return SwappingNode.NO_SWAP;
+		//in first turn => choose neighbor
+		return this.ask(this, rand);
 	}
+	
+	
 
 }

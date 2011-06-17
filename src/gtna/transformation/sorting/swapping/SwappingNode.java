@@ -37,6 +37,7 @@
 package gtna.transformation.sorting.swapping;
 
 import gtna.graph.NodeImpl;
+import gtna.routing.node.identifier.RingID;
 import gtna.transformation.sorting.SortingNode;
 
 import java.util.Random;
@@ -47,6 +48,8 @@ import java.util.Random;
  */
 public class SwappingNode extends SortingNode {
 	public static final double NO_SWAP = Double.MIN_VALUE;
+	//epsilon for choosing the ids 
+	public static final double epsilon = 1.0E-8;
 
 	protected Swapping swapping;
 
@@ -63,8 +66,15 @@ public class SwappingNode extends SortingNode {
 	}
 
 	public void turn(Random rand) {
-		// TODO implement
-		System.out.println("performing turn @ SwappingNode " + this.toString());
+		
+		//System.out.println("performing turn @ SwappingNode " + this.toString());
+		
+		//initiate swap
+        NodeImpl[] out = this.out();
+        double loc = ((SwappingNode)out[rand.nextInt(out.length)]).swap(this.getID().pos, this.knownIDs, 6, rand);
+		if (loc != SwappingNode.NO_SWAP){
+			this.getID().pos = loc;
+		}
 	}
 
 	protected double ask(SwappingNode caller, Random rand) {
@@ -80,14 +90,33 @@ public class SwappingNode extends SortingNode {
 	 */
 	protected double swap(double callerID, double[] callerNeighborIDs, int ttl,
 			Random rand) {
-		// TODO implement
+		
+		//case a) determine if nodes should swap
 		if (ttl - 1 <= 0) {
-			// compute D1 & D2
-			// check if D1*D2 >= P
-			// if to return this.getID().pos
-			// return NO_SWAP otherwise
+			//calculate coefficient
+			double before = 1;
+			double after = 1;
+			RingID neighborID = new RingID(rand.nextDouble());
+			RingID partnerID = new RingID(callerID);
+			for (int i = 0; i < this.out().length; i++){
+				neighborID.pos = this.knownIDs[i];
+				before = before*this.dist(neighborID);
+				after = after*partnerID.dist(neighborID);
+			}
+			for (int i = 0; i < callerNeighborIDs.length; i++){
+				neighborID.pos = callerNeighborIDs[i];
+				before = before*partnerID.dist(neighborID);
+				after = after*this.dist(neighborID);
+			}
+			//decide if to swap
+			if (rand.nextDouble() < before/after){
+				double loc = this.getID().pos; 
+				this.setID(partnerID);
+				return loc;
+			}
 		} else {
-			((SwappingNode) this.out()[rand.nextInt(this.out().length)]).swap(
+			//case 2: forward
+			return ((SwappingNode) this.out()[rand.nextInt(this.out().length)]).swap(
 					callerID, callerNeighborIDs, ttl - 1, rand);
 		}
 		return SwappingNode.NO_SWAP;

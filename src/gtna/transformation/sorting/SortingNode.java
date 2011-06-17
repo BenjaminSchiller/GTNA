@@ -47,6 +47,7 @@ import java.util.Random;
  * 
  */
 public abstract class SortingNode extends RingNode {
+
 	protected HashMap<SortingNode, Integer> position;
 
 	protected double[] knownIDs;

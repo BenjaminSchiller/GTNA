@@ -39,7 +39,7 @@ import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
- * 
+ * idea: offer random ids to prevent convergence
  */
 public class SwappingAttackerConvergence extends SwappingNode {
 
@@ -47,21 +47,40 @@ public class SwappingAttackerConvergence extends SwappingNode {
 		super(index, pos, swapping);
 	}
 
+	/**
+	 * offer randomly chosen id to neighbors
+	 */
 	public void turn(Random rand) {
-		// TODO implement
-		System.out.println("performing turn @ SwappingAttackerConvergence "
-				+ this.toString());
+		
+		//System.out.println("performing turn @ SwappingAttackerConvergence "
+			//	+ this.toString());
+		
+		double loc = rand.nextDouble();
+	    double[] locs = new double[this.out().length];
+		for (int i = 0; i < locs.length; i++){
+			locs[i] = loc +0.5 + rand.nextDouble()*SwappingNode.epsilon;
+			if (locs[i] > 1){
+				locs[i]--;
+			}
+		}
+		((SwappingNode)this.out()[rand.nextInt(this.out().length)]).swap(loc, locs, 1, rand);
 	}
 
+	/**
+	 * return randomly chosen id
+	 */
 	protected double ask(SwappingNode caller, Random rand) {
 		// TODO implement
-		return this.getID().pos;
+		return rand.nextDouble();
 	}
 
+	/**
+	 * return randomly chosen id
+	 */
 	protected double swap(double callerID, double[] callerNeighborIDs, int ttl,
 			Random rand) {
 		// TODO implement
-		return SwappingNode.NO_SWAP;
+		return rand.nextDouble();
 	}
 
 }

@@ -35,6 +35,9 @@
  */
 package gtna.transformation.sorting.lmc;
 
+import gtna.routing.node.RingNode;
+import gtna.transformation.sorting.SortingNode;
+
 import java.util.Random;
 
 /**
@@ -42,19 +45,43 @@ import java.util.Random;
  *
  */
 public class LMCAttackerContraction extends LMCNode {
+	//choose ID close to a neighbor
+	SortingNode neighbor = null;
+	//choose locations within distance epsilon
+	
 
 	public LMCAttackerContraction(int index, double pos, LMC lmc) {
 		super(index, pos, lmc);
 	}
 
 	public void turn(Random rand) {
-		// TODO implement
-		System.out.println("performing turn @ LMCAttackerContraction " + this.index());
+		//in first turn => choose neighbor
+		if (neighbor == null){
+			SortingNode neighbor = (SortingNode) this.out()[rand.nextInt(this.out().length)];
+		}
+		
+		//do nothing otherwise 
 	}
 
+	/**
+	 * idea: return id close to one neighbor hoping other will assume this position
+	 */
 	protected double ask(LMCNode caller, Random rand) {
-		// TODO implement
-		return this.getID().pos;
+		//neighbor not yet chosen => return random number 
+		if (neighbor == null){
+			return rand.nextDouble();
+		}
+		
+		//otherwise: loc close to neighbor
+		int index = this.position.get(neighbor);
+		double loc = this.knownIDs[index] + this.lmc.delta*rand.nextDouble();
+		  if (lmc.mode.equals(lmc.MODE_2)){
+			  loc = loc + lmc.delta;
+		  }
+		  if (loc > 1){
+			 loc--;
+		  }
+		return loc;
 	}
 
 }
