@@ -62,47 +62,47 @@ public class LMCNode extends SortingNode {
 	}
 
 	/**
-	 * regular LMC: turn; two steps:
-	 * 1) propose new ID
-	 * 2) check if new ID is accepted
+	 * regular LMC: turn; two steps: 1) propose new ID 2) check if new ID is
+	 * accepted
 	 */
 	public void turn(Random rand) {
-		//System.out.println("performing turn @ LMCNode " + this.index());
-		
+		// System.out.println("performing turn @ LMCNode " + this.index());
+
 		NodeImpl[] out = this.out();
-		//degree 1 treatment
-		if (!lmc.includeDegree1 && out.length < 2){
-			if (this.out().length == 1){
-				this.getID().pos = ((LMCNode)out[0]).ask(this, rand) +rand.nextDouble()*lmc.delta;
-			}
+		// degree 1 treatment
+		if (this.out().length == 1) {
+			this.getID().pos = ((LMCNode) out[0]).ask(this, rand)
+					+ rand.nextDouble() * lmc.delta;
+			return;
+		} else if (this.out().length == 0) {
 			return;
 		}
-		
-		//step 1:
+
+		// step 1:
 		double loc;
-		if (rand.nextDouble() < lmc.P){
-			loc = this.knownIDs[rand.nextInt(knownIDs.length)] + lmc.delta 
-			+ rand.nextDouble()*lmc.delta*lmc.C;
+		if (rand.nextDouble() < lmc.P) {
+			loc = this.knownIDs[rand.nextInt(knownIDs.length)] + lmc.delta
+					+ rand.nextDouble() * lmc.delta * lmc.C;
 		} else {
 			loc = rand.nextDouble();
 		}
-		
+
 		RingID id = new RingID(loc);
 		RingID neighborID = new RingID(this.knownIDs[0]);
-		
-		//step 2
+
+		// step 2
 		double before = 1;
 		double after = 1;
 		double dist;
-		for (int i = 0; i < knownIDs.length; i++){
+		for (int i = 0; i < knownIDs.length; i++) {
 			neighborID.pos = knownIDs[i];
-			before = before*this.dist(neighborID);
+			before = before * this.dist(neighborID);
 			dist = id.dist(neighborID);
-			if (lmc.mode.equals(LMC.MODE_2) && dist < lmc.delta){
-				return ;
+			if (lmc.mode.equals(LMC.MODE_2) && dist < lmc.delta) {
+				return;
 			}
 		}
-		if (rand.nextDouble() < before/after){
+		if (rand.nextDouble() < before / after) {
 			this.setID(id);
 		}
 	}
