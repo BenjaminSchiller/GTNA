@@ -49,12 +49,6 @@ import java.util.Random;
  * 
  */
 public class Swapping extends Sorting {
-	public static final String MODE_X = "X";
-
-	public static final String MODE_Y = "Y";
-
-	public static final String MODE_Z = "Z";
-
 	public static final String ATTACK_CONVERGENCE = "CONVERGENCE";
 
 	public static final String ATTACK_KLEINBERG = "KLEINBERG";
@@ -71,22 +65,19 @@ public class Swapping extends Sorting {
 
 	protected int interations;
 
-	protected String mode;
-
 	protected String attack;
 
 	protected int attackers;
-	
-	public Swapping(int iterations, String mode){
-		this(iterations, mode, ATTACK_NONE, 0);
+
+	public Swapping(int iterations) {
+		this(iterations, ATTACK_NONE, 0);
 	}
 
-	public Swapping(int iterations, String mode, String attack, int attackers) {
-		super(iterations, "SWAPPING", new String[] { "ITERATIONS", "MODE",
-				"ATTACK", "ATTACKERS" }, new String[] { "" + iterations, mode,
-				attack, "" + attackers });
+	public Swapping(int iterations, String attack, int attackers) {
+		super(iterations, "SWAPPING", new String[] { "ITERATIONS", "ATTACK",
+				"ATTACKERS" }, new String[] { "" + iterations, attack,
+				"" + attackers });
 		this.iterations = iterations;
-		this.mode = mode;
 		this.attack = attack;
 		this.attackers = attackers;
 	}
