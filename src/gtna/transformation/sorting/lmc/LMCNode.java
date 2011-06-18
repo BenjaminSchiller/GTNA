@@ -67,62 +67,64 @@ public class LMCNode extends SortingNode {
 	 */
 	public void turn(Random rand) {
 		// System.out.println("performing turn @ LMCNode " + this.index());
-
 		NodeImpl[] out = this.out();
-		// degree 1 treatment
-		if (out.length < 2) {
-			if (out.length == 1) {
-				if (rand.nextBoolean()) {
-					this.getID().pos = ((LMCNode) out[0]).ask(this, rand)
-							+ rand.nextDouble() * lmc.delta;
-				} else {
-					this.getID().pos = ((LMCNode) out[0]).ask(this, rand)
-							- rand.nextDouble() * lmc.delta;
+		if (out.length == 1) {
+			double loc1 = ((LMCNode) out[0]).getID().pos;
+			if (rand.nextBoolean()) {
+				loc1 = loc1 + rand.nextDouble() * lmc.delta;
+				if (loc1 > 1) {
+					loc1--;
+				}
+			} else {
+				loc1 = loc1 - rand.nextDouble() * lmc.delta;
+				if (loc1 < 0) {
+					loc1++;
 				}
 			}
-			return;
+			this.getID().pos = loc1;
 		}
 
-		// step 1:
 		double loc;
 		if (rand.nextDouble() < lmc.P) {
 			if (rand.nextBoolean()) {
 				loc = this.knownIDs[rand.nextInt(knownIDs.length)] + lmc.delta
-						+ rand.nextDouble() * lmc.delta * lmc.C;
+						+ rand.nextDouble() * lmc.C * lmc.delta;
+				while (loc > 1) {
+					loc--;
+				}
 			} else {
 				loc = this.knownIDs[rand.nextInt(knownIDs.length)] - lmc.delta
-						- rand.nextDouble() * lmc.delta * lmc.C;
+						- rand.nextDouble() * lmc.C * lmc.delta;
+				while (loc < 0) {
+					loc++;
+				}
 			}
 		} else {
 			loc = rand.nextDouble();
 		}
-		if (loc > 1) {
-			loc -= 1;
-		}
-		if (loc < 0) {
-			loc += 1;
-		}
 
-		RingID newID = new RingID(loc);
-		RingID neighborID = new RingID(this.knownIDs[0]);
-
-		// step 2
 		double before = 1;
 		double after = 1;
-		double dist;
+		RingID neighborID = new RingID(rand.nextDouble());
+		RingID newID = new RingID(loc);
+		boolean failed = false;
 		for (int i = 0; i < knownIDs.length; i++) {
 			if (out[i].out().length == 1) {
 				continue;
 			}
 			neighborID.pos = knownIDs[i];
-			before = before * this.dist(neighborID);
+			double dist = this.dist(neighborID);
+			before = before * dist;
 			dist = newID.dist(neighborID);
-			after = after * dist;
 			if (lmc.mode.equals(LMC.MODE_2) && dist < lmc.delta) {
-				return;
+				failed = true;
+				// lmc.failed++;
+				break;
 			}
+			after = after * dist;
 		}
-		if (rand.nextDouble() <= before / after) {
+
+		if (!failed && rand.nextDouble() < before / after) {
 			this.setID(newID);
 			for (int i = 0; i < out.length; i++) {
 				if (out[i].out().length == 1) {
