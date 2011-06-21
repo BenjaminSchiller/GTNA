@@ -49,74 +49,92 @@ import java.util.Random;
  * 
  */
 public class Swapping extends Sorting {
+
 	public static final String ATTACK_CONVERGENCE = "CONVERGENCE";
 
 	public static final String ATTACK_KLEINBERG = "KLEINBERG";
 
 	public static final String ATTACK_CONTRACTION = "CONTRACTION";
 
-	public static final String ATTACK_CONVERGENCE_WC = "CONVERGENCE_WC";
-
-	public static final String ATTACK_KLEINBERG_WC = "KLEINBERG_WC";
-
-	public static final String ATTACK_CONTRACTION_WC = "CONTRACTION_WC";
-
 	public static final String ATTACK_NONE = "NONE";
+
+	public static final String ATTACKER_SELECTION_LARGEST = "LARGEST";
+
+	public static final String ATTACKER_SELECTION_SMALLEST = "SMALLEST";
+
+	public static final String ATTACKER_SELECTION_MEDIAN = "MEDIAN";
+
+	public static final String ATTACKER_SELECTION_RANDOM = "RANDOM";
+
+	public static final String ATTACKER_SELECTION_NONE = "NONE";
 
 	protected int interations;
 
+	protected double delta;
+
 	protected String attack;
+
+	protected String attackerSelection;
 
 	protected int attackers;
 
+	public static int MEDIAN_SET_SIZE = 500;
+
 	public Swapping(int iterations) {
-		this(iterations, ATTACK_NONE, 0);
+		this(iterations, 0, ATTACK_NONE, ATTACKER_SELECTION_NONE, 0);
 	}
 
-	public Swapping(int iterations, String attack, int attackers) {
-		super(iterations, "SWAPPING", new String[] { "ITERATIONS", "ATTACK",
-				"ATTACKERS" }, new String[] { "" + iterations, attack,
+	public Swapping(int iterations, double delta, String attack,
+			String attackerSelection, int attackers) {
+		super(iterations, "SWAPPING", new String[] { "ITERATIONS", "DELTA",
+				"ATTACK", "ATTACKER_SELECTION", "ATTACKERS" }, new String[] {
+				"" + iterations, "" + delta, attack, attackerSelection,
 				"" + attackers });
 		this.iterations = iterations;
+		this.delta = delta;
 		this.attack = attack;
+		this.attackerSelection = attackerSelection;
 		this.attackers = attackers;
 	}
 
 	protected SortingNode[] generateNodes(Graph g, Random rand) {
-		HashSet<NodeImpl> attackers = ATTACK_NONE.equals(this.attack) ? new HashSet<NodeImpl>()
-				: this.selectNodesRandomly(g.nodes, this.attackers, rand);
+		HashSet<NodeImpl> attackers = new HashSet<NodeImpl>();
+		if (!ATTACK_NONE.equals(this.attack)
+				&& !ATTACKER_SELECTION_NONE.equals(this.attackerSelection)) {
+			if (ATTACKER_SELECTION_LARGEST.equals(this.attackerSelection)) {
+				attackers = this.selectNodesByDegreeDesc(g.nodes,
+						this.attackers, rand);
+			} else if (ATTACKER_SELECTION_SMALLEST
+					.equals(this.attackerSelection)) {
+				attackers = this.selectNodesByDegreeAsc(g.nodes,
+						this.attackers, rand);
+			} else if (ATTACKER_SELECTION_MEDIAN.equals(this.attackerSelection)) {
+				attackers = this.selectNodesAroundMedian(g.nodes,
+						this.attackers, rand, MEDIAN_SET_SIZE);
+			} else if (ATTACKER_SELECTION_RANDOM.equals(this.attackerSelection)) {
+				attackers = this.selectNodesRandomly(g.nodes, this.attackers,
+						rand);
+			} else {
+				throw new IllegalArgumentException(this.attackerSelection
+						+ " is an unknown attacker selection in Swapping");
+			}
+		}
 		SortingNode[] nodes = new SortingNode[g.nodes.length];
 		for (int i = 0; i < g.nodes.length; i++) {
 			double pos = ((RingNode) g.nodes[i]).getID().pos;
 			if (attackers.contains(g.nodes[i])) {
-				System.out.println("adding attacker @ " + i);
 				if (ATTACK_CONTRACTION.equals(this.attack)) {
 					nodes[i] = new SwappingAttackerContraction(i, pos, this);
 				} else if (ATTACK_CONVERGENCE.equals(this.attack)) {
 					nodes[i] = new SwappingAttackerConvergence(i, pos, this);
 				} else if (ATTACK_KLEINBERG.equals(this.attack)) {
 					nodes[i] = new SwappingAttackerKleinberg(i, pos, this);
-				} else if (ATTACK_CONTRACTION_WC.equals(this.attack)) {
-					nodes[i] = new SwappingWCAttackerContraction(i, pos, this);
-				} else if (ATTACK_CONVERGENCE_WC.equals(this.attack)) {
-					nodes[i] = new SwappingWCAttackerConvergence(i, pos, this);
-				} else if (ATTACK_KLEINBERG_WC.equals(this.attack)) {
-					nodes[i] = new SwappingWCAttackerKleinberg(i, pos, this);
 				} else {
 					throw new IllegalArgumentException(this.attack
 							+ " is an unknown attack in LMC");
 				}
 			} else {
-				if (ATTACK_NONE.equals(this.attack)
-						|| ATTACK_CONTRACTION.equals(this.attack)
-						|| ATTACK_CONVERGENCE.equals(this.attack)
-						|| ATTACK_KLEINBERG.equals(this.attack)) {
-					nodes[i] = new SwappingNode(i, pos, this);
-				} else if (ATTACK_CONTRACTION_WC.equals(this.attack)
-						|| ATTACK_CONVERGENCE_WC.equals(this.attack)
-						|| ATTACK_KLEINBERG_WC.equals(this.attack)) {
-					nodes[i] = new SwappingWCNode(i, pos, this);
-				}
+				nodes[i] = new SwappingNode(i, pos, this);
 			}
 		}
 		this.init(g, nodes);

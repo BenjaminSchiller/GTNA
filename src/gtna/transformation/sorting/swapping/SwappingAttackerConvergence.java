@@ -35,11 +35,12 @@
  */
 package gtna.transformation.sorting.swapping;
 
+import gtna.graph.NodeImpl;
+
 import java.util.Random;
 
 /**
- * @author "Benjamin Schiller"
- * idea: offer random ids to prevent convergence
+ * @author "Benjamin Schiller" idea: offer random ids to prevent convergence
  */
 public class SwappingAttackerConvergence extends SwappingNode {
 
@@ -48,29 +49,26 @@ public class SwappingAttackerConvergence extends SwappingNode {
 	}
 
 	/**
-	 * offer randomly chosen id to neighbors
+	 * offer randomly chosen id to a random node (TTL taken randomly from [1, 6]
+	 * use neighborhood at furthest distance (id + 0.5 + \delta) to make
+	 * receiving node accept it at all times
 	 */
 	public void turn(Random rand) {
-		
-		//System.out.println("performing turn @ SwappingAttackerConvergence "
-			//	+ this.toString());
-		
-		double loc = rand.nextDouble();
-	    double[] locs = new double[this.out().length];
-		for (int i = 0; i < locs.length; i++){
-			locs[i] = loc +0.5 + rand.nextDouble()*SwappingNode.epsilon;
-			if (locs[i] > 1){
-				locs[i]--;
-			}
+		int ttl = rand.nextInt(6) + 1;
+		double id = rand.nextDouble();
+		double[] neighbors = new double[this.out().length];
+		for (int i = 0; i < neighbors.length; i++) {
+			neighbors[i] = (id + 0.5 + rand.nextDouble() * this.swapping.delta) % 1.0;
 		}
-		((SwappingNode)this.out()[rand.nextInt(this.out().length)]).swap(loc, locs, 1, rand);
+		NodeImpl[] out = this.out();
+		int index = rand.nextInt(out.length);
+		((SwappingNode) out[index]).swap(id, neighbors, ttl, rand);
 	}
 
 	/**
 	 * return randomly chosen id
 	 */
 	protected double ask(SwappingNode caller, Random rand) {
-		// TODO implement
 		return rand.nextDouble();
 	}
 
@@ -79,7 +77,6 @@ public class SwappingAttackerConvergence extends SwappingNode {
 	 */
 	protected double swap(double callerID, double[] callerNeighborIDs, int ttl,
 			Random rand) {
-		// TODO implement
 		return rand.nextDouble();
 	}
 

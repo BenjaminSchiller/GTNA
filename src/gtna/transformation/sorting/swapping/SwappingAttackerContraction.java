@@ -36,110 +36,76 @@
 package gtna.transformation.sorting.swapping;
 
 import gtna.graph.NodeImpl;
-import gtna.transformation.sorting.SortingNode;
 
 import java.util.Random;
-import java.util.Vector;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
 public class SwappingAttackerContraction extends SwappingNode {
-	//length of random walk;
-	private int length;
-	Vector<Boolean> report;
-	private static final int m = 50;
-	private static final double per = 0.5;
-	private int count = 0;
-	int neighborIndex = -1;
+	
+	private SwappingNode neighbor;
+
+	private int index;
 
 	public SwappingAttackerContraction(int index, double pos, Swapping swapping) {
 		super(index, pos, swapping);
-		length = 2;
-		report = new Vector<Boolean>();
 	}
-	
+
 	/**
-	 * try to distribute ID of a neighbor
+	 * try to distribute an ID close to a neighbor
 	 */
 	public void turn(Random rand) {
-		//System.out.println("performing turn @ SwappingAttackerContraction " + this.toString());
-		
-		
-		//in first turn => choose neighbor
-		if (neighborIndex == -1){
-			neighborIndex = rand.nextInt(this.out().length);
+		// select a random neighbor
+		if (this.neighbor == null) {
+			NodeImpl[] out = this.out();
+			this.index = rand.nextInt(out.length);
+			this.neighbor = (SwappingNode) out[this.index];
 		}
-		
-		/**
-		 * start random walk offering ID
-		 */
-		double loc = this.knownIDs[neighborIndex] + rand.nextDouble()*SwappingNode.epsilon;
-		if (loc > 1){
-			loc--;
+
+		// select ID close to neighbor + furthest neighbors
+		double id = (this.knownIDs[this.index] + rand.nextDouble()
+				* this.swapping.delta) % 1.0;
+		double[] neighbors = new double[this.out().length];
+		for (int i = 0; i < neighbors.length; i++) {
+			neighbors[i] = (id + 0.5 + rand.nextDouble() * this.swapping.delta) % 1.0;
 		}
-		double[] locs = new double[this.out().length];
-		for (int i = 0; i < locs.length; i++){
-			locs[i] = loc +0.5 + rand.nextDouble()*SwappingNode.epsilon;
-			if (locs[i] > 1){
-				locs[i]--;
-			}
-		}
-		
-		/**
-		 * check if ID is accepted
-		 * eventually increase random walk length
-		 */
-		double res = ((SwappingNode)this.out()[neighborIndex]).swap(loc, locs, length, rand);
-		if (res == SwappingNode.NO_SWAP || Math.abs(res-loc)<2*SwappingNode.epsilon){
-			report.add(false);
-		} else {
-			report.add(true);
-		}
-		if (report.size() >= m && length < 6){
-			int countPos = 0;
-			for (int i = 0; i < report.size(); i++){
-				if (report.get(i)){
-					countPos++;
-				}
-			}
-			double q = (double)countPos/report.size();
-			if (q < per){
-				report = new Vector<Boolean>();
-				length++;
-			} else {
-				report.remove(0);
-			}
-		}
+
+		// select ttl
+		int ttl = rand.nextInt(6) + 1;
+
+		// select starting node
+		NodeImpl[] out = this.out();
+		SwappingNode start = (SwappingNode) out[rand.nextInt(out.length)];
+
+		// send swap request
+		start.swap(id, neighbors, ttl, rand);
 	}
 
 	/**
-	 * return id close to neighbor
+	 * return ID close to selected neighbor
 	 */
 	protected double ask(SwappingNode caller, Random rand) {
-		//in first turn => choose neighbor
-		if (neighborIndex == -1){
-			neighborIndex = rand.nextInt(this.out().length);
+		// select a random neighbor
+		if (this.neighbor == null) {
+			NodeImpl[] out = this.out();
+			this.index = rand.nextInt(out.length);
+			this.neighbor = (SwappingNode) out[this.index];
 		}
-		
-		double loc = this.knownIDs[neighborIndex] + rand.nextDouble()*SwappingNode.epsilon;
-		if (loc > 1){
-			loc--;
-		}
-		return loc;
+
+		// return ID close to neighbor's current ID
+		double id = (this.knownIDs[this.index] + rand.nextDouble()
+				* this.swapping.delta) % 1.0;
+		return id;
 	}
 
 	/**
-	 * return ID close to neighbor
+	 * return ID close to selected neighbor
 	 */
 	protected double swap(double callerID, double[] callerNeighborIDs, int ttl,
 			Random rand) {
-		// TODO implement
-		//in first turn => choose neighbor
 		return this.ask(this, rand);
 	}
-	
-	
 
 }

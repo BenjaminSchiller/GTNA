@@ -35,53 +35,50 @@
  */
 package gtna.transformation.sorting.lmc;
 
-import gtna.routing.node.RingNode;
-import gtna.transformation.sorting.SortingNode;
+import gtna.graph.NodeImpl;
 
 import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
- *
+ * 
  */
 public class LMCAttackerContraction extends LMCNode {
-	//choose ID close to a neighbor
-	SortingNode neighbor = null;
-	//choose locations within distance epsilon
-	
+
+	private LMCNode neighbor = null;
+
+	private int index;
 
 	public LMCAttackerContraction(int index, double pos, LMC lmc) {
 		super(index, pos, lmc);
 	}
 
+	/**
+	 * choose an ID close to the selected neighbor
+	 */
 	public void turn(Random rand) {
-		//in first turn => choose neighbor
-		if (neighbor == null){
-			SortingNode neighbor = (SortingNode) this.out()[rand.nextInt(this.out().length)];
-		}
-		
-		//do nothing otherwise 
+		this.getID().pos = this.ask(this, rand);
 	}
 
 	/**
-	 * idea: return id close to one neighbor hoping other will assume this position
+	 * return an ID close to one selected neighbor hoping all neighbors will
+	 * converge to this position
 	 */
 	protected double ask(LMCNode caller, Random rand) {
-		//neighbor not yet chosen => return random number 
-		if (neighbor == null){
-			return rand.nextDouble();
+		// choose a random neighbor to contract to
+		if (this.neighbor == null) {
+			NodeImpl[] out = this.out();
+			this.index = rand.nextInt(out.length);
+			this.neighbor = (LMCNode) out[this.index];
 		}
-		
-		//otherwise: loc close to neighbor
-		int index = this.position.get(neighbor);
-		double loc = this.knownIDs[index] + this.lmc.delta*rand.nextDouble();
-		  if (lmc.mode.equals(lmc.MODE_2)){
-			  loc = loc + lmc.delta;
-		  }
-		  if (loc > 1){
-			 loc--;
-		  }
-		return loc;
-	}
 
+		// return ID close to the selected neighbor
+		if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
+			return (this.knownIDs[this.index] + this.lmc.delta
+					* (1.0 + rand.nextDouble())) % 1.0;
+		} else {
+			return (this.knownIDs[this.index] + this.lmc.delta
+					* rand.nextDouble()) % 1.0;
+		}
+	}
 }

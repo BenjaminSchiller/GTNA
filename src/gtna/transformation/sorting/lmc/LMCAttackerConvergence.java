@@ -47,13 +47,15 @@ public class LMCAttackerConvergence extends LMCNode {
 		super(index, pos, lmc);
 	}
 
+	/**
+	 * select a random ID
+	 */
 	public void turn(Random rand) {
-		// Nothing to do
-		//System.out.println("performing turn @ LMCAttackerConvergence " + this.index());
+		this.getID().pos = rand.nextDouble();
 	}
 
 	/**
-	 * return random value
+	 * return a random ID
 	 */
 	protected double ask(LMCNode caller, Random rand) {
 		return rand.nextDouble();

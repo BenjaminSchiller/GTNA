@@ -49,11 +49,10 @@ import java.util.Random;
  * 
  */
 public class LMC extends Sorting {
-	public static final String MODE_1 = "UNRESTRICTED";
 
-	public static final String MODE_2 = "RESTRICTED";
+	public static final String MODE_UNRESTRICTED = "UNRESTRICTED";
 
-	// public static final String MODE_Z = "Z";
+	public static final String MODE_RESTRICTED = "RESTRICTED";
 
 	public static final String DELTA_1_N = "1_N";
 
@@ -64,12 +63,6 @@ public class LMC extends Sorting {
 	public static final String ATTACK_KLEINBERG = "KLEINBERG";
 
 	public static final String ATTACK_CONTRACTION = "CONTRACTION";
-
-	public static final String ATTACK_CONVERGENCE_WC = "CONVERGENCE_WC";
-
-	public static final String ATTACK_KLEINBERG_WC = "KLEINBERG_WC";
-
-	public static final String ATTACK_CONTRACTION_WC = "CONTRACTION_WC";
 
 	public static final String ATTACK_NONE = "NONE";
 
@@ -130,20 +123,16 @@ public class LMC extends Sorting {
 			if (ATTACKER_SELECTION_LARGEST.equals(this.attackerSelection)) {
 				attackers = this.selectNodesByDegreeDesc(g.nodes,
 						this.attackers, rand);
-				System.out.println("largest: " + attackers.toString());
 			} else if (ATTACKER_SELECTION_SMALLEST
 					.equals(this.attackerSelection)) {
 				attackers = this.selectNodesByDegreeAsc(g.nodes,
 						this.attackers, rand);
-				System.out.println("smallest: " + attackers.toString());
 			} else if (ATTACKER_SELECTION_MEDIAN.equals(this.attackerSelection)) {
 				attackers = this.selectNodesAroundMedian(g.nodes,
 						this.attackers, rand, MEDIAN_SET_SIZE);
-				System.out.println("median: " + attackers.toString());
 			} else if (ATTACKER_SELECTION_RANDOM.equals(this.attackerSelection)) {
 				attackers = this.selectNodesRandomly(g.nodes, this.attackers,
 						rand);
-				System.out.println("random: " + attackers.toString());
 			} else {
 				throw new IllegalArgumentException(this.attackerSelection
 						+ " is an unknown attacker selection in LMC");
@@ -153,35 +142,20 @@ public class LMC extends Sorting {
 		for (int i = 0; i < g.nodes.length; i++) {
 			double pos = ((RingNode) g.nodes[i]).getID().pos;
 			if (attackers.contains(g.nodes[i])) {
-				System.out.println("adding attacker @ " + i + " (D="
-						+ g.nodes[i].out().length * 2 + ")");
+				// System.out.println("adding attacker @ " + i + " (D="
+				// + g.nodes[i].out().length * 2 + ")");
 				if (ATTACK_CONTRACTION.equals(this.attack)) {
 					nodes[i] = new LMCAttackerContraction(i, pos, this);
 				} else if (ATTACK_CONVERGENCE.equals(this.attack)) {
 					nodes[i] = new LMCAttackerConvergence(i, pos, this);
 				} else if (ATTACK_KLEINBERG.equals(this.attack)) {
 					nodes[i] = new LMCAttackerKleinberg(i, pos, this);
-				} else if (ATTACK_CONTRACTION_WC.equals(this.attack)) {
-					nodes[i] = new LMCWCAttackerContraction(i, pos, this);
-				} else if (ATTACK_CONVERGENCE_WC.equals(this.attack)) {
-					nodes[i] = new LMCWCAttackerConvergence(i, pos, this);
-				} else if (ATTACK_KLEINBERG_WC.equals(this.attack)) {
-					nodes[i] = new LMCWCAttackerKleinberg(i, pos, this);
 				} else {
 					throw new IllegalArgumentException(this.attack
 							+ " is an unknown attack in LMC");
 				}
 			} else {
-				if (ATTACK_NONE.equals(this.attack)
-						|| ATTACK_CONTRACTION.equals(this.attack)
-						|| ATTACK_CONVERGENCE.equals(this.attack)
-						|| ATTACK_KLEINBERG.equals(this.attack)) {
-					nodes[i] = new LMCNode(i, pos, this);
-				} else if (ATTACK_CONTRACTION_WC.equals(this.attack)
-						|| ATTACK_CONVERGENCE_WC.equals(this.attack)
-						|| ATTACK_KLEINBERG_WC.equals(this.attack)) {
-					nodes[i] = new LMCWCNode(i, pos, this);
-				}
+				nodes[i] = new LMCNode(i, pos, this);
 			}
 		}
 		this.init(g, nodes);
