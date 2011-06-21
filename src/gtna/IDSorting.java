@@ -48,19 +48,22 @@ import gtna.networks.util.ReadableFolder;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.GreedyNextBestBacktracking;
+import gtna.routing.node.identifier.RingID;
 import gtna.transformation.Transformation;
-import gtna.transformation.identifier.LocalMC;
 import gtna.transformation.identifier.RandomID;
 import gtna.transformation.sorting.lmc.LMC;
 import gtna.transformation.sorting.swapping.Swapping;
 import gtna.util.Config;
 import gtna.util.Stats;
 import gtna.util.Timer;
+import gtna.util.Util;
 
 import java.io.File;
 import java.sql.Time;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
@@ -69,17 +72,17 @@ import java.util.Iterator;
 public class IDSorting {
 	private static final String SPI = "./resources/SPI-3-LCC/2010-08.spi.txt";
 
-	private static final int LMC_I = 2000;
-	private static final int LMCA_I = 2000;
+	private static final int LMC_I = 6000;
+	private static final int LMCA_I = 6000;
 
-	private static final double P = 0.5;
+	private static final double P = 0;
 	private static final int C = 10;
 	private static final String[] LMCA = new String[] { LMC.ATTACK_CONTRACTION,
 			LMC.ATTACK_CONVERGENCE, LMC.ATTACK_KLEINBERG };
 	private static final int[] LMC_A = new int[] { 1, 10, 100 };
 
-	private static final int SW_I = 2000;
-	private static final int SWA_I = 2000;
+	private static final int SW_I = 6000;
+	private static final int SWA_I = 6000;
 	private static final String[] SWA = new String[] {
 			Swapping.ATTACK_CONTRACTION, Swapping.ATTACK_CONVERGENCE,
 			Swapping.ATTACK_KLEINBERG };
@@ -99,7 +102,7 @@ public class IDSorting {
 			TTL);
 
 	// private static final String metrics = "ID_SPACE";
-	private static final String metrics = "ID_SPACE, ID_SPACE_DISTANCES, ID_SPACE_HOPS, RL";
+	private static final String metrics = "ID_SPACE_DISTANCES, ID_SPACE_HOPS, RL";
 
 	private static final int TIMES = 1;
 
@@ -107,49 +110,89 @@ public class IDSorting {
 
 	public static void main(String[] args) {
 		Stats stats = new Stats();
-		
-		execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_MEDIAN);
 
-		// execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_SMALLEST);
-		// execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_MEDIAN);
-		// execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_LARGEST);
-		// execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_RANDOM);
+		// execute(LMC.MODE_UNRESTRICTED, 0.000001,
+		// LMC.ATTACKER_SELECTION_SMALLEST,
+		// Swapping.ATTACKER_SELECTION_SMALLEST);
+		execute(LMC.MODE_UNRESTRICTED, 0.000001, LMC.ATTACKER_SELECTION_MEDIAN,
+				Swapping.ATTACKER_SELECTION_MEDIAN);
+		// execute(LMC.MODE_UNRESTRICTED, 0.000001,
+		// LMC.ATTACKER_SELECTION_LARGEST,
+		// Swapping.ATTACKER_SELECTION_LARGEST);
 
-		// execute(LMC.MODE_2, "0.001", LMC.ATTACKER_SELECTION_SMALLEST);
-		// execute(LMC.MODE_2, "0.001", LMC.ATTACKER_SELECTION_MEDIAN);
-		// execute(LMC.MODE_2, "0.001", LMC.ATTACKER_SELECTION_LARGEST);
-		// execute(LMC.MODE_2, "0.001", LMC.ATTACKER_SELECTION_RANDOM);
+		// execute(LMC.MODE_UNRESTRICTED, "0.0001",
+		// LMC.ATTACKER_SELECTION_MEDIAN,
+		// Swapping.ATTACKER_SELECTION_MEDIAN);
+		// execute(LMC.MODE_RESTRICTED, "0.0001", LMC.ATTACKER_SELECTION_MEDIAN,
+		// Swapping.ATTACKER_SELECTION_MEDIAN);
+		//		
+		// execute(LMC.MODE_UNRESTRICTED, "0.0001",
+		// LMC.ATTACKER_SELECTION_SMALLEST,
+		// Swapping.ATTACKER_SELECTION_SMALLEST);
+		// execute(LMC.MODE_RESTRICTED, "0.0001",
+		// LMC.ATTACKER_SELECTION_SMALLEST,
+		// Swapping.ATTACKER_SELECTION_SMALLEST);
+		//		
+		// execute(LMC.MODE_UNRESTRICTED, "0.0001",
+		// LMC.ATTACKER_SELECTION_LARGEST,
+		// Swapping.ATTACKER_SELECTION_LARGEST);
+		// execute(LMC.MODE_RESTRICTED, "0.0001",
+		// LMC.ATTACKER_SELECTION_LARGEST,
+		// Swapping.ATTACKER_SELECTION_LARGEST);
 
-		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_SMALLEST);
-		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_MEDIAN);
-		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_LARGEST);
-		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_RANDOM);
+		// execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_SMALLEST,
+		// Swapping.ATTACKER_SELECTION_SMALLEST);
+		// execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_MEDIAN,
+		// Swapping.ATTACKER_SELECTION_MEDIAN);
+		// execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_LARGEST,
+		// Swapping.ATTACKER_SELECTION_LARGEST);
+		// execute(LMC.MODE_1, "0.0001", LMC.ATTACKER_SELECTION_RANDOM,
+		// Swapping.ATTACKER_SELECTION_RANDOM);
 
-		// execute(LMC.MODE_2, "0.000001", LMC.ATTACKER_SELECTION_SMALLEST);
-		// execute(LMC.MODE_2, "0.000001", LMC.ATTACKER_SELECTION_MEDIAN);
-		// execute(LMC.MODE_2, "0.000001", LMC.ATTACKER_SELECTION_LARGEST);
-		// execute(LMC.MODE_2, "0.000001", LMC.ATTACKER_SELECTION_RANDOM);
-		
+		// execute(LMC.MODE_2, "0.001", LMC.ATTACKER_SELECTION_SMALLEST,
+		// Swapping.ATTACKER_SELECTION_SMALLEST);
+		// execute(LMC.MODE_2, "0.001", LMC.ATTACKER_SELECTION_MEDIAN,
+		// Swapping.ATTACKER_SELECTION_MEDIAN);
+		// execute(LMC.MODE_2, "0.001", LMC.ATTACKER_SELECTION_LARGEST,
+		// Swapping.ATTACKER_SELECTION_LARGEST);
+		// execute(LMC.MODE_2, "0.001", LMC.ATTACKER_SELECTION_RANDOM,
+		// Swapping.ATTACKER_SELECTION_RANDOM);
+
+		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_SMALLEST,
+		// Swapping.ATTACKER_SELECTION_SMALLEST);
+		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_MEDIAN,
+		// Swapping.ATTACKER_SELECTION_MEDIAN);
+		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_LARGEST,
+		// Swapping.ATTACKER_SELECTION_LARGEST);
+		// execute(LMC.MODE_2, "0.0001", LMC.ATTACKER_SELECTION_RANDOM,
+		// Swapping.ATTACKER_SELECTION_RANDOM);
+
+		// execute(LMC.MODE_2, "0.000001", LMC.ATTACKER_SELECTION_SMALLEST,
+		// Swapping.ATTACKER_SELECTION_SMALLEST);
+		// execute(LMC.MODE_2, "0.000001", LMC.ATTACKER_SELECTION_MEDIAN,
+		// Swapping.ATTACKER_SELECTION_MEDIAN);
+		// execute(LMC.MODE_2, "0.000001", LMC.ATTACKER_SELECTION_LARGEST,
+		// Swapping.ATTACKER_SELECTION_LARGEST);
+		// execute(LMC.MODE_2, "0.000001", LMC.ATTACKER_SELECTION_RANDOM,
+		// Swapping.ATTACKER_SELECTION_RANDOM);
+
 		stats.end();
 	}
 
-	public static void execute(String LMC_M, String D, String LMC_AS) {
+	public static void execute(String LMC_M, double D, String LMC_AS,
+			String SW_AS) {
 		// if (true) {
-		// Graph g = GraphReader.read(SPI);
-		// Transformation r = new RandomID(RandomID.RING_NODE, 0);
-		// Transformation lmc = new LMC(10, LMC.MODE_1, 0.5, "0.0001", 10);
-		// g = r.transform(g);
-		// g = lmc.transform(g);
-		//
-		// System.out.println(lmc.folder());
-		// System.out.println(lmc.name());
-		//
+		// Random rand = new Random();
+		// double[] values = new double[10];
+		// for (int i = 0; i < values.length; i++) {
+		// values[i] = rand.nextDouble() % 0.01;
+		// }
 		// return;
 		// }
 
 		// String MAIN_FOLDER = "test-" + LMC_M + "-" + D + "-" + LMC_AS + "/";
 		// String MAIN_FOLDER = "TEST-" + System.currentTimeMillis() + "/";
-		String MAIN_FOLDER = "TEST/";
+		String MAIN_FOLDER = "ALL-1/";
 
 		System.out.println("\n\n\n\n\n");
 		System.out
@@ -182,37 +225,16 @@ public class IDSorting {
 		 * Basics
 		 */
 
-		// Transformation[] r, lmc, sw;
-		// r = new Transformation[] { new RandomID(RandomID.RING_NODE, 0) };
-		// lmc = new Transformation[] { r[0], new LMC(LMC_I, LMC_M, P, D, C) };
-		// sw = new Transformation[] { r[0], new Swapping(SW_I) };
-		//
-		// names.put(r, "Random");
-		// names.put(lmc, "LMC-" + LMC_M + "-" + D);
-		// names.put(sw, "Swapping");
-		//
-		// Transformation[][] basic = new Transformation[][] { r, lmc, sw };
+		Transformation[] r, lmc, sw;
+		r = new Transformation[] { new RandomID(RandomID.RING_NODE, 0) };
+		lmc = new Transformation[] { r[0], new LMC(LMC_I, LMC_M, P, "" + D, C) };
+		sw = new Transformation[] { r[0], new Swapping(SW_I) };
 
-		Transformation[] lmcR, lmcU, lmcOldR, lmcOldU;
-		Transformation r = new RandomID(RandomID.RING_NODE, 0);
-		lmcR = new Transformation[] { r, new LMC(LMC_I, LMC.MODE_2, P, D, C) };
-		lmcU = new Transformation[] { r, new LMC(LMC_I, LMC.MODE_1, P, D, C) };
-		lmcOldR = new Transformation[] { r,
-				new LocalMC(LMC_I, 2, P, Double.parseDouble(D), C, false, null) };
-		lmcOldU = new Transformation[] { r,
-				new LocalMC(LMC_I, 1, P, Double.parseDouble(D), C, false, null) };
+		names.put(r, "Random");
+		names.put(lmc, "LMC");
+		names.put(sw, "Swapping");
 
-		names.put(lmcR, "LMC-R");
-		names.put(lmcU, "LMC-U");
-		names.put(lmcOldR, "LMC-OLD-R");
-		names.put(lmcOldU, "LMC-OLD-U");
-
-		// public LocalMC(int maxIter, int mode, double pRand, double delta, int
-		// C,
-		// boolean deg1, String file) {
-
-		Transformation[][] basic = new Transformation[][] { lmcR, lmcU,
-				lmcOldR, lmcOldU };
+		Transformation[][] basic = new Transformation[][] { r, lmc, sw };
 
 		/*
 		 * LMC Attacks
@@ -223,18 +245,18 @@ public class IDSorting {
 		lmc_conv = new Transformation[LMC_A.length][1];
 		lmc_klei = new Transformation[LMC_A.length][1];
 		for (int i = 0; i < LMC_A.length; i++) {
-			lmc_cont[i][0] = new LMC(LMCA_I, LMC_M, P, D, C, LMCA[0], LMC_AS,
-					LMC_A[i]);
-			lmc_conv[i][0] = new LMC(LMCA_I, LMC_M, P, D, C, LMCA[1], LMC_AS,
-					LMC_A[i]);
-			lmc_klei[i][0] = new LMC(LMCA_I, LMC_M, P, D, C, LMCA[2], LMC_AS,
-					LMC_A[i]);
-			names.put(lmc_cont[i], "LMC-" + LMC_M + "-" + D + "-Contraction-"
-					+ LMC_A[i] + "-" + LMC_AS);
-			names.put(lmc_conv[i], "LMC-" + LMC_M + "-" + D + "-Convergence-"
-					+ LMC_A[i] + "-" + LMC_AS);
-			names.put(lmc_klei[i], "LMC-" + LMC_M + "-" + D + "-Kleinberg-"
-					+ LMC_A[i] + "-" + LMC_AS);
+			lmc_cont[i][0] = new LMC(LMCA_I, LMC_M, P, "" + D, C, LMCA[0],
+					LMC_AS, LMC_A[i]);
+			lmc_conv[i][0] = new LMC(LMCA_I, LMC_M, P, "" + D, C, LMCA[1],
+					LMC_AS, LMC_A[i]);
+			lmc_klei[i][0] = new LMC(LMCA_I, LMC_M, P, "" + D, C, LMCA[2],
+					LMC_AS, LMC_A[i]);
+			names.put(lmc_cont[i], "LMC-" + D + "-Contraction-" + LMC_A[i]
+					+ "-" + LMC_AS);
+			names.put(lmc_conv[i], "LMC-" + D + "-Convergence-" + LMC_A[i]
+					+ "-" + LMC_AS);
+			names.put(lmc_klei[i], "LMC-" + D + "-Kleinberg-" + LMC_A[i] + "-"
+					+ LMC_AS);
 		}
 
 		/*
@@ -246,12 +268,15 @@ public class IDSorting {
 		sw_conv = new Transformation[SW_A.length][1];
 		sw_klei = new Transformation[SW_A.length][1];
 		for (int i = 0; i < SW_A.length; i++) {
-			sw_cont[i][0] = new Swapping(SWA_I, SWA[0], SW_A[i]);
-			sw_conv[i][0] = new Swapping(SWA_I, SWA[1], SW_A[i]);
-			sw_klei[i][0] = new Swapping(SWA_I, SWA[2], SW_A[i]);
-			names.put(sw_cont[i], "SW-Contraction-" + SW_A[i]);
-			names.put(sw_conv[i], "SW-Convergence-" + SW_A[i]);
-			names.put(sw_klei[i], "SW-Kleinberg-" + SW_A[i]);
+			sw_cont[i][0] = new Swapping(SWA_I, D, SWA[0], SW_AS, SW_A[i]);
+			sw_conv[i][0] = new Swapping(SWA_I, D, SWA[1], SW_AS, SW_A[i]);
+			sw_klei[i][0] = new Swapping(SWA_I, D, SWA[2], SW_AS, SW_A[i]);
+			names.put(sw_cont[i], "SW-" + D + "-Contraction-" + SW_A[i] + "-"
+					+ SW_AS);
+			names.put(sw_conv[i], "SW-" + D + "-Convergence-" + SW_A[i] + "-"
+					+ SW_AS);
+			names.put(sw_klei[i], "SW-" + D + "-Kleinberg-" + SW_A[i] + "-"
+					+ SW_AS);
 		}
 
 		/*
@@ -261,26 +286,62 @@ public class IDSorting {
 		if (GENERATE_GRAPHS) {
 			createGraphFolders(names, GRAPH_FOLDER);
 			generateGraphFromSPI(basic, TIMES, names, GRAPH_FOLDER);
-			// generateGraphFrom(lmc_cont, TIMES, names, lmc, GRAPH_FOLDER);
-			// generateGraphFrom(lmc_conv, TIMES, names, lmc, GRAPH_FOLDER);
-			// generateGraphFrom(lmc_klei, TIMES, names, lmc, GRAPH_FOLDER);
-			// generateGraphFrom(sw_cont, TIMES, names, sw, GRAPH_FOLDER);
-			// generateGraphFrom(sw_conv, TIMES, names, sw, GRAPH_FOLDER);
-			// generateGraphFrom(sw_klei, TIMES, names, sw, GRAPH_FOLDER);
+			generateGraphFrom(lmc_cont, TIMES, names, lmc, GRAPH_FOLDER);
+			generateGraphFrom(lmc_conv, TIMES, names, lmc, GRAPH_FOLDER);
+			generateGraphFrom(lmc_klei, TIMES, names, lmc, GRAPH_FOLDER);
+			generateGraphFrom(sw_cont, TIMES, names, sw, GRAPH_FOLDER);
+			generateGraphFrom(sw_conv, TIMES, names, sw, GRAPH_FOLDER);
+			generateGraphFrom(sw_klei, TIMES, names, sw, GRAPH_FOLDER);
 		}
 
 		if (GENERATE_DATA) {
 			generateData(basic, MAX_TIMES, names, GRAPH_FOLDER);
-			// generateData(lmc_cont, MAX_TIMES, names, GRAPH_FOLDER);
-			// generateData(lmc_conv, MAX_TIMES, names, GRAPH_FOLDER);
-			// generateData(lmc_klei, MAX_TIMES, names, GRAPH_FOLDER);
-			// generateData(sw_cont, MAX_TIMES, names, GRAPH_FOLDER);
-			// generateData(sw_conv, MAX_TIMES, names, GRAPH_FOLDER);
-			// generateData(sw_klei, MAX_TIMES, names, GRAPH_FOLDER);
+			generateData(lmc_cont, MAX_TIMES, names, GRAPH_FOLDER);
+			generateData(lmc_conv, MAX_TIMES, names, GRAPH_FOLDER);
+			generateData(lmc_klei, MAX_TIMES, names, GRAPH_FOLDER);
+			generateData(sw_cont, MAX_TIMES, names, GRAPH_FOLDER);
+			generateData(sw_conv, MAX_TIMES, names, GRAPH_FOLDER);
+			generateData(sw_klei, MAX_TIMES, names, GRAPH_FOLDER);
 		}
 
 		if (PLOT_DATA) {
-			plot(getData(basic, names, GRAPH_FOLDER), "BASIC/");
+			String f = "";
+
+			plot(getData(basic, names, GRAPH_FOLDER), "BASIC" + f);
+
+			plot(Util.combine(getData(new Transformation[][] { lmc }, names,
+					GRAPH_FOLDER), getData(lmc_cont, names, GRAPH_FOLDER)),
+					"LMC-" + LMC_M + "-" + D + "-Contraction-" + LMC_AS + f);
+
+			plot(Util.combine(getData(new Transformation[][] { lmc }, names,
+					GRAPH_FOLDER), getData(lmc_conv, names, GRAPH_FOLDER)),
+					"LMC-" + LMC_M + "-" + D + "-Convergence-" + LMC_AS + f);
+
+			plot(Util.combine(getData(new Transformation[][] { lmc }, names,
+					GRAPH_FOLDER), getData(lmc_klei, names, GRAPH_FOLDER)),
+					"LMC-" + LMC_M + "-" + D + "-Kleinberg-" + LMC_AS + f);
+
+			plot(Util.combine(getData(new Transformation[][] { sw }, names,
+					GRAPH_FOLDER), getData(sw_cont, names, GRAPH_FOLDER)),
+					"SW-Contraction-" + SW_AS + f);
+
+			plot(Util.combine(getData(new Transformation[][] { sw }, names,
+					GRAPH_FOLDER), getData(sw_conv, names, GRAPH_FOLDER)),
+					"SW-Convergence-" + SW_AS + f);
+
+			plot(Util.combine(getData(new Transformation[][] { sw }, names,
+					GRAPH_FOLDER), getData(sw_klei, names, GRAPH_FOLDER)),
+					"SW-Kleinberg-" + SW_AS + f);
+
+			Transformation[][] att1 = new Transformation[][] { lmc,
+					lmc_cont[0], lmc_conv[0], lmc_klei[0], sw, sw_cont[0],
+					sw_conv[0], sw_klei[0], r };
+			plot(getData(att1, names, GRAPH_FOLDER), "ATT-1" + f);
+
+			Transformation[][] attWorst = new Transformation[][] { lmc,
+					lmc_cont[2], lmc_conv[2], lmc_klei[2], sw, sw_cont[3],
+					sw_conv[3], sw_klei[3], r };
+			plot(getData(attWorst, names, GRAPH_FOLDER), "ATT-WORST" + f);
 		}
 
 	}
@@ -348,6 +409,10 @@ public class IDSorting {
 			}
 			return s;
 		} else {
+			if (PLOT_EACH) {
+				System.out.println("PLOT: " + "_separate/" + names.get(ts)
+						+ "/");
+			}
 			return null;
 		}
 	}
