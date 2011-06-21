@@ -486,6 +486,12 @@ public class Plot {
 					.get("MAIN_PLOT_FOLDER")
 					+ folder, series);
 		}
+		if (Config.getBoolean("PLOT_ALL_SINGLES_TABLE_WRITE")) {
+			String fn = Config.get("MAIN_PLOT_FOLDER") + folder
+					+ Config.get("PLOT_ALL_SINGLES_TABLE_FILENAME");
+			String f = Config.get("MAIN_PLOT_FOLDER") + folder;
+			LaTex.writeSingleTables(series, fn, f);
+		}
 		timer.end();
 	}
 
