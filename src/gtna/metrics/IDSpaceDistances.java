@@ -84,7 +84,7 @@ public class IDSpaceDistances extends MetricImpl implements Metric {
 				stepsNeighbors);
 		this.neighborsEDF = Statistics.empiricalDistributionFunction(dists, 0,
 				stepsNeighbors);
-		double[] successorDists = this.computeSuccessorDists(g);
+		double[] successorDists = IDSpaceDistances.computeSuccessorDists(g);
 		double stepsSuccessors = Config
 				.getDouble("ID_SPACE_DISTANCES_SUCCESSOR_DISTRIBUTION_STEPS");
 		this.successor = Statistics.probabilityDistribution(successorDists, 0,
@@ -104,7 +104,7 @@ public class IDSpaceDistances extends MetricImpl implements Metric {
 		return dist;
 	}
 
-	private double[] computeSuccessorDists(Graph g) {
+	public static double[] computeSuccessorDists(Graph g) {
 		RingNode[] nodes = new RingNode[g.nodes.length];
 		for (int i = 0; i < g.nodes.length; i++) {
 			nodes[i] = (RingNode) g.nodes[i];

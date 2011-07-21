@@ -54,6 +54,10 @@ public class SwappingAttackerConvergence extends SwappingNode {
 	 * receiving node accept it at all times
 	 */
 	public void turn(Random rand) {
+		// select random id
+		this.getID().pos = rand.nextDouble();
+		
+		// offer random id
 		int ttl = rand.nextInt(6) + 1;
 		double id = rand.nextDouble();
 		double[] neighbors = new double[this.out().length];

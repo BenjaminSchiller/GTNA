@@ -44,7 +44,7 @@ import java.util.Random;
  * 
  */
 public class SwappingAttackerContraction extends SwappingNode {
-	
+
 	private SwappingNode neighbor;
 
 	private int index;
@@ -63,6 +63,10 @@ public class SwappingAttackerContraction extends SwappingNode {
 			this.index = rand.nextInt(out.length);
 			this.neighbor = (SwappingNode) out[this.index];
 		}
+
+		// select own ID close to neighbor
+		this.getID().pos = (this.knownIDs[this.index] + rand.nextDouble()
+				* this.swapping.delta) % 1.0;
 
 		// select ID close to neighbor + furthest neighbors
 		double id = (this.knownIDs[this.index] + rand.nextDouble()

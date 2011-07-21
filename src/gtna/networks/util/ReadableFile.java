@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.util;
 
 import gtna.graph.Graph;
@@ -67,6 +67,10 @@ public class ReadableFile extends NetworkImpl implements Network {
 		this.FILENAME = FILENAME;
 		this.TYPE = TYPE;
 		super.setNodes(GraphReader.nodes(this.FILENAME, this.TYPE));
+		// TODO remove again, just a quick fix for LMC paper
+		if (super.nodes() == 0) {
+			super.setNodes(9223);
+		}
 	}
 
 	public ReadableFile(String name, String folder, String FILENAME, int TYPE,
@@ -76,6 +80,10 @@ public class ReadableFile extends NetworkImpl implements Network {
 		this.FILENAME = FILENAME;
 		this.TYPE = TYPE;
 		super.setNodes(GraphReader.nodes(this.FILENAME, this.TYPE));
+		// TODO remove again, just a quick fix for LMC paper
+		if (super.nodes() == 0) {
+			super.setNodes(9223);
+		}
 	}
 
 	public static String key(String name, String folder) {

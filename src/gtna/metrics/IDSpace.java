@@ -50,33 +50,33 @@ import java.util.Hashtable;
 import java.util.Random;
 
 public class IDSpace extends MetricImpl implements Metric {
-	private double[][] circle;
+	// private double[][] circle;
 
-	private double[][] circleSkewed;
+	// private double[][] circleSkewed;
 
 	private double[][] circleBinned;
 
-	private double[][] line;
+	// private double[][] line;
 
 	public IDSpace() {
 		super("ID_SPACE");
 	}
 
 	private void initEmpty() {
-		this.circle = new double[][] { new double[] { 0.0, 0.00 } };
-		this.circleSkewed = new double[][] { new double[] { 0.0, 0.00 } };
+		// this.circle = new double[][] { new double[] { 0.0, 0.00 } };
+		// this.circleSkewed = new double[][] { new double[] { 0.0, 0.00 } };
 		this.circleBinned = new double[][] { new double[] { 0.0, 0.00 } };
-		this.line = new double[][] { new double[] { 0.0, 0.00 } };
+		// this.line = new double[][] { new double[] { 0.0, 0.00 } };
 	}
 
 	public void computeData(Graph g, Network n, Hashtable<String, Metric> m) {
 		if (!(g.nodes[0] instanceof RingNode)) {
 			this.initEmpty();
 		}
-		this.circle = this.computeCircle(g);
-		this.circleSkewed = this.computeCircleSkewed(g);
+		// this.circle = this.computeCircle(g);
+		// this.circleSkewed = this.computeCircleSkewed(g);
 		this.circleBinned = this.computeCircleBinned(g);
-		this.line = this.computeLine(g);
+		// this.line = this.computeLine(g);
 	}
 
 	private double[][] computeCircle(Graph g) {
@@ -160,12 +160,12 @@ public class IDSpace extends MetricImpl implements Metric {
 	}
 
 	public boolean writeData(String folder) {
-		DataWriter.writeWithoutIndex(this.circle, "ID_SPACE_CIRCLE", folder);
-		DataWriter.writeWithoutIndex(this.circleSkewed,
-				"ID_SPACE_CIRCLE_SKEWED", folder);
+		// DataWriter.writeWithoutIndex(this.circle, "ID_SPACE_CIRCLE", folder);
+		// DataWriter.writeWithoutIndex(this.circleSkewed,
+		// "ID_SPACE_CIRCLE_SKEWED", folder);
 		DataWriter.writeWithoutIndex(this.circleBinned,
 				"ID_SPACE_CIRCLE_BINNED", folder);
-		DataWriter.writeWithoutIndex(this.line, "ID_SPACE_LINE", folder);
+		// DataWriter.writeWithoutIndex(this.line, "ID_SPACE_LINE", folder);
 		return true;
 	}
 
