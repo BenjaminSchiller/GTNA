@@ -36,11 +36,11 @@
 package gtna.graph;
 
 public class Edge {
-	public Node src;
+	public NodeImpl src;
 
-	public Node dst;
+	public NodeImpl dst;
 
-	public Edge(Node src, Node dst) {
+	public Edge(NodeImpl src, NodeImpl dst) {
 		this.src = src;
 		this.dst = dst;
 	}
@@ -79,7 +79,7 @@ public class Edge {
 		return toString(this.src, this.dst);
 	}
 
-	public static String toString(Node src, Node dst) {
+	public static String toString(NodeImpl src, NodeImpl dst) {
 		return toString(src.index(), dst.index());
 	}
 

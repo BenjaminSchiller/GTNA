@@ -35,7 +35,6 @@
 */
 package gtna.routing.random;
 
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
@@ -74,14 +73,14 @@ public class RandomWalk extends RoutingAlgorithmImpl implements
 		return null;
 	}
 
-	private int route(Node src, Node current, Node dest, Random rand, int hops) {
+	private int route(NodeImpl src, NodeImpl current, NodeImpl dest, Random rand, int hops) {
 		if (current.index() == dest.index()) {
 			return 0;
 		}
 		if (hops >= this.ttl) {
 			return this.ttl * 2;
 		}
-		Node[] out = current.out();
+		NodeImpl[] out = current.out();
 		if (this.check) {
 			for (int i = 0; i < out.length; i++) {
 				if (out[i].index() == dest.index()) {

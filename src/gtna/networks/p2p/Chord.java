@@ -37,7 +37,6 @@ package gtna.networks.p2p;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
@@ -242,7 +241,7 @@ public class Chord extends NetworkImpl implements Network {
 			this.id = new ChordID(id, mod);
 		}
 
-		public int route(Node n2) {
+		public int route(NodeImpl n2) {
 			long id = ((ChordNode) n2).id.id;
 			if (id == this.id.id) {
 				return 0;

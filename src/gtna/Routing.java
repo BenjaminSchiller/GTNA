@@ -36,9 +36,7 @@
 package gtna;
 
 import gtna.data.Series;
-import gtna.graph.Graph;
 import gtna.io.GraphReader;
-import gtna.io.GraphWriter;
 import gtna.networks.Network;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plot;

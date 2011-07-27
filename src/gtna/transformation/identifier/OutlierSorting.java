@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.transformation.identifier;
 
 import gtna.graph.Graph;
@@ -129,9 +129,8 @@ public class OutlierSorting extends TransformationImpl implements
 			// get a random outlier and correct its position
 			curOutlier = outliers.remove(rand.nextInt(outliers.size()));
 			if (this.isOutlier(curOutlier)) {
-				RingID cid = new RingID(
-						bestPosition[curOutlier.index()].pos
-								+ rand.nextDouble() * this.delta);
+				RingID cid = new RingID(bestPosition[curOutlier.index()].pos
+						+ rand.nextDouble() * this.delta);
 				((RingNode) curOutlier).setID(cid);
 				count++;
 				// collect new outlier created by change
@@ -190,7 +189,7 @@ public class OutlierSorting extends TransformationImpl implements
 			curNeighbor = (IDNode) cur.out()[j];
 			sum = 0;
 			for (int m = 0; m < cur.out().length; m++) {
-				if (curNeighbor.hasOut((NodeImpl) cur.out()[m])) {
+				if (((NodeImpl) curNeighbor).hasOut((NodeImpl) cur.out()[m])) {
 					sum++;
 				}
 			}

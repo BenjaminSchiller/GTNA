@@ -37,7 +37,6 @@ package gtna.networks.p2p;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
@@ -321,7 +320,7 @@ public class PathFinder extends NetworkImpl implements Network {
 			}
 		}
 
-		public int route(Node node) {
+		public int route(NodeImpl node) {
 			PhysicalNode pn = (PhysicalNode) node;
 			return this.routePN(pn);
 		}

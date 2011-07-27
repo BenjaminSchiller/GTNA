@@ -36,7 +36,6 @@
  */
 package gtna.routing.greedy;
 
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
@@ -45,7 +44,6 @@ import gtna.routing.RoutingAlgorithmImpl;
 import gtna.routing.node.IDNode;
 import gtna.routing.node.identifier.Identifier;
 
-import java.util.HashMap;
 import java.util.Random;
 
 public class GreedyNextBest extends RoutingAlgorithmImpl implements
@@ -81,7 +79,7 @@ public class GreedyNextBest extends RoutingAlgorithmImpl implements
 	public Route route(IDNode src, IDNode current, Identifier dest, int ttl,
 			boolean[] seen, Route route) {
 		seen[current.index()] = true;
-		route.add(current);
+		route.add((NodeImpl)current);
 		if (current.contains(dest)) {
 			route.setSuccess(true);
 			return route;
@@ -91,7 +89,7 @@ public class GreedyNextBest extends RoutingAlgorithmImpl implements
 			return route;
 		}
 
-		Node[] out = current.out();
+		NodeImpl[] out = current.out();
 		double minDist = Double.MAX_VALUE;
 		IDNode nextHop = null;
 		for (int i = 0; i < out.length; i++) {

@@ -36,7 +36,7 @@
 package gtna.metrics.roles;
 
 import gtna.graph.Graph;
-import gtna.graph.Node;
+import gtna.graph.NodeImpl;
 import gtna.graph.NodeImpl;
 
 /**
@@ -86,7 +86,7 @@ public class ClearGraph {
 		for (int i = 0; i < g.nodes.length; i++) {
 			NodeImpl node_i = g.nodes[i];
 			int index = node_i.index();
-			Node[] in = node_i.in();
+			NodeImpl[] in = node_i.in();
 			for (int j = 0; j < in.length; j++) {
 				for (int k = j+1; k < in.length; k++) {
 						if (in[j] == in[k]) {
@@ -108,7 +108,7 @@ public class ClearGraph {
 	public Graph graphDeleteLoops(Graph g) {
 		int counter = 0;
 		for (int i = 0; i < g.nodes.length; i++) {
-			Node[] in = g.nodes[i].in();
+			NodeImpl[] in = g.nodes[i].in();
 			for (int j = 0; j < in.length; j++) {
 				if (in[j].index() == g.nodes[i].index()) {
 					g.nodes[i].removeIn(g.nodes[i]);
@@ -126,8 +126,8 @@ public class ClearGraph {
 	public Graph graphDeleteParallelEdges(Graph g) {
 		int counter = 0;
 		for (int i = 0; i < g.nodes.length; i++) {
-			Node[] in = g.nodes[i].in();
-			Node[] out = g.nodes[i].out();
+			NodeImpl[] in = g.nodes[i].in();
+			NodeImpl[] out = g.nodes[i].out();
 			for (int j = 0; j < in.length; j++) {
 				for (int k = 0; k < out.length; k++) {
 					if (in[j].index() == out[k].index()) {

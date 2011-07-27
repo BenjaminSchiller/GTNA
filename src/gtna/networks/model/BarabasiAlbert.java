@@ -39,7 +39,6 @@ import java.util.Random;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
@@ -89,7 +88,7 @@ public class BarabasiAlbert extends NetworkImpl implements Network {
 		for (int i = 0; i < temp.nodes.length; i++) {
 			in[i] = temp.nodes[i].in().length;
 			out[i] = temp.nodes[i].out().length;
-			Node[] Out = temp.nodes[i].out();
+			NodeImpl[] Out = temp.nodes[i].out();
 			for (int j = 0; j < Out.length; j++) {
 				edges.add(nodes[i], nodes[Out[j].index()]);
 			}

@@ -43,7 +43,6 @@ package gtna.metrics;
 import gtna.data.Value;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperties;
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
@@ -143,7 +142,7 @@ public class ClusteringCoefficient extends MetricImpl implements Metric {
 		return cc / (double) counter;
 	}
 
-	private double computeCCW(double[] lcc, Node[] nodes) {
+	private double computeCCW(double[] lcc, NodeImpl[] nodes) {
 		double numerator = 0;
 		int denominator = 0;
 		for (int i = 0; i < lcc.length; i++) {

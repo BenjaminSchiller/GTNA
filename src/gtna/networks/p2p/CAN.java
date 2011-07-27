@@ -38,7 +38,6 @@ package gtna.networks.p2p;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
@@ -290,7 +289,7 @@ public class CAN extends NetworkImpl implements Network {
 	//
 	// }
 
-	private class CANNode extends NodeImpl implements IDNode {
+	private class CANNode extends NodeImpl {
 		private Reality[] realities;
 
 		private boolean marked = false;
@@ -304,7 +303,7 @@ public class CAN extends NetworkImpl implements Network {
 			this.realities[reality] = node;
 		}
 
-		public int route(Node n2) {
+		public int route(NodeImpl n2) {
 			return this.route(((CANNode) n2).realities[0].center);
 		}
 

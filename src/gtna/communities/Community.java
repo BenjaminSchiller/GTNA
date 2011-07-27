@@ -35,7 +35,7 @@
 */
 package gtna.communities;
 
-import gtna.graph.Node;
+import gtna.graph.NodeImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,28 +43,28 @@ import java.util.Collection;
 public class Community {
 
     private final int id;
-    private final Collection<Node> nodes = new ArrayList<Node>();
+    private final Collection<NodeImpl> nodes = new ArrayList<NodeImpl>();
     private CommunityList communityList = null;
 
     public Community(int id){
         this.id = id;
     }
 
-    public void addNode(Node node){
+    public void addNode(NodeImpl node){
         if (nodes.add(node) && communityList != null)
             communityList.addNodeMapping(node, this);
     }
 
-    public void removeNode(Node node){
+    public void removeNode(NodeImpl node){
         if (nodes.remove(node) && communityList != null)
             communityList.removeNodeMapping(node);
     }
 
-    public boolean containsNode(Node node){
+    public boolean containsNode(NodeImpl node){
         return nodes.contains(node);
     }
 
-    public Collection<Node> getNodes(){
+    public Collection<NodeImpl> getNodes(){
         return nodes;
     }
     

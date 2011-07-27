@@ -36,7 +36,7 @@
 package gtna.metrics.roles;
 
 import gtna.graph.Graph;
-import gtna.graph.Node;
+import gtna.graph.NodeImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -127,14 +127,14 @@ public class BFS {
 	private ArrayList<Integer> neighboursOfNode(int node, Graph g) {
 		ArrayList<Integer> neighbours = new ArrayList<Integer>();
 		// check all incoming links
-		Node[] in = g.nodes[node].in();
+		NodeImpl[] in = g.nodes[node].in();
 		for (int i = 0; i < in.length; i++) {
 			if (node != in[i].index()) {
 				neighbours.add(in[i].index());
 			}
 		}
 		// check all outgoing links
-		Node[] out = g.nodes[node].out();
+		NodeImpl[] out = g.nodes[node].out();
 		for (int i = 0; i < out.length; i++) {
 			if (node != out[i].index()) {
 				neighbours.add(out[i].index());

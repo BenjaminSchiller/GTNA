@@ -35,7 +35,6 @@
 */
 package gtna.routing.node;
 
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 import gtna.routing.node.identifier.Identifier;
 
@@ -52,7 +51,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public interface IDNode extends Node {
+public interface IDNode {
 	/**
 	 * Determines if the node is responsible for the given identifier or has
 	 * stored a copy of the identifier / its value.
@@ -94,4 +93,10 @@ public interface IDNode extends Node {
 	 * @return distance between the two nodes
 	 */
 	public double dist(IDNode node);
+	
+	public int index();
+	
+	public NodeImpl[] in();
+	
+	public NodeImpl[] out();
 }

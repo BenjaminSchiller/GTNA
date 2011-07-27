@@ -57,7 +57,6 @@ import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.GreedyNextBestBacktracking;
 import gtna.routing.node.RingNode;
-import gtna.routing.node.identifier.RingID;
 import gtna.transformation.Transformation;
 import gtna.transformation.embedding.lmc.LMC;
 import gtna.transformation.embedding.swapping.Swapping;
@@ -73,7 +72,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Time;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
@@ -455,29 +453,35 @@ public class IDSorting {
 
 			plot(getData(basic, names, GRAPH_FOLDER), "BASIC" + f);
 
-			plot(Util.combine(getData(new Transformation[][] { lmc }, names,
-					GRAPH_FOLDER), getData(lmc_cont, names, GRAPH_FOLDER)),
-					"LMC-" + D + "-Contraction-" + LMC_AS + f);
+			plot(Util.combine(
+					getData(new Transformation[][] { lmc }, names, GRAPH_FOLDER),
+					getData(lmc_cont, names, GRAPH_FOLDER)), "LMC-" + D
+					+ "-Contraction-" + LMC_AS + f);
 
-			plot(Util.combine(getData(new Transformation[][] { lmc }, names,
-					GRAPH_FOLDER), getData(lmc_conv, names, GRAPH_FOLDER)),
-					"LMC-" + LMC_M + "-" + D + "-Convergence-" + LMC_AS + f);
+			plot(Util.combine(
+					getData(new Transformation[][] { lmc }, names, GRAPH_FOLDER),
+					getData(lmc_conv, names, GRAPH_FOLDER)), "LMC-" + LMC_M
+					+ "-" + D + "-Convergence-" + LMC_AS + f);
 
-			plot(Util.combine(getData(new Transformation[][] { lmc }, names,
-					GRAPH_FOLDER), getData(lmc_klei, names, GRAPH_FOLDER)),
-					"LMC-" + LMC_M + "-" + D + "-Kleinberg-" + LMC_AS + f);
+			plot(Util.combine(
+					getData(new Transformation[][] { lmc }, names, GRAPH_FOLDER),
+					getData(lmc_klei, names, GRAPH_FOLDER)), "LMC-" + LMC_M
+					+ "-" + D + "-Kleinberg-" + LMC_AS + f);
 
-			plot(Util.combine(getData(new Transformation[][] { sw }, names,
-					GRAPH_FOLDER), getData(sw_cont, names, GRAPH_FOLDER)),
-					"SW-Contraction-" + SW_AS + f);
+			plot(Util.combine(
+					getData(new Transformation[][] { sw }, names, GRAPH_FOLDER),
+					getData(sw_cont, names, GRAPH_FOLDER)), "SW-Contraction-"
+					+ SW_AS + f);
 
-			plot(Util.combine(getData(new Transformation[][] { sw }, names,
-					GRAPH_FOLDER), getData(sw_conv, names, GRAPH_FOLDER)),
-					"SW-Convergence-" + SW_AS + f);
+			plot(Util.combine(
+					getData(new Transformation[][] { sw }, names, GRAPH_FOLDER),
+					getData(sw_conv, names, GRAPH_FOLDER)), "SW-Convergence-"
+					+ SW_AS + f);
 
-			plot(Util.combine(getData(new Transformation[][] { sw }, names,
-					GRAPH_FOLDER), getData(sw_klei, names, GRAPH_FOLDER)),
-					"SW-Kleinberg-" + SW_AS + f);
+			plot(Util.combine(
+					getData(new Transformation[][] { sw }, names, GRAPH_FOLDER),
+					getData(sw_klei, names, GRAPH_FOLDER)), "SW-Kleinberg-"
+					+ SW_AS + f);
 
 			Transformation[][] att1 = new Transformation[][] { lmc,
 					lmc_cont[0], lmc_conv[0], lmc_klei[0], sw, sw_cont[0],
@@ -1075,9 +1079,7 @@ public class IDSorting {
 			Series s2 = Series.get(lmc);
 			Series s3 = Series.get(swa);
 
-			Config
-					.overwrite("MAIN_PLOT_FOLDER",
-							"./plots/ID-SPACES/_combined/");
+			Config.overwrite("MAIN_PLOT_FOLDER", "./plots/ID-SPACES/_combined/");
 			Config.overwrite("GNUPLOT_CMD_ETC", Config.get("GNUPLOT_CMD_ETC")
 					+ "\nset xrange [-1:1]\nset yrange [-1:1]");
 			Config.overwrite("AVERAGE_PLOT_DOT_WIDTH", "4");

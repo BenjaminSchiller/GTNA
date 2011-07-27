@@ -37,7 +37,7 @@ package gtna.io;
 
 import gtna.graph.Edge;
 import gtna.graph.Graph;
-import gtna.graph.Node;
+import gtna.graph.NodeImpl;
 import gtna.routing.node.IDNode;
 import gtna.util.Config;
 
@@ -78,7 +78,7 @@ public class GraphWriter {
 		fw.writeln(g.edges);
 		fw.writeln();
 		for (int i = 0; i < g.nodes.length; i++) {
-			Node[] out = g.nodes[i].out();
+			NodeImpl[] out = g.nodes[i].out();
 			for (int j = 0; j < out.length; j++) {
 				fw.writeln(i + DELIMITER + out[j].index());
 			}
@@ -99,7 +99,7 @@ public class GraphWriter {
 		fw.writeln(g.edges);
 		fw.writeln();
 		for (int i = 0; i < g.nodes.length; i++) {
-			Node[] out = g.nodes[i].out();
+			NodeImpl[] out = g.nodes[i].out();
 			for (int j = 0; j < out.length; j++) {
 				String from = "" + ((IDNode) g.nodes[i]).toString();
 				String to = "" + ((IDNode) out[j]).toString();
@@ -119,7 +119,7 @@ public class GraphWriter {
 		fw.writeln(g.edges);
 		fw.writeln();
 		for (int i = 0; i < g.nodes.length; i++) {
-			Node[] out = g.nodes[i].out();
+			NodeImpl[] out = g.nodes[i].out();
 			for (int j = 0; j < out.length; j++) {
 				String from = "" + g.nodes[i].toString();
 				String to = "" + out[j].toString();
@@ -139,7 +139,7 @@ public class GraphWriter {
 		fw.writeln("  comment \"" + Config.get("GRAPH_WRITER_EDGES") + " "
 				+ g.edges + "\"");
 
-		for (Node node : g.nodes) {
+		for (NodeImpl node : g.nodes) {
 			fw.writeln("  node [");
 			fw.writeln("    id " + node.index());
 			fw.writeln("  ]");

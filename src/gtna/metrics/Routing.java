@@ -37,7 +37,7 @@ package gtna.metrics;
 
 import gtna.data.Value;
 import gtna.graph.Graph;
-import gtna.graph.Node;
+import gtna.graph.NodeImpl;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
 import gtna.routing.IDRoute;
@@ -50,7 +50,6 @@ import gtna.util.Timer;
 import gtna.util.Util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Random;
 
@@ -255,7 +254,7 @@ public class Routing extends MetricImpl implements Metric {
 		return prog;
 	}
 
-	private double[] copies(Node[] nodes) {
+	private double[] copies(NodeImpl[] nodes) {
 		double[] copies = new double[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
 			copies[i] = ((RegistrationNode) nodes[i]).registeredItems();
@@ -305,7 +304,7 @@ public class Routing extends MetricImpl implements Metric {
 	}
 
 	private double[] getProgression(IDRoute route) {
-		Node[] path = Util.toNodeArray(route.path());
+		NodeImpl[] path = Util.toNodeArray(route.path());
 		double[] p = new double[path.length];
 		IDNode dest = (IDNode) path[path.length - 1];
 		double total = ((IDNode) path[0]).dist(dest);

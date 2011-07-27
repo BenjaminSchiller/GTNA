@@ -66,7 +66,7 @@ public class GraphProperties {
 	public static boolean duplicateEdges(Graph g) {
 		for (int i = 0; i < g.nodes.length; i++) {
 			boolean[] out = new boolean[g.nodes.length];
-			Node[] Out = g.nodes[i].out();
+			NodeImpl[] Out = g.nodes[i].out();
 			for (int j = 0; j < Out.length; j++) {
 				if (out[Out[j].index()]) {
 					return true;
@@ -74,7 +74,7 @@ public class GraphProperties {
 				out[Out[j].index()] = true;
 			}
 			boolean[] in = new boolean[g.nodes.length];
-			Node[] In = g.nodes[i].in();
+			NodeImpl[] In = g.nodes[i].in();
 			for (int j = 0; j < In.length; j++) {
 				if (in[In[j].index()]) {
 					return true;
@@ -96,13 +96,13 @@ public class GraphProperties {
 	 */
 	public static boolean outEqualsIn(Graph g) {
 		for (int i = 0; i < g.nodes.length; i++) {
-			Node[] out = g.nodes[i].out();
+			NodeImpl[] out = g.nodes[i].out();
 			for (int j = 0; j < out.length; j++) {
 				if (!out[j].hasIn(g.nodes[i])) {
 					return false;
 				}
 			}
-			Node[] in = g.nodes[i].in();
+			NodeImpl[] in = g.nodes[i].in();
 			for (int j = 0; j < in.length; j++) {
 				if (!in[j].hasOut(g.nodes[i])) {
 					return false;
@@ -121,13 +121,13 @@ public class GraphProperties {
 	 */
 	public static boolean containsLoops(Graph g) {
 		for (int i = 0; i < g.nodes.length; i++) {
-			Node[] out = g.nodes[i].out();
+			NodeImpl[] out = g.nodes[i].out();
 			for (int j = 0; j < out.length; j++) {
 				if (out[j].index() == i) {
 					return true;
 				}
 			}
-			Node[] in = g.nodes[i].in();
+			NodeImpl[] in = g.nodes[i].in();
 			for (int j = 0; j < in.length; j++) {
 				if (in[j].index() == i) {
 					return true;

@@ -37,7 +37,6 @@ package gtna.networks.p2p;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
@@ -151,7 +150,7 @@ public class ODRI extends NetworkImpl implements Network {
 
 		Edges edges = new Edges(nodes, dbNodes.length * this.BASE);
 		for (int i = 0; i < dbNodes.length; i++) {
-			Node[] out = dbNodes[i].out();
+			NodeImpl[] out = dbNodes[i].out();
 			for (int j = 0; j < out.length; j++) {
 				edges.add(dbNodes[i].odri, ((DBNode) out[j]).odri);
 			}
@@ -177,7 +176,7 @@ public class ODRI extends NetworkImpl implements Network {
 		HashMap<Integer, ODRINode> seen = new HashMap<Integer, ODRINode>();
 		seen.put(node.index(), node);
 		for (int i = 0; i < node.dbNodes.length; i++) {
-			Node[] out = node.dbNodes[i].out();
+			NodeImpl[] out = node.dbNodes[i].out();
 			for (int j = 0; j < out.length; j++) {
 				ODRINode dest = ((DBNode) out[j]).odri;
 				if (!seen.containsKey(dest.index())) {

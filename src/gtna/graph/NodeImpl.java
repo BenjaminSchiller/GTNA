@@ -32,12 +32,12 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.graph;
 
 import gtna.util.Config;
 
-public class NodeImpl implements Node {
+public class NodeImpl {
 	private NodeImpl[] out = null;
 
 	private NodeImpl[] in = null;
@@ -48,11 +48,11 @@ public class NodeImpl implements Node {
 		this.index = index;
 	}
 
-	public int route(Node to) {
+	public int route(NodeImpl to) {
 		return Config.getInt("ROUTING_LENGTH_DEFAULT");
 	}
 
-	public double[] routeProg(Node to) {
+	public double[] routeProg(NodeImpl to) {
 		return null;
 	}
 
@@ -65,7 +65,7 @@ public class NodeImpl implements Node {
 		NodeImpl[] nodes = new NodeImpl[numberOfNodes];
 		for (int i = 0; i < nodes.length; i++) {
 			nodes[i] = new NodeImpl(i);
-            nodes[i].init(new NodeImpl[0], new NodeImpl[0]);
+			nodes[i].init(new NodeImpl[0], new NodeImpl[0]);
 		}
 		return nodes;
 	}

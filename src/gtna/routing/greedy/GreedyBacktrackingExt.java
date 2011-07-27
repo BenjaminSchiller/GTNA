@@ -35,7 +35,6 @@
  */
 package gtna.routing.greedy;
 
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
@@ -81,7 +80,7 @@ public class GreedyBacktrackingExt extends RoutingAlgorithmImpl implements
 
 	public Route route(IDNode src, IDNode current, Identifier dest, int ttl,
 			HashMap<IDNode, IDNode> pred, HashSet<IDNode> worse, Route route) {
-		route.add(current);
+		route.add((NodeImpl)current);
 		if (current.contains(dest)) {
 			route.setSuccess(true);
 			return route;
@@ -91,7 +90,7 @@ public class GreedyBacktrackingExt extends RoutingAlgorithmImpl implements
 			return route;
 		}
 
-		Node[] out = current.out();
+		NodeImpl[] out = current.out();
 		double minDist = current.dist(dest);
 		IDNode nextHop = null;
 		for (int i = 0; i < out.length; i++) {

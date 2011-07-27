@@ -35,7 +35,6 @@
 */
 package gtna.routing;
 
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 
 import java.util.Random;

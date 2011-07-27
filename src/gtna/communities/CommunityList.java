@@ -35,7 +35,7 @@
 */
 package gtna.communities;
 
-import gtna.graph.Node;
+import gtna.graph.NodeImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +45,7 @@ import java.util.Map;
 public class CommunityList {
 
     private ArrayList<Community> communities = new ArrayList<Community>();
-    private Map<Node, Community> nodeMap = new HashMap<Node, Community>();
+    private Map<NodeImpl, Community> nodeMap = new HashMap<NodeImpl, Community>();
     private Map<String, Object> information = new HashMap<String, Object>();
 
     public CommunityList(Collection<Community> communities){
@@ -57,14 +57,14 @@ public class CommunityList {
     public void addCommunity(Community community){
         community.setCommunityList(this);
         communities.add(community);
-        for (Node node : community.getNodes()){
+        for (NodeImpl node : community.getNodes()){
             this.nodeMap.put(node, community);
         }
     }
 
     public void removeCommunity(Community community){
         communities.remove(community);
-        for (Node node : community.getNodes()){
+        for (NodeImpl node : community.getNodes()){
             this.nodeMap.remove(node);
         }
     }
@@ -77,15 +77,15 @@ public class CommunityList {
         return communities;
     }
 
-    public Community getCommunity(Node node){
+    public Community getCommunity(NodeImpl node){
         return nodeMap.get(node);
     }
 
-    void addNodeMapping(Node node, Community community){
+    void addNodeMapping(NodeImpl node, Community community){
         nodeMap.put(node, community);
     }
 
-    void removeNodeMapping(Node node){
+    void removeNodeMapping(NodeImpl node){
         nodeMap.remove(node);
     }
 
@@ -128,7 +128,7 @@ public class CommunityList {
     public double calculateModularity(){
         double E = 0;
         for (Community c : getCommunities()){
-            for (Node n : c.getNodes()){
+            for (NodeImpl n : c.getNodes()){
                 E += n.out().length;
             }
         }
@@ -136,8 +136,8 @@ public class CommunityList {
         for (Community c : getCommunities()){
             double IC = 0;
             double OC = 0;
-            for (Node src : c.getNodes()){
-                for (Node dst : src.out()){
+            for (NodeImpl src : c.getNodes()){
+                for (NodeImpl dst : src.out()){
                     if (getCommunity(dst) == c){
                         IC++;
                     } else {
@@ -150,9 +150,9 @@ public class CommunityList {
         return Q;
     }
 
-    public int withinModuleDegree(Node node){
+    public int withinModuleDegree(NodeImpl node){
         int k = 0;
-        for(Node dst : node.out()){
+        for(NodeImpl dst : node.out()){
             if (getCommunity(dst) == getCommunity(node)){
                 k++;
             }
@@ -162,7 +162,7 @@ public class CommunityList {
 
     public double avgWithinModuleDegree(Community community){
         double k = 0;
-        for(Node n : community.getNodes()){
+        for(NodeImpl n : community.getNodes()){
             k += withinModuleDegree(n);
         }
         return k / community.getSize();

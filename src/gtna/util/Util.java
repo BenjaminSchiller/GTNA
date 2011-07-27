@@ -39,7 +39,6 @@ import gtna.data.Series;
 import gtna.data.Singles;
 import gtna.data.Value;
 import gtna.graph.Edge;
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 import gtna.networks.Network;
 import gtna.plot.PlotData;
@@ -308,17 +307,17 @@ public class Util {
 	// ///////////////////////
 	// ArrayList to Array
 	// ///////////////////////
-	public static Node[] toNodeArray(ArrayList<Node> list) {
-		Node[] array = new Node[list.size()];
+	public static NodeImpl[] toNodeArray(ArrayList<NodeImpl> list) {
+		NodeImpl[] array = new NodeImpl[list.size()];
 		for (int i = 0; i < array.length; i++) {
 			array[i] = list.get(i);
 		}
 		return array;
 	}
 
-	public static Node[] toNodeArray(HashSet<Node> set) {
-		Iterator<Node> iter = set.iterator();
-		Node[] array = new Node[set.size()];
+	public static NodeImpl[] toNodeArray(HashSet<NodeImpl> set) {
+		Iterator<NodeImpl> iter = set.iterator();
+		NodeImpl[] array = new NodeImpl[set.size()];
 		int i = 0;
 		while (iter.hasNext()) {
 			array[i++] = iter.next();
@@ -705,7 +704,7 @@ public class Util {
 			queueFW.add(users[i]);
 			while (!queueFW.isEmpty()) {
 				NodeImpl current = queueFW.poll();
-				Node[] out = current.out();
+				NodeImpl[] out = current.out();
 				for (int j = 0; j < out.length; j++) {
 					if (!visitedFW[out[j].index()]) {
 						queueFW.add((NodeImpl) out[j]);
@@ -720,7 +719,7 @@ public class Util {
 			queueBW.add(users[i]);
 			while (!queueBW.isEmpty()) {
 				NodeImpl current = queueBW.poll();
-				Node[] in = current.in();
+				NodeImpl[] in = current.in();
 				for (int j = 0; j < in.length; j++) {
 					if (!visitedBW[in[j].index()]) {
 						queueBW.add((NodeImpl) in[j]);

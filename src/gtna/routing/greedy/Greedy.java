@@ -32,10 +32,9 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.routing.greedy;
 
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
@@ -72,13 +71,13 @@ public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 
 	public static Route route(IDNode src, IDNode current, Identifier dest,
 			Route route) {
-		route.add(current);
+		route.add((NodeImpl) current);
 		if (current.contains(dest)) {
 			route.setSuccess(true);
 			return route;
 		}
 
-		Node[] out = current.out();
+		NodeImpl[] out = current.out();
 		double minDist = current.dist(dest);
 		IDNode nextHop = null;
 		for (int i = 0; i < out.length; i++) {

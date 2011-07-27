@@ -38,7 +38,6 @@ package gtna.transformation.identifier;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.Node;
 import gtna.graph.NodeImpl;
 import gtna.graph.sorting.NodeSorting;
 import gtna.routing.node.RingNode;
@@ -90,7 +89,7 @@ public class SpanningTreeSorting extends TransformationImpl implements
 
 		// NodeImpl max = nodes[this.index];
 
-		Node[] sorted = NodeSorting.degreeDesc(g.nodes, new Random(0));
+		NodeImpl[] sorted = NodeSorting.degreeDesc(g.nodes, new Random(0));
 		NodeImpl max = (NodeImpl) sorted[this.index];
 
 		double[] start = this.init(nodes.length, -1);
