@@ -37,7 +37,7 @@ package gtna.networks.model;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -86,7 +86,7 @@ public class Communities3 extends NetworkImpl implements Network {
 
 	private boolean bidirectional;
 
-	private NodeImpl[][] communities;
+	private Node[][] communities;
 
 	public static final boolean LESS_MEMORY = false;
 
@@ -108,18 +108,18 @@ public class Communities3 extends NetworkImpl implements Network {
 		this.bidirectional = bidirectional;
 	}
 
-	public NodeImpl[][] getCommunities() {
+	public Node[][] getCommunities() {
 		return this.communities;
 	}
 
 	public Graph generate() {
 		Timer timer = new Timer();
-		NodeImpl[] nodes = NodeImpl.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes());
 		Random rand = new Random(System.currentTimeMillis());
 		// init communities
-		this.communities = new NodeImpl[this.sizes.length][];
+		this.communities = new Node[this.sizes.length][];
 		for (int i = 0; i < this.communities.length; i++) {
-			this.communities[i] = new NodeImpl[this.sizes[i]];
+			this.communities[i] = new Node[this.sizes[i]];
 		}
 		// fill communities depending on order
 		if (this.order == SORTED_ORDER) {
@@ -142,7 +142,7 @@ public class Communities3 extends NetworkImpl implements Network {
 				}
 			}
 		} else if (this.order == RANDOM_ORDER) {
-			ArrayList<NodeImpl> list = new ArrayList<NodeImpl>(nodes.length);
+			ArrayList<Node> list = new ArrayList<Node>(nodes.length);
 			for (int i = 0; i < nodes.length; i++) {
 				list.add(nodes[i]);
 			}
@@ -167,8 +167,8 @@ public class Communities3 extends NetworkImpl implements Network {
 				if (i == j) {
 					continue;
 				}
-				NodeImpl[] from = this.communities[i];
-				NodeImpl[] to = this.communities[j];
+				Node[] from = this.communities[i];
+				Node[] to = this.communities[j];
 				this
 						.addInterCommunityEdges(from, to, this.p[i][j], rand,
 								edges);
@@ -178,12 +178,12 @@ public class Communities3 extends NetworkImpl implements Network {
 		// create internal links
 		for (int i = 0; i < this.communities.length; i++) {
 			for (int j = 0; j < this.communities[i].length; j++) {
-				NodeImpl n = this.communities[i][j];
-				NodeImpl[] inOld = n.in();
-				NodeImpl[] outOld = n.out();
-				NodeImpl[] inNew = new NodeImpl[inOld.length
+				Node n = this.communities[i][j];
+				Node[] inOld = n.in();
+				Node[] outOld = n.out();
+				Node[] inNew = new Node[inOld.length
 						+ this.communities[i].length - 1];
-				NodeImpl[] outNew = new NodeImpl[outOld.length
+				Node[] outNew = new Node[outOld.length
 						+ this.communities[i].length - 1];
 				int inIndex = 0;
 				int outIndex = 0;
@@ -207,7 +207,7 @@ public class Communities3 extends NetworkImpl implements Network {
 		return new Graph(this.description(), nodes, timer);
 	}
 
-	private void addInterCommunityEdges(NodeImpl[] from, NodeImpl[] to,
+	private void addInterCommunityEdges(Node[] from, Node[] to,
 			double p, Random rand, Edges edges) {
 		for (int i = 0; i < from.length; i++) {
 			for (int j = 0; j < to.length; j++) {

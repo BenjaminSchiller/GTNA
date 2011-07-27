@@ -37,7 +37,7 @@ package gtna.io;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.RingNode;
 import gtna.util.Config;
 import gtna.util.Timer;
@@ -102,7 +102,7 @@ public class GraphReader {
 		String name = fr.readLine();
 		int numberOfNodes = Integer.parseInt(fr.readLine());
 		int numberOfEdges = Integer.parseInt(fr.readLine());
-		NodeImpl[] nodes = NodeImpl.init(numberOfNodes);
+		Node[] nodes = Node.init(numberOfNodes);
 		Edges edges = new Edges(nodes, numberOfEdges);
 		String line = "";
 		while ((line = fr.readLine()) != null) {
@@ -182,7 +182,7 @@ public class GraphReader {
 		}
 		numberOfNodes++;
 		fr.close();
-		NodeImpl[] nodes = NodeImpl.init(numberOfNodes);
+		Node[] nodes = Node.init(numberOfNodes);
 		Edges edges = new Edges(nodes, numberOfEdges);
 		fr = new Filereader(filename);
 		while ((line = fr.readLine()) != null) {
@@ -238,7 +238,7 @@ public class GraphReader {
 			numberOfEdges++;
 		}
 		fr.close();
-		NodeImpl[] nodes = NodeImpl.init(numberOfNodes);
+		Node[] nodes = Node.init(numberOfNodes);
 		Edges edges = new Edges(nodes, numberOfNodes);
 		fr = new Filereader(filename);
 		while ((line = fr.readLine()) != null) {
@@ -280,7 +280,7 @@ public class GraphReader {
 		int index = 0;
 		String line = "";
 		HashMap<String, Integer> ids = new HashMap<String, Integer>();
-		NodeImpl[] nodes = null;
+		Node[] nodes = null;
 		while ((line = fr.readLine()) != null) {
 			int counter = 0;
 			if (line.equals("node [")) {
@@ -304,7 +304,7 @@ public class GraphReader {
 			}
 		}
 		fr.close();
-		nodes = NodeImpl.init(index + 1);
+		nodes = Node.init(index + 1);
 		fr = new Filereader(filename);
 		Edges edges = new Edges(nodes, nodes.length);
 		while ((line = fr.readLine()) != null) {
@@ -380,7 +380,7 @@ public class GraphReader {
 		}
 		numberOfNodes++;
 		fr.close();
-		NodeImpl[] nodes = NodeImpl.init(numberOfNodes);
+		Node[] nodes = Node.init(numberOfNodes);
 		Edges edges = new Edges(nodes, numberOfEdges);
 		fr = new Filereader(filename);
 		while ((line = fr.readLine()) != null) {
@@ -417,7 +417,7 @@ public class GraphReader {
 			numberOfEdges++;
 		}
 		fr.close();
-		NodeImpl[] nodes = NodeImpl.init(ids.size());
+		Node[] nodes = Node.init(ids.size());
 		Edges edges = new Edges(nodes, numberOfEdges);
 		fr = new Filereader(filename);
 		while ((line = fr.readLine()) != null) {

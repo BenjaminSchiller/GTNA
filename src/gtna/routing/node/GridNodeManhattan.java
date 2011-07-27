@@ -35,13 +35,13 @@
 */
 package gtna.routing.node;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.identifier.GridIDManhattan;
 import gtna.routing.node.identifier.Identifier;
 
 import java.util.Random;
 
-public class GridNodeManhattan extends NodeImpl implements IDNode {
+public class GridNodeManhattan extends Node implements IDNode {
 	private GridIDManhattan id;
 
 	public GridNodeManhattan(int index, double[] pos) {
@@ -57,7 +57,7 @@ public class GridNodeManhattan extends NodeImpl implements IDNode {
 		return this.id.dist(id);
 	}
 
-	public Identifier randomID(Random rand, NodeImpl[] nodes) {
+	public Identifier randomID(Random rand, Node[] nodes) {
 		GridIDManhattan id = ((GridNodeManhattan) nodes[rand
 				.nextInt(nodes.length)]).id;
 		while (this.contains(id)) {

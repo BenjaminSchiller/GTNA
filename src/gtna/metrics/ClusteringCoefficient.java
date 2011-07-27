@@ -43,7 +43,7 @@ package gtna.metrics;
 import gtna.data.Value;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperties;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
 import gtna.util.Config;
@@ -84,10 +84,10 @@ public class ClusteringCoefficient extends MetricImpl implements Metric {
 		this.timer.end();
 	}
 
-	private double[] computeLCC(NodeImpl[] nodes, boolean onlyOut) {
+	private double[] computeLCC(Node[] nodes, boolean onlyOut) {
 		double[] lcc = new double[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
-			Set<NodeImpl> n = this.neighborhood(nodes[i], onlyOut);
+			Set<Node> n = this.neighborhood(nodes[i], onlyOut);
 			if (n.size() <= 1) {
 				lcc[i] = 0;
 			} else {
@@ -98,13 +98,13 @@ public class ClusteringCoefficient extends MetricImpl implements Metric {
 		return lcc;
 	}
 
-	private int edgesInNeighborhood(Set<NodeImpl> n) {
+	private int edgesInNeighborhood(Set<Node> n) {
 		int edges = 0;
-		Iterator<NodeImpl> iter = n.iterator();
+		Iterator<Node> iter = n.iterator();
 		while (iter.hasNext()) {
-			NodeImpl current = iter.next();
-			NodeImpl[] OUT = current.out();
-			for (NodeImpl out : OUT) {
+			Node current = iter.next();
+			Node[] OUT = current.out();
+			for (Node out : OUT) {
 				if (n.contains(out)) {
 					edges++;
 				}
@@ -113,15 +113,15 @@ public class ClusteringCoefficient extends MetricImpl implements Metric {
 		return edges;
 	}
 
-	private Set<NodeImpl> neighborhood(NodeImpl node, boolean onlyOut) {
-		Set<NodeImpl> n = new HashSet<NodeImpl>();
-		NodeImpl[] OUT = node.out();
-		for (NodeImpl out : OUT) {
+	private Set<Node> neighborhood(Node node, boolean onlyOut) {
+		Set<Node> n = new HashSet<Node>();
+		Node[] OUT = node.out();
+		for (Node out : OUT) {
 			n.add(out);
 		}
 		if (!onlyOut) {
-			NodeImpl[] IN = node.in();
-			for (NodeImpl in : IN) {
+			Node[] IN = node.in();
+			for (Node in : IN) {
 				n.add(in);
 			}
 		}
@@ -142,7 +142,7 @@ public class ClusteringCoefficient extends MetricImpl implements Metric {
 		return cc / (double) counter;
 	}
 
-	private double computeCCW(double[] lcc, NodeImpl[] nodes) {
+	private double computeCCW(double[] lcc, Node[] nodes) {
 		double numerator = 0;
 		int denominator = 0;
 		for (int i = 0; i < lcc.length; i++) {

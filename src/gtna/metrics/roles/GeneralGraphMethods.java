@@ -36,7 +36,7 @@
 package gtna.metrics.roles;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,14 +50,14 @@ public class GeneralGraphMethods {
 	// Count the number of links from a node to a given group
 	public static int NLinksToGroup(int node, Group group, Graph g, int[] nlist) {
 		int counter = 0;
-		NodeImpl[] in = g.nodes[node].in();
+		Node[] in = g.nodes[node].in();
 		for (int i = 0; i < in.length; i++) {
 			if (nlist[in[i].index()] == group.getLabel()
 					&& in[i].index() != node) {
 				counter++;
 			}
 		}
-		NodeImpl[] out = g.nodes[node].out();
+		Node[] out = g.nodes[node].out();
 		for (int i = 0; i < out.length; i++) {
 			if (nlist[out[i].index()] == group.getLabel()
 					&& out[i].index() != node) {
@@ -74,11 +74,11 @@ public class GeneralGraphMethods {
 			oneHop = new HashSet[g.nodes.length];
 		if (oneHop[node] == null) {
 			HashSet<Integer> neighbors = new HashSet<Integer>();
-			NodeImpl[] in = g.nodes[node].in();
+			Node[] in = g.nodes[node].in();
 			for (int i = 0; i < in.length; i++) {				
 				neighbors.add(in[i].index());
 			}
-			NodeImpl[] out = g.nodes[node].out();
+			Node[] out = g.nodes[node].out();
 			for (int i = 0; i < out.length; i++) {
 				neighbors.add(out[i].index());
 			}
@@ -99,7 +99,7 @@ public class GeneralGraphMethods {
 			ArrayList<Integer> nodeList, Graph g) {
 		int inDegree = 0;
 		int outDegree = 0;
-		NodeImpl[] in = g.nodes[node].in();
+		Node[] in = g.nodes[node].in();
 		for (int i = 0; i < in.length; i++) {
 			for (int j = 0; j < nodeList.size(); j++) {
 				if (in[i].index() == nodeList.get(j)) {
@@ -107,7 +107,7 @@ public class GeneralGraphMethods {
 				}
 			}
 		}
-		NodeImpl[] out = g.nodes[node].out();
+		Node[] out = g.nodes[node].out();
 		for (int i = 0; i < out.length; i++) {
 			for (int j = 0; j < nodeList.size(); j++) {
 				if (out[i].index() == nodeList.get(j)) {

@@ -35,7 +35,7 @@
  */
 package gtna.transformation.embedding.lmc;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 
 import java.util.Random;
 
@@ -67,7 +67,7 @@ public class LMCAttackerContraction extends LMCNode {
 	protected double ask(LMCNode caller, Random rand) {
 		// choose a random neighbor to contract to
 		if (this.neighbor == null) {
-			NodeImpl[] out = this.out();
+			Node[] out = this.out();
 			this.index = rand.nextInt(out.length);
 			this.neighbor = (LMCNode) out[this.index];
 		}

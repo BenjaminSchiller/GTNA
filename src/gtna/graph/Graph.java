@@ -43,7 +43,7 @@ import java.util.HashMap;
 public class Graph {
 	public String name;
 
-	public NodeImpl[] nodes;
+	public Node[] nodes;
 
 	public int edges;
 
@@ -63,7 +63,7 @@ public class Graph {
 
 	public Timer timer;
 
-	public Graph(String name, NodeImpl[] nodes, Timer timer) {
+	public Graph(String name, Node[] nodes, Timer timer) {
 		this.name = name;
 		this.nodes = nodes;
 		this.computeDegrees();

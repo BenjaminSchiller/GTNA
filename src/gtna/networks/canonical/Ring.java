@@ -36,7 +36,7 @@
 package gtna.networks.canonical;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.NetworkImpl;
 import gtna.networks.Network;
 import gtna.routing.RoutingAlgorithm;
@@ -58,9 +58,9 @@ public class Ring extends NetworkImpl implements Network {
 
 	public Graph generate() {
 		Timer timer = new Timer();
-		NodeImpl[] nodes = NodeImpl.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes());
 		for (int i = 0; i < nodes.length; i++) {
-			NodeImpl[] edges = new NodeImpl[2];
+			Node[] edges = new Node[2];
 			edges[0] = nodes[(nodes.length + i - 1) % nodes.length];
 			edges[1] = nodes[(i + 1) % nodes.length];
 			nodes[i].init(edges, edges);

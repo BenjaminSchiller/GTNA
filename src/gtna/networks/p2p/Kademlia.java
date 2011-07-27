@@ -38,7 +38,7 @@ package gtna.networks.p2p;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -168,7 +168,7 @@ public class Kademlia extends NetworkImpl implements Network {
 		return graph;
 	}
 
-	private class KademliaNode extends NodeImpl {
+	private class KademliaNode extends Node {
 		private ID id;
 
 		private KademliaNode[][] buckets;
@@ -363,7 +363,7 @@ public class Kademlia extends NetworkImpl implements Network {
 			return buff.toString();
 		}
 
-		public int route(NodeImpl n2) {
+		public int route(Node n2) {
 			return Short.MIN_VALUE;
 		}
 	}

@@ -38,7 +38,7 @@ package gtna.transformation.identifier;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.GridNodeEuclidean;
 import gtna.routing.node.GridNodeManhattan;
 import gtna.routing.node.RingNode;
@@ -84,7 +84,7 @@ public class RandomID extends TransformationImpl implements Transformation {
 	}
 
 	public Graph transform(Graph g) {
-		NodeImpl[] nodes = new NodeImpl[g.nodes.length];
+		Node[] nodes = new Node[g.nodes.length];
 		Set<String> ids = new HashSet<String>();
 		Random rand = new Random(System.currentTimeMillis());
 		if (this.type.equals(RING_NODE)) {
@@ -117,8 +117,8 @@ public class RandomID extends TransformationImpl implements Transformation {
 		Edge[] original = g.edges();
 		Edges edges = new Edges(nodes, original.length);
 		for (int i = 0; i < original.length; i++) {
-			NodeImpl src = nodes[original[i].src.index()];
-			NodeImpl dst = nodes[original[i].dst.index()];
+			Node src = nodes[original[i].src.index()];
+			Node dst = nodes[original[i].dst.index()];
 			edges.add(src, dst);
 		}
 		edges.fill();

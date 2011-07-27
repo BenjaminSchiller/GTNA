@@ -37,7 +37,7 @@
 package gtna.transformation.identifier;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.RingNode;
 import gtna.routing.node.identifier.RingID;
 import gtna.transformation.Transformation;
@@ -107,7 +107,7 @@ public class LocalMC extends TransformationImpl implements Transformation {
 			this.minDist = (double) 1 / (double) (g.nodes.length);
 		}
 
-		NodeImpl[] curNodes = g.nodes;
+		Node[] curNodes = g.nodes;
 		// Random raN = new Random();
 		// for (int i = 0; i < curNodes.length; i++) {
 		// ((RingNode) curNodes[i]).getID().pos = raN.nextDouble();

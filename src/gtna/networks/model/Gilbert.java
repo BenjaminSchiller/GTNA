@@ -39,7 +39,7 @@ import java.util.Random;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -81,7 +81,7 @@ public class Gilbert extends NetworkImpl implements Network {
 	public Graph generate() {
 		Timer timer = new Timer();
 		Random rand = new Random(System.currentTimeMillis());
-		NodeImpl[] nodes = NodeImpl.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes());
 		double p = (double) this.EDGES / (double) (this.nodes() * this.nodes());
 		if (this.BIDIRECTIONAL) {
 			p /= 2;

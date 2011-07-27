@@ -36,7 +36,7 @@
 package gtna.transformation.degree;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 
@@ -73,7 +73,7 @@ public class MinDegree extends TransformationImpl implements Transformation {
 	}
 
 	public Graph transform(Graph g) {
-		ArrayList<NodeImpl> mins = new ArrayList<NodeImpl>();
+		ArrayList<Node> mins = new ArrayList<Node>();
 		for (int i = 0; i < g.nodes.length; i++) {
 			if (g.nodes[i].in().length < this.minIn
 					|| g.nodes[i].out().length < this.minOut) {
@@ -83,14 +83,14 @@ public class MinDegree extends TransformationImpl implements Transformation {
 		Random rand = new Random(System.currentTimeMillis());
 		while (mins.size() > 0) {
 			int index = rand.nextInt(mins.size());
-			NodeImpl current = mins.get(index);
+			Node current = mins.get(index);
 			if (current.in().length >= this.minIn
 					&& current.out().length >= this.minOut) {
 				mins.remove(index);
 				continue;
 			}
 			if (this.bidirectional) {
-				NodeImpl randLink = g.nodes[rand.nextInt(g.nodes.length)];
+				Node randLink = g.nodes[rand.nextInt(g.nodes.length)];
 				while (current.hasIn(randLink) || current.hasOut(randLink)
 						|| current.index() == randLink.index()) {
 					randLink = g.nodes[rand.nextInt(g.nodes.length)];
@@ -100,7 +100,7 @@ public class MinDegree extends TransformationImpl implements Transformation {
 				randLink.addIn(current);
 				randLink.addOut(current);
 			} else if (current.in().length < this.minIn) {
-				NodeImpl randLink = g.nodes[rand.nextInt(g.nodes.length)];
+				Node randLink = g.nodes[rand.nextInt(g.nodes.length)];
 				while (current.hasIn(randLink)
 						|| current.index() == randLink.index()) {
 					randLink = g.nodes[rand.nextInt(g.nodes.length)];
@@ -108,7 +108,7 @@ public class MinDegree extends TransformationImpl implements Transformation {
 				current.addIn(randLink);
 				randLink.addOut(current);
 			} else if (current.out().length < this.minOut) {
-				NodeImpl randLink = g.nodes[rand.nextInt(g.nodes.length)];
+				Node randLink = g.nodes[rand.nextInt(g.nodes.length)];
 				while (current.hasOut(randLink)
 						|| current.index() == randLink.index()) {
 					randLink = g.nodes[rand.nextInt(g.nodes.length)];

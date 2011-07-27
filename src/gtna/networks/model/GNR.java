@@ -40,7 +40,7 @@ import java.util.Random;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -86,10 +86,10 @@ public class GNR extends NetworkImpl implements Network {
 	public Graph generate() {
 		Timer timer = new Timer();
 		Random rand = new Random(System.currentTimeMillis());
-		NodeImpl[] nodes = NodeImpl.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes());
 		Edges edges = new Edges(nodes, 100);
 		for (int i = 1; i < nodes.length; i++) {
-			NodeImpl bootstrap = nodes[rand.nextInt(i)];
+			Node bootstrap = nodes[rand.nextInt(i)];
 			if (rand.nextDouble() <= this.REDIRECTION_PROBABILITY) {
 				boolean found = false;
 				for (int j = 0; j < i; j++) {

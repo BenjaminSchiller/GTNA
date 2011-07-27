@@ -35,7 +35,7 @@
 */
 package gtna.routing.node;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.identifier.Identifier;
 import gtna.routing.node.identifier.RingID;
 
@@ -43,7 +43,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 
-public class RingNode extends NodeImpl implements RegistrationNode {
+public class RingNode extends Node implements RegistrationNode {
 	private RingID id;
 
 	private HashSet<String> register;
@@ -77,7 +77,7 @@ public class RingNode extends NodeImpl implements RegistrationNode {
 		return this.id.dist(((RingNode) node).id);
 	}
 
-	public Identifier randomID(Random rand, NodeImpl[] nodes) {
+	public Identifier randomID(Random rand, Node[] nodes) {
 		int index = rand.nextInt(nodes.length);
 		while (index == this.index()) {
 			index = rand.nextInt(nodes.length);

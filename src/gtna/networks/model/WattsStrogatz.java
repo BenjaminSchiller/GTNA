@@ -39,7 +39,7 @@ import java.util.Random;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -89,19 +89,19 @@ public class WattsStrogatz extends NetworkImpl implements Network {
 	public Graph generate() {
 		Timer timer = new Timer();
 		Random rand = new Random(System.currentTimeMillis());
-		NodeImpl[] nodes = NodeImpl.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes());
 		Edges edges = new Edges(nodes, this.LINKS * 2 * nodes.length);
 		for (int i = 0; i < nodes.length; i++) {
 			for (int j = 1; j <= this.LINKS; j++) {
 				if (rand.nextDouble() <= this.BETA) {
-					NodeImpl dest = nodes[rand.nextInt(nodes.length)];
+					Node dest = nodes[rand.nextInt(nodes.length)];
 					while (edges.contains(i, dest.index())) {
 						dest = nodes[rand.nextInt(nodes.length)];
 					}
 					edges.add(nodes[i], dest);
 					edges.add(dest, nodes[i]);
 				} else {
-					NodeImpl succ = nodes[(i + j) % nodes.length];
+					Node succ = nodes[(i + j) % nodes.length];
 					edges.add(nodes[i], succ);
 					edges.add(succ, nodes[i]);
 				}

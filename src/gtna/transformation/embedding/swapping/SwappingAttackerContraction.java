@@ -35,7 +35,7 @@
  */
 package gtna.transformation.embedding.swapping;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 
 import java.util.Random;
 
@@ -59,7 +59,7 @@ public class SwappingAttackerContraction extends SwappingNode {
 	public void turn(Random rand) {
 		// select a random neighbor
 		if (this.neighbor == null) {
-			NodeImpl[] out = this.out();
+			Node[] out = this.out();
 			this.index = rand.nextInt(out.length);
 			this.neighbor = (SwappingNode) out[this.index];
 		}
@@ -80,7 +80,7 @@ public class SwappingAttackerContraction extends SwappingNode {
 		int ttl = rand.nextInt(6) + 1;
 
 		// select starting node
-		NodeImpl[] out = this.out();
+		Node[] out = this.out();
 		SwappingNode start = (SwappingNode) out[rand.nextInt(out.length)];
 
 		// send swap request
@@ -93,7 +93,7 @@ public class SwappingAttackerContraction extends SwappingNode {
 	protected double ask(SwappingNode caller, Random rand) {
 		// select a random neighbor
 		if (this.neighbor == null) {
-			NodeImpl[] out = this.out();
+			Node[] out = this.out();
 			this.index = rand.nextInt(out.length);
 			this.neighbor = (SwappingNode) out[this.index];
 		}

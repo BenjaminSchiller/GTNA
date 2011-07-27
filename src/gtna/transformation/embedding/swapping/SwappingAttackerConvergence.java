@@ -35,7 +35,7 @@
  */
 package gtna.transformation.embedding.swapping;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 
 import java.util.Random;
 
@@ -64,7 +64,7 @@ public class SwappingAttackerConvergence extends SwappingNode {
 		for (int i = 0; i < neighbors.length; i++) {
 			neighbors[i] = (id + 0.5 + rand.nextDouble() * this.swapping.delta) % 1.0;
 		}
-		NodeImpl[] out = this.out();
+		Node[] out = this.out();
 		int index = rand.nextInt(out.length);
 		((SwappingNode) out[index]).swap(id, neighbors, ttl, rand);
 	}

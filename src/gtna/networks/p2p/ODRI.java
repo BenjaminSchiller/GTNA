@@ -37,7 +37,7 @@ package gtna.networks.p2p;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.networks.model.DeBruijn;
@@ -150,7 +150,7 @@ public class ODRI extends NetworkImpl implements Network {
 
 		Edges edges = new Edges(nodes, dbNodes.length * this.BASE);
 		for (int i = 0; i < dbNodes.length; i++) {
-			NodeImpl[] out = dbNodes[i].out();
+			Node[] out = dbNodes[i].out();
 			for (int j = 0; j < out.length; j++) {
 				edges.add(dbNodes[i].odri, ((DBNode) out[j]).odri);
 			}
@@ -176,7 +176,7 @@ public class ODRI extends NetworkImpl implements Network {
 		HashMap<Integer, ODRINode> seen = new HashMap<Integer, ODRINode>();
 		seen.put(node.index(), node);
 		for (int i = 0; i < node.dbNodes.length; i++) {
-			NodeImpl[] out = node.dbNodes[i].out();
+			Node[] out = node.dbNodes[i].out();
 			for (int j = 0; j < out.length; j++) {
 				ODRINode dest = ((DBNode) out[j]).odri;
 				if (!seen.containsKey(dest.index())) {
@@ -194,7 +194,7 @@ public class ODRI extends NetworkImpl implements Network {
 		return max;
 	}
 
-	private class ODRINode extends NodeImpl {
+	private class ODRINode extends Node {
 		DBNode[] dbNodes;
 
 		private ODRINode(int index, DBNode[] dbNodes) {
@@ -224,7 +224,7 @@ public class ODRI extends NetworkImpl implements Network {
 		}
 	}
 
-	private class DBNode extends NodeImpl {
+	private class DBNode extends Node {
 		private ODRINode odri;
 
 		private DBNode(int index) {

@@ -39,7 +39,7 @@
 package gtna.transformation.identifier;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.RingNode;
 import gtna.routing.node.identifier.RingID;
 import gtna.transformation.Transformation;
@@ -93,7 +93,7 @@ public class SwappingSorting extends TransformationImpl implements
 			}
 
 			// compute switching coefficient
-			NodeImpl[] friends = initiator.out();
+			Node[] friends = initiator.out();
 			double before = 1;
 			double after = 1;
 			for (int j = 0; j < friends.length; j++) {

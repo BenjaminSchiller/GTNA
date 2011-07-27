@@ -37,7 +37,7 @@ package gtna.metrics;
 
 import gtna.data.Value;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
 import gtna.util.Config;
@@ -101,7 +101,7 @@ public class ShortestPath extends MetricImpl implements Metric {
 		this.timer.end();
 	}
 
-	private int[] computeSPLD(NodeImpl[] nodes) {
+	private int[] computeSPLD(Node[] nodes) {
 		int[] spld = new int[1];
 		this.lcpl = new double[nodes.length];
 		for (int v = 0; v < nodes.length; v++) {
@@ -117,7 +117,7 @@ public class ShortestPath extends MetricImpl implements Metric {
 				newPathFound = false;
 				for (int i = 0; i < visited.length; i++) {
 					if (visited[i] == h - 1) {
-						NodeImpl[] out = nodes[i].out();
+						Node[] out = nodes[i].out();
 						for (int j = 0; j < out.length; j++) {
 							if (visited[out[j].index()] == -1) {
 								visited[out[j].index()] = h;

@@ -37,7 +37,7 @@ package gtna.networks.model;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -126,14 +126,14 @@ public class Communities extends NetworkImpl implements Network {
 
 	public Graph generate() {
 		Timer timer = new Timer();
-		NodeImpl[] nodes = NodeImpl.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes());
 		Edges edges = new Edges(nodes, 0);
 		Random rand = new Random(System.currentTimeMillis());
-		NodeImpl[][] communities = new NodeImpl[this.sizes.length][];
+		Node[][] communities = new Node[this.sizes.length][];
 		// fill communities
 		int index = 0;
 		for (int i = 0; i < communities.length; i++) {
-			communities[i] = new NodeImpl[this.sizes[i]];
+			communities[i] = new Node[this.sizes[i]];
 			for (int j = 0; j < communities[i].length; j++) {
 				communities[i][j] = nodes[index++];
 			}

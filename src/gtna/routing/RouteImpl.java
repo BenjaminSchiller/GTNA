@@ -35,7 +35,7 @@
 */
 package gtna.routing;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 
 import java.util.ArrayList;
 
@@ -46,7 +46,7 @@ import java.util.ArrayList;
  * 
  */
 public class RouteImpl implements Route {
-	private ArrayList<NodeImpl> path;
+	private ArrayList<Node> path;
 
 	private boolean success;
 
@@ -66,19 +66,19 @@ public class RouteImpl implements Route {
 	 *            attempt (equals path.length-1 in most cased but may differ
 	 *            for, e.g., algorithms using parallel requests)
 	 */
-	public RouteImpl(ArrayList<NodeImpl> path, boolean success, int messages) {
+	public RouteImpl(ArrayList<Node> path, boolean success, int messages) {
 		this.path = path;
 		this.success = success;
 		this.messages = messages;
 	}
 
 	public RouteImpl() {
-		this.path = new ArrayList<NodeImpl>();
+		this.path = new ArrayList<Node>();
 		this.success = false;
 		this.messages = 0;
 	}
 
-	public void add(NodeImpl n) {
+	public void add(Node n) {
 		this.path.add(n);
 	}
 
@@ -94,7 +94,7 @@ public class RouteImpl implements Route {
 		this.success = success;
 	}
 
-	public ArrayList<NodeImpl> path() {
+	public ArrayList<Node> path() {
 		return this.path;
 	}
 

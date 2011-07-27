@@ -35,7 +35,7 @@
 */
 package gtna.routing.twoPhase;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.IDRouteImpl;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
@@ -63,11 +63,11 @@ public class TwoPhaseGreedyRegistrationMultiR extends TwoPhaseGreedy implements
 		this.duplicates = duplicates;
 	}
 
-	public boolean applicable(NodeImpl[] nodes) {
+	public boolean applicable(Node[] nodes) {
 		return nodes[0] instanceof RingNodeMultiR;
 	}
 
-	public Route randomRoute(NodeImpl[] nodes, NodeImpl src, Random rand) {
+	public Route randomRoute(Node[] nodes, Node src, Random rand) {
 		int realities = ((RingNodeMultiR) nodes[0]).getIDs().length;
 		RingNodeMultiR s = (RingNodeMultiR) src;
 		int index = rand.nextInt(nodes.length);
@@ -100,7 +100,7 @@ public class TwoPhaseGreedyRegistrationMultiR extends TwoPhaseGreedy implements
 		// return route;
 	}
 
-	public void init(NodeImpl[] nodes) {
+	public void init(Node[] nodes) {
 		int realities = ((RingNodeMultiR) nodes[0]).getIDs().length;
 		for (int i = 0; i < nodes.length; i++) {
 			RingNodeMultiR n = (RingNodeMultiR) nodes[i];
@@ -142,8 +142,8 @@ public class TwoPhaseGreedyRegistrationMultiR extends TwoPhaseGreedy implements
 
 	private void registerPhase1(RingNodeMultiR current, RingIDMultiR id,
 			int nodeID) {
-		NodeImpl[] out = current.out();
-		NodeImpl max = null;
+		Node[] out = current.out();
+		Node max = null;
 		int maxD = current.out().length + current.in().length;
 		for (int i = 0; i < out.length; i++) {
 			if (maxD < out[i].out().length + out[i].in().length) {
@@ -159,8 +159,8 @@ public class TwoPhaseGreedyRegistrationMultiR extends TwoPhaseGreedy implements
 	}
 
 	private void registerPhase2(RingNodeMultiR n, RingIDMultiR id, int nodeID) {
-		NodeImpl[] out = n.out();
-		NodeImpl min = null;
+		Node[] out = n.out();
+		Node min = null;
 		double minD = n.dist(id);
 		for (int i = 0; i < out.length; i++) {
 			if (((IDNode) out[i]).dist(id) < minD) {

@@ -39,7 +39,7 @@ package gtna.io.networks;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.io.GraphWriter;
 import gtna.io.Output;
 import gtna.util.Config;
@@ -156,7 +156,7 @@ public class WOTReader {
 		timer.end();
 
 		// prepare return graph
-		NodeImpl[] nodes = NodeImpl.init(wotNodes.size());
+		Node[] nodes = Node.init(wotNodes.size());
 		Edges edges = new Edges(nodes, nodes.length);
 		for (WOTNode source : wotNodes) {
 			for (WOTNode target : source.signatures) {

@@ -37,7 +37,7 @@ package gtna.networks.model;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -95,7 +95,7 @@ public class DeBruijn extends NetworkImpl implements Network {
 
 	public Graph generate() {
 		Timer timer = new Timer();
-		NodeImpl[] nodes = NodeImpl.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes());
 		Edges edges = new Edges(nodes, this.nodes() * this.BASE - this.BASE);
 		for (int i = 0; i < nodes.length; i++) {
 			int shiftedId = (i * this.BASE) % nodes.length;

@@ -36,7 +36,7 @@
  */
 package gtna.transformation.embedding.lmc;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.identifier.RingID;
 import gtna.transformation.embedding.EmbeddingNode;
 
@@ -56,7 +56,7 @@ public class LMCNode extends EmbeddingNode {
 	}
 
 	public void updateNeighbors(Random rand) {
-		NodeImpl[] out = this.out();
+		Node[] out = this.out();
 		for (int i = 0; i < out.length; i++) {
 			this.knownIDs[i] = ((LMCNode) out[i]).ask(this, rand);
 		}

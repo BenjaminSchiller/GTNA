@@ -35,7 +35,7 @@
 */
 package gtna.routing;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 
 import java.util.Random;
 
@@ -63,7 +63,7 @@ public interface RoutingAlgorithm {
 	 *            PRNG
 	 * @return Path object containing information about the routing attempt
 	 */
-	public Route randomRoute(NodeImpl[] nodes, NodeImpl src, Random rand);
+	public Route randomRoute(Node[] nodes, Node src, Random rand);
 
 	/**
 	 * Checks if this routing algorithm can be applied to the given network
@@ -74,7 +74,7 @@ public interface RoutingAlgorithm {
 	 * @return true if this routing algorithm can be applied to the network
 	 *         represented by the given set of nodes, false otherwise
 	 */
-	public boolean applicable(NodeImpl[] nodes);
+	public boolean applicable(Node[] nodes);
 
 	/**
 	 * Induces a pre-processing of the routing algorithm if required to, e.g.,
@@ -83,7 +83,7 @@ public interface RoutingAlgorithm {
 	 * @param nodes
 	 *            list of all nodes contained in the network
 	 */
-	public void init(NodeImpl[] nodes);
+	public void init(Node[] nodes);
 
 	/**
 	 * 

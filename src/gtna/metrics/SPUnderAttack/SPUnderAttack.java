@@ -37,7 +37,7 @@ package gtna.metrics.SPUnderAttack;
 
 import gtna.data.Value;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.graph.sorting.NodeSorting;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
@@ -87,7 +87,7 @@ public abstract class SPUnderAttack extends MetricImpl implements Metric {
 		this.conn = new double[steps];
 		this.cpl = new double[steps];
 		this.diam = new double[steps];
-		NodeImpl[] sorted = null;
+		Node[] sorted = null;
 		if (this.order == NetworkFragmentation.DEGREE_DESC) {
 			sorted = NodeSorting.degreeDesc(g.nodes, rand);
 		} else if (this.order == NetworkFragmentation.IN_DEGREE_DESC) {
@@ -105,7 +105,7 @@ public abstract class SPUnderAttack extends MetricImpl implements Metric {
 		timer.end();
 	}
 
-	private void computeRound(int round, NodeImpl[] nodes, boolean[] removed) {
+	private void computeRound(int round, Node[] nodes, boolean[] removed) {
 		int[] spld = new int[1];
 		for (int v = 0; v < nodes.length; v++) {
 			int[] visited = new int[nodes.length];
@@ -124,7 +124,7 @@ public abstract class SPUnderAttack extends MetricImpl implements Metric {
 				newPathFound = false;
 				for (int i = 0; i < visited.length; i++) {
 					if (visited[i] == h - 1) {
-						NodeImpl[] out = nodes[i].out();
+						Node[] out = nodes[i].out();
 						for (int j = 0; j < out.length; j++) {
 							if (visited[out[j].index()] == -1) {
 								visited[out[j].index()] = h;
@@ -159,7 +159,7 @@ public abstract class SPUnderAttack extends MetricImpl implements Metric {
 
 	}
 
-	private boolean[] removed(int number, NodeImpl[] sorted) {
+	private boolean[] removed(int number, Node[] sorted) {
 		boolean[] removed = new boolean[sorted.length];
 		for (int i = 0; i < number; i++) {
 			removed[sorted[i].index()] = true;

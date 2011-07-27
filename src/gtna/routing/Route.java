@@ -35,7 +35,7 @@
 */
 package gtna.routing;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 
 import java.util.ArrayList;
 
@@ -53,7 +53,7 @@ public interface Route {
 	 * @return array containing all hops on the routing path, starting at the
 	 *         source and ending at the destination
 	 */
-	public ArrayList<NodeImpl> path();
+	public ArrayList<Node> path();
 
 	/**
 	 * 
@@ -74,7 +74,7 @@ public interface Route {
 	 * @param n
 	 *            new node to add
 	 */
-	public void add(NodeImpl n);
+	public void add(Node n);
 
 	/**
 	 * Increments the message counter by 1.

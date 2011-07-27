@@ -35,7 +35,7 @@
  */
 package gtna.routing.greedy;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -57,15 +57,15 @@ public class GreedyBacktrackingExt extends RoutingAlgorithmImpl implements
 		this.ttl = ttl;
 	}
 
-	public boolean applicable(NodeImpl[] nodes) {
+	public boolean applicable(Node[] nodes) {
 		return nodes[0] instanceof IDNode;
 	}
 
-	public void init(NodeImpl[] nodes) {
+	public void init(Node[] nodes) {
 		return;
 	}
 
-	public Route randomRoute(NodeImpl[] nodes, NodeImpl src, Random rand) {
+	public Route randomRoute(Node[] nodes, Node src, Random rand) {
 		IDNode SRC = (IDNode) src;
 		Identifier DEST = ((IDNode) nodes[rand.nextInt(nodes.length)])
 				.randomID(rand, nodes);
@@ -80,7 +80,7 @@ public class GreedyBacktrackingExt extends RoutingAlgorithmImpl implements
 
 	public Route route(IDNode src, IDNode current, Identifier dest, int ttl,
 			HashMap<IDNode, IDNode> pred, HashSet<IDNode> worse, Route route) {
-		route.add((NodeImpl)current);
+		route.add((Node)current);
 		if (current.contains(dest)) {
 			route.setSuccess(true);
 			return route;
@@ -90,7 +90,7 @@ public class GreedyBacktrackingExt extends RoutingAlgorithmImpl implements
 			return route;
 		}
 
-		NodeImpl[] out = current.out();
+		Node[] out = current.out();
 		double minDist = current.dist(dest);
 		IDNode nextHop = null;
 		for (int i = 0; i < out.length; i++) {

@@ -39,7 +39,7 @@ import gtna.communities.CommunityList;
 import gtna.communities.Detection;
 import gtna.data.Value;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
 import gtna.util.Config;
@@ -65,7 +65,7 @@ public class Communities extends MetricImpl {
 		CommunityList communities = Detection.detectCommunities(g);
 		modularity = communities.calculateModularity();
 		com = new double[g.nodes.length];
-		for (NodeImpl node : g.nodes) {
+		for (Node node : g.nodes) {
 			com[node.index()] = communities.getCommunity(node).getId() + 1;
 		}
 		comShort = Util.avgArray(com, Config.getInt("COM_SHORT_MAX_VALUES"));

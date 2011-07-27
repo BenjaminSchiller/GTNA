@@ -35,7 +35,7 @@
 */
 package gtna.routing.bubblecast;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.RoutingAlgorithmImpl;
@@ -61,7 +61,7 @@ public class Bubblecast extends RoutingAlgorithmImpl implements
 
 	private int retries;
 
-	private Hashtable<NodeImpl, NodeImpl>[] rt;
+	private Hashtable<Node, Node>[] rt;
 
 	public Bubblecast(int DR, int DS, int DTTL, int QR, int QS, int QTTL,
 			int retries) {
@@ -164,16 +164,16 @@ public class Bubblecast extends RoutingAlgorithmImpl implements
 		return ra;
 	}
 
-	public boolean applicable(NodeImpl[] nodes) {
+	public boolean applicable(Node[] nodes) {
 		return true;
 	}
 
 	@SuppressWarnings("unchecked")
-	public void init(NodeImpl[] nodes) {
+	public void init(Node[] nodes) {
 		Random rand = new Random(System.currentTimeMillis());
 		this.rt = new Hashtable[nodes.length];
 		for (int i = 0; i < this.rt.length; i++) {
-			this.rt[i] = new Hashtable<NodeImpl, NodeImpl>();
+			this.rt[i] = new Hashtable<Node, Node>();
 		}
 		for (int i = 0; i < nodes.length; i++) {
 			this.store(nodes[i], nodes[i], nodes[i], nodes[i], this.DR, rand,
@@ -181,7 +181,7 @@ public class Bubblecast extends RoutingAlgorithmImpl implements
 		}
 	}
 
-	private void store(NodeImpl node, NodeImpl from, NodeImpl DSt, NodeImpl over, int r,
+	private void store(Node node, Node from, Node DSt, Node over, int r,
 			Random rand, int ttl) {
 		if (node.index() != DSt.index()
 				&& !this.rt[node.index()].containsKey(DSt)) {
@@ -193,14 +193,14 @@ public class Bubblecast extends RoutingAlgorithmImpl implements
 		// return;
 		// }
 		int[] split = this.split(r, Math.min(this.DS, node.out().length));
-		NodeImpl[] random = this.randomNeighbors(node, from, split.length, rand);
+		Node[] random = this.randomNeighbors(node, from, split.length, rand);
 		for (int i = 0; i < random.length; i++) {
 			this.store(random[i], node, DSt, node, split[i], rand, ttl - 1);
 		}
 	}
 
-	public Route randomRoute(NodeImpl[] nodes, NodeImpl src, Random rand) {
-		NodeImpl DSt = nodes[rand.nextInt(nodes.length)];
+	public Route randomRoute(Node[] nodes, Node src, Random rand) {
+		Node DSt = nodes[rand.nextInt(nodes.length)];
 		while (DSt.index() == src.index()) {
 			DSt = nodes[rand.nextInt(nodes.length)];
 		}
@@ -217,7 +217,7 @@ public class Bubblecast extends RoutingAlgorithmImpl implements
 		return null;
 	}
 
-	private int query(NodeImpl node, NodeImpl from, NodeImpl DSt, int r, Random rand,
+	private int query(Node node, Node from, Node DSt, int r, Random rand,
 			int ttl) {
 		if (node.index() == DSt.index()) {
 			return 0;
@@ -231,7 +231,7 @@ public class Bubblecast extends RoutingAlgorithmImpl implements
 		// return Integer.MAX_VALUE;
 		// }
 		int[] split = this.split(r - 1, Math.min(this.QS, node.out().length));
-		NodeImpl[] random = this.randomNeighbors(node, from, split.length, rand);
+		Node[] random = this.randomNeighbors(node, from, split.length, rand);
 		int min = Integer.MAX_VALUE;
 		for (int i = 0; i < random.length; i++) {
 			int route = this.query(random[i], node, DSt, split[i], rand,
@@ -243,16 +243,16 @@ public class Bubblecast extends RoutingAlgorithmImpl implements
 		return min;
 	}
 
-	private NodeImpl[] randomNeighbors(NodeImpl node, NodeImpl from, int number, Random rand) {
+	private Node[] randomNeighbors(Node node, Node from, int number, Random rand) {
 		int Out = node.out().length;
-		if (node.hasOut((NodeImpl) from)) {
+		if (node.hasOut((Node) from)) {
 			Out--;
 		}
 		number = Math.min(number, Out);
-		HashSet<NodeImpl> set = new HashSet<NodeImpl>(number);
-		NodeImpl[] out = node.out();
+		HashSet<Node> set = new HashSet<Node>(number);
+		Node[] out = node.out();
 		while (set.size() < number) {
-			NodeImpl random = out[rand.nextInt(out.length)];
+			Node random = out[rand.nextInt(out.length)];
 			if (!set.contains(random) && random.index() != from.index()) {
 				set.add(random);
 			}

@@ -37,7 +37,7 @@ package gtna.networks.model;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -73,14 +73,14 @@ public class Communities2 extends NetworkImpl implements Network {
 
 	public Graph generate() {
 		Timer timer = new Timer();
-		NodeImpl[] nodes = NodeImpl.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes());
 		Edges edges = new Edges(nodes, 0);
 		Random rand = new Random(System.currentTimeMillis());
-		NodeImpl[][] communities = new NodeImpl[this.sizes.length][];
+		Node[][] communities = new Node[this.sizes.length][];
 		// fill communities
 		int index = 0;
 		for (int i = 0; i < communities.length; i++) {
-			communities[i] = new NodeImpl[this.sizes[i]];
+			communities[i] = new Node[this.sizes[i]];
 			for (int j = 0; j < communities[i].length; j++) {
 				communities[i][j] = nodes[index++];
 			}
@@ -108,10 +108,10 @@ public class Communities2 extends NetworkImpl implements Network {
 				if (i == j) {
 					continue;
 				}
-				NodeImpl[] f = communities[i];
-				NodeImpl[] t = communities[j];
-				ArrayList<NodeImpl> from = this.fill(f, t.length);
-				ArrayList<NodeImpl> to = this.fill(t, f.length);
+				Node[] f = communities[i];
+				Node[] t = communities[j];
+				ArrayList<Node> from = this.fill(f, t.length);
+				ArrayList<Node> to = this.fill(t, f.length);
 				this.addInterCommunityEdges(from, to,
 						this.interCommunityLinks[i][j], edges, rand);
 			}
@@ -122,8 +122,8 @@ public class Communities2 extends NetworkImpl implements Network {
 		return new Graph(this.description(), nodes, timer);
 	}
 
-	private ArrayList<NodeImpl> fill(NodeImpl[] community, int copies) {
-		ArrayList<NodeImpl> set = new ArrayList<NodeImpl>(community.length
+	private ArrayList<Node> fill(Node[] community, int copies) {
+		ArrayList<Node> set = new ArrayList<Node>(community.length
 				* copies);
 		for(int i=0; i<community.length; i++){
 			for(int j=0; j<copies; j++){
@@ -133,12 +133,12 @@ public class Communities2 extends NetworkImpl implements Network {
 		return set;
 	}
 
-	private void addInterCommunityEdges(ArrayList<NodeImpl> from,
-			ArrayList<NodeImpl> to, int links, Edges edges, Random rand) {
+	private void addInterCommunityEdges(ArrayList<Node> from,
+			ArrayList<Node> to, int links, Edges edges, Random rand) {
 		int added = 0;
 		while (added < links) {
-			NodeImpl FROM = from.get(rand.nextInt(from.size()));
-			NodeImpl TO = to.get(rand.nextInt(to.size()));
+			Node FROM = from.get(rand.nextInt(from.size()));
+			Node TO = to.get(rand.nextInt(to.size()));
 			from.remove(FROM);
 			to.remove(TO);
 			if (!edges.contains(FROM.index(), TO.index())) {

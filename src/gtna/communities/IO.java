@@ -37,7 +37,7 @@ package gtna.communities;
 
 import gtna.graph.Edge;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.io.Filewriter;
 import gtna.util.Config;
 
@@ -98,7 +98,7 @@ public class IO {
                     out.append("cluster_");
                 }
                 out.append(community).append(" {\n");
-                NodeImpl[] nodes = community.getNodes().toArray(new NodeImpl[community.getSize()]);
+                Node[] nodes = community.getNodes().toArray(new Node[community.getSize()]);
                 writeNodes(out, nodes, communities, roles, communityColors, roleColors, roleShapes);
                 out.append("}\n");
             }
@@ -123,9 +123,9 @@ public class IO {
         return out.toString();
     }
 
-    private static void writeNodes(StringBuilder out, NodeImpl[] nodes, CommunityList communities, Role[] roles,
+    private static void writeNodes(StringBuilder out, Node[] nodes, CommunityList communities, Role[] roles,
                         Map<Community, String> communityColors, Map<Role, String> roleColors, Map<Role,String> roleShapes){
-         for (NodeImpl node : nodes){
+         for (Node node : nodes){
             String nodeAttributes = Config.get("COMMUNITY_EXPORT_DOT_NODE_ATTRIBUTES");
             if(communityColors != null){
             nodeAttributes = nodeAttributes.replace("%COMMUNITY_COLOR%", communityColors.get(communities.getCommunity(node)));
@@ -189,7 +189,7 @@ public class IO {
         boolean useQuotes = Config.getBoolean("COMMUNITY_EXPORT_GML_QUOTES");
         StringBuilder out = new StringBuilder();
         out.append("graph [\n");
-        for(NodeImpl node : graph.nodes){
+        for(Node node : graph.nodes){
             out.append("  node [\n");
             out.append("    id ");
             if(useQuotes) out.append("\"");                           

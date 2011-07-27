@@ -36,7 +36,7 @@
 package gtna.communities;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.graph.sorting.NodeSorting;
 import gtna.util.Config;
 
@@ -69,7 +69,7 @@ public class Detection {
     
     public static CommunityList lpa(Graph graph){
         long start = System.currentTimeMillis();
-        NodeImpl[] nodes = graph.nodes;
+        Node[] nodes = graph.nodes;
         int[] labels  = new int[nodes.length];
         for(int i = 0; i < labels.length; i++){
             labels[i] = i;
@@ -82,15 +82,15 @@ public class Detection {
         while(!finished){
             finished = true;
             t++;
-            NodeImpl[] X = NodeSorting.random(nodes, rand);
-            for (NodeImpl x : X){
+            Node[] X = NodeSorting.random(nodes, rand);
+            for (Node x : X){
                 List<Integer> maxLabel = selectMax(x.out(), labels);
                 if (maxLabel.size() > 0){
                     int max = maxLabel.get(rand.nextInt(maxLabel.size()));
                     labels[x.index()] = max;
                 }
             }
-            for (NodeImpl x : X){
+            for (Node x : X){
                 List<Integer> maxLabel = selectMax(x.out(), labels);
                 if (maxLabel.size() > 0 && !maxLabel.contains(labels[x.index()])){
                     finished = false;
@@ -105,9 +105,9 @@ public class Detection {
         return communities;
     }
 
-    private static List<Integer> selectMax(NodeImpl[] neighbours, int[] labels){
+    private static List<Integer> selectMax(Node[] neighbours, int[] labels){
         HashMap<Integer, Integer> count = new HashMap<Integer,Integer>(neighbours.length);
-        for (NodeImpl n : neighbours){
+        for (Node n : neighbours){
             int label = labels[n.index()];
             Integer c = count.get(label);
             if (c == null){
@@ -131,10 +131,10 @@ public class Detection {
         return maxLabel;
     }
 
-    private static CommunityList createCommunityList(NodeImpl[] nodes, int[] labels){
+    private static CommunityList createCommunityList(Node[] nodes, int[] labels){
         HashMap<Integer, Community> communities = new HashMap<Integer, Community>();
         int cid = 0;
-        for(NodeImpl node : nodes){
+        for(Node node : nodes){
             int label = labels[node.index()];
             Community community = communities.get(label);
             if (community == null){
@@ -150,7 +150,7 @@ public class Detection {
 
     public static CommunityList lpaExtended(Graph graph, EdgeWeight w, NodeCharacteristic f, double m, double d){
         long start = System.currentTimeMillis();
-        NodeImpl[] nodes = graph.nodes;
+        Node[] nodes = graph.nodes;
         int[] labels  = new int[nodes.length];
         double[] scores = new double[nodes.length];
         for(int i = 0; i < labels.length; i++){
@@ -165,8 +165,8 @@ public class Detection {
         while(finished < nodes.length){
             finished = 0;
             t++;
-            NodeImpl[] X = NodeSorting.random(nodes, rand);
-            for (NodeImpl x : X){
+            Node[] X = NodeSorting.random(nodes, rand);
+            for (Node x : X){
                 int maxLabel = selectMaxExtended(x, x.out(), labels, scores, w, f , m);
                 if (maxLabel != labels[x.index()]){
                     labels[x.index()] = maxLabel;
@@ -184,9 +184,9 @@ public class Detection {
         return communities;
     }
 
-    private static int selectMaxExtended(NodeImpl n, NodeImpl[] out, int[] l, double[] s, EdgeWeight w, NodeCharacteristic f, double m){
+    private static int selectMaxExtended(Node n, Node[] out, int[] l, double[] s, EdgeWeight w, NodeCharacteristic f, double m){
         HashMap<Integer, Double> sums = new HashMap<Integer, Double>();
-        for(NodeImpl dst : out){
+        for(Node dst : out){
             int label = l[dst.index()];
             double weight = w.getWeight(n, dst) + w.getWeight(dst, n);
             double psum = s[dst.index()] * Math.pow(f.getCharacteristic(dst), m) * weight;
@@ -209,21 +209,21 @@ public class Detection {
     }
 
     public static interface EdgeWeight {
-        public double getWeight(NodeImpl src, NodeImpl dst);
+        public double getWeight(Node src, Node dst);
     }
 
     public static interface NodeCharacteristic {
-        public double getCharacteristic(NodeImpl node);
+        public double getCharacteristic(Node node);
     }
 
     public static class DefaultEdgeWeight implements EdgeWeight{
-       public double getWeight(NodeImpl src, NodeImpl dst) {
+       public double getWeight(Node src, Node dst) {
            return 0.5;
        }
     }
 
     public static class DefaultNodeCharacteristic implements NodeCharacteristic{
-       public double getCharacteristic(NodeImpl node) {
+       public double getCharacteristic(Node node) {
            return node.out().length;
        }
     }
@@ -236,13 +236,13 @@ public class Detection {
     public static Role[] detectRoles(Graph graph, CommunityList communities){
         Role[] roles = new Role[graph.nodes.length];
 
-        for (NodeImpl node : graph.nodes){
+        for (Node node : graph.nodes){
             //calculate relative within module degree z
             double k = communities.withinModuleDegree(node);
             double avgk = 0;
             double avgkquad = 0;
             Community com = communities.getCommunity(node);
-            for(NodeImpl n : com.getNodes()){
+            for(Node n : com.getNodes()){
                 avgk += communities.withinModuleDegree(n);
                 avgkquad += Math.pow(communities.withinModuleDegree(n), 2);
             }
@@ -252,7 +252,7 @@ public class Detection {
 
             //calculate participation coefficient p
             HashMap<Community, Integer> counter = new HashMap<Community, Integer>();
-            for (NodeImpl dst : node.out()){
+            for (Node dst : node.out()){
                 Integer c = counter.get(communities.getCommunity(dst));
                 if (c == null){
                     c = 1;

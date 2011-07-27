@@ -36,7 +36,7 @@
 package gtna.networks.p2p;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -266,7 +266,7 @@ public class Gnutella06 extends NetworkImpl implements Network {
 		return sum / nodes.length;
 	}
 
-	private class Gnutella06Node extends NodeImpl {
+	private class Gnutella06Node extends Node {
 		private ArrayList<Gnutella06Node> leafNodes;
 
 		private ArrayList<Gnutella06Node> ultraNodes;

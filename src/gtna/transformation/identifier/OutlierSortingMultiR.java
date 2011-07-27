@@ -36,7 +36,7 @@
 package gtna.transformation.identifier;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.IDNode;
 import gtna.routing.node.RingNodeMultiR;
 import gtna.routing.node.identifier.RingIDMultiR;
@@ -106,7 +106,7 @@ public class OutlierSortingMultiR extends TransformationImpl implements
 		return g;
 	}
 
-	private void sort(NodeImpl[] nodes, int reality) {
+	private void sort(Node[] nodes, int reality) {
 		int count = 0;
 		this.bestPosition = new RingIDMultiR[nodes.length];
 		Vector<IDNode> outliers = this.collectOutliers(nodes, reality);
@@ -178,7 +178,7 @@ public class OutlierSortingMultiR extends TransformationImpl implements
 			curNeighbor = (IDNode) cur.out()[j];
 			sum = 0;
 			for (int m = 0; m < cur.out().length; m++) {
-				if (((NodeImpl) curNeighbor).hasOut((NodeImpl) cur.out()[m])) {
+				if (((Node) curNeighbor).hasOut((Node) cur.out()[m])) {
 					sum++;
 				}
 			}
@@ -191,7 +191,7 @@ public class OutlierSortingMultiR extends TransformationImpl implements
 		return bestLoc;
 	}
 
-	private Vector<IDNode> collectOutliers(NodeImpl[] nodes, int reality) {
+	private Vector<IDNode> collectOutliers(Node[] nodes, int reality) {
 		Vector<IDNode> outliers = new Vector<IDNode>();
 		IDNode cur;
 		for (int i = 0; i < nodes.length; i++) {

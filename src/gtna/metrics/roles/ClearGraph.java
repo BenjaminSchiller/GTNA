@@ -36,8 +36,8 @@
 package gtna.metrics.roles;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
+import gtna.graph.Node;
 
 /**
  * @deprecated
@@ -84,15 +84,15 @@ public class ClearGraph {
 	public Graph graphDeleteDirectedParallelEdges(Graph g) {
 		int counter = 0;
 		for (int i = 0; i < g.nodes.length; i++) {
-			NodeImpl node_i = g.nodes[i];
+			Node node_i = g.nodes[i];
 			int index = node_i.index();
-			NodeImpl[] in = node_i.in();
+			Node[] in = node_i.in();
 			for (int j = 0; j < in.length; j++) {
 				for (int k = j+1; k < in.length; k++) {
 						if (in[j] == in[k]) {
 							g.nodes[in[k].index()].removeOut(node_i);
 							g.nodes[index]
-									.removeIn((NodeImpl) in[k]);
+									.removeIn((Node) in[k]);
 							counter++;
 						}
 				}
@@ -108,7 +108,7 @@ public class ClearGraph {
 	public Graph graphDeleteLoops(Graph g) {
 		int counter = 0;
 		for (int i = 0; i < g.nodes.length; i++) {
-			NodeImpl[] in = g.nodes[i].in();
+			Node[] in = g.nodes[i].in();
 			for (int j = 0; j < in.length; j++) {
 				if (in[j].index() == g.nodes[i].index()) {
 					g.nodes[i].removeIn(g.nodes[i]);
@@ -126,14 +126,14 @@ public class ClearGraph {
 	public Graph graphDeleteParallelEdges(Graph g) {
 		int counter = 0;
 		for (int i = 0; i < g.nodes.length; i++) {
-			NodeImpl[] in = g.nodes[i].in();
-			NodeImpl[] out = g.nodes[i].out();
+			Node[] in = g.nodes[i].in();
+			Node[] out = g.nodes[i].out();
 			for (int j = 0; j < in.length; j++) {
 				for (int k = 0; k < out.length; k++) {
 					if (in[j].index() == out[k].index()) {
 						g.nodes[out[k].index()].removeIn(g.nodes[i]);
 						g.nodes[g.nodes[i].index()]
-								.removeOut((NodeImpl) out[k]);
+								.removeOut((Node) out[k]);
 						counter++;
 					}
 				}

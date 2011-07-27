@@ -36,7 +36,7 @@
 package gtna.transformation.degree;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 
@@ -57,7 +57,7 @@ public class RemoveLargestNode extends TransformationImpl implements
 	}
 
 	public Graph transform(Graph g) {
-		NodeImpl largest = g.nodes[0];
+		Node largest = g.nodes[0];
 		int degree = largest.out().length + largest.in().length;
 		for (int i = 1; i < g.nodes.length; i++) {
 			if (g.nodes[i].out().length + g.nodes[i].in().length > degree) {
@@ -71,7 +71,7 @@ public class RemoveLargestNode extends TransformationImpl implements
 		for (int i = 0; i < largest.in().length; i++) {
 			largest.in()[i].removeOut(largest);
 		}
-		NodeImpl[] nodes = new NodeImpl[g.nodes.length - 1];
+		Node[] nodes = new Node[g.nodes.length - 1];
 		for (int i = 0; i < largest.index(); i++) {
 			nodes[i] = g.nodes[i];
 			nodes[i].setIndex(i);

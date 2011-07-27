@@ -35,14 +35,14 @@
 */
 package gtna.routing.node;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.identifier.Identifier;
 import gtna.routing.node.identifier.RingIDMultiR;
 
 import java.util.HashSet;
 import java.util.Random;
 
-public class RingNodeMultiR extends NodeImpl implements RegistrationNode {
+public class RingNodeMultiR extends Node implements RegistrationNode {
 	private RingIDMultiR[] ids;
 
 	private HashSet<String> register;
@@ -79,11 +79,11 @@ public class RingNodeMultiR extends NodeImpl implements RegistrationNode {
 		return this.ids[0].dist(((RingNodeMultiR) node).ids[0]);
 	}
 
-	public Identifier randomID(Random rand, NodeImpl[] nodes) {
+	public Identifier randomID(Random rand, Node[] nodes) {
 		return this.randomID(rand, nodes, rand.nextInt(this.ids.length));
 	}
 
-	public Identifier randomID(Random rand, NodeImpl[] nodes, int reality) {
+	public Identifier randomID(Random rand, Node[] nodes, int reality) {
 		int index = rand.nextInt(nodes.length);
 		while (this.index() == index) {
 			index = rand.nextInt(nodes.length);

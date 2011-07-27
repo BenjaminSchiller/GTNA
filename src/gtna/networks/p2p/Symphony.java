@@ -38,7 +38,7 @@ package gtna.networks.p2p;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -387,7 +387,7 @@ public class Symphony extends NetworkImpl implements Network {
 		}
 	}
 
-	private static class SymphonyNode extends NodeImpl implements IDNode {
+	private static class SymphonyNode extends Node implements IDNode {
 		private SymphonyID id;
 
 		private SymphonyNode pred;
@@ -438,7 +438,7 @@ public class Symphony extends NetworkImpl implements Network {
 			return this.id.dist(id);
 		}
 
-		public Identifier randomID(Random rand, NodeImpl[] nodes) {
+		public Identifier randomID(Random rand, Node[] nodes) {
 			return new SymphonyID(rand.nextDouble() % 1);
 		}
 

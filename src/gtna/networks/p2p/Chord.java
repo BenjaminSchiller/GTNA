@@ -37,7 +37,7 @@ package gtna.networks.p2p;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -223,7 +223,7 @@ public class Chord extends NetworkImpl implements Network {
 		return nodes[index];
 	}
 
-	private class ChordNode extends NodeImpl implements IDNode {
+	private class ChordNode extends Node implements IDNode {
 		private ChordID id;
 
 		private ChordNode predecessor;
@@ -241,7 +241,7 @@ public class Chord extends NetworkImpl implements Network {
 			this.id = new ChordID(id, mod);
 		}
 
-		public int route(NodeImpl n2) {
+		public int route(Node n2) {
 			long id = ((ChordNode) n2).id.id;
 			if (id == this.id.id) {
 				return 0;
@@ -396,7 +396,7 @@ public class Chord extends NetworkImpl implements Network {
 			return this.id.dist((ChordID) id);
 		}
 
-		public Identifier randomID(Random rand, NodeImpl[] nodes) {
+		public Identifier randomID(Random rand, Node[] nodes) {
 			return new ChordID(Math.abs(rand.nextLong() % this.id.mod),
 					this.id.mod);
 		}

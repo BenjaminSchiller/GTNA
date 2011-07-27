@@ -36,7 +36,7 @@
 package gtna.transformation.embedding.swapping;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.RingNode;
 import gtna.transformation.embedding.Embedding;
 import gtna.transformation.embedding.EmbeddingNode;
@@ -98,7 +98,7 @@ public class Swapping extends Embedding {
 	}
 
 	protected EmbeddingNode[] generateNodes(Graph g, Random rand) {
-		HashSet<NodeImpl> attackers = new HashSet<NodeImpl>();
+		HashSet<Node> attackers = new HashSet<Node>();
 		if (!ATTACK_NONE.equals(this.attack)
 				&& !ATTACKER_SELECTION_NONE.equals(this.attackerSelection)) {
 			if (ATTACKER_SELECTION_LARGEST.equals(this.attackerSelection)) {

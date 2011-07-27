@@ -39,7 +39,7 @@ package gtna;
 import gtna.data.Series;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.graph.sorting.NodeSorting;
 import gtna.io.DataReader;
 import gtna.io.Filewriter;
@@ -961,7 +961,7 @@ public class IDSorting {
 		Stats stats = new Stats();
 
 		Graph g = GraphReader.read(WOT_INPUT_GRAPH);
-		NodeImpl[] nodes = NodeSorting.degreeDesc(g.nodes, new Random());
+		Node[] nodes = NodeSorting.degreeDesc(g.nodes, new Random());
 		System.out.println("Median degree node: " + nodes[nodes.length / 2]);
 
 		Config.overwrite("METRICS", "DD, CC, RCC, SPL");
@@ -989,7 +989,7 @@ public class IDSorting {
 		Stats stats = new Stats();
 
 		Graph g = GraphReader.read(SPI_INPUT_GRAPH);
-		NodeImpl[] nodes = NodeSorting.degreeDesc(g.nodes, new Random());
+		Node[] nodes = NodeSorting.degreeDesc(g.nodes, new Random());
 		System.out.println("Median degree node: " + nodes[nodes.length / 2]);
 
 		Config.overwrite("METRICS", "DD, CC, RCC, SPL");

@@ -35,7 +35,7 @@
 */
 package gtna.routing.twoPhase;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.IDRouteImpl;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
@@ -52,14 +52,14 @@ public abstract class TwoPhase extends RoutingAlgorithmImpl implements
 		super(key, configKeys, configValues);
 	}
 
-	public boolean applicable(NodeImpl[] nodes) {
+	public boolean applicable(Node[] nodes) {
 		return nodes[0] instanceof IDNode;
 	}
 
-	public void init(NodeImpl[] nodes) {
+	public void init(Node[] nodes) {
 	}
 
-	public Route randomRoute(NodeImpl[] nodes, NodeImpl src, Random rand) {
+	public Route randomRoute(Node[] nodes, Node src, Random rand) {
 		IDNode s = (IDNode) src;
 		Identifier dest = s.randomID(rand, nodes);
 		return this.phase1(s, s, dest, rand, new IDRouteImpl(dest));
@@ -67,7 +67,7 @@ public abstract class TwoPhase extends RoutingAlgorithmImpl implements
 
 	protected Route phase1(IDNode src, IDNode current, Identifier dest,
 			Random rand, Route route) {
-		route.add((NodeImpl) current);
+		route.add((Node) current);
 		if (current.contains(dest)) {
 			route.setSuccess(true);
 			return route;
@@ -75,7 +75,7 @@ public abstract class TwoPhase extends RoutingAlgorithmImpl implements
 
 		IDNode max = null;
 		int d = current.out().length + current.in().length;
-		NodeImpl[] out = current.out();
+		Node[] out = current.out();
 		for (int i = 0; i < out.length; i++) {
 			if (out[i].out().length + out[i].in().length > d) {
 				max = (IDNode) out[i];

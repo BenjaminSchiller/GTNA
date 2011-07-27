@@ -38,7 +38,7 @@ package gtna.networks.p2p;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -260,7 +260,7 @@ public class Pastry extends NetworkImpl implements Network {
 		return new double[] { rand.nextDouble(), rand.nextDouble() };
 	}
 
-	private static class PastryNode extends NodeImpl {
+	private static class PastryNode extends Node {
 		private boolean[] idBits;
 
 		private long id;
@@ -320,7 +320,7 @@ public class Pastry extends NetworkImpl implements Network {
 			return distance;
 		}
 
-		public int route(NodeImpl n2) {
+		public int route(Node n2) {
 			return Short.MIN_VALUE;
 		}
 	}

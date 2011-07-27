@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Edges {
-	private NodeImpl[] nodes;
+	private Node[] nodes;
 
 	private ArrayList<Edge> edges;
 
@@ -49,7 +49,7 @@ public class Edges {
 
 	private int[] out;
 
-	public Edges(NodeImpl[] nodes, int edges) {
+	public Edges(Node[] nodes, int edges) {
 		this.nodes = nodes;
 		this.edges = new ArrayList<Edge>(edges);
 		this.map = new HashMap<String, Edge>();
@@ -69,7 +69,7 @@ public class Edges {
 		return this.edges.size();
 	}
 	
-	public boolean add(NodeImpl src, NodeImpl dst){
+	public boolean add(Node src, Node dst){
 		return this.add(new Edge(src, dst));
 	}
 
@@ -93,14 +93,14 @@ public class Edges {
 
 	public void fill() {
 		for (int i = 0; i < this.nodes.length; i++) {
-			this.nodes[i].setIn(new NodeImpl[this.in[i]]);
-			this.nodes[i].setOut(new NodeImpl[this.out[i]]);
+			this.nodes[i].setIn(new Node[this.in[i]]);
+			this.nodes[i].setOut(new Node[this.out[i]]);
 		}
 		int[] inIndex = new int[this.nodes.length];
 		int[] outIndex = new int[this.nodes.length];
 		for (int i = 0; i < this.edges.size(); i++) {
-			NodeImpl src = this.edges.get(i).src;
-			NodeImpl dst = this.edges.get(i).dst;
+			Node src = this.edges.get(i).src;
+			Node dst = this.edges.get(i).dst;
 			src.out()[outIndex[src.index()]] = dst;
 			dst.in()[inIndex[dst.index()]] = src;
 			inIndex[dst.index()]++;
@@ -108,11 +108,11 @@ public class Edges {
 		}
 	}
 	
-	public int outDegree(NodeImpl node){
+	public int outDegree(Node node){
 		return this.out[node.index()];
 	}
 	
-	public int inDegree(NodeImpl node){
+	public int inDegree(Node node){
 		return this.in[node.index()];
 	}
 }

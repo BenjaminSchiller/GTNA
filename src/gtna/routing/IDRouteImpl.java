@@ -35,7 +35,7 @@
 */
 package gtna.routing;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.identifier.Identifier;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ import java.util.ArrayList;
 public class IDRouteImpl extends RouteImpl implements IDRoute {
 	private Identifier dest;
 
-	public IDRouteImpl(ArrayList<NodeImpl> path, boolean success, int messages,
+	public IDRouteImpl(ArrayList<Node> path, boolean success, int messages,
 			Identifier dest) {
 		super(path, success, messages);
 		this.dest = dest;

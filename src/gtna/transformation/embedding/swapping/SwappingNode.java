@@ -36,7 +36,7 @@
  */
 package gtna.transformation.embedding.swapping;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.identifier.RingID;
 import gtna.transformation.embedding.EmbeddingNode;
 
@@ -58,7 +58,7 @@ public class SwappingNode extends EmbeddingNode {
 	}
 
 	public void updateNeighbors(Random rand) {
-		NodeImpl[] out = this.out();
+		Node[] out = this.out();
 		for (int i = 0; i < out.length; i++) {
 			this.knownIDs[i] = ((SwappingNode) out[i]).ask(this, rand);
 		}
@@ -66,7 +66,7 @@ public class SwappingNode extends EmbeddingNode {
 
 	public void turn(Random rand) {
 		// initiate swap
-		NodeImpl[] out = this.out();
+		Node[] out = this.out();
 		double loc = ((SwappingNode) out[rand.nextInt(out.length)]).swap(this
 				.getID().pos, this.knownIDs, 6, rand);
 		if (loc != SwappingNode.NO_SWAP) {

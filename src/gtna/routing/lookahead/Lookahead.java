@@ -35,7 +35,7 @@
  */
 package gtna.routing.lookahead;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -52,15 +52,15 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 		super("LOOKAHEAD", new String[] {}, new String[] {});
 	}
 
-	public boolean applicable(NodeImpl[] nodes) {
+	public boolean applicable(Node[] nodes) {
 		return nodes[0] instanceof IDNode;
 	}
 
-	public void init(NodeImpl[] nodes) {
+	public void init(Node[] nodes) {
 
 	}
 
-	public Route randomRoute(NodeImpl[] nodes, NodeImpl src, Random rand) {
+	public Route randomRoute(Node[] nodes, Node src, Random rand) {
 		IDNode SRC = (IDNode) src;
 		Identifier DST = SRC.randomID(rand, nodes);
 		while (SRC.contains(DST)) {
@@ -72,13 +72,13 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 	public static Route route(IDNode src, IDNode current, Identifier dest,
 			Route route, Set<IDNode> seen) {
 		seen.add(current);
-		route.add((NodeImpl) current);
+		route.add((Node) current);
 		if (current.contains(dest)) {
 			route.setSuccess(true);
 			return route;
 		}
 
-		NodeImpl[] out = current.out();
+		Node[] out = current.out();
 		double minDist = current.dist(dest);
 		IDNode nextHop = null;
 		int outIndex = -1;
@@ -89,7 +89,7 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 				nextHop = Out;
 				outIndex = i;
 			}
-			NodeImpl[] lookahead = Out.out();
+			Node[] lookahead = Out.out();
 			for (int j = 0; j < lookahead.length; j++) {
 				IDNode Lookahead = (IDNode) lookahead[j];
 				if (Lookahead.dist(dest) < minDist && !seen.contains(Out)) {
@@ -105,7 +105,7 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 				route.incMessages(2);
 				break;
 			}
-			NodeImpl[] lookahead = Out.out();
+			Node[] lookahead = Out.out();
 			for (int j = 0; j < lookahead.length; j++) {
 				IDNode Lookahead = (IDNode) lookahead[j];
 				if (Lookahead.dist(dest) <= minDist && seen.contains(Out)) {

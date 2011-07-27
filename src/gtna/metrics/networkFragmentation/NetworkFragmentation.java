@@ -37,7 +37,7 @@ package gtna.metrics.networkFragmentation;
 
 import gtna.data.Value;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.graph.sorting.NodeSorting;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
@@ -94,7 +94,7 @@ public abstract class NetworkFragmentation extends MetricImpl implements Metric 
 		this.aics = new double[steps];
 		this.noc = new double[steps];
 		Random rand = new Random(System.currentTimeMillis());
-		NodeImpl[] sorted = null;
+		Node[] sorted = null;
 		if (this.order == DEGREE_DESC) {
 			sorted = NodeSorting.degreeDesc(g.nodes, rand);
 		} else if (this.order == IN_DEGREE_DESC) {
@@ -140,7 +140,7 @@ public abstract class NetworkFragmentation extends MetricImpl implements Metric 
 		return mcs.length;
 	}
 
-	private int[] clusterSizesBidirectional(NodeImpl[] nodes, boolean[] removed) {
+	private int[] clusterSizesBidirectional(Node[] nodes, boolean[] removed) {
 		ArrayList<Integer> sizes = new ArrayList<Integer>();
 		boolean[] visited = new boolean[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
@@ -148,20 +148,20 @@ public abstract class NetworkFragmentation extends MetricImpl implements Metric 
 				continue;
 			}
 			int size = 0;
-			Queue<NodeImpl> queue = new LinkedList<NodeImpl>();
+			Queue<Node> queue = new LinkedList<Node>();
 			queue.add(nodes[i]);
 			visited[nodes[i].index()] = true;
 			while (!queue.isEmpty()) {
 				size++;
-				NodeImpl current = queue.poll();
-				NodeImpl[] out = current.out();
+				Node current = queue.poll();
+				Node[] out = current.out();
 				for (int j = 0; j < out.length; j++) {
 					if (!visited[out[j].index()] && !removed[out[j].index()]) {
 						queue.add(out[j]);
 						visited[out[j].index()] = true;
 					}
 				}
-				NodeImpl[] in = current.in();
+				Node[] in = current.in();
 				for (int j = 0; j < in.length; j++) {
 					if (!visited[in[j].index()] && !removed[in[j].index()]) {
 						queue.add(in[j]);
@@ -174,7 +174,7 @@ public abstract class NetworkFragmentation extends MetricImpl implements Metric 
 		return Util.toIntegerArray(sizes);
 	}
 
-	private int[] clusterSizesUnidirectional(NodeImpl[] nodes, boolean[] removed) {
+	private int[] clusterSizesUnidirectional(Node[] nodes, boolean[] removed) {
 		ArrayList<Integer> sizes = new ArrayList<Integer>();
 		boolean[] visited = new boolean[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
@@ -182,13 +182,13 @@ public abstract class NetworkFragmentation extends MetricImpl implements Metric 
 				continue;
 			}
 
-			Queue<NodeImpl> queueFW = new LinkedList<NodeImpl>();
+			Queue<Node> queueFW = new LinkedList<Node>();
 			boolean[] visitedFW = new boolean[nodes.length];
 			visitedFW[nodes[i].index()] = true;
 			queueFW.add(nodes[i]);
 			while (!queueFW.isEmpty()) {
-				NodeImpl current = queueFW.poll();
-				NodeImpl[] out = current.out();
+				Node current = queueFW.poll();
+				Node[] out = current.out();
 				for (int j = 0; j < out.length; j++) {
 					if (!visitedFW[out[j].index()] && !removed[out[j].index()]) {
 						queueFW.add(out[j]);
@@ -197,13 +197,13 @@ public abstract class NetworkFragmentation extends MetricImpl implements Metric 
 				}
 			}
 
-			Queue<NodeImpl> queueBW = new LinkedList<NodeImpl>();
+			Queue<Node> queueBW = new LinkedList<Node>();
 			boolean[] visitedBW = new boolean[nodes.length];
 			visitedBW[nodes[i].index()] = true;
 			queueBW.add(nodes[i]);
 			while (!queueBW.isEmpty()) {
-				NodeImpl current = queueBW.poll();
-				NodeImpl[] in = current.in();
+				Node current = queueBW.poll();
+				Node[] in = current.in();
 				for (int j = 0; j < in.length; j++) {
 					if (!visitedBW[in[j].index()] && !removed[in[j].index()]) {
 						queueBW.add(in[j]);
@@ -224,7 +224,7 @@ public abstract class NetworkFragmentation extends MetricImpl implements Metric 
 		return Util.toIntegerArray(sizes);
 	}
 
-	private boolean[] removed(int number, NodeImpl[] sorted) {
+	private boolean[] removed(int number, Node[] sorted) {
 		boolean[] removed = new boolean[sorted.length];
 		for (int i = 0; i < number; i++) {
 			removed[sorted[i].index()] = true;

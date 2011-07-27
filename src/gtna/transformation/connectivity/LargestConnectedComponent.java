@@ -36,7 +36,7 @@
 package gtna.transformation.connectivity;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 import gtna.util.Util;
@@ -62,7 +62,7 @@ public class LargestConnectedComponent extends TransformationImpl implements
 	}
 
 	public Graph transform(Graph g) {
-		NodeImpl[] lc = this.largestCluster(g);
+		Node[] lc = this.largestCluster(g);
 		for (int i = 0; i < lc.length; i++) {
 			lc[i].setIndex(i);
 		}
@@ -72,21 +72,21 @@ public class LargestConnectedComponent extends TransformationImpl implements
 		return g;
 	}
 
-	private ArrayList<ArrayList<NodeImpl>> clusters(Graph g) {
-		ArrayList<ArrayList<NodeImpl>> clusters = new ArrayList<ArrayList<NodeImpl>>();
+	private ArrayList<ArrayList<Node>> clusters(Graph g) {
+		ArrayList<ArrayList<Node>> clusters = new ArrayList<ArrayList<Node>>();
 		boolean[] seen = new boolean[g.nodes.length];
 		for (int i = 0; i < seen.length; i++) {
 			if (!seen[i]) {
-				ArrayList<NodeImpl> current = new ArrayList<NodeImpl>();
+				ArrayList<Node> current = new ArrayList<Node>();
 				clusters.add(current);
-				Stack<NodeImpl> stack = new Stack<NodeImpl>();
+				Stack<Node> stack = new Stack<Node>();
 				stack.push(g.nodes[i]);
 				seen[i] = true;
 				current.add(g.nodes[i]);
 				while (!stack.empty()) {
-					NodeImpl n = stack.pop();
-					NodeImpl[] out = n.out();
-					NodeImpl[] in = n.in();
+					Node n = stack.pop();
+					Node[] out = n.out();
+					Node[] in = n.in();
 					for (int j = 0; j < out.length; j++) {
 						if (!seen[out[j].index()]) {
 							seen[out[j].index()] = true;
@@ -107,9 +107,9 @@ public class LargestConnectedComponent extends TransformationImpl implements
 		return clusters;
 	}
 
-	private NodeImpl[] largestCluster(Graph g) {
-		ArrayList<ArrayList<NodeImpl>> clusters = this.clusters(g);
-		ArrayList<NodeImpl> largest = clusters.get(0);
+	private Node[] largestCluster(Graph g) {
+		ArrayList<ArrayList<Node>> clusters = this.clusters(g);
+		ArrayList<Node> largest = clusters.get(0);
 		for (int i = 1; i < clusters.size(); i++) {
 			if (clusters.get(i).size() > largest.size()) {
 				largest = clusters.get(i);

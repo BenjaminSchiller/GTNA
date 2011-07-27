@@ -37,7 +37,7 @@ package gtna.io.networks;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.io.Filereader;
 import gtna.util.Timer;
 
@@ -74,7 +74,7 @@ public class CAIDAReader extends Filereader {
 		}
 		reader1.close();
 
-		NodeImpl[] nodes = NodeImpl.init(index);
+		Node[] nodes = Node.init(index);
 		Edges edges = new Edges(nodes, edgeCounter);
 		CAIDAReader reader = new CAIDAReader(filename);
 		String line = null;

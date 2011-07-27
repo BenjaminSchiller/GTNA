@@ -35,7 +35,7 @@
 */
 package gtna.routing.flooding;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.RoutingAlgorithmImpl;
@@ -65,15 +65,15 @@ public class GreedyFlooding extends RoutingAlgorithmImpl implements
 		this.mode = mode;
 	}
 
-	public boolean applicable(NodeImpl[] nodes) {
+	public boolean applicable(Node[] nodes) {
 		return nodes[0] instanceof IDNode;
 	}
 
-	public void init(NodeImpl[] nodes) {
+	public void init(Node[] nodes) {
 
 	}
 
-	public Route randomRoute(NodeImpl[] nodes, NodeImpl src, Random rand) {
+	public Route randomRoute(Node[] nodes, Node src, Random rand) {
 		IDNode s = (IDNode) src;
 		Identifier dest = s.randomID(rand, nodes);
 		// return this.route(s, dest, nodes.length);

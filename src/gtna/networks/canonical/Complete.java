@@ -36,7 +36,7 @@
 package gtna.networks.canonical;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -58,9 +58,9 @@ public class Complete extends NetworkImpl implements Network {
 
 	public Graph generate() {
 		Timer timer = new Timer();
-		NodeImpl[] nodes = NodeImpl.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes());
 		for (int i = 0; i < nodes.length; i++) {
-			NodeImpl[] edges = new NodeImpl[nodes.length - 1];
+			Node[] edges = new Node[nodes.length - 1];
 			int index = 0;
 			for (int j = 0; j < nodes.length; j++) {
 				if (j != i) {

@@ -35,7 +35,7 @@
 */
 package gtna.routing.twoPhase;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.node.IDNode;
 import gtna.routing.node.RingNode;
@@ -51,11 +51,11 @@ public class TwoPhaseLookaheadRegistration extends TwoPhaseLookahead implements
 				new String[] {});
 	}
 
-	public boolean applicable(NodeImpl n) {
+	public boolean applicable(Node n) {
 		return n instanceof RingNode;
 	}
 
-	public void init(NodeImpl[] nodes) {
+	public void init(Node[] nodes) {
 		for (int i = 0; i < nodes.length; i++) {
 			this.register((RingNode) nodes[i]);
 		}
@@ -66,8 +66,8 @@ public class TwoPhaseLookaheadRegistration extends TwoPhaseLookahead implements
 	}
 
 	private void registerPhase1(RingNode current, RingID id) {
-		NodeImpl[] out = current.out();
-		NodeImpl max = null;
+		Node[] out = current.out();
+		Node max = null;
 		int maxD = current.out().length + current.in().length;
 		for (int i = 0; i < out.length; i++) {
 			if (maxD < out[i].out().length + out[i].in().length) {
@@ -86,15 +86,15 @@ public class TwoPhaseLookaheadRegistration extends TwoPhaseLookahead implements
 	private void registerPhase2(RingNode n, RingID id,
 			Set<RingNode> seen) {
 		seen.add(n);
-		NodeImpl[] out = n.out();
-		NodeImpl min = null;
+		Node[] out = n.out();
+		Node min = null;
 		double minD = n.dist(id);
 		for (int i = 0; i < out.length; i++) {
 			if (((IDNode) out[i]).dist(id) < minD) {
 				min = out[i];
 				minD = ((IDNode) out[i]).dist(id);
 			}
-			NodeImpl[] lookahead = out[i].out();
+			Node[] lookahead = out[i].out();
 			for (int j = 0; j < lookahead.length; j++) {
 				if (((IDNode) lookahead[j]).dist(id) < minD
 						&& !seen

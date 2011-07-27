@@ -37,44 +37,44 @@ package gtna.graph;
 
 import gtna.util.Config;
 
-public class NodeImpl {
-	private NodeImpl[] out = null;
+public class Node {
+	private Node[] out = null;
 
-	private NodeImpl[] in = null;
+	private Node[] in = null;
 
 	private int index = 0;
 
-	public NodeImpl(int index) {
+	public Node(int index) {
 		this.index = index;
 	}
 
-	public int route(NodeImpl to) {
+	public int route(Node to) {
 		return Config.getInt("ROUTING_LENGTH_DEFAULT");
 	}
 
-	public double[] routeProg(NodeImpl to) {
+	public double[] routeProg(Node to) {
 		return null;
 	}
 
-	public void init(NodeImpl[] in, NodeImpl[] out) {
+	public void init(Node[] in, Node[] out) {
 		this.in = in;
 		this.out = out;
 	}
 
-	public static NodeImpl[] init(int numberOfNodes) {
-		NodeImpl[] nodes = new NodeImpl[numberOfNodes];
+	public static Node[] init(int numberOfNodes) {
+		Node[] nodes = new Node[numberOfNodes];
 		for (int i = 0; i < nodes.length; i++) {
-			nodes[i] = new NodeImpl(i);
-			nodes[i].init(new NodeImpl[0], new NodeImpl[0]);
+			nodes[i] = new Node(i);
+			nodes[i].init(new Node[0], new Node[0]);
 		}
 		return nodes;
 	}
 
-	public NodeImpl[] in() {
+	public Node[] in() {
 		return this.in;
 	}
 
-	public NodeImpl[] out() {
+	public Node[] out() {
 		return this.out;
 	}
 
@@ -86,15 +86,15 @@ public class NodeImpl {
 		this.index = index;
 	}
 
-	public void setIn(NodeImpl[] in) {
+	public void setIn(Node[] in) {
 		this.in = in;
 	}
 
-	public void setOut(NodeImpl[] out) {
+	public void setOut(Node[] out) {
 		this.out = out;
 	}
 
-	public boolean hasIn(NodeImpl n) {
+	public boolean hasIn(Node n) {
 		for (int i = 0; i < this.in.length; i++) {
 			if (this.in[i].index == n.index) {
 				return true;
@@ -103,7 +103,7 @@ public class NodeImpl {
 		return false;
 	}
 
-	public boolean hasOut(NodeImpl n) {
+	public boolean hasOut(Node n) {
 		for (int i = 0; i < this.out.length; i++) {
 			if (this.out[i].index == n.index) {
 				return true;
@@ -112,8 +112,8 @@ public class NodeImpl {
 		return false;
 	}
 
-	public void addIn(NodeImpl n) {
-		NodeImpl[] temp = new NodeImpl[this.in.length + 1];
+	public void addIn(Node n) {
+		Node[] temp = new Node[this.in.length + 1];
 		for (int i = 0; i < this.in.length; i++) {
 			temp[i] = this.in[i];
 		}
@@ -121,8 +121,8 @@ public class NodeImpl {
 		this.in = temp;
 	}
 
-	public void addOut(NodeImpl n) {
-		NodeImpl[] temp = new NodeImpl[this.out.length + 1];
+	public void addOut(Node n) {
+		Node[] temp = new Node[this.out.length + 1];
 		for (int i = 0; i < this.out.length; i++) {
 			temp[i] = this.out[i];
 		}
@@ -130,8 +130,8 @@ public class NodeImpl {
 		this.out = temp;
 	}
 
-	public void removeIn(NodeImpl n) {
-		NodeImpl[] temp = new NodeImpl[this.in.length - 1];
+	public void removeIn(Node n) {
+		Node[] temp = new Node[this.in.length - 1];
 		int index = 0;
 		boolean second = false;
 		for (int i = 0; i < this.in.length; i++) {
@@ -155,8 +155,8 @@ public class NodeImpl {
 	// this.in = temp;
 	// }
 
-	public void removeOut(NodeImpl n) {
-		NodeImpl[] temp = new NodeImpl[this.out.length - 1];
+	public void removeOut(Node n) {
+		Node[] temp = new Node[this.out.length - 1];
 		int index = 0;
 		boolean second = false;
 		for (int i = 0; i < this.out.length; i++) {

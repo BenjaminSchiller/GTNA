@@ -36,7 +36,7 @@
 package gtna.networks.canonical;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.NetworkImpl;
 import gtna.networks.Network;
 import gtna.routing.RoutingAlgorithm;
@@ -59,12 +59,12 @@ public class Star extends NetworkImpl implements Network {
 
 	public Graph generate() {
 		Timer timer = new Timer();
-		NodeImpl[] nodes = new NodeImpl[this.nodes()];
-		nodes[0] = new NodeImpl(0);
-		NodeImpl[] edges = new NodeImpl[nodes.length - 1];
-		NodeImpl[] single = new NodeImpl[] { nodes[0] };
+		Node[] nodes = new Node[this.nodes()];
+		nodes[0] = new Node(0);
+		Node[] edges = new Node[nodes.length - 1];
+		Node[] single = new Node[] { nodes[0] };
 		for (int i = 1; i < nodes.length; i++) {
-			nodes[i] = new NodeImpl(i);
+			nodes[i] = new Node(i);
 			nodes[i].init(single, single);
 			edges[i - 1] = nodes[i];
 		}

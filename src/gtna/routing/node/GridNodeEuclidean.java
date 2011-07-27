@@ -35,13 +35,13 @@
 */
 package gtna.routing.node;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.identifier.GridIDEuclidean;
 import gtna.routing.node.identifier.Identifier;
 
 import java.util.Random;
 
-public class GridNodeEuclidean extends NodeImpl implements IDNode {
+public class GridNodeEuclidean extends Node implements IDNode {
 	private GridIDEuclidean id;
 
 	public GridNodeEuclidean(int index, double[] pos) {
@@ -57,7 +57,7 @@ public class GridNodeEuclidean extends NodeImpl implements IDNode {
 		return this.id.dist(id);
 	}
 
-	public Identifier randomID(Random rand, NodeImpl[] nodes) {
+	public Identifier randomID(Random rand, Node[] nodes) {
 		GridIDEuclidean id = ((GridNodeEuclidean) nodes[rand
 				.nextInt(nodes.length)]).id;
 		while (this.contains(id)) {

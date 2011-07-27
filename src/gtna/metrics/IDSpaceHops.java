@@ -38,7 +38,7 @@ package gtna.metrics;
 
 import gtna.data.Value;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
 import gtna.routing.node.RingNode;
@@ -97,17 +97,17 @@ public class IDSpaceHops extends MetricImpl implements Metric {
 		return hops;
 	}
 
-	private int hops(Graph g, NodeImpl from, NodeImpl to) {
+	private int hops(Graph g, Node from, Node to) {
 		int[] hops = new int[g.nodes.length];
 		for (int i = 0; i < hops.length; i++) {
 			hops[i] = -1;
 		}
 		hops[from.index()] = 0;
-		LinkedList<NodeImpl> list = new LinkedList<NodeImpl>();
+		LinkedList<Node> list = new LinkedList<Node>();
 		list.add(from);
 		while (!list.isEmpty()) {
-			NodeImpl curr = list.removeFirst();
-			NodeImpl[] out = curr.out();
+			Node curr = list.removeFirst();
+			Node[] out = curr.out();
 			for (int i = 0; i < out.length; i++) {
 				if (to.index() == out[i].index()) {
 					return hops[curr.index()] + 1;

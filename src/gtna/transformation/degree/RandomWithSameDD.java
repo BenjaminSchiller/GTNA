@@ -37,7 +37,7 @@ package gtna.transformation.degree;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 
@@ -69,7 +69,7 @@ public class RandomWithSameDD extends TransformationImpl implements
 	}
 
 	public Graph transform(Graph g) {
-		NodeImpl[] nodes = NodeImpl.init(g.nodes.length);
+		Node[] nodes = Node.init(g.nodes.length);
 		Edges edges = this.random(src(g), dst(g), nodes, g.nodes);
 		while (edges == null) {
 			edges = this.random(src(g), dst(g), nodes, g.nodes);
@@ -79,7 +79,7 @@ public class RandomWithSameDD extends TransformationImpl implements
 	}
 
 	private Edges random(ArrayList<Integer> src, ArrayList<Integer> dst,
-			NodeImpl[] nodes, NodeImpl[] orig) {
+			Node[] nodes, Node[] orig) {
 		Edges edges = new Edges(nodes, src.size());
 		Random rand = new Random(System.currentTimeMillis());
 		int counter = 0;

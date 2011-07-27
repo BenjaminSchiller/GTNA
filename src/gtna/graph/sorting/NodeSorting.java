@@ -35,15 +35,15 @@
 */
 package gtna.graph.sorting;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 
 public class NodeSorting {
-	public static NodeImpl[] degreeDesc(NodeImpl[] nodes, Random rand) {
-		NodeImpl[] sorted = nodes.clone();
+	public static Node[] degreeDesc(Node[] nodes, Random rand) {
+		Node[] sorted = nodes.clone();
 		Arrays.sort(sorted, new DegreeDesc());
 		int value = sorted[0].in().length + sorted[0].out().length;
 		int from = 0;
@@ -58,8 +58,8 @@ public class NodeSorting {
 		return sorted;
 	}
 
-	private static class DegreeDesc implements Comparator<NodeImpl> {
-		public int compare(NodeImpl n1, NodeImpl n2) {
+	private static class DegreeDesc implements Comparator<Node> {
+		public int compare(Node n1, Node n2) {
 			int v1 = n1.in().length + n1.out().length;
 			int v2 = n2.in().length + n2.out().length;
 			if (v1 == v2) {
@@ -72,8 +72,8 @@ public class NodeSorting {
 		}
 	}
 
-	public static NodeImpl[] inDegreeDesc(NodeImpl[] nodes, Random rand) {
-		NodeImpl[] sorted = nodes.clone();
+	public static Node[] inDegreeDesc(Node[] nodes, Random rand) {
+		Node[] sorted = nodes.clone();
 		Arrays.sort(sorted, new InDegreeDesc());
 		int value = sorted[0].in().length;
 		int from = 0;
@@ -88,8 +88,8 @@ public class NodeSorting {
 		return sorted;
 	}
 
-	private static class InDegreeDesc implements Comparator<NodeImpl> {
-		public int compare(NodeImpl n1, NodeImpl n2) {
+	private static class InDegreeDesc implements Comparator<Node> {
+		public int compare(Node n1, Node n2) {
 			int v1 = n1.in().length;
 			int v2 = n2.in().length;
 			if (v1 == v2) {
@@ -102,8 +102,8 @@ public class NodeSorting {
 		}
 	}
 
-	public static NodeImpl[] outDegreeDesc(NodeImpl[] nodes, Random rand) {
-		NodeImpl[] sorted = nodes.clone();
+	public static Node[] outDegreeDesc(Node[] nodes, Random rand) {
+		Node[] sorted = nodes.clone();
 		Arrays.sort(sorted, new OutDegreeDesc());
 		int value = sorted[0].out().length;
 		int from = 0;
@@ -118,8 +118,8 @@ public class NodeSorting {
 		return sorted;
 	}
 
-	private static class OutDegreeDesc implements Comparator<NodeImpl> {
-		public int compare(NodeImpl n1, NodeImpl n2) {
+	private static class OutDegreeDesc implements Comparator<Node> {
+		public int compare(Node n1, Node n2) {
 			int v1 = n1.out().length;
 			int v2 = n2.out().length;
 			if (v1 == v2) {
@@ -132,23 +132,23 @@ public class NodeSorting {
 		}
 	}
 
-	public static NodeImpl[] random(NodeImpl[] nodes, Random rand) {
-		NodeImpl[] sorted = nodes.clone();
+	public static Node[] random(Node[] nodes, Random rand) {
+		Node[] sorted = nodes.clone();
 		randomize(sorted, rand, 0,
 				sorted.length - 1);
 		return sorted;
 	}
 
-	private static void randomize(NodeImpl[] nodes, Random rand, int from, int to) {
+	private static void randomize(Node[] nodes, Random rand, int from, int to) {
 		for (int i = to - from; i > 1; i--) {
 			int index = rand.nextInt(i) + from;
-			NodeImpl temp = nodes[index];
+			Node temp = nodes[index];
 			nodes[index] = nodes[i + from];
 			nodes[i + from] = temp;
 		}
 	}
 
-	public static int[] byDegreeDesc(NodeImpl[] nodes, Random rand) {
+	public static int[] byDegreeDesc(Node[] nodes, Random rand) {
 		int[] degree = new int[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
 			degree[i] = nodes[i].in().length + nodes[i].out().length;

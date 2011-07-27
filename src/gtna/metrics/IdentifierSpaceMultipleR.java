@@ -38,7 +38,7 @@ package gtna.metrics;
 
 import gtna.data.Value;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
 import gtna.routing.node.RingNode;
@@ -81,7 +81,7 @@ public class IdentifierSpaceMultipleR extends MetricImpl implements Metric {
 		}
 	}
 
-	private double[][] distancesRingNode(NodeImpl[] nodes, int edges) {
+	private double[][] distancesRingNode(Node[] nodes, int edges) {
 		double[][] distances = new double[edges][];
 		int index = 0;
 		for (int i = 0; i < nodes.length; i++) {
@@ -97,7 +97,7 @@ public class IdentifierSpaceMultipleR extends MetricImpl implements Metric {
 		return distances;
 	}
 
-	private double[][] distancesRingNodeMultiR(NodeImpl[] nodes, int edges) {
+	private double[][] distancesRingNodeMultiR(Node[] nodes, int edges) {
 		int realities = ((RingNodeMultiR) nodes[0]).getIDs().length;
 		double[][] distances = new double[edges * realities][];
 		int index = 0;
@@ -116,7 +116,7 @@ public class IdentifierSpaceMultipleR extends MetricImpl implements Metric {
 		return distances;
 	}
 
-	private double[][] distancesByR1RingNodeMultiR(NodeImpl[] nodes, int edges) {
+	private double[][] distancesByR1RingNodeMultiR(Node[] nodes, int edges) {
 		int realities = ((RingNodeMultiR) nodes[0]).getIDs().length;
 		double[][] distances = new double[edges * realities][];
 		int index = 0;
@@ -135,7 +135,7 @@ public class IdentifierSpaceMultipleR extends MetricImpl implements Metric {
 		return distances;
 	}
 
-	private double[][] idsRingNode(NodeImpl[] nodes) {
+	private double[][] idsRingNode(Node[] nodes) {
 		double[][] ids = new double[nodes.length][2];
 		for (int i = 0; i < nodes.length; i++) {
 			double pos = ((RingNode) nodes[i]).getID().pos;
@@ -144,7 +144,7 @@ public class IdentifierSpaceMultipleR extends MetricImpl implements Metric {
 		return ids;
 	}
 
-	private double[][] idsRingNodeMultiR(NodeImpl[] nodes) {
+	private double[][] idsRingNodeMultiR(Node[] nodes) {
 		int realities = ((RingNodeMultiR) nodes[0]).getIDs().length;
 		double[][] ids = new double[nodes.length * realities][2];
 		for (int r = 0; r < realities; r++) {

@@ -39,7 +39,7 @@ import gtna.data.Series;
 import gtna.data.Singles;
 import gtna.data.Value;
 import gtna.graph.Edge;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.plot.PlotData;
 import gtna.routing.RoutingAlgorithm;
@@ -307,17 +307,17 @@ public class Util {
 	// ///////////////////////
 	// ArrayList to Array
 	// ///////////////////////
-	public static NodeImpl[] toNodeArray(ArrayList<NodeImpl> list) {
-		NodeImpl[] array = new NodeImpl[list.size()];
+	public static Node[] toNodeArray(ArrayList<Node> list) {
+		Node[] array = new Node[list.size()];
 		for (int i = 0; i < array.length; i++) {
 			array[i] = list.get(i);
 		}
 		return array;
 	}
 
-	public static NodeImpl[] toNodeArray(HashSet<NodeImpl> set) {
-		Iterator<NodeImpl> iter = set.iterator();
-		NodeImpl[] array = new NodeImpl[set.size()];
+	public static Node[] toNodeArray(HashSet<Node> set) {
+		Iterator<Node> iter = set.iterator();
+		Node[] array = new Node[set.size()];
 		int i = 0;
 		while (iter.hasNext()) {
 			array[i++] = iter.next();
@@ -391,8 +391,8 @@ public class Util {
 		return array;
 	}
 
-	public static NodeImpl[] toNodeImplArray(ArrayList<NodeImpl> list) {
-		NodeImpl[] array = new NodeImpl[list.size()];
+	public static Node[] toNodeImplArray(ArrayList<Node> list) {
+		Node[] array = new Node[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			array[i] = list.get(i);
 		}
@@ -656,7 +656,7 @@ public class Util {
 	// REMOVE
 	// ///////////////////////
 
-	public static NodeImpl[] removeHighestDegree(NodeImpl[] nodes) {
+	public static Node[] removeHighestDegree(Node[] nodes) {
 		int largestIndex = 0;
 		int largestDegree = nodes[0].in().length + nodes[0].out().length;
 		for (int i = 1; i < nodes.length; i++) {
@@ -666,7 +666,7 @@ public class Util {
 				largestIndex = i;
 			}
 		}
-		NodeImpl[] removed = new NodeImpl[nodes.length - 1];
+		Node[] removed = new Node[nodes.length - 1];
 		for (int i = 0; i < nodes.length; i++) {
 			if (i < largestIndex) {
 				removed[i] = nodes[i];
@@ -674,7 +674,7 @@ public class Util {
 				removed[i - 1] = nodes[i];
 			}
 		}
-		NodeImpl largest = nodes[largestIndex];
+		Node largest = nodes[largestIndex];
 		for (int i = 0; i < removed.length; i++) {
 			if (removed[i].hasIn(largest)) {
 				removed[i].removeIn(largest);
@@ -689,46 +689,46 @@ public class Util {
 		return removed;
 	}
 
-	public static NodeImpl[] removeIsolatedClusters(NodeImpl[] users) {
-		ArrayList<ArrayList<NodeImpl>> clusters = new ArrayList<ArrayList<NodeImpl>>();
+	public static Node[] removeIsolatedClusters(Node[] users) {
+		ArrayList<ArrayList<Node>> clusters = new ArrayList<ArrayList<Node>>();
 		boolean[] visited = new boolean[users.length];
 		for (int i = 0; i < users.length; i++) {
 			if (visited[users[i].index()]) {
 				continue;
 			}
-			clusters.add(new ArrayList<NodeImpl>());
+			clusters.add(new ArrayList<Node>());
 
-			Queue<NodeImpl> queueFW = new LinkedList<NodeImpl>();
+			Queue<Node> queueFW = new LinkedList<Node>();
 			boolean[] visitedFW = new boolean[users.length];
 			visitedFW[users[i].index()] = true;
 			queueFW.add(users[i]);
 			while (!queueFW.isEmpty()) {
-				NodeImpl current = queueFW.poll();
-				NodeImpl[] out = current.out();
+				Node current = queueFW.poll();
+				Node[] out = current.out();
 				for (int j = 0; j < out.length; j++) {
 					if (!visitedFW[out[j].index()]) {
-						queueFW.add((NodeImpl) out[j]);
+						queueFW.add((Node) out[j]);
 						visitedFW[out[j].index()] = true;
 					}
 				}
 			}
 
-			Queue<NodeImpl> queueBW = new LinkedList<NodeImpl>();
+			Queue<Node> queueBW = new LinkedList<Node>();
 			boolean[] visitedBW = new boolean[users.length];
 			visitedBW[users[i].index()] = true;
 			queueBW.add(users[i]);
 			while (!queueBW.isEmpty()) {
-				NodeImpl current = queueBW.poll();
-				NodeImpl[] in = current.in();
+				Node current = queueBW.poll();
+				Node[] in = current.in();
 				for (int j = 0; j < in.length; j++) {
 					if (!visitedBW[in[j].index()]) {
-						queueBW.add((NodeImpl) in[j]);
+						queueBW.add((Node) in[j]);
 						visitedBW[in[j].index()] = true;
 					}
 				}
 			}
 
-			ArrayList<NodeImpl> currentCluster = clusters
+			ArrayList<Node> currentCluster = clusters
 					.get(clusters.size() - 1);
 			for (int j = 0; j < users.length; j++) {
 				if (visitedFW[users[j].index()] && visitedBW[users[j].index()]) {
@@ -743,7 +743,7 @@ public class Util {
 				maxClusterIndex = i;
 			}
 		}
-		ArrayList<NodeImpl> remove = new ArrayList<NodeImpl>();
+		ArrayList<Node> remove = new ArrayList<Node>();
 		for (int i = 0; i < clusters.size(); i++) {
 			if (i != maxClusterIndex) {
 				remove.addAll(clusters.get(i));
@@ -752,9 +752,9 @@ public class Util {
 		return remove(users, remove);
 	}
 
-	private static NodeImpl[] remove(NodeImpl[] nodes,
-			ArrayList<NodeImpl> remove) {
-		ArrayList<NodeImpl> removed = new ArrayList<NodeImpl>(nodes.length
+	private static Node[] remove(Node[] nodes,
+			ArrayList<Node> remove) {
+		ArrayList<Node> removed = new ArrayList<Node>(nodes.length
 				- remove.size());
 		for (int i = 0; i < nodes.length; i++) {
 			if (!remove.contains(nodes[i])) {

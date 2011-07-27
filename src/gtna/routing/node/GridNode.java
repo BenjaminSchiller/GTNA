@@ -35,7 +35,7 @@
 */
 package gtna.routing.node;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.identifier.GridID;
 import gtna.routing.node.identifier.Identifier;
 
@@ -44,7 +44,7 @@ import java.util.Random;
 /**
  * @deprecated
  */
-public class GridNode extends NodeImpl implements IDNode {
+public class GridNode extends Node implements IDNode {
 	public GridID id;
 
 	public GridNode(int index, GridID id) {
@@ -60,7 +60,7 @@ public class GridNode extends NodeImpl implements IDNode {
 		return this.id.dist((GridID) id);
 	}
 
-	public Identifier randomID(Random rand, NodeImpl[] nodes) {
+	public Identifier randomID(Random rand, Node[] nodes) {
 		return ((GridNode) nodes[rand.nextInt(nodes.length)]).id;
 	}
 

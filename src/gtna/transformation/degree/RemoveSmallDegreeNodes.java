@@ -38,7 +38,7 @@ package gtna.transformation.degree;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 
@@ -80,13 +80,13 @@ public class RemoveSmallDegreeNodes extends TransformationImpl implements
 			}
 		}
 		Edge[] old = g.edges();
-		NodeImpl[] nodes = NodeImpl.init(counter);
+		Node[] nodes = Node.init(counter);
 		Edges edges = new Edges(nodes, 0);
 		for (int i = 0; i < old.length; i++) {
 			if (ids.containsKey(old[i].src.index())
 					&& ids.containsKey(old[i].dst.index())) {
-				NodeImpl src = nodes[ids.get(old[i].src.index())];
-				NodeImpl dst = nodes[ids.get(old[i].dst.index())];
+				Node src = nodes[ids.get(old[i].src.index())];
+				Node dst = nodes[ids.get(old[i].dst.index())];
 				edges.add(src, dst);
 			}
 		}

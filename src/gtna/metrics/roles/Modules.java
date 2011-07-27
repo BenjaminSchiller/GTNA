@@ -38,7 +38,7 @@ package gtna.metrics.roles;
 //rev tobi2
 import gtna.data.Value;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.io.DataWriter;
 import gtna.io.GraphReader;
 import gtna.metrics.Metric;
@@ -567,7 +567,7 @@ public class Modules extends MetricImpl implements Metric {
 		Group[] glist;
 		int[] gsize;
 
-		NodeImpl[] nodeListOfGivenGroup = new NodeImpl[nodeList.size()]; // nodelist of
+		Node[] nodeListOfGivenGroup = new Node[nodeList.size()]; // nodelist of
 		// the given
 		// group
 		for (int i = 0; i < nodeList.size(); i++) {
@@ -823,7 +823,7 @@ public class Modules extends MetricImpl implements Metric {
 	private int NLinksToGroupInLinks(int node, Group group, Graph g, int[] nlist) {
 		int counter = 0;
 
-		NodeImpl[] out = g.nodes[node].out();
+		Node[] out = g.nodes[node].out();
 		for (int i = 0; i < out.length; i++) {
 			if (nlist[out[i].index()] == group.getLabel()
 					&& out[i].index() != node) {
@@ -902,12 +902,12 @@ public class Modules extends MetricImpl implements Metric {
 		System.out.println("");
 		for (int i = 0; i < g.nodes.length; i++) {
 			System.out.print("Node: " + i + " -> Inlinks: ");
-			NodeImpl[] in = g.nodes[i].in();
+			Node[] in = g.nodes[i].in();
 			for (int j = 0; j < in.length; j++) {
 				System.out.print(in[j].index() + ", ");
 			}
 			System.out.print(":: Outlinks: ");
-			NodeImpl[] out = g.nodes[i].out();
+			Node[] out = g.nodes[i].out();
 			for (int j = 0; j < out.length; j++) {
 				System.out.print(out[j].index() + ", ");
 			}

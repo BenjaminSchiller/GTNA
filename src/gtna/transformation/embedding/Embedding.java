@@ -39,7 +39,7 @@ package gtna.transformation.embedding;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.graph.sorting.NodeSorting;
 import gtna.routing.node.RingNode;
 import gtna.transformation.Transformation;
@@ -125,9 +125,9 @@ public abstract class Embedding extends TransformationImpl implements
 	 *            PRNG
 	 * @return set of unique nodes selected uniformly at random
 	 */
-	protected HashSet<NodeImpl> selectNodesRandomly(NodeImpl[] nodes,
+	protected HashSet<Node> selectNodesRandomly(Node[] nodes,
 			int number, Random rand) {
-		HashSet<NodeImpl> attackers = new HashSet<NodeImpl>();
+		HashSet<Node> attackers = new HashSet<Node>();
 		while (attackers.size() < number) {
 			int index = rand.nextInt(nodes.length);
 			attackers.add(nodes[index]);
@@ -146,10 +146,10 @@ public abstract class Embedding extends TransformationImpl implements
 	 *            PRNG
 	 * @return set of the highest degree nodes from the given list
 	 */
-	protected HashSet<NodeImpl> selectNodesByDegreeDesc(NodeImpl[] nodes,
+	protected HashSet<Node> selectNodesByDegreeDesc(Node[] nodes,
 			int number, Random rand) {
-		NodeImpl[] sorted = NodeSorting.degreeDesc(nodes, rand);
-		HashSet<NodeImpl> attackers = new HashSet<NodeImpl>();
+		Node[] sorted = NodeSorting.degreeDesc(nodes, rand);
+		HashSet<Node> attackers = new HashSet<Node>();
 		for (int i = 0; i < number; i++) {
 			attackers.add(sorted[i]);
 		}
@@ -167,10 +167,10 @@ public abstract class Embedding extends TransformationImpl implements
 	 *            PRNG
 	 * @return set of lowest degree nodes from the given list
 	 */
-	protected HashSet<NodeImpl> selectNodesByDegreeAsc(NodeImpl[] nodes,
+	protected HashSet<Node> selectNodesByDegreeAsc(Node[] nodes,
 			int number, Random rand) {
-		NodeImpl[] sorted = NodeSorting.degreeDesc(nodes, rand);
-		HashSet<NodeImpl> attackers = new HashSet<NodeImpl>();
+		Node[] sorted = NodeSorting.degreeDesc(nodes, rand);
+		HashSet<Node> attackers = new HashSet<Node>();
 		for (int i = 0; i < number; i++) {
 			attackers.add(sorted[sorted.length - i - 1]);
 		}
@@ -194,16 +194,16 @@ public abstract class Embedding extends TransformationImpl implements
 	 * @return set of nodes within the bounds of the given minimum and maximum
 	 *         degree
 	 */
-	protected HashSet<NodeImpl> selectNodesByDegree(NodeImpl[] nodes,
+	protected HashSet<Node> selectNodesByDegree(Node[] nodes,
 			int number, Random rand, int min, int max) {
-		ArrayList<NodeImpl> potential = new ArrayList<NodeImpl>();
+		ArrayList<Node> potential = new ArrayList<Node>();
 		for (int i = 0; i < nodes.length; i++) {
 			int d = nodes[i].out().length + nodes[i].in().length;
 			if (min <= d && d <= max) {
 				potential.add(nodes[i]);
 			}
 		}
-		HashSet<NodeImpl> attackers = new HashSet<NodeImpl>();
+		HashSet<Node> attackers = new HashSet<Node>();
 		number = Math.min(number, potential.size());
 		while (attackers.size() < number) {
 			int index = rand.nextInt(potential.size());
@@ -212,9 +212,9 @@ public abstract class Embedding extends TransformationImpl implements
 		return attackers;
 	}
 
-	protected HashSet<NodeImpl> selectNodesAroundMedian(NodeImpl[] nodes,
+	protected HashSet<Node> selectNodesAroundMedian(Node[] nodes,
 			int number, Random rand, int setSize) {
-		NodeImpl[] sorted = NodeSorting.degreeDesc(nodes, rand);
+		Node[] sorted = NodeSorting.degreeDesc(nodes, rand);
 		int median = sorted[sorted.length / 2].out().length
 				+ sorted[sorted.length / 2].in().length;
 		int medianStart = 0;
@@ -236,11 +236,11 @@ public abstract class Embedding extends TransformationImpl implements
 		int medianIndex = medianStart + (medianEnd - medianStart) / 2;
 		int startIndex = medianIndex - (setSize / 2);
 		int endIndex = medianIndex + (setSize / 2);
-		ArrayList<NodeImpl> potential = new ArrayList<NodeImpl>(setSize);
+		ArrayList<Node> potential = new ArrayList<Node>(setSize);
 		for (int i = startIndex; i < endIndex; i++) {
 			potential.add(sorted[i]);
 		}
-		HashSet<NodeImpl> attackers = new HashSet<NodeImpl>();
+		HashSet<Node> attackers = new HashSet<Node>();
 		number = Math.min(number, setSize);
 		while (attackers.size() < number) {
 			int index = rand.nextInt(potential.size());

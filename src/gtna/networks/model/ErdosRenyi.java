@@ -40,7 +40,7 @@ import java.util.Random;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -122,12 +122,12 @@ public class ErdosRenyi extends NetworkImpl implements Network {
 	public Graph generate() {
 		Timer timer = new Timer();
 		Random rand = new Random(System.currentTimeMillis());
-		NodeImpl[] nodes = NodeImpl.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes());
 		int toAdd = (int) (this.AVERAGE_DEGREE * this.nodes() / 2);
 		Edges edges = new Edges(nodes, toAdd);
 		while (edges.size() < toAdd) {
-			NodeImpl u = nodes[rand.nextInt(nodes.length)];
-			NodeImpl v = nodes[rand.nextInt(nodes.length)];
+			Node u = nodes[rand.nextInt(nodes.length)];
+			Node v = nodes[rand.nextInt(nodes.length)];
 			if (u.index() == v.index()) {
 				continue;
 			}

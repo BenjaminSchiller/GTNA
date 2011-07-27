@@ -36,7 +36,7 @@
  */
 package gtna.transformation.embedding;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.RingNode;
 
 import java.util.HashMap;
@@ -61,7 +61,7 @@ public abstract class EmbeddingNode extends RingNode {
 	 */
 	public void initKnownIDs() {
 		this.position = new HashMap<EmbeddingNode, Integer>(this.out().length);
-		NodeImpl[] out = this.out();
+		Node[] out = this.out();
 		this.knownIDs = new double[out().length];
 		for (int i = 0; i < out.length; i++) {
 			this.position.put((EmbeddingNode) out[i], i);

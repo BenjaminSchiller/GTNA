@@ -35,7 +35,7 @@
 */
 package gtna.routing.node;
 
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.routing.node.identifier.Identifier;
 
 import java.util.Random;
@@ -81,7 +81,7 @@ public interface IDNode {
 	 *            PRNG
 	 * @return random identifier
 	 */
-	public Identifier randomID(Random rand, NodeImpl[] nodes);
+	public Identifier randomID(Random rand, Node[] nodes);
 
 	/**
 	 * Computes the distance between this node an the given one. This might
@@ -96,7 +96,7 @@ public interface IDNode {
 	
 	public int index();
 	
-	public NodeImpl[] in();
+	public Node[] in();
 	
-	public NodeImpl[] out();
+	public Node[] out();
 }

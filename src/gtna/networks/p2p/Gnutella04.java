@@ -36,7 +36,7 @@
 package gtna.networks.p2p;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -111,7 +111,7 @@ public class Gnutella04 extends NetworkImpl implements Network {
 			int u = nodeList.get(index1);
 			int v = nodeList.get(index2);
 			boolean exists = false;
-			NodeImpl[] out = nodes[u].out();
+			Node[] out = nodes[u].out();
 			for (int i = 0; i < out.length; i++) {
 				if (out[i] != null && out[i].index() == v) {
 					exists = true;
@@ -163,7 +163,7 @@ public class Gnutella04 extends NetworkImpl implements Network {
 	}
 
 	private void add(Gnutella04Node node, Gnutella04Node v) {
-		NodeImpl[] in = node.in();
+		Node[] in = node.in();
 		Gnutella04Node[] newIn = new Gnutella04Node[in.length + 1];
 		for (int i = 0; i < in.length; i++) {
 			newIn[i] = (Gnutella04Node) in[i];
@@ -192,7 +192,7 @@ public class Gnutella04 extends NetworkImpl implements Network {
 				q.add(start);
 				while (!q.isEmpty()) {
 					int current = q.poll();
-					NodeImpl[] out = nodes[current].out();
+					Node[] out = nodes[current].out();
 					for (int i = 0; i < out.length; i++) {
 						int index = ((Gnutella04Node) out[i]).index();
 						if (!visited[index]) {
@@ -242,7 +242,7 @@ public class Gnutella04 extends NetworkImpl implements Network {
 		return nodesOfDegree;
 	}
 
-	private class Gnutella04Node extends NodeImpl {
+	private class Gnutella04Node extends Node {
 		private Gnutella04Node(int index, int inOutDegree) {
 			super(index);
 			this.init(new Gnutella04Node[inOutDegree],

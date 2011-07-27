@@ -38,7 +38,7 @@ package gtna.transformation.identifier;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.graph.sorting.NodeSorting;
 import gtna.routing.node.RingNode;
 import gtna.routing.node.identifier.RingID;
@@ -65,15 +65,15 @@ public class SpanningTreeSorting extends TransformationImpl implements
 	}
 
 	public Graph transform(Graph g) {
-		NodeImpl[] nodes = new NodeImpl[g.nodes.length];
+		Node[] nodes = new Node[g.nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
 			nodes[i] = new RingNode(i, -1);
 		}
 		Edge[] original = g.edges();
 		Edges edges = new Edges(nodes, original.length);
 		for (int i = 0; i < original.length; i++) {
-			NodeImpl src = nodes[original[i].src.index()];
-			NodeImpl dst = nodes[original[i].dst.index()];
+			Node src = nodes[original[i].src.index()];
+			Node dst = nodes[original[i].dst.index()];
 			edges.add(src, dst);
 		}
 		edges.fill();
@@ -89,8 +89,8 @@ public class SpanningTreeSorting extends TransformationImpl implements
 
 		// NodeImpl max = nodes[this.index];
 
-		NodeImpl[] sorted = NodeSorting.degreeDesc(g.nodes, new Random(0));
-		NodeImpl max = (NodeImpl) sorted[this.index];
+		Node[] sorted = NodeSorting.degreeDesc(g.nodes, new Random(0));
+		Node max = (Node) sorted[this.index];
 
 		double[] start = this.init(nodes.length, -1);
 		double[] end = this.init(nodes.length, -1);
@@ -98,14 +98,14 @@ public class SpanningTreeSorting extends TransformationImpl implements
 		start[max.index()] = 0;
 		end[max.index()] = 1024;
 
-		Queue<NodeImpl> stack = new LinkedList<NodeImpl>();
+		Queue<Node> stack = new LinkedList<Node>();
 		stack.add(max);
 		int round = 0;
 		while (!stack.isEmpty()) {
 			round++;
-			NodeImpl n = stack.poll();
+			Node n = stack.poll();
 			double counter = 0;
-			NodeImpl[] out = n.out();
+			Node[] out = n.out();
 			for (int i = 0; i < out.length; i++) {
 				if (start[out[i].index()] == -1) {
 					counter++;
@@ -127,7 +127,7 @@ public class SpanningTreeSorting extends TransformationImpl implements
 
 			int index = 0;
 			for (int i = 0; i < out.length; i++) {
-				NodeImpl o = out[i];
+				Node o = out[i];
 				if (start[o.index()] == -1) {
 					start[o.index()] = start[n.index()]
 							+ ((double) index + 1.0) * width;
@@ -143,7 +143,7 @@ public class SpanningTreeSorting extends TransformationImpl implements
 			// }
 		}
 
-		HashMap<Double, NodeImpl> ids = new HashMap<Double, NodeImpl>(
+		HashMap<Double, Node> ids = new HashMap<Double, Node>(
 				nodes.length);
 		for (int i = 0; i < nodes.length; i++) {
 			double id = start[i] + (end[i] - start[i]) / 2.0;

@@ -36,7 +36,7 @@
 package gtna.transformation.degree;
 
 import gtna.graph.Graph;
-import gtna.graph.NodeImpl;
+import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 
@@ -68,7 +68,7 @@ public class RemoveDeadNodes extends TransformationImpl implements
 				ids.put(i, index++);
 			}
 		}
-		NodeImpl[] nodes = new NodeImpl[index];
+		Node[] nodes = new Node[index];
 		for (int i = 0; i < g.nodes.length; i++) {
 			if (ids.containsKey(i)) {
 				nodes[ids.get(i)] = g.nodes[i];
