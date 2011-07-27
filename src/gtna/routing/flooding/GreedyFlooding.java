@@ -73,7 +73,6 @@ public class GreedyFlooding extends RoutingAlgorithmImpl implements
 
 	}
 
-	// TODO adapt to return Route object
 	public Route randomRoute(NodeImpl[] nodes, NodeImpl src, Random rand) {
 		IDNode s = (IDNode) src;
 		Identifier dest = s.randomID(rand, nodes);

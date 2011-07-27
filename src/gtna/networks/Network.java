@@ -103,7 +103,7 @@ public interface Network {
 	 * 
 	 * @return true if the network is fully connected, false otherwise
 	 */
-	// TODO remove all? get via computed metrics? how for Series.get()???
+	// TODO remove
 	public boolean isConnected();
 
 	public double getConnectivity();
@@ -117,7 +117,7 @@ public interface Network {
 	 * 
 	 * @param connected
 	 */
-	// TODO remove all?
+	// TODO add as graph properties
 	public void setConnected(boolean connected);
 
 	public void setConnectivity(double connectivity);

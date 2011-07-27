@@ -200,7 +200,6 @@ public class Bubblecast extends RoutingAlgorithmImpl implements
 		}
 	}
 
-	// TODO adapt to return Route object
 	public Route randomRoute(NodeImpl[] nodes, NodeImpl src, Random rand) {
 		Node DSt = nodes[rand.nextInt(nodes.length)];
 		while (DSt.index() == src.index()) {

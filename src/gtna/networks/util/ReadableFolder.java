@@ -74,16 +74,8 @@ public class ReadableFolder extends NetworkImpl implements Network {
 		this.index = -1;
 		if (this.files.length == 0) {
 			super.setNodes(0);
-			// TODO remove again, just a quick fix for LMC paper
-			if (super.nodes() == 0) {
-				super.setNodes(9223);
-			}
 		} else {
 			super.setNodes(GraphReader.nodes(this.files[0], this.type));
-			// TODO remove again, just a quick fix for LMC paper
-			if (super.nodes() == 0) {
-				super.setNodes(9223);
-			}
 		}
 	}
 

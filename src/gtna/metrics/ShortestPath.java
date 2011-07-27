@@ -47,7 +47,7 @@ import gtna.util.Util;
 import java.util.Arrays;
 import java.util.Hashtable;
 
-// TODO problem with big networks (> 40.000)
+// TODO problem with averages for big networks (> 40.000)
 public class ShortestPath extends MetricImpl implements Metric {
 	private double[] lcpl;
 

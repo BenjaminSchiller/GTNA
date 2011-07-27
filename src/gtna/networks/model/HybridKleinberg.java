@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.model;
 
 import gtna.data.Series;
@@ -44,32 +44,36 @@ import gtna.transformation.Transformation;
 import gtna.util.Config;
 
 public class HybridKleinberg extends NetworkImpl implements Network {
-	// TODO "reimplement" to fit current interfaces
-//	private Series series;
-//
-//	private int dimensions;
-//
-//	private double ratio;
-//
-//	private double clusteringExponent;
-//
-//	private boolean bidirectional;
+	// private Series series;
+	//
+	// private int dimensions;
+	//
+	// private double ratio;
+	//
+	// private double clusteringExponent;
+	//
+	// private boolean bidirectional;
 
 	public HybridKleinberg(Series series, int dimensions, double ratio,
 			double clusteringExponent, boolean bidirectional,
 			RoutingAlgorithm ra, Transformation[] t) {
-		super("HYBRID_KLEINBERG", series.network().nodes(), new String[] {
-				"NETWORK", "DIMENSIONS", "RATIO", "CLUSTERING_EXPONENT",
-				"BIDIRECTIONAL" }, new String[] {
-				series.network().folder().replace(
-						Config.get("FILESYSTEM_FOLDER_DELIMITER"), ""),
-				dimensions + "", ratio + "", clusteringExponent + "",
-				bidirectional + "" }, ra, t);
-//		this.series = series;
-//		this.dimensions = dimensions;
-//		this.ratio = ratio;
-//		this.clusteringExponent = clusteringExponent;
-//		this.bidirectional = bidirectional;
+		super(
+				"HYBRID_KLEINBERG",
+				series.network().nodes(),
+				new String[] { "NETWORK", "DIMENSIONS", "RATIO",
+						"CLUSTERING_EXPONENT", "BIDIRECTIONAL" },
+				new String[] {
+						series.network()
+								.folder()
+								.replace(
+										Config.get("FILESYSTEM_FOLDER_DELIMITER"),
+										""), dimensions + "", ratio + "",
+						clusteringExponent + "", bidirectional + "" }, ra, t);
+		// this.series = series;
+		// this.dimensions = dimensions;
+		// this.ratio = ratio;
+		// this.clusteringExponent = clusteringExponent;
+		// this.bidirectional = bidirectional;
 	}
 
 	public Graph generate() {

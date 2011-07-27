@@ -69,7 +69,6 @@ public class LMCAttackRandomAll extends LMCAttack implements Transformation {
 
 	@Override
 	public boolean isAttacker(RingNode node) {
-		// TODO Auto-generated method stub
 		return attacks[node.index()];
 	}
 

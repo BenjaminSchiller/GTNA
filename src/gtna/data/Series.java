@@ -237,6 +237,9 @@ public class Series {
 			maxLength = summaryOutput.length();
 		}
 
+		boolean skipExistingDataFolders = Config
+				.getBoolean("SKIP_EXISTING_DATA_FOLDERS");
+
 		for (int i = 0; i < times; i++) {
 			int gc = Config.getInt("TIMES_TO_CALL_GARBAGE_COLLECTOR");
 			for (int j = 0; j < gc; j++) {
@@ -247,13 +250,12 @@ public class Series {
 					+ Config.get("FILESYSTEM_FOLDER_DELIMITER");
 			s.dataFolders[i] = s.graphFolders[i]
 					+ Config.get("GRAPH_DATA_FOLDER");
-			
-			// TODO remove again - BEGIN
-			if ((new File(s.dataFolders[i])).exists()) {
+
+			if (skipExistingDataFolders
+					&& (new File(s.dataFolders[i])).exists()) {
 				Output.writeln("skipping " + s.dataFolders[i]);
 				continue;
 			}
-			// TODO remove again - END
 
 			String singlesFilename = s.graphFolders[i]
 					+ Config.get("GRAPH_SINGLES_FILENAME");
@@ -292,10 +294,10 @@ public class Series {
 				Output.writeln("");
 			}
 
-			System.out
-					.println((new Date(System.currentTimeMillis())).toString()
-							+ " / "
-							+ (new Time(System.currentTimeMillis())).toString());
+			System.out.println((new Date(System.currentTimeMillis()))
+					.toString()
+					+ " / "
+					+ (new Time(System.currentTimeMillis())).toString());
 			Timer networkTimer = new Timer(networkOutput
 					+ fill(maxLength - networkOutput.length()));
 			Graph g = n.generate();
@@ -324,26 +326,16 @@ public class Series {
 			singles.write(singlesFilename);
 			swTimer.end();
 
-			// TODO include again / make configurable
+			// TODO write graph depending on configuration
+			// TODO write properties in separate file
 			// Timer gTimer = new Timer(graphOutput
 			// + fill(maxLength - graphOutput.length()));
 			// GraphWriter.write(g, graphFilename);
 			// gTimer.end();
-			// TODO include again.... (make configurable
 			// Timer gInfoTimer = new Timer(graphInfoOutput
 			// + fill(maxLength - graphInfoOutput.length()));
 			// GraphWriter.write(g, graphInfoFilename, GraphWriter.INFO_FORMAT);
 			// gInfoTimer.end();
-			// TODO remove???
-			// if (g.nodes[i] instanceof IDNode
-			// && (((IDNode) g.nodes[i]).id() instanceof GridID)
-			// && (((GridID) ((IDNode) g.nodes[i]).id()).x.length == 2)) {
-			// Timer gCoordinatesTimer = new Timer(graphCoordinatesOutput
-			// + fill(maxLength - graphIDsOutput.length()));
-			// GraphWriter.write(g, graphCoordinatesFilename,
-			// GraphWriter.GML_WITH_COORDINATES_FORMAT);
-			// gCoordinatesTimer.end();
-			// }
 
 			for (int j = 0; j < gc; j++) {
 				System.gc();

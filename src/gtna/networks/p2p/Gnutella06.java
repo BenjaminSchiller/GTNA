@@ -60,7 +60,6 @@ import java.util.Random;
  * @author benni
  * 
  */
-// TODO include detailed description of all parameters
 public class Gnutella06 extends NetworkImpl implements Network {
 	private int NETWORK_INIT_SIZE;
 

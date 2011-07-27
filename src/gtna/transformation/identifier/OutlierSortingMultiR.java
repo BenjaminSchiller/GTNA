@@ -46,7 +46,6 @@ import gtna.transformation.TransformationImpl;
 import java.util.Random;
 import java.util.Vector;
 
-// TODO finalize and make description
 public class OutlierSortingMultiR extends TransformationImpl implements
 		Transformation {
 	// allowed distance to best Position

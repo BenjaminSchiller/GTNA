@@ -5,6 +5,7 @@ temp
 resources
 src/gtna/GTNA2.java
 #src/gtna/IDSorting.java
+bin
 
 # Exceptions
 !src/gtna/data

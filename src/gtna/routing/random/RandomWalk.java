@@ -64,7 +64,6 @@ public class RandomWalk extends RoutingAlgorithmImpl implements
 		return;
 	}
 
-	// TODO adapt to return Route object
 	public Route randomRoute(NodeImpl[] nodes, NodeImpl src, Random rand) {
 		int l = this
 				.route(src, src, nodes[rand.nextInt(nodes.length)], rand, 0);

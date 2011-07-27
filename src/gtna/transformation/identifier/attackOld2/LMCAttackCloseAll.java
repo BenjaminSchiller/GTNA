@@ -74,8 +74,6 @@ public class LMCAttackCloseAll extends LMCAttack implements Transformation {
 
 	@Override
 	public void lauchAttackActive(RingNode node, Random rand) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

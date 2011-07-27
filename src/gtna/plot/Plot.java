@@ -683,7 +683,6 @@ public class Plot {
 				return;
 			}
 		}
-		// TODO adapt configuration parameters
 		String filename = Config.get(plotKey + "_PLOT_FILENAME");
 		String ext = Config.get("PLOT_EXTENSION");
 		String title = Config.get(plotKey + "_PLOT_TITLE");

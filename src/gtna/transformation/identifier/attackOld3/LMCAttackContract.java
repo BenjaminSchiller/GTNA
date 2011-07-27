@@ -96,7 +96,6 @@ public class LMCAttackContract extends LMCAttackNew {
 
 	@Override
 	public boolean isAttacker(RingNode node) {
-		// TODO Auto-generated method stub
 		return attacks[node.index()];
 	}
 
