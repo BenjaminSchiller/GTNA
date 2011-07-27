@@ -34,11 +34,11 @@
  * 2011-06-14 : v1 (BS)
  *
  */
-package gtna.transformation.sorting.lmc;
+package gtna.transformation.embedding.lmc;
 
 import gtna.graph.NodeImpl;
 import gtna.routing.node.identifier.RingID;
-import gtna.transformation.sorting.SortingNode;
+import gtna.transformation.embedding.EmbeddingNode;
 
 import java.util.Random;
 
@@ -46,7 +46,7 @@ import java.util.Random;
  * @author "Benjamin Schiller"
  * 
  */
-public class LMCNode extends SortingNode {
+public class LMCNode extends EmbeddingNode {
 
 	protected LMC lmc;
 

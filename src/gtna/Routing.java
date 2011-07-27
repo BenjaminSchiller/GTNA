@@ -48,8 +48,8 @@ import gtna.routing.greedy.GreedyNextBestBacktracking;
 import gtna.routing.lookahead.Lookahead;
 import gtna.routing.twoPhase.TwoPhaseGreedyRegistration;
 import gtna.transformation.Transformation;
+import gtna.transformation.embedding.lmc.LMC;
 import gtna.transformation.identifier.RandomID;
-import gtna.transformation.sorting.lmc.LMC;
 import gtna.util.Config;
 
 /**

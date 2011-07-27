@@ -21,50 +21,55 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * LocalMCAttackCloseAll.java
+ * SortingNodeImpl.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Stefanie Roos;
- * Contributors:    Benjamin Schiller;
+ * Original Author: "Benjamin Schiller";
+ * Contributors:    "Stefanie Roos";
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- * 2011-06-06 : changed names of variables and parameters (BS)
- * 2011-06-06 : removed duplicate methods (BS)
+ * 2011-06-14 : v1 (BS)
  *
  */
-package gtna.transformation.identifier.attackOld;
+package gtna.transformation.embedding;
 
+import gtna.graph.NodeImpl;
 import gtna.routing.node.RingNode;
 
+import java.util.HashMap;
 import java.util.Random;
 
-public class LocalMCAttackCloseAll extends LocalMCAttack {
+/**
+ * @author "Benjamin Schiller"
+ * 
+ */
+public abstract class EmbeddingNode extends RingNode {
 
-	public LocalMCAttackCloseAll(int mode, int iterations, double p,
-			double delta, int c, boolean includeDegree1, int attackers) {
-		super("LOCALMC_ATTACK_CLOSE_ALL", mode, iterations, p, delta, c,
-				includeDegree1, attackers);
+	protected HashMap<EmbeddingNode, Integer> position;
+
+	protected double[] knownIDs;
+
+	public EmbeddingNode(int index, double pos) {
+		super(index, pos);
 	}
 
-	public void lauchAttackActive(RingNode node, Random rand) {
-
-	}
-
-	public double lauchAttackPassiv(RingNode node, RingNode cur, double min,
-			Random rand) {
-		double res;
-		if (this.mode == 2 || this.mode == 3) {
-			res = cur.getID().pos + min + min * rand.nextDouble();
-		} else {
-			res = cur.getID().pos + min * rand.nextDouble();
+	/**
+	 * must be called after creating the outgoing edges of this node
+	 */
+	public void initKnownIDs() {
+		this.position = new HashMap<EmbeddingNode, Integer>(this.out().length);
+		NodeImpl[] out = this.out();
+		this.knownIDs = new double[out().length];
+		for (int i = 0; i < out.length; i++) {
+			this.position.put((EmbeddingNode) out[i], i);
 		}
-		if (res > 1) {
-			res = res - 1;
-		}
-		return res;
 	}
+
+	public abstract void updateNeighbors(Random rand);
+
+	public abstract void turn(Random rand);
 
 }

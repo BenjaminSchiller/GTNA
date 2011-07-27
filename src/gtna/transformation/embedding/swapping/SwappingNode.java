@@ -34,11 +34,11 @@
  * 2011-06-14 : v1 (BS)
  *
  */
-package gtna.transformation.sorting.swapping;
+package gtna.transformation.embedding.swapping;
 
 import gtna.graph.NodeImpl;
 import gtna.routing.node.identifier.RingID;
-import gtna.transformation.sorting.SortingNode;
+import gtna.transformation.embedding.EmbeddingNode;
 
 import java.util.Random;
 
@@ -46,7 +46,7 @@ import java.util.Random;
  * @author "Benjamin Schiller"
  * 
  */
-public class SwappingNode extends SortingNode {
+public class SwappingNode extends EmbeddingNode {
 	
 	public static final double NO_SWAP = Double.MIN_VALUE;
 

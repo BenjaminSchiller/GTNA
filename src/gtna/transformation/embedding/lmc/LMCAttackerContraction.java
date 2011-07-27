@@ -21,56 +21,64 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * LocalMCAttackCloseOne.java
+ * LMCAttackerContraction.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Stefanie Roos;
- * Contributors:    Benjamin Schiller;
+ * Original Author: "Benjamin Schiller";
+ * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- * 2011-06-06 : changed names of variables and parameters (BS)
- * 2011-06-06 : removed duplicate methods (BS)
  *
  */
-package gtna.transformation.identifier.attackOld;
+package gtna.transformation.embedding.lmc;
 
-import gtna.routing.node.RingNode;
+import gtna.graph.NodeImpl;
 
-import java.util.HashMap;
 import java.util.Random;
 
-public class LocalMCAttackCloseOne extends LocalMCAttack {
+/**
+ * @author "Benjamin Schiller"
+ * 
+ */
+public class LMCAttackerContraction extends LMCNode {
 
-	HashMap<Integer, Integer> toAttack;
+	private LMCNode neighbor = null;
 
-	public LocalMCAttackCloseOne(int mode, int iterations, double p,
-			double delta, int c, boolean includeDegree1, int attackers) {
-		super("LOCALMC_ATTACK_CLOSE_ONE", mode, iterations, p, delta, c,
-				includeDegree1, attackers);
+	private int index;
+
+	public LMCAttackerContraction(int index, double pos, LMC lmc) {
+		super(index, pos, lmc);
 	}
 
-	public void lauchAttackActive(RingNode node, Random rand) {
-
+	/**
+	 * choose an ID close to the selected neighbor
+	 */
+	public void turn(Random rand) {
+		this.getID().pos = this.ask(this, rand);
 	}
 
-	public double lauchAttackPassiv(RingNode node, RingNode cur, double min,
-			Random rand) {
-		double res;
-		if (!node.out()[toAttack.get(node.index())].equals(cur)) {
-			return node.getID().pos;
+	/**
+	 * return an ID close to one selected neighbor hoping all neighbors will
+	 * converge to this position
+	 */
+	protected double ask(LMCNode caller, Random rand) {
+		// choose a random neighbor to contract to
+		if (this.neighbor == null) {
+			NodeImpl[] out = this.out();
+			this.index = rand.nextInt(out.length);
+			this.neighbor = (LMCNode) out[this.index];
 		}
-		if (this.mode == 2 || this.mode == 3) {
-			res = cur.getID().pos + min + min * rand.nextDouble();
+
+		// return ID close to the selected neighbor
+		if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
+			return (this.knownIDs[this.index] + this.lmc.delta
+					* (1.0 + rand.nextDouble())) % 1.0;
 		} else {
-			res = cur.getID().pos + min * rand.nextDouble();
+			return (this.knownIDs[this.index] + this.lmc.delta
+					* rand.nextDouble()) % 1.0;
 		}
-		if (res > 1) {
-			res = res - 1;
-		}
-		return res;
 	}
-
 }

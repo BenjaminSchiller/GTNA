@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.sorting.swapping;
+package gtna.transformation.embedding.swapping;
 
 import java.util.Arrays;
 import java.util.Random;

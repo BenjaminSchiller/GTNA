@@ -34,7 +34,7 @@
  * 2011-06-14 : v1 (BS)
  *
  */
-package gtna.transformation.sorting;
+package gtna.transformation.embedding;
 
 import gtna.graph.Edge;
 import gtna.graph.Edges;
@@ -53,7 +53,7 @@ import java.util.Random;
  * @author "Benjamin Schiller"
  * 
  */
-public abstract class Sorting extends TransformationImpl implements
+public abstract class Embedding extends TransformationImpl implements
 		Transformation {
 
 	protected int iterations;
@@ -63,7 +63,7 @@ public abstract class Sorting extends TransformationImpl implements
 	 * @param configKeys
 	 * @param configValues
 	 */
-	public Sorting(int iterations, String key, String[] configKeys,
+	public Embedding(int iterations, String key, String[] configKeys,
 			String[] configValues) {
 		super(key, configKeys, configValues);
 		this.iterations = iterations;
@@ -75,8 +75,8 @@ public abstract class Sorting extends TransformationImpl implements
 
 	public Graph transform(Graph g) {
 		Random rand = new Random();
-		SortingNode[] nodes = this.generateNodes(g, rand);
-		SortingNode[] selectionSet = this.generateSelectionSet(nodes, rand);
+		EmbeddingNode[] nodes = this.generateNodes(g, rand);
+		EmbeddingNode[] selectionSet = this.generateSelectionSet(nodes, rand);
 		for (int i = 0; i < this.iterations * selectionSet.length; i++) {
 			int index = rand.nextInt(selectionSet.length);
 			if (selectionSet[index].out().length > 0) {
@@ -97,7 +97,7 @@ public abstract class Sorting extends TransformationImpl implements
 	 *            PRNG
 	 * @return set of SortingNodes generated from the input graph
 	 */
-	protected abstract SortingNode[] generateNodes(Graph g, Random rand);
+	protected abstract EmbeddingNode[] generateNodes(Graph g, Random rand);
 
 	/**
 	 * Generates a selection set of all nodes that contains every node that
@@ -111,7 +111,7 @@ public abstract class Sorting extends TransformationImpl implements
 	 * @return selection set of all nodes containing every node that should
 	 *         perform turn actions
 	 */
-	protected abstract SortingNode[] generateSelectionSet(SortingNode[] nodes,
+	protected abstract EmbeddingNode[] generateSelectionSet(EmbeddingNode[] nodes,
 			Random rand);
 
 	/**
@@ -260,12 +260,12 @@ public abstract class Sorting extends TransformationImpl implements
 	 * @param nodes
 	 *            nodes to add edges for
 	 */
-	protected void init(Graph g, SortingNode[] nodes) {
+	protected void init(Graph g, EmbeddingNode[] nodes) {
 		Edges edges = new Edges(nodes, g.edges);
 		Edge[] oldEdges = g.edges();
 		for (int i = 0; i < oldEdges.length; i++) {
-			SortingNode src = nodes[oldEdges[i].src.index()];
-			SortingNode dst = nodes[oldEdges[i].dst.index()];
+			EmbeddingNode src = nodes[oldEdges[i].src.index()];
+			EmbeddingNode dst = nodes[oldEdges[i].dst.index()];
 			edges.add(src, dst);
 		}
 		edges.fill();

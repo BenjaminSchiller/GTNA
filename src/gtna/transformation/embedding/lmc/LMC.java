@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Swapping.java
+ * LMC.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,13 +33,13 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.sorting.swapping;
+package gtna.transformation.embedding.lmc;
 
 import gtna.graph.Graph;
 import gtna.graph.NodeImpl;
 import gtna.routing.node.RingNode;
-import gtna.transformation.sorting.Sorting;
-import gtna.transformation.sorting.SortingNode;
+import gtna.transformation.embedding.Embedding;
+import gtna.transformation.embedding.EmbeddingNode;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -48,7 +48,15 @@ import java.util.Random;
  * @author "Benjamin Schiller"
  * 
  */
-public class Swapping extends Sorting {
+public class LMC extends Embedding {
+
+	public static final String MODE_UNRESTRICTED = "UNRESTRICTED";
+
+	public static final String MODE_RESTRICTED = "RESTRICTED";
+
+	public static final String DELTA_1_N = "1_N";
+
+	public static final String DELTA_1_N2 = "1_N_2";
 
 	public static final String ATTACK_CONVERGENCE = "CONVERGENCE";
 
@@ -68,9 +76,15 @@ public class Swapping extends Sorting {
 
 	public static final String ATTACKER_SELECTION_NONE = "NONE";
 
-	protected int interations;
+	protected String mode;
+
+	protected double P;
+
+	protected String deltaMode;
 
 	protected double delta;
+
+	protected int C;
 
 	protected String attack;
 
@@ -80,24 +94,29 @@ public class Swapping extends Sorting {
 
 	public static int MEDIAN_SET_SIZE = 500;
 
-	public Swapping(int iterations) {
-		this(iterations, 0, ATTACK_NONE, ATTACKER_SELECTION_NONE, 0);
+	public LMC(int iterations, String mode, double P, String deltaMode, int C) {
+		this(iterations, mode, P, deltaMode, C, ATTACK_NONE,
+				ATTACKER_SELECTION_NONE, 0);
 	}
 
-	public Swapping(int iterations, double delta, String attack,
-			String attackerSelection, int attackers) {
-		super(iterations, "SWAPPING", new String[] { "ITERATIONS", "DELTA",
-				"ATTACK", "ATTACKER_SELECTION", "ATTACKERS" }, new String[] {
-				"" + iterations, "" + delta, attack, attackerSelection,
-				"" + attackers });
-		this.iterations = iterations;
-		this.delta = delta;
+	public LMC(int iterations, String mode, double P, String deltaMode, int C,
+			String attack, String attackerSelection, int attackers) {
+		super(iterations, "LMC", new String[] { "ITERATIONS", "MODE", "P",
+				"DELTA", "C", "ATTACK", "ATTACKER_SELECTION", "ATTACKERS" },
+				new String[] { "" + iterations, mode, "" + P, deltaMode,
+						"" + C, attack, attackerSelection, "" + attackers });
+		this.mode = mode;
+		this.P = P;
+		this.deltaMode = deltaMode;
+		this.delta = 0;
+		this.C = C;
 		this.attack = attack;
 		this.attackerSelection = attackerSelection;
 		this.attackers = attackers;
 	}
 
-	protected SortingNode[] generateNodes(Graph g, Random rand) {
+	protected EmbeddingNode[] generateNodes(Graph g, Random rand) {
+		this.setDelta(g);
 		HashSet<NodeImpl> attackers = new HashSet<NodeImpl>();
 		if (!ATTACK_NONE.equals(this.attack)
 				&& !ATTACKER_SELECTION_NONE.equals(this.attackerSelection)) {
@@ -116,34 +135,53 @@ public class Swapping extends Sorting {
 						rand);
 			} else {
 				throw new IllegalArgumentException(this.attackerSelection
-						+ " is an unknown attacker selection in Swapping");
+						+ " is an unknown attacker selection in LMC");
 			}
 		}
-		SortingNode[] nodes = new SortingNode[g.nodes.length];
+		EmbeddingNode[] nodes = new EmbeddingNode[g.nodes.length];
 		for (int i = 0; i < g.nodes.length; i++) {
 			double pos = ((RingNode) g.nodes[i]).getID().pos;
 			if (attackers.contains(g.nodes[i])) {
+				// System.out.println("adding attacker @ " + i + " (D="
+				// + g.nodes[i].out().length * 2 + ")");
 				if (ATTACK_CONTRACTION.equals(this.attack)) {
-					nodes[i] = new SwappingAttackerContraction(i, pos, this);
+					nodes[i] = new LMCAttackerContraction(i, pos, this);
 				} else if (ATTACK_CONVERGENCE.equals(this.attack)) {
-					nodes[i] = new SwappingAttackerConvergence(i, pos, this);
+					nodes[i] = new LMCAttackerConvergence(i, pos, this);
 				} else if (ATTACK_KLEINBERG.equals(this.attack)) {
-					nodes[i] = new SwappingAttackerKleinberg(i, pos, this);
+					nodes[i] = new LMCAttackerKleinberg(i, pos, this);
 				} else {
 					throw new IllegalArgumentException(this.attack
 							+ " is an unknown attack in LMC");
 				}
 			} else {
-				nodes[i] = new SwappingNode(i, pos, this);
+				nodes[i] = new LMCNode(i, pos, this);
 			}
 		}
 		this.init(g, nodes);
 		return nodes;
 	}
 
-	protected SortingNode[] generateSelectionSet(SortingNode[] nodes,
+	protected EmbeddingNode[] generateSelectionSet(EmbeddingNode[] nodes,
 			Random rand) {
 		return nodes.clone();
+	}
+
+	/**
+	 * initializes delta depending on the configuration parameter deltaMode and
+	 * possibly the graph g
+	 * 
+	 * @param g
+	 *            graph on which the selection of delta might depend
+	 */
+	protected void setDelta(Graph g) {
+		if (DELTA_1_N.equals(this.deltaMode)) {
+			this.delta = 1.0 / (double) g.nodes.length;
+		} else if (DELTA_1_N2.equals(this.deltaMode)) {
+			this.delta = 1.0 / (double) (g.nodes.length * g.nodes.length);
+		} else {
+			this.delta = Double.parseDouble(this.deltaMode);
+		}
 	}
 
 }

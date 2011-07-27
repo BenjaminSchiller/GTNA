@@ -21,55 +21,44 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * SortingNodeImpl.java
+ * LMCAttackerConvergence.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
  * Original Author: "Benjamin Schiller";
- * Contributors:    "Stefanie Roos";
+ * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- * 2011-06-14 : v1 (BS)
  *
  */
-package gtna.transformation.sorting;
+package gtna.transformation.embedding.lmc;
 
-import gtna.graph.NodeImpl;
-import gtna.routing.node.RingNode;
-
-import java.util.HashMap;
 import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-public abstract class SortingNode extends RingNode {
+public class LMCAttackerConvergence extends LMCNode {
 
-	protected HashMap<SortingNode, Integer> position;
-
-	protected double[] knownIDs;
-
-	public SortingNode(int index, double pos) {
-		super(index, pos);
+	public LMCAttackerConvergence(int index, double pos, LMC lmc) {
+		super(index, pos, lmc);
 	}
 
 	/**
-	 * must be called after creating the outgoing edges of this node
+	 * select a random ID
 	 */
-	public void initKnownIDs() {
-		this.position = new HashMap<SortingNode, Integer>(this.out().length);
-		NodeImpl[] out = this.out();
-		this.knownIDs = new double[out().length];
-		for (int i = 0; i < out.length; i++) {
-			this.position.put((SortingNode) out[i], i);
-		}
+	public void turn(Random rand) {
+		this.getID().pos = rand.nextDouble();
 	}
 
-	public abstract void updateNeighbors(Random rand);
-
-	public abstract void turn(Random rand);
+	/**
+	 * return a random ID
+	 */
+	protected double ask(LMCNode caller, Random rand) {
+		return rand.nextDouble();
+	}
 
 }

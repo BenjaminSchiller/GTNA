@@ -21,43 +21,55 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * LocalMCAttackRandomOne.java
+ * LMCAttackerKleinberg.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: stefanie;
+ * Original Author: "Benjamin Schiller";
  * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- * 2011-06-06 : changed names of variables and parameters (BS)
- * 2011-06-06 : removed duplicate methods (BS)
  *
  */
-package gtna.transformation.identifier.attackOld;
+package gtna.transformation.embedding.lmc;
 
-import gtna.routing.node.RingNode;
+import gtna.transformation.embedding.swapping.SwappingAttackerKleinberg;
 
 import java.util.Random;
 
-public class LocalMCAttackRandomOne extends LocalMCAttack {
+/**
+ * @author "Benjamin Schiller"
+ * 
+ */
+public class LMCAttackerKleinberg extends LMCNode {
 
-	public LocalMCAttackRandomOne(int mode, int iterations, double p,
-			double delta, int c, boolean includeDegree1, int attackers) {
-		super("LOCALMC_ATTACK_RANDOM_ONE", mode, iterations, p, delta, c,
-				includeDegree1, attackers);
+	public LMCAttackerKleinberg(int index, double pos, LMC lmc) {
+		super(index, pos, lmc);
 	}
 
-	public void lauchAttackActive(RingNode node, Random rand) {
-		node.getID().pos = rand.nextDouble();
-
+	/**
+	 * select ID at longest distance to any node
+	 */
+	public void turn(Random rand) {
+		double[] neighbors = this.knownIDs.clone();
+		this.getID().pos = (SwappingAttackerKleinberg.maxMiddle(neighbors) + rand
+				.nextDouble()
+				* this.lmc.delta) % 1.0;
 	}
 
-	public double lauchAttackPassiv(RingNode node, RingNode cur, double min,
-			Random rand) {
-
-		return node.getID().pos;
+	/**
+	 * return ID close to neighbor to keep it from changing IDs
+	 */
+	protected double ask(LMCNode caller, Random rand) {
+		int index = this.position.get(caller);
+		if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
+			return (this.knownIDs[index] + this.lmc.delta
+					* (1.0 + rand.nextDouble())) % 1.0;
+		} else {
+			return (this.knownIDs[index] + this.lmc.delta * rand.nextDouble()) % 1.0;
+		}
 	}
 
 }
