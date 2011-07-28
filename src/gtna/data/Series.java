@@ -46,7 +46,7 @@ import gtna.util.Timer;
 import java.io.File;
 import java.sql.Date;
 import java.sql.Time;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class Series {
 	private Network network;
@@ -310,7 +310,7 @@ public class Series {
 			networkTimer.end();
 
 			// metrics = Config.getMetrics();
-			Hashtable<String, Metric> computedMetrics = new Hashtable<String, Metric>();
+			HashMap<String, Metric> computedMetrics = new HashMap<String, Metric>();
 			for (int j = 0; j < metrics.length; j++) {
 				Timer timer = new Timer("  - " + metrics[j].name()
 						+ fill(maxLength - 4 - metrics[j].name().length()));

@@ -37,7 +37,6 @@ package gtna.metrics;
 
 import gtna.util.Config;
 
-//TODO reimplement MetricImpl
 public abstract class MetricImpl implements Metric {
 	private String key;
 
