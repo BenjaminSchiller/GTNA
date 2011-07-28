@@ -35,10 +35,9 @@
  */
 package gtna;
 
-import gtna.graph.Edge;
+import gtna.data.Series;
 import gtna.graph.Graph;
-import gtna.io.GraphReader;
-import gtna.io.GraphWriter;
+import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.canonical.Complete;
 import gtna.networks.canonical.Ring;
@@ -50,6 +49,8 @@ import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GN;
 import gtna.networks.model.Gilbert;
 import gtna.networks.p2p.CAN;
+import gtna.plot.Plot;
+import gtna.util.Config;
 import gtna.util.Stats;
 
 import java.util.HashMap;
@@ -76,26 +77,48 @@ public class NodesTest {
 		// testHash1(50000000);
 		// testHash2(50000000);
 		// testHash3(50000000);
-		testNW();
+		// testNW();
+		testMetrics();
+	}
+
+	private static void testMetrics() {
+		Config.overwrite("METRICS", "SP");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/testMetrics/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testMetrics/");
+		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
+		// Network nw = new ErdosRenyi(1000, 20, true, null, null);
+		// Series s = Series.generate(nw, 1);
+		// Plot.multiAvg(s, "multi-avg/");
+		// Plot.multiConf(s, "multi-conf/");
+		// Plot.multiVar(s, "multi-var/");
+		Network[] nw2 = ErdosRenyi.get(1000, new double[] { 10, 20, 30, 40 },
+				true, null, null);
+		Series[] s2 = Series.generate(nw2, 2);
+		Plot.singlesAvg(s2, "single-avg/");
+		Plot.multiAvg(s2, "multi-avg/");
 	}
 
 	private static void testNW() {
 		Network nw = null;
-		nw = new Star(10, null, null);
-		nw = new Ring(10, null, null);
-		nw = new Complete(5, null, null);
-		nw = new BarabasiAlbert(100, 2, null, null);
-		nw = new Communities3(new int[] { 100, 200 }, new double[][] {
-				new double[] { 0.5, 0.1 }, new double[] { 0.1, 0.5 } },
-				Communities3.RANDOM_ORDER, false, null, null);
-		nw = new DeBruijn(2, 3, null, null);
-		nw = new Gilbert(10, 100, true, null, null);
-		nw = new GN(10, false, null, null);
-		nw = new CAN(100, 2, 1, null, null);
+		// nw = new Star(10, null, null);
+		// nw = new Ring(10, null, null);
+		// nw = new Complete(5, null, null);
+		// nw = new BarabasiAlbert(100, 2, null, null);
+		// nw = new Communities3(new int[] { 100, 200 }, new double[][] {
+		// new double[] { 0.5, 0.1 }, new double[] { 0.1, 0.5 } },
+		// Communities3.RANDOM_ORDER, false, null, null);
+		// nw = new DeBruijn(2, 3, null, null);
+		nw = new ErdosRenyi(10, 2, true, null, null);
+		// nw = new Gilbert(10, 100, true, null, null);
+		// nw = new GN(10, false, null, null);
+		// nw = new CAN(10, 2, 1, null, null);
 		Graph graph = nw.generate();
-		GraphWriter.write(graph, "./temp/test1.txt");
-		Graph graph2 = GraphReader.read("./temp/test1.txt");
-		GraphWriter.write(graph2, "./temp/test2.txt");
+		for (Node n : graph.getNodes()) {
+			System.out.println(n);
+		}
+		// GraphWriter.write(graph, "./temp/test1.txt");
+		// Graph graph2 = GraphReader.read("./temp/test1.txt");
+		// GraphWriter.write(graph2, "./temp/test2.txt");
 		// Edge[] edges = graph.generateOutgoingEdges();
 		// for (Edge e : edges) {
 		// System.out.println(e);

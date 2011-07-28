@@ -35,100 +35,146 @@
  */
 package gtna.metrics;
 
-//TODO reimplement DegreeDistribution
-public class DegreeDistribution {
-	// public class DegreeDistribution extends MetricImpl implements Metric {
-	// public double[] dd;
-	//
-	// public double[] ddi;
-	//
-	// public double[] ddo;
-	//
-	// public double[] ecd;
-	//
-	// public double[] ecdi;
-	//
-	// public double[] ecdo;
-	//
-	// public Timer timer;
-	//
-	// public Graph g;
-	//
-	// public DegreeDistribution() {
-	// super("DD");
-	// }
-	//
-	// public void computeData(Graph g, Network n, Hashtable<String, Metric> m)
-	// {
-	// this.timer = new Timer();
-	// this.g = g;
-	// long[] DD = new long[g.maxDegree + 1];
-	// long[] DDI = new long[g.maxInDegree + 1];
-	// long[] DDO = new long[g.maxOutDegree + 1];
-	// for (int i = 0; i < g.nodes.length; i++) {
-	// DD[g.nodes[i].in().length + g.nodes[i].out().length]++;
-	// DDI[g.nodes[i].in().length]++;
-	// DDO[g.nodes[i].out().length]++;
-	// }
-	// // DD
-	// this.dd = new double[g.maxDegree + 1];
-	// for (int i = 0; i < DD.length; i++) {
-	// this.dd[i] = (double) DD[i] / (double) g.nodes.length;
-	// }
-	// // DDI
-	// this.ddi = new double[g.maxInDegree + 1];
-	// for (int i = 0; i < DDI.length; i++) {
-	// this.ddi[i] = (double) DDI[i] / (double) g.nodes.length;
-	// }
-	// // DDO
-	// this.ddo = new double[g.maxOutDegree + 1];
-	// for (int i = 0; i < DDO.length; i++) {
-	// this.ddo[i] = (double) DDO[i] / (double) g.nodes.length;
-	// }
-	// // ECD
-	// this.ecd = new double[g.maxDegree + 1];
-	// this.ecd[0] = this.dd[0];
-	// for (int i = 1; i < this.dd.length; i++) {
-	// this.ecd[i] = ecd[i - 1] + this.dd[i];
-	// }
-	// // ECDI
-	// this.ecdi = new double[g.maxInDegree + 1];
-	// this.ecdi[0] = this.ddi[0];
-	// for (int i = 1; i < this.ddi.length; i++) {
-	// this.ecdi[i] = ecdi[i - 1] + this.ddi[i];
-	// }
-	// // ECDO
-	// this.ecdo = new double[g.maxOutDegree + 1];
-	// this.ecdo[0] = this.ddo[0];
-	// for (int i = 1; i < this.ddo.length; i++) {
-	// this.ecdo[i] = ecdo[i - 1] + this.ddo[i];
-	// }
-	// this.timer.end();
-	// }
-	//
-	// public Value[] getValues(Value[] values) {
-	// Value NODES = new Value("NODES", this.g.nodes.length);
-	// Value EDGES = new Value("EDGES", this.g.edges);
-	// Value D_AVG = new Value("D_AVG", this.g.avgDegree);
-	// Value D_MAX = new Value("D_MAX", this.g.maxDegree);
-	// Value D_MIN = new Value("D_MIN", this.g.minDegree);
-	// Value DI_MAX = new Value("DI_MAX", this.g.maxInDegree);
-	// Value DI_MIN = new Value("DI_MIN", this.g.minInDegree);
-	// Value DO_MAX = new Value("DO_MAX", this.g.maxOutDegree);
-	// Value DO_MIN = new Value("DO_MIN", this.g.minOutDegree);
-	// Value DD_RT = new Value("DD_RT", this.timer.rt());
-	// Value GG_RT = new Value("GG_RT", this.g.timer.rt());
-	// return new Value[] { NODES, EDGES, D_AVG, D_MAX, D_MIN, DI_MAX, DI_MIN,
-	// DO_MAX, DO_MIN, DD_RT, GG_RT };
-	// }
-	//
-	// public boolean writeData(String folder) {
-	// DataWriter.writeWithIndex(this.dd, "DD", folder);
-	// DataWriter.writeWithIndex(this.ddi, "DDI", folder);
-	// DataWriter.writeWithIndex(this.ddo, "DDO", folder);
-	// DataWriter.writeWithIndex(this.ecd, "ECD", folder);
-	// DataWriter.writeWithIndex(this.ecdi, "ECDI", folder);
-	// DataWriter.writeWithIndex(this.ecdo, "ECDO", folder);
-	// return true;
-	// }
+import gtna.data.Value;
+import gtna.graph.Graph;
+import gtna.graph.Node;
+import gtna.io.DataWriter;
+import gtna.networks.Network;
+import gtna.util.Distribution;
+import gtna.util.Timer;
+
+import java.util.HashMap;
+
+public class DegreeDistribution extends MetricImpl implements Metric {
+	private Distribution degreeDistribution;
+
+	private Distribution inDegreeDistribution;
+
+	private Distribution outDegreeDistribution;
+
+	private int nodes;
+
+	private int edges;
+
+	private Timer timer;
+
+	public DegreeDistribution() {
+		super("DD");
+	}
+
+	public void computeData(Graph graph, Network nw, HashMap<String, Metric> m) {
+		this.timer = new Timer();
+
+		double[] dd = new double[this.maxDegree(graph) + 1];
+		double[] ddi = new double[this.maxInDegree(graph) + 1];
+		double[] ddo = new double[this.maxOutDegree(graph) + 1];
+
+		for (Node n : graph.getNodes()) {
+			dd[n.getDegree()]++;
+			ddi[n.getInDegree()]++;
+			ddo[n.getOutDegree()]++;
+		}
+		for (int i = 0; i < dd.length; i++) {
+			dd[i] /= (double) graph.getNodes().length;
+		}
+		for (int i = 0; i < ddi.length; i++) {
+			ddi[i] /= (double) graph.getNodes().length;
+		}
+		for (int i = 0; i < ddo.length; i++) {
+			ddo[i] /= (double) graph.getNodes().length;
+		}
+
+		this.degreeDistribution = new Distribution(dd);
+		this.inDegreeDistribution = new Distribution(ddi);
+		this.outDegreeDistribution = new Distribution(ddo);
+
+		this.nodes = graph.getNodes().length;
+		this.edges = graph.generateIncomingEdges().length;
+
+		this.timer.end();
+	}
+
+	private int maxDegree(Graph graph) {
+		int max = 0;
+		for (Node n : graph.getNodes()) {
+			max = Math.max(max, n.getDegree());
+		}
+		return max;
+	}
+
+	private int maxInDegree(Graph graph) {
+		int max = 0;
+		for (Node n : graph.getNodes()) {
+			max = Math.max(max, n.getInDegree());
+		}
+		return max;
+	}
+
+	private int maxOutDegree(Graph graph) {
+		int max = 0;
+		for (Node n : graph.getNodes()) {
+			max = Math.max(max, n.getOutDegree());
+		}
+		return max;
+	}
+
+	public Value[] getValues() {
+		Value nodes = new Value("DD_NODES", this.nodes);
+		Value edges = new Value("DD_EDGES", this.edges);
+
+		Value degreeMin = new Value("DD_DEGREE_MIN",
+				this.degreeDistribution.getMin());
+		Value degreeMed = new Value("DD_DEGREE_MED",
+				this.degreeDistribution.getMedian());
+		Value degreeAvg = new Value("DD_DEGREE_AVG",
+				this.degreeDistribution.getAverage());
+		Value degreeMax = new Value("DD_DEGREE_MAX",
+				this.degreeDistribution.getMax());
+
+		Value inDegreeMin = new Value("DD_IN_DEGREE_MIN",
+				this.inDegreeDistribution.getMin());
+		Value inDegreeMed = new Value("DD_IN_DEGREE_MED",
+				this.inDegreeDistribution.getMedian());
+		Value inDegreeAvg = new Value("DD_IN_DEGREE_AVG",
+				this.inDegreeDistribution.getAverage());
+		Value inDegreeMax = new Value("DD_IN_DEGREE_MAX",
+				this.inDegreeDistribution.getMax());
+
+		Value outDegreeMin = new Value("DD_OUT_DEGREE_MIN",
+				this.outDegreeDistribution.getMin());
+		Value outDegreeMed = new Value("DD_OUT_DEGREE_MED",
+				this.outDegreeDistribution.getMedian());
+		Value outDegreeAvg = new Value("DD_OUT_DEGREE_AVG",
+				this.outDegreeDistribution.getAverage());
+		Value outDegreeMax = new Value("DD_OUT_DEGREE_MAX",
+				this.outDegreeDistribution.getMax());
+
+		Value runtime = new Value("DD_RUNTIME", this.timer.getRuntime());
+
+		return new Value[] { nodes, edges, degreeMin, degreeMed, degreeAvg,
+				degreeMax, inDegreeMin, inDegreeMed, inDegreeAvg, inDegreeMax,
+				outDegreeMin, outDegreeMed, outDegreeAvg, outDegreeMax, runtime };
+	}
+
+	public boolean writeData(String folder) {
+		boolean success = true;
+		success &= DataWriter.writeWithIndex(
+				this.degreeDistribution.getDistribution(),
+				"DD_DEGREE_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.degreeDistribution.getCdf(),
+				"DD_DEGREE_DISTRIBUTION_CDF", folder);
+		success &= DataWriter.writeWithIndex(
+				this.inDegreeDistribution.getDistribution(),
+				"DD_IN_DEGREE_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(
+				this.inDegreeDistribution.getCdf(),
+				"DD_IN_DEGREE_DISTRIBUTION_CDF", folder);
+		success &= DataWriter.writeWithIndex(
+				this.outDegreeDistribution.getDistribution(),
+				"DD_OUT_DEGREE_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(
+				this.outDegreeDistribution.getCdf(),
+				"DD_OUT_DEGREE_DISTRIBUTION_CDF", folder);
+		return success;
+	}
 }
