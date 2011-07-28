@@ -37,6 +37,8 @@ package gtna.graph;
 
 import gtna.util.Timer;
 
+import java.util.HashMap;
+
 public class Graph {
 	private String name;
 
@@ -44,62 +46,72 @@ public class Graph {
 
 	private Timer timer;
 
+	private HashMap<String, Object[]> properties;
+
 	public Graph(String name) {
 		this.name = name;
 		this.timer = new Timer();
-	}
-
-	public void setNodes(Node[] nodes) {
-		this.nodes = nodes;
-		this.timer.end();
+		this.properties = new HashMap<String, Object[]>();
 	}
 
 	public String toString() {
 		return this.name + " (" + this.nodes.length + ")";
 	}
-	
-	public Edge[] generateEdges(){
+
+	public void addProperty(String key, Object[] property) {
+		this.properties.put(key, property);
+	}
+
+	public boolean hasProperty(String key) {
+		return this.properties.containsKey(key);
+	}
+
+	public Object[] getProperty(String key) {
+		return this.properties.get(key);
+	}
+
+	public Edge[] generateEdges() {
 		int E = 0;
-		for(Node n : this.nodes){
+		for (Node n : this.nodes) {
 			E += n.getDegree();
 		}
 		Edge[] edges = new Edge[E];
 		int index = 0;
-		for(Node n : this.nodes){
-			for(int out : n.getOutgoingEdges()){
+		for (Node n : this.nodes) {
+			for (int out : n.getOutgoingEdges()) {
 				edges[index++] = new Edge(n.getIndex(), out);
 			}
-			for(int in : n.getIncomingEdges()){
+			for (int in : n.getIncomingEdges()) {
 				edges[index++] = new Edge(in, n.getIndex());
 			}
 		}
 		return edges;
 	}
-	
-	public Edge[] generateIncomingEdges(){
+
+	public Edge[] generateIncomingEdges() {
 		int E = 0;
-		for(Node n : this.nodes){
+		for (Node n : this.nodes) {
 			E += n.getInDegree();
 		}
 		Edge[] edges = new Edge[E];
 		int index = 0;
-		for(Node n : this.nodes){
-			for(int in : n.getIncomingEdges()){
+		for (Node n : this.nodes) {
+			for (int in : n.getIncomingEdges()) {
 				edges[index++] = new Edge(in, n.getIndex());
 			}
 		}
 		return edges;
 	}
-	
-	public Edge[] generateOutgoingEdges(){
+
+	public Edge[] generateOutgoingEdges() {
 		int E = 0;
-		for(Node n : this.nodes){
+		for (Node n : this.nodes) {
 			E += n.getOutDegree();
 		}
 		Edge[] edges = new Edge[E];
 		int index = 0;
-		for(Node n : this.nodes){
-			for(int out : n.getOutgoingEdges()){
+		for (Node n : this.nodes) {
+			for (int out : n.getOutgoingEdges()) {
 				edges[index++] = new Edge(n.getIndex(), out);
 			}
 		}
@@ -141,6 +153,15 @@ public class Graph {
 	 */
 	public Node[] getNodes() {
 		return this.nodes;
+	}
+
+	/**
+	 * @param nodes
+	 *            the nodes to set
+	 */
+	public void setNodes(Node[] nodes) {
+		this.nodes = nodes;
+		this.timer.end();
 	}
 
 	// TODO replace by properties
