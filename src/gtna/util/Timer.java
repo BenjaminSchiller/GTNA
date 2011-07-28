@@ -75,13 +75,13 @@ public class Timer {
 		if (this.name != null) {
 			String out = Config.get("TIMER_END");
 			out = out.replace("%MSG", msg);
-			out = out.replace("%MSEC", msec() + "");
-			out = out.replace("%SEC", sec() + "");
+			out = out.replace("%MSEC", getMsec() + "");
+			out = out.replace("%SEC", getSec() + "");
 			Output.writeln(out);
 		}
 	}
 
-	public long msec() {
+	public long getMsec() {
 		if (this.end == -1) {
 			return System.currentTimeMillis() - this.start;
 		} else {
@@ -89,15 +89,15 @@ public class Timer {
 		}
 	}
 
-	public long sec() {
-		return this.msec() / 1000;
+	public long getSec() {
+		return this.getMsec() / 1000;
 	}
 
-	public double rt() {
+	public double getRuntime() {
 		if (Config.get("TIMER_TYPE").equals("sec")) {
-			return (double) this.msec() / (double) 1000;
+			return (double) this.getMsec() / (double) 1000;
 		} else if (Config.get("TIMER_TYPE").equals("msec")) {
-			return this.msec();
+			return this.getMsec();
 		} else {
 			return -1;
 		}

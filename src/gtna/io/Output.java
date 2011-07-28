@@ -82,11 +82,11 @@ public class Output {
 		writeln(end);
 		writeIndent();
 		String mb = "" + Runtime.getRuntime().totalMemory() / (1024 * 1024);
-		if (timer.sec() == 1) {
+		if (timer.getSec() == 1) {
 			writeln(Config.get("OUTPUT_SECOND").replace("%MEM", mb));
 		} else {
 			writeln(Config.get("OUTPUT_SECONDS").replace("%SEC",
-					timer.sec() + "").replace("%MEM", mb));
+					timer.getSec() + "").replace("%MEM", mb));
 		}
 		writelnDelimiter();
 		if (writeToFile && fw != null) {
