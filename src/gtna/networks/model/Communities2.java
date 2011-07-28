@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.model;
 
 import gtna.graph.Edges;
@@ -42,7 +42,6 @@ import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
 import gtna.util.Util;
 
 import java.util.ArrayList;
@@ -72,8 +71,8 @@ public class Communities2 extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
-		Node[] nodes = Node.init(this.nodes());
+		Graph graph = new Graph(this.description());
+		Node[] nodes = Node.init(this.nodes(), graph);
 		Edges edges = new Edges(nodes, 0);
 		Random rand = new Random(System.currentTimeMillis());
 		Node[][] communities = new Node[this.sizes.length][];
@@ -92,11 +91,11 @@ public class Communities2 extends NetworkImpl implements Network {
 			for (int j = 0; j < communities[i].length; j++) {
 				for (int k = 0; k < communities[i].length; k++) {
 					if (j != k && rand.nextDouble() <= prob) {
-						edges.add(nodes[communities[i][j].index()],
-								nodes[communities[i][k].index()]);
+						edges.add(communities[i][j].getIndex(),
+								communities[i][k].getIndex());
 						if (this.bidirectional) {
-							edges.add(nodes[communities[i][k].index()],
-									nodes[communities[i][j].index()]);
+							edges.add(communities[i][k].getIndex(),
+									communities[i][j].getIndex());
 						}
 					}
 				}
@@ -118,15 +117,14 @@ public class Communities2 extends NetworkImpl implements Network {
 		}
 
 		edges.fill();
-		timer.end();
-		return new Graph(this.description(), nodes, timer);
+		graph.setNodes(nodes);
+		return graph;
 	}
 
 	private ArrayList<Node> fill(Node[] community, int copies) {
-		ArrayList<Node> set = new ArrayList<Node>(community.length
-				* copies);
-		for(int i=0; i<community.length; i++){
-			for(int j=0; j<copies; j++){
+		ArrayList<Node> set = new ArrayList<Node>(community.length * copies);
+		for (int i = 0; i < community.length; i++) {
+			for (int j = 0; j < copies; j++) {
 				set.add(community[i]);
 			}
 		}
@@ -141,11 +139,11 @@ public class Communities2 extends NetworkImpl implements Network {
 			Node TO = to.get(rand.nextInt(to.size()));
 			from.remove(FROM);
 			to.remove(TO);
-			if (!edges.contains(FROM.index(), TO.index())) {
+			if (!edges.contains(FROM.getIndex(), TO.getIndex())) {
 				added++;
-				edges.add(FROM, TO);
+				edges.add(FROM.getIndex(), TO.getIndex());
 				if (this.bidirectional) {
-					edges.add(TO, FROM);
+					edges.add(TO.getIndex(), FROM.getIndex());
 				}
 			}
 		}

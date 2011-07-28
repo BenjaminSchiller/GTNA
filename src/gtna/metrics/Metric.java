@@ -41,6 +41,7 @@ import gtna.networks.Network;
 
 import java.util.Hashtable;
 
+//TODO reimplement Metric
 public interface Metric {
 	/**
 	 * computes all metric-specific data<br>

@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.routing.node;
 
 import gtna.graph.Node;
@@ -51,6 +51,7 @@ import java.util.Random;
  * @author benni
  * 
  */
+@Deprecated
 public interface IDNode {
 	/**
 	 * Determines if the node is responsible for the given identifier or has
@@ -93,10 +94,10 @@ public interface IDNode {
 	 * @return distance between the two nodes
 	 */
 	public double dist(IDNode node);
-	
-	public int index();
-	
-	public Node[] in();
-	
-	public Node[] out();
+
+	public int getIndex();
+
+	public int[] getIncomingEdges();
+
+	public int[] getOutgoingEdges();
 }

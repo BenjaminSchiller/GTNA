@@ -32,13 +32,15 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.metrics.networkFragmentation;
 
-import gtna.metrics.Metric;
 
-public class NetworkFragmentationBDI extends NetworkFragmentation implements Metric {
-	public NetworkFragmentationBDI(){
-		super(NetworkFragmentation.IN_DEGREE_DESC, true);
-	}
+// TODO reimplement NetworkFragmentationBDI
+public class NetworkFragmentationBDI {
+	// public class NetworkFragmentationBDI extends NetworkFragmentation
+	// implements Metric {
+	// public NetworkFragmentationBDI(){
+	// super(NetworkFragmentation.IN_DEGREE_DESC, true);
+	// }
 }

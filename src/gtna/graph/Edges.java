@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.graph;
 
 import java.util.ArrayList;
@@ -45,74 +45,54 @@ public class Edges {
 
 	private HashMap<String, Edge> map;
 
-	private int[] in;
+	private int[] inDegree;
 
-	private int[] out;
+	private int[] outDegree;
 
 	public Edges(Node[] nodes, int edges) {
 		this.nodes = nodes;
 		this.edges = new ArrayList<Edge>(edges);
 		this.map = new HashMap<String, Edge>();
-		this.in = new int[this.nodes.length];
-		this.out = new int[this.nodes.length];
-	}
-	
-	public boolean contains(int index1, int index2){
-		return this.map.containsKey(Edge.toString(index1, index2));
-	}
-	
-	public boolean contains(Edge edge){
-		return this.map.containsKey(edge.toString());
-	}
-	
-	public int size(){
-		return this.edges.size();
-	}
-	
-	public boolean add(Node src, Node dst){
-		return this.add(new Edge(src, dst));
+		this.inDegree = new int[this.nodes.length];
+		this.outDegree = new int[this.nodes.length];
 	}
 
-	public boolean add(Edge edge) {
-		if (this.map.containsKey(edge.toString())) {
+	public boolean contains(int src, int dst) {
+		return this.map.containsKey(Edge.toString(src, dst));
+	}
+
+	public int size() {
+		return this.edges.size();
+	}
+
+	public boolean add(int src, int dst) {
+		if (this.map.containsKey(Edge.toString(src, dst))) {
 			return false;
 		}
+		Edge edge = new Edge(src, dst);
 		this.edges.add(edge);
 		this.map.put(edge.toString(), edge);
-		this.in[edge.dst.index()]++;
-		this.out[edge.src.index()]++;
-		return true;
-	}
-	
-	public boolean add(Edge[] edges){
-		for(int i=0; i<edges.length; i++){
-			this.add(edges[i]);
-		}
+		this.inDegree[edge.getDst()]++;
+		this.outDegree[edge.getSrc()]++;
 		return true;
 	}
 
 	public void fill() {
 		for (int i = 0; i < this.nodes.length; i++) {
-			this.nodes[i].setIn(new Node[this.in[i]]);
-			this.nodes[i].setOut(new Node[this.out[i]]);
+			this.nodes[i].setIncomingEdges(new int[this.inDegree[i]]);
+			this.nodes[i].setOutgoingEdges(new int[this.outDegree[i]]);
 		}
 		int[] inIndex = new int[this.nodes.length];
 		int[] outIndex = new int[this.nodes.length];
-		for (int i = 0; i < this.edges.size(); i++) {
-			Node src = this.edges.get(i).src;
-			Node dst = this.edges.get(i).dst;
-			src.out()[outIndex[src.index()]] = dst;
-			dst.in()[inIndex[dst.index()]] = src;
-			inIndex[dst.index()]++;
-			outIndex[src.index()]++;
+		for (Edge e : this.edges) {
+			int srcIndex = e.getSrc();
+			int dstIndex = e.getDst();
+			Node src = this.nodes[srcIndex];
+			Node dst = this.nodes[dstIndex];
+			dst.getIncomingEdges()[inIndex[dstIndex]] = srcIndex;
+			src.getOutgoingEdges()[outIndex[srcIndex]] = dstIndex;
+			inIndex[dstIndex]++;
+			outIndex[srcIndex]++;
 		}
-	}
-	
-	public int outDegree(Node node){
-		return this.out[node.index()];
-	}
-	
-	public int inDegree(Node node){
-		return this.in[node.index()];
 	}
 }

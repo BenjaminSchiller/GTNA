@@ -35,10 +35,7 @@
 */
 package gtna.routing.node.identifier;
 
-
-/**
- * @deprecated
- */
+@Deprecated
 public class GridIDManhattan extends GridID implements Identifier {
 	public double[] pos;
 

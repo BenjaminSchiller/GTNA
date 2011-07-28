@@ -32,10 +32,9 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.p2p;
 
-import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -43,7 +42,6 @@ import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -51,7 +49,8 @@ import java.util.Random;
 
 /**
  * Implements a network generator for the P2P network Pastry, described by
- * Rowstron and Rowstron in their paper"Pastry: Scalable, distributed object location and routing for large-scale peer-to-peer systems"
+ * Rowstron and Rowstron in their paper
+ * "Pastry: Scalable, distributed object location and routing for large-scale peer-to-peer systems"
  * (2001).
  * 
  * The parameters are size of the identifier space, base, and size of the
@@ -116,8 +115,8 @@ public class Pastry extends NetworkImpl implements Network {
 				new String[] { "" + BITS_PER_KEY, "" + BASE }, ra, t);
 		this.BITS_PER_KEY = BITS_PER_KEY;
 		this.BASE = BASE;
-		this.NAMESPACE_SET_SIZE = Math.min((int) Math.pow(2, BASE), this
-				.nodes());
+		this.NAMESPACE_SET_SIZE = Math.min((int) Math.pow(2, BASE),
+				this.nodes());
 		// this.NUMBER_OF_REPLICAS = 3;
 		// this.NEIGHBORHOOD_SET_SIZE = Math.min((int) Math.pow(2, BASE + 1),
 		// this
@@ -125,7 +124,7 @@ public class Pastry extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
+		Graph graph = new Graph(this.description());
 		Random rand = new Random(System.currentTimeMillis());
 
 		PastryNode[] nodes = new PastryNode[this.nodes()];
@@ -133,7 +132,7 @@ public class Pastry extends NetworkImpl implements Network {
 		PastryNode[] sorted = new PastryNode[this.nodes()];
 		for (int i = 0; i < nodes.length; i++) {
 			nodes[i] = new PastryNode(randomIDUnique(rand, this.BITS_PER_KEY,
-					nodes, i), randomLocation(rand), i, this);
+					nodes, i), randomLocation(rand), i, graph, this);
 			sortable[i] = nodes[i];
 			sorted[i] = nodes[i];
 		}
@@ -151,21 +150,18 @@ public class Pastry extends NetworkImpl implements Network {
 		Edges edges = new Edges(nodes, 100);
 		for (int i = 0; i < nodes.length; i++) {
 			for (int j = 0; j < nodes[i].namespaceSet.length; j++) {
-				edges.add(nodes[i], nodes[i].namespaceSet[j]);
+				edges.add(i, nodes[i].namespaceSet[j].getIndex());
 			}
 			for (int j = 0; j < nodes[i].routingTable.length; j++) {
 				for (int k = 0; k < nodes[i].routingTable[j].length; k++) {
 					if (nodes[i].routingTable[j][k] != null) {
-						edges.add(new Edge(nodes[i],
-								nodes[i].routingTable[j][k]));
+						edges.add(i, nodes[i].routingTable[j][k].getIndex());
 					}
 				}
 			}
 		}
 		edges.fill();
-
-		timer.end();
-		Graph graph = new Graph(this.description(), nodes, timer);
+		graph.setNodes(nodes);
 		return graph;
 	}
 
@@ -181,7 +177,7 @@ public class Pastry extends NetworkImpl implements Network {
 			PastryNode[] sorted) {
 		int index = -1;
 		for (int i = 0; i < sorted.length; i++) {
-			if (n.index() == sorted[i].index()) {
+			if (n.getIndex() == sorted[i].getIndex()) {
 				index = i;
 				break;
 			}
@@ -276,8 +272,8 @@ public class Pastry extends NetworkImpl implements Network {
 		private PastryNode[][] routingTable;
 
 		private PastryNode(boolean[] idBits, double[] location, int index,
-				Pastry n) {
-			super(index);
+				Graph graph, Pastry n) {
+			super(index, graph);
 			this.location = location;
 			// this.neighborhoodSet = new Node[n.NEIGHBORHOOD_SET_SIZE()];
 			this.namespaceSet = new PastryNode[n.NAMESPACE_SET_SIZE];

@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.p2p;
 
 import gtna.graph.Edges;
@@ -42,7 +42,6 @@ import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
 import gtna.util.Util;
 
 import java.util.ArrayList;
@@ -167,7 +166,7 @@ public class PathFinder extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
+		Graph graph = new Graph(this.description());
 
 		VirtualNode[] virtualNodes = new VirtualNode[this.NUMBER_OF_VIRTUAL_NODES];
 		for (int i = 0; i < virtualNodes.length; i++) {
@@ -182,7 +181,7 @@ public class PathFinder extends NetworkImpl implements Network {
 		long seed = computeRandomSeed();
 		Random rand = new Random(seed);
 		PhysicalNode[] nodes = new PhysicalNode[this.nodes()];
-		nodes[0] = new PhysicalNode(0, virtualNodes.clone(), this);
+		nodes[0] = new PhysicalNode(0, graph, virtualNodes.clone(), this);
 		for (int i = 1; i < nodes.length; i++) {
 			PhysicalNode currentOwner;
 			int newVirtualID;
@@ -210,7 +209,7 @@ public class PathFinder extends NetworkImpl implements Network {
 				}
 			} while (currentOwner.virtualNodes.length <= 1);
 			VirtualNode[] newList = currentOwner.handOver(rand);
-			nodes[i] = new PhysicalNode(i, newList, this);
+			nodes[i] = new PhysicalNode(i, graph, newList, this);
 		}
 
 		int numberOfEdges = this.NUMBER_OF_VIRTUAL_NODES
@@ -223,18 +222,16 @@ public class PathFinder extends NetworkImpl implements Network {
 			PhysicalNode src = virtualNodes[i].physicalNode;
 			for (int j = 0; j < virtualNodes[i].neighbors.length; j++) {
 				PhysicalNode dst = virtualNodes[i].neighbors[j].physicalNode;
-				if (src.index() != dst.index()) {
-					edges.add(src, dst);
+				if (src.getIndex() != dst.getIndex()) {
+					edges.add(src.getIndex(), dst.getIndex());
 					if (this.BIDIRECTIONAL) {
-						edges.add(dst, src);
+						edges.add(dst.getIndex(), src.getIndex());
 					}
 				}
 			}
 		}
 		edges.fill();
-
-		timer.end();
-		Graph graph = new Graph(this.description(), nodes, timer);
+		graph.setNodes(nodes);
 		return graph;
 	}
 
@@ -285,14 +282,14 @@ public class PathFinder extends NetworkImpl implements Network {
 
 	public static int[] vnd(Graph g) {
 		int max = 0;
-		for (int i = 0; i < g.nodes.length; i++) {
-			if (((PhysicalNode) g.nodes[i]).virtualNodes.length > max) {
-				max = ((PhysicalNode) g.nodes[i]).virtualNodes.length;
+		for (int i = 0; i < g.getNodes().length; i++) {
+			if (((PhysicalNode) g.getNodes()[i]).virtualNodes.length > max) {
+				max = ((PhysicalNode) g.getNodes()[i]).virtualNodes.length;
 			}
 		}
 		int[] vns = new int[max + 1];
-		for (int i = 0; i < g.nodes.length; i++) {
-			vns[((PhysicalNode) g.nodes[i]).virtualNodes.length]++;
+		for (int i = 0; i < g.getNodes().length; i++) {
+			vns[((PhysicalNode) g.getNodes()[i]).virtualNodes.length]++;
 		}
 		return vns;
 	}
@@ -301,7 +298,7 @@ public class PathFinder extends NetworkImpl implements Network {
 		int[] vnd = vnd(g);
 		double[] vndp = new double[vnd.length];
 		for (int i = 0; i < vnd.length; i++) {
-			vndp[i] = (double) vnd[i] / (double) g.nodes.length;
+			vndp[i] = (double) vnd[i] / (double) g.getNodes().length;
 		}
 		return vndp;
 	}
@@ -311,8 +308,9 @@ public class PathFinder extends NetworkImpl implements Network {
 
 		private PathFinder nw;
 
-		private PhysicalNode(int index, VirtualNode[] vns, PathFinder nw) {
-			super(index);
+		private PhysicalNode(int index, Graph graph, VirtualNode[] vns,
+				PathFinder nw) {
+			super(index, graph);
 			this.virtualNodes = vns;
 			this.nw = nw;
 			for (int i = 0; i < vns.length; i++) {

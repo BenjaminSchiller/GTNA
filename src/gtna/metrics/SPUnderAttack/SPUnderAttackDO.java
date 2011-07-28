@@ -32,14 +32,14 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.metrics.SPUnderAttack;
 
-import gtna.metrics.Metric;
-import gtna.metrics.networkFragmentation.NetworkFragmentation;
 
-public class SPUnderAttackDO extends SPUnderAttack implements Metric {
-	public SPUnderAttackDO() {
-		super(NetworkFragmentation.OUT_DEGREE_DESC);
-	}
+//TODO reimplement BLASPUnderAttackDOFASEL
+public class SPUnderAttackDO {
+	// public class SPUnderAttackDO extends SPUnderAttack implements Metric {
+	// public SPUnderAttackDO() {
+	// super(NetworkFragmentation.OUT_DEGREE_DESC);
+	// }
 }

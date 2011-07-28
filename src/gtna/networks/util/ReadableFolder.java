@@ -50,18 +50,15 @@ import java.io.File;
  * 
  */
 public class ReadableFolder extends NetworkImpl implements Network {
-	private int type;
-
 	private String[] files;
 
 	private int index;
 
-	public ReadableFolder(String name, String folder, String src, int type,
+	public ReadableFolder(String name, String folder, String srcFolder,
 			RoutingAlgorithm ra, Transformation[] t) {
-		super(key(name, folder), Integer.MIN_VALUE, new String[] {},
+		super(ReadableFolder.key(name, folder), Integer.MIN_VALUE, new String[] {},
 				new String[] {}, ra, t);
-		this.type = type;
-		File d = new File(src);
+		File d = new File(srcFolder);
 		if (!d.exists()) {
 			this.files = new String[0];
 		} else {
@@ -75,7 +72,7 @@ public class ReadableFolder extends NetworkImpl implements Network {
 		if (this.files.length == 0) {
 			super.setNodes(0);
 		} else {
-			super.setNodes(GraphReader.nodes(this.files[0], this.type));
+			super.setNodes(GraphReader.nodes(this.files[0]));
 		}
 	}
 
@@ -89,9 +86,10 @@ public class ReadableFolder extends NetworkImpl implements Network {
 		if (this.files.length == 0) {
 			return null;
 		}
-		this.index = (index + 1) % this.files.length;
-		return GraphReader.read(this.files[this.index], this.type, this
-				.description());
+		this.index = (this.index + 1) % this.files.length;
+		Graph graph = GraphReader.read(this.files[this.index]);
+		graph.setName(this.description());
+		return graph;
 	}
 
 	public String[] getFiles() {

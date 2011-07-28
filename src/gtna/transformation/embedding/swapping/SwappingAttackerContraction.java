@@ -35,81 +35,83 @@
  */
 package gtna.transformation.embedding.swapping;
 
-import gtna.graph.Node;
-
-import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-public class SwappingAttackerContraction extends SwappingNode {
-
-	private SwappingNode neighbor;
-
-	private int index;
-
-	public SwappingAttackerContraction(int index, double pos, Swapping swapping) {
-		super(index, pos, swapping);
-	}
-
-	/**
-	 * try to distribute an ID close to a neighbor
-	 */
-	public void turn(Random rand) {
-		// select a random neighbor
-		if (this.neighbor == null) {
-			Node[] out = this.out();
-			this.index = rand.nextInt(out.length);
-			this.neighbor = (SwappingNode) out[this.index];
-		}
-
-		// select own ID close to neighbor
-		this.getID().pos = (this.knownIDs[this.index] + rand.nextDouble()
-				* this.swapping.delta) % 1.0;
-
-		// select ID close to neighbor + furthest neighbors
-		double id = (this.knownIDs[this.index] + rand.nextDouble()
-				* this.swapping.delta) % 1.0;
-		double[] neighbors = new double[this.out().length];
-		for (int i = 0; i < neighbors.length; i++) {
-			neighbors[i] = (id + 0.5 + rand.nextDouble() * this.swapping.delta) % 1.0;
-		}
-
-		// select ttl
-		int ttl = rand.nextInt(6) + 1;
-
-		// select starting node
-		Node[] out = this.out();
-		SwappingNode start = (SwappingNode) out[rand.nextInt(out.length)];
-
-		// send swap request
-		start.swap(id, neighbors, ttl, rand);
-	}
-
-	/**
-	 * return ID close to selected neighbor
-	 */
-	protected double ask(SwappingNode caller, Random rand) {
-		// select a random neighbor
-		if (this.neighbor == null) {
-			Node[] out = this.out();
-			this.index = rand.nextInt(out.length);
-			this.neighbor = (SwappingNode) out[this.index];
-		}
-
-		// return ID close to neighbor's current ID
-		double id = (this.knownIDs[this.index] + rand.nextDouble()
-				* this.swapping.delta) % 1.0;
-		return id;
-	}
-
-	/**
-	 * return ID close to selected neighbor
-	 */
-	protected double swap(double callerID, double[] callerNeighborIDs, int ttl,
-			Random rand) {
-		return this.ask(this, rand);
-	}
+// TODO reimplement SwappingAttackerContraction
+public class SwappingAttackerContraction {
+	// public class SwappingAttackerContraction extends SwappingNode {
+	//
+	// private SwappingNode neighbor;
+	//
+	// private int index;
+	//
+	// public SwappingAttackerContraction(int index, double pos, Swapping
+	// swapping) {
+	// super(index, pos, swapping);
+	// }
+	//
+	// /**
+	// * try to distribute an ID close to a neighbor
+	// */
+	// public void turn(Random rand) {
+	// // select a random neighbor
+	// if (this.neighbor == null) {
+	// Node[] out = this.out();
+	// this.index = rand.nextInt(out.length);
+	// this.neighbor = (SwappingNode) out[this.index];
+	// }
+	//
+	// // select own ID close to neighbor
+	// this.getID().pos = (this.knownIDs[this.index] + rand.nextDouble()
+	// * this.swapping.delta) % 1.0;
+	//
+	// // select ID close to neighbor + furthest neighbors
+	// double id = (this.knownIDs[this.index] + rand.nextDouble()
+	// * this.swapping.delta) % 1.0;
+	// double[] neighbors = new double[this.out().length];
+	// for (int i = 0; i < neighbors.length; i++) {
+	// neighbors[i] = (id + 0.5 + rand.nextDouble() * this.swapping.delta) %
+	// 1.0;
+	// }
+	//
+	// // select ttl
+	// int ttl = rand.nextInt(6) + 1;
+	//
+	// // select starting node
+	// Node[] out = this.out();
+	// SwappingNode start = (SwappingNode) out[rand.nextInt(out.length)];
+	//
+	// // send swap request
+	// start.swap(id, neighbors, ttl, rand);
+	// }
+	//
+	// /**
+	// * return ID close to selected neighbor
+	// */
+	// protected double ask(SwappingNode caller, Random rand) {
+	// // select a random neighbor
+	// if (this.neighbor == null) {
+	// Node[] out = this.out();
+	// this.index = rand.nextInt(out.length);
+	// this.neighbor = (SwappingNode) out[this.index];
+	// }
+	//
+	// // return ID close to neighbor's current ID
+	// double id = (this.knownIDs[this.index] + rand.nextDouble()
+	// * this.swapping.delta) % 1.0;
+	// return id;
+	// }
+	//
+	// /**
+	// * return ID close to selected neighbor
+	// */
+	// protected double swap(double callerID, double[] callerNeighborIDs, int
+	// ttl,
+	// Random rand) {
+	// return this.ask(this, rand);
+	// }
 
 }

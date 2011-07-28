@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.model;
 
 import gtna.graph.Edges;
@@ -42,7 +42,6 @@ import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
 
 /**
  * Implements a network generator for De Bruijn graph, a deterministic network
@@ -94,23 +93,20 @@ public class DeBruijn extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
-		Node[] nodes = Node.init(this.nodes());
+		Graph graph = new Graph(this.description());
+		Node[] nodes = Node.init(this.nodes(), graph);
 		Edges edges = new Edges(nodes, this.nodes() * this.BASE - this.BASE);
 		for (int i = 0; i < nodes.length; i++) {
 			int shiftedId = (i * this.BASE) % nodes.length;
 			for (int j = 0; j < this.BASE; j++) {
 				if (i != shiftedId) {
-					edges.add(nodes[i], nodes[shiftedId]);
+					edges.add(i, shiftedId);
 				}
 				shiftedId++;
 			}
 		}
 		edges.fill();
-		System.out.println((this.nodes() * this.BASE - this.BASE) + " == "
-				+ edges.size());
-		timer.end();
-		Graph g = new Graph(this.description(), nodes, timer);
-		return g;
+		graph.setNodes(nodes);
+		return graph;
 	}
 }

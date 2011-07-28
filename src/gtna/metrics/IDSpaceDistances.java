@@ -36,114 +36,105 @@
  */
 package gtna.metrics;
 
-import gtna.data.Value;
-import gtna.graph.Edge;
-import gtna.graph.Graph;
-import gtna.io.DataWriter;
-import gtna.networks.Network;
-import gtna.routing.node.RingNode;
-import gtna.util.Config;
-import gtna.util.Statistics;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Hashtable;
-
 /**
  * @author "Benjamin Schiller"
  * 
  */
-public class IDSpaceDistances extends MetricImpl implements Metric {
-	private double[][] neighbors;
 
-	private double[][] neighborsEDF;
-
-	private double[][] successor;
-
-	private double[][] successorEDF;
-
-	public IDSpaceDistances() {
-		super("ID_SPACE_DISTANCES");
-	}
-
-	private void initEmpty() {
-		this.neighbors = new double[][] { new double[] { 0.0, 0.0 } };
-		this.neighborsEDF = new double[][] { new double[] { 0.0, 0.0 } };
-		this.successor = new double[][] { new double[] { 0.0, 0.0 } };
-		this.successorEDF = new double[][] { new double[] { 0.0, 0.0 } };
-	}
-
-	public void computeData(Graph g, Network n, Hashtable<String, Metric> m) {
-		if (!(g.nodes[0] instanceof RingNode)) {
-			this.initEmpty();
-		}
-		double[] dists = this.computeDists(g);
-		double stepsNeighbors = Config
-				.getDouble("ID_SPACE_DISTANCES_NEIGHBORS_DISTRIBUTION_STEPS");
-		this.neighbors = Statistics.probabilityDistribution(dists, 0,
-				stepsNeighbors);
-		this.neighborsEDF = Statistics.empiricalDistributionFunction(dists, 0,
-				stepsNeighbors);
-		double[] successorDists = IDSpaceDistances.computeSuccessorDists(g);
-		double stepsSuccessors = Config
-				.getDouble("ID_SPACE_DISTANCES_SUCCESSOR_DISTRIBUTION_STEPS");
-		this.successor = Statistics.probabilityDistribution(successorDists, 0,
-				stepsSuccessors);
-		this.successorEDF = Statistics.empiricalDistributionFunction(
-				successorDists, 0, stepsSuccessors);
-	}
-
-	private double[] computeDists(Graph g) {
-		double[] dist = new double[g.edges];
-		Edge[] e = g.edges();
-		for (int i = 0; i < e.length; i++) {
-			dist[i] = ((RingNode) e[i].src).getID().dist(
-					((RingNode) e[i].dst).getID());
-		}
-		Arrays.sort(dist);
-		return dist;
-	}
-
-	public static double[] computeSuccessorDists(Graph g) {
-		RingNode[] nodes = new RingNode[g.nodes.length];
-		for (int i = 0; i < g.nodes.length; i++) {
-			nodes[i] = (RingNode) g.nodes[i];
-		}
-		Arrays.sort(nodes, new SuccessorSorting());
-		double[] dist = new double[nodes.length];
-		for (int i = 0; i < nodes.length; i++) {
-			dist[i] = nodes[i].getID().dist(
-					nodes[(i + 1) % nodes.length].getID());
-		}
-		return dist;
-	}
-
-	public Value[] getValues(Value[] values) {
-		return new Value[] {};
-	}
-
-	public boolean writeData(String folder) {
-		DataWriter.writeWithoutIndex(this.neighbors,
-				"ID_SPACE_DISTANCES_NEIGHBORS", folder);
-		DataWriter.writeWithoutIndex(this.neighborsEDF,
-				"ID_SPACE_DISTANCES_NEIGHBORS_EDF", folder);
-		DataWriter.writeWithoutIndex(this.successor,
-				"ID_SPACE_DISTANCES_SUCCESSOR", folder);
-		DataWriter.writeWithoutIndex(this.successorEDF,
-				"ID_SPACE_DISTANCES_SUCCESSOR_EDF", folder);
-		return true;
-	}
-
-	private static class SuccessorSorting implements Comparator<RingNode> {
-		public int compare(RingNode a, RingNode b) {
-			if (a.getID().pos == b.getID().pos) {
-				return 0;
-			} else if (a.getID().pos < b.getID().pos) {
-				return -1;
-			} else {
-				return 1;
-			}
-		}
-	}
+// TODO reimplement IDSpaceDistances
+public class IDSpaceDistances {
+	// public class IDSpaceDistances extends MetricImpl implements Metric {
+	// private double[][] neighbors;
+	//
+	// private double[][] neighborsEDF;
+	//
+	// private double[][] successor;
+	//
+	// private double[][] successorEDF;
+	//
+	// public IDSpaceDistances() {
+	// super("ID_SPACE_DISTANCES");
+	// }
+	//
+	// private void initEmpty() {
+	// this.neighbors = new double[][] { new double[] { 0.0, 0.0 } };
+	// this.neighborsEDF = new double[][] { new double[] { 0.0, 0.0 } };
+	// this.successor = new double[][] { new double[] { 0.0, 0.0 } };
+	// this.successorEDF = new double[][] { new double[] { 0.0, 0.0 } };
+	// }
+	//
+	// public void computeData(Graph g, Network n, Hashtable<String, Metric> m)
+	// {
+	// if (!(g.nodes[0] instanceof RingNode)) {
+	// this.initEmpty();
+	// }
+	// double[] dists = this.computeDists(g);
+	// double stepsNeighbors = Config
+	// .getDouble("ID_SPACE_DISTANCES_NEIGHBORS_DISTRIBUTION_STEPS");
+	// this.neighbors = Statistics.probabilityDistribution(dists, 0,
+	// stepsNeighbors);
+	// this.neighborsEDF = Statistics.empiricalDistributionFunction(dists, 0,
+	// stepsNeighbors);
+	// double[] successorDists = IDSpaceDistances.computeSuccessorDists(g);
+	// double stepsSuccessors = Config
+	// .getDouble("ID_SPACE_DISTANCES_SUCCESSOR_DISTRIBUTION_STEPS");
+	// this.successor = Statistics.probabilityDistribution(successorDists, 0,
+	// stepsSuccessors);
+	// this.successorEDF = Statistics.empiricalDistributionFunction(
+	// successorDists, 0, stepsSuccessors);
+	// }
+	//
+	// private double[] computeDists(Graph g) {
+	// double[] dist = new double[g.edges];
+	// Edge[] e = g.edges();
+	// for (int i = 0; i < e.length; i++) {
+	// dist[i] = ((RingNode) e[i].src).getID().dist(
+	// ((RingNode) e[i].dst).getID());
+	// }
+	// Arrays.sort(dist);
+	// return dist;
+	// }
+	//
+	// public static double[] computeSuccessorDists(Graph g) {
+	// RingNode[] nodes = new RingNode[g.nodes.length];
+	// for (int i = 0; i < g.nodes.length; i++) {
+	// nodes[i] = (RingNode) g.nodes[i];
+	// }
+	// Arrays.sort(nodes, new SuccessorSorting());
+	// double[] dist = new double[nodes.length];
+	// for (int i = 0; i < nodes.length; i++) {
+	// dist[i] = nodes[i].getID().dist(
+	// nodes[(i + 1) % nodes.length].getID());
+	// }
+	// return dist;
+	// }
+	//
+	// public Value[] getValues(Value[] values) {
+	// return new Value[] {};
+	// }
+	//
+	// public boolean writeData(String folder) {
+	// DataWriter.writeWithoutIndex(this.neighbors,
+	// "ID_SPACE_DISTANCES_NEIGHBORS", folder);
+	// DataWriter.writeWithoutIndex(this.neighborsEDF,
+	// "ID_SPACE_DISTANCES_NEIGHBORS_EDF", folder);
+	// DataWriter.writeWithoutIndex(this.successor,
+	// "ID_SPACE_DISTANCES_SUCCESSOR", folder);
+	// DataWriter.writeWithoutIndex(this.successorEDF,
+	// "ID_SPACE_DISTANCES_SUCCESSOR_EDF", folder);
+	// return true;
+	// }
+	//
+	// private static class SuccessorSorting implements Comparator<RingNode> {
+	// public int compare(RingNode a, RingNode b) {
+	// if (a.getID().pos == b.getID().pos) {
+	// return 0;
+	// } else if (a.getID().pos < b.getID().pos) {
+	// return -1;
+	// } else {
+	// return 1;
+	// }
+	// }
+	// }
 
 }

@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.model;
 
 import gtna.graph.Edges;
@@ -42,7 +42,6 @@ import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
 import gtna.util.Util;
 
 import java.util.ArrayList;
@@ -57,9 +56,9 @@ public class Communities extends NetworkImpl implements Network {
 
 	private boolean bidirectional;
 
-	public Communities(int n, double avgCommunitySize,
-			double avgInLinks, double avgOutLinks, boolean bidirectional,
-			RoutingAlgorithm r, Transformation[] t) {
+	public Communities(int n, double avgCommunitySize, double avgInLinks,
+			double avgOutLinks, boolean bidirectional, RoutingAlgorithm r,
+			Transformation[] t) {
 		super("COMMUNITIES", n, new String[] { "AVG_COMMUNITY_SIZE",
 				"AVG_IN_LINKS", "AVG_OUT_LINKS" }, new String[] {
 				"" + avgCommunitySize, "" + avgInLinks, "" + avgOutLinks }, r,
@@ -111,12 +110,12 @@ public class Communities extends NetworkImpl implements Network {
 		}
 	}
 
-	public Communities(int[] sizes, double[] avgInLinks,
-			double[] avgOutLinks, boolean bidirectional, RoutingAlgorithm r,
-			Transformation[] t) {
+	public Communities(int[] sizes, double[] avgInLinks, double[] avgOutLinks,
+			boolean bidirectional, RoutingAlgorithm r, Transformation[] t) {
 		super("COMMUNITIES_NETWORK", Util.sum(sizes), new String[] {
 				"AVG_COMMUNITY_SIZE", "AVG_IN_LINKS", "AVG_OUT_LINKS" },
-				new String[] { Util.toFolderString(sizes), Util.toFolderString(avgInLinks),
+				new String[] { Util.toFolderString(sizes),
+						Util.toFolderString(avgInLinks),
 						Util.toFolderString(avgOutLinks) }, r, t);
 		this.sizes = sizes;
 		this.avgInLinks = avgInLinks;
@@ -125,8 +124,8 @@ public class Communities extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
-		Node[] nodes = Node.init(this.nodes());
+		Graph graph = new Graph(this.description());
+		Node[] nodes = Node.init(this.nodes(), graph);
 		Edges edges = new Edges(nodes, 0);
 		Random rand = new Random(System.currentTimeMillis());
 		Node[][] communities = new Node[this.sizes.length][];
@@ -145,11 +144,11 @@ public class Communities extends NetworkImpl implements Network {
 			for (int j = 0; j < communities[i].length; j++) {
 				for (int k = 0; k < communities[i].length; k++) {
 					if (j != k && rand.nextDouble() <= prob) {
-						edges.add(nodes[communities[i][j].index()],
-								nodes[communities[i][k].index()]);
+						edges.add(communities[i][j].getIndex(),
+								communities[i][k].getIndex());
 						if (this.bidirectional) {
-							edges.add(nodes[communities[i][k].index()],
-									nodes[communities[i][j].index()]);
+							edges.add(communities[i][k].getIndex(),
+									communities[i][j].getIndex());
 						}
 					}
 				}
@@ -159,22 +158,21 @@ public class Communities extends NetworkImpl implements Network {
 		for (int i = 0; i < communities.length; i++) {
 			double prob = this.avgOutLinks[i]
 					/ (double) (this.nodes() - communities[i].length);
-			int start = communities[i][0].index();
-			int end = communities[i][communities[i].length - 1].index();
+			int start = communities[i][0].getIndex();
+			int end = communities[i][communities[i].length - 1].getIndex();
 			for (int j = 0; j < communities[i].length; j++) {
 				for (int k = 0; k < nodes.length; k++) {
 					if ((k < start || k > end) && rand.nextDouble() <= prob) {
-						edges.add(nodes[communities[i][j].index()], nodes[k]);
+						edges.add(communities[i][j].getIndex(), k);
 						if (this.bidirectional) {
-							edges.add(nodes[k],
-									nodes[communities[i][j].index()]);
+							edges.add(k, communities[i][j].getIndex());
 						}
 					}
 				}
 			}
 		}
 		edges.fill();
-		timer.end();
-		return new Graph(this.description(), nodes, timer);
+		graph.setNodes(nodes);
+		return graph;
 	}
 }

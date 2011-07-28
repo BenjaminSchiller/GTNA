@@ -35,50 +35,49 @@
  */
 package gtna.transformation.embedding.lmc;
 
-import gtna.graph.Node;
-
-import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-public class LMCAttackerContraction extends LMCNode {
-
-	private LMCNode neighbor = null;
-
-	private int index;
-
-	public LMCAttackerContraction(int index, double pos, LMC lmc) {
-		super(index, pos, lmc);
-	}
-
-	/**
-	 * choose an ID close to the selected neighbor
-	 */
-	public void turn(Random rand) {
-		this.getID().pos = this.ask(this, rand);
-	}
-
-	/**
-	 * return an ID close to one selected neighbor hoping all neighbors will
-	 * converge to this position
-	 */
-	protected double ask(LMCNode caller, Random rand) {
-		// choose a random neighbor to contract to
-		if (this.neighbor == null) {
-			Node[] out = this.out();
-			this.index = rand.nextInt(out.length);
-			this.neighbor = (LMCNode) out[this.index];
-		}
-
-		// return ID close to the selected neighbor
-		if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
-			return (this.knownIDs[this.index] + this.lmc.delta
-					* (1.0 + rand.nextDouble())) % 1.0;
-		} else {
-			return (this.knownIDs[this.index] + this.lmc.delta
-					* rand.nextDouble()) % 1.0;
-		}
-	}
+// TODO reimplement LMCAttackerContraction
+public class LMCAttackerContraction {
+	// public class LMCAttackerContraction extends LMCNode {
+	//
+	// private LMCNode neighbor = null;
+	//
+	// private int index;
+	//
+	// public LMCAttackerContraction(int index, double pos, LMC lmc) {
+	// super(index, pos, lmc);
+	// }
+	//
+	// /**
+	// * choose an ID close to the selected neighbor
+	// */
+	// public void turn(Random rand) {
+	// this.getID().pos = this.ask(this, rand);
+	// }
+	//
+	// /**
+	// * return an ID close to one selected neighbor hoping all neighbors will
+	// * converge to this position
+	// */
+	// protected double ask(LMCNode caller, Random rand) {
+	// // choose a random neighbor to contract to
+	// if (this.neighbor == null) {
+	// Node[] out = this.out();
+	// this.index = rand.nextInt(out.length);
+	// this.neighbor = (LMCNode) out[this.index];
+	// }
+	//
+	// // return ID close to the selected neighbor
+	// if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
+	// return (this.knownIDs[this.index] + this.lmc.delta
+	// * (1.0 + rand.nextDouble())) % 1.0;
+	// } else {
+	// return (this.knownIDs[this.index] + this.lmc.delta
+	// * rand.nextDouble()) % 1.0;
+	// }
+	// }
 }

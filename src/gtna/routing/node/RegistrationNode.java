@@ -47,6 +47,7 @@ import gtna.routing.node.identifier.Identifier;
  * @author benni
  * 
  */
+@Deprecated
 public interface RegistrationNode extends IDNode {
 	/**
 	 * Registers the given identifier at this node. A call register(X) should

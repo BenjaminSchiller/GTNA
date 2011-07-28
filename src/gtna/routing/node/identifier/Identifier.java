@@ -51,6 +51,7 @@ package gtna.routing.node.identifier;
  * @author benni
  * 
  */
+@Deprecated
 public interface Identifier {
 	/**
 	 * Computes the distance of this identifier to the given one. Note that

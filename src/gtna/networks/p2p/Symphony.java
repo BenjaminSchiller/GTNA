@@ -32,10 +32,9 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.p2p;
 
-import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -45,7 +44,6 @@ import gtna.routing.RoutingAlgorithm;
 import gtna.routing.node.IDNode;
 import gtna.routing.node.identifier.Identifier;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -200,7 +198,7 @@ public class Symphony extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
+		Graph graph = new Graph(this.description());
 		double[] ids = new double[this.nodes()];
 		Random rand = new Random(System.currentTimeMillis());
 		for (int i = 0; i < this.nodes(); i++) {
@@ -214,10 +212,10 @@ public class Symphony extends NetworkImpl implements Network {
 
 		// SUCC / PRED
 		double id = ids[0];
-		nodes[0] = new SymphonyNode(id, 0);
+		nodes[0] = new SymphonyNode(id, 0, graph);
 		for (int i = 1; i < nodes.length; i++) {
 			id = ids[i];
-			nodes[i] = new SymphonyNode(id, i, nodes[i - 1]);
+			nodes[i] = new SymphonyNode(id, i, graph, nodes[i - 1]);
 			nodes[i - 1].succ = nodes[i];
 		}
 		nodes[0].pred = nodes[nodes.length - 1];
@@ -254,14 +252,14 @@ public class Symphony extends NetworkImpl implements Network {
 					key = Symphony.longDistanceKey(nodes[i].id.id,
 							nodes.length, rand);
 					link = Symphony.getNode(key, nodes);
-					if (incomming[link.index()] >= this.MAX_INCOMMING) {
+					if (incomming[link.getIndex()] >= this.MAX_INCOMMING) {
 						retries++;
 						continue;
 					}
-					if (edges.contains(i, link.index())) {
+					if (edges.contains(i, link.getIndex())) {
 						continue;
 					}
-					if (i == link.index()) {
+					if (i == link.getIndex()) {
 						continue;
 					}
 					if (links.contains(link)) {
@@ -270,9 +268,9 @@ public class Symphony extends NetworkImpl implements Network {
 					break;
 				}
 				if (link != null && retries <= this.MAX_LONG_DISTANCE_RETRIES
-						&& incomming[link.index()] < this.MAX_INCOMMING) {
+						&& incomming[link.getIndex()] < this.MAX_INCOMMING) {
 					links.add(link);
-					incomming[link.index()]++;
+					incomming[link.getIndex()]++;
 				}
 			}
 			nodes[i].links = new SymphonyNode[links.size()];
@@ -311,22 +309,19 @@ public class Symphony extends NetworkImpl implements Network {
 		// }
 		// }
 
-		timer.end();
-		Graph graph = new Graph(this.description(), nodes, timer);
+		graph.setNodes(nodes);
 		return graph;
 	}
 
 	private void addLink(SymphonyNode src, SymphonyNode dst, Edges edges) {
-		Edge e1 = new Edge(src, dst);
-		if (!edges.contains(e1)) {
-			edges.add(e1);
+		if (!edges.contains(src.getIndex(), dst.getIndex())) {
+			edges.add(src.getIndex(), dst.getIndex());
 		}
 		if (!this.BIDIRECTIONAL) {
 			return;
 		}
-		Edge e2 = new Edge(dst, src);
-		if (!edges.contains(e2)) {
-			edges.add(e2);
+		if (!edges.contains(dst.getIndex(), src.getIndex())) {
+			edges.add(dst.getIndex(), src.getIndex());
 		}
 	}
 
@@ -398,20 +393,21 @@ public class Symphony extends NetworkImpl implements Network {
 
 		private SymphonyNode[] links;
 
-		private SymphonyNode(double id, int index) {
-			super(index);
+		private SymphonyNode(double id, int index, Graph graph) {
+			super(index, graph);
 			this.id = new SymphonyID(id);
 		}
 
-		private SymphonyNode(double id, int index, SymphonyNode pred) {
-			super(index);
+		private SymphonyNode(double id, int index, Graph graph,
+				SymphonyNode pred) {
+			super(index, graph);
 			this.id = new SymphonyID(id);
 			this.pred = pred;
 		}
 
-		private SymphonyNode(double id, int index, SymphonyNode pred,
-				SymphonyNode succ, String routing) {
-			super(index);
+		private SymphonyNode(double id, int index, Graph graph,
+				SymphonyNode pred, SymphonyNode succ, String routing) {
+			super(index, graph);
 			this.id = new SymphonyID(id);
 			this.pred = pred;
 			this.succ = succ;

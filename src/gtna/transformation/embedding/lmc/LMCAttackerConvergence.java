@@ -35,30 +35,31 @@
  */
 package gtna.transformation.embedding.lmc;
 
-import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-public class LMCAttackerConvergence extends LMCNode {
-
-	public LMCAttackerConvergence(int index, double pos, LMC lmc) {
-		super(index, pos, lmc);
-	}
-
-	/**
-	 * select a random ID
-	 */
-	public void turn(Random rand) {
-		this.getID().pos = rand.nextDouble();
-	}
-
-	/**
-	 * return a random ID
-	 */
-	protected double ask(LMCNode caller, Random rand) {
-		return rand.nextDouble();
-	}
+// TODO reimplement LMCAttackerConvergence
+public class LMCAttackerConvergence {
+	// public class LMCAttackerConvergence extends LMCNode {
+	//
+	// public LMCAttackerConvergence(int index, double pos, LMC lmc) {
+	// super(index, pos, lmc);
+	// }
+	//
+	// /**
+	// * select a random ID
+	// */
+	// public void turn(Random rand) {
+	// this.getID().pos = rand.nextDouble();
+	// }
+	//
+	// /**
+	// * return a random ID
+	// */
+	// protected double ask(LMCNode caller, Random rand) {
+	// return rand.nextDouble();
+	// }
 
 }

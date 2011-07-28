@@ -68,7 +68,7 @@ import java.util.Vector;
  * 
  */
 public class WOTReader {
-	private final static int SIGNATURE_TYPE_MASK = 0xF0000000;
+	// private final static int SIGNATURE_TYPE_MASK = 0xF0000000;
 	private final static int SIGNATURE_INDEX_MASK = 0x0FFFFFFF;
 
 	public static Graph read(String filename) throws Exception {
@@ -127,7 +127,7 @@ public class WOTReader {
 
 				// get the signature type
 				// TODO do something with the signature type
-				int signatureType = signature & SIGNATURE_TYPE_MASK;
+				// int signatureType = signature & SIGNATURE_TYPE_MASK;
 
 				// get the target key
 				int targetIndex = signature & SIGNATURE_INDEX_MASK;
@@ -156,16 +156,17 @@ public class WOTReader {
 		timer.end();
 
 		// prepare return graph
-		Node[] nodes = Node.init(wotNodes.size());
+		Graph graph = new Graph("WOT - read from " + filename);
+		Node[] nodes = Node.init(wotNodes.size(), graph);
 		Edges edges = new Edges(nodes, nodes.length);
 		for (WOTNode source : wotNodes) {
 			for (WOTNode target : source.signatures) {
-				edges.add(nodes[source.index], nodes[target.index]);
+				edges.add(source.index, target.index);
 			}
 		}
 		edges.fill();
-		Graph g = new Graph("NAME", nodes, timer);
-		return g;
+		graph.setNodes(nodes);
+		return graph;
 	}
 
 	private static class WOTNode {
@@ -237,8 +238,8 @@ public class WOTReader {
 
 		String wot = fetchFolder + fetchOut;
 		String unzipped = unzipFolder + unzipOut;
-		String graph = Config.get("WOT_READER_GRAPH_OUT");
-		graph = replace(graph, Y, M, D);
+		String filename = Config.get("WOT_READER_GRAPH_OUT");
+		filename = replace(filename, Y, M, D);
 
 		execute(fetchCmd, fetchFolder);
 		if (!(new File(wot)).exists()) {
@@ -252,7 +253,7 @@ public class WOTReader {
 
 		try {
 			Graph g = WOTReader.read(unzipped);
-			GraphWriter.write(g, graph);
+			GraphWriter.write(g, filename);
 			if (Config.getBoolean("WOT_READER_DELETE_WOT_FILE")) {
 				String deleteFolder = Config
 						.get("WOT_READER_DELETE_WOT_FOLDER");

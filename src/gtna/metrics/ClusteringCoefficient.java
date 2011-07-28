@@ -40,129 +40,116 @@
  */
 package gtna.metrics;
 
-import gtna.data.Value;
-import gtna.graph.Graph;
-import gtna.graph.GraphProperties;
-import gtna.graph.Node;
-import gtna.io.DataWriter;
-import gtna.networks.Network;
-import gtna.util.Config;
-import gtna.util.Timer;
-import gtna.util.Util;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Set;
-
-public class ClusteringCoefficient extends MetricImpl implements Metric {
-	private double[] lcc;
-
-	private double[] lccShort;
-
-	private double cc;
-
-	private double ccw;
-
-	private Timer timer;
-
-	public ClusteringCoefficient() {
-		super("CC");
-	}
-
-	public void computeData(Graph g, Network n, Hashtable<String, Metric> m) {
-		this.timer = new Timer();
-		boolean onlyOut = GraphProperties.bidirectional(g)
-				|| Config
-						.getBoolean("CC_NEIGHBORHOOD_DEFINED_BY_OUTGOING_EDGES");
-		this.lcc = this.computeLCC(g.nodes, onlyOut);
-		Arrays.sort(this.lcc);
-		this.lccShort = this.computeLCCShort(this.lcc);
-		this.cc = this.computeCC(this.lcc);
-		this.ccw = this.computeCCW(this.lcc, g.nodes);
-		this.timer.end();
-	}
-
-	private double[] computeLCC(Node[] nodes, boolean onlyOut) {
-		double[] lcc = new double[nodes.length];
-		for (int i = 0; i < nodes.length; i++) {
-			Set<Node> n = this.neighborhood(nodes[i], onlyOut);
-			if (n.size() <= 1) {
-				lcc[i] = 0;
-			} else {
-				int edges = this.edgesInNeighborhood(n);
-				lcc[i] = edges / (double) (n.size() * (n.size() - 1));
-			}
-		}
-		return lcc;
-	}
-
-	private int edgesInNeighborhood(Set<Node> n) {
-		int edges = 0;
-		Iterator<Node> iter = n.iterator();
-		while (iter.hasNext()) {
-			Node current = iter.next();
-			Node[] OUT = current.out();
-			for (Node out : OUT) {
-				if (n.contains(out)) {
-					edges++;
-				}
-			}
-		}
-		return edges;
-	}
-
-	private Set<Node> neighborhood(Node node, boolean onlyOut) {
-		Set<Node> n = new HashSet<Node>();
-		Node[] OUT = node.out();
-		for (Node out : OUT) {
-			n.add(out);
-		}
-		if (!onlyOut) {
-			Node[] IN = node.in();
-			for (Node in : IN) {
-				n.add(in);
-			}
-		}
-		return n;
-	}
-
-	private double[] computeLCCShort(double[] lcc) {
-		return Util.avgArray(lcc, Config.getInt("CC_LCC_SHORT_MAX_VALUES"));
-	}
-
-	private double computeCC(double[] lcc) {
-		int counter = 0;
-		double cc = 0;
-		for (int i = 0; i < lcc.length; i++) {
-			cc += lcc[i];
-			counter += lcc[i] != 0 ? 1 : 0;
-		}
-		return cc / (double) counter;
-	}
-
-	private double computeCCW(double[] lcc, Node[] nodes) {
-		double numerator = 0;
-		int denominator = 0;
-		for (int i = 0; i < lcc.length; i++) {
-			int d = nodes[i].in().length + nodes[i].out().length;
-			numerator += (double) (d * (d - 1)) * lcc[i];
-			denominator += d * (d - 1);
-		}
-		return (double) numerator / (double) denominator;
-	}
-
-	public Value[] getValues(Value[] values) {
-		Value CC = new Value("CC_CC", this.cc);
-		Value CCW = new Value("CC_CCW", this.ccw);
-		Value RT = new Value("CC_RT", this.timer.rt());
-		return new Value[] { CC, CCW, RT };
-	}
-
-	public boolean writeData(String folder) {
-		DataWriter.writeWithIndex(this.lcc, "CC_LCC", folder);
-		DataWriter.writeWithIndex(this.lccShort, "CC_LCC_SHORT", folder);
-		return true;
-	}
+//TODO reimplement ClusteringCoefficient
+public class ClusteringCoefficient {
+	// public class ClusteringCoefficient extends MetricImpl implements Metric {
+	// private double[] lcc;
+	//
+	// private double[] lccShort;
+	//
+	// private double cc;
+	//
+	// private double ccw;
+	//
+	// private Timer timer;
+	//
+	// public ClusteringCoefficient() {
+	// super("CC");
+	// }
+	//
+	// public void computeData(Graph g, Network n, Hashtable<String, Metric> m)
+	// {
+	// this.timer = new Timer();
+	// boolean onlyOut = GraphProperties.bidirectional(g)
+	// || Config
+	// .getBoolean("CC_NEIGHBORHOOD_DEFINED_BY_OUTGOING_EDGES");
+	// this.lcc = this.computeLCC(g.nodes, onlyOut);
+	// Arrays.sort(this.lcc);
+	// this.lccShort = this.computeLCCShort(this.lcc);
+	// this.cc = this.computeCC(this.lcc);
+	// this.ccw = this.computeCCW(this.lcc, g.nodes);
+	// this.timer.end();
+	// }
+	//
+	// private double[] computeLCC(Node[] nodes, boolean onlyOut) {
+	// double[] lcc = new double[nodes.length];
+	// for (int i = 0; i < nodes.length; i++) {
+	// Set<Node> n = this.neighborhood(nodes[i], onlyOut);
+	// if (n.size() <= 1) {
+	// lcc[i] = 0;
+	// } else {
+	// int edges = this.edgesInNeighborhood(n);
+	// lcc[i] = edges / (double) (n.size() * (n.size() - 1));
+	// }
+	// }
+	// return lcc;
+	// }
+	//
+	// private int edgesInNeighborhood(Set<Node> n) {
+	// int edges = 0;
+	// Iterator<Node> iter = n.iterator();
+	// while (iter.hasNext()) {
+	// Node current = iter.next();
+	// Node[] OUT = current.out();
+	// for (Node out : OUT) {
+	// if (n.contains(out)) {
+	// edges++;
+	// }
+	// }
+	// }
+	// return edges;
+	// }
+	//
+	// private Set<Node> neighborhood(Node node, boolean onlyOut) {
+	// Set<Node> n = new HashSet<Node>();
+	// Node[] OUT = node.out();
+	// for (Node out : OUT) {
+	// n.add(out);
+	// }
+	// if (!onlyOut) {
+	// Node[] IN = node.in();
+	// for (Node in : IN) {
+	// n.add(in);
+	// }
+	// }
+	// return n;
+	// }
+	//
+	// private double[] computeLCCShort(double[] lcc) {
+	// return Util.avgArray(lcc, Config.getInt("CC_LCC_SHORT_MAX_VALUES"));
+	// }
+	//
+	// private double computeCC(double[] lcc) {
+	// int counter = 0;
+	// double cc = 0;
+	// for (int i = 0; i < lcc.length; i++) {
+	// cc += lcc[i];
+	// counter += lcc[i] != 0 ? 1 : 0;
+	// }
+	// return cc / (double) counter;
+	// }
+	//
+	// private double computeCCW(double[] lcc, Node[] nodes) {
+	// double numerator = 0;
+	// int denominator = 0;
+	// for (int i = 0; i < lcc.length; i++) {
+	// int d = nodes[i].in().length + nodes[i].out().length;
+	// numerator += (double) (d * (d - 1)) * lcc[i];
+	// denominator += d * (d - 1);
+	// }
+	// return (double) numerator / (double) denominator;
+	// }
+	//
+	// public Value[] getValues(Value[] values) {
+	// Value CC = new Value("CC_CC", this.cc);
+	// Value CCW = new Value("CC_CCW", this.ccw);
+	// Value RT = new Value("CC_RT", this.timer.rt());
+	// return new Value[] { CC, CCW, RT };
+	// }
+	//
+	// public boolean writeData(String folder) {
+	// DataWriter.writeWithIndex(this.lcc, "CC_LCC", folder);
+	// DataWriter.writeWithIndex(this.lccShort, "CC_LCC_SHORT", folder);
+	// return true;
+	// }
 }

@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.p2p;
 
 import gtna.graph.Edge;
@@ -169,11 +169,11 @@ public class CAN extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
+		Graph graph = new Graph(this.description());
 		Random rand = new Random(System.currentTimeMillis());
 		CANNode[] nodes = new CANNode[this.nodes()];
 		for (int i = 0; i < nodes.length; i++) {
-			nodes[i] = new CANNode(this.REALITIES, i);
+			nodes[i] = new CANNode(this.REALITIES, i, graph);
 		}
 		for (int reality = 0; reality < this.REALITIES; reality++) {
 			double[][] coordinates = new double[this.DIMENSIONS][2];
@@ -231,16 +231,13 @@ public class CAN extends NetworkImpl implements Network {
 		for (int i = 0; i < nodes.length; i++) {
 			for (int j = 0; j < nodes[i].realities.length; j++) {
 				for (int k = 0; k < nodes[i].realities[j].neighbors.size(); k++) {
-					Edge edge = new Edge(nodes[i],
-							nodes[i].realities[j].neighbors.get(k).node);
-					edges.add(edge);
+					edges.add(i, nodes[i].realities[j].neighbors.get(k).node
+							.getIndex());
 				}
 			}
 		}
 		edges.fill();
-
-		timer.end();
-		Graph graph = new Graph(this.description(), nodes, timer);
+		graph.setNodes(nodes);
 		return graph;
 	}
 
@@ -294,8 +291,8 @@ public class CAN extends NetworkImpl implements Network {
 
 		private boolean marked = false;
 
-		private CANNode(int realities, int index) {
-			super(index);
+		private CANNode(int realities, int index, Graph graph) {
+			super(index, graph);
 			this.realities = new Reality[realities];
 		}
 
@@ -374,7 +371,7 @@ public class CAN extends NetworkImpl implements Network {
 		}
 
 		public String toString() {
-			return this.index() + " "
+			return this.getIndex() + " "
 					+ CAN.toString(this.realities[0].coordinates);
 		}
 	}
@@ -541,7 +538,7 @@ public class CAN extends NetworkImpl implements Network {
 		}
 
 		public String toString() {
-			return this.node.index() + ". " + CAN.toString(this.coordinates);
+			return this.node.getIndex() + ". " + CAN.toString(this.coordinates);
 		}
 	}
 }

@@ -36,34 +36,30 @@
  */
 package gtna.networks.snapshot;
 
-import gtna.graph.Graph;
-import gtna.io.GraphReader;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
-import gtna.transformation.Transformation;
-
 /**
  * @author "Benjamin Schiller"
  * 
  */
-public class WOT extends NetworkImpl {
-	private String filename;
-
-	public WOT(String filename, String date, Transformation[] t,
-			RoutingAlgorithm r) {
-		super("WOT", GraphReader.nodes(filename, GraphReader.OWN_FORMAT),
-				new String[] { "DATE" }, new String[] { date }, r, t);
-		this.filename = filename;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.networks.Network#generate()
-	 */
-	@Override
-	public Graph generate() {
-		return GraphReader.read(this.filename);
-	}
+// TODO reimplement or remove WOT
+public class WOT {
+	// public class WOT extends NetworkImpl {
+	// private String filename;
+	//
+	// public WOT(String filename, String date, Transformation[] t,
+	// RoutingAlgorithm r) {
+	// super("WOT", GraphReader.nodes(filename, GraphReader.OWN_FORMAT),
+	// new String[] { "DATE" }, new String[] { date }, r, t);
+	// this.filename = filename;
+	// }
+	//
+	// /*
+	// * (non-Javadoc)
+	// *
+	// * @see gtna.networks.Network#generate()
+	// */
+	// @Override
+	// public Graph generate() {
+	// return GraphReader.read(this.filename);
+	// }
 
 }

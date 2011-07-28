@@ -32,12 +32,13 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.metrics;
 
 import gtna.util.Config;
 
-public abstract class MetricImpl implements Metric{
+//TODO reimplement MetricImpl
+public abstract class MetricImpl implements Metric {
 	private String key;
 
 	public MetricImpl(String key) {

@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.util;
 
 import gtna.graph.Graph;
@@ -41,6 +41,7 @@ import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.Config;
 
 /**
  * Implements a graph generator for a list of snapshots. It works like the
@@ -57,39 +58,30 @@ import gtna.transformation.Transformation;
  * 
  */
 public class ReadableList extends NetworkImpl implements Network {
-	private String[] LIST;
+	private String[] files;
 
-	private int TYPE;
+	private int index;
 
-	private int CURRENT_INDEX;
-
-	public ReadableList(String key, String[] LIST, int TYPE,
+	public ReadableList(String name, String folder, String[] files,
 			RoutingAlgorithm ra, Transformation[] t) {
-		super(key, Integer.MIN_VALUE, new String[] {}, new String[] {}, ra, t);
-		this.LIST = LIST;
-		this.TYPE = TYPE;
-		this.CURRENT_INDEX = -1;
-		int nodes = 0;
-		for (int i = 0; i < this.LIST.length; i++) {
-			nodes += GraphReader.nodes(this.LIST[i], this.TYPE);
-		}
-		nodes /= this.LIST.length;
-		super.setNodes(nodes);
+		super(ReadableList.key(name, folder), Integer.MIN_VALUE,
+				new String[] {}, new String[] {}, ra, t);
+		this.files = files;
+		this.index = -1;
+		super.setNodes(GraphReader.nodes(this.files[0]));
 	}
 
-	public ReadableList(String key, int nodes, String[] LIST, int TYPE,
-			String[] keys, String[] values, RoutingAlgorithm ra,
-			Transformation[] t) {
-		super(key, nodes, keys, values, ra, t);
-		this.LIST = LIST;
-		this.TYPE = TYPE;
-		this.CURRENT_INDEX = -1;
+	public static String key(String name, String folder) {
+		Config.overwrite("READABLE_LIST_" + folder + "_NAME", name);
+		Config.overwrite("READABLE_LIST_" + folder + "_FOLDER", folder);
+		return "READABLE_LIST_" + folder;
 	}
 
 	public Graph generate() {
-		this.CURRENT_INDEX = (this.CURRENT_INDEX + 1) % this.LIST.length;
-		return GraphReader.read(this.LIST[this.CURRENT_INDEX], this.TYPE, this
-				.description());
+		this.index = (this.index + 1) % this.files.length;
+		Graph graph = GraphReader.read(this.files[this.index]);
+		graph.setName(this.description());
+		return graph;
 	}
 
 }

@@ -32,13 +32,14 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.metrics.networkFragmentation;
 
-import gtna.metrics.Metric;
-
-public class NetworkFragmentationUD extends NetworkFragmentation implements Metric {
-	public NetworkFragmentationUD() {
-		super(NetworkFragmentation.DEGREE_DESC, false);
-	}
+//TODO reimplement NetworkFragmentationUD
+public class NetworkFragmentationUD {
+	// public class NetworkFragmentationUD extends NetworkFragmentation
+	// implements Metric {
+	// public NetworkFragmentationUD() {
+	// super(NetworkFragmentation.DEGREE_DESC, false);
+	// }
 }

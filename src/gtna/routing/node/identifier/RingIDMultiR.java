@@ -44,6 +44,7 @@ package gtna.routing.node.identifier;
  * @author benni
  * 
  */
+@Deprecated
 public class RingIDMultiR extends RingID implements Identifier {
 	public int reality;
 

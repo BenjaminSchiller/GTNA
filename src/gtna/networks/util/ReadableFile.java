@@ -57,25 +57,13 @@ import gtna.util.Config;
  * 
  */
 public class ReadableFile extends NetworkImpl implements Network {
-	private String FILENAME;
+	private String filename;
 
-	private int TYPE;
-
-	public ReadableFile(String KEY, String FILENAME, int TYPE,
+	public ReadableFile(String name, String folder, String filename,
 			RoutingAlgorithm ra, Transformation[] t) {
-		super(KEY, Integer.MIN_VALUE, new String[] {}, new String[] {}, ra, t);
-		this.FILENAME = FILENAME;
-		this.TYPE = TYPE;
-		super.setNodes(GraphReader.nodes(this.FILENAME, this.TYPE));
-	}
-
-	public ReadableFile(String name, String folder, String FILENAME, int TYPE,
-			RoutingAlgorithm ra, Transformation[] t) {
-		super(key(name, folder), Integer.MIN_VALUE, new String[] {},
+		super(ReadableFile.key(name, folder), GraphReader.nodes(filename), new String[] {},
 				new String[] {}, ra, t);
-		this.FILENAME = FILENAME;
-		this.TYPE = TYPE;
-		super.setNodes(GraphReader.nodes(this.FILENAME, this.TYPE));
+		this.filename = filename;
 	}
 
 	public static String key(String name, String folder) {
@@ -85,6 +73,8 @@ public class ReadableFile extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		return GraphReader.read(this.FILENAME, this.TYPE, this.description());
+		Graph graph = GraphReader.read(this.filename);
+		graph.setName(this.description());
+		return graph;
 	}
 }

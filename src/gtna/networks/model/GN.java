@@ -32,10 +32,8 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.model;
-
-import java.util.Random;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
@@ -44,7 +42,8 @@ import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
+
+import java.util.Random;
 
 /**
  * Implements a network generator for GN, the Growing Network. This network
@@ -71,20 +70,19 @@ public class GN extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
+		Graph graph = new Graph(this.description());
 		Random rand = new Random(System.currentTimeMillis());
-		Node[] nodes = Node.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes(), graph);
 		Edges edges = new Edges(nodes, 100);
 		for (int i = 1; i < nodes.length; i++) {
-			Node bootstrap = nodes[rand.nextInt(i)];
-			edges.add(nodes[i], bootstrap);
+			int bootstrap = rand.nextInt(i);
+			edges.add(i, bootstrap);
 			if (this.BIDIRECTIONAL) {
-				edges.add(bootstrap, nodes[i]);
+				edges.add(bootstrap, i);
 			}
 		}
 		edges.fill();
-		timer.end();
-		Graph g = new Graph(this.description(), nodes, timer);
-		return g;
+		graph.setNodes(nodes);
+		return graph;
 	}
 }

@@ -32,12 +32,9 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.model;
 
-import java.util.Random;
-
-import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -45,7 +42,8 @@ import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
+
+import java.util.Random;
 
 /**
  * Implements a network generator for GNR, the Growing Network with
@@ -84,40 +82,39 @@ public class GNR extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
+		Graph graph = new Graph(this.description());
 		Random rand = new Random(System.currentTimeMillis());
-		Node[] nodes = Node.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes(), graph);
 		Edges edges = new Edges(nodes, 100);
 		for (int i = 1; i < nodes.length; i++) {
-			Node bootstrap = nodes[rand.nextInt(i)];
+			int bootstrap = rand.nextInt(i);
 			if (rand.nextDouble() <= this.REDIRECTION_PROBABILITY) {
 				boolean found = false;
 				for (int j = 0; j < i; j++) {
-					if (edges.contains(new Edge(bootstrap, nodes[j]))) {
-						edges.add(nodes[i], nodes[j]);
+					if (edges.contains(bootstrap, j)) {
+						edges.add(i, j);
 						if (this.BIDIRECTIONAL) {
-							edges.add(nodes[j], nodes[i]);
+							edges.add(j, i);
 						}
 						found = true;
 						break;
 					}
 				}
 				if (!found) {
-					edges.add(new Edge(nodes[i], bootstrap));
+					edges.add(i, bootstrap);
 					if (this.BIDIRECTIONAL) {
-						edges.add(new Edge(bootstrap, nodes[i]));
+						edges.add(bootstrap, i);
 					}
 				}
 			} else {
-				edges.add(new Edge(nodes[i], bootstrap));
+				edges.add(i, bootstrap);
 				if (this.BIDIRECTIONAL) {
-					edges.add(new Edge(bootstrap, nodes[i]));
+					edges.add(bootstrap, i);
 				}
 			}
 		}
 		edges.fill();
-		timer.end();
-		Graph g = new Graph(this.description(), nodes, timer);
-		return g;
+		graph.setNodes(nodes);
+		return graph;
 	}
 }

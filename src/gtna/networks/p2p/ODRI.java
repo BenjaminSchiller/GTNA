@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.p2p;
 
 import gtna.graph.Edges;
@@ -44,7 +44,6 @@ import gtna.networks.model.DeBruijn;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
-import gtna.util.Timer;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -52,7 +51,8 @@ import java.util.Random;
 /**
  * Implements a network generator for the P2P overlay of ODRI, the Optimal
  * Diameter Routing Infrastructure, which is based on DeBruijn graph. It was
- * described in the paper"Graph-theoretic analysis of structured peer-to-peer systems: routing distances and fault resilience"
+ * described in the paper
+ * "Graph-theoretic analysis of structured peer-to-peer systems: routing distances and fault resilience"
  * by Loguinov et al. in 2003.
  * 
  * The parameters are the base and dimensions of the underlying DeBruijn graph
@@ -99,21 +99,21 @@ public class ODRI extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
+		Graph graph = new Graph(this.description());
 		Random rand = new Random(System.currentTimeMillis());
 
 		int numberOfDBNodes = DeBruijn
 				.numberOfNodes(this.BASE, this.DIMENSIONS);
 		DBNode[] dbNodes = new DBNode[numberOfDBNodes];
 		for (int i = 0; i < dbNodes.length; i++) {
-			dbNodes[i] = new DBNode(i);
+			dbNodes[i] = new DBNode(i, graph);
 		}
 		Edges dbEdges = new Edges(dbNodes, dbNodes.length * this.BASE);
 		for (int i = 0; i < dbNodes.length; i++) {
 			int shiftedId = (i * this.BASE) % dbNodes.length;
 			for (int j = 0; j < this.BASE; j++) {
 				if (i != shiftedId) {
-					dbEdges.add(dbNodes[i], dbNodes[shiftedId]);
+					dbEdges.add(i, shiftedId);
 				}
 				shiftedId++;
 			}
@@ -121,7 +121,7 @@ public class ODRI extends NetworkImpl implements Network {
 		dbEdges.fill();
 
 		ODRINode[] nodes = new ODRINode[this.nodes()];
-		nodes[0] = new ODRINode(0, dbNodes);
+		nodes[0] = new ODRINode(0, graph, dbNodes);
 		for (int i = 1; i < nodes.length; i++) {
 			while (true) {
 				ODRINode bootstrap = nodes[rand.nextInt(i)];
@@ -130,7 +130,7 @@ public class ODRI extends NetworkImpl implements Network {
 				}
 				if (bootstrap.dbNodes.length >= 2) {
 					DBNode[] handOver = bootstrap.handOver();
-					nodes[i] = new ODRINode(i, handOver);
+					nodes[i] = new ODRINode(i, graph, handOver);
 					// int width = bootstrap.end - bootstrap.start;
 					// if ((width % 2) == 0) {
 					// int start = bootstrap.start + width / 2;
@@ -150,16 +150,15 @@ public class ODRI extends NetworkImpl implements Network {
 
 		Edges edges = new Edges(nodes, dbNodes.length * this.BASE);
 		for (int i = 0; i < dbNodes.length; i++) {
-			Node[] out = dbNodes[i].out();
+			int[] out = dbNodes[i].getOutgoingEdges();
 			for (int j = 0; j < out.length; j++) {
-				edges.add(dbNodes[i].odri, ((DBNode) out[j]).odri);
+				edges.add(dbNodes[i].odri.getIndex(),
+						((DBNode) dbNodes[out[j]]).odri.getIndex());
 			}
 		}
 		edges.fill();
-
-		timer.end();
-		Graph g = new Graph(this.description(), nodes, timer);
-		return g;
+		graph.setNodes(nodes);
+		return graph;
 	}
 
 	private ODRINode getBootstrap(Random rand, ODRINode[] nodes, int index) {
@@ -174,14 +173,14 @@ public class ODRI extends NetworkImpl implements Network {
 		}
 		ODRINode max = node;
 		HashMap<Integer, ODRINode> seen = new HashMap<Integer, ODRINode>();
-		seen.put(node.index(), node);
+		seen.put(node.getIndex(), node);
 		for (int i = 0; i < node.dbNodes.length; i++) {
-			Node[] out = node.dbNodes[i].out();
+			int[] out = node.dbNodes[i].getOutgoingEdges();
 			for (int j = 0; j < out.length; j++) {
-				ODRINode dest = ((DBNode) out[j]).odri;
-				if (!seen.containsKey(dest.index())) {
+				ODRINode dest = ((DBNode) node.dbNodes[out[j]]).odri;
+				if (!seen.containsKey(dest.getIndex())) {
 					dest = getMax(dest, d - 1, k);
-					seen.put(dest.index(), dest);
+					seen.put(dest.getIndex(), dest);
 					if (dest.dbNodes.length > max.dbNodes.length) {
 						max = dest;
 					}
@@ -197,8 +196,8 @@ public class ODRI extends NetworkImpl implements Network {
 	private class ODRINode extends Node {
 		DBNode[] dbNodes;
 
-		private ODRINode(int index, DBNode[] dbNodes) {
-			super(index);
+		private ODRINode(int index, Graph graph, DBNode[] dbNodes) {
+			super(index, graph);
 			this.dbNodes = dbNodes;
 			this.update();
 		}
@@ -227,8 +226,8 @@ public class ODRI extends NetworkImpl implements Network {
 	private class DBNode extends Node {
 		private ODRINode odri;
 
-		private DBNode(int index) {
-			super(index);
+		private DBNode(int index, Graph graph) {
+			super(index, graph);
 		}
 	}
 }

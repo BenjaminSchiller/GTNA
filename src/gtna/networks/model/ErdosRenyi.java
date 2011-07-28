@@ -32,12 +32,9 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.model;
 
-import java.util.Random;
-
-import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -45,7 +42,8 @@ import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
+
+import java.util.Random;
 
 /**
  * Implements a network generator for the so-called Erdos-Renyi random graph
@@ -120,32 +118,26 @@ public class ErdosRenyi extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
+		Graph graph = new Graph(this.description());
 		Random rand = new Random(System.currentTimeMillis());
-		Node[] nodes = Node.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes(), graph);
 		int toAdd = (int) (this.AVERAGE_DEGREE * this.nodes() / 2);
 		Edges edges = new Edges(nodes, toAdd);
 		while (edges.size() < toAdd) {
-			Node u = nodes[rand.nextInt(nodes.length)];
-			Node v = nodes[rand.nextInt(nodes.length)];
-			if (u.index() == v.index()) {
+			int src = rand.nextInt(nodes.length);
+			int dst = rand.nextInt(nodes.length);
+			if (src == dst) {
 				continue;
 			}
 			if (this.BIDIRECTIONAL) {
-				Edge edge = new Edge(u, v);
-				if (!edges.contains(edge)) {
-					edges.add(edge);
-					edges.add(v, u);
-				}
+				edges.add(src, dst);
+				edges.add(dst, src);
 			} else {
-				Edge edge = new Edge(u, v);
-				if (!edges.contains(edge)) {
-					edges.add(edge);
-				}
+				edges.add(src, dst);
 			}
 		}
 		edges.fill();
-		timer.end();
-		return new Graph(this.description(), nodes, timer);
+		graph.setNodes(nodes);
+		return graph;
 	}
 }

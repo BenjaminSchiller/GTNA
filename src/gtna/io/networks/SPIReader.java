@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.io.networks;
 
 import gtna.graph.Edges;
@@ -45,9 +45,9 @@ import java.util.Hashtable;
 
 public class SPIReader extends Filereader {
 	public static final String buddySeparator = ";";
-	
+
 	public static final String buddyFileStart = "\"user_active_rid\"";
-	
+
 	private SPIReader(String filename) {
 		super(filename);
 	}
@@ -77,7 +77,8 @@ public class SPIReader extends Filereader {
 		}
 		reader1.close();
 
-		Node[] nodes = Node.init(index);
+		Graph graph = new Graph("SPI read from " + filename);
+		Node[] nodes = Node.init(index, graph);
 		Edges edges = new Edges(nodes, edgeCounter);
 		SPIReader reader = new SPIReader(filename);
 		String line = null;
@@ -90,13 +91,13 @@ public class SPIReader extends Filereader {
 			String to = parts[1].replace("\"", "");
 			int fromID = ids.get(from);
 			int toID = ids.get(to);
-			edges.add(nodes[fromID], nodes[toID]);
+			edges.add(fromID, toID);
 		}
 		reader.close();
 		edges.fill();
 
 		timer.end();
-		Graph g = new Graph("NAME", nodes, timer);
-		return g;
+		graph.setNodes(nodes);
+		return graph;
 	}
 }

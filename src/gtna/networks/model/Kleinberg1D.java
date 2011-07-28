@@ -35,110 +35,102 @@
  */
 package gtna.networks.model;
 
-import gtna.graph.Edges;
-import gtna.graph.Graph;
-import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
-import gtna.routing.node.RingNode;
-import gtna.transformation.Transformation;
-import gtna.util.Timer;
-
-import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-public class Kleinberg1D extends NetworkImpl implements Network {
-	private int SHORT_RANGE_CONTACTS;
-
-	private int LONG_RANGE_CONTACTS;
-
-	private double CLUSTERING_EXPONENT;
-
-	private boolean BIDIRECTIONAL;
-
-	public Kleinberg1D(int nodes, int SHORT_RANGE_CONTACTS,
-			int LONG_RANGE_CONTACTS, double CLUSTERING_EXPONENT,
-			boolean BIDIRECTIONAL, RoutingAlgorithm ra, Transformation[] t) {
-		super("KLEINBERG_1D", nodes,
-				new String[] { "SHORT_RANGE_CONTACTS", "LONG_RANGE_CONTACTS",
-						"CLUSTERING_EXPONENT", "BIDIRECTIONAL" }, new String[] {
-						"" + SHORT_RANGE_CONTACTS, "" + LONG_RANGE_CONTACTS,
-						"" + CLUSTERING_EXPONENT, "" + BIDIRECTIONAL }, ra, t);
-		this.SHORT_RANGE_CONTACTS = SHORT_RANGE_CONTACTS;
-		this.LONG_RANGE_CONTACTS = LONG_RANGE_CONTACTS;
-		this.CLUSTERING_EXPONENT = CLUSTERING_EXPONENT;
-		this.BIDIRECTIONAL = BIDIRECTIONAL;
-	}
-
-	public Graph generate() {
-		Timer timer = new Timer();
-		Random rand = new Random();
-		RingNode[] nodes = new RingNode[this.nodes()];
-		for (int i = 0; i < nodes.length; i++) {
-			// double id = (double) i / (double) this.nodes();
-			double id = rand.nextDouble();
-			nodes[i] = new RingNode(i, id);
-		}
-
-		Edges edges = new Edges(nodes, this.nodes()
-				* (this.SHORT_RANGE_CONTACTS * 2 + this.LONG_RANGE_CONTACTS));
-		// short-distance links
-		for (int i = 0; i < nodes.length; i++) {
-			RingNode src = nodes[i];
-			for (int j = 1; j <= this.SHORT_RANGE_CONTACTS; j++) {
-				RingNode dst = nodes[(i + j) % nodes.length];
-				edges.add(src, dst);
-				edges.add(dst, src);
-			}
-		}
-		// long-distance links
-		for (int i = 0; i < nodes.length; i++) {
-			double[] prob = new double[nodes.length];
-			double sum = 0;
-			for (int j = 0; j < nodes.length; j++) {
-				if (i != j) {
-					sum += Math.pow(nodes[i].getID().dist(nodes[j].getID()),
-							-this.CLUSTERING_EXPONENT);
-				}
-			}
-			for (int j = 0; j < nodes.length; j++) {
-				prob[j] = Math.pow(nodes[i].getID().dist(nodes[j].getID()),
-						-this.CLUSTERING_EXPONENT)
-						/ sum;
-			}
-			this.generateLongRangeContacts(nodes[i], nodes, edges, prob, rand);
-		}
-		edges.fill();
-
-		timer.end();
-		return new Graph(this.description(), nodes, timer);
-	}
-
-	private void generateLongRangeContacts(RingNode node, RingNode[] nodes,
-			Edges edges, double[] prob, Random rand) {
-		double sum = 0;
-		for (int i = 0; i < nodes.length; i++) {
-			sum += node.getID().dist(nodes[i].getID());
-		}
-		int found = 0;
-		while (found < this.LONG_RANGE_CONTACTS) {
-			RingNode contact = nodes[rand.nextInt(nodes.length)];
-			if (node.index() == contact.index()) {
-				continue;
-			}
-			if (prob[contact.index()] >= rand.nextDouble()) {
-				if (edges.contains(node.index(), contact.index())) {
-					continue;
-				}
-				edges.add(node, contact);
-				if (this.BIDIRECTIONAL) {
-					edges.add(contact, node);
-				}
-				found++;
-			}
-		}
-	}
+// TODO reimplement Kleinberg1D
+public class Kleinberg1D {
+	// public class Kleinberg1D extends NetworkImpl implements Network {
+	// private int SHORT_RANGE_CONTACTS;
+	//
+	// private int LONG_RANGE_CONTACTS;
+	//
+	// private double CLUSTERING_EXPONENT;
+	//
+	// private boolean BIDIRECTIONAL;
+	//
+	// public Kleinberg1D(int nodes, int SHORT_RANGE_CONTACTS,
+	// int LONG_RANGE_CONTACTS, double CLUSTERING_EXPONENT,
+	// boolean BIDIRECTIONAL, RoutingAlgorithm ra, Transformation[] t) {
+	// super("KLEINBERG_1D", nodes,
+	// new String[] { "SHORT_RANGE_CONTACTS", "LONG_RANGE_CONTACTS",
+	// "CLUSTERING_EXPONENT", "BIDIRECTIONAL" }, new String[] {
+	// "" + SHORT_RANGE_CONTACTS, "" + LONG_RANGE_CONTACTS,
+	// "" + CLUSTERING_EXPONENT, "" + BIDIRECTIONAL }, ra, t);
+	// this.SHORT_RANGE_CONTACTS = SHORT_RANGE_CONTACTS;
+	// this.LONG_RANGE_CONTACTS = LONG_RANGE_CONTACTS;
+	// this.CLUSTERING_EXPONENT = CLUSTERING_EXPONENT;
+	// this.BIDIRECTIONAL = BIDIRECTIONAL;
+	// }
+	//
+	// public Graph generate() {
+	// Timer timer = new Timer();
+	// Random rand = new Random();
+	// RingNode[] nodes = new RingNode[this.nodes()];
+	// for (int i = 0; i < nodes.length; i++) {
+	// // double id = (double) i / (double) this.nodes();
+	// double id = rand.nextDouble();
+	// nodes[i] = new RingNode(i, id);
+	// }
+	//
+	// Edges edges = new Edges(nodes, this.nodes()
+	// * (this.SHORT_RANGE_CONTACTS * 2 + this.LONG_RANGE_CONTACTS));
+	// // short-distance links
+	// for (int i = 0; i < nodes.length; i++) {
+	// RingNode src = nodes[i];
+	// for (int j = 1; j <= this.SHORT_RANGE_CONTACTS; j++) {
+	// RingNode dst = nodes[(i + j) % nodes.length];
+	// edges.add(src, dst);
+	// edges.add(dst, src);
+	// }
+	// }
+	// // long-distance links
+	// for (int i = 0; i < nodes.length; i++) {
+	// double[] prob = new double[nodes.length];
+	// double sum = 0;
+	// for (int j = 0; j < nodes.length; j++) {
+	// if (i != j) {
+	// sum += Math.pow(nodes[i].getID().dist(nodes[j].getID()),
+	// -this.CLUSTERING_EXPONENT);
+	// }
+	// }
+	// for (int j = 0; j < nodes.length; j++) {
+	// prob[j] = Math.pow(nodes[i].getID().dist(nodes[j].getID()),
+	// -this.CLUSTERING_EXPONENT)
+	// / sum;
+	// }
+	// this.generateLongRangeContacts(nodes[i], nodes, edges, prob, rand);
+	// }
+	// edges.fill();
+	//
+	// timer.end();
+	// return new Graph(this.description(), nodes, timer);
+	// }
+	//
+	// private void generateLongRangeContacts(RingNode node, RingNode[] nodes,
+	// Edges edges, double[] prob, Random rand) {
+	// double sum = 0;
+	// for (int i = 0; i < nodes.length; i++) {
+	// sum += node.getID().dist(nodes[i].getID());
+	// }
+	// int found = 0;
+	// while (found < this.LONG_RANGE_CONTACTS) {
+	// RingNode contact = nodes[rand.nextInt(nodes.length)];
+	// if (node.index() == contact.index()) {
+	// continue;
+	// }
+	// if (prob[contact.index()] >= rand.nextDouble()) {
+	// if (edges.contains(node.index(), contact.index())) {
+	// continue;
+	// }
+	// edges.add(node, contact);
+	// if (this.BIDIRECTIONAL) {
+	// edges.add(contact, node);
+	// }
+	// found++;
+	// }
+	// }
+	// }
 }

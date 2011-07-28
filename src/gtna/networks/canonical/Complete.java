@@ -32,16 +32,16 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.canonical;
 
+import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
 
 /**
  * Implements the network generator for a complete / fully-connected network of
@@ -57,19 +57,19 @@ public class Complete extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
-		Node[] nodes = Node.init(this.nodes());
+		Graph graph = new Graph(this.description());
+		Node[] nodes = Node.init(this.nodes(), graph);
+		Edges edges = new Edges(nodes, this.nodes() * (this.nodes() - 1));
 		for (int i = 0; i < nodes.length; i++) {
-			Node[] edges = new Node[nodes.length - 1];
-			int index = 0;
 			for (int j = 0; j < nodes.length; j++) {
-				if (j != i) {
-					edges[index++] = nodes[j];
+				if (j == i) {
+					continue;
 				}
+				edges.add(i, j);
 			}
-			nodes[i].init(edges, edges);
 		}
-		timer.end();
-		return new Graph(this.description(), nodes, timer);
+		edges.fill();
+		graph.setNodes(nodes);
+		return graph;
 	}
 }

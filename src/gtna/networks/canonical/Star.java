@@ -32,17 +32,17 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.canonical;
 
+import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.networks.NetworkImpl;
 import gtna.networks.Network;
+import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
-import gtna.util.Timer;
 
 /**
  * Implements the network generator for star network of given size. In a star
@@ -58,19 +58,16 @@ public class Star extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
-		Node[] nodes = new Node[this.nodes()];
-		nodes[0] = new Node(0);
-		Node[] edges = new Node[nodes.length - 1];
-		Node[] single = new Node[] { nodes[0] };
+		Graph graph = new Graph(this.description());
+		Node[] nodes = Node.init(this.nodes(), graph);
+		Edges edges = new Edges(nodes, this.nodes() * 2 - 2);
 		for (int i = 1; i < nodes.length; i++) {
-			nodes[i] = new Node(i);
-			nodes[i].init(single, single);
-			edges[i - 1] = nodes[i];
+			edges.add(0, i);
+			edges.add(i, 0);
 		}
-		nodes[0].init(edges, edges);
-		timer.end();
-		return new Graph(this.description(), nodes, timer);
+		edges.fill();
+		graph.setNodes(nodes);
+		return graph;
 	}
 
 	public String compareName(Network nw) {

@@ -35,41 +35,40 @@
  */
 package gtna.transformation.embedding.lmc;
 
-import gtna.transformation.embedding.swapping.SwappingAttackerKleinberg;
-
-import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-public class LMCAttackerKleinberg extends LMCNode {
-
-	public LMCAttackerKleinberg(int index, double pos, LMC lmc) {
-		super(index, pos, lmc);
-	}
-
-	/**
-	 * select ID at longest distance to any node
-	 */
-	public void turn(Random rand) {
-		double[] neighbors = this.knownIDs.clone();
-		this.getID().pos = (SwappingAttackerKleinberg.maxMiddle(neighbors) + rand
-				.nextDouble()
-				* this.lmc.delta) % 1.0;
-	}
-
-	/**
-	 * return ID close to neighbor to keep it from changing IDs
-	 */
-	protected double ask(LMCNode caller, Random rand) {
-		int index = this.position.get(caller);
-		if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
-			return (this.knownIDs[index] + this.lmc.delta
-					* (1.0 + rand.nextDouble())) % 1.0;
-		} else {
-			return (this.knownIDs[index] + this.lmc.delta * rand.nextDouble()) % 1.0;
-		}
-	}
+// TODO reimplement LMCAttackerKleinberg
+public class LMCAttackerKleinberg {
+	// public class LMCAttackerKleinberg extends LMCNode {
+	//
+	// public LMCAttackerKleinberg(int index, double pos, LMC lmc) {
+	// super(index, pos, lmc);
+	// }
+	//
+	// /**
+	// * select ID at longest distance to any node
+	// */
+	// public void turn(Random rand) {
+	// double[] neighbors = this.knownIDs.clone();
+	// this.getID().pos = (SwappingAttackerKleinberg.maxMiddle(neighbors) + rand
+	// .nextDouble()
+	// * this.lmc.delta) % 1.0;
+	// }
+	//
+	// /**
+	// * return ID close to neighbor to keep it from changing IDs
+	// */
+	// protected double ask(LMCNode caller, Random rand) {
+	// int index = this.position.get(caller);
+	// if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
+	// return (this.knownIDs[index] + this.lmc.delta
+	// * (1.0 + rand.nextDouble())) % 1.0;
+	// } else {
+	// return (this.knownIDs[index] + this.lmc.delta * rand.nextDouble()) % 1.0;
+	// }
+	// }
 
 }

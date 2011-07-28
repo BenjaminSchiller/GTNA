@@ -32,10 +32,8 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.model;
-
-import java.util.Random;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
@@ -44,7 +42,8 @@ import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
+
+import java.util.Random;
 
 /**
  * Implements the so-called Barabasi Albert network growth model described by
@@ -71,26 +70,27 @@ public class BarabasiAlbert extends NetworkImpl implements Network {
 		this.EDGES_PER_NODE = EDGES_PER_NODE;
 	}
 
+	// TODO takes very long for small network sizes
 	public Graph generate() {
-		Timer timer = new Timer();
+		Graph graph = new Graph(this.description());
 		Random rand = new Random(System.currentTimeMillis());
-		Node[] nodes = Node.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes(), graph);
 		int[] in = new int[nodes.length];
 		int[] out = new int[nodes.length];
 
 		int initNodes = Math.max(this.INIT_NETWORK_SIZE,
 				this.EDGES_PER_NODE + 5);
 		int initEdges = initNodes * this.EDGES_PER_NODE;
-		Graph temp = new ErdosRenyi(initNodes, initEdges, true, this
-				.routingAlgorithm(), this.transformations()).generate();
+		Graph temp = new ErdosRenyi(initNodes, initEdges, true,
+				this.routingAlgorithm(), this.transformations()).generate();
 		Edges edges = new Edges(nodes, initEdges + (nodes.length - initNodes)
 				* this.EDGES_PER_NODE);
-		for (int i = 0; i < temp.nodes.length; i++) {
-			in[i] = temp.nodes[i].in().length;
-			out[i] = temp.nodes[i].out().length;
-			Node[] Out = temp.nodes[i].out();
+		for (int i = 0; i < temp.getNodes().length; i++) {
+			in[i] = temp.getNodes()[i].getInDegree();
+			out[i] = temp.getNodes()[i].getOutDegree();
+			int[] Out = temp.getNodes()[i].getOutgoingEdges();
 			for (int j = 0; j < Out.length; j++) {
-				edges.add(nodes[i], nodes[Out[j].index()]);
+				edges.add(i, Out[j]);
 			}
 		}
 
@@ -117,8 +117,7 @@ public class BarabasiAlbert extends NetworkImpl implements Network {
 
 		edges.fill();
 
-		timer.end();
-		Graph g = new Graph(this.description(), nodes, timer);
-		return g;
+		graph.setNodes(nodes);
+		return graph;
 	}
 }

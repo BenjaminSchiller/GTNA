@@ -36,114 +36,104 @@
  */
 package gtna.metrics;
 
-import gtna.data.Value;
-import gtna.graph.Graph;
-import gtna.graph.Node;
-import gtna.io.DataWriter;
-import gtna.networks.Network;
-import gtna.routing.node.RingNode;
-import gtna.util.Statistics;
-import gtna.util.Util;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Hashtable;
-import java.util.LinkedList;
-
 /**
  * @author "Benjamin Schiller"
  * 
  */
-public class IDSpaceHops extends MetricImpl implements Metric {
-	private double[][] successor;
 
-	private double[][] successorEDF;
-
-	private double average;
-
-	public IDSpaceHops() {
-		super("ID_SPACE_HOPS");
-	}
-
-	private void initEmpty() {
-		this.successor = new double[][] { new double[] { 0.0, 0.0 } };
-		this.successorEDF = new double[][] { new double[] { 0.0, 0.0 } };
-		this.average = 0.0;
-	}
-
-	public void computeData(Graph g, Network n, Hashtable<String, Metric> m) {
-		if (!(g.nodes[0] instanceof RingNode)) {
-			this.initEmpty();
-		}
-		double[] hops = this.computeSuccessorHops(g);
-		this.successor = Statistics.probabilityDistribution(hops, 0, 1);
-		this.successorEDF = Statistics.empiricalDistributionFunction(
-				this.successor, 0, 1);
-		this.average = Util.avg(hops);
-	}
-
-	private double[] computeSuccessorHops(Graph g) {
-		RingNode[] nodes = new RingNode[g.nodes.length];
-		for (int i = 0; i < g.nodes.length; i++) {
-			nodes[i] = (RingNode) g.nodes[i];
-		}
-		Arrays.sort(nodes, new SuccessorSorting());
-		double[] hops = new double[nodes.length];
-		for (int i = 0; i < nodes.length; i++) {
-			RingNode node = nodes[i];
-			RingNode succ = nodes[(i + 1) % nodes.length];
-			hops[i] = this.hops(g, node, succ);
-		}
-		return hops;
-	}
-
-	private int hops(Graph g, Node from, Node to) {
-		int[] hops = new int[g.nodes.length];
-		for (int i = 0; i < hops.length; i++) {
-			hops[i] = -1;
-		}
-		hops[from.index()] = 0;
-		LinkedList<Node> list = new LinkedList<Node>();
-		list.add(from);
-		while (!list.isEmpty()) {
-			Node curr = list.removeFirst();
-			Node[] out = curr.out();
-			for (int i = 0; i < out.length; i++) {
-				if (to.index() == out[i].index()) {
-					return hops[curr.index()] + 1;
-				}
-				if (hops[out[i].index()] == -1) {
-					hops[out[i].index()] = hops[curr.index()] + 1;
-					list.addLast(out[i]);
-				}
-			}
-		}
-		return -1;
-	}
-
-	public Value[] getValues(Value[] values) {
-		Value averageHops = new Value("ID_SPACE_HOPS_AVERAGE", this.average);
-		return new Value[] { averageHops };
-	}
-
-	public boolean writeData(String folder) {
-		DataWriter.writeWithoutIndex(this.successor, "ID_SPACE_HOPS_SUCCESSOR",
-				folder);
-		DataWriter.writeWithoutIndex(this.successorEDF,
-				"ID_SPACE_HOPS_SUCCESSOR_EDF", folder);
-		return true;
-	}
-
-	private static class SuccessorSorting implements Comparator<RingNode> {
-		public int compare(RingNode a, RingNode b) {
-			if (a.getID().pos == b.getID().pos) {
-				return 0;
-			} else if (a.getID().pos < b.getID().pos) {
-				return -1;
-			} else {
-				return 1;
-			}
-		}
-	}
+// TODO reimplement IDSpaceHops
+public class IDSpaceHops {
+	// public class IDSpaceHops extends MetricImpl implements Metric {
+	// private double[][] successor;
+	//
+	// private double[][] successorEDF;
+	//
+	// private double average;
+	//
+	// public IDSpaceHops() {
+	// super("ID_SPACE_HOPS");
+	// }
+	//
+	// private void initEmpty() {
+	// this.successor = new double[][] { new double[] { 0.0, 0.0 } };
+	// this.successorEDF = new double[][] { new double[] { 0.0, 0.0 } };
+	// this.average = 0.0;
+	// }
+	//
+	// public void computeData(Graph g, Network n, Hashtable<String, Metric> m)
+	// {
+	// if (!(g.nodes[0] instanceof RingNode)) {
+	// this.initEmpty();
+	// }
+	// double[] hops = this.computeSuccessorHops(g);
+	// this.successor = Statistics.probabilityDistribution(hops, 0, 1);
+	// this.successorEDF = Statistics.empiricalDistributionFunction(
+	// this.successor, 0, 1);
+	// this.average = Util.avg(hops);
+	// }
+	//
+	// private double[] computeSuccessorHops(Graph g) {
+	// RingNode[] nodes = new RingNode[g.nodes.length];
+	// for (int i = 0; i < g.nodes.length; i++) {
+	// nodes[i] = (RingNode) g.nodes[i];
+	// }
+	// Arrays.sort(nodes, new SuccessorSorting());
+	// double[] hops = new double[nodes.length];
+	// for (int i = 0; i < nodes.length; i++) {
+	// RingNode node = nodes[i];
+	// RingNode succ = nodes[(i + 1) % nodes.length];
+	// hops[i] = this.hops(g, node, succ);
+	// }
+	// return hops;
+	// }
+	//
+	// private int hops(Graph g, Node from, Node to) {
+	// int[] hops = new int[g.nodes.length];
+	// for (int i = 0; i < hops.length; i++) {
+	// hops[i] = -1;
+	// }
+	// hops[from.index()] = 0;
+	// LinkedList<Node> list = new LinkedList<Node>();
+	// list.add(from);
+	// while (!list.isEmpty()) {
+	// Node curr = list.removeFirst();
+	// Node[] out = curr.out();
+	// for (int i = 0; i < out.length; i++) {
+	// if (to.index() == out[i].index()) {
+	// return hops[curr.index()] + 1;
+	// }
+	// if (hops[out[i].index()] == -1) {
+	// hops[out[i].index()] = hops[curr.index()] + 1;
+	// list.addLast(out[i]);
+	// }
+	// }
+	// }
+	// return -1;
+	// }
+	//
+	// public Value[] getValues(Value[] values) {
+	// Value averageHops = new Value("ID_SPACE_HOPS_AVERAGE", this.average);
+	// return new Value[] { averageHops };
+	// }
+	//
+	// public boolean writeData(String folder) {
+	// DataWriter.writeWithoutIndex(this.successor, "ID_SPACE_HOPS_SUCCESSOR",
+	// folder);
+	// DataWriter.writeWithoutIndex(this.successorEDF,
+	// "ID_SPACE_HOPS_SUCCESSOR_EDF", folder);
+	// return true;
+	// }
+	//
+	// private static class SuccessorSorting implements Comparator<RingNode> {
+	// public int compare(RingNode a, RingNode b) {
+	// if (a.getID().pos == b.getID().pos) {
+	// return 0;
+	// } else if (a.getID().pos < b.getID().pos) {
+	// return -1;
+	// } else {
+	// return 1;
+	// }
+	// }
+	// }
 
 }

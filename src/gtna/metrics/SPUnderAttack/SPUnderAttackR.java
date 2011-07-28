@@ -32,14 +32,13 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.metrics.SPUnderAttack;
 
-import gtna.metrics.Metric;
-import gtna.metrics.networkFragmentation.NetworkFragmentation;
-
-public class SPUnderAttackR extends SPUnderAttack implements Metric {
-	public SPUnderAttackR() {
-		super(NetworkFragmentation.RANDOM);
-	}
+// TODO reimplement SPUnderAttackR
+public class SPUnderAttackR {
+	// public class SPUnderAttackR extends SPUnderAttack implements Metric {
+	// public SPUnderAttackR() {
+	// super(NetworkFragmentation.RANDOM);
+	// }
 }

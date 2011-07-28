@@ -32,10 +32,9 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.p2p;
 
-import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -126,14 +125,14 @@ public class Kademlia extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
+		Graph graph = new Graph(this.description());
 		Random rand = new Random(System.currentTimeMillis());
 
 		KademliaNode[] nodes = new KademliaNode[this.nodes()];
 		Timer t = new Timer("NODES");
 		for (int i = 0; i < nodes.length; i++) {
 			nodes[i] = new KademliaNode(ID.randomUnique(rand, this, nodes,
-					i - 1), i, this);
+					i - 1), i, graph, this);
 		}
 		t.end();
 		t = new Timer("JOIN");
@@ -156,15 +155,13 @@ public class Kademlia extends NetworkImpl implements Network {
 			for (int j = 0; j < nodes[i].buckets.length; j++) {
 				for (int k = 0; k < nodes[i].buckets[j].length; k++) {
 					if (nodes[i].buckets[j][k] != null) {
-						edges.add(new Edge(nodes[i], nodes[i].buckets[j][k]));
+						edges.add(i, nodes[i].buckets[j][k].getIndex());
 					}
 				}
 			}
 		}
 		edges.fill();
-
-		timer.end();
-		Graph graph = new Graph(this.description(), nodes, timer);
+		graph.setNodes(nodes);
 		return graph;
 	}
 
@@ -175,8 +172,8 @@ public class Kademlia extends NetworkImpl implements Network {
 
 		private ArrayList<KademliaNode> list;
 
-		private KademliaNode(ID id, int index, Kademlia n) {
-			super(index);
+		private KademliaNode(ID id, int index, Graph graph, Kademlia n) {
+			super(index, graph);
 			this.id = id;
 			this.buckets = new KademliaNode[n.BITS_PER_ID][n.BUCKET_SIZE];
 			this.list = new ArrayList<KademliaNode>();

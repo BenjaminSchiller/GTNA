@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.transformation;
 
 import gtna.util.Config;
@@ -69,8 +69,7 @@ public abstract class TransformationImpl implements Transformation {
 		this.configKeys = configKeys;
 		this.configValues = configValues;
 	}
-	
-	
+
 	public String compareName(Transformation t, String key) {
 		if (!this.getClass().equals(t.getClass())) {
 			return Config.get("TRANSFORMATION_NOT_COMPARABLE");

@@ -36,9 +36,7 @@
 package gtna.routing.node.identifier;
 
 
-/**
- * @deprecated
- */
+@Deprecated
 public class GridID implements Identifier {
 	public double[] x;
 

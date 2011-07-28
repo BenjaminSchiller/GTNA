@@ -45,12 +45,12 @@ public class NodeSorting {
 	public static Node[] degreeDesc(Node[] nodes, Random rand) {
 		Node[] sorted = nodes.clone();
 		Arrays.sort(sorted, new DegreeDesc());
-		int value = sorted[0].in().length + sorted[0].out().length;
+		int value = sorted[0].getDegree();
 		int from = 0;
 		for (int i = 1; i < sorted.length; i++) {
-			if (sorted[i].in().length + sorted[i].out().length != value) {
+			if (sorted[i].getDegree() != value) {
 				randomize(sorted, rand, from, i - 1);
-				value = sorted[i].in().length + sorted[i].out().length;
+				value = sorted[i].getDegree();
 				from = i;
 			}
 		}
@@ -60,8 +60,8 @@ public class NodeSorting {
 
 	private static class DegreeDesc implements Comparator<Node> {
 		public int compare(Node n1, Node n2) {
-			int v1 = n1.in().length + n1.out().length;
-			int v2 = n2.in().length + n2.out().length;
+			int v1 = n1.getDegree();
+			int v2 = n2.getDegree();
 			if (v1 == v2) {
 				return 0;
 			} else if (v1 > v2) {
@@ -75,12 +75,12 @@ public class NodeSorting {
 	public static Node[] inDegreeDesc(Node[] nodes, Random rand) {
 		Node[] sorted = nodes.clone();
 		Arrays.sort(sorted, new InDegreeDesc());
-		int value = sorted[0].in().length;
+		int value = sorted[0].getInDegree();
 		int from = 0;
 		for (int i = 1; i < sorted.length; i++) {
-			if (sorted[i].in().length != value) {
+			if (sorted[i].getInDegree() != value) {
 				randomize(sorted, rand, from, i - 1);
-				value = sorted[i].in().length;
+				value = sorted[i].getInDegree();
 				from = i;
 			}
 		}
@@ -90,8 +90,8 @@ public class NodeSorting {
 
 	private static class InDegreeDesc implements Comparator<Node> {
 		public int compare(Node n1, Node n2) {
-			int v1 = n1.in().length;
-			int v2 = n2.in().length;
+			int v1 = n1.getInDegree();
+			int v2 = n2.getInDegree();
 			if (v1 == v2) {
 				return 0;
 			} else if (v1 > v2) {
@@ -105,12 +105,12 @@ public class NodeSorting {
 	public static Node[] outDegreeDesc(Node[] nodes, Random rand) {
 		Node[] sorted = nodes.clone();
 		Arrays.sort(sorted, new OutDegreeDesc());
-		int value = sorted[0].out().length;
+		int value = sorted[0].getOutDegree();
 		int from = 0;
 		for (int i = 1; i < sorted.length; i++) {
-			if (sorted[i].out().length != value) {
+			if (sorted[i].getOutDegree() != value) {
 				randomize(sorted, rand, from, i - 1);
-				value = sorted[i].out().length;
+				value = sorted[i].getOutDegree();
 				from = i;
 			}
 		}
@@ -120,8 +120,8 @@ public class NodeSorting {
 
 	private static class OutDegreeDesc implements Comparator<Node> {
 		public int compare(Node n1, Node n2) {
-			int v1 = n1.out().length;
-			int v2 = n2.out().length;
+			int v1 = n1.getOutDegree();
+			int v2 = n2.getOutDegree();
 			if (v1 == v2) {
 				return 0;
 			} else if (v1 > v2) {
@@ -151,7 +151,7 @@ public class NodeSorting {
 	public static int[] byDegreeDesc(Node[] nodes, Random rand) {
 		int[] degree = new int[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
-			degree[i] = nodes[i].in().length + nodes[i].out().length;
+			degree[i] = nodes[i].getDegree();
 		}
 		return getNodesSortedDescending(degree, rand);
 	}

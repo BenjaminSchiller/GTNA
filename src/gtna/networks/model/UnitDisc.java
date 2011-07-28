@@ -35,7 +35,7 @@
  */
 package gtna.networks.model;
 
-
+// TODO reimplement UnitDisc
 public class UnitDisc {
 	// private int AREA_WIDTH;
 	//

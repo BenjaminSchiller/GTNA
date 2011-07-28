@@ -36,87 +36,85 @@
  */
 package gtna.transformation.embedding.swapping;
 
-import gtna.graph.Node;
-import gtna.routing.node.identifier.RingID;
-import gtna.transformation.embedding.EmbeddingNode;
-
-import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-public class SwappingNode extends EmbeddingNode {
-	
-	public static final double NO_SWAP = Double.MIN_VALUE;
-
-	protected Swapping swapping;
-
-	public SwappingNode(int index, double pos, Swapping swapping) {
-		super(index, pos);
-		this.swapping = swapping;
-	}
-
-	public void updateNeighbors(Random rand) {
-		Node[] out = this.out();
-		for (int i = 0; i < out.length; i++) {
-			this.knownIDs[i] = ((SwappingNode) out[i]).ask(this, rand);
-		}
-	}
-
-	public void turn(Random rand) {
-		// initiate swap
-		Node[] out = this.out();
-		double loc = ((SwappingNode) out[rand.nextInt(out.length)]).swap(this
-				.getID().pos, this.knownIDs, 6, rand);
-		if (loc != SwappingNode.NO_SWAP) {
-			this.getID().pos = loc;
-		}
-	}
-
-	protected double ask(SwappingNode caller, Random rand) {
-		return this.getID().pos;
-	}
-
-	/**
-	 * 
-	 * @param caller
-	 * @param callerNeighbors
-	 * @param ttl
-	 * @return ID to change for; or Double.MIN_VALUE in case of no swap
-	 */
-	protected double swap(double callerID, double[] callerNeighborIDs, int ttl,
-			Random rand) {
-
-		// case a) determine if nodes should swap
-		if (ttl - 1 <= 0) {
-			// calculate coefficient
-			double before = 1;
-			double after = 1;
-			RingID neighborID = new RingID(rand.nextDouble());
-			RingID partnerID = new RingID(callerID);
-			for (int i = 0; i < this.out().length; i++) {
-				neighborID.pos = this.knownIDs[i];
-				before = before * this.dist(neighborID);
-				after = after * partnerID.dist(neighborID);
-			}
-			for (int i = 0; i < callerNeighborIDs.length; i++) {
-				neighborID.pos = callerNeighborIDs[i];
-				before = before * partnerID.dist(neighborID);
-				after = after * this.dist(neighborID);
-			}
-			// decide if to swap
-			if (rand.nextDouble() < before / after) {
-				double loc = this.getID().pos;
-				this.setID(partnerID);
-				return loc;
-			}
-		} else {
-			// case 2: forward
-			return ((SwappingNode) this.out()[rand.nextInt(this.out().length)])
-					.swap(callerID, callerNeighborIDs, ttl - 1, rand);
-		}
-		return SwappingNode.NO_SWAP;
-	}
+// TODO reimplement SwappingNode
+public class SwappingNode {
+	// public class SwappingNode extends EmbeddingNode {
+	//
+	// public static final double NO_SWAP = Double.MIN_VALUE;
+	//
+	// protected Swapping swapping;
+	//
+	// public SwappingNode(int index, double pos, Swapping swapping) {
+	// super(index, pos);
+	// this.swapping = swapping;
+	// }
+	//
+	// public void updateNeighbors(Random rand) {
+	// Node[] out = this.out();
+	// for (int i = 0; i < out.length; i++) {
+	// this.knownIDs[i] = ((SwappingNode) out[i]).ask(this, rand);
+	// }
+	// }
+	//
+	// public void turn(Random rand) {
+	// // initiate swap
+	// Node[] out = this.out();
+	// double loc = ((SwappingNode) out[rand.nextInt(out.length)]).swap(this
+	// .getID().pos, this.knownIDs, 6, rand);
+	// if (loc != SwappingNode.NO_SWAP) {
+	// this.getID().pos = loc;
+	// }
+	// }
+	//
+	// protected double ask(SwappingNode caller, Random rand) {
+	// return this.getID().pos;
+	// }
+	//
+	// /**
+	// *
+	// * @param caller
+	// * @param callerNeighbors
+	// * @param ttl
+	// * @return ID to change for; or Double.MIN_VALUE in case of no swap
+	// */
+	// protected double swap(double callerID, double[] callerNeighborIDs, int
+	// ttl,
+	// Random rand) {
+	//
+	// // case a) determine if nodes should swap
+	// if (ttl - 1 <= 0) {
+	// // calculate coefficient
+	// double before = 1;
+	// double after = 1;
+	// RingID neighborID = new RingID(rand.nextDouble());
+	// RingID partnerID = new RingID(callerID);
+	// for (int i = 0; i < this.out().length; i++) {
+	// neighborID.pos = this.knownIDs[i];
+	// before = before * this.dist(neighborID);
+	// after = after * partnerID.dist(neighborID);
+	// }
+	// for (int i = 0; i < callerNeighborIDs.length; i++) {
+	// neighborID.pos = callerNeighborIDs[i];
+	// before = before * partnerID.dist(neighborID);
+	// after = after * this.dist(neighborID);
+	// }
+	// // decide if to swap
+	// if (rand.nextDouble() < before / after) {
+	// double loc = this.getID().pos;
+	// this.setID(partnerID);
+	// return loc;
+	// }
+	// } else {
+	// // case 2: forward
+	// return ((SwappingNode) this.out()[rand.nextInt(this.out().length)])
+	// .swap(callerID, callerNeighborIDs, ttl - 1, rand);
+	// }
+	// return SwappingNode.NO_SWAP;
+	// }
 
 }

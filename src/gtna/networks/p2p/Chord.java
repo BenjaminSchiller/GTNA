@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.p2p;
 
 import gtna.graph.Edges;
@@ -44,7 +44,6 @@ import gtna.routing.RoutingAlgorithm;
 import gtna.routing.node.IDNode;
 import gtna.routing.node.identifier.Identifier;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
 import gtna.util.Util;
 
 import java.util.ArrayList;
@@ -147,14 +146,14 @@ public class Chord extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
+		Graph graph = new Graph(this.description());
 		Random rand = new Random(System.currentTimeMillis());
 		long mod = (long) Math.pow(2, this.BITS_PER_KEY);
 
 		ChordNode[] nodes = new ChordNode[this.nodes()];
 		long[] ids = this.getUniqueIDs(this.nodes(), rand, mod);
 		for (int i = 0; i < nodes.length; i++) {
-			nodes[i] = new ChordNode(i, ids[i], mod);
+			nodes[i] = new ChordNode(i, graph, ids[i], mod);
 		}
 		for (int i = 0; i < nodes.length; i++) {
 			int indexPredecessor = (i + nodes.length - 1) % nodes.length;
@@ -175,20 +174,18 @@ public class Chord extends NetworkImpl implements Network {
 		Edges edges = new Edges(nodes, nodes.length
 				* (fingers + this.SUCCESSOR_LIST_SIZE + 1));
 		for (int i = 0; i < nodes.length; i++) {
-			edges.add(nodes[i], nodes[i].predecessor);
-			edges.add(nodes[i], nodes[i].successor);
+			edges.add(i, nodes[i].predecessor.getIndex());
+			edges.add(i, nodes[i].successor.getIndex());
 			for (int j = 0; j < nodes[i].successorList.length; j++) {
-				edges.add(nodes[i], nodes[i].successorList[j]);
+				edges.add(i, nodes[i].successorList[j].getIndex());
 			}
 			for (int j = 0; j < nodes[i].fingers.length; j++) {
-				edges.add(nodes[i], nodes[i].fingers[j]);
+				edges.add(i, nodes[i].fingers[j].getIndex());
 			}
 		}
 		edges.fill();
-
-		timer.end();
-		Graph g = new Graph(this.description(), nodes, timer);
-		return g;
+		graph.setNodes(nodes);
+		return graph;
 	}
 
 	private long[] getUniqueIDs(int number, Random rand, long mod) {
@@ -236,8 +233,8 @@ public class Chord extends NetworkImpl implements Network {
 
 		private ChordNode[] fingers;
 
-		private ChordNode(int index, long id, long mod) {
-			super(index);
+		private ChordNode(int index, Graph graph, long id, long mod) {
+			super(index, graph);
 			this.id = new ChordID(id, mod);
 		}
 
@@ -382,7 +379,7 @@ public class Chord extends NetworkImpl implements Network {
 		}
 
 		public String toString() {
-			return this.index() + " / " + this.id;
+			return this.getIndex() + " / " + this.id;
 		}
 
 		public boolean contains(Identifier id) {

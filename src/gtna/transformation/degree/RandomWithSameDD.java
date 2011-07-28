@@ -32,17 +32,9 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.transformation.degree;
 
-import gtna.graph.Edges;
-import gtna.graph.Graph;
-import gtna.graph.Node;
-import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * Transforms the given graph by generating a random graph with the exact same
@@ -54,76 +46,78 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RandomWithSameDD extends TransformationImpl implements
-		Transformation {
-	private boolean bidirectional;
-
-	public RandomWithSameDD(boolean bidirectional) {
-		super("RANDOM_WITH_SAME_DD", new String[] { "BIDIRECTIONAL" },
-				new String[] { "" + bidirectional });
-		this.bidirectional = bidirectional;
-	}
-
-	public boolean applicable(Graph g) {
-		return true;
-	}
-
-	public Graph transform(Graph g) {
-		Node[] nodes = Node.init(g.nodes.length);
-		Edges edges = this.random(src(g), dst(g), nodes, g.nodes);
-		while (edges == null) {
-			edges = this.random(src(g), dst(g), nodes, g.nodes);
-		}
-		edges.fill();
-		return new Graph(g.name, nodes, g.timer);
-	}
-
-	private Edges random(ArrayList<Integer> src, ArrayList<Integer> dst,
-			Node[] nodes, Node[] orig) {
-		Edges edges = new Edges(nodes, src.size());
-		Random rand = new Random(System.currentTimeMillis());
-		int counter = 0;
-		while (src.size() > 0) {
-			if (counter > 1000) {
-				return null;
-			}
-			int si = rand.nextInt(src.size());
-			int di = rand.nextInt(dst.size());
-			int s = src.get(si);
-			int d = dst.get(di);
-			if (s == d || edges.contains(s, d)) {
-				counter++;
-				continue;
-			}
-			edges.add(nodes[s], nodes[d]);
-			src.remove((Integer) s);
-			dst.remove((Integer) d);
-			if (this.bidirectional) {
-				edges.add(nodes[d], nodes[s]);
-				src.remove((Integer) d);
-				dst.remove((Integer) s);
-			}
-		}
-		return edges;
-	}
-
-	private ArrayList<Integer> src(Graph g) {
-		ArrayList<Integer> src = new ArrayList<Integer>(g.edges);
-		for (int i = 0; i < g.nodes.length; i++) {
-			for (int j = 0; j < g.nodes[i].out().length; j++) {
-				src.add(i);
-			}
-		}
-		return src;
-	}
-
-	private ArrayList<Integer> dst(Graph g) {
-		ArrayList<Integer> dst = new ArrayList<Integer>(g.edges);
-		for (int i = 0; i < g.nodes.length; i++) {
-			for (int j = 0; j < g.nodes[i].in().length; j++) {
-				dst.add(i);
-			}
-		}
-		return dst;
-	}
+// TODO reimplement RandomWithSameDD
+public class RandomWithSameDD {
+	// public class RandomWithSameDD extends TransformationImpl implements
+	// Transformation {
+	// private boolean bidirectional;
+	//
+	// public RandomWithSameDD(boolean bidirectional) {
+	// super("RANDOM_WITH_SAME_DD", new String[] { "BIDIRECTIONAL" },
+	// new String[] { "" + bidirectional });
+	// this.bidirectional = bidirectional;
+	// }
+	//
+	// public boolean applicable(Graph g) {
+	// return true;
+	// }
+	//
+	// public Graph transform(Graph g) {
+	// Node[] nodes = Node.init(g.nodes.length);
+	// Edges edges = this.random(src(g), dst(g), nodes, g.nodes);
+	// while (edges == null) {
+	// edges = this.random(src(g), dst(g), nodes, g.nodes);
+	// }
+	// edges.fill();
+	// return new Graph(g.name, nodes, g.timer);
+	// }
+	//
+	// private Edges random(ArrayList<Integer> src, ArrayList<Integer> dst,
+	// Node[] nodes, Node[] orig) {
+	// Edges edges = new Edges(nodes, src.size());
+	// Random rand = new Random(System.currentTimeMillis());
+	// int counter = 0;
+	// while (src.size() > 0) {
+	// if (counter > 1000) {
+	// return null;
+	// }
+	// int si = rand.nextInt(src.size());
+	// int di = rand.nextInt(dst.size());
+	// int s = src.get(si);
+	// int d = dst.get(di);
+	// if (s == d || edges.contains(s, d)) {
+	// counter++;
+	// continue;
+	// }
+	// edges.add(nodes[s], nodes[d]);
+	// src.remove((Integer) s);
+	// dst.remove((Integer) d);
+	// if (this.bidirectional) {
+	// edges.add(nodes[d], nodes[s]);
+	// src.remove((Integer) d);
+	// dst.remove((Integer) s);
+	// }
+	// }
+	// return edges;
+	// }
+	//
+	// private ArrayList<Integer> src(Graph g) {
+	// ArrayList<Integer> src = new ArrayList<Integer>(g.edges);
+	// for (int i = 0; i < g.nodes.length; i++) {
+	// for (int j = 0; j < g.nodes[i].out().length; j++) {
+	// src.add(i);
+	// }
+	// }
+	// return src;
+	// }
+	//
+	// private ArrayList<Integer> dst(Graph g) {
+	// ArrayList<Integer> dst = new ArrayList<Integer>(g.edges);
+	// for (int i = 0; i < g.nodes.length; i++) {
+	// for (int j = 0; j < g.nodes[i].in().length; j++) {
+	// dst.add(i);
+	// }
+	// }
+	// return dst;
+	// }
 }

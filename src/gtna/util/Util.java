@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.util;
 
 import gtna.data.Series;
@@ -47,8 +47,6 @@ import gtna.routing.RoutingAlgorithm;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Random;
 import java.util.Vector;
 
@@ -656,124 +654,124 @@ public class Util {
 	// REMOVE
 	// ///////////////////////
 
-	public static Node[] removeHighestDegree(Node[] nodes) {
-		int largestIndex = 0;
-		int largestDegree = nodes[0].in().length + nodes[0].out().length;
-		for (int i = 1; i < nodes.length; i++) {
-			int degree = nodes[i].in().length + nodes[i].out().length;
-			if (degree > largestDegree) {
-				largestDegree = degree;
-				largestIndex = i;
-			}
-		}
-		Node[] removed = new Node[nodes.length - 1];
-		for (int i = 0; i < nodes.length; i++) {
-			if (i < largestIndex) {
-				removed[i] = nodes[i];
-			} else if (i > largestIndex) {
-				removed[i - 1] = nodes[i];
-			}
-		}
-		Node largest = nodes[largestIndex];
-		for (int i = 0; i < removed.length; i++) {
-			if (removed[i].hasIn(largest)) {
-				removed[i].removeIn(largest);
-			}
-			if (removed[i].hasOut(largest)) {
-				removed[i].removeOut(largest);
-			}
-		}
-		for (int i = 0; i < removed.length; i++) {
-			removed[i].setIndex(i);
-		}
-		return removed;
-	}
-
-	public static Node[] removeIsolatedClusters(Node[] users) {
-		ArrayList<ArrayList<Node>> clusters = new ArrayList<ArrayList<Node>>();
-		boolean[] visited = new boolean[users.length];
-		for (int i = 0; i < users.length; i++) {
-			if (visited[users[i].index()]) {
-				continue;
-			}
-			clusters.add(new ArrayList<Node>());
-
-			Queue<Node> queueFW = new LinkedList<Node>();
-			boolean[] visitedFW = new boolean[users.length];
-			visitedFW[users[i].index()] = true;
-			queueFW.add(users[i]);
-			while (!queueFW.isEmpty()) {
-				Node current = queueFW.poll();
-				Node[] out = current.out();
-				for (int j = 0; j < out.length; j++) {
-					if (!visitedFW[out[j].index()]) {
-						queueFW.add((Node) out[j]);
-						visitedFW[out[j].index()] = true;
-					}
-				}
-			}
-
-			Queue<Node> queueBW = new LinkedList<Node>();
-			boolean[] visitedBW = new boolean[users.length];
-			visitedBW[users[i].index()] = true;
-			queueBW.add(users[i]);
-			while (!queueBW.isEmpty()) {
-				Node current = queueBW.poll();
-				Node[] in = current.in();
-				for (int j = 0; j < in.length; j++) {
-					if (!visitedBW[in[j].index()]) {
-						queueBW.add((Node) in[j]);
-						visitedBW[in[j].index()] = true;
-					}
-				}
-			}
-
-			ArrayList<Node> currentCluster = clusters
-					.get(clusters.size() - 1);
-			for (int j = 0; j < users.length; j++) {
-				if (visitedFW[users[j].index()] && visitedBW[users[j].index()]) {
-					currentCluster.add(users[j]);
-					visited[users[j].index()] = true;
-				}
-			}
-		}
-		int maxClusterIndex = 0;
-		for (int i = 1; i < clusters.size(); i++) {
-			if (clusters.get(i).size() > clusters.get(maxClusterIndex).size()) {
-				maxClusterIndex = i;
-			}
-		}
-		ArrayList<Node> remove = new ArrayList<Node>();
-		for (int i = 0; i < clusters.size(); i++) {
-			if (i != maxClusterIndex) {
-				remove.addAll(clusters.get(i));
-			}
-		}
-		return remove(users, remove);
-	}
-
-	private static Node[] remove(Node[] nodes,
-			ArrayList<Node> remove) {
-		ArrayList<Node> removed = new ArrayList<Node>(nodes.length
-				- remove.size());
-		for (int i = 0; i < nodes.length; i++) {
-			if (!remove.contains(nodes[i])) {
-				removed.add(nodes[i]);
-			}
-		}
-		for (int i = 0; i < removed.size(); i++) {
-			for (int j = 0; j < remove.size(); j++) {
-				if (removed.get(i).hasIn(remove.get(j))) {
-					removed.get(i).removeIn(remove.get(j));
-				}
-				if (removed.get(i).hasOut(remove.get(j))) {
-					removed.get(i).removeOut(remove.get(j));
-				}
-			}
-		}
-		for (int i = 0; i < removed.size(); i++) {
-			removed.get(i).setIndex(i);
-		}
-		return Util.toNodeImplArray(removed);
-	}
+	// public static Node[] removeHighestDegree(Node[] nodes) {
+	// int largestIndex = 0;
+	// int largestDegree = nodes[0].in().length + nodes[0].out().length;
+	// for (int i = 1; i < nodes.length; i++) {
+	// int degree = nodes[i].in().length + nodes[i].out().length;
+	// if (degree > largestDegree) {
+	// largestDegree = degree;
+	// largestIndex = i;
+	// }
+	// }
+	// Node[] removed = new Node[nodes.length - 1];
+	// for (int i = 0; i < nodes.length; i++) {
+	// if (i < largestIndex) {
+	// removed[i] = nodes[i];
+	// } else if (i > largestIndex) {
+	// removed[i - 1] = nodes[i];
+	// }
+	// }
+	// Node largest = nodes[largestIndex];
+	// for (int i = 0; i < removed.length; i++) {
+	// if (removed[i].hasIn(largest)) {
+	// removed[i].removeIn(largest);
+	// }
+	// if (removed[i].hasOut(largest)) {
+	// removed[i].removeOut(largest);
+	// }
+	// }
+	// for (int i = 0; i < removed.length; i++) {
+	// removed[i].setIndex(i);
+	// }
+	// return removed;
+	// }
+	//
+	// public static Node[] removeIsolatedClusters(Node[] users) {
+	// ArrayList<ArrayList<Node>> clusters = new ArrayList<ArrayList<Node>>();
+	// boolean[] visited = new boolean[users.length];
+	// for (int i = 0; i < users.length; i++) {
+	// if (visited[users[i].index()]) {
+	// continue;
+	// }
+	// clusters.add(new ArrayList<Node>());
+	//
+	// Queue<Node> queueFW = new LinkedList<Node>();
+	// boolean[] visitedFW = new boolean[users.length];
+	// visitedFW[users[i].index()] = true;
+	// queueFW.add(users[i]);
+	// while (!queueFW.isEmpty()) {
+	// Node current = queueFW.poll();
+	// Node[] out = current.out();
+	// for (int j = 0; j < out.length; j++) {
+	// if (!visitedFW[out[j].index()]) {
+	// queueFW.add((Node) out[j]);
+	// visitedFW[out[j].index()] = true;
+	// }
+	// }
+	// }
+	//
+	// Queue<Node> queueBW = new LinkedList<Node>();
+	// boolean[] visitedBW = new boolean[users.length];
+	// visitedBW[users[i].index()] = true;
+	// queueBW.add(users[i]);
+	// while (!queueBW.isEmpty()) {
+	// Node current = queueBW.poll();
+	// Node[] in = current.in();
+	// for (int j = 0; j < in.length; j++) {
+	// if (!visitedBW[in[j].index()]) {
+	// queueBW.add((Node) in[j]);
+	// visitedBW[in[j].index()] = true;
+	// }
+	// }
+	// }
+	//
+	// ArrayList<Node> currentCluster = clusters
+	// .get(clusters.size() - 1);
+	// for (int j = 0; j < users.length; j++) {
+	// if (visitedFW[users[j].index()] && visitedBW[users[j].index()]) {
+	// currentCluster.add(users[j]);
+	// visited[users[j].index()] = true;
+	// }
+	// }
+	// }
+	// int maxClusterIndex = 0;
+	// for (int i = 1; i < clusters.size(); i++) {
+	// if (clusters.get(i).size() > clusters.get(maxClusterIndex).size()) {
+	// maxClusterIndex = i;
+	// }
+	// }
+	// ArrayList<Node> remove = new ArrayList<Node>();
+	// for (int i = 0; i < clusters.size(); i++) {
+	// if (i != maxClusterIndex) {
+	// remove.addAll(clusters.get(i));
+	// }
+	// }
+	// return remove(users, remove);
+	// }
+	//
+	// private static Node[] remove(Node[] nodes,
+	// ArrayList<Node> remove) {
+	// ArrayList<Node> removed = new ArrayList<Node>(nodes.length
+	// - remove.size());
+	// for (int i = 0; i < nodes.length; i++) {
+	// if (!remove.contains(nodes[i])) {
+	// removed.add(nodes[i]);
+	// }
+	// }
+	// for (int i = 0; i < removed.size(); i++) {
+	// for (int j = 0; j < remove.size(); j++) {
+	// if (removed.get(i).hasIn(remove.get(j))) {
+	// removed.get(i).removeIn(remove.get(j));
+	// }
+	// if (removed.get(i).hasOut(remove.get(j))) {
+	// removed.get(i).removeOut(remove.get(j));
+	// }
+	// }
+	// }
+	// for (int i = 0; i < removed.size(); i++) {
+	// removed.get(i).setIndex(i);
+	// }
+	// return Util.toNodeImplArray(removed);
+	// }
 }

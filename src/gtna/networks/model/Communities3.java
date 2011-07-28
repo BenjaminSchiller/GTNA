@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.model;
 
 import gtna.graph.Edges;
@@ -42,7 +42,6 @@ import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
 import gtna.util.Util;
 
 import java.util.ArrayList;
@@ -88,8 +87,6 @@ public class Communities3 extends NetworkImpl implements Network {
 
 	private Node[][] communities;
 
-	public static final boolean LESS_MEMORY = false;
-
 	public static final int SORTED_ORDER = 1;
 
 	public static final int ALTERNATING_ORDER = 2;
@@ -113,8 +110,8 @@ public class Communities3 extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
-		Node[] nodes = Node.init(this.nodes());
+		Graph graph = new Graph(this.description());
+		Node[] nodes = Node.init(this.nodes(), graph);
 		Random rand = new Random(System.currentTimeMillis());
 		// init communities
 		this.communities = new Node[this.sizes.length][];
@@ -154,12 +151,6 @@ public class Communities3 extends NetworkImpl implements Network {
 				}
 			}
 		}
-		for (int i = 0; i < this.communities.length; i++) {
-			for (int j = 0; j < this.communities[i].length; j++) {
-				System.out.println(i + " => " + this.communities[i][j].index()
-						+ " @ " + this.communities[i].length);
-			}
-		}
 		// create inter-community links
 		Edges edges = new Edges(nodes, 0);
 		for (int i = 0; i < this.p.length; i++) {
@@ -169,9 +160,7 @@ public class Communities3 extends NetworkImpl implements Network {
 				}
 				Node[] from = this.communities[i];
 				Node[] to = this.communities[j];
-				this
-						.addInterCommunityEdges(from, to, this.p[i][j], rand,
-								edges);
+				this.addInterCommunityEdges(from, to, this.p[i][j], rand, edges);
 			}
 		}
 		edges.fill();
@@ -179,11 +168,11 @@ public class Communities3 extends NetworkImpl implements Network {
 		for (int i = 0; i < this.communities.length; i++) {
 			for (int j = 0; j < this.communities[i].length; j++) {
 				Node n = this.communities[i][j];
-				Node[] inOld = n.in();
-				Node[] outOld = n.out();
-				Node[] inNew = new Node[inOld.length
-						+ this.communities[i].length - 1];
-				Node[] outNew = new Node[outOld.length
+				int[] inOld = n.getIncomingEdges();
+				int[] outOld = n.getOutgoingEdges();
+				int[] inNew = new int[inOld.length + this.communities[i].length
+						- 1];
+				int[] outNew = new int[outOld.length
 						+ this.communities[i].length - 1];
 				int inIndex = 0;
 				int outIndex = 0;
@@ -195,35 +184,26 @@ public class Communities3 extends NetworkImpl implements Network {
 				}
 				for (int k = 0; k < this.communities[i].length; k++) {
 					if (j != k) {
-						inNew[inIndex++] = this.communities[i][k];
-						outNew[outIndex++] = this.communities[i][k];
+						inNew[inIndex++] = this.communities[i][k].getIndex();
+						outNew[outIndex++] = this.communities[i][k].getIndex();
 					}
 				}
-				n.init(inNew, outNew);
+				n.setIncomingEdges(inNew);
+				n.setOutgoingEdges(outNew);
 			}
 		}
-
-		timer.end();
-		return new Graph(this.description(), nodes, timer);
+		graph.setNodes(nodes);
+		return graph;
 	}
 
-	private void addInterCommunityEdges(Node[] from, Node[] to,
-			double p, Random rand, Edges edges) {
+	private void addInterCommunityEdges(Node[] from, Node[] to, double p,
+			Random rand, Edges edges) {
 		for (int i = 0; i < from.length; i++) {
 			for (int j = 0; j < to.length; j++) {
 				if (rand.nextDouble() <= p) {
-					if (LESS_MEMORY) {
-						from[i].addOut(to[j]);
-						to[j].addIn(from[i]);
-						if (this.bidirectional) {
-							from[i].addIn(to[j]);
-							to[j].addOut(from[i]);
-						}
-					} else {
-						edges.add(from[i], to[j]);
-						if (this.bidirectional) {
-							edges.add(to[j], from[i]);
-						}
+					edges.add(from[i].getIndex(), to[j].getIndex());
+					if (this.bidirectional) {
+						edges.add(to[j].getIndex(), from[i].getIndex());
 					}
 				}
 			}

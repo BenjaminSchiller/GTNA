@@ -32,16 +32,16 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.canonical;
 
+import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.networks.NetworkImpl;
 import gtna.networks.Network;
+import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
 
 /**
  * Implements the network generator for a ring network of given size. In a ring,
@@ -57,15 +57,15 @@ public class Ring extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
-		Node[] nodes = Node.init(this.nodes());
+		Graph graph = new Graph(this.description());
+		Node[] nodes = Node.init(this.nodes(), graph);
+		Edges edges = new Edges(nodes, this.nodes() * 2);
 		for (int i = 0; i < nodes.length; i++) {
-			Node[] edges = new Node[2];
-			edges[0] = nodes[(nodes.length + i - 1) % nodes.length];
-			edges[1] = nodes[(i + 1) % nodes.length];
-			nodes[i].init(edges, edges);
+			edges.add(i, (i + 1) % nodes.length);
+			edges.add((i + 1) % nodes.length, i);
 		}
-		timer.end();
-		return new Graph(this.description(), nodes, timer);
+		edges.fill();
+		graph.setNodes(nodes);
+		return graph;
 	}
 }

@@ -32,10 +32,8 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.networks.model;
-
-import java.util.Random;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
@@ -44,7 +42,8 @@ import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
+
+import java.util.Random;
 
 /**
  * Implements a network generator for the so-called Gilbert model G(n,p). It
@@ -79,9 +78,9 @@ public class Gilbert extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Timer timer = new Timer();
+		Graph graph = new Graph(this.description());
 		Random rand = new Random(System.currentTimeMillis());
-		Node[] nodes = Node.init(this.nodes());
+		Node[] nodes = Node.init(this.nodes(), graph);
 		double p = (double) this.EDGES / (double) (this.nodes() * this.nodes());
 		if (this.BIDIRECTIONAL) {
 			p /= 2;
@@ -89,20 +88,19 @@ public class Gilbert extends NetworkImpl implements Network {
 		Edges edges = new Edges(nodes, (int) (this.EDGES * 1.05));
 		for (int i = 0; i < nodes.length; i++) {
 			for (int j = 0; j < nodes.length; j++) {
-				if (i != j) {
-					if (rand.nextDouble() < p) {
-						if (this.BIDIRECTIONAL) {
-							edges.add(nodes[i], nodes[j]);
-							edges.add(nodes[j], nodes[i]);
-						} else {
-							edges.add(nodes[i], nodes[j]);
-						}
+				if (i == j) {
+					continue;
+				}
+				if (rand.nextDouble() < p) {
+					edges.add(i, j);
+					if (this.BIDIRECTIONAL) {
+						edges.add(j, i);
 					}
 				}
 			}
 		}
 		edges.fill();
-		timer.end();
-		return new Graph(this.description(), nodes, timer);
+		graph.setNodes(nodes);
+		return graph;
 	}
 }

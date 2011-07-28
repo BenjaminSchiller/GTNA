@@ -35,15 +35,10 @@
  */
 package gtna.networks.model;
 
-import gtna.data.Series;
-import gtna.graph.Graph;
-import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
-import gtna.transformation.Transformation;
-import gtna.util.Config;
 
-public class HybridKleinberg extends NetworkImpl implements Network {
+// TODO reimplement HybridKleinberg
+public class HybridKleinberg {
+	// public class HybridKleinberg extends NetworkImpl implements Network {
 	// private Series series;
 	//
 	// private int dimensions;
@@ -53,33 +48,33 @@ public class HybridKleinberg extends NetworkImpl implements Network {
 	// private double clusteringExponent;
 	//
 	// private boolean bidirectional;
-
-	public HybridKleinberg(Series series, int dimensions, double ratio,
-			double clusteringExponent, boolean bidirectional,
-			RoutingAlgorithm ra, Transformation[] t) {
-		super(
-				"HYBRID_KLEINBERG",
-				series.network().nodes(),
-				new String[] { "NETWORK", "DIMENSIONS", "RATIO",
-						"CLUSTERING_EXPONENT", "BIDIRECTIONAL" },
-				new String[] {
-						series.network()
-								.folder()
-								.replace(
-										Config.get("FILESYSTEM_FOLDER_DELIMITER"),
-										""), dimensions + "", ratio + "",
-						clusteringExponent + "", bidirectional + "" }, ra, t);
-		// this.series = series;
-		// this.dimensions = dimensions;
-		// this.ratio = ratio;
-		// this.clusteringExponent = clusteringExponent;
-		// this.bidirectional = bidirectional;
-	}
-
-	public Graph generate() {
-		return null;
-	}
-
+	//
+	// public HybridKleinberg(Series series, int dimensions, double ratio,
+	// double clusteringExponent, boolean bidirectional,
+	// RoutingAlgorithm ra, Transformation[] t) {
+	// super(
+	// "HYBRID_KLEINBERG",
+	// series.network().nodes(),
+	// new String[] { "NETWORK", "DIMENSIONS", "RATIO",
+	// "CLUSTERING_EXPONENT", "BIDIRECTIONAL" },
+	// new String[] {
+	// series.network()
+	// .folder()
+	// .replace(
+	// Config.get("FILESYSTEM_FOLDER_DELIMITER"),
+	// ""), dimensions + "", ratio + "",
+	// clusteringExponent + "", bidirectional + "" }, ra, t);
+	// // this.series = series;
+	// // this.dimensions = dimensions;
+	// // this.ratio = ratio;
+	// // this.clusteringExponent = clusteringExponent;
+	// // this.bidirectional = bidirectional;
+	// }
+	//
+	// public Graph generate() {
+	// return null;
+	// }
+	//
 	// public Graph generate() {
 	// Timer timer = new Timer();
 	// GridNode[] nodes = new GridNode[this.nodes()];

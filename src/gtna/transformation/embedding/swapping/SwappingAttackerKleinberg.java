@@ -35,64 +35,67 @@
  */
 package gtna.transformation.embedding.swapping;
 
-import java.util.Arrays;
-import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-public class SwappingAttackerKleinberg extends SwappingNode {
-
-	public SwappingAttackerKleinberg(int index, double pos, Swapping swapping) {
-		super(index, pos, swapping);
-	}
-
-	/**
-	 * select ID at biggest distance to any neighbor; send no swap request,
-	 * since attacker could even offer a better ID (no knowledge)
-	 */
-	public void turn(Random rand) {
-		double[] neighbors = this.knownIDs.clone();
-		this.getID().pos = (maxMiddle(neighbors) + rand.nextDouble()
-				* this.swapping.delta) % 1.0;
-	}
-
-	/**
-	 * return ID close to current requester's ID to keep it from changing its ID
-	 */
-	protected double ask(SwappingNode caller, Random rand) {
-		int index = this.position.get(caller);
-		double id = (this.knownIDs[index] + rand.nextDouble()
-				* this.swapping.delta) % 1.0;
-		return id;
-	}
-
-	/**
-	 * give ID that is extremely bad for caller: biggest distance to any
-	 * neighbor node
-	 */
-	protected double swap(double callerID, double[] callerNeighborIDs, int ttl,
-			Random rand) {
-		return (maxMiddle(callerNeighborIDs) + rand.nextDouble()
-				* this.swapping.delta) % 1.0;
-	}
-
-	public static double maxMiddle(double[] values) {
-		Arrays.sort(values);
-		double max = 1 - values[values.length - 1] + values[0];
-		int index = values.length - 1;
-		for (int i = 0; i < values.length - 1; i++) {
-			double a = values[i];
-			double b = values[i + 1];
-			double dist = b - a;
-			if (dist > max) {
-				max = dist;
-				index = i;
-			}
-		}
-		double middle = (values[index] + max / 2) % 1.0;
-		return middle;
-	}
+// TODO reimplement SwappingAttackerKleinberg
+public class SwappingAttackerKleinberg{
+	// public class SwappingAttackerKleinberg extends SwappingNode {
+	//
+	// public SwappingAttackerKleinberg(int index, double pos, Swapping
+	// swapping) {
+	// super(index, pos, swapping);
+	// }
+	//
+	// /**
+	// * select ID at biggest distance to any neighbor; send no swap request,
+	// * since attacker could even offer a better ID (no knowledge)
+	// */
+	// public void turn(Random rand) {
+	// double[] neighbors = this.knownIDs.clone();
+	// this.getID().pos = (maxMiddle(neighbors) + rand.nextDouble()
+	// * this.swapping.delta) % 1.0;
+	// }
+	//
+	// /**
+	// * return ID close to current requester's ID to keep it from changing its
+	// ID
+	// */
+	// protected double ask(SwappingNode caller, Random rand) {
+	// int index = this.position.get(caller);
+	// double id = (this.knownIDs[index] + rand.nextDouble()
+	// * this.swapping.delta) % 1.0;
+	// return id;
+	// }
+	//
+	// /**
+	// * give ID that is extremely bad for caller: biggest distance to any
+	// * neighbor node
+	// */
+	// protected double swap(double callerID, double[] callerNeighborIDs, int
+	// ttl,
+	// Random rand) {
+	// return (maxMiddle(callerNeighborIDs) + rand.nextDouble()
+	// * this.swapping.delta) % 1.0;
+	// }
+	//
+	// public static double maxMiddle(double[] values) {
+	// Arrays.sort(values);
+	// double max = 1 - values[values.length - 1] + values[0];
+	// int index = values.length - 1;
+	// for (int i = 0; i < values.length - 1; i++) {
+	// double a = values[i];
+	// double b = values[i + 1];
+	// double dist = b - a;
+	// if (dist > max) {
+	// max = dist;
+	// index = i;
+	// }
+	// }
+	// double middle = (values[index] + max / 2) % 1.0;
+	// return middle;
+	// }
 
 }

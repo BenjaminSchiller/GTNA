@@ -44,6 +44,7 @@ package gtna.routing.node.identifier;
  * @author benni
  * 
  */
+@Deprecated
 public class RingID implements Identifier {
 	public double pos;
 

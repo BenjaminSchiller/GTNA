@@ -36,75 +36,68 @@
  */
 package gtna.routing.greedy;
 
-import gtna.graph.Node;
-import gtna.routing.Route;
-import gtna.routing.RouteImpl;
-import gtna.routing.RoutingAlgorithm;
-import gtna.routing.RoutingAlgorithmImpl;
-import gtna.routing.node.IDNode;
-import gtna.routing.node.identifier.Identifier;
 
-import java.util.Random;
-
-public class GreedyNextBest extends RoutingAlgorithmImpl implements
-		RoutingAlgorithm {
-	private int ttl;
-
-	public GreedyNextBest(int ttl) {
-		super("GREEDY_NEXT_BEST", new String[] { "TTL" }, new String[] { ""
-				+ ttl });
-		this.ttl = ttl;
-	}
-
-	public boolean applicable(Node[] nodes) {
-		return nodes[0] instanceof IDNode;
-	}
-
-	public void init(Node[] nodes) {
-		return;
-	}
-
-	public Route randomRoute(Node[] nodes, Node src, Random rand) {
-		IDNode SRC = (IDNode) src;
-		Identifier DEST = ((IDNode) nodes[rand.nextInt(nodes.length)])
-				.randomID(rand, nodes);
-		while (SRC.contains(DEST)) {
-			DEST = ((IDNode) nodes[rand.nextInt(nodes.length)]).randomID(rand,
-					nodes);
-		}
-		return route(SRC, SRC, DEST, 0, new boolean[nodes.length],
-				new RouteImpl());
-	}
-
-	public Route route(IDNode src, IDNode current, Identifier dest, int ttl,
-			boolean[] seen, Route route) {
-		seen[current.index()] = true;
-		route.add((Node)current);
-		if (current.contains(dest)) {
-			route.setSuccess(true);
-			return route;
-		}
-		if (ttl >= this.ttl) {
-			route.setSuccess(false);
-			return route;
-		}
-
-		Node[] out = current.out();
-		double minDist = Double.MAX_VALUE;
-		IDNode nextHop = null;
-		for (int i = 0; i < out.length; i++) {
-			IDNode Out = (IDNode) out[i];
-			double dist = Out.dist(dest);
-			if (dist < minDist && !seen[Out.index()]) {
-				minDist = dist;
-				nextHop = Out;
-			}
-		}
-		if (nextHop == null) {
-			route.setSuccess(false);
-			return route;
-		}
-		route.incMessages();
-		return route(src, nextHop, dest, ttl + 1, seen, route);
-	}
+// TODO reimplement GreedyNextBest
+public class GreedyNextBest {
+	// public class GreedyNextBest extends RoutingAlgorithmImpl implements
+	// RoutingAlgorithm {
+	// private int ttl;
+	//
+	// public GreedyNextBest(int ttl) {
+	// super("GREEDY_NEXT_BEST", new String[] { "TTL" }, new String[] { ""
+	// + ttl });
+	// this.ttl = ttl;
+	// }
+	//
+	// public boolean applicable(Node[] nodes) {
+	// return nodes[0] instanceof IDNode;
+	// }
+	//
+	// public void init(Node[] nodes) {
+	// return;
+	// }
+	//
+	// public Route randomRoute(Node[] nodes, Node src, Random rand) {
+	// IDNode SRC = (IDNode) src;
+	// Identifier DEST = ((IDNode) nodes[rand.nextInt(nodes.length)])
+	// .randomID(rand, nodes);
+	// while (SRC.contains(DEST)) {
+	// DEST = ((IDNode) nodes[rand.nextInt(nodes.length)]).randomID(rand,
+	// nodes);
+	// }
+	// return route(SRC, SRC, DEST, 0, new boolean[nodes.length],
+	// new RouteImpl());
+	// }
+	//
+	// public Route route(IDNode src, IDNode current, Identifier dest, int ttl,
+	// boolean[] seen, Route route) {
+	// seen[current.index()] = true;
+	// route.add((Node)current);
+	// if (current.contains(dest)) {
+	// route.setSuccess(true);
+	// return route;
+	// }
+	// if (ttl >= this.ttl) {
+	// route.setSuccess(false);
+	// return route;
+	// }
+	//
+	// Node[] out = current.out();
+	// double minDist = Double.MAX_VALUE;
+	// IDNode nextHop = null;
+	// for (int i = 0; i < out.length; i++) {
+	// IDNode Out = (IDNode) out[i];
+	// double dist = Out.dist(dest);
+	// if (dist < minDist && !seen[Out.index()]) {
+	// minDist = dist;
+	// nextHop = Out;
+	// }
+	// }
+	// if (nextHop == null) {
+	// route.setSuccess(false);
+	// return route;
+	// }
+	// route.incMessages();
+	// return route(src, nextHop, dest, ttl + 1, seen, route);
+	// }
 }

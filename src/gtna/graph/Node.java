@@ -35,152 +35,120 @@
  */
 package gtna.graph;
 
-import gtna.util.Config;
-
 public class Node {
-	private Node[] out = null;
+	private Graph graph;
 
-	private Node[] in = null;
+	private int index;
 
-	private int index = 0;
+	private int[] incomingEdges;
 
-	public Node(int index) {
+	private int[] outgoingEdges;
+
+	public Node(int index, Graph graph) {
 		this.index = index;
+		this.graph = graph;
+		this.incomingEdges = new int[] {};
+		this.outgoingEdges = new int[] {};
 	}
 
-	public int route(Node to) {
-		return Config.getInt("ROUTING_LENGTH_DEFAULT");
+	public Node(int index, Graph graph, int incomingEdges, int outgoingEdges) {
+		this.index = index;
+		this.graph = graph;
+		this.incomingEdges = new int[incomingEdges];
+		this.outgoingEdges = new int[outgoingEdges];
 	}
 
-	public double[] routeProg(Node to) {
-		return null;
+	public Node(int index, Graph graph, int[] incomingEdges, int[] outgoingEdges) {
+		this.index = index;
+		this.graph = graph;
+		this.incomingEdges = incomingEdges;
+		this.outgoingEdges = outgoingEdges;
 	}
 
-	public void init(Node[] in, Node[] out) {
-		this.in = in;
-		this.out = out;
-	}
-
-	public static Node[] init(int numberOfNodes) {
-		Node[] nodes = new Node[numberOfNodes];
+	public static Node[] init(int n, Graph graph) {
+		Node[] nodes = new Node[n];
 		for (int i = 0; i < nodes.length; i++) {
-			nodes[i] = new Node(i);
-			nodes[i].init(new Node[0], new Node[0]);
+			nodes[i] = new Node(i, graph);
 		}
 		return nodes;
 	}
 
-	public Node[] in() {
-		return this.in;
+	public String toString() {
+		return this.index + "  (" + this.incomingEdges.length + " / "
+				+ this.outgoingEdges.length + ")";
 	}
 
-	public Node[] out() {
-		return this.out;
+	public int getInDegree() {
+		return this.incomingEdges.length;
 	}
 
-	public int index() {
+	public int getOutDegree() {
+		return this.outgoingEdges.length;
+	}
+
+	public int getDegree() {
+		return this.incomingEdges.length + this.outgoingEdges.length;
+	}
+
+	/**
+	 * @return the graph
+	 */
+	public Graph getGraph() {
+		return this.graph;
+	}
+
+	/**
+	 * @param graph
+	 *            the graph to set
+	 */
+	public void setGraph(Graph graph) {
+		this.graph = graph;
+	}
+
+	/**
+	 * @return the index
+	 */
+	public int getIndex() {
 		return this.index;
 	}
 
+	/**
+	 * @param index
+	 *            the index to set
+	 */
 	public void setIndex(int index) {
 		this.index = index;
 	}
 
-	public void setIn(Node[] in) {
-		this.in = in;
+	/**
+	 * @return the incomingEdges
+	 */
+	public int[] getIncomingEdges() {
+		return this.incomingEdges;
 	}
 
-	public void setOut(Node[] out) {
-		this.out = out;
+	/**
+	 * @param incomingEdges
+	 *            the incomingEdges to set
+	 */
+	public void setIncomingEdges(int[] incomingEdges) {
+		this.incomingEdges = incomingEdges;
 	}
 
-	public boolean hasIn(Node n) {
-		for (int i = 0; i < this.in.length; i++) {
-			if (this.in[i].index == n.index) {
-				return true;
-			}
-		}
-		return false;
+	/**
+	 * @return the outgoingEdges
+	 */
+	public int[] getOutgoingEdges() {
+		return this.outgoingEdges;
 	}
 
-	public boolean hasOut(Node n) {
-		for (int i = 0; i < this.out.length; i++) {
-			if (this.out[i].index == n.index) {
-				return true;
-			}
-		}
-		return false;
+	/**
+	 * @param outgoingEdges
+	 *            the outgoingEdges to set
+	 */
+	public void setOutgoingEdges(int[] outgoingEdges) {
+		this.outgoingEdges = outgoingEdges;
 	}
 
-	public void addIn(Node n) {
-		Node[] temp = new Node[this.in.length + 1];
-		for (int i = 0; i < this.in.length; i++) {
-			temp[i] = this.in[i];
-		}
-		temp[this.in.length] = n;
-		this.in = temp;
-	}
-
-	public void addOut(Node n) {
-		Node[] temp = new Node[this.out.length + 1];
-		for (int i = 0; i < this.out.length; i++) {
-			temp[i] = this.out[i];
-		}
-		temp[this.out.length] = n;
-		this.out = temp;
-	}
-
-	public void removeIn(Node n) {
-		Node[] temp = new Node[this.in.length - 1];
-		int index = 0;
-		boolean second = false;
-		for (int i = 0; i < this.in.length; i++) {
-			if (this.in[i].index != n.index() || second) {
-				temp[index++] = this.in[i];
-			} else {
-				second = true;
-			}
-		}
-		this.in = temp;
-	}
-
-	// public void removeIn(NodeImpl n) {
-	// NodeImpl[] temp = new NodeImpl[this.in.length - 1];
-	// int index = 0;
-	// for (int i = 0; i < this.in.length; i++) {
-	// if (this.in[i].index != n.index) {
-	// temp[index++] = this.in[i];
-	// }
-	// }
-	// this.in = temp;
-	// }
-
-	public void removeOut(Node n) {
-		Node[] temp = new Node[this.out.length - 1];
-		int index = 0;
-		boolean second = false;
-		for (int i = 0; i < this.out.length; i++) {
-			if (this.out[i].index != n.index || second) {
-				temp[index++] = this.out[i];
-			} else {
-				second = true;
-			}
-		}
-		this.out = temp;
-	}
-
-	// public void removeOut(NodeImpl n) {
-	// NodeImpl[] temp = new NodeImpl[this.out.length - 1];
-	// int index = 0;
-	// for (int i = 0; i < this.out.length; i++) {
-	// if (this.out[i].index != n.index) {
-	// temp[index++] = this.out[i];
-	// }
-	// }
-	// this.out = temp;
-	// }
-
-	public String toString() {
-		return this.index + "  " + this.in.length + " / " + this.out.length;
-	}
+	// TODO hasOut, hasIn, addIn, addOut, removeIn, removeOut
 }

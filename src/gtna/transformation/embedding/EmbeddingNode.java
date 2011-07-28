@@ -36,40 +36,37 @@
  */
 package gtna.transformation.embedding;
 
-import gtna.graph.Node;
-import gtna.routing.node.RingNode;
-
-import java.util.HashMap;
-import java.util.Random;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-public abstract class EmbeddingNode extends RingNode {
-
-	protected HashMap<EmbeddingNode, Integer> position;
-
-	protected double[] knownIDs;
-
-	public EmbeddingNode(int index, double pos) {
-		super(index, pos);
-	}
-
-	/**
-	 * must be called after creating the outgoing edges of this node
-	 */
-	public void initKnownIDs() {
-		this.position = new HashMap<EmbeddingNode, Integer>(this.out().length);
-		Node[] out = this.out();
-		this.knownIDs = new double[out().length];
-		for (int i = 0; i < out.length; i++) {
-			this.position.put((EmbeddingNode) out[i], i);
-		}
-	}
-
-	public abstract void updateNeighbors(Random rand);
-
-	public abstract void turn(Random rand);
+// TODO reimplement EmbeddingNode
+public abstract class EmbeddingNode {
+	// public abstract class EmbeddingNode extends RingNode {
+	//
+	// protected HashMap<EmbeddingNode, Integer> position;
+	//
+	// protected double[] knownIDs;
+	//
+	// public EmbeddingNode(int index, double pos) {
+	// super(index, pos);
+	// }
+	//
+	// /**
+	// * must be called after creating the outgoing edges of this node
+	// */
+	// public void initKnownIDs() {
+	// this.position = new HashMap<EmbeddingNode, Integer>(this.out().length);
+	// Node[] out = this.out();
+	// this.knownIDs = new double[out().length];
+	// for (int i = 0; i < out.length; i++) {
+	// this.position.put((EmbeddingNode) out[i], i);
+	// }
+	// }
+	//
+	// public abstract void updateNeighbors(Random rand);
+	//
+	// public abstract void turn(Random rand);
 
 }

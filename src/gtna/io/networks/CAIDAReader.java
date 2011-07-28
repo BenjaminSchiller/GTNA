@@ -32,14 +32,13 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.io.networks;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.io.Filereader;
-import gtna.util.Timer;
 
 import java.util.Hashtable;
 
@@ -49,10 +48,10 @@ public class CAIDAReader extends Filereader {
 	public CAIDAReader(String filename) {
 		super(filename);
 	}
-	
-	public static Graph read(String filename){
-		Timer timer = new Timer();
-		
+
+	public static Graph read(String filename) {
+		Graph graph = new Graph("CAIDA read from " + filename);
+
 		Hashtable<String, Integer> ids = new Hashtable<String, Integer>();
 		int index = 0;
 		int edgeCounter = 0;
@@ -74,7 +73,7 @@ public class CAIDAReader extends Filereader {
 		}
 		reader1.close();
 
-		Node[] nodes = Node.init(index);
+		Node[] nodes = Node.init(index, graph);
 		Edges edges = new Edges(nodes, edgeCounter);
 		CAIDAReader reader = new CAIDAReader(filename);
 		String line = null;
@@ -83,14 +82,12 @@ public class CAIDAReader extends Filereader {
 			if ("D".equals(parts[0])) {
 				int fromID = ids.get(parts[1]);
 				int toID = ids.get(parts[2]);
-				edges.add(nodes[fromID], nodes[toID]);
+				edges.add(fromID, toID);
 			}
 		}
 		reader.close();
 		edges.fill();
-
-		timer.end();
-		Graph g = new Graph("CAIDA", nodes, timer);
-		return g;
+		graph.setNodes(nodes);
+		return graph;
 	}
 }
