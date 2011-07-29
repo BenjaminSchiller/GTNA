@@ -49,8 +49,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 // TODO problem with averages for big networks (> 40.000)
-// TODO reimplement ShorestPath
 public class ShortestPaths extends MetricImpl implements Metric {
+	// TODO add LCPL => binning?!?
+
 	private Distribution shortestPathLengthDistribution;
 
 	private Distribution shortestPathLengthDistributionAbsolute;
