@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.data;
 
 import gtna.io.Filereader;
@@ -175,8 +175,9 @@ public class Singles {
 		int[] max = new int[values.length];
 		int total = 0;
 		for (int i = 0; i < values.length; i++) {
-			max[i] = Math.max(Math.max(names[i].length(),
-					getMaxLength(values[i])), (average[i] + "").length());
+			max[i] = Math.max(
+					Math.max(names[i].length(), getMaxLength(values[i])),
+					(average[i] + "").length());
 			total += max[i];
 		}
 		total += start.length();
@@ -233,9 +234,7 @@ public class Singles {
 				}
 				if (values[i].length > j) {
 					fw.write(values[i][j] + "");
-					fw
-							.write(space(max[i] - (values[i][j] + "").length(),
-									space));
+					fw.write(space(max[i] - (values[i][j] + "").length(), space));
 				} else {
 					fw.write(space(max[i], space));
 				}

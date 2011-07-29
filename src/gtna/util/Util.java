@@ -188,6 +188,18 @@ public class Util {
 	}
 
 	// ///////////////////////
+	// init
+	// ///////////////////////
+
+	public static int[] initIntArray(int length, int value) {
+		int[] array = new int[length];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = value;
+		}
+		return array;
+	}
+
+	// ///////////////////////
 	// array from index
 	// ///////////////////////
 	public static double[] arrayFromIndex(double[][] values, int index) {
@@ -454,6 +466,14 @@ public class Util {
 
 	public static int sum(int[] values) {
 		int sum = 0;
+		for (int i = 0; i < values.length; i++) {
+			sum += values[i];
+		}
+		return sum;
+	}
+
+	public static long sum(long[] values) {
+		long sum = 0;
 		for (int i = 0; i < values.length; i++) {
 			sum += values[i];
 		}

@@ -39,16 +39,7 @@ import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.networks.canonical.Complete;
-import gtna.networks.canonical.Ring;
-import gtna.networks.canonical.Star;
-import gtna.networks.model.BarabasiAlbert;
-import gtna.networks.model.Communities3;
-import gtna.networks.model.DeBruijn;
 import gtna.networks.model.ErdosRenyi;
-import gtna.networks.model.GN;
-import gtna.networks.model.Gilbert;
-import gtna.networks.p2p.CAN;
 import gtna.plot.Plot;
 import gtna.util.Config;
 import gtna.util.Stats;
@@ -86,14 +77,15 @@ public class NodesTest {
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/testMetrics/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testMetrics/");
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 		// Network nw = new ErdosRenyi(1000, 20, true, null, null);
 		// Series s = Series.generate(nw, 1);
 		// Plot.multiAvg(s, "multi-avg/");
 		// Plot.multiConf(s, "multi-conf/");
 		// Plot.multiVar(s, "multi-var/");
-		Network[] nw2 = ErdosRenyi.get(1000, new double[] { 10, 20, 30, 40 },
+		Network[] nw2 = ErdosRenyi.get(1000, new double[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
 				true, null, null);
-		Series[] s2 = Series.generate(nw2, 2);
+		Series[] s2 = Series.generate(nw2, 1);
 		Plot.singlesAvg(s2, "single-avg/");
 		Plot.multiAvg(s2, "multi-avg/");
 	}

@@ -84,7 +84,8 @@ public class Distribution {
 
 	private double computeMedian() {
 		int index = 0;
-		while (this.cdf[index] <= 0.5) {
+		double threshold = this.cdf[this.cdf.length - 1] / 2.0;
+		while (this.cdf[index] <= threshold) {
 			index++;
 		}
 		return index;
