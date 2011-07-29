@@ -177,4 +177,46 @@ public class DegreeDistribution extends MetricImpl implements Metric {
 				"DD_OUT_DEGREE_DISTRIBUTION_CDF", folder);
 		return success;
 	}
+
+	/**
+	 * @return the degreeDistribution
+	 */
+	public Distribution getDegreeDistribution() {
+		return this.degreeDistribution;
+	}
+
+	/**
+	 * @return the inDegreeDistribution
+	 */
+	public Distribution getInDegreeDistribution() {
+		return this.inDegreeDistribution;
+	}
+
+	/**
+	 * @return the outDegreeDistribution
+	 */
+	public Distribution getOutDegreeDistribution() {
+		return this.outDegreeDistribution;
+	}
+
+	/**
+	 * @return the nodes
+	 */
+	public int getNodes() {
+		return this.nodes;
+	}
+
+	/**
+	 * @return the edges
+	 */
+	public int getEdges() {
+		return this.edges;
+	}
+
+	/**
+	 * @return the timer
+	 */
+	public Timer getTimer() {
+		return this.timer;
+	}
 }
