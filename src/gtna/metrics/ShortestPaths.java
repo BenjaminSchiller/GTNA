@@ -181,4 +181,39 @@ public class ShortestPaths extends MetricImpl implements Metric {
 				connectivity, runtime };
 	}
 
+	/**
+	 * @return the shortestPathLengthDistribution
+	 */
+	public Distribution getShortestPathLengthDistribution() {
+		return this.shortestPathLengthDistribution;
+	}
+
+	/**
+	 * @return the shortestPathLengthDistributionAbsolute
+	 */
+	public Distribution getShortestPathLengthDistributionAbsolute() {
+		return this.shortestPathLengthDistributionAbsolute;
+	}
+
+	/**
+	 * @return the localCharacteristicPathLength
+	 */
+	public double[] getLocalCharacteristicPathLength() {
+		return this.localCharacteristicPathLength;
+	}
+
+	/**
+	 * @return the connectivity
+	 */
+	public double getConnectivity() {
+		return this.connectivity;
+	}
+
+	/**
+	 * @return the runtime
+	 */
+	public Timer getRuntime() {
+		return this.runtime;
+	}
+
 }

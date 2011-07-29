@@ -56,14 +56,14 @@ public class DegreeDistribution extends MetricImpl implements Metric {
 
 	private int edges;
 
-	private Timer timer;
+	private Timer runtime;
 
 	public DegreeDistribution() {
 		super("DD");
 	}
 
 	public void computeData(Graph graph, Network nw, HashMap<String, Metric> m) {
-		this.timer = new Timer();
+		this.runtime = new Timer();
 
 		double[] dd = new double[this.maxDegree(graph) + 1];
 		double[] ddi = new double[this.maxInDegree(graph) + 1];
@@ -91,7 +91,7 @@ public class DegreeDistribution extends MetricImpl implements Metric {
 		this.nodes = graph.getNodes().length;
 		this.edges = graph.generateIncomingEdges().length;
 
-		this.timer.end();
+		this.runtime.end();
 	}
 
 	private int maxDegree(Graph graph) {
@@ -149,7 +149,7 @@ public class DegreeDistribution extends MetricImpl implements Metric {
 		Value outDegreeMax = new Value("DD_OUT_DEGREE_MAX",
 				this.outDegreeDistribution.getMax());
 
-		Value runtime = new Value("DD_RUNTIME", this.timer.getRuntime());
+		Value runtime = new Value("DD_RUNTIME", this.runtime.getRuntime());
 
 		return new Value[] { nodes, edges, degreeMin, degreeMed, degreeAvg,
 				degreeMax, inDegreeMin, inDegreeMed, inDegreeAvg, inDegreeMax,
@@ -216,7 +216,7 @@ public class DegreeDistribution extends MetricImpl implements Metric {
 	/**
 	 * @return the timer
 	 */
-	public Timer getTimer() {
-		return this.timer;
+	public Timer getRuntime() {
+		return this.runtime;
 	}
 }
