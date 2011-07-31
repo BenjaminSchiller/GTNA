@@ -82,13 +82,13 @@ public class NodesTest {
 		Transformation t = new RandomRingID();
 		Graph g = nw.generate();
 		g = t.transform(g);
-		RingID[] ids = (RingID[]) g.getProperty("ID").clone();
+		RingID[] ids = (RingID[]) g.getNodeProperties("ID").clone();
 		Arrays.sort(ids);
 		for (RingID id : ids) {
 			System.out.println(id);
 		}
 		System.out.println("");
-		RingID[] ids2 = (RingID[]) g.getProperty("ID");
+		RingID[] ids2 = (RingID[]) g.getNodeProperties("ID");
 		for (RingID id : ids2) {
 			System.out.println(id);
 		}

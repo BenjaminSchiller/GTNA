@@ -46,28 +46,48 @@ public class Graph {
 
 	private Timer timer;
 
-	private HashMap<String, Object[]> properties;
+	private HashMap<String, Object[]> nodeProperties;
 
+	private HashMap<String, Object> graphProperties;
+
+	/**
+	 * initializes a graph with the given name an starts the timer
+	 * 
+	 * @param name
+	 *            name of the graph
+	 */
 	public Graph(String name) {
 		this.name = name;
 		this.timer = new Timer();
-		this.properties = new HashMap<String, Object[]>();
+		this.nodeProperties = new HashMap<String, Object[]>();
 	}
 
 	public String toString() {
 		return this.name + " (" + this.nodes.length + ")";
 	}
 
-	public void addProperty(String key, Object[] property) {
-		this.properties.put(key, property);
+	public void addGraphProperty(String key, Object property) {
+		this.graphProperties.put(key, property);
 	}
 
-	public boolean hasProperty(String key) {
-		return this.properties.containsKey(key);
+	public boolean hasGraphProperty(String key) {
+		return this.graphProperties.containsKey(key);
 	}
 
-	public Object[] getProperty(String key) {
-		return this.properties.get(key);
+	public Object getGraphProperty(String key) {
+		return this.graphProperties.get(key);
+	}
+
+	public void addNodeProperties(String key, Object[] properties) {
+		this.nodeProperties.put(key, properties);
+	}
+
+	public boolean hasNodeProperties(String key) {
+		return this.nodeProperties.containsKey(key);
+	}
+
+	public Object[] getNodeProperties(String key) {
+		return this.nodeProperties.get(key);
 	}
 
 	public Edge[] generateEdges() {
@@ -156,6 +176,8 @@ public class Graph {
 	}
 
 	/**
+	 * sets the nodes and ends the timer starte during graph initialization
+	 * 
 	 * @param nodes
 	 *            the nodes to set
 	 */

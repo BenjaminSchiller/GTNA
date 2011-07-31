@@ -61,7 +61,7 @@ public class RandomRingID extends TransformationImpl implements Transformation {
 		for (int i = 0; i < ids.length; i++) {
 			ids[i] = RingID.rand(rand);
 		}
-		graph.addProperty("ID", ids);
+		graph.addNodeProperties("ID", ids);
 		return graph;
 	}
 
