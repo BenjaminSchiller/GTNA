@@ -51,6 +51,7 @@ import java.util.Queue;
 // TODO problem with averages for big networks (> 40.000)
 public class ShortestPaths extends MetricImpl implements Metric {
 	// TODO add LCPL => binning?!?
+	// TODO add distribution of LCPL?!?
 
 	private Distribution shortestPathLengthDistribution;
 

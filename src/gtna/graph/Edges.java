@@ -57,12 +57,30 @@ public class Edges {
 		this.outDegree = new int[this.nodes.length];
 	}
 
+	public Edges(Node[] nodes, Edge[] edges) {
+		this(nodes, edges.length);
+		for (Edge edge : edges) {
+			this.add(edge);
+		}
+	}
+
 	public boolean contains(int src, int dst) {
 		return this.map.containsKey(Edge.toString(src, dst));
 	}
 
 	public int size() {
 		return this.edges.size();
+	}
+
+	private boolean add(Edge edge) {
+		if (this.map.containsKey(edge.toString())) {
+			return false;
+		}
+		this.edges.add(edge);
+		this.map.put(edge.toString(), edge);
+		this.inDegree[edge.getDst()]++;
+		this.outDegree[edge.getSrc()]++;
+		return true;
 	}
 
 	public boolean add(int src, int dst) {

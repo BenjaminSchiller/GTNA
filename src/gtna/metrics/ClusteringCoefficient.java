@@ -40,116 +40,82 @@
  */
 package gtna.metrics;
 
-//TODO reimplement ClusteringCoefficient
-public class ClusteringCoefficient {
-	// public class ClusteringCoefficient extends MetricImpl implements Metric {
-	// private double[] lcc;
-	//
-	// private double[] lccShort;
-	//
-	// private double cc;
-	//
-	// private double ccw;
-	//
-	// private Timer timer;
-	//
-	// public ClusteringCoefficient() {
-	// super("CC");
-	// }
-	//
-	// public void computeData(Graph g, Network n, Hashtable<String, Metric> m)
-	// {
-	// this.timer = new Timer();
-	// boolean onlyOut = GraphProperties.bidirectional(g)
-	// || Config
-	// .getBoolean("CC_NEIGHBORHOOD_DEFINED_BY_OUTGOING_EDGES");
-	// this.lcc = this.computeLCC(g.nodes, onlyOut);
-	// Arrays.sort(this.lcc);
-	// this.lccShort = this.computeLCCShort(this.lcc);
-	// this.cc = this.computeCC(this.lcc);
-	// this.ccw = this.computeCCW(this.lcc, g.nodes);
-	// this.timer.end();
-	// }
-	//
-	// private double[] computeLCC(Node[] nodes, boolean onlyOut) {
-	// double[] lcc = new double[nodes.length];
-	// for (int i = 0; i < nodes.length; i++) {
-	// Set<Node> n = this.neighborhood(nodes[i], onlyOut);
-	// if (n.size() <= 1) {
-	// lcc[i] = 0;
-	// } else {
-	// int edges = this.edgesInNeighborhood(n);
-	// lcc[i] = edges / (double) (n.size() * (n.size() - 1));
-	// }
-	// }
-	// return lcc;
-	// }
-	//
-	// private int edgesInNeighborhood(Set<Node> n) {
-	// int edges = 0;
-	// Iterator<Node> iter = n.iterator();
-	// while (iter.hasNext()) {
-	// Node current = iter.next();
-	// Node[] OUT = current.out();
-	// for (Node out : OUT) {
-	// if (n.contains(out)) {
-	// edges++;
-	// }
-	// }
-	// }
-	// return edges;
-	// }
-	//
-	// private Set<Node> neighborhood(Node node, boolean onlyOut) {
-	// Set<Node> n = new HashSet<Node>();
-	// Node[] OUT = node.out();
-	// for (Node out : OUT) {
-	// n.add(out);
-	// }
-	// if (!onlyOut) {
-	// Node[] IN = node.in();
-	// for (Node in : IN) {
-	// n.add(in);
-	// }
-	// }
-	// return n;
-	// }
-	//
-	// private double[] computeLCCShort(double[] lcc) {
-	// return Util.avgArray(lcc, Config.getInt("CC_LCC_SHORT_MAX_VALUES"));
-	// }
-	//
-	// private double computeCC(double[] lcc) {
-	// int counter = 0;
-	// double cc = 0;
-	// for (int i = 0; i < lcc.length; i++) {
-	// cc += lcc[i];
-	// counter += lcc[i] != 0 ? 1 : 0;
-	// }
-	// return cc / (double) counter;
-	// }
-	//
-	// private double computeCCW(double[] lcc, Node[] nodes) {
-	// double numerator = 0;
-	// int denominator = 0;
-	// for (int i = 0; i < lcc.length; i++) {
-	// int d = nodes[i].in().length + nodes[i].out().length;
-	// numerator += (double) (d * (d - 1)) * lcc[i];
-	// denominator += d * (d - 1);
-	// }
-	// return (double) numerator / (double) denominator;
-	// }
-	//
-	// public Value[] getValues(Value[] values) {
-	// Value CC = new Value("CC_CC", this.cc);
-	// Value CCW = new Value("CC_CCW", this.ccw);
-	// Value RT = new Value("CC_RT", this.timer.rt());
-	// return new Value[] { CC, CCW, RT };
-	// }
-	//
-	// public boolean writeData(String folder) {
-	// DataWriter.writeWithIndex(this.lcc, "CC_LCC", folder);
-	// DataWriter.writeWithIndex(this.lccShort, "CC_LCC_SHORT", folder);
-	// return true;
-	// }
+import gtna.data.Value;
+import gtna.graph.Edges;
+import gtna.graph.Graph;
+import gtna.graph.Node;
+import gtna.networks.Network;
+import gtna.util.Timer;
+import gtna.util.Util;
+
+import java.util.HashMap;
+
+public class ClusteringCoefficient extends MetricImpl implements Metric {
+	// TODO add LCC => binning?!?
+	// TODO add distribution of LCC?!?
+
+	private double[] localClusteringCoefficient;
+
+	private double clusteringCoefficient;
+
+	private Timer runtime;
+
+	public ClusteringCoefficient() {
+		super("CC");
+	}
+
+	@Override
+	public void computeData(Graph graph, Network nw,
+			HashMap<String, Metric> metrics) {
+		this.runtime = new Timer();
+		Edges edges = new Edges(graph.getNodes(), graph.generateEdges());
+		this.localClusteringCoefficient = this
+				.computeLocalClusteringCoefficient(graph.getNodes(), edges);
+		this.clusteringCoefficient = this
+				.computeClusteringCoefficient(this.localClusteringCoefficient);
+		this.runtime.end();
+	}
+
+	private double[] computeLocalClusteringCoefficient(Node[] nodes, Edges edges) {
+		double[] lcc = new double[nodes.length];
+		for (int i = 0; i < nodes.length; i++) {
+			lcc[i] = this.computeLocalClusteringCoefficient(nodes[i], edges);
+		}
+		return lcc;
+	}
+
+	private double computeLocalClusteringCoefficient(Node node, Edges edges) {
+		if (node.getOutDegree() <= 1) {
+			return 0;
+		}
+		int[] neighbors = node.getOutgoingEdges();
+		int counter = 0;
+		for (int u : neighbors) {
+			for (int v : neighbors) {
+				if (u != v && edges.contains(u, v)) {
+					counter++;
+				}
+			}
+		}
+		return (double) counter
+				/ (double) (neighbors.length * (neighbors.length - 1));
+	}
+
+	private double computeClusteringCoefficient(double[] lcc) {
+		return Util.avg(lcc);
+	}
+
+	@Override
+	public boolean writeData(String folder) {
+		boolean success = true;
+		return success;
+	}
+
+	@Override
+	public Value[] getValues() {
+		Value clusteringCoefficient = new Value("CC_CLUSTERING_COEFFICIENT",
+				this.clusteringCoefficient);
+		Value runtime = new Value("CC_RUNTIME", this.runtime.getRuntime());
+		return new Value[] { clusteringCoefficient, runtime };
+	}
 }

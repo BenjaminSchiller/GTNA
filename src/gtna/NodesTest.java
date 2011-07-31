@@ -73,7 +73,7 @@ public class NodesTest {
 	}
 
 	private static void testMetrics() {
-		Config.overwrite("METRICS", "SP");
+		Config.overwrite("METRICS", "CC");
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/testMetrics/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testMetrics/");
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
@@ -83,11 +83,11 @@ public class NodesTest {
 		// Plot.multiAvg(s, "multi-avg/");
 		// Plot.multiConf(s, "multi-conf/");
 		// Plot.multiVar(s, "multi-var/");
-		Network[] nw2 = ErdosRenyi.get(1000, new double[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
+		Network[] nw2 = ErdosRenyi.get(1000, new double[] { 1, 5, 10, 15, 20 },
 				true, null, null);
 		Series[] s2 = Series.generate(nw2, 1);
 		Plot.singlesAvg(s2, "single-avg/");
-		Plot.multiAvg(s2, "multi-avg/");
+		// Plot.multiAvg(s2, "multi-avg/");
 	}
 
 	private static void testNW() {
