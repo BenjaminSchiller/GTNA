@@ -43,6 +43,9 @@ import gtna.transformation.TransformationImpl;
 import java.util.Random;
 
 /**
+ * Assigns a randomly selected RingID to every node and stores it as a property
+ * with key "ID" in the given graph.
+ * 
  * @author benni
  * 
  */

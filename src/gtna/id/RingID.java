@@ -38,26 +38,31 @@ package gtna.id;
 import java.util.Random;
 
 /**
+ * Implements an ID in the wrapping ID space [0,1) (i.e. a ring). Distance
+ * computations are performed with wrap-around. When creating a RingID or
+ * setting a new position, the position if computed modulo 1.0.
+ * 
  * @author benni
  * 
  */
-public class RingID implements ID, Comparable<RingID> {
-	private double pos;
+public class RingID implements ID<RingID>, Comparable<RingID> {
+	private double position;
 
 	public RingID(double pos) {
-		this.pos = pos;
+		this.position = Math.abs(pos) % 1.0;
 	}
 
 	@Override
-	public double distance(ID id) {
-		double dest = ((RingID) id).pos;
-		double dist = this.pos <= dest ? dest - this.pos : dest + 1 - this.pos;
+	public double distance(RingID id) {
+		double dest = id.getPosition();
+		double dist = this.position <= dest ? dest - this.position : dest + 1
+				- this.position;
 		return dist <= 0.5 ? dist : 1 - dist;
 	}
 
 	@Override
-	public boolean equals(ID id) {
-		return this.pos == ((RingID) id).pos;
+	public boolean equals(RingID id) {
+		return this.position == id.getPosition();
 	}
 
 	public static RingID rand(Random rand) {
@@ -67,27 +72,27 @@ public class RingID implements ID, Comparable<RingID> {
 	/**
 	 * @return the pos
 	 */
-	public double getPos() {
-		return this.pos;
+	public double getPosition() {
+		return this.position;
 	}
 
 	/**
 	 * @param pos
 	 *            the pos to set
 	 */
-	public void setPos(double pos) {
-		this.pos = pos;
+	public void setPosition(double pos) {
+		this.position = Math.abs(pos) % 1.0;
 	}
 
 	public String toString() {
-		return "RingID(" + this.pos + ")";
+		return "RingID(" + this.position + ")";
 	}
 
 	@Override
 	public int compareTo(RingID id) {
-		if (id.getPos() < this.pos) {
+		if (id.getPosition() < this.position) {
 			return 1;
-		} else if (id.getPos() > this.pos) {
+		} else if (id.getPosition() > this.position) {
 			return -1;
 		} else {
 			return 0;

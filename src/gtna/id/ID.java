@@ -39,18 +39,18 @@ package gtna.id;
  * @author benni
  * 
  */
-public interface ID {
+public interface ID<IDType> {
 	/**
 	 * return the distance to the given ID
 	 * @param id ID to compute the distance to
 	 * @return distance to the given ID
 	 */
-	public double distance(ID id);
+	public double distance(IDType id);
 
 	/**
 	 * 
 	 * @param id ID to compare to
 	 * @return true, if the IDs are equal; false otherwise
 	 */
-	public boolean equals(ID id);
+	public boolean equals(IDType id);
 }

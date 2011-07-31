@@ -38,12 +38,16 @@ package gtna;
 import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.id.RingID;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.plot.Plot;
+import gtna.transformation.Transformation;
+import gtna.transformation.id.RandomRingID;
 import gtna.util.Config;
 import gtna.util.Stats;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -69,7 +73,25 @@ public class NodesTest {
 		// testHash2(50000000);
 		// testHash3(50000000);
 		// testNW();
-		testMetrics();
+		// testMetrics();
+		testID();
+	}
+
+	private static void testID() {
+		Network nw = new ErdosRenyi(10, 2, true, null, null);
+		Transformation t = new RandomRingID();
+		Graph g = nw.generate();
+		g = t.transform(g);
+		RingID[] ids = (RingID[]) g.getProperty("ID").clone();
+		Arrays.sort(ids);
+		for (RingID id : ids) {
+			System.out.println(id);
+		}
+		System.out.println("");
+		RingID[] ids2 = (RingID[]) g.getProperty("ID");
+		for (RingID id : ids2) {
+			System.out.println(id);
+		}
 	}
 
 	private static void testMetrics() {
