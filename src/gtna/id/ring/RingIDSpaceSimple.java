@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * RingID.java
+ * RingIDSpaceSimple.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,69 +33,37 @@
  * ---------------------------------------
  *
  */
-package gtna.id;
+package gtna.id.ring;
+
+import gtna.id.IDSpace;
+import gtna.id.Partition;
 
 import java.util.Random;
 
 /**
- * Implements an ID in the wrapping ID space [0,1) (i.e. a ring). Distance
- * computations are performed with wrap-around. When creating a RingID or
- * setting a new position, the position if computed modulo 1.0.
- * 
  * @author benni
  * 
  */
-public class RingID implements ID<RingID>, Comparable<RingID> {
-	private double position;
+public class RingIDSpaceSimple implements IDSpace {
+	private RingPartitionSimple[] partitions;
 
-	public RingID(double pos) {
-		this.position = Math.abs(pos) % 1.0;
+	public RingIDSpaceSimple(RingPartitionSimple[] partitions) {
+		this.partitions = partitions;
 	}
 
 	@Override
-	public double distance(RingID id) {
-		double dest = id.getPosition();
-		double dist = this.position <= dest ? dest - this.position : dest + 1
-				- this.position;
-		return dist <= 0.5 ? dist : 1 - dist;
+	public Partition[] getPartitions() {
+		return this.partitions;
 	}
 
 	@Override
-	public boolean equals(RingID id) {
-		return this.position == id.getPosition();
-	}
-
-	public static RingID rand(Random rand) {
-		return new RingID(rand.nextDouble());
-	}
-
-	/**
-	 * @return the pos
-	 */
-	public double getPosition() {
-		return this.position;
-	}
-
-	/**
-	 * @param pos
-	 *            the pos to set
-	 */
-	public void setPosition(double pos) {
-		this.position = Math.abs(pos) % 1.0;
-	}
-
-	public String toString() {
-		return "RingID(" + this.position + ")";
+	public void setPartitions(Partition[] partitions) {
+		this.partitions = (RingPartitionSimple[]) partitions;
 	}
 
 	@Override
-	public int compareTo(RingID id) {
-		if (id.getPosition() < this.position) {
-			return 1;
-		} else if (id.getPosition() > this.position) {
-			return -1;
-		} else {
-			return 0;
-		}
+	public RingID randomID(Random rand) {
+		return this.partitions[rand.nextInt(this.partitions.length)].getId();
 	}
+
 }

@@ -36,32 +36,56 @@
 package gtna.transformation.id;
 
 import gtna.graph.Graph;
-import gtna.id.RingID;
+import gtna.id.ring.RingID;
+import gtna.id.ring.RingIDSpace;
+import gtna.id.ring.RingPartition;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
+import gtna.util.Util;
 
+import java.util.Arrays;
 import java.util.Random;
 
 /**
- * Assigns a randomly selected RingID to every node and stores it as a property
- * with key "ID" in the given graph.
+ * Assigns a randomly selected RingPartition to every node and stores it as a
+ * property with key "ID_SPACE" in the given graph.
  * 
  * @author benni
  * 
  */
-public class RandomRingID extends TransformationImpl implements Transformation {
-	public RandomRingID() {
-		super("RANDOM_RING_ID", new String[] {}, new String[] {});
+public class RandomRingIDSpace extends TransformationImpl implements
+		Transformation {
+	private int realities;
+
+	public RandomRingIDSpace() {
+		super("RANDOM_RING_ID_SPACE", new String[] {}, new String[] {});
+		this.realities = 1;
+	}
+
+	public RandomRingIDSpace(int realities) {
+		super("RANDOM_RING_ID_SPACE", new String[] { "REALITIES" },
+				new String[] { "" + realities });
+		this.realities = realities;
 	}
 
 	@Override
 	public Graph transform(Graph graph) {
 		Random rand = new Random();
-		RingID[] ids = new RingID[graph.getNodes().length];
-		for (int i = 0; i < ids.length; i++) {
-			ids[i] = RingID.rand(rand);
+		for (int r = 0; r < this.realities; r++) {
+			RingID[] ids = new RingID[graph.getNodes().length];
+			for (int i = 0; i < ids.length; i++) {
+				ids[i] = RingID.rand(rand);
+			}
+			Arrays.sort(ids);
+			RingPartition[] partitions = new RingPartition[graph.getNodes().length];
+			for (int i = 0; i < partitions.length; i++) {
+				partitions[i] = new RingPartition(ids[i], ids[(i + 1)
+						% ids.length]);
+			}
+			Util.randomize(partitions, rand);
+			RingIDSpace idSpace = new RingIDSpace(partitions);
+			graph.addGraphProperty("ID_SPACE_" + r, idSpace);
 		}
-		graph.addNodeProperties("ID", ids);
 		return graph;
 	}
 

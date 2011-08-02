@@ -38,16 +38,16 @@ package gtna;
 import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.RingID;
+import gtna.id.IDSpace;
+import gtna.id.Partition;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.plot.Plot;
 import gtna.transformation.Transformation;
-import gtna.transformation.id.RandomRingID;
+import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.util.Config;
 import gtna.util.Stats;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -78,19 +78,22 @@ public class NodesTest {
 	}
 
 	private static void testID() {
-		Network nw = new ErdosRenyi(10, 2, true, null, null);
-		Transformation t = new RandomRingID();
+		Network nw = new ErdosRenyi(2, 2, true, null, null);
+		Transformation t = new RandomRingIDSpaceSimple(4);
 		Graph g = nw.generate();
 		g = t.transform(g);
-		RingID[] ids = (RingID[]) g.getNodeProperties("ID").clone();
-		Arrays.sort(ids);
-		for (RingID id : ids) {
-			System.out.println(id);
-		}
-		System.out.println("");
-		RingID[] ids2 = (RingID[]) g.getNodeProperties("ID");
-		for (RingID id : ids2) {
-			System.out.println(id);
+		int r = 0;
+		Random rand = new Random();
+		while (g.hasGraphProperty("ID_SPACE_" + r)) {
+			IDSpace idSpace = (IDSpace) g.getGraphProperty("ID_SPACE_" + r);
+			System.out.println(idSpace);
+			for (Partition p : idSpace.getPartitions()) {
+				System.out.println("  " + p);
+			}
+			for (int i = 0; i < 10; i++) {
+				System.out.println("  => " + idSpace.randomID(rand));
+			}
+			r++;
 		}
 	}
 

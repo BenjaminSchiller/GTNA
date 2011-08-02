@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Identifier.java
+ * RingIDSpace.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,26 +33,37 @@
  * ---------------------------------------
  *
  */
-package gtna.id;
+package gtna.id.ring;
+
+import gtna.id.IDSpace;
+import gtna.id.Partition;
+
+import java.util.Random;
 
 /**
  * @author benni
  * 
  */
-public interface ID {
-	/**
-	 * 
-	 * @param id
-	 *            ID to compute the distance to
-	 * @return distance to the given ID
-	 */
-	public double distance(ID id);
+public class RingIDSpace implements IDSpace {
+	private RingPartition[] partitions;
 
-	/**
-	 * 
-	 * @param id
-	 *            ID to compare to
-	 * @return true if the IDs are equal; false otherwise
-	 */
-	public boolean equals(ID id);
+	public RingIDSpace(RingPartition[] partitions) {
+		this.partitions = partitions;
+	}
+
+	@Override
+	public Partition[] getPartitions() {
+		return this.partitions;
+	}
+
+	@Override
+	public void setPartitions(Partition[] partitions) {
+		this.partitions = (RingPartition[]) partitions;
+	}
+
+	@Override
+	public RingID randomID(Random rand) {
+		return RingID.rand(rand);
+	}
+
 }

@@ -60,6 +60,7 @@ public class Graph {
 		this.name = name;
 		this.timer = new Timer();
 		this.nodeProperties = new HashMap<String, Object[]>();
+		this.graphProperties = new HashMap<String, Object>();
 	}
 
 	public String toString() {

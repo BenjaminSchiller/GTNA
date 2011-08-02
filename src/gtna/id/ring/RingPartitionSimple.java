@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Identifier.java
+ * RingPartitionSingleID.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,26 +33,54 @@
  * ---------------------------------------
  *
  */
-package gtna.id;
+package gtna.id.ring;
+
+import gtna.id.ID;
+import gtna.id.Partition;
 
 /**
  * @author benni
  * 
  */
-public interface ID {
-	/**
-	 * 
-	 * @param id
-	 *            ID to compute the distance to
-	 * @return distance to the given ID
-	 */
-	public double distance(ID id);
+public class RingPartitionSimple implements Partition {
+	private RingID id;
+
+	public RingPartitionSimple(RingID id) {
+		this.id = id;
+	}
+
+	@Override
+	public double distance(ID id) {
+		return this.id.distance((RingID) id);
+	}
+
+	@Override
+	public boolean equals(Partition partition) {
+		return this.id.equals(((RingPartitionSimple) partition).getId());
+	}
+
+	@Override
+	public boolean contains(ID id) {
+		return this.id.equals((RingID) id);
+	}
+
+	public String toString() {
+		return "RingParitionSimple(" + this.id.getPosition() + ")";
+	}
 
 	/**
-	 * 
-	 * @param id
-	 *            ID to compare to
-	 * @return true if the IDs are equal; false otherwise
+	 * @return the id
 	 */
-	public boolean equals(ID id);
+	public RingID getId() {
+		return this.id;
+	}
+
+	/**
+	 * @param id
+	 *            the id to set
+	 */
+	public void setId(RingID id) {
+		this.id = id;
+	}
+
 }

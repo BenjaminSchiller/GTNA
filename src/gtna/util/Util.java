@@ -187,6 +187,15 @@ public class Util {
 		}
 	}
 
+	public static void randomize(Object[] values, Random rand) {
+		for (int i = values.length - 1; i > 1; i--) {
+			int index = rand.nextInt(i);
+			Object temp = values[index];
+			values[index] = values[i];
+			values[i] = temp;
+		}
+	}
+
 	// ///////////////////////
 	// init
 	// ///////////////////////
