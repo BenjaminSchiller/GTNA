@@ -42,7 +42,7 @@ import gtna.graph.Edge;
 import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.plot.PlotData;
-import gtna.routing.RoutingAlgorithm;
+import gtna.routingOld.RoutingAlgorithm;
 
 import java.util.ArrayList;
 import java.util.HashSet;
