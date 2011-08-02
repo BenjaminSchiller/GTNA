@@ -33,7 +33,7 @@
  * Changes since 2011-05-17
  * ---------------------------------------
 */
-package gtna.routingOld;
+package gtna.routing;
 
 import gtna.graph.Node;
 

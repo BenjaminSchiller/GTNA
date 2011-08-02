@@ -36,6 +36,7 @@
 package gtna.routingOld;
 
 import gtna.graph.Node;
+import gtna.routing.RouteImpl;
 import gtna.routingOld.node.identifier.Identifier;
 
 import java.util.ArrayList;
