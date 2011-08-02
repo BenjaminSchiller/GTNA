@@ -41,7 +41,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
-import gtna.routingOld.RoutingAlgorithm;
+import gtna.routing.RoutingAlgorithm;
 import gtna.routingOld.node.IDNode;
 import gtna.routingOld.node.identifier.GridID;
 import gtna.routingOld.node.identifier.Identifier;

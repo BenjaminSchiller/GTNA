@@ -38,7 +38,7 @@ package gtna.networks.util;
 
 import gtna.graph.Graph;
 import gtna.networks.Network;
-import gtna.routingOld.RoutingAlgorithm;
+import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 
 /**

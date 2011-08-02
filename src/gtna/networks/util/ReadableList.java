@@ -39,7 +39,7 @@ import gtna.graph.Graph;
 import gtna.io.GraphReader;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
-import gtna.routingOld.RoutingAlgorithm;
+import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
 
