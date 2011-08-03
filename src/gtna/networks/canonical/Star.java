@@ -42,7 +42,6 @@ import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Config;
 
 /**
  * Implements the network generator for star network of given size. In a star
@@ -68,9 +67,5 @@ public class Star extends NetworkImpl implements Network {
 		edges.fill();
 		graph.setNodes(nodes);
 		return graph;
-	}
-
-	public String compareName(Network nw) {
-		return Config.get("NETWORK_COMPARE_NODES");
 	}
 }

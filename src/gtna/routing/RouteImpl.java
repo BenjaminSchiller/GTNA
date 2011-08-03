@@ -48,6 +48,11 @@ public class RouteImpl implements Route {
 
 	private boolean successful;
 
+	public RouteImpl(int[] route, boolean successful) {
+		this.route = route;
+		this.successful = successful;
+	}
+
 	public RouteImpl(ArrayList<Integer> route, boolean successful) {
 		this.route = new int[route.size()];
 		for (int i = 0; i < route.size(); i++) {

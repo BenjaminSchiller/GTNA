@@ -39,10 +39,13 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.ID;
 import gtna.id.IDSpace;
+import gtna.id.Partition;
 import gtna.routing.Route;
+import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.RoutingAlgorithmImpl;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -52,14 +55,43 @@ import java.util.Random;
 public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 	private IDSpace idSpace;
 
+	private Partition[] p;
+
 	public Greedy() {
 		super("GREEDY", new String[] {}, new String[] {});
 	}
 
 	@Override
-	public Route route(Graph graph, Node start, ID target, Random rand) {
-		// TODO Auto-generated method stub
-		return null;
+	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
+		ID target = this.idSpace.randomID(rand);
+		while(this.p[start].contains(target)){
+			target = this.idSpace.randomID(rand);
+		}
+		return this.route(new ArrayList<Integer>(), start, target, rand,
+				graph.getNodes());
+	}
+
+	private Route route(ArrayList<Integer> route, int current, ID target,
+			Random rand, Node[] nodes) {
+		route.add(current);
+		if (this.idSpace.getPartitions()[current].contains(target)) {
+			return new RouteImpl(route, true);
+		}
+		double currentDist = this.idSpace.getPartitions()[current]
+				.distance(target);
+		double minDist = Double.MAX_VALUE;
+		int minNode = -1;
+		for (int out : nodes[current].getOutgoingEdges()) {
+			double dist = this.p[out].distance(target);
+			if (dist < minDist && dist < currentDist) {
+				minDist = dist;
+				minNode = out;
+			}
+		}
+		if (minNode == -1) {
+			return new RouteImpl(route, false);
+		}
+		return this.route(route, minNode, target, rand, nodes);
 	}
 
 	@Override
@@ -70,6 +102,7 @@ public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 	@Override
 	public void preprocess(Graph graph) {
 		this.idSpace = (IDSpace) graph.getProperty("ID_SPACE");
+		this.p = idSpace.getPartitions();
 	}
 
 }

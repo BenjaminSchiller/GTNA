@@ -52,6 +52,7 @@ import java.util.Queue;
 public class ShortestPaths extends MetricImpl implements Metric {
 	// TODO add LCPL => binning?!?
 	// TODO add distribution of LCPL?!?
+	// TODO remove computation of distribution
 
 	private Distribution shortestPathLengthDistribution;
 

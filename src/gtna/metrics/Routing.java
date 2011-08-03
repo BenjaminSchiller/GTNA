@@ -35,272 +35,135 @@
  */
 package gtna.metrics;
 
+import gtna.data.Value;
+import gtna.graph.Graph;
+import gtna.graph.Node;
+import gtna.io.DataWriter;
+import gtna.networks.Network;
+import gtna.routing.Route;
+import gtna.routing.RoutingAlgorithm;
+import gtna.util.Config;
+import gtna.util.Distribution;
+import gtna.util.Timer;
+
+import java.util.HashMap;
+import java.util.Random;
 
 // TODO reimplement Routing
-public class Routing {
-	// public class Routing extends MetricImpl implements Metric {
-	// // local characteristic routing length
-	// // private double[] lcrl;
-	//
-	// // local characteristic routing length (SHORT)
-	// // private double[] lcrlShort;
-	//
-	// // routing length distribution
-	// private double[] rld;
-	//
-	// // cumulative routing length distribution
-	// private double[] crld;
-	//
-	// // routing progression
-	// // private double[] prog;
-	//
-	// // copies stored at each node
-	// // private double[] copies;
-	//
-	// // copies stored at each node (SHORT)
-	// // private double[] copiesShort;
-	//
-	// // messages per routing
-	// // private double[] msgs;
-	//
-	// // messages per routing (SHORT)
-	// // private double[] msgsShort;
-	//
-	// public boolean writeData(String folder) {
-	// // DataWriter.writeWithIndex(this.lcrl, "RL_LCRL", folder);
-	// // DataWriter.writeWithIndex(this.lcrlShort, "RL_LCRL_SHORT", folder);
-	// DataWriter.writeWithIndex(this.rld, "RL_RLD", folder);
-	// DataWriter.writeWithIndex(this.crld, "RL_CRLD", folder);
-	// // DataWriter.writeWithIndex(this.prog, "RL_PROG", folder);
-	// // DataWriter.writeWithIndex(this.copies, "RL_COPIES", folder);
-	// // DataWriter.writeWithIndex(this.copiesShort, "RL_COPIES_SHORT",
-	// // folder);
-	// // DataWriter.writeWithIndex(this.msgs, "RL_MSGS", folder);
-	// // DataWriter.writeWithIndex(this.msgsShort, "RL_MSGS_SHORT", folder);
-	// return true;
-	// }
-	//
-	// // characteristic routing length
-	// private double crl;
-	//
-	// // maximum routing length
-	// private double mrl;
-	//
-	// // fraction of failed routings
-	// private double fr;
-	//
-	// // average number of copies stored at each node
-	// // private double averageCopies;
-	//
-	// // average number of messages per routing
-	// // private double avgMsgs;
-	//
-	// // timer
-	// private Timer timer;
-	//
-	// // list of all routes
-	// private ArrayList<Route> routes;
-	//
-	// public Value[] getValues(Value[] values) {
-	// Value crl = new Value("RL_CRL", this.crl);
-	// Value mrl = new Value("RL_MRL", this.mrl);
-	// Value fr = new Value("RL_FR", this.fr);
-	// // Value avgCopies = new Value("RL_AVG_COPIES", this.averageCopies);
-	// // Value avgMsgs = new Value("RL_AVG_MSGS", this.avgMsgs);
-	// Value rt = new Value("RL_RT", this.timer.rt());
-	// // return new Value[] { crl, mrl, fr, avgCopies, avgMsgs, rt };
-	// return new Value[] { crl, mrl, fr, rt };
-	// }
-	//
-	// private void initEmpty() {
-	// // this.lcrl = new double[] { 0.0 };
-	// // this.lcrlShort = new double[] { 0.0 };
-	// this.rld = new double[] { 0.0 };
-	// this.crld = new double[] { 0.0 };
-	// // this.prog = new double[] { 0.0 };
-	// // this.copies = new double[] { 0.0 };
-	// // this.copiesShort = new double[] { 0.0 };
-	// // this.msgs = new double[] { 0.0 };
-	// // this.msgsShort = new double[] { 0.0 };
-	// this.crl = 0.0;
-	// this.mrl = 0.0;
-	// this.fr = 0.0;
-	// // this.averageCopies = 0.0;
-	// // this.avgMsgs = 0.0;
-	// this.timer = new Timer();
-	// timer.end();
-	// this.routes = new ArrayList<Route>();
-	// }
-	//
-	// public Routing() {
-	// super("RL");
-	// }
-	//
-	// public void computeData(Graph g, Network n, Hashtable<String, Metric> m)
-	// {
-	// RoutingAlgorithm ra = n.routingAlgorithm();
-	// this.initEmpty();
-	// if (ra == null || !ra.applicable(g.nodes)) {
-	// return;
-	// }
-	// this.timer = new Timer();
-	// ra.init(g.nodes);
-	// Random rand = new Random(System.currentTimeMillis());
-	// this.routes = new ArrayList<Route>();
-	// int times = Config.getInt("RL_ROUTES_PER_NODE");
-	//
-	// for (int i = 0; i < g.nodes.length; i++) {
-	// for (int j = 0; j < times; j++) {
-	// Route r = ra.randomRoute(g.nodes, g.nodes[i], rand);
-	// this.routes.add(r);
-	// }
-	// }
-	//
-	// // this.lcrl = this.lcrl(routes, g.nodes.length, times);
-	// // Arrays.sort(this.lcrl);
-	// // int lcrlShort = Config.getInt("RL_LCRL_SHORT_MAX_VALUES");
-	// // this.lcrlShort = Util.avgArray(this.lcrl, lcrlShort);
-	// this.rld = this.rld(routes);
-	// this.crld = Util.cumulative(this.rld);
-	// // if (g.nodes[0] instanceof IDNode) {
-	// // this.prog = this.prog(routes);
-	// // }
-	// // if (g.nodes[0] instanceof RegistrationNode) {
-	// // this.copies = this.copies(g.nodes);
-	// // Arrays.sort(this.copies);
-	// // int copiesShort = Config.getInt("RL_COPIES_SHORT_MAX_VALUES");
-	// // this.copiesShort = Util.avgArray(this.copies, copiesShort);
-	// // this.averageCopies = Util.avg(this.copies);
-	// // }
-	// // this.msgs = this.msgs(routes);
-	// // Arrays.sort(this.msgs);
-	// // int msgsShort = Config.getInt("RL_MSGS_SHORT_MAX_VALUES");
-	// // this.msgsShort = Util.avgArray(this.msgs, msgsShort);
-	// this.crl = this.crl(routes);
-	// this.mrl = this.mrl(routes);
-	// this.fr = this.fr(routes);
-	// // this.avgMsgs = Util.avg(this.msgs);
-	// this.timer.end();
-	// }
-	//
-	// private double[] lcrl(ArrayList<Route> routes, int nodes, int times) {
-	// double[] lcrl = new double[nodes];
-	// for (int i = 0; i < nodes; i++) {
-	// double sum = 0;
-	// double success = 0;
-	// for (int j = 0; j < times; j++) {
-	// int index = i * times + j;
-	// if (routes.get(index).success()) {
-	// sum += routes.get(index).path().size() - 1;
-	// success++;
-	// }
-	// }
-	// if (success == 0) {
-	// lcrl[i] = 0;
-	// } else {
-	// lcrl[i] = sum / success;
-	// }
-	// }
-	// return lcrl;
-	// }
-	//
-	// private double[] rld(ArrayList<Route> routes) {
-	// int[] rld = new int[(int) this.mrl(routes) + 1];
-	// for (int i = 0; i < routes.size(); i++) {
-	// if (routes.get(i).success()) {
-	// rld[routes.get(i).path().size() - 1]++;
-	// }
-	// }
-	// double[] d = Util.distribution(rld);
-	// double fr = this.fr(routes);
-	// for (int i = 0; i < d.length; i++) {
-	// d[i] *= 1.0 - fr;
-	// }
-	// return d;
-	// }
-	//
-	// private double[] prog(ArrayList<Route> routes) {
-	// if (!(routes.get(0) instanceof IDRoute)) {
-	// return new double[] { 0.0 };
-	// }
-	// double[] prog = new double[(int) this.mrl(routes) + 1];
-	// double[] count = new double[prog.length];
-	// for (int i = 0; i < routes.size(); i++) {
-	// if (routes.get(i).success()) {
-	// double[] p = this.getProgression((IDRoute) routes.get(i));
-	// for (int j = 0; j < p.length; j++) {
-	// prog[j] += p[j];
-	// count[j]++;
-	// }
-	// }
-	// }
-	// for (int i = 0; i < prog.length; i++) {
-	// prog[i] /= count[i];
-	// }
-	// return prog;
-	// }
-	//
-	// private double[] copies(Node[] nodes) {
-	// double[] copies = new double[nodes.length];
-	// for (int i = 0; i < nodes.length; i++) {
-	// copies[i] = ((RegistrationNode) nodes[i]).registeredItems();
-	// }
-	// return copies;
-	// }
-	//
-	// private double[] msgs(ArrayList<Route> routes) {
-	// ArrayList<Double> msgs = new ArrayList<Double>(routes.size());
-	// for (int i = 0; i < routes.size(); i++) {
-	// if (routes.get(i).success()) {
-	// msgs.add((double) routes.get(i).messages());
-	// }
-	// }
-	// return Util.toDoubleArray(msgs);
-	// }
-	//
-	// private double crl(ArrayList<Route> routes) {
-	// ArrayList<Integer> rl = new ArrayList<Integer>(routes.size());
-	// for (int i = 0; i < routes.size(); i++) {
-	// if (routes.get(i).success()) {
-	// rl.add(routes.get(i).path().size() - 1);
-	// }
-	// }
-	// return Util.avg(Util.toIntegerArray(rl));
-	// }
-	//
-	// private double mrl(ArrayList<Route> routes) {
-	// double mrl = 0;
-	// for (int i = 0; i < routes.size(); i++) {
-	// double rl = routes.get(i).path().size() - 1;
-	// if (routes.get(i).success() && rl > mrl) {
-	// mrl = rl;
-	// }
-	// }
-	// return mrl;
-	// }
-	//
-	// private double fr(ArrayList<Route> routes) {
-	// double fr = 0;
-	// for (int i = 0; i < routes.size(); i++) {
-	// if (!routes.get(i).success()) {
-	// fr++;
-	// }
-	// }
-	// return fr / (double) routes.size();
-	// }
-	//
-	// private double[] getProgression(IDRoute route) {
-	// Node[] path = Util.toNodeArray(route.path());
-	// double[] p = new double[path.length];
-	// IDNode dest = (IDNode) path[path.length - 1];
-	// double total = ((IDNode) path[0]).dist(dest);
-	// for (int i = 0; i < p.length; i++) {
-	// if (total == 0) {
-	// p[i] = 0;
-	// } else {
-	// p[i] = ((IDNode) path[i]).dist(route.dest()) / total;
-	// }
-	// }
-	// return p;
-	// }
+public class Routing extends MetricImpl implements Metric {
+	private Distribution hopDistribution;
+
+	private Distribution hopDistributionAbsolute;
+
+	private Route[] routes;
+
+	private Timer runtime;
+
+	public Routing() {
+		super("R");
+	}
+
+	@Override
+	public void computeData(Graph graph, Network network,
+			HashMap<String, Metric> metrics) {
+		this.runtime = new Timer();
+		RoutingAlgorithm ra = network.routingAlgorithm();
+		if (ra == null || !ra.applicable(graph)) {
+			this.initEmpty();
+			return;
+		}
+		ra.preprocess(graph);
+		int times = Config.getInt("R_ROUTES_PER_NODE");
+		Random rand = new Random();
+		this.routes = new Route[graph.getNodes().length * times];
+		int index = 0;
+		for (Node start : graph.getNodes()) {
+			for (int i = 0; i < times; i++) {
+				this.routes[index++] = ra.routeToRandomTarget(graph,
+						start.getIndex(), rand);
+				// if (this.routes[index - 1].isSuccessful()) {
+				// System.out.println(this.routes[index - 1].getHops() + " / "
+				// + this.routes[index - 1].getRoute().length);
+				// }else{
+				// System.out.println("ewrgo8wzidghiowdhghwdgi");
+				// }
+			}
+		}
+		this.hopDistribution = this.computeHopDistribution();
+		this.hopDistributionAbsolute = this.computeHopDistributionAbsolute();
+		this.runtime.end();
+	}
+
+	private Distribution computeHopDistribution() {
+		long[] hops = new long[1];
+		long counter = 0;
+		for (Route route : this.routes) {
+			if (route.isSuccessful()) {
+				hops = this.inc(hops, route.getHops());
+				counter++;
+			}
+		}
+		return new Distribution(hops, counter);
+	}
+
+	private Distribution computeHopDistributionAbsolute() {
+		long[] hops = new long[1];
+		for (Route route : this.routes) {
+			if (route.isSuccessful()) {
+				hops = this.inc(hops, route.getHops());
+			}
+		}
+		return new Distribution(hops, this.routes.length);
+	}
+
+	private long[] inc(long[] values, int index) {
+		try {
+			values[index]++;
+			return values;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			long[] valuesNew = new long[index + 1];
+			System.arraycopy(values, 0, valuesNew, 0, values.length);
+			valuesNew[index] = 1;
+			return valuesNew;
+		}
+	}
+
+	private void initEmpty() {
+		this.hopDistribution = new Distribution(new double[] { 0 });
+		this.hopDistributionAbsolute = new Distribution(new double[] { 0 });
+		this.routes = new Route[0];
+	}
+
+	@Override
+	public boolean writeData(String folder) {
+		boolean success = true;
+		success &= DataWriter.writeWithIndex(
+				this.hopDistribution.getDistribution(), "R_HOP_DISTRIBUTION",
+				folder);
+		success &= DataWriter.writeWithIndex(this.hopDistribution.getCdf(),
+				"R_HOP_DISTRIBUTION_CDF", folder);
+		success &= DataWriter.writeWithIndex(
+				this.hopDistributionAbsolute.getDistribution(),
+				"R_HOP_DISTRIBUTION_ABSOLUTE", folder);
+		success &= DataWriter.writeWithIndex(
+				this.hopDistributionAbsolute.getCdf(),
+				"R_HOP_DISTRIBUTION_ABSOLUTE_CDF", folder);
+		return success;
+	}
+
+	@Override
+	public Value[] getValues() {
+		Value averageHops = new Value("R_HOPS_AVG",
+				this.hopDistribution.getAverage());
+		Value medianHops = new Value("R_HOPS_MED",
+				this.hopDistribution.getMedian());
+		Value maximumHops = new Value("R_HOPS_MAX",
+				this.hopDistribution.getMax());
+		double[] cdf = this.hopDistributionAbsolute.getCdf();
+		Value successRate = new Value("R_SUCCESS_RATE", cdf[cdf.length - 1]);
+		Value failureRate = new Value("R_FAILURE_RATE", 1 - cdf[cdf.length - 1]);
+		Value runtime = new Value("R_RUNTIME", this.runtime.getRuntime());
+		return new Value[] { averageHops, medianHops, maximumHops, successRate,
+				failureRate, runtime };
+	}
 }

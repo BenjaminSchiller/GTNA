@@ -37,7 +37,6 @@ package gtna.routing;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.ID;
 
 import java.util.Random;
 
@@ -65,7 +64,7 @@ public interface RoutingAlgorithm {
 	 *            PRNG
 	 * @return Path object containing information about the routing attempt
 	 */
-	public Route route(Graph graph, Node start, ID target, Random rand);
+	public Route routeToRandomTarget(Graph graph, int start, Random rand);
 
 	/**
 	 * Checks if this routing algorithm can be applied to the given network

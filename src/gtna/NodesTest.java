@@ -41,6 +41,9 @@ import gtna.graph.Node;
 import gtna.id.IDSpace;
 import gtna.id.Partition;
 import gtna.networks.Network;
+import gtna.networks.canonical.Complete;
+import gtna.networks.canonical.Ring;
+import gtna.networks.canonical.Star;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plot;
@@ -88,13 +91,21 @@ public class NodesTest {
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 
-		Transformation[] t = new Transformation[] {};
+		Transformation t1 = new RandomRingIDSpaceSimple();
+		Transformation[] t = new Transformation[] { t1 };
 		RoutingAlgorithm r = new Greedy();
-		Network nw = new ReadableFile("SPI", "spi",
+		int nodes = 100;
+		Network nw0 = new ReadableFile("SPI", "spi",
 				"./resources/SPI-3-LCC/2010-08.spi.txt", r, t);
+		Network nw1 = new ErdosRenyi(nodes, 10, true, r, t);
+		Network nw2 = new Complete(nodes, r, t);
+		Network nw3 = new Star(nodes, r, t);
+		Network nw4 = new Ring(nodes, r, t);
+		Network[] nw = new Network[] { nw0 };
 
-		Series s = Series.generate(nw, 1);
-		Plot.allMulti(s, "multi/");
+		Series[] s = Series.generate(nw, 10);
+		Plot.multiAvg(s, "multi/");
+		Plot.singlesAvg(s, "singles/");
 	}
 
 	private static void testID() {
@@ -118,7 +129,7 @@ public class NodesTest {
 	}
 
 	private static void testMetrics() {
-		Config.overwrite("METRICS", "CC");
+		Config.overwrite("METRICS", "DD, SP, CC");
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/testMetrics/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testMetrics/");
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
@@ -132,7 +143,7 @@ public class NodesTest {
 				true, null, null);
 		Series[] s2 = Series.generate(nw2, 1);
 		Plot.singlesAvg(s2, "single-avg/");
-		// Plot.multiAvg(s2, "multi-avg/");
+		Plot.multiAvg(s2, "multi-avg/");
 	}
 
 	private static void testNW() {

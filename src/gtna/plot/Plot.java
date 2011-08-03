@@ -128,17 +128,17 @@ public class Plot {
 	}
 
 	public static void allSingleByEdges(Series[][] series, String folder) {
-		singlesAvgByEdges(series, folder
-				+ Config.get("PLOT_ALL_SINGLES_AVG_FOLDER"));
-		singlesConfByEdges(series, folder
-				+ Config.get("PLOT_ALL_SINGLES_CONF_FOLDER"));
+		singlesAvgByEdges(series,
+				folder + Config.get("PLOT_ALL_SINGLES_AVG_FOLDER"));
+		singlesConfByEdges(series,
+				folder + Config.get("PLOT_ALL_SINGLES_CONF_FOLDER"));
 	}
 
 	public static void allSingleByEdgesNoLine(Series[][] series, String folder) {
-		singlesAvgByEdgesNoLine(series, folder
-				+ Config.get("PLOT_ALL_SINGLES_AVG_FOLDER"));
-		singlesConfByEdgesNoLine(series, folder
-				+ Config.get("PLOT_ALL_SINGLES_CONF_FOLDER"));
+		singlesAvgByEdgesNoLine(series,
+				folder + Config.get("PLOT_ALL_SINGLES_AVG_FOLDER"));
+		singlesConfByEdgesNoLine(series,
+				folder + Config.get("PLOT_ALL_SINGLES_CONF_FOLDER"));
 	}
 
 	public static void multiAvg(Series[] series, String folder) {
@@ -204,8 +204,9 @@ public class Plot {
 				name = "PLOT_SINGLES_AVG";
 			}
 		}
-		Timer timer = new Timer(Config.get(name).replace("%SERIES",
-				"" + series.length).replace("%DEST", folder));
+		Timer timer = new Timer(Config.get(name)
+				.replace("%SERIES", "" + series.length)
+				.replace("%DEST", folder));
 		Filewriter.generateFolders(Config.get("MAIN_PLOT_FOLDER") + folder);
 		String[][] keys = Config.allKeys("_SINGLES_PLOTS");
 		for (int i = 0; i < keys.length; i++) {
@@ -214,10 +215,8 @@ public class Plot {
 			}
 		}
 		if (Config.getBoolean("PLOT_SINGLES_LATEX_WRITE")) {
-			LaTex
-					.writeSinglePlots(Config.get("MAIN_PLOT_FOLDER") + folder
-							+ Config.get("PLOT_SINGLES_LATEX_FILENAME"),
-							folder, series);
+			LaTex.writeSinglePlots(Config.get("MAIN_PLOT_FOLDER") + folder
+					+ Config.get("PLOT_SINGLES_LATEX_FILENAME"), folder, series);
 		}
 		timer.end();
 	}
@@ -323,11 +322,9 @@ public class Plot {
 			plotData = new PlotData[series.length * values.length];
 		}
 		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_X")
-				: 0;
+				.getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
 		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_Y")
-				: 0;
+				.getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
 		int counter = 0;
 		for (int i = 0; i < series.length; i++) {
 			for (int sv = 0; sv < values.length; sv++) {
@@ -392,8 +389,8 @@ public class Plot {
 					avg[d][i][j][1] = series[i][j].avgSingles().getValue(
 							data[d]);
 					conf[d][i][j] = ConfidenceData.getConfidenceInterval(
-							avg[d][i][j][0], Singles.getValues(series[i][j]
-									.summaries(), data[d]));
+							avg[d][i][j][0], Singles.getValues(
+									series[i][j].summaries(), data[d]));
 				}
 			}
 		}
@@ -404,11 +401,9 @@ public class Plot {
 			plotData = new PlotData[series.length * conf.length];
 		}
 		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_X")
-				: 0;
+				.getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
 		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_Y")
-				: 0;
+				.getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
 		int counter = 0;
 		for (int i = 0; i < series.length; i++) {
 			for (int sv = 0; sv < conf.length; sv++) {
@@ -464,8 +459,9 @@ public class Plot {
 		} else if (type.equals("VAR")) {
 			name = "PLOT_MULTI_VAR";
 		}
-		Timer timer = new Timer(Config.get(name).replace("%SERIES",
-				series.length + "").replace("%DEST", folder));
+		Timer timer = new Timer(Config.get(name)
+				.replace("%SERIES", series.length + "")
+				.replace("%DEST", folder));
 		Filewriter.generateFolders(Config.get("MAIN_PLOT_FOLDER") + folder);
 
 		String[][] keys = Config.allKeys("_DATA_PLOTS");
@@ -482,9 +478,8 @@ public class Plot {
 		}
 		if (Config.getBoolean("PLOT_MULTI_LATEX_WRITE")) {
 			LaTex.writeDataPlots(Config.get("MAIN_PLOT_FOLDER") + folder
-					+ Config.get("PLOT_MULTI_LATEX_FILENAME"), Config
-					.get("MAIN_PLOT_FOLDER")
-					+ folder, series);
+					+ Config.get("PLOT_MULTI_LATEX_FILENAME"),
+					Config.get("MAIN_PLOT_FOLDER") + folder, series);
 		}
 		if (Config.getBoolean("PLOT_ALL_SINGLES_TABLE_WRITE")) {
 			String fn = Config.get("MAIN_PLOT_FOLDER") + folder
@@ -526,11 +521,9 @@ public class Plot {
 			plotData = new PlotData[series.length * data.length];
 		}
 		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_X")
-				: 0;
+				.getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
 		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_Y")
-				: 0;
+				.getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
 		int counter = 0;
 		for (int d = 0; d < data.length; d++) {
 			for (int i = 0; i < series.length; i++) {
@@ -617,11 +610,9 @@ public class Plot {
 			plotData = new PlotData[series.length * data.length];
 		}
 		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_X")
-				: 0;
+				.getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
 		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_Y")
-				: 0;
+				.getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
 		int counter = 0;
 		for (int d = 0; d < data.length; d++) {
 			for (int i = 0; i < series.length; i++) {
@@ -693,11 +684,9 @@ public class Plot {
 		int pointWidth = Config.getInt("AVERAGE_PLOT_POINT_WIDTH");
 		PlotData[] plotData = new PlotData[series.length * data.length];
 		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_X")
-				: 0;
+				.getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
 		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_Y")
-				: 0;
+				.getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
 		int counter = 0;
 		for (int d = 0; d < data.length; d++) {
 			for (int i = 0; i < series.length; i++) {

@@ -52,6 +52,14 @@ public class Distribution {
 
 	private double max;
 
+	public Distribution(long[] values, long sum) {
+		this(Distribution.computeDistributionLong(values, sum));
+	}
+
+	public Distribution(int[] values, int sum) {
+		this(Distribution.computeDistributionInt(values, sum));
+	}
+
 	public Distribution(double[] distribution) {
 		this.distribution = distribution;
 		this.cdf = this.computeCdf();
@@ -59,6 +67,28 @@ public class Distribution {
 		this.median = this.computeMedian();
 		this.average = this.computeAverage();
 		this.max = this.computeMax();
+	}
+
+	private static double[] computeDistributionLong(long[] values, long sum) {
+		if(sum == 0){
+			return new double[values.length];
+		}
+		double[] distribution = new double[values.length];
+		for (int i = 0; i < values.length; i++) {
+			distribution[i] = (double) values[i] / (double) sum;
+		}
+		return distribution;
+	}
+
+	private static double[] computeDistributionInt(int[] values, int sum) {
+		if(sum == 0){
+			return new double[values.length];
+		}
+		double[] distribution = new double[values.length];
+		for (int i = 0; i < values.length; i++) {
+			distribution[i] = (double) values[i] / (double) sum;
+		}
+		return distribution;
 	}
 
 	private double[] computeCdf() {
@@ -72,7 +102,7 @@ public class Distribution {
 
 	private double computeMin() {
 		int index = 0;
-		while (this.distribution[index] == 0) {
+		while (index < this.distribution.length && this.distribution[index] == 0) {
 			index++;
 		}
 		return index;
@@ -85,7 +115,7 @@ public class Distribution {
 	private double computeMedian() {
 		int index = 0;
 		double threshold = this.cdf[this.cdf.length - 1] / 2.0;
-		while (this.cdf[index] <= threshold) {
+		while (index < this.cdf.length && this.cdf[index] <= threshold) {
 			index++;
 		}
 		return index;
