@@ -42,7 +42,10 @@ import gtna.id.IDSpace;
 import gtna.id.Partition;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
+import gtna.networks.util.ReadableFile;
 import gtna.plot.Plot;
+import gtna.routing.RoutingAlgorithm;
+import gtna.routing.greedy.Greedy;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.util.Config;
@@ -74,7 +77,24 @@ public class NodesTest {
 		// testHash3(50000000);
 		// testNW();
 		// testMetrics();
-		testID();
+		// testID();
+		testRouting();
+	}
+
+	private static void testRouting() {
+		Config.overwrite("METRICS", "R");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/testRouting/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testRouting/");
+		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+
+		Transformation[] t = new Transformation[] {};
+		RoutingAlgorithm r = new Greedy();
+		Network nw = new ReadableFile("SPI", "spi",
+				"./resources/SPI-3-LCC/2010-08.spi.txt", r, t);
+
+		Series s = Series.generate(nw, 1);
+		Plot.allMulti(s, "multi/");
 	}
 
 	private static void testID() {
@@ -84,8 +104,8 @@ public class NodesTest {
 		g = t.transform(g);
 		int r = 0;
 		Random rand = new Random();
-		while (g.hasGraphProperty("ID_SPACE_" + r)) {
-			IDSpace idSpace = (IDSpace) g.getGraphProperty("ID_SPACE_" + r);
+		while (g.hasProperty("ID_SPACE_" + r)) {
+			IDSpace idSpace = (IDSpace) g.getProperty("ID_SPACE_" + r);
 			System.out.println(idSpace);
 			for (Partition p : idSpace.getPartitions()) {
 				System.out.println("  " + p);
