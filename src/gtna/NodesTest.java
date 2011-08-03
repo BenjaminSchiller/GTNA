@@ -103,7 +103,7 @@ public class NodesTest {
 		Network nw4 = new Ring(nodes, r, t);
 		Network[] nw = new Network[] { nw0 };
 
-		Series[] s = Series.generate(nw, 10);
+		Series[] s = Series.generate(nw, 1);
 		Plot.multiAvg(s, "multi/");
 		Plot.singlesAvg(s, "singles/");
 	}
