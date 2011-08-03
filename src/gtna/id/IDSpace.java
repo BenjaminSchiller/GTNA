@@ -35,13 +35,15 @@
  */
 package gtna.id;
 
+import gtna.graph.GraphProperty;
+
 import java.util.Random;
 
 /**
  * @author benni
  * 
  */
-public interface IDSpace {
+public interface IDSpace extends GraphProperty {
 	public Partition[] getPartitions();
 
 	public void setPartitions(Partition[] partitions);

@@ -46,9 +46,7 @@ public class Graph {
 
 	private Timer timer;
 
-	private HashMap<String, Object[]> nodeProperties;
-
-	private HashMap<String, Object> graphProperties;
+	private HashMap<String, GraphProperty> properties;
 
 	/**
 	 * initializes a graph with the given name an starts the timer
@@ -59,36 +57,23 @@ public class Graph {
 	public Graph(String name) {
 		this.name = name;
 		this.timer = new Timer();
-		this.nodeProperties = new HashMap<String, Object[]>();
-		this.graphProperties = new HashMap<String, Object>();
+		this.properties = new HashMap<String, GraphProperty>();
 	}
 
 	public String toString() {
 		return this.name + " (" + this.nodes.length + ")";
 	}
 
-	public void addGraphProperty(String key, Object property) {
-		this.graphProperties.put(key, property);
+	public void addProperty(String key, GraphProperty property) {
+		this.properties.put(key, property);
 	}
 
-	public boolean hasGraphProperty(String key) {
-		return this.graphProperties.containsKey(key);
+	public boolean hasProperty(String key) {
+		return this.properties.containsKey(key);
 	}
 
-	public Object getGraphProperty(String key) {
-		return this.graphProperties.get(key);
-	}
-
-	public void addNodeProperties(String key, Object[] properties) {
-		this.nodeProperties.put(key, properties);
-	}
-
-	public boolean hasNodeProperties(String key) {
-		return this.nodeProperties.containsKey(key);
-	}
-
-	public Object[] getNodeProperties(String key) {
-		return this.nodeProperties.get(key);
+	public GraphProperty getProperty(String key) {
+		return this.properties.get(key);
 	}
 
 	public Edge[] generateEdges() {
@@ -186,119 +171,4 @@ public class Graph {
 		this.nodes = nodes;
 		this.timer.end();
 	}
-
-	// TODO replace by properties
-
-	// public int edges;
-	//
-	// public double avgDegree;
-	//
-	// public int maxDegree;
-	//
-	// public int maxInDegree;
-	//
-	// public int maxOutDegree;
-	//
-	// public int minDegree;
-	//
-	// public int minInDegree;
-	//
-	// public int minOutDegree;
-	//
-	// @Deprecated
-	// public Graph(String name, Node[] nodes, Timer timer) {
-	// this.name = name;
-	// this.nodes = nodes;
-	// this.computeDegrees();
-	// this.timer = timer;
-	// }
-	//
-	// public void computeDegrees() {
-	// this.edges = 0;
-	// this.minDegree = Integer.MAX_VALUE;
-	// this.minInDegree = Integer.MAX_VALUE;
-	// this.minOutDegree = Integer.MAX_VALUE;
-	// for (int i = 0; i < this.nodes.length; i++) {
-	// int in = nodes[i].in().length;
-	// int out = nodes[i].out().length;
-	// int degree = in + out;
-	// this.edges += out;
-	// this.avgDegree += degree;
-	// // DEGREE
-	// if (degree < this.minDegree) {
-	// this.minDegree = degree;
-	// }
-	// if (degree > this.maxDegree) {
-	// this.maxDegree = degree;
-	// }
-	// // IN-DEGREE
-	// if (in < this.minInDegree) {
-	// this.minInDegree = in;
-	// }
-	// if (in > this.maxInDegree) {
-	// this.maxInDegree = in;
-	// }
-	// // OUT-DEGREE
-	// if (out < this.minOutDegree) {
-	// this.minOutDegree = out;
-	// }
-	// if (out > this.maxOutDegree) {
-	// this.maxOutDegree = out;
-	// }
-	// }
-	// this.avgDegree /= this.nodes.length;
-	// }
-	//
-	// public Value[] values() {
-	// Value nodes = new Value("NODES", this.nodes.length);
-	// Value edges = new Value("EDGES", this.edges);
-	// Value davg = new Value("D_AVG", this.avgDegree);
-	// Value dmax = new Value("D_MAX", this.maxDegree);
-	// Value dmin = new Value("D_MIN", this.minDegree);
-	// Value dimax = new Value("DI_MAX", this.maxInDegree);
-	// Value dimin = new Value("DI_MIN", this.minInDegree);
-	// Value domax = new Value("DO_MAX", this.maxOutDegree);
-	// Value domin = new Value("DO_MIN", this.minOutDegree);
-	// return new Value[] { nodes, edges, davg, dmax, dmin, dimax, dimin,
-	// domax, domin };
-	// }
-	//
-	// private Edge[] Edges;
-	//
-	// public Edge[] edges() {
-	// if (this.Edges == null) {
-	// this.computeEdges();
-	// }
-	// return this.Edges;
-	// }
-	//
-	// public void computeEdges() {
-	// this.Edges = new Edge[this.edges];
-	// int index = 0;
-	// for (int i = 0; i < this.nodes.length; i++) {
-	// for (int j = 0; j < this.nodes[i].out().length; j++) {
-	// this.Edges[index++] = new Edge(this.nodes[i],
-	// this.nodes[i].out()[j]);
-	// }
-	// }
-	// }
-	//
-	// private HashMap<String, Edge> map;
-	//
-	// public HashMap<String, Edge> map() {
-	// if (this.map == null) {
-	// this.map = new HashMap<String, Edge>();
-	// for (int i = 0; i < this.nodes.length; i++) {
-	// for (int j = 0; j < this.nodes[i].out().length; j++) {
-	// Edge edge = new Edge(this.nodes[i], this.nodes[i].out()[j]);
-	// this.map.put(edge.toString(), edge);
-	// }
-	// }
-	// }
-	// return this.map;
-	// }
-	//
-	// public String toString() {
-	// return "|N| = " + this.nodes.length + ", |E| = " + this.edges;
-	// }
 }

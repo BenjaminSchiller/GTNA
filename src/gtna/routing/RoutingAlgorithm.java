@@ -85,7 +85,7 @@ public interface RoutingAlgorithm {
 	 * @param nodes
 	 *            list of all nodes contained in the network
 	 */
-	public void init(Graph graph);
+	public void preprocess(Graph graph);
 
 	/**
 	 * 

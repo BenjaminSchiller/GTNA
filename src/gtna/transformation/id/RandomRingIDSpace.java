@@ -84,7 +84,10 @@ public class RandomRingIDSpace extends TransformationImpl implements
 			}
 			Util.randomize(partitions, rand);
 			RingIDSpace idSpace = new RingIDSpace(partitions);
-			graph.addGraphProperty("ID_SPACE_" + r, idSpace);
+			graph.addProperty("ID_SPACE_" + r, idSpace);
+			if(r == 0){
+				graph.addProperty("ID_SPACE", idSpace);
+			}
 		}
 		return graph;
 	}

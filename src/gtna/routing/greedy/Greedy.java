@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * RingIDSpace.java
+ * Greedy.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,11 +33,15 @@
  * ---------------------------------------
  *
  */
-package gtna.id.ring;
+package gtna.routing.greedy;
 
-import gtna.graph.GraphProperty;
+import gtna.graph.Graph;
+import gtna.graph.Node;
+import gtna.id.ID;
 import gtna.id.IDSpace;
-import gtna.id.Partition;
+import gtna.routing.Route;
+import gtna.routing.RoutingAlgorithm;
+import gtna.routing.RoutingAlgorithmImpl;
 
 import java.util.Random;
 
@@ -45,38 +49,27 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RingIDSpace implements IDSpace {
-	private RingPartition[] partitions;
+public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
+	private IDSpace idSpace;
 
-	public RingIDSpace(RingPartition[] partitions) {
-		this.partitions = partitions;
+	public Greedy() {
+		super("GREEDY", new String[] {}, new String[] {});
 	}
 
 	@Override
-	public Partition[] getPartitions() {
-		return this.partitions;
-	}
-
-	@Override
-	public void setPartitions(Partition[] partitions) {
-		this.partitions = (RingPartition[]) partitions;
-	}
-
-	@Override
-	public RingID randomID(Random rand) {
-		return RingID.rand(rand);
-	}
-
-	@Override
-	public boolean write(String filename) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public GraphProperty read(String filename) {
+	public Route route(Graph graph, Node start, ID target, Random rand) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean applicable(Graph graph) {
+		return graph.hasProperty("ID_SPACE");
+	}
+
+	@Override
+	public void preprocess(Graph graph) {
+		this.idSpace = (IDSpace) graph.getProperty("ID_SPACE");
 	}
 
 }

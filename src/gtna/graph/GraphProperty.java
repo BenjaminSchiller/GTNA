@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * RingIDSpace.java
+ * GraphProperty.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,50 +33,14 @@
  * ---------------------------------------
  *
  */
-package gtna.id.ring;
-
-import gtna.graph.GraphProperty;
-import gtna.id.IDSpace;
-import gtna.id.Partition;
-
-import java.util.Random;
+package gtna.graph;
 
 /**
  * @author benni
  * 
  */
-public class RingIDSpace implements IDSpace {
-	private RingPartition[] partitions;
+public interface GraphProperty {
+	public boolean write(String filename);
 
-	public RingIDSpace(RingPartition[] partitions) {
-		this.partitions = partitions;
-	}
-
-	@Override
-	public Partition[] getPartitions() {
-		return this.partitions;
-	}
-
-	@Override
-	public void setPartitions(Partition[] partitions) {
-		this.partitions = (RingPartition[]) partitions;
-	}
-
-	@Override
-	public RingID randomID(Random rand) {
-		return RingID.rand(rand);
-	}
-
-	@Override
-	public boolean write(String filename) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public GraphProperty read(String filename) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	public GraphProperty read(String filename);
 }

@@ -35,6 +35,7 @@
  */
 package gtna.id.ring;
 
+import gtna.graph.GraphProperty;
 import gtna.id.IDSpace;
 import gtna.id.Partition;
 
@@ -64,6 +65,18 @@ public class RingIDSpaceSimple implements IDSpace {
 	@Override
 	public RingID randomID(Random rand) {
 		return this.partitions[rand.nextInt(this.partitions.length)].getId();
+	}
+
+	@Override
+	public boolean write(String filename) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public GraphProperty read(String filename) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
