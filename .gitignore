@@ -4,6 +4,7 @@ plots
 temp
 resources
 src/gtna/GTNA2.java
+src/gtna/NodesTest.java
 #src/gtna/IDSorting.java
 bin
 

@@ -41,14 +41,12 @@ import gtna.graph.Node;
 import gtna.id.IDSpace;
 import gtna.id.Partition;
 import gtna.networks.Network;
-import gtna.networks.canonical.Complete;
-import gtna.networks.canonical.Ring;
-import gtna.networks.canonical.Star;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.Greedy;
+import gtna.routing.greedy.GreedyBacktracking;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.util.Config;
@@ -93,17 +91,15 @@ public class NodesTest {
 
 		Transformation t1 = new RandomRingIDSpaceSimple();
 		Transformation[] t = new Transformation[] { t1 };
-		RoutingAlgorithm r = new Greedy();
-		int nodes = 100;
-		Network nw0 = new ReadableFile("SPI", "spi",
-				"./resources/SPI-3-LCC/2010-08.spi.txt", r, t);
-		Network nw1 = new ErdosRenyi(nodes, 10, true, r, t);
-		Network nw2 = new Complete(nodes, r, t);
-		Network nw3 = new Star(nodes, r, t);
-		Network nw4 = new Ring(nodes, r, t);
-		Network[] nw = new Network[] { nw0 };
+		RoutingAlgorithm r1 = new Greedy();
+		RoutingAlgorithm r2 = new GreedyBacktracking();
+		Network nw1 = new ReadableFile("SPI", "spi",
+				"./resources/SPI-3-LCC/2010-08.spi.txt", r1, t);
+		Network nw2 = new ReadableFile("SPI", "spi",
+				"./resources/SPI-3-LCC/2010-08.spi.txt", r2, t);
+		Network[] nw = new Network[] { nw1, nw2 };
 
-		Series[] s = Series.generate(nw, 1);
+		Series[] s = Series.generate(nw, 10);
 		Plot.multiAvg(s, "multi/");
 		Plot.singlesAvg(s, "singles/");
 	}
