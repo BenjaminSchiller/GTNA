@@ -69,12 +69,14 @@ public class GreedyBacktracking extends RoutingAlgorithmImpl implements
 		while (this.p[start].contains(target)) {
 			target = this.idSpace.randomID(rand);
 		}
+		System.out.println("\n\n");
 		return this.route(new ArrayList<Integer>(), start, target, rand,
 				graph.getNodes(), new HashMap<Integer, Integer>());
 	}
 
 	private Route route(ArrayList<Integer> route, int current, ID target,
 			Random rand, Node[] nodes, HashMap<Integer, Integer> from) {
+		System.out.println("=> " + current);
 		route.add(current);
 		if (this.idSpace.getPartitions()[current].contains(target)) {
 			return new RouteImpl(route, true);
@@ -91,12 +93,20 @@ public class GreedyBacktracking extends RoutingAlgorithmImpl implements
 			}
 		}
 		if (minNode == -1 && from.containsKey(current)) {
+			System.out.println("BT");
 			return this.route(route, from.get(current), target, rand, nodes,
 					from);
 		} else if (minNode == -1) {
+			System.out.println("failed @ " + route.size() + " / " + from.size());
+			System.out.println("    current = " + current);
+			for(int i=0; i<route.size(); i++){
+				System.out.print("  " + route.get(i) + "/" + from.containsKey(current));
+			}
+			System.out.println("");
 			return new RouteImpl(route, false);
 		}
-		from.put(current, minNode);
+		System.out.println("    " + current + " => " + minNode);
+		from.put(minNode, current);
 		return this.route(route, minNode, target, rand, nodes, from);
 	}
 

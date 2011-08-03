@@ -93,13 +93,15 @@ public class NodesTest {
 		Transformation[] t = new Transformation[] { t1 };
 		RoutingAlgorithm r1 = new Greedy();
 		RoutingAlgorithm r2 = new GreedyBacktracking();
-		Network nw1 = new ReadableFile("SPI", "spi",
-				"./resources/SPI-3-LCC/2010-08.spi.txt", r1, t);
-		Network nw2 = new ReadableFile("SPI", "spi",
-				"./resources/SPI-3-LCC/2010-08.spi.txt", r2, t);
+		// Network nw1 = new ReadableFile("SPI", "spi",
+		// "./resources/SPI-3-LCC/2010-08.spi.txt", r1, t);
+		// Network nw2 = new ReadableFile("SPI", "spi",
+		// "./resources/SPI-3-LCC/2010-08.spi.txt", r2, t);
+		Network nw1 = new ErdosRenyi(100, 10, true, r1, t);
+		Network nw2 = new ErdosRenyi(100, 10, true, r2, t);
 		Network[] nw = new Network[] { nw1, nw2 };
 
-		Series[] s = Series.generate(nw, 100);
+		Series[] s = Series.generate(nw, 1);
 		Plot.multiAvg(s, "multi/");
 		Plot.singlesAvg(s, "singles/");
 	}
