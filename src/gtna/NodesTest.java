@@ -92,7 +92,7 @@ public class NodesTest {
 		Transformation t1 = new RandomRingIDSpaceSimple();
 		Transformation[] t = new Transformation[] { t1 };
 		RoutingAlgorithm r1 = new Greedy();
-		RoutingAlgorithm r2 = new GreedyBacktracking();
+		RoutingAlgorithm r2 = new GreedyBacktracking(10);
 		// Network nw1 = new ReadableFile("SPI", "spi",
 		// "./resources/SPI-3-LCC/2010-08.spi.txt", r1, t);
 		// Network nw2 = new ReadableFile("SPI", "spi",

@@ -57,14 +57,22 @@ public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 
 	private Partition[] p;
 
+	private int ttl;
+
 	public Greedy() {
 		super("GREEDY", new String[] {}, new String[] {});
+		this.ttl = Integer.MAX_VALUE;
+	}
+
+	public Greedy(int ttl) {
+		super("GREEDY", new String[] { "TTL" }, new String[] { "" + ttl });
+		this.ttl = ttl;
 	}
 
 	@Override
 	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
 		ID target = this.idSpace.randomID(rand);
-		while(this.p[start].contains(target)){
+		while (this.p[start].contains(target)) {
 			target = this.idSpace.randomID(rand);
 		}
 		return this.route(new ArrayList<Integer>(), start, target, rand,
@@ -76,6 +84,9 @@ public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 		route.add(current);
 		if (this.idSpace.getPartitions()[current].contains(target)) {
 			return new RouteImpl(route, true);
+		}
+		if (route.size() > this.ttl) {
+			return new RouteImpl(route, false);
 		}
 		double currentDist = this.idSpace.getPartitions()[current]
 				.distance(target);
