@@ -33,7 +33,7 @@
  * Changes since 2011-05-17
  * ---------------------------------------
 */
-package gtna.communities;
+package gtna.communitiesOld;
 
 public enum Role {
 //    R1 ("Ultra-Peripheral"),
