@@ -42,11 +42,12 @@ import gtna.id.IDSpace;
 import gtna.id.Partition;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
-import gtna.networks.util.ReadableFile;
+import gtna.networks.util.DescriptionWrapper;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.Greedy;
 import gtna.routing.greedy.GreedyBacktracking;
+import gtna.routing.lookahead.Lookahead;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.util.Config;
@@ -91,19 +92,27 @@ public class NodesTest {
 
 		Transformation t1 = new RandomRingIDSpaceSimple();
 		Transformation[] t = new Transformation[] { t1 };
-		RoutingAlgorithm r1 = new Greedy();
-		RoutingAlgorithm r2 = new GreedyBacktracking(10);
+		RoutingAlgorithm r1 = new Greedy(100);
+		RoutingAlgorithm r2 = new GreedyBacktracking(100);
+		RoutingAlgorithm r3 = new Lookahead(100);
 		// Network nw1 = new ReadableFile("SPI", "spi",
 		// "./resources/SPI-3-LCC/2010-08.spi.txt", r1, t);
 		// Network nw2 = new ReadableFile("SPI", "spi",
 		// "./resources/SPI-3-LCC/2010-08.spi.txt", r2, t);
-		Network nw1 = new ErdosRenyi(100, 10, true, r1, t);
-		Network nw2 = new ErdosRenyi(100, 10, true, r2, t);
-		Network[] nw = new Network[] { nw1, nw2 };
+		Network nw_1 = new ErdosRenyi(1000, 20, true, r1, t);
+		Network nw_2 = new ErdosRenyi(1000, 20, true, r2, t);
+		Network nw_3 = new ErdosRenyi(1000, 20, true, r3, t);
+		Network nw1 = new DescriptionWrapper(nw_1, "Greedy");
+		Network nw2 = new DescriptionWrapper(nw_2, "Backtracking");
+		Network nw3 = new DescriptionWrapper(nw_3, "Lookahead");
+		Network[] nw = new Network[] { nw1, nw2, nw3 };
+		Network[][] nwnw = new Network[][] { new Network[] { nw1 },
+				new Network[] { nw2 }, new Network[] { nw3 } };
 
-		Series[] s = Series.generate(nw, 1);
-		Plot.multiAvg(s, "multi/");
-		Plot.singlesAvg(s, "singles/");
+		Series[] s1 = Series.generate(nw, 1);
+		Series[][] s2 = Series.get(nwnw);
+		Plot.multiAvg(s1, "multi/");
+		Plot.singlesAvg(s2, "singles/");
 	}
 
 	private static void testID() {

@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.routing.greedy;
+package gtna.routing.lookahead;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -46,29 +46,27 @@ import gtna.routing.RoutingAlgorithm;
 import gtna.routing.RoutingAlgorithmImpl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 /**
  * @author benni
  * 
  */
-public class GreedyBacktracking extends RoutingAlgorithmImpl implements
-		RoutingAlgorithm {
+public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 	private IDSpace idSpace;
 
 	private Partition[] p;
 
 	private int ttl;
 
-	public GreedyBacktracking() {
-		super("GREEDY_BACKTRACKING", new String[] {}, new String[] {});
+	public Lookahead() {
+		super("LOOKAHEAD", new String[] {}, new String[] {});
 		this.ttl = Integer.MAX_VALUE;
 	}
 
-	public GreedyBacktracking(int ttl) {
-		super("GREEDY_BACKTRACKING", new String[] { "TTL" }, new String[] { ""
-				+ ttl });
+	public Lookahead(int ttl) {
+		super("LOOKAHEAD", new String[] { "TTL" }, new String[] { "" + ttl });
 		this.ttl = ttl;
 	}
 
@@ -79,16 +77,17 @@ public class GreedyBacktracking extends RoutingAlgorithmImpl implements
 			target = this.idSpace.randomID(rand);
 		}
 		return this.route(new ArrayList<Integer>(), start, target, rand,
-				graph.getNodes(), new HashMap<Integer, Integer>());
+				graph.getNodes(), new HashSet<Integer>());
 	}
 
 	private Route route(ArrayList<Integer> route, int current, ID target,
-			Random rand, Node[] nodes, HashMap<Integer, Integer> from) {
+			Random rand, Node[] nodes, HashSet<Integer> seen) {
 		route.add(current);
+		seen.add(current);
 		if (this.idSpace.getPartitions()[current].contains(target)) {
 			return new RouteImpl(route, true);
 		}
-		if (route.size() > ttl) {
+		if (route.size() > this.ttl) {
 			return new RouteImpl(route, false);
 		}
 		double currentDist = this.idSpace.getPartitions()[current]
@@ -97,19 +96,24 @@ public class GreedyBacktracking extends RoutingAlgorithmImpl implements
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
 			double dist = this.p[out].distance(target);
-			if (dist < minDist && dist < currentDist && !from.containsKey(out)) {
+			if (dist < minDist && dist < currentDist) {
 				minDist = dist;
 				minNode = out;
+			} else {
+				for (int lookahead : nodes[out].getOutgoingEdges()) {
+					dist = this.p[lookahead].distance(target);
+					if (dist < minDist && dist < currentDist
+							&& !seen.contains(out)) {
+						minDist = dist;
+						minNode = out;
+					}
+				}
 			}
 		}
-		if (minNode == -1 && from.containsKey(current)) {
-			return this.route(route, from.get(current), target, rand, nodes,
-					from);
-		} else if (minNode == -1) {
+		if (minNode == -1) {
 			return new RouteImpl(route, false);
 		}
-		from.put(minNode, current);
-		return this.route(route, minNode, target, rand, nodes, from);
+		return this.route(route, minNode, target, rand, nodes, seen);
 	}
 
 	@Override
