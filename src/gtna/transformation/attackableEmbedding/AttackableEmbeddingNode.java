@@ -21,45 +21,52 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * LMCAttackerConvergence.java
+ * SortingNodeImpl.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
  * Original Author: "Benjamin Schiller";
- * Contributors:    -;
+ * Contributors:    "Stefanie Roos";
  *
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2011-06-14 : v1 (BS)
  *
  */
-package gtna.transformationOld.embedding.lmc;
+package gtna.transformation.attackableEmbedding;
 
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-// TODO reimplement LMCAttackerConvergence
-public class LMCAttackerConvergence {
-	// public class LMCAttackerConvergence extends LMCNode {
+// TODO reimplement EmbeddingNode
+public abstract class AttackableEmbeddingNode {
+	// public abstract class EmbeddingNode extends RingNode {
 	//
-	// public LMCAttackerConvergence(int index, double pos, LMC lmc) {
-	// super(index, pos, lmc);
+	// protected HashMap<EmbeddingNode, Integer> position;
+	//
+	// protected double[] knownIDs;
+	//
+	// public EmbeddingNode(int index, double pos) {
+	// super(index, pos);
 	// }
 	//
 	// /**
-	// * select a random ID
+	// * must be called after creating the outgoing edges of this node
 	// */
-	// public void turn(Random rand) {
-	// this.getID().pos = rand.nextDouble();
+	// public void initKnownIDs() {
+	// this.position = new HashMap<EmbeddingNode, Integer>(this.out().length);
+	// Node[] out = this.out();
+	// this.knownIDs = new double[out().length];
+	// for (int i = 0; i < out.length; i++) {
+	// this.position.put((AttackableEmbeddingNode) out[i], i);
+	// }
 	// }
 	//
-	// /**
-	// * return a random ID
-	// */
-	// protected double ask(LMCNode caller, Random rand) {
-	// return rand.nextDouble();
-	// }
+	// public abstract void updateNeighbors(Random rand);
+	//
+	// public abstract void turn(Random rand);
 
 }

@@ -34,16 +34,16 @@
  * 2011-06-14 : v1 (BS)
  *
  */
-package gtna.transformationOld.embedding;
-
+package gtna.transformation.attackableEmbedding;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
 // TODO reimplement Embedding
-public class Embedding {
-	// public abstract class Embedding extends TransformationImpl implements
+public class AttackableEmbedding {
+	// public abstract class AttackableEmbedding extends TransformationImpl
+	// implements
 	// Transformation {
 	//
 	// protected int iterations;
@@ -65,8 +65,9 @@ public class Embedding {
 	//
 	// public Graph transform(Graph g) {
 	// Random rand = new Random();
-	// EmbeddingNode[] nodes = this.generateNodes(g, rand);
-	// EmbeddingNode[] selectionSet = this.generateSelectionSet(nodes, rand);
+	// AttackableEmbeddingNode[] nodes = this.generateNodes(g, rand);
+	// AttackableEmbeddingNode[] selectionSet = this.generateSelectionSet(nodes,
+	// rand);
 	// for (int i = 0; i < this.iterations * selectionSet.length; i++) {
 	// int index = rand.nextInt(selectionSet.length);
 	// if (selectionSet[index].out().length > 0) {
@@ -87,7 +88,8 @@ public class Embedding {
 	// * PRNG
 	// * @return set of SortingNodes generated from the input graph
 	// */
-	// protected abstract EmbeddingNode[] generateNodes(Graph g, Random rand);
+	// protected abstract AttackableEmbeddingNode[] generateNodes(Graph g,
+	// Random rand);
 	//
 	// /**
 	// * Generates a selection set of all nodes that contains every node that
@@ -101,9 +103,8 @@ public class Embedding {
 	// * @return selection set of all nodes containing every node that should
 	// * perform turn actions
 	// */
-	// protected abstract EmbeddingNode[] generateSelectionSet(EmbeddingNode[]
-	// nodes,
-	// Random rand);
+	// protected abstract AttackableEmbeddingNode[] generateSelectionSet(
+	// AttackableEmbeddingNode[] nodes, Random rand);
 	//
 	// /**
 	// * generates a set of unique nodes at uniformly random
@@ -116,8 +117,8 @@ public class Embedding {
 	// * PRNG
 	// * @return set of unique nodes selected uniformly at random
 	// */
-	// protected HashSet<Node> selectNodesRandomly(Node[] nodes,
-	// int number, Random rand) {
+	// protected HashSet<Node> selectNodesRandomly(Node[] nodes, int number,
+	// Random rand) {
 	// HashSet<Node> attackers = new HashSet<Node>();
 	// while (attackers.size() < number) {
 	// int index = rand.nextInt(nodes.length);
@@ -137,8 +138,8 @@ public class Embedding {
 	// * PRNG
 	// * @return set of the highest degree nodes from the given list
 	// */
-	// protected HashSet<Node> selectNodesByDegreeDesc(Node[] nodes,
-	// int number, Random rand) {
+	// protected HashSet<Node> selectNodesByDegreeDesc(Node[] nodes, int number,
+	// Random rand) {
 	// Node[] sorted = NodeSorting.degreeDesc(nodes, rand);
 	// HashSet<Node> attackers = new HashSet<Node>();
 	// for (int i = 0; i < number; i++) {
@@ -158,8 +159,8 @@ public class Embedding {
 	// * PRNG
 	// * @return set of lowest degree nodes from the given list
 	// */
-	// protected HashSet<Node> selectNodesByDegreeAsc(Node[] nodes,
-	// int number, Random rand) {
+	// protected HashSet<Node> selectNodesByDegreeAsc(Node[] nodes, int number,
+	// Random rand) {
 	// Node[] sorted = NodeSorting.degreeDesc(nodes, rand);
 	// HashSet<Node> attackers = new HashSet<Node>();
 	// for (int i = 0; i < number; i++) {
@@ -185,8 +186,8 @@ public class Embedding {
 	// * @return set of nodes within the bounds of the given minimum and maximum
 	// * degree
 	// */
-	// protected HashSet<Node> selectNodesByDegree(Node[] nodes,
-	// int number, Random rand, int min, int max) {
+	// protected HashSet<Node> selectNodesByDegree(Node[] nodes, int number,
+	// Random rand, int min, int max) {
 	// ArrayList<Node> potential = new ArrayList<Node>();
 	// for (int i = 0; i < nodes.length; i++) {
 	// int d = nodes[i].out().length + nodes[i].in().length;
@@ -203,8 +204,8 @@ public class Embedding {
 	// return attackers;
 	// }
 	//
-	// protected HashSet<Node> selectNodesAroundMedian(Node[] nodes,
-	// int number, Random rand, int setSize) {
+	// protected HashSet<Node> selectNodesAroundMedian(Node[] nodes, int number,
+	// Random rand, int setSize) {
 	// Node[] sorted = NodeSorting.degreeDesc(nodes, rand);
 	// int median = sorted[sorted.length / 2].out().length
 	// + sorted[sorted.length / 2].in().length;
@@ -252,12 +253,12 @@ public class Embedding {
 	// * @param nodes
 	// * nodes to add edges for
 	// */
-	// protected void init(Graph g, EmbeddingNode[] nodes) {
+	// protected void init(Graph g, AttackableEmbeddingNode[] nodes) {
 	// Edges edges = new Edges(nodes, g.edges);
 	// Edge[] oldEdges = g.edges();
 	// for (int i = 0; i < oldEdges.length; i++) {
-	// EmbeddingNode src = nodes[oldEdges[i].src.index()];
-	// EmbeddingNode dst = nodes[oldEdges[i].dst.index()];
+	// AttackableEmbeddingNode src = nodes[oldEdges[i].src.index()];
+	// AttackableEmbeddingNode dst = nodes[oldEdges[i].dst.index()];
 	// edges.add(src, dst);
 	// }
 	// edges.fill();

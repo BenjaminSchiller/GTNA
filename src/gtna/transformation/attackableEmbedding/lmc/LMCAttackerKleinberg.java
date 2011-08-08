@@ -21,52 +21,54 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * SortingNodeImpl.java
+ * LMCAttackerKleinberg.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
  * Original Author: "Benjamin Schiller";
- * Contributors:    "Stefanie Roos";
+ * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- * 2011-06-14 : v1 (BS)
  *
  */
-package gtna.transformationOld.embedding;
+package gtna.transformation.attackableEmbedding.lmc;
 
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-// TODO reimplement EmbeddingNode
-public abstract class EmbeddingNode {
-	// public abstract class EmbeddingNode extends RingNode {
+// TODO reimplement LMCAttackerKleinberg
+public class LMCAttackerKleinberg {
+	// public class LMCAttackerKleinberg extends LMCNode {
 	//
-	// protected HashMap<EmbeddingNode, Integer> position;
-	//
-	// protected double[] knownIDs;
-	//
-	// public EmbeddingNode(int index, double pos) {
-	// super(index, pos);
+	// public LMCAttackerKleinberg(int index, double pos, LMC lmc) {
+	// super(index, pos, lmc);
 	// }
 	//
 	// /**
-	// * must be called after creating the outgoing edges of this node
+	// * select ID at longest distance to any node
 	// */
-	// public void initKnownIDs() {
-	// this.position = new HashMap<EmbeddingNode, Integer>(this.out().length);
-	// Node[] out = this.out();
-	// this.knownIDs = new double[out().length];
-	// for (int i = 0; i < out.length; i++) {
-	// this.position.put((EmbeddingNode) out[i], i);
-	// }
+	// public void turn(Random rand) {
+	// double[] neighbors = this.knownIDs.clone();
+	// this.getID().pos = (SwappingAttackerKleinberg.maxMiddle(neighbors) + rand
+	// .nextDouble()
+	// * this.lmc.delta) % 1.0;
 	// }
 	//
-	// public abstract void updateNeighbors(Random rand);
-	//
-	// public abstract void turn(Random rand);
+	// /**
+	// * return ID close to neighbor to keep it from changing IDs
+	// */
+	// protected double ask(LMCNode caller, Random rand) {
+	// int index = this.position.get(caller);
+	// if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
+	// return (this.knownIDs[index] + this.lmc.delta
+	// * (1.0 + rand.nextDouble())) % 1.0;
+	// } else {
+	// return (this.knownIDs[index] + this.lmc.delta * rand.nextDouble()) % 1.0;
+	// }
+	// }
 
 }

@@ -34,7 +34,7 @@
  * 2011-06-14 : v1 (BS)
  *
  */
-package gtna.transformationOld.embedding.swapping;
+package gtna.transformation.attackableEmbedding.swapping;
 
 
 /**

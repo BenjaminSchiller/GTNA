@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * SwappingAttackerConvergence.java
+ * SwappingAttackerKleinberg.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,58 +33,69 @@
  * ---------------------------------------
  *
  */
-package gtna.transformationOld.embedding.swapping;
+package gtna.transformation.attackableEmbedding.swapping;
 
 
 /**
- * @author "Benjamin Schiller" idea: offer random ids to prevent convergence
+ * @author "Benjamin Schiller"
+ * 
  */
-// TODO reimplement SwappingAttackerConvergence
-public class SwappingAttackerConvergence{
-	// public class SwappingAttackerConvergence extends SwappingNode {
+// TODO reimplement SwappingAttackerKleinberg
+public class SwappingAttackerKleinberg{
+	// public class SwappingAttackerKleinberg extends SwappingNode {
 	//
-	// public SwappingAttackerConvergence(int index, double pos, Swapping
+	// public SwappingAttackerKleinberg(int index, double pos, Swapping
 	// swapping) {
 	// super(index, pos, swapping);
 	// }
 	//
 	// /**
-	// * offer randomly chosen id to a random node (TTL taken randomly from [1,
-	// 6]
-	// * use neighborhood at furthest distance (id + 0.5 + \delta) to make
-	// * receiving node accept it at all times
+	// * select ID at biggest distance to any neighbor; send no swap request,
+	// * since attacker could even offer a better ID (no knowledge)
 	// */
 	// public void turn(Random rand) {
-	// // select random id
-	// this.getID().pos = rand.nextDouble();
-	//
-	// // offer random id
-	// int ttl = rand.nextInt(6) + 1;
-	// double id = rand.nextDouble();
-	// double[] neighbors = new double[this.out().length];
-	// for (int i = 0; i < neighbors.length; i++) {
-	// neighbors[i] = (id + 0.5 + rand.nextDouble() * this.swapping.delta) %
-	// 1.0;
-	// }
-	// Node[] out = this.out();
-	// int index = rand.nextInt(out.length);
-	// ((SwappingNode) out[index]).swap(id, neighbors, ttl, rand);
+	// double[] neighbors = this.knownIDs.clone();
+	// this.getID().pos = (maxMiddle(neighbors) + rand.nextDouble()
+	// * this.swapping.delta) % 1.0;
 	// }
 	//
 	// /**
-	// * return randomly chosen id
+	// * return ID close to current requester's ID to keep it from changing its
+	// ID
 	// */
 	// protected double ask(SwappingNode caller, Random rand) {
-	// return rand.nextDouble();
+	// int index = this.position.get(caller);
+	// double id = (this.knownIDs[index] + rand.nextDouble()
+	// * this.swapping.delta) % 1.0;
+	// return id;
 	// }
 	//
 	// /**
-	// * return randomly chosen id
+	// * give ID that is extremely bad for caller: biggest distance to any
+	// * neighbor node
 	// */
 	// protected double swap(double callerID, double[] callerNeighborIDs, int
 	// ttl,
 	// Random rand) {
-	// return rand.nextDouble();
+	// return (maxMiddle(callerNeighborIDs) + rand.nextDouble()
+	// * this.swapping.delta) % 1.0;
+	// }
+	//
+	// public static double maxMiddle(double[] values) {
+	// Arrays.sort(values);
+	// double max = 1 - values[values.length - 1] + values[0];
+	// int index = values.length - 1;
+	// for (int i = 0; i < values.length - 1; i++) {
+	// double a = values[i];
+	// double b = values[i + 1];
+	// double dist = b - a;
+	// if (dist > max) {
+	// max = dist;
+	// index = i;
+	// }
+	// }
+	// double middle = (values[index] + max / 2) % 1.0;
+	// return middle;
 	// }
 
 }

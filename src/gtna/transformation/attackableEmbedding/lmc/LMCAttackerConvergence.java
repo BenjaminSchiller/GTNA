@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * LMCAttackerKleinberg.java
+ * LMCAttackerConvergence.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,42 +33,33 @@
  * ---------------------------------------
  *
  */
-package gtna.transformationOld.embedding.lmc;
+package gtna.transformation.attackableEmbedding.lmc;
 
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-// TODO reimplement LMCAttackerKleinberg
-public class LMCAttackerKleinberg {
-	// public class LMCAttackerKleinberg extends LMCNode {
+// TODO reimplement LMCAttackerConvergence
+public class LMCAttackerConvergence {
+	// public class LMCAttackerConvergence extends LMCNode {
 	//
-	// public LMCAttackerKleinberg(int index, double pos, LMC lmc) {
+	// public LMCAttackerConvergence(int index, double pos, LMC lmc) {
 	// super(index, pos, lmc);
 	// }
 	//
 	// /**
-	// * select ID at longest distance to any node
+	// * select a random ID
 	// */
 	// public void turn(Random rand) {
-	// double[] neighbors = this.knownIDs.clone();
-	// this.getID().pos = (SwappingAttackerKleinberg.maxMiddle(neighbors) + rand
-	// .nextDouble()
-	// * this.lmc.delta) % 1.0;
+	// this.getID().pos = rand.nextDouble();
 	// }
 	//
 	// /**
-	// * return ID close to neighbor to keep it from changing IDs
+	// * return a random ID
 	// */
 	// protected double ask(LMCNode caller, Random rand) {
-	// int index = this.position.get(caller);
-	// if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
-	// return (this.knownIDs[index] + this.lmc.delta
-	// * (1.0 + rand.nextDouble())) % 1.0;
-	// } else {
-	// return (this.knownIDs[index] + this.lmc.delta * rand.nextDouble()) % 1.0;
-	// }
+	// return rand.nextDouble();
 	// }
 
 }
