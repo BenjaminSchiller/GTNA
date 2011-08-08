@@ -38,7 +38,7 @@ package gtna;
 import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.networks.Network;
-import gtna.networks.p2p.CAN;
+import gtna.networksOld.p2p.CAN;
 import gtna.plot.Plot;
 import gtna.util.Config;
 import gtna.util.Stats;

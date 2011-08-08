@@ -34,7 +34,7 @@
  * 2011-05-18 : Version 1 (BS)
  *
  */
-package gtna.networks.snapshot;
+package gtna.networksOld.snapshot;
 
 /**
  * @author "Benjamin Schiller"
