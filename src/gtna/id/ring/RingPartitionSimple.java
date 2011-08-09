@@ -68,6 +68,16 @@ public class RingPartitionSimple implements Partition {
 		return "RingParitionSimple(" + this.id.getPosition() + ")";
 	}
 
+	public RingPartitionSimple(String stringRepresentation) {
+		stringRepresentation = stringRepresentation.replace("(", "").replace(
+				")", "");
+		this.id = new RingID(Double.parseDouble(stringRepresentation));
+	}
+
+	public String getStringRepresentation() {
+		return "(" + this.id.getPosition() + ")";
+	}
+
 	/**
 	 * @return the id
 	 */

@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * RingIDSpaceSimple.java
+ * Communities.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,45 +33,45 @@
  * ---------------------------------------
  *
  */
-package gtna.id.ring;
+package gtna.communities;
 
 import gtna.graph.Graph;
-import gtna.id.IDSpace;
-import gtna.id.Partition;
+import gtna.graph.GraphProperty;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
 import gtna.util.Config;
 
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author benni
  * 
  */
-public class RingIDSpaceSimple implements IDSpace {
-	private RingPartitionSimple[] partitions;
+public class Communities implements GraphProperty {
+	private Community[] communities;
 
-	public RingIDSpaceSimple() {
-		this.partitions = new RingPartitionSimple[] {};
+	public Communities() {
+		this.communities = new Community[] {};
 	}
 
-	public RingIDSpaceSimple(RingPartitionSimple[] partitions) {
-		this.partitions = partitions;
+	public Communities(HashMap<Integer, Community> communities) {
+		this.communities = new Community[communities.size()];
+		int index = 0;
+		for (Community c : communities.values()) {
+			this.communities[index++] = c;
+		}
 	}
 
-	@Override
-	public Partition[] getPartitions() {
-		return this.partitions;
+	public Communities(ArrayList<Community> communities) {
+		this.communities = new Community[communities.size()];
+		for (int i = 0; i < communities.size(); i++) {
+			this.communities[i] = communities.get(i);
+		}
 	}
 
-	@Override
-	public void setPartitions(Partition[] partitions) {
-		this.partitions = (RingPartitionSimple[]) partitions;
-	}
-
-	@Override
-	public RingID randomID(Random rand) {
-		return this.partitions[rand.nextInt(this.partitions.length)].getId();
+	public Communities(Community[] communities) {
+		this.communities = communities;
 	}
 
 	@Override
@@ -86,14 +86,15 @@ public class RingIDSpaceSimple implements IDSpace {
 		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
 		fw.writeln(key);
 
-		// # OF PARTITIONS
-		fw.writeComment("Partitions");
-		fw.writeln(this.partitions.length);
+		// # OF COMMUNITIES
+		fw.writeComment("Communities");
+		fw.writeln(this.communities.length);
 
-		// PARTITIONS
-		int index = 0;
-		for (RingPartitionSimple p : this.partitions) {
-			fw.writeln(index++ + ":" + p.getStringRepresentation());
+		fw.writeln();
+
+		// LIST OF COMMUNITIES
+		for (Community community : this.communities) {
+			fw.writeln(community.getStringRepresentation());
 		}
 
 		return fw.close();
@@ -109,21 +110,19 @@ public class RingIDSpaceSimple implements IDSpace {
 		// KEYS
 		String key = fr.readLine();
 
-		// # OF PARTITIONS
-		int partitions = Integer.parseInt(fr.readLine());
-		this.partitions = new RingPartitionSimple[partitions];
+		// # OF COMMUNITIES
+		int communities = Integer.parseInt(fr.readLine());
+		this.communities = new Community[communities];
 
-		// PARTITIONS
+		// COMMUNITIES
 		String line = null;
+		int index = 0;
 		while ((line = fr.readLine()) != null) {
-			String[] temp = line.split(":");
-			int index = Integer.parseInt(temp[0]);
-			this.partitions[index++] = new RingPartitionSimple(temp[1]);
+			this.communities[index++] = new Community(line);
 		}
 
 		fr.close();
 
 		graph.addProperty(key, this);
 	}
-
 }

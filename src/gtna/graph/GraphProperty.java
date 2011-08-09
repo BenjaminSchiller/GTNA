@@ -40,7 +40,7 @@ package gtna.graph;
  * 
  */
 public interface GraphProperty {
-	public boolean write(String filename);
+	public boolean write(String filename, String key);
 
-	public GraphProperty read(String filename);
+	public void read(String filename, Graph graph);
 }

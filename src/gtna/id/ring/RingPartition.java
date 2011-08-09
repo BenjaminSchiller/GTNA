@@ -54,7 +54,7 @@ public class RingPartition implements Partition {
 
 	@Override
 	public double distance(ID id) {
-		if(this.contains(id)){
+		if (this.contains(id)) {
 			return 0;
 		}
 		return Math.min(this.start.distance((RingID) id),
@@ -84,6 +84,19 @@ public class RingPartition implements Partition {
 	public String toString() {
 		return "RingPartition]" + this.start.getPosition() + ", "
 				+ this.end.getPosition() + "]";
+	}
+
+	public RingPartition(String stringRepresentation) {
+		stringRepresentation = stringRepresentation.replace("(", "").replace(
+				"]", "");
+		String[] temp = stringRepresentation.split(",");
+		this.start = new RingID(Double.parseDouble(temp[0]));
+		this.end = new RingID(Double.parseDouble(temp[1]));
+	}
+
+	public String getStringRepresentation() {
+		return "(" + this.start.getPosition() + "," + this.end.getPosition()
+				+ "]";
 	}
 
 	/**

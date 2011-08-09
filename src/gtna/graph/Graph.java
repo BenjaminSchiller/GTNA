@@ -76,6 +76,10 @@ public class Graph {
 		return this.properties.get(key);
 	}
 
+	public HashMap<String, GraphProperty> getProperties() {
+		return this.properties;
+	}
+
 	public Edge[] generateEdges() {
 		int E = 0;
 		for (Node n : this.nodes) {

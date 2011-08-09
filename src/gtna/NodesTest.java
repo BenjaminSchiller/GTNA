@@ -35,8 +35,11 @@
  */
 package gtna;
 
+import gtna.communities.Communities;
+import gtna.communities.Community;
 import gtna.data.Series;
 import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.id.IDSpace;
 import gtna.id.Partition;
@@ -49,10 +52,13 @@ import gtna.routing.greedy.Greedy;
 import gtna.routing.greedy.GreedyBacktracking;
 import gtna.routing.lookahead.Lookahead;
 import gtna.transformation.Transformation;
+import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.util.Config;
 import gtna.util.Stats;
+import gtna.util.Timer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -67,7 +73,7 @@ public class NodesTest {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// testGraph();
 		// int total = 5000000;
 		// testHash(total);
@@ -80,7 +86,57 @@ public class NodesTest {
 		// testNW();
 		// testMetrics();
 		// testID();
-		testRouting();
+		// testRouting();
+		testCommunities();
+		testGraphProperties();
+	}
+
+	private static void testGraphProperties() {
+		Transformation t1 = new RandomRingIDSpace();
+		Transformation[] t = new Transformation[] { t1 };
+		Network nw_1 = new ErdosRenyi(10, 3, true, null, t);
+		Graph g1 = nw_1.generate();
+		Graph g2 = nw_1.generate();
+		for (Transformation trans : t) {
+			g1 = trans.transform(g1);
+		}
+		for (String key : g1.getProperties().keySet()) {
+			GraphProperty prop1 = g1.getProperty(key);
+			String f1 = "temp/graph-1-" + key + ".txt";
+			String f2 = "temp/graph-2-" + key + ".txt";
+			prop1.write(f1, key);
+			try {
+				GraphProperty prop2 = (GraphProperty) ClassLoader
+						.getSystemClassLoader()
+						.loadClass(
+								prop1.getClass().toString()
+										.replace("class ", "")).newInstance();
+				prop2.read(f1, g2);
+				prop2.write(f2, key);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private static void testCommunities() {
+		ArrayList<Integer> c0 = new ArrayList<Integer>();
+		c0.add(0);
+		c0.add(2);
+		c0.add(1);
+		ArrayList<Integer> c1 = new ArrayList<Integer>();
+		c1.add(3);
+		c1.add(4);
+		ArrayList<Integer> c2 = new ArrayList<Integer>();
+		Community[] cc = new Community[] { new Community(0, c0),
+				new Community(1, c1), new Community(2, c2) };
+		String key = "weoifghewg";
+		Communities c = new Communities(cc);
+		c.write("temp/c1.txt", key);
+		Graph graph = new Graph("TEST");
+		Communities cc2 = new Communities();
+		cc2.read("temp/c1.txt", graph);
+		cc2.write("temp/c2.txt", key);
 	}
 
 	private static void testRouting() {
