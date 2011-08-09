@@ -85,10 +85,6 @@ public class Roles implements GraphProperty {
 		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
 		fw.writeln(key);
 
-		// # OF ROLES
-		fw.writeComment("Roles");
-		fw.writeln(this.roles.length);
-
 		fw.writeln();
 
 		// LIST OF ROLES
@@ -109,15 +105,17 @@ public class Roles implements GraphProperty {
 		// KEYS
 		String key = fr.readLine();
 
-		// # OF ROLES
-		int roles = Integer.parseInt(fr.readLine());
-		this.roles = new Role[roles];
-
 		// ROLES
+		this.roles = new Role[7];
 		String line = null;
-		int index = 0;
 		while ((line = fr.readLine()) != null) {
-			this.roles[index++] = new Role(line);
+			Role r = new Role(line);
+			this.roles[r.getType() - 1] = r;
+		}
+		for (int i = 0; i < this.roles.length; i++) {
+			if (this.roles[i] == null) {
+				this.roles[i] = new Role((byte) (i + 1));
+			}
 		}
 
 		fr.close();
@@ -125,6 +123,10 @@ public class Roles implements GraphProperty {
 		this.computeRoleOfNodes();
 
 		graph.addProperty(key, this);
+	}
+
+	public Role getRole(byte type) {
+		return this.roles[type - 1];
 	}
 
 	/**

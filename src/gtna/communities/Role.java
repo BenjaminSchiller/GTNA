@@ -45,24 +45,28 @@ import java.util.ArrayList;
  */
 public class Role {
 	// TODO check names...
-	
+
 	public static final byte ULTRA_PERIPHERAL = 1;
-	
+
 	public static final byte PERIPHERAL = 2;
-	
+
 	public static final byte SATTELITE_CONNECTOR = 3;
-	
+
 	public static final byte KINLESS_NODE = 4;
-	
+
 	public static final byte PRINCIPAL_HUB = 5;
-	
+
 	public static final byte CONNECTOR_HUP = 6;
-	
+
 	public static final byte GLOBAL_HUB = 7;
-	
+
 	private byte type;
 
 	private int[] nodes;
+
+	public Role(byte type) {
+		this(type, new int[] {});
+	}
 
 	public Role(byte type, int[] nodes) {
 		this.type = type;
