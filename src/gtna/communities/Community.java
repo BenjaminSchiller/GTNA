@@ -105,4 +105,18 @@ public class Community {
 	public void setNodes(int[] nodes) {
 		this.nodes = nodes;
 	}
+
+	/**
+	 * @return the index
+	 */
+	public int getIndex() {
+		return this.index;
+	}
+
+	/**
+	 * @param index the index to set
+	 */
+	public void setIndex(int index) {
+		this.index = index;
+	}
 }

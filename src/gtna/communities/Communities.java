@@ -51,8 +51,11 @@ import java.util.HashMap;
 public class Communities implements GraphProperty {
 	private Community[] communities;
 
+	private int[] communityOfNode;
+
 	public Communities() {
 		this.communities = new Community[] {};
+		this.communityOfNode = new int[] {};
 	}
 
 	public Communities(HashMap<Integer, Community> communities) {
@@ -61,6 +64,7 @@ public class Communities implements GraphProperty {
 		for (Community c : communities.values()) {
 			this.communities[index++] = c;
 		}
+		this.computeCommunityOfNodes();
 	}
 
 	public Communities(ArrayList<Community> communities) {
@@ -68,10 +72,25 @@ public class Communities implements GraphProperty {
 		for (int i = 0; i < communities.size(); i++) {
 			this.communities[i] = communities.get(i);
 		}
+		this.computeCommunityOfNodes();
 	}
 
 	public Communities(Community[] communities) {
 		this.communities = communities;
+		this.computeCommunityOfNodes();
+	}
+
+	private void computeCommunityOfNodes() {
+		int sum = 0;
+		for (Community c : this.communities) {
+			sum += c.getNodes().length;
+		}
+		this.communityOfNode = new int[sum];
+		for (Community c : this.communities) {
+			for (int n : c.getNodes()) {
+				this.communityOfNode[n] = c.getIndex();
+			}
+		}
 	}
 
 	@Override
@@ -122,6 +141,8 @@ public class Communities implements GraphProperty {
 		}
 
 		fr.close();
+
+		this.computeCommunityOfNodes();
 
 		graph.addProperty(key, this);
 	}
