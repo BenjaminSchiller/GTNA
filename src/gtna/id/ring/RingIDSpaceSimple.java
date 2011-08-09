@@ -118,7 +118,7 @@ public class RingIDSpaceSimple implements IDSpace {
 		while ((line = fr.readLine()) != null) {
 			String[] temp = line.split(":");
 			int index = Integer.parseInt(temp[0]);
-			this.partitions[index++] = new RingPartitionSimple(temp[1]);
+			this.partitions[index] = new RingPartitionSimple(temp[1]);
 		}
 
 		fr.close();

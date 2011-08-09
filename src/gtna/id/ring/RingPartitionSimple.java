@@ -51,7 +51,7 @@ public class RingPartitionSimple implements Partition {
 
 	@Override
 	public double distance(ID id) {
-		return this.id.distance((RingID) id);
+		return this.id.distance(id);
 	}
 
 	@Override
