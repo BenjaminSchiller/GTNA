@@ -52,11 +52,10 @@ import gtna.routing.greedy.Greedy;
 import gtna.routing.greedy.GreedyBacktracking;
 import gtna.routing.lookahead.Lookahead;
 import gtna.transformation.Transformation;
-import gtna.transformation.id.RandomRingIDSpace;
+import gtna.transformation.id.RandomPlaneIDSpaceSimple;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.util.Config;
 import gtna.util.Stats;
-import gtna.util.Timer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,13 +85,13 @@ public class NodesTest {
 		// testNW();
 		// testMetrics();
 		// testID();
-		// testRouting();
-		testCommunities();
-		testGraphProperties();
+		testRouting();
+		// testCommunities();
+		// testGraphProperties();
 	}
 
 	private static void testGraphProperties() {
-		Transformation t1 = new RandomRingIDSpace();
+		Transformation t1 = new RandomPlaneIDSpaceSimple(2);
 		Transformation[] t = new Transformation[] { t1 };
 		Network nw_1 = new ErdosRenyi(10, 3, true, null, t);
 		Graph g1 = nw_1.generate();
@@ -146,26 +145,34 @@ public class NodesTest {
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 
-		Transformation t1 = new RandomRingIDSpaceSimple();
-		Transformation[] t = new Transformation[] { t1 };
-		RoutingAlgorithm r1 = new Greedy(100);
-		RoutingAlgorithm r2 = new GreedyBacktracking(100);
-		RoutingAlgorithm r3 = new Lookahead(100);
+		Transformation[] t1 = new Transformation[] { new RandomRingIDSpaceSimple() };
+		Transformation[] t2 = new Transformation[] { new RandomPlaneIDSpaceSimple() };
+		RoutingAlgorithm r1 = new Greedy(30);
+		RoutingAlgorithm r2 = new GreedyBacktracking(30);
+		RoutingAlgorithm r3 = new Lookahead(30);
 		// Network nw1 = new ReadableFile("SPI", "spi",
 		// "./resources/SPI-3-LCC/2010-08.spi.txt", r1, t);
 		// Network nw2 = new ReadableFile("SPI", "spi",
 		// "./resources/SPI-3-LCC/2010-08.spi.txt", r2, t);
-		Network nw_1 = new ErdosRenyi(1000, 20, true, r1, t);
-		Network nw_2 = new ErdosRenyi(1000, 20, true, r2, t);
-		Network nw_3 = new ErdosRenyi(1000, 20, true, r3, t);
-		Network nw1 = new DescriptionWrapper(nw_1, "Greedy");
-		Network nw2 = new DescriptionWrapper(nw_2, "Backtracking");
-		Network nw3 = new DescriptionWrapper(nw_3, "Lookahead");
-		Network[] nw = new Network[] { nw1, nw2, nw3 };
+		Network nw_1 = new ErdosRenyi(1000, 20, true, r1, t1);
+		Network nw_2 = new ErdosRenyi(1000, 20, true, r2, t1);
+		Network nw_3 = new ErdosRenyi(1000, 20, true, r3, t1);
+		Network nw_4 = new ErdosRenyi(1000, 20, true, r1, t2);
+		Network nw_5 = new ErdosRenyi(1000, 20, true, r2, t2);
+		Network nw_6 = new ErdosRenyi(1000, 20, true, r3, t2);
+		Network nw1 = new DescriptionWrapper(nw_1, "Greedy - 1D");
+		Network nw2 = new DescriptionWrapper(nw_4, "Greedy - 2D");
+		Network nw3 = new DescriptionWrapper(nw_2, "Backtracking - 1D");
+		Network nw4 = new DescriptionWrapper(nw_5, "Backtracking - 2D");
+		Network nw5 = new DescriptionWrapper(nw_3, "Lookahead - 1D");
+		Network nw6 = new DescriptionWrapper(nw_6, "Lookahead - 2D");
+		Network[] nw = new Network[] { nw1, nw2, nw3, nw4, nw5, nw6 };
 		Network[][] nwnw = new Network[][] { new Network[] { nw1 },
-				new Network[] { nw2 }, new Network[] { nw3 } };
+				new Network[] { nw2 }, new Network[] { nw3 },
+				new Network[] { nw4 }, new Network[] { nw5 },
+				new Network[] { nw6 } };
 
-		Series[] s1 = Series.generate(nw, 1);
+		Series[] s1 = Series.generate(nw, 5);
 		Series[][] s2 = Series.get(nwnw);
 		Plot.multiAvg(s1, "multi/");
 		Plot.singlesAvg(s2, "singles/");
