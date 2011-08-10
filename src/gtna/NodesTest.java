@@ -43,6 +43,8 @@ import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.id.IDSpace;
 import gtna.id.Partition;
+import gtna.io.GraphReader;
+import gtna.io.GraphWriter;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.util.DescriptionWrapper;
@@ -85,9 +87,24 @@ public class NodesTest {
 		// testNW();
 		// testMetrics();
 		// testID();
-		testRouting();
+		// testRouting();
 		// testCommunities();
 		// testGraphProperties();
+		testGraphIO();
+	}
+
+	private static void testGraphIO() {
+		Network nw = new ErdosRenyi(10, 3, true, null, null);
+		String fo1 = "temp/graph-old1.txt";
+		String fo2 = "temp/graph-old2.txt";
+		String f1 = "temp/graph1.txt";
+		String f2 = "temp/graph2.txt";
+		Graph g1 = nw.generate();
+		GraphWriter.writeOld(g1, fo1);
+		GraphWriter.write(g1, f1);
+		Graph g2 = GraphReader.read(f1);
+		GraphWriter.writeOld(g2, fo2);
+		GraphWriter.write(g2, f2);
 	}
 
 	private static void testGraphProperties() {

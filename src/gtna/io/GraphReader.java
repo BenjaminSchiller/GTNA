@@ -42,6 +42,42 @@ import gtna.util.Config;
 
 public class GraphReader {
 	public static Graph read(String filename) {
+		String sep1 = Config.get("GRAPH_WRITER_SEPARATOR_1");
+		String sep2 = Config.get("GRAPH_WRITER_SEPARATOR_2");
+		Filereader fr = new Filereader(filename);
+		String line = null;
+		String name = fr.readLine();
+		int V = Integer.parseInt(fr.readLine());
+		int E = Integer.parseInt(fr.readLine());
+		Graph graph = new Graph(name);
+		Node[] nodes = Node.init(V, graph);
+		Edges edges = new Edges(nodes, E);
+		while ((line = fr.readLine()) != null) {
+			String[] temp = line.split(sep1);
+			if (temp.length < 2 || temp[1].length() == 0) {
+				continue;
+			}
+			int src = Integer.parseInt(temp[0]);
+			String[] temp2 = temp[1].split(sep2);
+			for (String dst : temp2) {
+				edges.add(src, Integer.parseInt(dst));
+			}
+		}
+		edges.fill();
+		graph.setNodes(nodes);
+		fr.close();
+		return graph;
+	}
+
+	public static int nodes(String filename) {
+		Filereader fr = new Filereader(filename);
+		fr.readLine();
+		int V = Integer.parseInt(fr.readLine());
+		fr.close();
+		return V;
+	}
+
+	public static Graph readOld(String filename) {
 		String delimiter = Config.get("GRAPH_WRITER_DELIMITER");
 		Filereader fr = new Filereader(filename);
 		String line = null;
@@ -60,400 +96,4 @@ public class GraphReader {
 		fr.close();
 		return graph;
 	}
-	
-	public static int nodes(String filename){
-		Filereader fr = new Filereader(filename);
-		fr.readLine();
-		int V = Integer.parseInt(fr.readLine());
-		fr.close();
-		return V;
-	}
-	// public static final int OWN_FORMAT = 1;
-	//
-	// public static final int EDGES_ONLY_FORMAT = 2;
-	//
-	// public static final int EDGES_ONLY_STARTING_AT_1_FORMAT = 3;
-	//
-	// public static final int GML_FORMAT = 5;
-	//
-	// public static final int BIDIRECTIONAL_EDGES_ONLY_FORMAT = 6;
-	//
-	// public static final int ARBITRARY_IDS = 7;
-	//
-	// public static final int RING_NODES = 8;
-	//
-	// public static Graph read(String filename, int TYPE, String name) {
-	// Graph g = null;
-	// if (TYPE == OWN_FORMAT) {
-	// g = read(filename);
-	// } else if (TYPE == EDGES_ONLY_FORMAT) {
-	// g = edgesOnly(filename, name);
-	// } else if (TYPE == EDGES_ONLY_STARTING_AT_1_FORMAT) {
-	// g = edgesOnlyStartingAt1(filename, name);
-	// } else if (TYPE == GML_FORMAT) {
-	// g = gml(filename, name);
-	// } else if (TYPE == BIDIRECTIONAL_EDGES_ONLY_FORMAT) {
-	// g = bidirectionalEdgesOnly(filename, name);
-	// } else if (TYPE == ARBITRARY_IDS) {
-	// g = arbitraryIDs(filename, name);
-	// } else if (TYPE == RING_NODES) {
-	// g = ringNodes(filename);
-	// }
-	// return g;
-	// }
-	//
-	// public static int nodes(String filename, int TYPE) {
-	// int nodes = -1;
-	// if (TYPE == OWN_FORMAT) {
-	// nodes = nodes(filename);
-	// } else if (TYPE == EDGES_ONLY_FORMAT) {
-	// nodes = nodesEdgesOnly(filename);
-	// } else if (TYPE == EDGES_ONLY_STARTING_AT_1_FORMAT) {
-	// nodes = nodesEdgesOnlyStartingAt1(filename);
-	// } else if (TYPE == BIDIRECTIONAL_EDGES_ONLY_FORMAT) {
-	// nodes = nodesEdgesOnly(filename);
-	// } else if (TYPE == RING_NODES) {
-	// nodes = nodesRingNodes(filename);
-	// }
-	// return nodes;
-	// }
-	//
-	// public static Graph read(String filename) {
-	// Timer timer = new Timer();
-	// Filereader fr = new Filereader(filename);
-	// String name = fr.readLine();
-	// int numberOfNodes = Integer.parseInt(fr.readLine());
-	// int numberOfEdges = Integer.parseInt(fr.readLine());
-	// Node[] nodes = Node.init(numberOfNodes);
-	// Edges edges = new Edges(nodes, numberOfEdges);
-	// String line = "";
-	// while ((line = fr.readLine()) != null) {
-	// String n[] = line.split(GraphWriter.DELIMITER);
-	// int u = Integer.parseInt(n[0]);
-	// int v = Integer.parseInt(n[1]);
-	// edges.add(nodes[u], nodes[v]);
-	// }
-	// fr.close();
-	// edges.fill();
-	// timer.end();
-	// Graph graph = new Graph(name, nodes, timer);
-	// return graph;
-	// }
-	//
-	// private static int nodes(String filename) {
-	// Filereader fr = new Filereader(filename);
-	// fr.readLine();
-	// int numberOfNodes = Integer.parseInt(fr.readLine());
-	// fr.close();
-	// return numberOfNodes;
-	// }
-	//
-	// public static Graph ringNodes(String filename) {
-	// Timer timer = new Timer();
-	// Filereader fr = new Filereader(filename);
-	// String name = fr.readLine();
-	// int numberOfNodes = Integer.parseInt(fr.readLine());
-	// int numberOfEdges = Integer.parseInt(fr.readLine());
-	// RingNode[] nodes = new RingNode[numberOfNodes];
-	// for (int i = 0; i < nodes.length; i++) {
-	// nodes[i] = new RingNode(i, -1);
-	// }
-	// Edges edges = new Edges(nodes, numberOfEdges);
-	// String line = "";
-	// while ((line = fr.readLine()) != null) {
-	// String n[] = line.split(GraphWriter.DELIMITER);
-	// RingNode u = RingNode.parse(n[0]);
-	// RingNode v = RingNode.parse(n[1]);
-	// edges.add(nodes[u.index()], nodes[v.index()]);
-	// nodes[u.index()].getID().pos = u.getID().pos;
-	// nodes[v.index()].getID().pos = v.getID().pos;
-	// }
-	// fr.close();
-	// edges.fill();
-	// timer.end();
-	// Graph graph = new Graph(name, nodes, timer);
-	// return graph;
-	// }
-	//
-	// private static int nodesRingNodes(String filename) {
-	// Filereader fr = new Filereader(filename);
-	// fr.readLine();
-	// int numberOfNodes = Integer.parseInt(fr.readLine());
-	// fr.close();
-	// return numberOfNodes;
-	// }
-	//
-	// private static Graph edgesOnly(String filename, String name) {
-	// Timer timer = new Timer();
-	// String delimiter = Config.get("GRAPH_READER_EDGES_ONLY_DELIMITER");
-	// Filereader fr = new Filereader(filename);
-	// int numberOfNodes = -1;
-	// int numberOfEdges = 0;
-	// String line = "";
-	// while ((line = fr.readLine()) != null) {
-	// String[] edge = line.split(delimiter);
-	// int u = Integer.parseInt(edge[0]);
-	// int v = Integer.parseInt(edge[1]);
-	// if (u > numberOfNodes) {
-	// numberOfNodes = u;
-	// }
-	// if (v > numberOfNodes) {
-	// numberOfNodes = v;
-	// }
-	// numberOfEdges++;
-	// }
-	// numberOfNodes++;
-	// fr.close();
-	// Node[] nodes = Node.init(numberOfNodes);
-	// Edges edges = new Edges(nodes, numberOfEdges);
-	// fr = new Filereader(filename);
-	// while ((line = fr.readLine()) != null) {
-	// String[] edge = line.split(delimiter);
-	// int u = Integer.parseInt(edge[0]);
-	// int v = Integer.parseInt(edge[1]);
-	// edges.add(nodes[u], nodes[v]);
-	// }
-	// fr.close();
-	// edges.fill();
-	// timer.end();
-	// return new Graph(name, nodes, timer);
-	// }
-	//
-	// private static int nodesEdgesOnly(String filename) {
-	// String delimiter = Config.get("GRAPH_READER_EDGES_ONLY_DELIMITER");
-	// Filereader fr = new Filereader(filename);
-	// int max = -1;
-	// String line = "";
-	// while ((line = fr.readLine()) != null) {
-	// String[] edge = line.split(delimiter);
-	// int u = Integer.parseInt(edge[0]);
-	// int v = Integer.parseInt(edge[1]);
-	// if (u > max) {
-	// max = u;
-	// }
-	// if (v > max) {
-	// max = v;
-	// }
-	// }
-	// fr.close();
-	// return max + 1;
-	// }
-	//
-	// private static Graph edgesOnlyStartingAt1(String filename, String name) {
-	// Timer timer = new Timer();
-	// String delimiter = Config
-	// .get("GRAPH_READER_EDGES_ONLY_STARTING_AT_1_DELIMITER");
-	// Filereader fr = new Filereader(filename);
-	// int numberOfNodes = 0;
-	// int numberOfEdges = 0;
-	// String line = "";
-	// while ((line = fr.readLine()) != null) {
-	// String[] edge = line.split(delimiter);
-	// int u = Integer.parseInt(edge[0]);
-	// int v = Integer.parseInt(edge[1]);
-	// if (u > numberOfNodes) {
-	// numberOfNodes = u;
-	// }
-	// if (v > numberOfNodes) {
-	// numberOfNodes = v;
-	// }
-	// numberOfEdges++;
-	// }
-	// fr.close();
-	// Node[] nodes = Node.init(numberOfNodes);
-	// Edges edges = new Edges(nodes, numberOfNodes);
-	// fr = new Filereader(filename);
-	// while ((line = fr.readLine()) != null) {
-	// String[] edge = line.split(delimiter);
-	// int u = Integer.parseInt(edge[0]) - 1;
-	// int v = Integer.parseInt(edge[1]) - 1;
-	// edges.add(nodes[u], nodes[v]);
-	// }
-	// fr.close();
-	// edges.fill();
-	// timer.end();
-	// return new Graph(name, nodes, timer);
-	// }
-	//
-	// private static int nodesEdgesOnlyStartingAt1(String filename) {
-	// String delimiter = Config
-	// .get("GRAPH_READER_EDGES_ONLY_STARTING_AT_1_DELIMITER");
-	// Filereader fr = new Filereader(filename);
-	// int max = -1;
-	// String line = "";
-	// while ((line = fr.readLine()) != null) {
-	// String[] edge = line.split(delimiter);
-	// int u = Integer.parseInt(edge[0]);
-	// int v = Integer.parseInt(edge[1]);
-	// if (u > max) {
-	// max = u;
-	// }
-	// if (v > max) {
-	// max = v;
-	// }
-	// }
-	// fr.close();
-	// return max;
-	// }
-	//
-	// private static Graph gml(String filename, String name) {
-	// Timer timer = new Timer();
-	// Filereader fr = new Filereader(filename);
-	// int index = 0;
-	// String line = "";
-	// HashMap<String, Integer> ids = new HashMap<String, Integer>();
-	// Node[] nodes = null;
-	// while ((line = fr.readLine()) != null) {
-	// int counter = 0;
-	// if (line.equals("node [")) {
-	// while ((line = fr.readLine()) != null) {
-	// if (line.contains("id")) {
-	// int start = line.indexOf("\"");
-	// int end = line.lastIndexOf("\"");
-	// String id = line.subSequence(start + 1, end).toString();
-	// ids.put(id, index++);
-	// }
-	// if (line.contains("[")) {
-	// counter++;
-	// }
-	// if (line.contains("]")) {
-	// counter--;
-	// }
-	// if (counter == -1) {
-	// break;
-	// }
-	// }
-	// }
-	// }
-	// fr.close();
-	// nodes = Node.init(index + 1);
-	// fr = new Filereader(filename);
-	// Edges edges = new Edges(nodes, nodes.length);
-	// while ((line = fr.readLine()) != null) {
-	// int counter = 0;
-	// if (line.equals("edge [")) {
-	// String src = null;
-	// String dst = null;
-	// while ((line = fr.readLine()) != null) {
-	// if (line.contains("source")) {
-	// int start = line.indexOf("\"");
-	// int end = line.lastIndexOf("\"");
-	// src = line.subSequence(start + 1, end).toString();
-	// }
-	// if (line.contains("target")) {
-	// int start = line.indexOf("\"");
-	// int end = line.lastIndexOf("\"");
-	// dst = line.subSequence(start + 1, end).toString();
-	// }
-	// if (line.contains("[")) {
-	// counter++;
-	// }
-	// if (line.contains("]")) {
-	// counter--;
-	// }
-	// if (counter == -1) {
-	// if (src != null && dst != null) {
-	// if (ids.containsKey(src) && ids.containsKey(dst)) {
-	// int srcIndex = ids.get(src);
-	// int dstIndex = ids.get(dst);
-	// edges.add(nodes[srcIndex], nodes[dstIndex]);
-	// } else {
-	// if (!ids.containsKey(src)) {
-	// System.out.println("key \"" + src
-	// + "\" not declared as a node");
-	// }
-	// if (!ids.containsKey(dst)) {
-	// System.out.println("key \"" + dst
-	// + "\" not declared as a node");
-	// }
-	// }
-	// } else {
-	// System.out.println("ERROR!!!!!!!");
-	// }
-	// break;
-	// }
-	// }
-	// }
-	// }
-	// fr.close();
-	// edges.fill();
-	// timer.end();
-	// return new Graph(name, nodes, timer);
-	// }
-	//
-	// private static Graph bidirectionalEdgesOnly(String filename, String name)
-	// {
-	// Timer timer = new Timer();
-	// String delimiter = Config.get("GRAPH_READER_EDGES_ONLY_DELIMITER");
-	// Filereader fr = new Filereader(filename);
-	// int numberOfNodes = -1;
-	// int numberOfEdges = 0;
-	// String line = "";
-	// while ((line = fr.readLine()) != null) {
-	// String[] edge = line.split(delimiter);
-	// int u = Integer.parseInt(edge[0]);
-	// int v = Integer.parseInt(edge[1]);
-	// if (u > numberOfNodes) {
-	// numberOfNodes = u;
-	// }
-	// if (v > numberOfNodes) {
-	// numberOfNodes = v;
-	// }
-	// numberOfEdges++;
-	// }
-	// numberOfNodes++;
-	// fr.close();
-	// Node[] nodes = Node.init(numberOfNodes);
-	// Edges edges = new Edges(nodes, numberOfEdges);
-	// fr = new Filereader(filename);
-	// while ((line = fr.readLine()) != null) {
-	// String[] edge = line.split(delimiter);
-	// int u = Integer.parseInt(edge[0]);
-	// int v = Integer.parseInt(edge[1]);
-	// edges.add(nodes[u], nodes[v]);
-	// edges.add(nodes[v], nodes[u]);
-	// }
-	// fr.close();
-	// edges.fill();
-	// timer.end();
-	// return new Graph(name, nodes, timer);
-	// }
-	//
-	// private static Graph arbitraryIDs(String filename, String name) {
-	// Timer timer = new Timer();
-	// String delimiter = Config.get("GRAPH_ARBITRARY_IDS_DELIMITER");
-	// Filereader fr = new Filereader(filename);
-	// Hashtable<String, Integer> ids = new Hashtable<String, Integer>();
-	// String line = null;
-	// int index = 0;
-	// int numberOfEdges = 0;
-	// while ((line = fr.readLine()) != null) {
-	// String[] temp = line.split(delimiter);
-	// String from = temp[0].trim();
-	// String to = temp[1].trim();
-	// if (!ids.containsKey(from)) {
-	// ids.put(from, index++);
-	// }
-	// if (!ids.containsKey(to)) {
-	// ids.put(to, index++);
-	// }
-	// numberOfEdges++;
-	// }
-	// fr.close();
-	// Node[] nodes = Node.init(ids.size());
-	// Edges edges = new Edges(nodes, numberOfEdges);
-	// fr = new Filereader(filename);
-	// while ((line = fr.readLine()) != null) {
-	// String[] temp = line.split(delimiter);
-	// String from = temp[0].trim();
-	// String to = temp[1].trim();
-	// int f = ids.get(from);
-	// int t = ids.get(to);
-	// edges.add(nodes[f], nodes[t]);
-	// }
-	// fr.close();
-	// edges.fill();
-	// timer.end();
-	// return new Graph(name, nodes, timer);
-	// }
 }
