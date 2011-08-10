@@ -37,8 +37,12 @@ package gtna.io;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.util.Config;
+
+import java.io.File;
+import java.io.FilenameFilter;
 
 public class GraphReader {
 	public static Graph read(String filename) {
@@ -66,6 +70,55 @@ public class GraphReader {
 		edges.fill();
 		graph.setNodes(nodes);
 		fr.close();
+		return graph;
+	}
+
+	public static Graph readWithProperties(String filename) {
+		File file = new File(filename);
+		File folder = file.getParentFile();
+		String del = Config.get("GRAPH_WRITER_PROPERTY_FILE_DELIMITER");
+		PrefixFilter filter = new PrefixFilter(file.getName() + del);
+		File[] propertyFiles = folder.listFiles(filter);
+		String[] properties = new String[propertyFiles.length];
+		for (int i = 0; i < propertyFiles.length; i++) {
+			properties[i] = propertyFiles[i].getAbsolutePath();
+		}
+		return GraphReader.readWithProperties(filename, properties);
+	}
+
+	private static class PrefixFilter implements FilenameFilter {
+		String prefix;
+
+		private PrefixFilter(String prefix) {
+			this.prefix = prefix;
+		}
+
+		@Override
+		public boolean accept(File dir, String name) {
+			return name.startsWith(this.prefix);
+		}
+
+	}
+
+	public static Graph readWithProperties(String filename, String[] properties) {
+		Graph graph = GraphReader.read(filename);
+		for (String prop : properties) {
+			Filereader fr = new Filereader(prop);
+			String className = fr.readLine();
+			fr.close();
+			try {
+				GraphProperty property = (GraphProperty) ClassLoader
+						.getSystemClassLoader().loadClass(className)
+						.newInstance();
+				property.read(prop, graph);
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 		return graph;
 	}
 

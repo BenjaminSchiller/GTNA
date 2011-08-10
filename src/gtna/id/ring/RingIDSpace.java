@@ -80,7 +80,7 @@ public class RingIDSpace implements IDSpace {
 
 		// CLASS
 		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
-		fw.writeln(this.getClass().toString());
+		fw.writeln(this.getClass().getCanonicalName().toString());
 
 		// KEYS
 		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));

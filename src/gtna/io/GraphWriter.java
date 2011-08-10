@@ -37,8 +37,11 @@ package gtna.io;
 
 import gtna.graph.Edge;
 import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.util.Config;
+
+import java.util.HashMap;
 
 public class GraphWriter {
 	public static boolean write(Graph graph, String filename) {
@@ -75,6 +78,25 @@ public class GraphWriter {
 		}
 
 		return fw.close();
+	}
+
+	public static boolean writeWithProperties(Graph graph, String filename) {
+		HashMap<String, String> filenames = new HashMap<String, String>();
+		String del = Config.get("GRAPH_WRITER_PROPERTY_FILE_DELIMITER");
+		for (String key : graph.getProperties().keySet()) {
+			filenames.put(key, filename + del + key);
+		}
+		return GraphWriter.writeWithProperties(graph, filename, filenames);
+	}
+
+	public static boolean writeWithProperties(Graph graph, String filename,
+			HashMap<String, String> filenames) {
+		boolean success = GraphWriter.write(graph, filename);
+		for (String key : filenames.keySet()) {
+			GraphProperty property = graph.getProperty(key);
+			success &= property.write(filenames.get(key), key);
+		}
+		return success;
 	}
 
 	public static boolean writeOld(Graph graph, String filename) {

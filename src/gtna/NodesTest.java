@@ -95,16 +95,23 @@ public class NodesTest {
 
 	private static void testGraphIO() {
 		Network nw = new ErdosRenyi(10, 3, true, null, null);
-		String fo1 = "temp/graph-old1.txt";
-		String fo2 = "temp/graph-old2.txt";
-		String f1 = "temp/graph1.txt";
-		String f2 = "temp/graph2.txt";
+		Transformation t = new RandomPlaneIDSpaceSimple();
 		Graph g1 = nw.generate();
-		GraphWriter.writeOld(g1, fo1);
-		GraphWriter.write(g1, f1);
-		Graph g2 = GraphReader.read(f1);
-		GraphWriter.writeOld(g2, fo2);
-		GraphWriter.write(g2, f2);
+		Graph g2 = nw.generate();
+		g2 = t.transform(g2);
+
+		String f1 = "temp/test/graph-1.txt";
+		String f2 = "temp/test/graph-2.txt";
+		String f3 = "temp/test/graph-3.txt";
+		String f4 = "temp/test/graph-4.txt";
+
+		GraphWriter.writeWithProperties(g1, f1);
+		GraphWriter.writeWithProperties(g2, f2);
+
+		Graph g3 = GraphReader.readWithProperties(f1);
+		Graph g4 = GraphReader.readWithProperties(f2);
+		GraphWriter.writeWithProperties(g3, f3);
+		GraphWriter.writeWithProperties(g4, f4);
 	}
 
 	private static void testGraphProperties() {
