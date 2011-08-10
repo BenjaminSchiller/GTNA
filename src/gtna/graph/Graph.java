@@ -79,41 +79,16 @@ public class Graph {
 	public HashMap<String, GraphProperty> getProperties() {
 		return this.properties;
 	}
+	
+	public int computeNumberOfEdges(){
+		int E = 0;
+		for (Node n : this.nodes) {
+			E += n.getOutDegree();
+		}
+		return E;
+	}
 
 	public Edge[] generateEdges() {
-		int E = 0;
-		for (Node n : this.nodes) {
-			E += n.getDegree();
-		}
-		Edge[] edges = new Edge[E];
-		int index = 0;
-		for (Node n : this.nodes) {
-			for (int out : n.getOutgoingEdges()) {
-				edges[index++] = new Edge(n.getIndex(), out);
-			}
-			for (int in : n.getIncomingEdges()) {
-				edges[index++] = new Edge(in, n.getIndex());
-			}
-		}
-		return edges;
-	}
-
-	public Edge[] generateIncomingEdges() {
-		int E = 0;
-		for (Node n : this.nodes) {
-			E += n.getInDegree();
-		}
-		Edge[] edges = new Edge[E];
-		int index = 0;
-		for (Node n : this.nodes) {
-			for (int in : n.getIncomingEdges()) {
-				edges[index++] = new Edge(in, n.getIndex());
-			}
-		}
-		return edges;
-	}
-
-	public Edge[] generateOutgoingEdges() {
 		int E = 0;
 		for (Node n : this.nodes) {
 			E += n.getOutDegree();

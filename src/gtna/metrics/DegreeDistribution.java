@@ -89,7 +89,7 @@ public class DegreeDistribution extends MetricImpl implements Metric {
 		this.outDegreeDistribution = new Distribution(ddo);
 
 		this.nodes = graph.getNodes().length;
-		this.edges = graph.generateIncomingEdges().length;
+		this.edges = graph.generateEdges().length;
 
 		this.runtime.end();
 	}
