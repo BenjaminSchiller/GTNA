@@ -56,7 +56,18 @@ public class ChordPartition implements BIPartition {
 
 	@Override
 	public BigInteger distance(BIID id) {
-		return this.succ.distance(id);
+		if (this.contains(id)) {
+			return BigInteger.ZERO;
+		}
+		BigInteger compare = ((ChordID) id).getId();
+		if (this.succ.getId().compareTo(compare) == -1) {
+			return compare.subtract(this.succ.getId()).mod(
+					this.succ.getIdSpace().getModulus());
+		} else {
+			return compare.add(this.succ.getIdSpace().getModulus())
+					.subtract(this.succ.getId())
+					.mod(this.succ.getIdSpace().getModulus());
+		}
 	}
 
 	@Override
@@ -107,8 +118,8 @@ public class ChordPartition implements BIPartition {
 	public void setSucc(ChordID succ) {
 		this.succ = succ;
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return "(" + this.pred.getId() + ", " + this.succ.getId() + "]";
 	}
 

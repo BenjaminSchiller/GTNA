@@ -104,7 +104,7 @@ public class Chord extends NetworkImpl implements Network {
 //			}
 //			System.out.println();
 
-			edges.add(node.getIndex(), predIndex);
+//			edges.add(node.getIndex(), predIndex);
 			edges.add(node.getIndex(), succIndex);
 			for (int finger : fingerIndex) {
 				edges.add(node.getIndex(), finger);

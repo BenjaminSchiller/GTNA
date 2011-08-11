@@ -103,6 +103,13 @@ public class GreedyBI extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 			}
 		}
 		if (minNode == -1) {
+//			System.out.println("\n\n=> " + target + " (minDist=" + minDist + ")");
+//			for(int index : route){
+//				System.out.println("  " + this.p[index] + " @ " + this.p[index].distance(target));
+//			}
+//			for(int out : nodes[current].getOutgoingEdges()){
+//				System.out.println("  ..." + this.p[out] + " @ " + this.p[out].distance(target));
+//			}
 			return new RouteImpl(route, false);
 		}
 		return this.route(route, minNode, target, rand, nodes);
@@ -111,7 +118,7 @@ public class GreedyBI extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 	@Override
 	public boolean applicable(Graph graph) {
 		return graph.hasProperty("ID_SPACE")
-				&& graph.getProperty("ID_SPACE") instanceof IDSpace;
+				&& graph.getProperty("ID_SPACE") instanceof BIIDSpace;
 	}
 
 	@Override

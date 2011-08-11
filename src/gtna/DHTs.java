@@ -39,6 +39,8 @@ import gtna.data.Series;
 import gtna.networks.Network;
 import gtna.networks.p2p.chord.Chord;
 import gtna.plot.Plot;
+import gtna.routing.RoutingAlgorithm;
+import gtna.routing.greedy.GreedyBI;
 import gtna.util.Config;
 import gtna.util.Stats;
 
@@ -54,15 +56,24 @@ public class DHTs {
 	}
 
 	public static void chordTest() {
-		Config.overwrite("METRICS", "DD");
+		Config.overwrite("METRICS", "DD, R");
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/chord/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/chord/");
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
-		
-		Network nw = new Chord(10000, 128, null, null);
-		Series s = Series.generate(nw, 10);
-		Plot.multiConf(s, "multi2/");
-		
+
+		RoutingAlgorithm r = new GreedyBI();
+
+		Network nw0 = new Chord(16, 5, r, null);
+		// Network nw1 = new Chord(1000, 16, r, null);
+		// Network nw2 = new Chord(1000, 32, r, null);
+		// Network nw3 = new Chord(1000, 64, r, null);
+		// Network nw4 = new Chord(1024, 128, r, null);
+
+		Network[] nw = new Network[] { nw0 };
+		// Network[] nw = new Network[] { nw1, nw2, nw3, nw4 };
+		Series[] s = Series.generate(nw, 1);
+		Plot.multiConf(s, "multi/");
+
 	}
 }
