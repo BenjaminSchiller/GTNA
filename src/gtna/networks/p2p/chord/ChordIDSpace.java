@@ -75,6 +75,11 @@ public class ChordIDSpace implements BIIDSpace {
 	}
 
 	@Override
+	public BigInteger getMaxDistance() {
+		return this.modulus;
+	}
+
+	@Override
 	public boolean write(String filename, String key) {
 		// TODO Auto-generated method stub
 		return false;

@@ -76,6 +76,11 @@ public class PlaneIDSpaceSimple implements IDSpace {
 	}
 
 	@Override
+	public double getMaxDistance() {
+		return Double.MAX_VALUE;
+	}
+
+	@Override
 	public boolean write(String filename, String key) {
 		Filewriter fw = new Filewriter(filename);
 

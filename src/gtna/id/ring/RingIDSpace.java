@@ -75,6 +75,11 @@ public class RingIDSpace implements IDSpace {
 	}
 
 	@Override
+	public double getMaxDistance() {
+		return 1;
+	}
+
+	@Override
 	public boolean write(String filename, String key) {
 		Filewriter fw = new Filewriter(filename);
 

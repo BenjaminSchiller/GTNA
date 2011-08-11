@@ -93,7 +93,7 @@ public class GreedyBacktracking extends RoutingAlgorithmImpl implements
 		}
 		double currentDist = this.idSpace.getPartitions()[current]
 				.distance(target);
-		double minDist = Double.MAX_VALUE;
+		double minDist = this.idSpace.getMaxDistance();
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
 			double dist = this.p[out].distance(target);

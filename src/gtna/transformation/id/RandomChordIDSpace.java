@@ -41,7 +41,6 @@ import gtna.networks.p2p.chord.ChordIDSpace;
 import gtna.networks.p2p.chord.ChordPartition;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
-import gtna.util.Util;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -97,7 +96,7 @@ public class RandomChordIDSpace extends TransformationImpl implements
 				partitions[i] = new ChordPartition(ids[i - 1], ids[i]);
 			}
 
-			 Util.randomize(partitions, rand);
+			// Util.randomize(partitions, rand);
 			idSpace.setPartitions(partitions);
 
 			graph.addProperty("ID_SPACE_" + r, idSpace);

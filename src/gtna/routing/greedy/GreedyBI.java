@@ -37,14 +37,16 @@ package gtna.routing.greedy;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.ID;
+import gtna.id.BIID;
+import gtna.id.BIIDSpace;
+import gtna.id.BIPartition;
 import gtna.id.IDSpace;
-import gtna.id.Partition;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.RoutingAlgorithmImpl;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -52,26 +54,26 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
-	private IDSpace idSpace;
+public class GreedyBI extends RoutingAlgorithmImpl implements RoutingAlgorithm {
+	private BIIDSpace idSpace;
 
-	private Partition[] p;
+	private BIPartition[] p;
 
 	private int ttl;
 
-	public Greedy() {
+	public GreedyBI() {
 		super("GREEDY", new String[] {}, new String[] {});
 		this.ttl = Integer.MAX_VALUE;
 	}
 
-	public Greedy(int ttl) {
+	public GreedyBI(int ttl) {
 		super("GREEDY", new String[] { "TTL" }, new String[] { "" + ttl });
 		this.ttl = ttl;
 	}
 
 	@Override
 	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
-		ID target = this.idSpace.randomID(rand);
+		BIID target = this.idSpace.randomID(rand);
 		while (this.p[start].contains(target)) {
 			target = this.idSpace.randomID(rand);
 		}
@@ -79,7 +81,7 @@ public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 				graph.getNodes());
 	}
 
-	private Route route(ArrayList<Integer> route, int current, ID target,
+	private Route route(ArrayList<Integer> route, int current, BIID target,
 			Random rand, Node[] nodes) {
 		route.add(current);
 		if (this.idSpace.getPartitions()[current].contains(target)) {
@@ -88,13 +90,14 @@ public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 		if (route.size() > this.ttl) {
 			return new RouteImpl(route, false);
 		}
-		double currentDist = this.idSpace.getPartitions()[current]
+		BigInteger currentDist = this.idSpace.getPartitions()[current]
 				.distance(target);
-		double minDist = this.idSpace.getMaxDistance();
+		BigInteger minDist = this.idSpace.getMaxDistance();
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
-			double dist = this.p[out].distance(target);
-			if (dist < minDist && dist < currentDist) {
+			BigInteger dist = this.p[out].distance(target);
+			if (dist.compareTo(minDist) == -1
+					&& dist.compareTo(currentDist) == -1) {
 				minDist = dist;
 				minNode = out;
 			}
@@ -113,8 +116,8 @@ public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 
 	@Override
 	public void preprocess(Graph graph) {
-		this.idSpace = (IDSpace) graph.getProperty("ID_SPACE");
-		this.p = idSpace.getPartitions();
+		this.idSpace = (BIIDSpace) graph.getProperty("ID_SPACE");
+		this.p = this.idSpace.getPartitions();
 	}
 
 }

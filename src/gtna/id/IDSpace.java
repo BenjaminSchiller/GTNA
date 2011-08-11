@@ -49,4 +49,6 @@ public interface IDSpace extends GraphProperty {
 	public void setPartitions(Partition[] partitions);
 
 	public ID randomID(Random rand);
+	
+	public double getMaxDistance();
 }

@@ -37,6 +37,7 @@ package gtna.id;
 
 import gtna.graph.GraphProperty;
 
+import java.math.BigInteger;
 import java.util.Random;
 
 /**
@@ -49,4 +50,6 @@ public interface BIIDSpace extends GraphProperty {
 	public void setPartitions(BIPartition[] partitions);
 
 	public BIID randomID(Random rand);
+	
+	public BigInteger getMaxDistance();
 }
