@@ -42,6 +42,7 @@ import gtna.networks.p2p.chord.ChordPartition;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
@@ -59,17 +60,22 @@ public class RandomChordIDSpace extends TransformationImpl implements
 
 	private int bits;
 
-	public RandomChordIDSpace(int bits) {
-		super("RANDOM_CHORD_ID_SPACE", new String[] { "BITS" },
-				new String[] { "" + bits });
+	private boolean uniform;
+
+	public RandomChordIDSpace(int bits, boolean uniform) {
+		super("RANDOM_CHORD_ID_SPACE", new String[] { "BITS", "ID_SELECTION" },
+				new String[] { "" + bits, uniform ? "uniform" : "random" });
 		this.bits = bits;
+		this.uniform = uniform;
 		this.realities = 1;
 	}
 
-	public RandomChordIDSpace(int bits, int realities) {
+	public RandomChordIDSpace(int bits, boolean uniform, int realities) {
 		super("RANDOM_CHORD_ID_SPACE", new String[] { "BITS", "REALITIES" },
-				new String[] { "" + bits, "" + realities });
+				new String[] { "" + bits, uniform ? "uniform" : "random",
+						"" + realities });
 		this.bits = bits;
+		this.uniform = uniform;
 		this.realities = realities;
 	}
 
@@ -79,14 +85,23 @@ public class RandomChordIDSpace extends TransformationImpl implements
 		ChordIDSpace idSpace = new ChordIDSpace(this.bits);
 		for (int r = 0; r < this.realities; r++) {
 			ChordID[] ids = new ChordID[graph.getNodes().length];
-			HashSet<String> idSet = new HashSet<String>();
-			for (int i = 0; i < ids.length; i++) {
-				ChordID id = (ChordID) idSpace.randomID(rand);
-				while (idSet.contains(id.toString())) {
-					id = (ChordID) idSpace.randomID(rand);
+			if (this.uniform) {
+				BigInteger stepSize = idSpace.getModulus().divide(
+						new BigInteger("" + graph.getNodes().length));
+				for (int i = 0; i < ids.length; i++) {
+					ids[i] = new ChordID(idSpace,
+							stepSize.multiply(new BigInteger("" + i)));
 				}
-				ids[i] = id;
-				idSet.add(id.toString());
+			} else {
+				HashSet<String> idSet = new HashSet<String>();
+				for (int i = 0; i < ids.length; i++) {
+					ChordID id = (ChordID) idSpace.randomID(rand);
+					while (idSet.contains(id.toString())) {
+						id = (ChordID) idSpace.randomID(rand);
+					}
+					ids[i] = id;
+					idSet.add(id.toString());
+				}
 			}
 			Arrays.sort(ids);
 

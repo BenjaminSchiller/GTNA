@@ -43,6 +43,7 @@ import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomChordIDSpace;
+import gtna.util.Config;
 
 import java.math.BigInteger;
 
@@ -53,18 +54,63 @@ import java.math.BigInteger;
 public class Chord extends NetworkImpl implements Network {
 	private int bits;
 
-	public Chord(int nodes, int bits, RoutingAlgorithm ra, Transformation[] t) {
-		super("CHORD", nodes, new String[] { "BITS" },
-				new String[] { "" + bits }, ra, t);
+	private boolean uniform;
+	
+	private int rpn;
+
+	public static Chord[] get(int[] nodes, int bits, boolean uniform, int rpn,
+			RoutingAlgorithm ra, Transformation[] t) {
+		Chord[] nw = new Chord[nodes.length];
+		for (int i = 0; i < nodes.length; i++) {
+			nw[i] = new Chord(nodes[i], bits, uniform, rpn, ra, t);
+		}
+		return nw;
+	}
+
+	public static Chord[] get(int nodes, int[] bits, boolean uniform, int rpn,
+			RoutingAlgorithm ra, Transformation[] t) {
+		Chord[] nw = new Chord[bits.length];
+		for (int i = 0; i < bits.length; i++) {
+			nw[i] = new Chord(nodes, bits[i], uniform, rpn, ra, t);
+		}
+		return nw;
+	}
+
+	public static Chord[] get(int nodes, int bits, boolean[] uniform, int rpn,
+			RoutingAlgorithm ra, Transformation[] t) {
+		Chord[] nw = new Chord[uniform.length];
+		for (int i = 0; i < uniform.length; i++) {
+			nw[i] = new Chord(nodes, bits, uniform[i], rpn, ra, t);
+		}
+		return nw;
+	}
+
+	public static Chord[] get(int nodes, int bits, boolean uniform, int[] rpn,
+			RoutingAlgorithm ra, Transformation[] t) {
+		Chord[] nw = new Chord[rpn.length];
+		for (int i = 0; i < rpn.length; i++) {
+			nw[i] = new Chord(nodes, bits, uniform, rpn[i], ra, t);
+		}
+		return nw;
+	}
+
+	public Chord(int nodes, int bits, boolean uniform, int rpn,
+			RoutingAlgorithm ra, Transformation[] t) {
+		super("CHORD", nodes, new String[] { "BITS", "ID_SELECTION",
+				"ROUTES_PER_NODE" }, new String[] { "" + bits,
+				uniform ? "uniform" : "random", "" + rpn }, ra, t);
 		this.bits = bits;
+		this.uniform = uniform;
+		this.rpn = rpn;
 	}
 
 	@Override
 	public Graph generate() {
+		Config.overwrite("R_ROUTES_PER_NODE", "" + this.rpn);
 		Graph graph = new Graph(this.description());
 		Node[] nodes = Node.init(this.nodes(), graph);
 		graph.setNodes(nodes);
-		RandomChordIDSpace t = new RandomChordIDSpace(this.bits);
+		RandomChordIDSpace t = new RandomChordIDSpace(this.bits, this.uniform);
 		graph = t.transform(graph);
 
 		ChordIDSpace idSpace = (ChordIDSpace) graph.getProperty("ID_SPACE");
@@ -93,18 +139,18 @@ public class Chord extends NetworkImpl implements Network {
 				add = add.shiftLeft(1);
 			}
 
-//			System.out.println(p);
-//			System.out.println("  pred = " + predID + " => "
-//					+ partitions[predIndex]);
-//			System.out.println("  succ = " + succID + " => "
-//					+ partitions[succIndex]);
-//			for (int i = 0; i < fingerIndex.length; i++) {
-//				System.out.println("  f[" + i + "] = " + fingerID[i] + " => "
-//						+ partitions[fingerIndex[i]]);
-//			}
-//			System.out.println();
+			// System.out.println(p);
+			// System.out.println("  pred = " + predID + " => "
+			// + partitions[predIndex]);
+			// System.out.println("  succ = " + succID + " => "
+			// + partitions[succIndex]);
+			// for (int i = 0; i < fingerIndex.length; i++) {
+			// System.out.println("  f[" + i + "] = " + fingerID[i] + " => "
+			// + partitions[fingerIndex[i]]);
+			// }
+			// System.out.println();
 
-//			edges.add(node.getIndex(), predIndex);
+			// edges.add(node.getIndex(), predIndex);
 			edges.add(node.getIndex(), succIndex);
 			for (int finger : fingerIndex) {
 				edges.add(node.getIndex(), finger);

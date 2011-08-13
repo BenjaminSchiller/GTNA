@@ -46,6 +46,7 @@ import gtna.util.Config;
 import gtna.util.Distribution;
 import gtna.util.Timer;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -56,6 +57,8 @@ public class Routing extends MetricImpl implements Metric {
 	private Distribution hopDistributionAbsolute;
 
 	private Route[] routes;
+
+	private double[] betweennessCentrality;
 
 	private Timer runtime;
 
@@ -81,17 +84,24 @@ public class Routing extends MetricImpl implements Metric {
 			for (int i = 0; i < times; i++) {
 				this.routes[index++] = ra.routeToRandomTarget(graph,
 						start.getIndex(), rand);
-				// if (this.routes[index - 1].isSuccessful()) {
-				// System.out.println(this.routes[index - 1].getHops() + " / "
-				// + this.routes[index - 1].getRoute().length);
-				// }else{
-				// System.out.println("ewrgo8wzidghiowdhghwdgi");
-				// }
 			}
 		}
 		this.hopDistribution = this.computeHopDistribution();
 		this.hopDistributionAbsolute = this.computeHopDistributionAbsolute();
+		this.betweennessCentrality = this.computeBetweennessCentrality(graph
+				.getNodes().length);
 		this.runtime.end();
+	}
+
+	private double[] computeBetweennessCentrality(int nodes) {
+		double[] bc = new double[nodes];
+		for (Route route : this.routes) {
+			for (int i = 1; i < route.getRoute().length - 1; i++) {
+				bc[route.getRoute()[i]]++;
+			}
+		}
+		Arrays.sort(bc);
+		return bc;
 	}
 
 	private Distribution computeHopDistribution() {
@@ -131,6 +141,7 @@ public class Routing extends MetricImpl implements Metric {
 	private void initEmpty() {
 		this.hopDistribution = new Distribution(new double[] { 0 });
 		this.hopDistributionAbsolute = new Distribution(new double[] { 0 });
+		this.betweennessCentrality = new double[0];
 		this.routes = new Route[0];
 	}
 
@@ -148,6 +159,8 @@ public class Routing extends MetricImpl implements Metric {
 		success &= DataWriter.writeWithIndex(
 				this.hopDistributionAbsolute.getCdf(),
 				"R_HOP_DISTRIBUTION_ABSOLUTE_CDF", folder);
+		success &= DataWriter.writeWithIndex(this.betweennessCentrality,
+				"R_BETWEENNESS_CENTRALITY", folder);
 		return success;
 	}
 
