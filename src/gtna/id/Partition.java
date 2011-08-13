@@ -65,4 +65,10 @@ public interface Partition {
 	 *         otherwise
 	 */
 	public boolean contains(ID id);
+
+	/**
+	 * 
+	 * @return ID that is representative for this partition
+	 */
+	public ID getRepresentativeID();
 }

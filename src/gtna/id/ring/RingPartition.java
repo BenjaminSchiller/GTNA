@@ -81,6 +81,11 @@ public class RingPartition implements Partition {
 		return false;
 	}
 
+	@Override
+	public ID getRepresentativeID() {
+		return this.end;
+	}
+
 	public String toString() {
 		return "RingPartition]" + this.start.getPosition() + ", "
 				+ this.end.getPosition() + "]";

@@ -64,6 +64,11 @@ public class PlanePartitionSimple implements Partition {
 		return this.id.equals(id);
 	}
 
+	@Override
+	public ID getRepresentativeID() {
+		return this.id;
+	}
+
 	public String toString() {
 		return "PlanePartitionSimple(" + this.id.getX() + "/" + this.id.getY()
 				+ ")";

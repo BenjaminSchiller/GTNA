@@ -89,6 +89,11 @@ public class ChordPartition implements BIPartition {
 		}
 	}
 
+	@Override
+	public BIID getRepresentativeID() {
+		return this.succ;
+	}
+
 	/**
 	 * @return the pred
 	 */

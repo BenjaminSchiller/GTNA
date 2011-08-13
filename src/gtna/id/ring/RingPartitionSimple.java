@@ -64,6 +64,11 @@ public class RingPartitionSimple implements Partition {
 		return this.id.equals((RingID) id);
 	}
 
+	@Override
+	public ID getRepresentativeID() {
+		return this.id;
+	}
+
 	public String toString() {
 		return "RingParitionSimple(" + this.id.getPosition() + ")";
 	}

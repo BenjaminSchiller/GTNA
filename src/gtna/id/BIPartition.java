@@ -67,4 +67,10 @@ public interface BIPartition {
 	 *         otherwise
 	 */
 	public boolean contains(BIID id);
+	
+	/**
+	 * 
+	 * @return BIID that is representative for this partition
+	 */
+	public BIID getRepresentativeID();
 }
