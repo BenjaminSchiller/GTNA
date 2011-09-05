@@ -58,13 +58,30 @@ public class Communities implements GraphProperty {
 		this.communityOfNode = new int[] {};
 	}
 
-	public Communities(HashMap<Integer, Community> communities) {
-		this.communities = new Community[communities.size()];
-		int index = 0;
-		for (Community c : communities.values()) {
-			this.communities[index++] = c;
+	public Communities(HashMap<Integer, Integer> map) {
+		this(Communities.compute(map));
+	}
+
+	private static Community[] compute(HashMap<Integer, Integer> map) {
+		int max = 0;
+		for (int value : map.values()) {
+			if (value > max) {
+				max = value;
+			}
 		}
-		this.computeCommunityOfNodes();
+		HashMap<Integer, ArrayList<Integer>> communities = new HashMap<Integer, ArrayList<Integer>>();
+		for (int i = 0; i <= max; i++) {
+			communities.put(i, new ArrayList<Integer>());
+		}
+		for (int index : map.keySet()) {
+			int community = map.get(index);
+			communities.get(community).add(index);
+		}
+		Community[] c = new Community[max + 1];
+		for (int i = 0; i < c.length; i++) {
+			c[i] = new Community(i, communities.get(i));
+		}
+		return c;
 	}
 
 	public Communities(ArrayList<Community> communities) {

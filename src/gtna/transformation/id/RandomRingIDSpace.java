@@ -94,7 +94,7 @@ public class RandomRingIDSpace extends TransformationImpl implements
 						% ids.length]);
 			}
 			Util.randomize(partitions, rand);
-			graph.addProperty("ID_SPACE_" + RandomIDSpace.nextIDSpace(graph), idSpace);
+			graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
 		}
 		return graph;
 	}

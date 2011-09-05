@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * RandomIDSpace.java
+ * Communities.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,20 +33,48 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.id;
+package gtna.transformation.communities;
 
 import gtna.graph.Graph;
+import gtna.graph.Node;
+import gtna.transformation.Transformation;
+import gtna.transformation.TransformationImpl;
+
+import java.util.HashMap;
 
 /**
  * @author benni
  * 
  */
-public class RandomIDSpace {
-	protected static int nextIDSpace(Graph graph) {
-		int index = 0;
-		while (graph.hasProperty("ID_SPACE_" + index)) {
-			index++;
+public class CommunityGeneration extends TransformationImpl implements Transformation {
+	public CommunityGeneration() {
+		super("COMMUNITIES", new String[] {}, new String[] {});
+	}
+	
+	// TODO remove
+	private int communities;
+	
+	// TODO remove
+	public CommunityGeneration(int communities){
+		this();
+		this.communities = communities;
+	}
+
+	@Override
+	public Graph transform(Graph g) {
+		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+		// TODO implement - start
+		for (Node n : g.getNodes()) {
+			map.put(n.getIndex(), n.getIndex() % this.communities);
 		}
-		return index;
+		// TODO implement end
+		g.addProperty(g.getNextKey("COMMUNITIES"),
+				new gtna.communities.Communities(map));
+		return g;
+	}
+
+	@Override
+	public boolean applicable(Graph g) {
+		return true;
 	}
 }

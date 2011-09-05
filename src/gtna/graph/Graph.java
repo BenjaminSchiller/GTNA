@@ -37,6 +37,7 @@ package gtna.graph;
 
 import gtna.util.Timer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Graph {
@@ -76,11 +77,33 @@ public class Graph {
 		return this.properties.get(key);
 	}
 
+	public GraphProperty[] getProperties(String type) {
+		ArrayList<GraphProperty> list = new ArrayList<GraphProperty>();
+		int index = 0;
+		while (this.hasProperty(type + "_" + index)) {
+			list.add(this.getProperty(type + "_" + index));
+			index++;
+		}
+		GraphProperty[] array = new GraphProperty[list.size()];
+		for(int i=0; i<array.length; i++){
+			array[i] = (GraphProperty) list.get(i);
+		}
+		return array;
+	}
+
+	public String getNextKey(String type) {
+		int index = 0;
+		while (this.hasProperty(type + "_" + index)) {
+			index++;
+		}
+		return type + "_" + index;
+	}
+
 	public HashMap<String, GraphProperty> getProperties() {
 		return this.properties;
 	}
-	
-	public int computeNumberOfEdges(){
+
+	public int computeNumberOfEdges() {
 		int E = 0;
 		for (Node n : this.nodes) {
 			E += n.getOutDegree();

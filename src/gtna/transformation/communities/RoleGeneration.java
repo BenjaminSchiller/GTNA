@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * RandomPlaneIDSpaceSimple.java
+ * Roles.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,67 +33,57 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.id;
+package gtna.transformation.communities;
 
+import gtna.communities.Communities;
 import gtna.graph.Graph;
-import gtna.id.plane.PlaneID;
-import gtna.id.plane.PlaneIDSpaceSimple;
-import gtna.id.plane.PlanePartitionSimple;
+import gtna.graph.GraphProperty;
+import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 
-import java.util.Random;
+import java.util.HashMap;
 
 /**
  * @author benni
  * 
  */
-public class RandomPlaneIDSpaceSimple extends TransformationImpl implements
+public class RoleGeneration extends TransformationImpl implements
 		Transformation {
-	private int realities;
 
-	private double modulusX;
-
-	private double modulusY;
-
-	private boolean wrapAround;
-
-	public RandomPlaneIDSpaceSimple() {
-		super("RANDOM_PLANE_ID_SPACE_SIMPLE", new String[] {}, new String[] {});
-		this.realities = 1;
+	public RoleGeneration() {
+		super("ROLES", new String[] {}, new String[] {});
 	}
-
-	public RandomPlaneIDSpaceSimple(int realities, double modulusX,
-			double modulusY, boolean wrapAround) {
-		super("RANDOM_PLANE_ID_SPACE_SIMPLE", new String[] { "REALITIES",
-				"MODULUS_X", "MODULUS_Y", "WRAP_AROUND" }, new String[] {
-				"" + realities, "" + modulusX, "" + modulusY, "" + wrapAround });
-		this.realities = realities;
-		this.modulusX = modulusX;
-		this.modulusY = modulusY;
-		this.wrapAround = wrapAround;
+	
+	// TODO remove
+	private int offset;
+	
+	// TODO remove
+	public RoleGeneration(int offset){
+		this();
+		this.offset = offset;
 	}
 
 	@Override
-	public Graph transform(Graph graph) {
-		Random rand = new Random();
-		for (int r = 0; r < this.realities; r++) {
-			PlanePartitionSimple[] partitions = new PlanePartitionSimple[graph
-					.getNodes().length];
-			PlaneIDSpaceSimple idSpace = new PlaneIDSpaceSimple(partitions,
-					this.modulusX, this.modulusY, this.wrapAround);
-			for (int i = 0; i < partitions.length; i++) {
-				partitions[i] = new PlanePartitionSimple(PlaneID.rand(rand,
-						idSpace));
+	public Graph transform(Graph g) {
+		GraphProperty[] properties = g.getProperties("COMMUNITIES");
+		for (GraphProperty gp : properties) {
+			Communities communities = (Communities) gp;
+			HashMap<Integer, Byte> map = new HashMap<Integer, Byte>();
+			// TODO implement - start
+			for (Node n : g.getNodes()) {
+				map.put(n.getIndex(), (byte) (((n.getIndex() + this.offset) % 7) + 1));
 			}
-			graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
+			// TODO implement - end
+			g.addProperty(g.getNextKey("ROLES"),
+					new gtna.communities.Roles(map));
 		}
-		return graph;
+		return g;
 	}
 
 	@Override
 	public boolean applicable(Graph g) {
-		return true;
+		return g.hasProperty("COMMUNITIES_0");
 	}
 
 }

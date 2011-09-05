@@ -87,7 +87,7 @@ public class RandomRingIDSpaceSimple extends TransformationImpl implements
 			for (int i = 0; i < partitions.length; i++) {
 				partitions[i] = new RingPartitionSimple(RingID.rand(rand, idSpace));
 			}
-			graph.addProperty("ID_SPACE_" + RandomIDSpace.nextIDSpace(graph), idSpace);
+			graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
 		}
 		return graph;
 	}
