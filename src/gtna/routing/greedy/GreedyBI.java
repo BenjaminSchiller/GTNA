@@ -40,7 +40,6 @@ import gtna.graph.Node;
 import gtna.id.BIID;
 import gtna.id.BIIDSpace;
 import gtna.id.BIPartition;
-import gtna.id.IDSpace;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -103,13 +102,6 @@ public class GreedyBI extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 			}
 		}
 		if (minNode == -1) {
-//			System.out.println("\n\n=> " + target + " (minDist=" + minDist + ")");
-//			for(int index : route){
-//				System.out.println("  " + this.p[index] + " @ " + this.p[index].distance(target));
-//			}
-//			for(int out : nodes[current].getOutgoingEdges()){
-//				System.out.println("  ..." + this.p[out] + " @ " + this.p[out].distance(target));
-//			}
 			return new RouteImpl(route, false);
 		}
 		return this.route(route, minNode, target, rand, nodes);
