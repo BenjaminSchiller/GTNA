@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * RingPartitionSingleID.java
+ * RandomIDSpace.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,69 +33,20 @@
  * ---------------------------------------
  *
  */
-package gtna.id.ring;
+package gtna.transformation.id;
 
-import gtna.id.ID;
-import gtna.id.Partition;
+import gtna.graph.Graph;
 
 /**
  * @author benni
  * 
  */
-public class RingPartitionSimple implements Partition {
-	private RingID id;
-
-	public RingPartitionSimple(RingID id) {
-		this.id = id;
+public class RandomIDSpace {
+	protected static int nextIDSpace(Graph graph) {
+		int index = 0;
+		while (graph.hasProperty("ID_SPACE_" + index)) {
+			index++;
+		}
+		return index;
 	}
-
-	@Override
-	public double distance(ID id) {
-		return this.id.distance(id);
-	}
-
-	@Override
-	public boolean equals(Partition partition) {
-		return this.id.equals(((RingPartitionSimple) partition).getId());
-	}
-
-	@Override
-	public boolean contains(ID id) {
-		return this.id.equals((RingID) id);
-	}
-
-	@Override
-	public ID getRepresentativeID() {
-		return this.id;
-	}
-
-	public String toString() {
-		return "RingParitionSimple(" + this.id.getPosition() + ")";
-	}
-
-	public RingPartitionSimple(String stringRepresentation, RingIDSpace idSpace) {
-		stringRepresentation = stringRepresentation.replace("(", "").replace(
-				")", "");
-		this.id = new RingID(Double.parseDouble(stringRepresentation), idSpace);
-	}
-
-	public String getStringRepresentation() {
-		return "(" + this.id.getPosition() + ")";
-	}
-
-	/**
-	 * @return the id
-	 */
-	public RingID getId() {
-		return this.id;
-	}
-
-	/**
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(RingID id) {
-		this.id = id;
-	}
-
 }

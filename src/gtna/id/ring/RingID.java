@@ -50,16 +50,22 @@ import java.util.Random;
 public class RingID implements ID, Comparable<RingID> {
 	private double position;
 
-	public RingID(double pos) {
-		this.position = Math.abs(pos) % 1.0;
+	private RingIDSpace idSpace;
+
+	public RingID(double pos, RingIDSpace idSpace) {
+		this.position = Math.abs(pos) % idSpace.getModulus();
+		this.idSpace = idSpace;
 	}
 
 	@Override
 	public double distance(ID id) {
 		double dest = ((RingID) id).getPosition();
-		double dist = this.position <= dest ? dest - this.position : dest + 1
-				- this.position;
-		return dist <= 0.5 ? dist : 1 - dist;
+		if (this.idSpace.isWrapAround()) {
+			return Math.abs(dest - this.position)
+					% (this.idSpace.getModulus() / 2.0);
+		} else {
+			return Math.abs(dest - this.position);
+		}
 	}
 
 	@Override
@@ -67,8 +73,8 @@ public class RingID implements ID, Comparable<RingID> {
 		return this.position == ((RingID) id).getPosition();
 	}
 
-	public static RingID rand(Random rand) {
-		return new RingID(rand.nextDouble());
+	public static RingID rand(Random rand, RingIDSpace idSpace) {
+		return new RingID(rand.nextDouble() * idSpace.getModulus(), idSpace);
 	}
 
 	/**

@@ -57,37 +57,44 @@ public class RandomRingIDSpace extends TransformationImpl implements
 		Transformation {
 	private int realities;
 
+	private double modulus;
+
+	private boolean wrapAround;
+
 	public RandomRingIDSpace() {
 		super("RANDOM_RING_ID_SPACE", new String[] {}, new String[] {});
 		this.realities = 1;
+		this.modulus = 1.0;
+		this.wrapAround = true;
 	}
 
-	public RandomRingIDSpace(int realities) {
-		super("RANDOM_RING_ID_SPACE", new String[] { "REALITIES" },
-				new String[] { "" + realities });
+	public RandomRingIDSpace(int realities, double modulus, boolean wrapAround) {
+		super("RANDOM_RING_ID_SPACE", new String[] { "REALITIES", "MODULUS",
+				"WRAP_AROUND" }, new String[] { "" + realities, "" + modulus,
+				"" + wrapAround });
 		this.realities = realities;
+		this.modulus = modulus;
+		this.wrapAround = wrapAround;
 	}
 
 	@Override
 	public Graph transform(Graph graph) {
 		Random rand = new Random();
 		for (int r = 0; r < this.realities; r++) {
+			RingPartition[] partitions = new RingPartition[graph.getNodes().length];
+			RingIDSpace idSpace = new RingIDSpace(partitions, this.modulus,
+					this.wrapAround);
 			RingID[] ids = new RingID[graph.getNodes().length];
 			for (int i = 0; i < ids.length; i++) {
-				ids[i] = RingID.rand(rand);
+				ids[i] = RingID.rand(rand, idSpace);
 			}
 			Arrays.sort(ids);
-			RingPartition[] partitions = new RingPartition[graph.getNodes().length];
 			for (int i = 0; i < partitions.length; i++) {
 				partitions[i] = new RingPartition(ids[i], ids[(i + 1)
 						% ids.length]);
 			}
 			Util.randomize(partitions, rand);
-			RingIDSpace idSpace = new RingIDSpace(partitions);
-			graph.addProperty("ID_SPACE_" + r, idSpace);
-			if(r == 0){
-				graph.addProperty("ID_SPACE", idSpace);
-			}
+			graph.addProperty("ID_SPACE_" + RandomIDSpace.nextIDSpace(graph), idSpace);
 		}
 		return graph;
 	}

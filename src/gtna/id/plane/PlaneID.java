@@ -48,17 +48,28 @@ public class PlaneID implements ID, Comparable<PlaneID> {
 
 	private double y;
 
-	public PlaneID(double x, double y) {
-		this.x = x;
-		this.y = y;
+	private PlaneIDSpaceSimple idSpace;
+
+	public PlaneID(double x, double y, PlaneIDSpaceSimple idSpace) {
+		this.x = x % idSpace.getModulusX();
+		this.y = y % idSpace.getModulusY();
+		this.idSpace = idSpace;
 	}
 
 	@Override
 	public double distance(ID id) {
 		PlaneID to = (PlaneID) id;
-		double temp = Math.pow(this.x - to.getX(), 2);
-		temp += Math.pow(this.y - to.getY(), 2);
-		return Math.sqrt(temp);
+		if (this.idSpace.isWrapAround()) {
+			double dx = Math.abs(this.x - to.getX())
+					% (this.idSpace.getModulusX() / 2.0);
+			double dy = Math.abs(this.y - to.getY())
+					% (this.idSpace.getModulusY() / 2.0);
+			return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+		} else {
+			double dx = this.x - to.getX();
+			double dy = this.y - to.getY();
+			return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+		}
 	}
 
 	@Override
@@ -67,8 +78,9 @@ public class PlaneID implements ID, Comparable<PlaneID> {
 				&& this.y == ((PlaneID) id).getY();
 	}
 
-	public static PlaneID rand(Random rand) {
-		return new PlaneID(rand.nextDouble(), rand.nextDouble());
+	public static PlaneID rand(Random rand, PlaneIDSpaceSimple idSpace) {
+		return new PlaneID(rand.nextDouble() * idSpace.getModulusX(),
+				rand.nextDouble() * idSpace.getModulusY(), idSpace);
 	}
 
 	/**

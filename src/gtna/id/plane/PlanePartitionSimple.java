@@ -74,11 +74,12 @@ public class PlanePartitionSimple implements Partition {
 				+ ")";
 	}
 
-	public PlanePartitionSimple(String stringRepresentation) {
+	public PlanePartitionSimple(String stringRepresentation,
+			PlaneIDSpaceSimple idSpace) {
 		String[] temp = stringRepresentation.replace("(", "").replace(")", "")
 				.split("/");
 		this.id = new PlaneID(Double.parseDouble(temp[0]),
-				Double.parseDouble(temp[1]));
+				Double.parseDouble(temp[1]), idSpace);
 	}
 
 	public String getStringRepresentation() {

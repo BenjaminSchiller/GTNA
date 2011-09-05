@@ -52,12 +52,35 @@ import java.util.Random;
 public class PlaneIDSpaceSimple implements IDSpace {
 	private PlanePartitionSimple[] partitions;
 
+	private double modulusX;
+
+	private double modulusY;
+
+	private boolean wrapAround;
+
+	private double maxDistance;
+
 	public PlaneIDSpaceSimple() {
 		this.partitions = new PlanePartitionSimple[] {};
+		this.modulusX = Double.MAX_VALUE;
+		this.modulusY = Double.MAX_VALUE;
+		this.wrapAround = true;
+		this.maxDistance = Double.MAX_VALUE;
 	}
 
-	public PlaneIDSpaceSimple(PlanePartitionSimple[] partitions) {
+	public PlaneIDSpaceSimple(PlanePartitionSimple[] partitions,
+			double modulusX, double modulusY, boolean wrapAround) {
 		this.partitions = partitions;
+		this.modulusX = modulusX;
+		this.modulusY = modulusY;
+		this.wrapAround = wrapAround;
+		if (this.wrapAround) {
+			this.maxDistance = Math.sqrt(Math.pow(this.modulusX / 2.0, 2)
+					+ Math.pow(this.modulusY / 2.0, 2));
+		} else {
+			this.maxDistance = Math.sqrt(Math.pow(this.modulusX, 2)
+					+ Math.pow(this.modulusY, 2));
+		}
 	}
 
 	@Override
@@ -77,7 +100,7 @@ public class PlaneIDSpaceSimple implements IDSpace {
 
 	@Override
 	public double getMaxDistance() {
-		return Double.MAX_VALUE;
+		return this.maxDistance;
 	}
 
 	@Override
@@ -88,13 +111,27 @@ public class PlaneIDSpaceSimple implements IDSpace {
 		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
 		fw.writeln(this.getClass().getCanonicalName().toString());
 
-		// KEYS
+		// KEY
 		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
 		fw.writeln(key);
 
-		// # OF PARTITIONS
+		// # MODULUS_X
+		fw.writeComment("Modulus-X");
+		fw.writeln(this.modulusX);
+
+		// # MODULUS_Y
+		fw.writeComment("Modulus-Y");
+		fw.writeln(this.modulusY);
+
+		// # WRAP-AROUND
+		fw.writeComment("Wrap-around");
+		fw.writeln(this.wrapAround + "");
+
+		// # PARTITIONS
 		fw.writeComment("Partitions");
 		fw.writeln(this.partitions.length);
+
+		fw.writeln();
 
 		// PARTITIONS
 		int index = 0;
@@ -112,24 +149,86 @@ public class PlaneIDSpaceSimple implements IDSpace {
 		// CLASS
 		fr.readLine();
 
-		// KEYS
+		// KEY
 		String key = fr.readLine();
 
-		// # OF PARTITIONS
+		// # MUDULUS_X
+		this.modulusX = Double.parseDouble(fr.readLine());
+
+		// # MUDULUS_Y
+		this.modulusY = Double.parseDouble(fr.readLine());
+
+		// # WRAP-AROUND
+		this.wrapAround = Boolean.parseBoolean(fr.readLine());
+
+		// # PARTITIONS
 		int partitions = Integer.parseInt(fr.readLine());
 		this.partitions = new PlanePartitionSimple[partitions];
+
+		if (this.wrapAround) {
+			this.maxDistance = Math.sqrt(Math.pow(this.modulusX / 2.0, 2)
+					+ Math.pow(this.modulusY / 2.0, 2));
+		} else {
+			this.maxDistance = Math.sqrt(Math.pow(this.modulusX, 2)
+					+ Math.pow(this.modulusY, 2));
+		}
 
 		// PARTITIONS
 		String line = null;
 		while ((line = fr.readLine()) != null) {
 			String[] temp = line.split(":");
 			int index = Integer.parseInt(temp[0]);
-			this.partitions[index] = new PlanePartitionSimple(temp[1]);
+			this.partitions[index] = new PlanePartitionSimple(temp[1], this);
 		}
 
 		fr.close();
 
 		graph.addProperty(key, this);
+	}
+
+	/**
+	 * @return the modulusX
+	 */
+	public double getModulusX() {
+		return this.modulusX;
+	}
+
+	/**
+	 * @param modulusX
+	 *            the modulusX to set
+	 */
+	public void setModulusX(double modulusX) {
+		this.modulusX = modulusX;
+	}
+
+	/**
+	 * @return the modulusY
+	 */
+	public double getModulusY() {
+		return this.modulusY;
+	}
+
+	/**
+	 * @param modulusY
+	 *            the modulusY to set
+	 */
+	public void setModulusY(double modulusY) {
+		this.modulusY = modulusY;
+	}
+
+	/**
+	 * @return the wrapAround
+	 */
+	public boolean isWrapAround() {
+		return this.wrapAround;
+	}
+
+	/**
+	 * @param wrapAround
+	 *            the wrapAround to set
+	 */
+	public void setWrapAround(boolean wrapAround) {
+		this.wrapAround = wrapAround;
 	}
 
 }

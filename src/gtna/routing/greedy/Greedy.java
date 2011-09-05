@@ -107,8 +107,8 @@ public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 
 	@Override
 	public boolean applicable(Graph graph) {
-		return graph.hasProperty("ID_SPACE")
-				&& graph.getProperty("ID_SPACE") instanceof IDSpace;
+		return graph.hasProperty("ID_SPACE_0")
+				&& graph.getProperty("ID_SPACE_0") instanceof IDSpace;
 	}
 
 	@Override

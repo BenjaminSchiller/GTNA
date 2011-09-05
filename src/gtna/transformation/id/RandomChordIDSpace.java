@@ -114,10 +114,7 @@ public class RandomChordIDSpace extends TransformationImpl implements
 			// Util.randomize(partitions, rand);
 			idSpace.setPartitions(partitions);
 
-			graph.addProperty("ID_SPACE_" + r, idSpace);
-			if (r == 0) {
-				graph.addProperty("ID_SPACE", idSpace);
-			}
+			graph.addProperty("ID_SPACE_" + RandomIDSpace.nextIDSpace(graph), idSpace);
 		}
 		return graph;
 	}

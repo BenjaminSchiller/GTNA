@@ -37,6 +37,8 @@ package gtna;
 
 import gtna.communities.Communities;
 import gtna.communities.Community;
+import gtna.communities.Role;
+import gtna.communities.Roles;
 import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
@@ -55,6 +57,7 @@ import gtna.routing.greedy.GreedyBacktracking;
 import gtna.routing.lookahead.Lookahead;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
+import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.util.Config;
 import gtna.util.Stats;
@@ -89,8 +92,9 @@ public class NodesTest {
 		// testID();
 		// testRouting();
 		// testCommunities();
-		// testGraphProperties();
-		testGraphIO();
+		// testRoles();
+		testIDSpaces();
+		// testGraphIO();
 	}
 
 	private static void testGraphIO() {
@@ -114,32 +118,23 @@ public class NodesTest {
 		GraphWriter.writeWithProperties(g4, f4);
 	}
 
-	private static void testGraphProperties() {
-		Transformation t1 = new RandomPlaneIDSpaceSimple(2);
-		Transformation[] t = new Transformation[] { t1 };
-		Network nw_1 = new ErdosRenyi(10, 3, true, null, t);
-		Graph g1 = nw_1.generate();
-		Graph g2 = nw_1.generate();
+	private static void testIDSpaces() {
+		Transformation t1 = new RandomPlaneIDSpaceSimple(1, 100, 500, true);
+		Transformation t2 = new RandomPlaneIDSpaceSimple(2, 10, 0.5, false);
+		Transformation t3 = new RandomRingIDSpaceSimple(1, 1.0, true);
+		Transformation t4 = new RandomRingIDSpaceSimple(2, 111.0, true);
+		Transformation t5 = new RandomRingIDSpace(1, 2.0, true);
+		Transformation t6 = new RandomRingIDSpace(2, 222.0, true);
+
+		Transformation[] t = new Transformation[] { t1, t2, t3, t4, t5, t6 };
+		Network nw = new ErdosRenyi(10, 3, true, null, t);
+		Graph g1 = nw.generate();
 		for (Transformation trans : t) {
 			g1 = trans.transform(g1);
 		}
-		for (String key : g1.getProperties().keySet()) {
-			GraphProperty prop1 = g1.getProperty(key);
-			String f1 = "temp/graph-1-" + key + ".txt";
-			String f2 = "temp/graph-2-" + key + ".txt";
-			prop1.write(f1, key);
-			try {
-				GraphProperty prop2 = (GraphProperty) ClassLoader
-						.getSystemClassLoader()
-						.loadClass(
-								prop1.getClass().toString()
-										.replace("class ", "")).newInstance();
-				prop2.read(f1, g2);
-				prop2.write(f2, key);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		GraphWriter.writeWithProperties(g1, "./temp/test/g1.txt");
+		Graph g2 = GraphReader.readWithProperties("./temp/test/g1.txt");
+		GraphWriter.writeWithProperties(g2, "./temp/test/g2.txt");
 	}
 
 	private static void testCommunities() {
@@ -155,11 +150,23 @@ public class NodesTest {
 				new Community(1, c1), new Community(2, c2) };
 		String key = "weoifghewg";
 		Communities c = new Communities(cc);
-		c.write("temp/c1.txt", key);
+		c.write("temp/test/c1.txt", key);
 		Graph graph = new Graph("TEST");
 		Communities cc2 = new Communities();
-		cc2.read("temp/c1.txt", graph);
-		cc2.write("temp/c2.txt", key);
+		cc2.read("temp/test/c1.txt", graph);
+		cc2.write("temp/test/c2.txt", key);
+	}
+
+	private static void testRoles() {
+		ArrayList<Role> roles = new ArrayList<Role>();
+		roles.add(new Role(Role.KINLESS_NODE, new int[] { 0, 1, 2, 5 }));
+		roles.add(new Role(Role.PERIPHERAL, new int[] { 3, 4, 6 }));
+		Roles r = new Roles(roles);
+		r.write("temp/test/r1.txt", "woigehwieg");
+		Graph graph = new Graph("TEST");
+		Roles r2 = new Roles();
+		r2.read("temp/test/r1.txt", graph);
+		r2.write("temp/test/r2.txt", "oweiugz8998");
 	}
 
 	private static void testRouting() {
@@ -204,7 +211,7 @@ public class NodesTest {
 
 	private static void testID() {
 		Network nw = new ErdosRenyi(2, 2, true, null, null);
-		Transformation t = new RandomRingIDSpaceSimple(4);
+		Transformation t = new RandomRingIDSpaceSimple(4, 1, true);
 		Graph g = nw.generate();
 		g = t.transform(g);
 		int r = 0;

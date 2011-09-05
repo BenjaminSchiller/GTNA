@@ -117,13 +117,13 @@ public class GreedyBI extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 
 	@Override
 	public boolean applicable(Graph graph) {
-		return graph.hasProperty("ID_SPACE")
-				&& graph.getProperty("ID_SPACE") instanceof BIIDSpace;
+		return graph.hasProperty("ID_SPACE_0")
+				&& graph.getProperty("ID_SPACE_0") instanceof BIIDSpace;
 	}
 
 	@Override
 	public void preprocess(Graph graph) {
-		this.idSpace = (BIIDSpace) graph.getProperty("ID_SPACE");
+		this.idSpace = (BIIDSpace) graph.getProperty("ID_SPACE_0");
 		this.p = this.idSpace.getPartitions();
 	}
 

@@ -52,15 +52,26 @@ public class RandomPlaneIDSpaceSimple extends TransformationImpl implements
 		Transformation {
 	private int realities;
 
+	private double modulusX;
+
+	private double modulusY;
+
+	private boolean wrapAround;
+
 	public RandomPlaneIDSpaceSimple() {
 		super("RANDOM_PLANE_ID_SPACE_SIMPLE", new String[] {}, new String[] {});
 		this.realities = 1;
 	}
 
-	public RandomPlaneIDSpaceSimple(int realities) {
-		super("RANDOM_PLANE_ID_SPACE_SIMPLE", new String[] { "REALITIES" },
-				new String[] { "" + realities });
+	public RandomPlaneIDSpaceSimple(int realities, double modulusX,
+			double modulusY, boolean wrapAround) {
+		super("RANDOM_PLANE_ID_SPACE_SIMPLE", new String[] { "REALITIES",
+				"MODULUS_X", "MODULUS_Y", "WRAP_AROUND" }, new String[] {
+				"" + realities, "" + modulusX, "" + modulusY, "" + wrapAround });
 		this.realities = realities;
+		this.modulusX = modulusX;
+		this.modulusY = modulusY;
+		this.wrapAround = wrapAround;
 	}
 
 	@Override
@@ -69,14 +80,14 @@ public class RandomPlaneIDSpaceSimple extends TransformationImpl implements
 		for (int r = 0; r < this.realities; r++) {
 			PlanePartitionSimple[] partitions = new PlanePartitionSimple[graph
 					.getNodes().length];
+			PlaneIDSpaceSimple idSpace = new PlaneIDSpaceSimple(partitions,
+					this.modulusX, this.modulusY, this.wrapAround);
 			for (int i = 0; i < partitions.length; i++) {
-				partitions[i] = new PlanePartitionSimple(PlaneID.rand(rand));
+				partitions[i] = new PlanePartitionSimple(PlaneID.rand(rand,
+						idSpace));
 			}
-			PlaneIDSpaceSimple idSpace = new PlaneIDSpaceSimple(partitions);
-			graph.addProperty("ID_SPACE_" + r, idSpace);
-			if (r == 0) {
-				graph.addProperty("ID_SPACE", idSpace);
-			}
+			graph.addProperty("ID_SPACE_" + RandomIDSpace.nextIDSpace(graph),
+					idSpace);
 		}
 		return graph;
 	}

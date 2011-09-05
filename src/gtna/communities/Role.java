@@ -60,6 +60,20 @@ public class Role {
 
 	public static final byte GLOBAL_HUB = 7;
 
+	public static final byte R1 = Role.ULTRA_PERIPHERAL;
+
+	public static final byte R2 = Role.PERIPHERAL;
+
+	public static final byte R3 = Role.SATTELITE_CONNECTOR;
+
+	public static final byte R4 = Role.KINLESS_NODE;
+
+	public static final byte R5 = Role.PRINCIPAL_HUB;
+
+	public static final byte R6 = Role.CONNECTOR_HUP;
+
+	public static final byte R7 = Role.GLOBAL_HUB;
+
 	private byte type;
 
 	private int[] nodes;
@@ -85,7 +99,7 @@ public class Role {
 		String sep1 = Config.get("GRAPH_PROPERTY_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_PROPERTY_SEPARATOR_2");
 		String temp1[] = stringRepresentation.split(sep1);
-		this.type = Byte.parseByte(temp1[0]);
+		this.type = Byte.parseByte(temp1[0].replace("R", ""));
 		if (temp1.length < 2 || temp1[1].length() == 0) {
 			this.nodes = new int[] {};
 		} else {
@@ -100,7 +114,7 @@ public class Role {
 	public String getStringRepresentation() {
 		String sep1 = Config.get("GRAPH_PROPERTY_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_PROPERTY_SEPARATOR_2");
-		StringBuffer buff = new StringBuffer(type + sep1);
+		StringBuffer buff = new StringBuffer("R" + this.type + sep1);
 		if (this.nodes.length == 0) {
 			return buff.toString();
 		}

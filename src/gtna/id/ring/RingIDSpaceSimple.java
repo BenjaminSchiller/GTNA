@@ -48,15 +48,24 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RingIDSpaceSimple implements IDSpace {
+public class RingIDSpaceSimple extends RingIDSpace implements IDSpace {
 	private RingPartitionSimple[] partitions;
+
+	private double modulus;
 
 	public RingIDSpaceSimple() {
 		this.partitions = new RingPartitionSimple[] {};
+		this.modulus = Double.MAX_VALUE;
+		this.wrapAround = false;
+		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
 	}
 
-	public RingIDSpaceSimple(RingPartitionSimple[] partitions) {
+	public RingIDSpaceSimple(RingPartitionSimple[] partitions, double modulus,
+			boolean wrapAround) {
 		this.partitions = partitions;
+		this.modulus = modulus;
+		this.wrapAround = wrapAround;
+		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
 	}
 
 	@Override
@@ -76,7 +85,7 @@ public class RingIDSpaceSimple implements IDSpace {
 
 	@Override
 	public double getMaxDistance() {
-		return 1;
+		return this.maxDistance;
 	}
 
 	@Override
@@ -87,13 +96,23 @@ public class RingIDSpaceSimple implements IDSpace {
 		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
 		fw.writeln(this.getClass().getCanonicalName().toString());
 
-		// KEYS
+		// KEY
 		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
 		fw.writeln(key);
 
-		// # OF PARTITIONS
+		// # MODULUS
+		fw.writeComment("Modulus");
+		fw.writeln(this.modulus);
+
+		// # WRAP-AROUND
+		fw.writeComment("Wrap-around");
+		fw.writeln(this.wrapAround + "");
+
+		// # PARTITIONS
 		fw.writeComment("Partitions");
 		fw.writeln(this.partitions.length);
+
+		fw.writeln();
 
 		// PARTITIONS
 		int index = 0;
@@ -111,24 +130,62 @@ public class RingIDSpaceSimple implements IDSpace {
 		// CLASS
 		fr.readLine();
 
-		// KEYS
+		// KEY
 		String key = fr.readLine();
 
-		// # OF PARTITIONS
+		// # MUDULUS
+		this.modulus = Double.parseDouble(fr.readLine());
+
+		// # WRAP-AROUND
+		this.wrapAround = Boolean.parseBoolean(fr.readLine());
+
+		// # PARTITIONS
 		int partitions = Integer.parseInt(fr.readLine());
 		this.partitions = new RingPartitionSimple[partitions];
+
+		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
 
 		// PARTITIONS
 		String line = null;
 		while ((line = fr.readLine()) != null) {
 			String[] temp = line.split(":");
 			int index = Integer.parseInt(temp[0]);
-			this.partitions[index] = new RingPartitionSimple(temp[1]);
+			this.partitions[index] = new RingPartitionSimple(temp[1], this);
 		}
 
 		fr.close();
 
 		graph.addProperty(key, this);
+	}
+
+	/**
+	 * @return the modulus
+	 */
+	public double getModulus() {
+		return this.modulus;
+	}
+
+	/**
+	 * @param modulus
+	 *            the modulus to set
+	 */
+	public void setModulus(double modulus) {
+		this.modulus = modulus;
+	}
+
+	/**
+	 * @return the wrapAround
+	 */
+	public boolean isWrapAround() {
+		return this.wrapAround;
+	}
+
+	/**
+	 * @param wrapAround
+	 *            the wrapAround to set
+	 */
+	public void setWrapAround(boolean wrapAround) {
+		this.wrapAround = wrapAround;
 	}
 
 }

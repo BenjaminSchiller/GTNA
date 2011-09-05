@@ -35,6 +35,8 @@
  */
 package gtna.communities;
 
+import java.util.ArrayList;
+
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.io.Filereader;
@@ -55,9 +57,27 @@ public class Roles implements GraphProperty {
 		this.roleOfNode = new byte[] {};
 	}
 
-	public Roles(Role[] roles) {
-		this.roles = roles;
+	public Roles(ArrayList<Role> roles) {
+		this.initRoles();
+		for (Role role : roles) {
+			this.roles[role.getType() - 1] = role;
+		}
 		this.computeRoleOfNodes();
+	}
+
+	public Roles(Role[] roles) {
+		this.initRoles();
+		for (Role role : roles) {
+			this.roles[role.getType() - 1] = role;
+		}
+		this.computeRoleOfNodes();
+	}
+
+	private void initRoles() {
+		this.roles = new Role[7];
+		for (int i = 0; i < this.roles.length; i++) {
+			this.roles[i] = new Role((byte) (i + 1));
+		}
 	}
 
 	private void computeRoleOfNodes() {

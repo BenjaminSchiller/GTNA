@@ -55,15 +55,25 @@ public class RandomRingIDSpaceSimple extends TransformationImpl implements
 		Transformation {
 	private int realities;
 
+	private double modulus;
+
+	private boolean wrapAround;
+
 	public RandomRingIDSpaceSimple() {
 		super("RANDOM_RING_ID_SPACE_SIMPLE", new String[] {}, new String[] {});
 		this.realities = 1;
+		this.modulus = 1.0;
+		this.wrapAround = true;
 	}
 
-	public RandomRingIDSpaceSimple(int realities) {
-		super("RANDOM_RING_ID_SPACE_SIMPLE", new String[] { "REALITIES" },
-				new String[] { "" + realities });
+	public RandomRingIDSpaceSimple(int realities, double modulus,
+			boolean wrapAround) {
+		super("RANDOM_RING_ID_SPACE_SIMPLE", new String[] { "REALITIES",
+				"MODULUS", "WRAP_AROUND" }, new String[] { "" + realities,
+				"" + modulus, "" + wrapAround });
 		this.realities = realities;
+		this.modulus = modulus;
+		this.wrapAround = wrapAround;
 	}
 
 	@Override
@@ -72,14 +82,12 @@ public class RandomRingIDSpaceSimple extends TransformationImpl implements
 		for (int r = 0; r < this.realities; r++) {
 			RingPartitionSimple[] partitions = new RingPartitionSimple[graph
 					.getNodes().length];
+			RingIDSpaceSimple idSpace = new RingIDSpaceSimple(partitions,
+					this.modulus, this.wrapAround);
 			for (int i = 0; i < partitions.length; i++) {
-				partitions[i] = new RingPartitionSimple(RingID.rand(rand));
+				partitions[i] = new RingPartitionSimple(RingID.rand(rand, idSpace));
 			}
-			RingIDSpaceSimple idSpace = new RingIDSpaceSimple(partitions);
-			graph.addProperty("ID_SPACE_" + r, idSpace);
-			if(r == 0){
-				graph.addProperty("ID_SPACE", idSpace);
-			}
+			graph.addProperty("ID_SPACE_" + RandomIDSpace.nextIDSpace(graph), idSpace);
 		}
 		return graph;
 	}
