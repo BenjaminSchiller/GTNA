@@ -173,4 +173,12 @@ public class Graph {
 		this.nodes = nodes;
 		this.timer.end();
 	}
+
+    /**
+     * @param nodeIndex
+     * @return the node with index nodeIndex
+     */
+    public Node getNode(int nodeIndex){
+        return nodes[nodeIndex];
+    }
 }

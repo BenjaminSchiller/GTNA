@@ -44,19 +44,18 @@ import java.util.ArrayList;
  * 
  */
 public class Role {
-	// TODO check names...
 
 	public static final byte ULTRA_PERIPHERAL = 1;
 
 	public static final byte PERIPHERAL = 2;
 
-	public static final byte SATTELITE_CONNECTOR = 3;
+	public static final byte SATELLITE_CONNECTOR = 3;
 
 	public static final byte KINLESS_NODE = 4;
 
-	public static final byte PRINCIPAL_HUB = 5;
+	public static final byte PROVINCIAL_HUB = 5;
 
-	public static final byte CONNECTOR_HUP = 6;
+	public static final byte CONNECTOR_HUB = 6;
 
 	public static final byte GLOBAL_HUB = 7;
 
@@ -64,13 +63,13 @@ public class Role {
 
 	public static final byte R2 = Role.PERIPHERAL;
 
-	public static final byte R3 = Role.SATTELITE_CONNECTOR;
+	public static final byte R3 = Role.SATELLITE_CONNECTOR;
 
 	public static final byte R4 = Role.KINLESS_NODE;
 
-	public static final byte R5 = Role.PRINCIPAL_HUB;
+	public static final byte R5 = Role.PROVINCIAL_HUB;
 
-	public static final byte R6 = Role.CONNECTOR_HUP;
+	public static final byte R6 = Role.CONNECTOR_HUB;
 
 	public static final byte R7 = Role.GLOBAL_HUB;
 

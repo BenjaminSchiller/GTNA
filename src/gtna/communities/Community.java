@@ -119,4 +119,11 @@ public class Community {
 	public void setIndex(int index) {
 		this.index = index;
 	}
+
+    /**
+     * @return community size
+     */
+    public int size(){
+        return getNodes().length;
+    }
 }

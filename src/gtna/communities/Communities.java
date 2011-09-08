@@ -110,6 +110,14 @@ public class Communities implements GraphProperty {
 		}
 	}
 
+    public Community[] getCommunities(){
+        return communities;
+    }
+
+    public Community getCommunityOfNode(int nodeIndex){
+        return communities[communityOfNode[nodeIndex]];
+    }
+
 	@Override
 	public boolean write(String filename, String key) {
 		Filewriter fw = new Filewriter(filename);

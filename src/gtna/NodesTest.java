@@ -103,11 +103,11 @@ public class NodesTest {
 		// Transformation t5 = new RandomRingIDSpace(1, 2.0, true);
 		// Transformation t6 = new RandomRingIDSpace(2, 222.0, true);
 		// Transformation[] t = new Transformation[] { t1, t2, t3, t4, t5, t6 };
-		Transformation t1 = new CommunityGeneration(3);
-		Transformation t2 = new CommunityGeneration(5);
-		Transformation t3 = new CommunityGeneration(10);
-		Transformation t4 = new RoleGeneration(0);
-		Transformation t5 = new RoleGeneration(1);
+		Transformation t1 = new CommunityGeneration();
+		Transformation t2 = new CommunityGeneration();
+		Transformation t3 = new CommunityGeneration();
+		Transformation t4 = new RoleGeneration();
+		Transformation t5 = new RoleGeneration();
 		Transformation[] t = new Transformation[] { t1, t2, t3, t4, t5 };
 
 		Network nw = new ErdosRenyi(30, 3, true, null, t);
