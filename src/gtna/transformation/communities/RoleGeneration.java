@@ -53,7 +53,7 @@ import java.util.HashMap;
 public class RoleGeneration extends TransformationImpl implements Transformation {
 
 	public RoleGeneration() {
-		super("ROLES", new String[] {}, new String[] {});
+		super("ROLE_GENERATION", new String[] {}, new String[] {});
 	}
 
 	@Override

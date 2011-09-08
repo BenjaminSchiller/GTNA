@@ -47,6 +47,7 @@ import gtna.io.GraphWriter;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.util.DescriptionWrapper;
+import gtna.networks.util.ReadableFile;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.Greedy;
@@ -56,7 +57,6 @@ import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityGeneration;
 import gtna.transformation.communities.RoleGeneration;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
-import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.util.Config;
 import gtna.util.Stats;
@@ -96,28 +96,37 @@ public class NodesTest {
 	}
 
 	private static void testProperties() {
-		// Transformation t1 = new RandomPlaneIDSpaceSimple(1, 100, 500, true);
-		// Transformation t2 = new RandomPlaneIDSpaceSimple(2, 10, 0.5, false);
-		// Transformation t3 = new RandomRingIDSpaceSimple(1, 1.0, true);
-		// Transformation t4 = new RandomRingIDSpaceSimple(2, 111.0, true);
-		// Transformation t5 = new RandomRingIDSpace(1, 2.0, true);
-		// Transformation t6 = new RandomRingIDSpace(2, 222.0, true);
-		// Transformation[] t = new Transformation[] { t1, t2, t3, t4, t5, t6 };
-		Transformation t1 = new CommunityGeneration();
-		Transformation t2 = new CommunityGeneration();
-		Transformation t3 = new CommunityGeneration();
-		Transformation t4 = new RoleGeneration();
-		Transformation t5 = new RoleGeneration();
-		Transformation[] t = new Transformation[] { t1, t2, t3, t4, t5 };
+		Config.overwrite("METRICS", "ROLES");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/testRoles/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testRoles/");
+		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 
-		Network nw = new ErdosRenyi(30, 3, true, null, t);
-		Graph g1 = nw.generate();
-		for (Transformation trans : t) {
-			g1 = trans.transform(g1);
-		}
-		GraphWriter.writeWithProperties(g1, "./temp/test/g1.txt");
-		Graph g2 = GraphReader.readWithProperties("./temp/test/g1.txt");
-		GraphWriter.writeWithProperties(g2, "./temp/test/g2.txt");
+		Transformation t1 = new CommunityGeneration();
+		Transformation t2 = new RoleGeneration();
+		Transformation[] t = new Transformation[] { t1, t2 };
+
+		String spi = "./resources/SPI-3-LCC/2010-08.spi.txt";
+		String wot = "./resources/WOT-1-BD/2005-02-25.wot.txt";
+		String spiOut = "./temp/test/spi.txt";
+		String wotOut = "./temp/test/wot.txt";
+
+		// Graph spiG = GraphReader.readOld(spi);
+		// Graph wotG = GraphReader.readOld(wot);
+		// for (Transformation trans : t) {
+		// spiG = trans.transform(spiG);
+		// wotG = trans.transform(wotG);
+		// }
+		// GraphWriter.writeWithProperties(spiG, spiOut);
+		// GraphWriter.writeWithProperties(wotG, wotOut);
+
+		Network spiNW = new ReadableFile("SPI", "spi", spiOut, null, t);
+		Network wotNW = new ReadableFile("WOT", "wot", wotOut, null, t);
+
+		Network[] nw = new Network[] { spiNW, wotNW };
+
+		Series[] s = Series.generate(nw, 10);
+		Plot.allMulti(s, "multi/");
 	}
 
 	private static void testGraphIO() {

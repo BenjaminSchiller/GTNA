@@ -54,7 +54,7 @@ import java.util.TreeSet;
 public class CommunityGeneration extends TransformationImpl implements Transformation {
 
 	public CommunityGeneration() {
-		super("COMMUNITIES", new String[] {}, new String[] {});
+		super("COMMUNITY_GENERATION", new String[] {}, new String[] {});
 	}
 	
 	@Override
