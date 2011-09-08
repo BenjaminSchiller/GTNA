@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Roles.java
+ * Communities.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -42,38 +42,44 @@ import gtna.networks.Network;
 import gtna.util.Distribution;
 import gtna.util.Timer;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
  * @author benni
  * 
  */
-public class Roles extends MetricImpl implements Metric {
-	private Distribution distribution;
+public class Communities extends MetricImpl implements Metric {
+	private Distribution communitySize;
 
 	private Timer runtime;
 
-	public Roles() {
-		super("ROLES");
+	public Communities() {
+		super("COMMUNITIES");
 	}
 
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		if (!g.hasProperty("ROLES_0")) {
+		if (!g.hasProperty("COMMUNITIES_0")) {
 			this.runtime = new Timer();
-			this.distribution = new Distribution(new double[] { 0.0 });
+			this.communitySize = new Distribution(new double[] { 0.0 });
 			this.runtime.end();
-			return;
 		}
 		this.runtime = new Timer();
-		gtna.communities.Roles roles = (gtna.communities.Roles) g
-				.getProperty("ROLES_0");
-		double[] r = new double[roles.getRoles().length];
-		for (int i = 0; i < r.length; i++) {
-			r[i] = (double) roles.getRoles()[i].getNodes().length
+		gtna.communities.Communities communities = (gtna.communities.Communities) g
+				.getProperty("COMMUNITIES_0");
+		double[] c = new double[communities.getCommunities().length];
+		for (int i = 0; i < c.length; i++) {
+			c[i] = (double) communities.getCommunities()[i].getNodes().length
 					/ (double) g.getNodes().length;
 		}
-		this.distribution = new Distribution(r);
+		Arrays.sort(c);
+		for (int i = 0; i < c.length / 2; i++) {
+			double temp = c[i];
+			c[i] = c[c.length - i - 1];
+			c[c.length - i - 1] = temp;
+		}
+		this.communitySize = new Distribution(c);
 		this.runtime.end();
 	}
 
@@ -81,15 +87,16 @@ public class Roles extends MetricImpl implements Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(
-				this.distribution.getDistribution(), "ROLES_DISTRIBUTION",
+				this.communitySize.getDistribution(), "COMMUNITIES_SIZE",
 				folder);
+		success &= DataWriter.writeWithIndex(this.communitySize.getCdf(),
+				"COMMUNITIES_SIZE_CDF", folder);
 		return success;
 	}
 
 	@Override
 	public Value[] getValues() {
-		Value runtime = new Value("ROLES_RUNTIME", this.runtime.getRuntime());
-		return new Value[] { runtime };
+		return new Value[] {};
 	}
 
 }

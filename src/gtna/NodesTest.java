@@ -96,11 +96,14 @@ public class NodesTest {
 	}
 
 	private static void testProperties() {
-		Config.overwrite("METRICS", "ROLES");
+		Config.overwrite("METRICS", "COMMUNITIES, ROLES");
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/testRoles/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testRoles/");
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+
+		boolean generate = false;
+		int times = 1;
 
 		Transformation t1 = new CommunityGeneration();
 		Transformation t2 = new RoleGeneration();
@@ -122,11 +125,17 @@ public class NodesTest {
 
 		Network spiNW = new ReadableFile("SPI", "spi", spiOut, null, t);
 		Network wotNW = new ReadableFile("WOT", "wot", wotOut, null, t);
-
 		Network[] nw = new Network[] { spiNW, wotNW };
 
-		Series[] s = Series.generate(nw, 10);
-		Plot.allMulti(s, "multi/");
+		// Network nw1 = new ErdosRenyi(10000, 5, true, null, t);
+		// Network nw2 = new ErdosRenyi(10000, 10, true, null, t);
+		// Network nw3 = new ErdosRenyi(10000, 15, true, null, t);
+		// Network nw4 = new ErdosRenyi(10000, 20, true, null, t);
+		// Network nw5 = new ErdosRenyi(10000, 25, true, null, t);
+		// Network[] nw = new Network[] { nw2, nw3, nw4, nw5 };
+
+		Series[] s = generate ? Series.generate(nw, 1) : Series.get(nw);
+		Plot.multiAvg(s, "multi-c-r/");
 	}
 
 	private static void testGraphIO() {
