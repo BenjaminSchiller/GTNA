@@ -36,6 +36,7 @@
 package gtna.data;
 
 import gtna.graph.Graph;
+import gtna.io.GraphWriter;
 import gtna.io.Output;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -263,8 +264,6 @@ public class Series {
 					+ Config.get("GRAPH_FILENAME");
 			String graphInfoFilename = s.graphFolders[i]
 					+ Config.get("GRAPH_INFO_FILENAME");
-			// String graphCoordinatesFilename = s.graphFolders[i]
-			// + Config.get("GRAPH_COORDINATES_FILENAME");
 
 			String networkOutput = Config.get("NETWORK_GENERATION").replace(
 					"%NETWORK", n.description());
@@ -274,12 +273,6 @@ public class Series {
 			String graphOutput = "  "
 					+ Config.get("GRAPH_WRITER_OUTPUT").replace("%FILENAME",
 							graphFilename);
-			String graphInfoOutput = "  "
-					+ Config.get("GRAPH_WRITER_OUTPUT").replace("%FILENAME",
-							graphInfoFilename);
-			// String graphCoordinatesOutput = "  "
-			// + Config.get("GRAPH_WRITER_OUTPUT").replace("%FILENAME",
-			// graphCoordinatesFilename);
 			if (networkOutput.length() > maxLength) {
 				maxLength = networkOutput.length();
 			}
@@ -325,7 +318,8 @@ public class Series {
 			Singles singles = new Singles(n.description(), metrics);
 			singles.write(singlesFilename);
 			swTimer.end();
-
+			
+//			GraphWriter.writeWithProperties(g, graphFilename);
 			// TODO write graph depending on configuration
 			// TODO write properties in separate file
 			// Timer gTimer = new Timer(graphOutput

@@ -58,6 +58,7 @@ import gtna.transformation.communities.CommunityGeneration;
 import gtna.transformation.communities.RoleGeneration;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
+import gtna.transformation.id.RandomRingIDSpaceSimpleCommunities;
 import gtna.util.Config;
 import gtna.util.Stats;
 
@@ -77,6 +78,7 @@ public class NodesTest {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
+		Stats stats = new Stats();
 		// testGraph();
 		// int total = 5000000;
 		// testHash(total);
@@ -91,8 +93,46 @@ public class NodesTest {
 		// testID();
 		// testRouting();
 		// testCommunities();
-		testProperties();
+		// testProperties();
 		// testGraphIO();
+		testComunitiesRouting();
+		stats.end();
+	}
+
+	private static void testComunitiesRouting() {
+		Config.overwrite("METRICS", "COMMUNITIES, ROLES, R");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/testRouting/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testRouting/");
+		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+
+		boolean generate = true;
+		int times = 10;
+
+		String spi = "./temp/test/spi.txt";
+		String wot = "./temp/test/wot.txt";
+
+		Transformation t1 = new CommunityGeneration();
+		Transformation t2 = new RoleGeneration();
+		Transformation t3 = new RandomRingIDSpaceSimpleCommunities(1.0, true);
+		Transformation t4 = new RandomRingIDSpaceSimple(1, 1.0, true);
+		Transformation[] t_1 = new Transformation[] { t1, t2, t3 };
+		Transformation[] t_2 = new Transformation[] { t4 };
+		
+		RoutingAlgorithm ra = new Lookahead(100);
+
+		Network nw_1 = new DescriptionWrapper(new ReadableFile("SPI", "spi",
+				spi, ra, t_1), "SPI-C");
+		Network nw_2 = new DescriptionWrapper(new ReadableFile("SPI", "spi",
+				spi, ra, t_2), "SPI-R");
+		Network nw_3 = new DescriptionWrapper(new ReadableFile("WOT", "wot",
+				wot, ra, t_1), "WOT-C");
+		Network nw_4 = new DescriptionWrapper(new ReadableFile("WOT", "wot",
+				wot, ra, t_2), "WOT-R");
+		Network[] nw = new Network[] { nw_1, nw_2, nw_3, nw_4 };
+
+		Series[] s = generate ? Series.generate(nw, times) : Series.get(nw);
+		Plot.multiAvg(s, "greedy-lookahead/");
 	}
 
 	private static void testProperties() {
@@ -102,12 +142,13 @@ public class NodesTest {
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 
-		boolean generate = false;
+		boolean generate = true;
 		int times = 1;
 
 		Transformation t1 = new CommunityGeneration();
 		Transformation t2 = new RoleGeneration();
-		Transformation[] t = new Transformation[] { t1, t2 };
+		Transformation t3 = new RandomRingIDSpaceSimpleCommunities(1.0, true);
+		Transformation[] t = new Transformation[] { t1, t2, t3 };
 
 		String spi = "./resources/SPI-3-LCC/2010-08.spi.txt";
 		String wot = "./resources/WOT-1-BD/2005-02-25.wot.txt";
@@ -125,7 +166,7 @@ public class NodesTest {
 
 		Network spiNW = new ReadableFile("SPI", "spi", spiOut, null, t);
 		Network wotNW = new ReadableFile("WOT", "wot", wotOut, null, t);
-		Network[] nw = new Network[] { spiNW, wotNW };
+		Network[] nw = new Network[] { spiNW };
 
 		// Network nw1 = new ErdosRenyi(10000, 5, true, null, t);
 		// Network nw2 = new ErdosRenyi(10000, 10, true, null, t);
@@ -135,7 +176,7 @@ public class NodesTest {
 		// Network[] nw = new Network[] { nw2, nw3, nw4, nw5 };
 
 		Series[] s = generate ? Series.generate(nw, 1) : Series.get(nw);
-		Plot.multiAvg(s, "multi-c-r/");
+		Plot.multiAvg(s, "multi-c-ids/");
 	}
 
 	private static void testGraphIO() {
