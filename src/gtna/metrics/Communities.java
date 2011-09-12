@@ -64,6 +64,7 @@ public class Communities extends MetricImpl implements Metric {
 			this.runtime = new Timer();
 			this.communitySize = new Distribution(new double[] { 0.0 });
 			this.runtime.end();
+			return;
 		}
 		this.runtime = new Timer();
 		gtna.communities.Communities communities = (gtna.communities.Communities) g
