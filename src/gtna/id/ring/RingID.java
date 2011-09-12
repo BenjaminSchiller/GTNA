@@ -92,6 +92,20 @@ public class RingID implements ID, Comparable<RingID> {
 		this.position = Math.abs(pos) % 1.0;
 	}
 
+	/**
+	 * @return the idSpace
+	 */
+	public RingIDSpace getIdSpace() {
+		return this.idSpace;
+	}
+
+	/**
+	 * @param idSpace the idSpace to set
+	 */
+	public void setIdSpace(RingIDSpace idSpace) {
+		this.idSpace = idSpace;
+	}
+
 	public String toString() {
 		return "RingID(" + this.position + ")";
 	}
