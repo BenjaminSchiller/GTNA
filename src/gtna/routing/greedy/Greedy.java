@@ -113,7 +113,7 @@ public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 
 	@Override
 	public void preprocess(Graph graph) {
-		this.idSpace = (IDSpace) graph.getProperty("ID_SPACE");
+		this.idSpace = (IDSpace) graph.getProperty("ID_SPACE_0");
 		this.p = idSpace.getPartitions();
 	}
 
