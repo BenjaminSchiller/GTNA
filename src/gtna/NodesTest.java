@@ -53,6 +53,7 @@ import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.Greedy;
 import gtna.routing.greedy.GreedyBacktracking;
 import gtna.routing.lookahead.Lookahead;
+import gtna.routing.lookahead.LookaheadObfuscated;
 import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityGeneration;
 import gtna.transformation.communities.RoleGeneration;
@@ -95,8 +96,46 @@ public class NodesTest {
 		// testCommunities();
 		// testProperties();
 		// testGraphIO();
-		testComunitiesRouting();
+		// testComunitiesRouting();
+		testLookahead();
 		stats.end();
+	}
+
+	private static void testLookahead() {
+		Config.overwrite("METRICS", "R");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/testLookahead/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testLookahead/");
+		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+
+		boolean generate = true;
+		int times = 5;
+
+		String spi = "./temp/test/spi.txt";
+		String wot = "./temp/test/wot.txt";
+
+		Transformation t1 = new RandomRingIDSpaceSimple();
+		Transformation[] t = new Transformation[] { t1 };
+
+		RoutingAlgorithm g = new Greedy(100);
+		RoutingAlgorithm l = new Lookahead(100);
+		RoutingAlgorithm lo0 = new LookaheadObfuscated(0, 100);
+		RoutingAlgorithm lo1 = new LookaheadObfuscated(1.0 / 100000.0, 100);
+		RoutingAlgorithm lo2 = new LookaheadObfuscated(1.0 / 10000.0, 100);
+		RoutingAlgorithm lo3 = new LookaheadObfuscated(1.0 / 1000.0, 100);
+		RoutingAlgorithm lo4 = new LookaheadObfuscated(1.0 / 100.0, 100);
+
+		Network nw0 = new ReadableFile("SPI", "spi", spi, g, t);
+		Network nw1 = new ReadableFile("SPI", "spi", spi, l, t);
+		Network nw2 = new ReadableFile("SPI", "spi", spi, lo0, t);
+		Network nw3 = new ReadableFile("SPI", "spi", spi, lo1, t);
+		Network nw4 = new ReadableFile("SPI", "spi", spi, lo2, t);
+		Network nw5 = new ReadableFile("SPI", "spi", spi, lo3, t);
+		Network nw6 = new ReadableFile("SPI", "spi", spi, lo4, t);
+		Network[] nw = new Network[] { nw1, nw2, nw3, nw4, nw5, nw6 };
+
+		Series[] s = generate ? Series.generate(nw, times) : Series.get(nw);
+		Plot.multiAvg(s, "greedy-lookahead/");
 	}
 
 	private static void testComunitiesRouting() {
@@ -118,7 +157,7 @@ public class NodesTest {
 		Transformation t4 = new RandomRingIDSpaceSimple(1, 1.0, true);
 		Transformation[] t_1 = new Transformation[] { t1, t2, t3 };
 		Transformation[] t_2 = new Transformation[] { t4 };
-		
+
 		RoutingAlgorithm ra = new Lookahead(100);
 
 		Network nw_1 = new DescriptionWrapper(new ReadableFile("SPI", "spi",
