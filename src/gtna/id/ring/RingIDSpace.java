@@ -120,7 +120,7 @@ public class RingIDSpace implements IDSpace {
 		// PARTITIONS
 		int index = 0;
 		for (RingPartition p : this.partitions) {
-			fw.writeln(index++ + ":" + p.getStringRepresentation());
+			fw.writeln(index++ + ":" + p.toString());
 		}
 
 		return fw.close();
@@ -169,24 +169,10 @@ public class RingIDSpace implements IDSpace {
 	}
 
 	/**
-	 * @param modulus the modulus to set
-	 */
-	public void setModulus(double modulus) {
-		this.modulus = modulus;
-	}
-
-	/**
 	 * @return the wrapAround
 	 */
 	public boolean isWrapAround() {
 		return this.wrapAround;
-	}
-
-	/**
-	 * @param wrapAround the wrapAround to set
-	 */
-	public void setWrapAround(boolean wrapAround) {
-		this.wrapAround = wrapAround;
 	}
 
 }

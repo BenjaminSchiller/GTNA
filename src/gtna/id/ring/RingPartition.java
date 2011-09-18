@@ -52,6 +52,21 @@ public class RingPartition implements Partition {
 		this.end = end;
 	}
 
+	public RingPartition(String string, RingIDSpace idSpace) {
+		String[] temp = string.replace("(", "").replace("]", "").split(",");
+		this.start = new RingID(Double.parseDouble(temp[0]), idSpace);
+		this.end = new RingID(Double.parseDouble(temp[1]), idSpace);
+	}
+
+	public RingPartition(String string) {
+		this(string, null);
+	}
+
+	public String toString() {
+		return "(" + this.start.getPosition() + "," + this.end.getPosition()
+				+ "]";
+	}
+
 	@Override
 	public double distance(ID id) {
 		if (this.contains(id)) {
@@ -86,24 +101,6 @@ public class RingPartition implements Partition {
 		return this.end;
 	}
 
-	public String toString() {
-		return "RingPartition]" + this.start.getPosition() + ", "
-				+ this.end.getPosition() + "]";
-	}
-
-	public RingPartition(String stringRepresentation, RingIDSpace idSpace) {
-		stringRepresentation = stringRepresentation.replace("(", "").replace(
-				"]", "");
-		String[] temp = stringRepresentation.split(",");
-		this.start = new RingID(Double.parseDouble(temp[0]), idSpace);
-		this.end = new RingID(Double.parseDouble(temp[1]), idSpace);
-	}
-
-	public String getStringRepresentation() {
-		return "(" + this.start.getPosition() + "," + this.end.getPosition()
-				+ "]";
-	}
-
 	/**
 	 * @return the start
 	 */
@@ -112,26 +109,10 @@ public class RingPartition implements Partition {
 	}
 
 	/**
-	 * @param start
-	 *            the start to set
-	 */
-	public void setStart(RingID start) {
-		this.start = start;
-	}
-
-	/**
 	 * @return the end
 	 */
 	public RingID getEnd() {
 		return this.end;
-	}
-
-	/**
-	 * @param end
-	 *            the end to set
-	 */
-	public void setEnd(RingID end) {
-		this.end = end;
 	}
 
 }

@@ -53,8 +53,22 @@ public class RingID implements ID, Comparable<RingID> {
 	private RingIDSpace idSpace;
 
 	public RingID(double pos, RingIDSpace idSpace) {
-		this.position = Math.abs(pos) % idSpace.getModulus();
+		this.position = Math.abs(pos);
 		this.idSpace = idSpace;
+	}
+
+	public RingID(String string, RingIDSpace idSpace) {
+		this.position = Double.parseDouble(string.replace("(", "").replace(")",
+				""));
+		this.idSpace = idSpace;
+	}
+
+	public RingID(String string) {
+		this(string, null);
+	}
+
+	public String toString() {
+		return "(" + this.position + ")";
 	}
 
 	@Override
@@ -73,6 +87,17 @@ public class RingID implements ID, Comparable<RingID> {
 		return this.position == ((RingID) id).getPosition();
 	}
 
+	@Override
+	public int compareTo(RingID id) {
+		if (id.getPosition() < this.position) {
+			return 1;
+		} else if (id.getPosition() > this.position) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+
 	public static RingID rand(Random rand, RingIDSpace idSpace) {
 		return new RingID(rand.nextDouble() * idSpace.getModulus(), idSpace);
 	}
@@ -85,39 +110,9 @@ public class RingID implements ID, Comparable<RingID> {
 	}
 
 	/**
-	 * @param pos
-	 *            the pos to set
-	 */
-	public void setPosition(double pos) {
-		this.position = Math.abs(pos) % 1.0;
-	}
-
-	/**
 	 * @return the idSpace
 	 */
 	public RingIDSpace getIdSpace() {
 		return this.idSpace;
-	}
-
-	/**
-	 * @param idSpace the idSpace to set
-	 */
-	public void setIdSpace(RingIDSpace idSpace) {
-		this.idSpace = idSpace;
-	}
-
-	public String toString() {
-		return "RingID(" + this.position + ")";
-	}
-
-	@Override
-	public int compareTo(RingID id) {
-		if (id.getPosition() < this.position) {
-			return 1;
-		} else if (id.getPosition() > this.position) {
-			return -1;
-		} else {
-			return 0;
-		}
 	}
 }

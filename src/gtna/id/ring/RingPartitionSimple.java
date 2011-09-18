@@ -49,6 +49,19 @@ public class RingPartitionSimple implements Partition {
 		this.id = id;
 	}
 
+	public RingPartitionSimple(String string, RingIDSpace idSpace) {
+		string = string.replace("(", "").replace(")", "");
+		this.id = new RingID(Double.parseDouble(string), idSpace);
+	}
+
+	public RingPartitionSimple(String string) {
+		this(string, null);
+	}
+
+	public String toString() {
+		return "[" + this.id.getPosition() + "]";
+	}
+
 	@Override
 	public double distance(ID id) {
 		return this.id.distance(id);
@@ -69,33 +82,11 @@ public class RingPartitionSimple implements Partition {
 		return this.id;
 	}
 
-	public String toString() {
-		return "RingParitionSimple(" + this.id.getPosition() + ")";
-	}
-
-	public RingPartitionSimple(String stringRepresentation, RingIDSpace idSpace) {
-		stringRepresentation = stringRepresentation.replace("(", "").replace(
-				")", "");
-		this.id = new RingID(Double.parseDouble(stringRepresentation), idSpace);
-	}
-
-	public String getStringRepresentation() {
-		return "(" + this.id.getPosition() + ")";
-	}
-
 	/**
 	 * @return the id
 	 */
 	public RingID getId() {
 		return this.id;
-	}
-
-	/**
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(RingID id) {
-		this.id = id;
 	}
 
 }
