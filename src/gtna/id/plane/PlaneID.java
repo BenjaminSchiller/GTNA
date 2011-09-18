@@ -56,6 +56,21 @@ public class PlaneID implements ID, Comparable<PlaneID> {
 		this.idSpace = idSpace;
 	}
 
+	public PlaneID(String string, PlaneIDSpaceSimple idSpace) {
+		String[] temp = string.replace("(", "").replace(")", "").split("/");
+		this.x = Integer.parseInt(temp[0]) % idSpace.getModulusX();
+		this.y = Integer.parseInt(temp[1]) % idSpace.getModulusY();
+		this.idSpace = idSpace;
+	}
+
+	public PlaneID(String string) {
+		this(string, null);
+	}
+
+	public String toString() {
+		return "(" + this.x + "/" + this.y + ")";
+	}
+
 	@Override
 	public double distance(ID id) {
 		PlaneID to = (PlaneID) id;
@@ -91,30 +106,10 @@ public class PlaneID implements ID, Comparable<PlaneID> {
 	}
 
 	/**
-	 * @param x
-	 *            the x to set
-	 */
-	public void setX(double x) {
-		this.x = x;
-	}
-
-	/**
 	 * @return the y
 	 */
 	public double getY() {
 		return this.y;
-	}
-
-	/**
-	 * @param y
-	 *            the y to set
-	 */
-	public void setY(double y) {
-		this.y = y;
-	}
-
-	public String toString() {
-		return "PlaneID(" + this.x + ", " + this.y + ")";
 	}
 
 	@Override

@@ -49,6 +49,18 @@ public class PlanePartitionSimple implements Partition {
 		this.id = id;
 	}
 
+	public PlanePartitionSimple(String string, PlaneIDSpaceSimple idSpace) {
+		this.id = new PlaneID(string, idSpace);
+	}
+
+	public PlanePartitionSimple(String string) {
+		this(string, null);
+	}
+
+	public String toString() {
+		return this.id.toString();
+	}
+
 	@Override
 	public double distance(ID id) {
 		return this.id.distance(id);
@@ -67,23 +79,6 @@ public class PlanePartitionSimple implements Partition {
 	@Override
 	public ID getRepresentativeID() {
 		return this.id;
-	}
-
-	public String toString() {
-		return "PlanePartitionSimple(" + this.id.getX() + "/" + this.id.getY()
-				+ ")";
-	}
-
-	public PlanePartitionSimple(String stringRepresentation,
-			PlaneIDSpaceSimple idSpace) {
-		String[] temp = stringRepresentation.replace("(", "").replace(")", "")
-				.split("/");
-		this.id = new PlaneID(Double.parseDouble(temp[0]),
-				Double.parseDouble(temp[1]), idSpace);
-	}
-
-	public String getStringRepresentation() {
-		return "(" + this.id.getX() + "/" + this.id.getY() + ")";
 	}
 
 	/**

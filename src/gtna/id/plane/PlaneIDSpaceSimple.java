@@ -136,7 +136,7 @@ public class PlaneIDSpaceSimple implements IDSpace {
 		// PARTITIONS
 		int index = 0;
 		for (PlanePartitionSimple p : this.partitions) {
-			fw.writeln(index++ + ":" + p.getStringRepresentation());
+			fw.writeln(index++ + ":" + p.toString());
 		}
 
 		return fw.close();
@@ -194,14 +194,6 @@ public class PlaneIDSpaceSimple implements IDSpace {
 	}
 
 	/**
-	 * @param modulusX
-	 *            the modulusX to set
-	 */
-	public void setModulusX(double modulusX) {
-		this.modulusX = modulusX;
-	}
-
-	/**
 	 * @return the modulusY
 	 */
 	public double getModulusY() {
@@ -209,26 +201,10 @@ public class PlaneIDSpaceSimple implements IDSpace {
 	}
 
 	/**
-	 * @param modulusY
-	 *            the modulusY to set
-	 */
-	public void setModulusY(double modulusY) {
-		this.modulusY = modulusY;
-	}
-
-	/**
 	 * @return the wrapAround
 	 */
 	public boolean isWrapAround() {
 		return this.wrapAround;
-	}
-
-	/**
-	 * @param wrapAround
-	 *            the wrapAround to set
-	 */
-	public void setWrapAround(boolean wrapAround) {
-		this.wrapAround = wrapAround;
 	}
 
 }
