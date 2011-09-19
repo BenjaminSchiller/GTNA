@@ -35,8 +35,11 @@
  */
 package gtna.transformation.lookahead;
 
-import gtna.graph.Graph;
+import gtna.id.ID;
+import gtna.id.ring.RingID;
 import gtna.transformation.Transformation;
+
+import java.util.Random;
 
 /**
  * @author benni
@@ -50,15 +53,9 @@ public class RandomLookaheadList extends RandomObfuscatedLookaheadList
 	}
 
 	@Override
-	public Graph transform(Graph g) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean applicable(Graph g) {
-		// TODO Auto-generated method stub
-		return false;
+	protected ID obfuscateID(ID id, Random rand) {
+		RingID ID = (RingID) id;
+		return new RingID(ID.getPosition(), ID.getIdSpace());
 	}
 
 }

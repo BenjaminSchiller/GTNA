@@ -36,7 +36,16 @@
 package gtna.transformation.lookahead;
 
 import gtna.graph.Graph;
+import gtna.graph.Node;
+import gtna.id.IDSpace;
+import gtna.id.lookahead.LookaheadElement;
+import gtna.id.lookahead.LookaheadList;
+import gtna.id.lookahead.LookaheadLists;
 import gtna.transformation.Transformation;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 /**
  * @author benni
@@ -57,8 +66,34 @@ public class RandomObfuscatedLookaheadList extends ObfuscatedLookaheadRouting
 
 	@Override
 	public Graph transform(Graph g) {
-		// TODO Auto-generated method stub
-		return null;
+		Random rand = new Random();
+		IDSpace[] gps = (IDSpace[]) g.getProperties("ID_SPACE");
+		for (IDSpace ids : gps) {
+			ArrayList<LookaheadList> lists = new ArrayList<LookaheadList>();
+			for (Node n : g.getNodes()) {
+				ArrayList<LookaheadElement> list = new ArrayList<LookaheadElement>();
+				for (int outIndex : n.getOutgoingEdges()) {
+					// add neighbor
+					list.add(new LookaheadElement(ids.getPartitions()[outIndex]
+							.getRepresentativeID(), outIndex));
+					Node out = g.getNode(outIndex);
+					// add neighbor's neighbors
+					for (int lookaheadIndex : out.getOutgoingEdges()) {
+						if (lookaheadIndex == n.getIndex()) {
+							continue;
+						}
+						list.add(new LookaheadElement(
+								this.obfuscateID(ids.getPartitions()[lookaheadIndex]
+										.getRepresentativeID(), rand), outIndex));
+					}
+				}
+				Collections.shuffle(list);
+				lists.add(new LookaheadList(n.getIndex(), list));
+			}
+			g.addProperty(g.getNextKey("LOOKAHEAD_LIST"), new LookaheadLists(
+					lists));
+		}
+		return g;
 	}
 
 }
