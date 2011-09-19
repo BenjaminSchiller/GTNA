@@ -74,6 +74,12 @@ public class LookaheadElement {
 		return this.id.toString() + "->" + via;
 	}
 
+	@Override
+	public boolean equals(Object arg0) {
+		LookaheadElement l = (LookaheadElement) arg0;
+		return l.id.equals(this.id) && l.via == this.via;
+	}
+
 	/**
 	 * @return the id
 	 */
