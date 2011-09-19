@@ -61,10 +61,10 @@ public class Community {
 		this.nodes = nodes;
 	}
 
-	public Community(String stringRepresentation) {
+	public Community(String string) {
 		String sep1 = Config.get("GRAPH_PROPERTY_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_PROPERTY_SEPARATOR_2");
-		String[] temp1 = stringRepresentation.split(sep1);
+		String[] temp1 = string.split(sep1);
 		this.index = Integer.parseInt(temp1[0]);
 		if (temp1.length < 2 || temp1[1].length() == 0) {
 			this.nodes = new int[0];
@@ -77,7 +77,7 @@ public class Community {
 		}
 	}
 
-	public String getStringRepresentation() {
+	public String toString() {
 		String sep1 = Config.get("GRAPH_PROPERTY_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_PROPERTY_SEPARATOR_2");
 		StringBuffer buff = new StringBuffer(this.index + sep1);
@@ -99,25 +99,10 @@ public class Community {
 	}
 
 	/**
-	 * @param nodes
-	 *            the nodes to set
-	 */
-	public void setNodes(int[] nodes) {
-		this.nodes = nodes;
-	}
-
-	/**
 	 * @return the index
 	 */
 	public int getIndex() {
 		return this.index;
-	}
-
-	/**
-	 * @param index the index to set
-	 */
-	public void setIndex(int index) {
-		this.index = index;
 	}
 
     /**

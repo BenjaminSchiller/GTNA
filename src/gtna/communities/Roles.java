@@ -125,7 +125,7 @@ public class Roles implements GraphProperty {
 
 		// LIST OF ROLES
 		for (Role role : this.roles) {
-			fw.writeln(role.getStringRepresentation());
+			fw.writeln(role.toString());
 		}
 
 		return fw.close();

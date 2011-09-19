@@ -138,7 +138,7 @@ public class Communities implements GraphProperty {
 
 		// LIST OF COMMUNITIES
 		for (Community community : this.communities) {
-			fw.writeln(community.getStringRepresentation());
+			fw.writeln(community.toString());
 		}
 
 		return fw.close();

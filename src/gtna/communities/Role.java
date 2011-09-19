@@ -94,10 +94,10 @@ public class Role {
 		}
 	}
 
-	public Role(String stringRepresentation) {
+	public Role(String string) {
 		String sep1 = Config.get("GRAPH_PROPERTY_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_PROPERTY_SEPARATOR_2");
-		String temp1[] = stringRepresentation.split(sep1);
+		String temp1[] = string.split(sep1);
 		this.type = Byte.parseByte(temp1[0].replace("R", ""));
 		if (temp1.length < 2 || temp1[1].length() == 0) {
 			this.nodes = new int[] {};
@@ -110,7 +110,7 @@ public class Role {
 		}
 	}
 
-	public String getStringRepresentation() {
+	public String toString() {
 		String sep1 = Config.get("GRAPH_PROPERTY_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_PROPERTY_SEPARATOR_2");
 		StringBuffer buff = new StringBuffer("R" + this.type + sep1);
@@ -132,25 +132,9 @@ public class Role {
 	}
 
 	/**
-	 * @param type
-	 *            the type to set
-	 */
-	public void setType(byte type) {
-		this.type = type;
-	}
-
-	/**
 	 * @return the nodes
 	 */
 	public int[] getNodes() {
 		return this.nodes;
-	}
-
-	/**
-	 * @param nodes
-	 *            the nodes to set
-	 */
-	public void setNodes(int[] nodes) {
-		this.nodes = nodes;
 	}
 }
