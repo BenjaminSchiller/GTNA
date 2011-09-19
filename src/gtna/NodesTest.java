@@ -58,10 +58,14 @@ import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityGeneration;
 import gtna.transformation.communities.RoleGeneration;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
+import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.id.RandomRingIDSpaceSimpleCommunities;
+import gtna.transformation.lookahead.RandomLookaheadList;
+import gtna.transformation.lookahead.RandomObfuscatedLookaheadList;
 import gtna.util.Config;
 import gtna.util.Stats;
+import gtna.util.Util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,45 +101,84 @@ public class NodesTest {
 		// testProperties();
 		// testGraphIO();
 		// testComunitiesRouting();
-		testLookahead();
+		// Network nw = new ErdosRenyi(20, 4, true, null, null);
+		// Graph g = nw.generate();
+		// GraphWriter.write(g, "./temp/test/graph-bi.txt");
+		// testLookahead();
+
+		Network nw = new ErdosRenyi(3, 2, false, null, null);
+		Graph g = nw.generate();
+
+		Transformation t1 = new RandomRingIDSpace(1, 1.0, true);
+		Transformation t2 = new RandomLookaheadList();
+		Transformation t3 = new RandomObfuscatedLookaheadList(0.001, 0.002);
+
+		System.out.println(t1.name());
+		System.out.println(t2.name());
+		System.out.println(t3.name());
+
+		g = t1.transform(g);
+		g = t2.transform(g);
+		g = t3.transform(g);
+		
+		GraphWriter.writeWithProperties(g, "./temp/test/randomObfuscated.txt");
+
 		stats.end();
 	}
 
 	private static void testLookahead() {
+		boolean generate = true;
+		int times = 5;
+		boolean wot = false;
+		boolean skipExistingFolders = true;
+
 		Config.overwrite("METRICS", "R");
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/testLookahead/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testLookahead/");
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + skipExistingFolders);
 
-		boolean generate = true;
-		int times = 5;
-
-		String spi = "./temp/test/spi.txt";
-		String wot = "./temp/test/wot.txt";
+		String spiGraph = "./temp/test/spi.txt";
+		String wotGraph = "./temp/test/wot.txt";
+		String graph = spiGraph;
+		String name = "SPI";
+		String folder = "spi";
+		if (wot) {
+			graph = wotGraph;
+			name = "WOT";
+			folder = "wot";
+		}
 
 		Transformation t1 = new RandomRingIDSpaceSimple();
 		Transformation[] t = new Transformation[] { t1 };
 
 		RoutingAlgorithm g = new Greedy(100);
 		RoutingAlgorithm l = new Lookahead(100);
-		RoutingAlgorithm lo0 = new LookaheadObfuscated(0, 100);
-		RoutingAlgorithm lo1 = new LookaheadObfuscated(1.0 / 100000.0, 100);
-		RoutingAlgorithm lo2 = new LookaheadObfuscated(1.0 / 10000.0, 100);
-		RoutingAlgorithm lo3 = new LookaheadObfuscated(1.0 / 1000.0, 100);
-		RoutingAlgorithm lo4 = new LookaheadObfuscated(1.0 / 100.0, 100);
+		double[] distances = new double[] { 0.0, 0.1, 1.0E-2, 1.0E-3, 1.0E-4,
+				1.0E-5, 1.0E-6, 1.0E-7, 1.0E-8, 1.0E-9, 1.0E-10 };
+		RoutingAlgorithm[] lo = new RoutingAlgorithm[distances.length];
+		for (int i = 0; i < distances.length; i++) {
+			lo[i] = new LookaheadObfuscated(distances[i], 100);
+		}
 
-		Network nw0 = new ReadableFile("SPI", "spi", spi, g, t);
-		Network nw1 = new ReadableFile("SPI", "spi", spi, l, t);
-		Network nw2 = new ReadableFile("SPI", "spi", spi, lo0, t);
-		Network nw3 = new ReadableFile("SPI", "spi", spi, lo1, t);
-		Network nw4 = new ReadableFile("SPI", "spi", spi, lo2, t);
-		Network nw5 = new ReadableFile("SPI", "spi", spi, lo3, t);
-		Network nw6 = new ReadableFile("SPI", "spi", spi, lo4, t);
-		Network[] nw = new Network[] { nw1, nw2, nw3, nw4, nw5, nw6 };
+		Network nwG = new ReadableFile(name, folder, graph, g, t);
+		Network nwL = new ReadableFile(name, folder, graph, l, t);
+		Network[] nwLO = new Network[lo.length];
+		for (int i = 0; i < lo.length; i++) {
+			nwLO[i] = new ReadableFile(name, folder, graph, lo[i], t);
+		}
+
+		Network[] nw = Util.combine(new Network[] { nwG, nwL }, nwLO);
 
 		Series[] s = generate ? Series.generate(nw, times) : Series.get(nw);
-		Plot.multiAvg(s, "greedy-lookahead/");
+		Plot.multiAvg(s, "obfuscation-spi-small/");
+
+		for (int i = 0; i < lo.length; i++) {
+			long eq = ((LookaheadObfuscated) lo[i]).getEqual();
+			long un = ((LookaheadObfuscated) lo[i]).getUnqeual();
+			double bla = (double) un / (double) (eq + un);
+			System.out.println(lo[i].name() + " ====> " + bla);
+		}
 	}
 
 	private static void testComunitiesRouting() {

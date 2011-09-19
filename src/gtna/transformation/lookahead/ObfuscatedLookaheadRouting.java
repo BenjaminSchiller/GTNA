@@ -36,8 +36,13 @@
 package gtna.transformation.lookahead;
 
 import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
 import gtna.id.ID;
+import gtna.id.IDSpace;
+import gtna.id.ring.RingID;
 import gtna.transformation.TransformationImpl;
+
+import java.util.Random;
 
 /**
  * @author benni
@@ -48,6 +53,8 @@ public abstract class ObfuscatedLookaheadRouting extends TransformationImpl {
 
 	protected double maxEpsilon;
 
+	protected double size;
+
 	public ObfuscatedLookaheadRouting(String key, double minEpsilon,
 			double maxEpsilon, String[] configKeys, String[] configValues) {
 		super(key, ObfuscatedLookaheadRouting.add(configKeys, "MIN_EPSILON",
@@ -55,6 +62,7 @@ public abstract class ObfuscatedLookaheadRouting extends TransformationImpl {
 				+ minEpsilon, "" + maxEpsilon));
 		this.minEpsilon = minEpsilon;
 		this.maxEpsilon = maxEpsilon;
+		this.size = maxEpsilon - minEpsilon;
 	}
 
 	private static String[] add(String[] values, String v1, String v2) {
@@ -70,15 +78,26 @@ public abstract class ObfuscatedLookaheadRouting extends TransformationImpl {
 		return newValues;
 	}
 
-	protected ID obfuscateID(ID id) {
-		// TODO implement
-		return null;
+	protected ID obfuscateID(ID id, Random rand) {
+		RingID ID = (RingID) id;
+		double sign = rand.nextBoolean() ? 1.0 : -1.0;
+		double epsilon = minEpsilon + rand.nextDouble() * this.size;
+		double position = ID.getPosition() + sign * epsilon;
+		System.out.println("obfuscating: " + ID.getPosition() + " => "
+				+ position);
+		return new RingID(position, ID.getIdSpace());
 	}
 
 	@Override
 	public boolean applicable(Graph g) {
-		// TODO Auto-generated method stub
-		return false;
+		Random rand = new Random();
+		for (GraphProperty p : g.getProperties("ID_SPACE")) {
+			ID id = ((IDSpace) p).randomID(rand);
+			if (!(id instanceof RingID)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

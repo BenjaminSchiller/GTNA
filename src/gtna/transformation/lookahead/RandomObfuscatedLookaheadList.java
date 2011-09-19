@@ -36,6 +36,7 @@
 package gtna.transformation.lookahead;
 
 import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.id.IDSpace;
 import gtna.id.lookahead.LookaheadElement;
@@ -67,8 +68,9 @@ public class RandomObfuscatedLookaheadList extends ObfuscatedLookaheadRouting
 	@Override
 	public Graph transform(Graph g) {
 		Random rand = new Random();
-		IDSpace[] gps = (IDSpace[]) g.getProperties("ID_SPACE");
-		for (IDSpace ids : gps) {
+		GraphProperty[] gps = g.getProperties("ID_SPACE");
+		for (GraphProperty p : gps) {
+			IDSpace ids = (IDSpace) p;
 			ArrayList<LookaheadList> lists = new ArrayList<LookaheadList>();
 			for (Node n : g.getNodes()) {
 				ArrayList<LookaheadElement> list = new ArrayList<LookaheadElement>();
@@ -82,9 +84,9 @@ public class RandomObfuscatedLookaheadList extends ObfuscatedLookaheadRouting
 						if (lookaheadIndex == n.getIndex()) {
 							continue;
 						}
-						list.add(new LookaheadElement(
-								this.obfuscateID(ids.getPartitions()[lookaheadIndex]
-										.getRepresentativeID(), rand), outIndex));
+						list.add(new LookaheadElement(this.obfuscateID(ids
+								.getPartitions()[lookaheadIndex]
+								.getRepresentativeID(), rand), outIndex));
 					}
 				}
 				Collections.shuffle(list);
