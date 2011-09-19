@@ -89,6 +89,18 @@ public class LookaheadObfuscated extends RoutingAlgorithmImpl implements
 				graph.getNodes(), new HashSet<Integer>());
 	}
 
+	private long unequal = 0;
+
+	private long equal = 0;
+
+	public long getUnqeual() {
+		return this.unequal;
+	}
+
+	public long getEqual() {
+		return this.equal;
+	}
+
 	private Route route(ArrayList<Integer> route, int current, RingID target,
 			Random rand, Node[] nodes, HashSet<Integer> seen) {
 		route.add(current);
@@ -102,33 +114,100 @@ public class LookaheadObfuscated extends RoutingAlgorithmImpl implements
 		double currentDist = this.idSpace.getPartitions()[current]
 				.distance(target);
 		double minDist = this.idSpace.getMaxDistance();
-		int minNode = -1;
-		for (int out : nodes[current].getOutgoingEdges()) {
-			double dist = this.p[out].distance(target);
-			if (dist < minDist && dist < currentDist) {
-				minDist = dist;
-				minNode = out;
-			} else {
-				for (RingID obfuscated : this.obfuscatedIDs[out]) {
-					dist = obfuscated.distance(target);
-					if (dist < minDist && dist < currentDist
-							&& !seen.contains(out)) {
-						minDist = dist;
-						minNode = out;
-					}
-				}
-			}
+		if (DEBUG)
+			System.out.println(current);
+		int minNode = this.determineNextHopObfuscated(nodes, current, minDist,
+				currentDist, target, seen);
+		int compare = this.determineNextHopLookahead(nodes, current, minDist,
+				currentDist, target, seen);
+		if (minNode != compare) {
+			this.unequal++;
+			if (DEBUG)
+				System.out.println(minNode + " != " + compare + "\n");
+		} else {
+			this.equal++;
+			if (DEBUG)
+				System.out.println("");
 		}
+
 		if (minNode == -1) {
 			return new RouteImpl(route, false);
 		}
 		return this.route(route, minNode, target, rand, nodes, seen);
 	}
 
+	private static final boolean DEBUG = false;
+
+	private int determineNextHopLookahead(Node[] nodes, int current,
+			double minDist, double currentDist, RingID target,
+			HashSet<Integer> seen) {
+		int minNode = -1;
+		for (int out : nodes[current].getOutgoingEdges()) {
+			double dist = this.p[out].distance(target);
+			if (dist < minDist && dist < currentDist) {
+				minDist = dist;
+				minNode = out;
+				if (DEBUG)
+					System.out.println("   l - " + out);
+			}
+		}
+		for (int out : nodes[current].getOutgoingEdges()) {
+			for (int lookahead : nodes[out].getOutgoingEdges()) {
+				double dist = this.p[lookahead].distance(target);
+				if (dist < minDist && dist < currentDist && !seen.contains(out)) {
+					minDist = dist;
+					minNode = out;
+					if (DEBUG)
+						System.out.println("   l - " + out + " => " + lookahead
+								+ " @ " + dist);
+				}
+			}
+		}
+		if (DEBUG)
+			System.out.println("   L - " + minNode);
+		return minNode;
+	}
+
+	private int determineNextHopObfuscated(Node[] nodes, int current,
+			double minDist, double currentDist, RingID target,
+			HashSet<Integer> seen) {
+		int minNode = -1;
+		for (int out : nodes[current].getOutgoingEdges()) {
+			double dist = this.p[out].distance(target);
+			if (dist < minDist && dist < currentDist) {
+				minDist = dist;
+				minNode = out;
+				if (DEBUG)
+					System.out.println("   o - " + out);
+			}
+		}
+		for (int out : nodes[current].getOutgoingEdges()) {
+			for (int i = 0; i < nodes[out].getOutDegree(); i++) {
+				if (nodes[out].getOutgoingEdges()[i] == current) {
+					continue;
+				}
+				double dist = this.obfuscatedIDs[out][i].distance(target);
+				if (dist < minDist && dist < currentDist && !seen.contains(out)) {
+					minDist = dist;
+					minNode = out;
+					if (DEBUG)
+						System.out.println("   o - " + out + " => "
+								+ nodes[out].getOutgoingEdges()[i] + " @ "
+								+ dist);
+				}
+			}
+		}
+		if (DEBUG)
+			System.out.println("   O - " + minNode);
+		return minNode;
+	}
+
 	private RingID closeID(RingID original, double maxDistance, Random rand) {
 		double sign = rand.nextBoolean() ? 1.0 : -1.0;
-		double id = original.getPosition() + sign * rand.nextDouble()
-				* maxDistance;
+		double diff = sign * rand.nextDouble() * maxDistance;
+		double id = original.getPosition() + diff;
+		// System.out.println(original.getPosition() + " + " + diff + " = " +
+		// id);
 		return new RingID(id, original.getIdSpace());
 	}
 
@@ -149,8 +228,8 @@ public class LookaheadObfuscated extends RoutingAlgorithmImpl implements
 		// computed once for every edge (not per neighbor)
 		this.obfuscatedIDs = new RingID[graph.getNodes().length][];
 		for (Node n : graph.getNodes()) {
-			this.obfuscatedIDs[n.getIndex()] = new RingID[n.getOutDegree()];
 			int[] out = n.getOutgoingEdges();
+			this.obfuscatedIDs[n.getIndex()] = new RingID[out.length];
 			for (int i = 0; i < out.length; i++) {
 				RingID original = (RingID) this.idSpace.getPartitions()[out[i]]
 						.getRepresentativeID();
@@ -158,6 +237,23 @@ public class LookaheadObfuscated extends RoutingAlgorithmImpl implements
 						maxDistance, rand);
 			}
 		}
+		// test
+		double diff = 0.0;
+		for (Node n : graph.getNodes()) {
+			int[] out = n.getOutgoingEdges();
+			for (int i = 0; i < out.length; i++) {
+				int[] lookahead = graph.getNode(out[i]).getOutgoingEdges();
+				for (int j = 0; j < lookahead.length; j++) {
+					RingID l = (RingID) this.p[lookahead[j]]
+							.getRepresentativeID();
+					RingID o = this.obfuscatedIDs[out[i]][j];
+					if (l.distance(o) > diff) {
+						diff = l.distance(o);
+					}
+				}
+			}
+		}
+		System.out.println("\nDIFF: " + diff);
 	}
 
 }
