@@ -88,6 +88,7 @@ public class RandomObfuscatedLookaheadList extends ObfuscatedLookaheadList
 								.getRepresentativeID(), rand), outIndex));
 					}
 				}
+				// shuffle list
 				Collections.shuffle(list);
 				lists.add(new LookaheadList(n.getIndex(), list));
 			}

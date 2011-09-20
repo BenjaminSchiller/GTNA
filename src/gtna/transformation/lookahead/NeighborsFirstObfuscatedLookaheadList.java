@@ -36,7 +36,16 @@
 package gtna.transformation.lookahead;
 
 import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
+import gtna.graph.Node;
+import gtna.id.IDSpace;
+import gtna.id.lookahead.LookaheadElement;
+import gtna.id.lookahead.LookaheadList;
+import gtna.id.lookahead.LookaheadLists;
 import gtna.transformation.Transformation;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * @author benni
@@ -57,8 +66,36 @@ public class NeighborsFirstObfuscatedLookaheadList extends
 
 	@Override
 	public Graph transform(Graph g) {
-		// TODO Auto-generated method stub
-		return null;
+		Random rand = new Random();
+		GraphProperty[] gps = g.getProperties("ID_SPACE");
+		for (GraphProperty p : gps) {
+			IDSpace ids = (IDSpace) p;
+			ArrayList<LookaheadList> lists = new ArrayList<LookaheadList>();
+			for (Node n : g.getNodes()) {
+				ArrayList<LookaheadElement> list = new ArrayList<LookaheadElement>();
+				// add neighbors
+				for (int outIndex : n.getOutgoingEdges()) {
+					list.add(new LookaheadElement(ids.getPartitions()[outIndex]
+							.getRepresentativeID(), outIndex));
+				}
+				// add neighbors' neighbors
+				for (int outIndex : n.getOutgoingEdges()) {
+					Node out = g.getNode(outIndex);
+					for (int lookaheadIndex : out.getOutgoingEdges()) {
+						if (lookaheadIndex == n.getIndex()) {
+							continue;
+						}
+						list.add(new LookaheadElement(this.obfuscateID(ids
+								.getPartitions()[lookaheadIndex]
+								.getRepresentativeID(), rand), outIndex));
+					}
+				}
+				lists.add(new LookaheadList(n.getIndex(), list));
+			}
+			g.addProperty(g.getNextKey("LOOKAHEAD_LIST"), new LookaheadLists(
+					lists));
+		}
+		return g;
 	}
 
 }
