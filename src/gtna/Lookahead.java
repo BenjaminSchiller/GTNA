@@ -79,7 +79,7 @@ public class Lookahead {
 
 		Network nw1 = new ErdosRenyi(1000, 20, true, new Greedy(),
 				new Transformation[] { new RandomRingIDSpace() });
-		Network nw2 = new Chord(1000, 20, true, 5, new Greedy(), null);
+		Network nw2 = new Chord(1000, 20, true, new Greedy(), null);
 		Network[] nw = new Network[] { nw1, nw2 };
 		Series[] s = Series.generate(nw, 1);
 		Plot.allMulti(s, "TEST/");
@@ -137,11 +137,11 @@ public class Lookahead {
 		Network[] nw = new Network[ll.length + 1];
 		// nw[0] = new ReadableFile(name, folder, graph, greedy,
 		// new Transformation[] { t1 });
-		nw[0] = new Chord(1000, 100, false, 5, greedy, null);
+		nw[0] = new Chord(1000, 100, false, greedy, null);
 		for (int i = 0; i < ts.length; i++) {
 			// nw[i + 1] = new ReadableFile(name, folder, graph, lookahead,
 			// ts[i]);
-			nw[i + 1] = new Chord(1000, 100, false, 5, lookahead, ts[i]);
+			nw[i + 1] = new Chord(1000, 100, false, lookahead, ts[i]);
 		}
 
 		Series[] s = generate ? Series.generate(nw, times) : Series.get(nw);

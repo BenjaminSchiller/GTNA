@@ -67,30 +67,25 @@ public class DHTs {
 		int[] nodes = new int[] { 10000, 20000 };
 		int[] bits = new int[] { 32, 64, 128 };
 		boolean[] uniform = new boolean[] { true, false };
-		int[] rpn = new int[] { 5, 10, 25, 50 };
 
 		for (int n : nodes) {
 			for (int b : bits) {
 				for (boolean u : uniform) {
-					for (int r : rpn) {
-						Network nw = new Chord(n, b, u, r, new GreedyBI(), null);
-						// Series.generate(nw, 1);
-					}
+					Network nw = new Chord(n, b, u, new GreedyBI(), null);
+					// Series.generate(nw, 1);
 				}
 			}
 		}
 
 		RoutingAlgorithm ra = new GreedyBI();
 
-		Network[] nw1 = Chord.get(nodes, 128, true, 50, ra, null);
-		Network[] nw2 = Chord.get(nodes, 128, false, 50, ra, null);
-		Network[] nw3 = Chord.get(20000, bits, true, 50, ra, null);
-		Network[] nw4 = Chord.get(20000, bits, false, 50, ra, null);
-		Network[] nw5 = Chord.get(20000, 128, uniform, 50, ra, null);
-		Network[] nw6 = Chord.get(20000, 128, true, rpn, ra, null);
-		Network[] nw7 = Chord.get(20000, 128, false, rpn, ra, null);
+		Network[] nw1 = Chord.get(nodes, 128, true, ra, null);
+		Network[] nw2 = Chord.get(nodes, 128, false, ra, null);
+		Network[] nw3 = Chord.get(20000, bits, true, ra, null);
+		Network[] nw4 = Chord.get(20000, bits, false, ra, null);
+		Network[] nw5 = Chord.get(20000, 128, uniform, ra, null);
 
-		Network[][] nw = new Network[][] { nw1, nw2, nw3, nw4, nw5, nw6, nw7 };
+		Network[][] nw = new Network[][] { nw1, nw2, nw3, nw4, nw5 };
 
 		Series[][] s = Series.get(nw);
 

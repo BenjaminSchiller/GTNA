@@ -43,7 +43,6 @@ import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomChordIDSpace;
-import gtna.util.Config;
 
 import java.math.BigInteger;
 
@@ -56,57 +55,44 @@ public class Chord extends NetworkImpl implements Network {
 
 	private boolean uniform;
 
-	private int rpn;
-
-	public static Chord[] get(int[] nodes, int bits, boolean uniform, int rpn,
+	public static Chord[] get(int[] nodes, int bits, boolean uniform,
 			RoutingAlgorithm ra, Transformation[] t) {
 		Chord[] nw = new Chord[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
-			nw[i] = new Chord(nodes[i], bits, uniform, rpn, ra, t);
+			nw[i] = new Chord(nodes[i], bits, uniform, ra, t);
 		}
 		return nw;
 	}
 
-	public static Chord[] get(int nodes, int[] bits, boolean uniform, int rpn,
+	public static Chord[] get(int nodes, int[] bits, boolean uniform,
 			RoutingAlgorithm ra, Transformation[] t) {
 		Chord[] nw = new Chord[bits.length];
 		for (int i = 0; i < bits.length; i++) {
-			nw[i] = new Chord(nodes, bits[i], uniform, rpn, ra, t);
+			nw[i] = new Chord(nodes, bits[i], uniform, ra, t);
 		}
 		return nw;
 	}
 
-	public static Chord[] get(int nodes, int bits, boolean[] uniform, int rpn,
+	public static Chord[] get(int nodes, int bits, boolean[] uniform,
 			RoutingAlgorithm ra, Transformation[] t) {
 		Chord[] nw = new Chord[uniform.length];
 		for (int i = 0; i < uniform.length; i++) {
-			nw[i] = new Chord(nodes, bits, uniform[i], rpn, ra, t);
+			nw[i] = new Chord(nodes, bits, uniform[i], ra, t);
 		}
 		return nw;
 	}
 
-	public static Chord[] get(int nodes, int bits, boolean uniform, int[] rpn,
-			RoutingAlgorithm ra, Transformation[] t) {
-		Chord[] nw = new Chord[rpn.length];
-		for (int i = 0; i < rpn.length; i++) {
-			nw[i] = new Chord(nodes, bits, uniform, rpn[i], ra, t);
-		}
-		return nw;
-	}
-
-	public Chord(int nodes, int bits, boolean uniform, int rpn,
-			RoutingAlgorithm ra, Transformation[] t) {
-		super("CHORD", nodes, new String[] { "BITS", "ID_SELECTION",
-				"ROUTES_PER_NODE" }, new String[] { "" + bits,
-				uniform ? "uniform" : "random", "" + rpn }, ra, t);
+	public Chord(int nodes, int bits, boolean uniform, RoutingAlgorithm ra,
+			Transformation[] t) {
+		super("CHORD", nodes, new String[] { "BITS", "ID_SELECTION" },
+				new String[] { "" + bits, uniform ? "uniform" : "random" }, ra,
+				t);
 		this.bits = bits;
 		this.uniform = uniform;
-		this.rpn = rpn;
 	}
 
 	@Override
 	public Graph generate() {
-		Config.overwrite("R_ROUTES_PER_NODE", "" + this.rpn);
 		Graph graph = new Graph(this.description());
 		Node[] nodes = Node.init(this.nodes(), graph);
 		graph.setNodes(nodes);
