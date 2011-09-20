@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * PlaneID.java
+ * RingIdentifier.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,97 +33,87 @@
  * ---------------------------------------
  *
  */
-package gtna.id.plane;
+package gtna.id.ring;
 
-import gtna.id.DID;
+import gtna.id.DIdentifier;
 import gtna.id.Identifier;
 
 import java.util.Random;
 
 /**
+ * Implements an ID in the wrapping ID space [0,1) (i.e. a ring). Distance
+ * computations are performed with wrap-around. When creating a RingID or
+ * setting a new position, the position if computed modulo 1.0.
+ * 
  * @author benni
  * 
  */
-public class PlaneID implements DID, Comparable<PlaneID> {
-	private double x;
+public class RingIdentifier implements DIdentifier, Comparable<RingIdentifier> {
+	private double position;
 
-	private double y;
+	private RingIdentifierSpace idSpace;
 
-	private PlaneIDSpaceSimple idSpace;
-
-	public PlaneID(double x, double y, PlaneIDSpaceSimple idSpace) {
-		this.x = x % idSpace.getModulusX();
-		this.y = y % idSpace.getModulusY();
+	public RingIdentifier(double pos, RingIdentifierSpace idSpace) {
+		this.position = Math.abs(pos);
 		this.idSpace = idSpace;
 	}
 
-	public PlaneID(String string, PlaneIDSpaceSimple idSpace) {
-		String[] temp = string.replace("(", "").replace(")", "").split("/");
-		this.x = Integer.parseInt(temp[0]) % idSpace.getModulusX();
-		this.y = Integer.parseInt(temp[1]) % idSpace.getModulusY();
+	public RingIdentifier(String string, RingIdentifierSpace idSpace) {
+		this.position = Double.parseDouble(string.replace("(", "").replace(")",
+				""));
 		this.idSpace = idSpace;
 	}
 
-	public PlaneID(String string) {
+	public RingIdentifier(String string) {
 		this(string, null);
 	}
 
 	public String toString() {
-		return "(" + this.x + "/" + this.y + ")";
+		return "(" + this.position + ")";
 	}
 
 	@Override
 	public Double distance(Identifier<Double> id) {
-		PlaneID to = (PlaneID) id;
+		double dest = ((RingIdentifier) id).getPosition();
 		if (this.idSpace.isWrapAround()) {
-			double dx = Math.abs(this.x - to.getX())
-					% (this.idSpace.getModulusX() / 2.0);
-			double dy = Math.abs(this.y - to.getY())
-					% (this.idSpace.getModulusY() / 2.0);
-			return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+			return Math.abs(dest - this.position)
+					% (this.idSpace.getModulus() / 2.0);
 		} else {
-			double dx = this.x - to.getX();
-			double dy = this.y - to.getY();
-			return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+			return Math.abs(dest - this.position);
 		}
 	}
 
 	@Override
 	public boolean equals(Identifier<Double> id) {
-		return this.x == ((PlaneID) id).getX()
-				&& this.y == ((PlaneID) id).getY();
+		return this.position == ((RingIdentifier) id).getPosition();
 	}
 
-	public static PlaneID rand(Random rand, PlaneIDSpaceSimple idSpace) {
-		return new PlaneID(rand.nextDouble() * idSpace.getModulusX(),
-				rand.nextDouble() * idSpace.getModulusY(), idSpace);
+	@Override
+	public int compareTo(RingIdentifier id) {
+		if (id.getPosition() < this.position) {
+			return 1;
+		} else if (id.getPosition() > this.position) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+
+	public static RingIdentifier rand(Random rand, RingIdentifierSpace idSpace) {
+		return new RingIdentifier(rand.nextDouble() * idSpace.getModulus(), idSpace);
 	}
 
 	/**
-	 * @return the x
+	 * @return the pos
 	 */
-	public double getX() {
-		return this.x;
-	}
-
-	/**
-	 * @return the y
-	 */
-	public double getY() {
-		return this.y;
+	public double getPosition() {
+		return this.position;
 	}
 
 	/**
 	 * @return the idSpace
 	 */
-	public PlaneIDSpaceSimple getIdSpace() {
+	public RingIdentifierSpace getIdSpace() {
 		return this.idSpace;
 	}
-
-	@Override
-	public int compareTo(PlaneID o) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * IDSpace.java
+ * BIIdentifierSpace.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -35,16 +35,11 @@
  */
 package gtna.id;
 
+import java.math.BigInteger;
+
 /**
  * @author benni
  * 
  */
-public interface DIDSpace extends IDSpace<Double> {
-	// public DPartition[] getPartitions();
-	//
-	// public void setPartitions(DPartition[] partitions);
-	//
-	// public DID randomID(Random rand);
-	//
-	// public double getMaxDistance();
+public interface BIIdentifierSpace extends IdentifierSpace<BigInteger> {
 }

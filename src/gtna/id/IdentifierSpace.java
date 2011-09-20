@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * IDSpace.java
+ * IdentifierSpace.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -43,7 +43,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public interface IDSpace<Type> extends GraphProperty {
+public interface IdentifierSpace<Type> extends GraphProperty {
 	public Partition<Type>[] getPartitions();
 
 	public void setPartitions(Partition<Type>[] partitions);

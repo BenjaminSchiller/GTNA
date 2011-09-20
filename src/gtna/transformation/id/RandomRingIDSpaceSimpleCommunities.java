@@ -39,8 +39,8 @@ import gtna.communities.Communities;
 import gtna.communities.Community;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
-import gtna.id.ring.RingID;
-import gtna.id.ring.RingIDSpaceSimple;
+import gtna.id.ring.RingIdentifier;
+import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartitionSimple;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
@@ -89,14 +89,14 @@ public class RandomRingIDSpaceSimpleCommunities extends TransformationImpl
 			Communities cs = (Communities) gp;
 			RingPartitionSimple[] partitions = new RingPartitionSimple[g
 					.getNodes().length];
-			RingIDSpaceSimple idSpace = new RingIDSpaceSimple(partitions,
+			RingIdentifierSpaceSimple idSpace = new RingIdentifierSpaceSimple(partitions,
 					this.modulus, this.wrapAround);
 			double size = this.modulus / (double) cs.getCommunities().length;
 			for (Community c : cs.getCommunities()) {
 				double start = (double) c.getIndex() * size;
 				for (int i = 0; i < c.getNodes().length; i++) {
 					partitions[c.getNodes()[i]] = new RingPartitionSimple(
-							new RingID(start + rand.nextDouble() * size,
+							new RingIdentifier(start + rand.nextDouble() * size,
 									idSpace));
 				}
 			}

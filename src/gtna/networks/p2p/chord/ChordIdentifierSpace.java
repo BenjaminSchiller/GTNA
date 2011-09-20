@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * ChordIDSpace.java
+ * ChordIdentifierSpace.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -36,8 +36,8 @@
 package gtna.networks.p2p.chord;
 
 import gtna.graph.Graph;
-import gtna.id.BIID;
-import gtna.id.BIIDSpace;
+import gtna.id.BIIdentifier;
+import gtna.id.BIIdentifierSpace;
 import gtna.id.BIPartition;
 import gtna.id.Partition;
 
@@ -48,14 +48,14 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class ChordIDSpace implements BIIDSpace {
+public class ChordIdentifierSpace implements BIIdentifierSpace {
 	private int bits;
 
 	private BigInteger modulus;
 
 	private ChordPartition[] partitions;
 
-	public ChordIDSpace(int bits) {
+	public ChordIdentifierSpace(int bits) {
 		this.bits = bits;
 		this.modulus = BigInteger.ONE.add(BigInteger.ONE).pow(this.bits);
 	}
@@ -71,8 +71,8 @@ public class ChordIDSpace implements BIIDSpace {
 	}
 
 	@Override
-	public BIID randomID(Random rand) {
-		return ChordID.rand(rand, this);
+	public BIIdentifier randomID(Random rand) {
+		return ChordIdentifier.rand(rand, this);
 	}
 
 	@Override

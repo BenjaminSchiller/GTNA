@@ -35,7 +35,7 @@
  */
 package gtna.id.plane;
 
-import gtna.id.DID;
+import gtna.id.DIdentifier;
 import gtna.id.DPartition;
 import gtna.id.Identifier;
 import gtna.id.Partition;
@@ -45,14 +45,14 @@ import gtna.id.Partition;
  * 
  */
 public class PlanePartitionSimple implements DPartition {
-	private PlaneID id;
+	private PlaneIdentifier id;
 
-	public PlanePartitionSimple(PlaneID id) {
+	public PlanePartitionSimple(PlaneIdentifier id) {
 		this.id = id;
 	}
 
-	public PlanePartitionSimple(String string, PlaneIDSpaceSimple idSpace) {
-		this.id = new PlaneID(string, idSpace);
+	public PlanePartitionSimple(String string, PlaneIdentifierSpaceSimple idSpace) {
+		this.id = new PlaneIdentifier(string, idSpace);
 	}
 
 	public PlanePartitionSimple(String string) {
@@ -79,14 +79,14 @@ public class PlanePartitionSimple implements DPartition {
 	}
 
 	@Override
-	public DID getRepresentativeID() {
+	public DIdentifier getRepresentativeID() {
 		return this.id;
 	}
 
 	/**
 	 * @return the id
 	 */
-	public PlaneID getId() {
+	public PlaneIdentifier getId() {
 		return this.id;
 	}
 
@@ -94,7 +94,7 @@ public class PlanePartitionSimple implements DPartition {
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(PlaneID id) {
+	public void setId(PlaneIdentifier id) {
 		this.id = id;
 	}
 

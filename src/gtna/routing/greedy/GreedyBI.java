@@ -37,8 +37,8 @@ package gtna.routing.greedy;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.BIID;
-import gtna.id.BIIDSpace;
+import gtna.id.BIIdentifier;
+import gtna.id.BIIdentifierSpace;
 import gtna.id.BIPartition;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
@@ -54,7 +54,7 @@ import java.util.Random;
  * 
  */
 public class GreedyBI extends RoutingAlgorithmImpl implements RoutingAlgorithm {
-	private BIIDSpace idSpace;
+	private BIIdentifierSpace idSpace;
 
 	private BIPartition[] p;
 
@@ -72,15 +72,15 @@ public class GreedyBI extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 
 	@Override
 	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
-		BIID target = (BIID) this.idSpace.randomID(rand);
+		BIIdentifier target = (BIIdentifier) this.idSpace.randomID(rand);
 		while (this.p[start].contains(target)) {
-			target = (BIID) this.idSpace.randomID(rand);
+			target = (BIIdentifier) this.idSpace.randomID(rand);
 		}
 		return this.route(new ArrayList<Integer>(), start, target, rand,
 				graph.getNodes());
 	}
 
-	private Route route(ArrayList<Integer> route, int current, BIID target,
+	private Route route(ArrayList<Integer> route, int current, BIIdentifier target,
 			Random rand, Node[] nodes) {
 		route.add(current);
 		if (this.idSpace.getPartitions()[current].contains(target)) {
@@ -110,12 +110,12 @@ public class GreedyBI extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 	@Override
 	public boolean applicable(Graph graph) {
 		return graph.hasProperty("ID_SPACE_0")
-				&& graph.getProperty("ID_SPACE_0") instanceof BIIDSpace;
+				&& graph.getProperty("ID_SPACE_0") instanceof BIIdentifierSpace;
 	}
 
 	@Override
 	public void preprocess(Graph graph) {
-		this.idSpace = (BIIDSpace) graph.getProperty("ID_SPACE_0");
+		this.idSpace = (BIIdentifierSpace) graph.getProperty("ID_SPACE_0");
 		this.p = (BIPartition[]) this.idSpace.getPartitions();
 	}
 

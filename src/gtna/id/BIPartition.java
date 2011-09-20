@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * IDSpacePartition.java
+ * BIPartition.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -42,5 +42,5 @@ import java.math.BigInteger;
  * 
  */
 public interface BIPartition extends Partition<BigInteger> {
-	
+
 }

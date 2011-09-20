@@ -36,8 +36,8 @@
 package gtna.transformation.id;
 
 import gtna.graph.Graph;
-import gtna.id.ring.RingID;
-import gtna.id.ring.RingIDSpaceSimple;
+import gtna.id.ring.RingIdentifier;
+import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartitionSimple;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
@@ -82,10 +82,10 @@ public class RandomRingIDSpaceSimple extends TransformationImpl implements
 		for (int r = 0; r < this.realities; r++) {
 			RingPartitionSimple[] partitions = new RingPartitionSimple[graph
 					.getNodes().length];
-			RingIDSpaceSimple idSpace = new RingIDSpaceSimple(partitions,
+			RingIdentifierSpaceSimple idSpace = new RingIdentifierSpaceSimple(partitions,
 					this.modulus, this.wrapAround);
 			for (int i = 0; i < partitions.length; i++) {
-				partitions[i] = new RingPartitionSimple(RingID.rand(rand, idSpace));
+				partitions[i] = new RingPartitionSimple(RingIdentifier.rand(rand, idSpace));
 			}
 			graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
 		}

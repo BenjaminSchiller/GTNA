@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * ChordID.java
+ * ChordIdentifier.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -35,7 +35,7 @@
  */
 package gtna.networks.p2p.chord;
 
-import gtna.id.BIID;
+import gtna.id.BIIdentifier;
 import gtna.id.Identifier;
 
 import java.math.BigInteger;
@@ -45,23 +45,23 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class ChordID implements BIID, Comparable<ChordID> {
-	private ChordIDSpace idSpace;
+public class ChordIdentifier implements BIIdentifier, Comparable<ChordIdentifier> {
+	private ChordIdentifierSpace idSpace;
 
 	private BigInteger id;
 
-	public ChordID(ChordIDSpace idSpace, BigInteger id) {
+	public ChordIdentifier(ChordIdentifierSpace idSpace, BigInteger id) {
 		this.idSpace = idSpace;
 		this.id = id;
 	}
 
 	@Override
-	public int compareTo(ChordID arg0) {
-		return this.id.compareTo(((ChordID) arg0).getId());
+	public int compareTo(ChordIdentifier arg0) {
+		return this.id.compareTo(((ChordIdentifier) arg0).getId());
 	}
 
 	public BigInteger distance(Identifier<BigInteger> id) {
-		BigInteger value = ((ChordID) id).getId();
+		BigInteger value = ((ChordIdentifier) id).getId();
 		BigInteger sub1 = this.id.subtract(value).abs();
 		BigInteger sub2 = this.idSpace.getModulus().subtract(sub1);
 		return sub1.min(sub2);
@@ -69,17 +69,17 @@ public class ChordID implements BIID, Comparable<ChordID> {
 
 	@Override
 	public boolean equals(Identifier<BigInteger> id) {
-		return this.id.equals(((ChordID) id).getId());
+		return this.id.equals(((ChordIdentifier) id).getId());
 	}
 
-	public static ChordID rand(Random rand, ChordIDSpace idSpace) {
-		return new ChordID(idSpace, new BigInteger(idSpace.getBits(), rand));
+	public static ChordIdentifier rand(Random rand, ChordIdentifierSpace idSpace) {
+		return new ChordIdentifier(idSpace, new BigInteger(idSpace.getBits(), rand));
 	}
 
 	/**
 	 * @return the idSpace
 	 */
-	public ChordIDSpace getIdSpace() {
+	public ChordIdentifierSpace getIdSpace() {
 		return this.idSpace;
 	}
 
@@ -87,7 +87,7 @@ public class ChordID implements BIID, Comparable<ChordID> {
 	 * @param idSpace
 	 *            the idSpace to set
 	 */
-	public void setIdSpace(ChordIDSpace idSpace) {
+	public void setIdSpace(ChordIdentifierSpace idSpace) {
 		this.idSpace = idSpace;
 	}
 

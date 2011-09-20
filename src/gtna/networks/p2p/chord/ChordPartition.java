@@ -35,7 +35,7 @@
  */
 package gtna.networks.p2p.chord;
 
-import gtna.id.BIID;
+import gtna.id.BIIdentifier;
 import gtna.id.BIPartition;
 import gtna.id.Identifier;
 import gtna.id.Partition;
@@ -47,11 +47,11 @@ import java.math.BigInteger;
  * 
  */
 public class ChordPartition implements BIPartition {
-	private ChordID pred;
+	private ChordIdentifier pred;
 
-	private ChordID succ;
+	private ChordIdentifier succ;
 
-	public ChordPartition(ChordID pred, ChordID succ) {
+	public ChordPartition(ChordIdentifier pred, ChordIdentifier succ) {
 		this.pred = pred;
 		this.succ = succ;
 	}
@@ -61,7 +61,7 @@ public class ChordPartition implements BIPartition {
 		if (this.contains(id)) {
 			return BigInteger.ZERO;
 		}
-		BigInteger compare = ((ChordID) id).getId();
+		BigInteger compare = ((ChordIdentifier) id).getId();
 		if (this.succ.getId().compareTo(compare) == -1) {
 			return compare.subtract(this.succ.getId()).mod(
 					this.succ.getIdSpace().getModulus());
@@ -81,7 +81,7 @@ public class ChordPartition implements BIPartition {
 
 	@Override
 	public boolean contains(Identifier<BigInteger> id) {
-		BigInteger v = ((ChordID) id).getId();
+		BigInteger v = ((ChordIdentifier) id).getId();
 		BigInteger p = this.pred.getId();
 		BigInteger s = this.succ.getId();
 		if (this.pred.getId().compareTo(this.succ.getId()) == -1) {
@@ -92,14 +92,14 @@ public class ChordPartition implements BIPartition {
 	}
 
 	@Override
-	public BIID getRepresentativeID() {
+	public BIIdentifier getRepresentativeID() {
 		return this.succ;
 	}
 
 	/**
 	 * @return the pred
 	 */
-	public ChordID getPred() {
+	public ChordIdentifier getPred() {
 		return this.pred;
 	}
 
@@ -107,14 +107,14 @@ public class ChordPartition implements BIPartition {
 	 * @param pred
 	 *            the pred to set
 	 */
-	public void setPred(ChordID pred) {
+	public void setPred(ChordIdentifier pred) {
 		this.pred = pred;
 	}
 
 	/**
 	 * @return the succ
 	 */
-	public ChordID getSucc() {
+	public ChordIdentifier getSucc() {
 		return this.succ;
 	}
 
@@ -122,7 +122,7 @@ public class ChordPartition implements BIPartition {
 	 * @param succ
 	 *            the succ to set
 	 */
-	public void setSucc(ChordID succ) {
+	public void setSucc(ChordIdentifier succ) {
 		this.succ = succ;
 	}
 

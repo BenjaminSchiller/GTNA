@@ -37,14 +37,14 @@ package gtna.transformation.lookahead;
 
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
-import gtna.id.BIID;
-import gtna.id.BIIDSpace;
-import gtna.id.DID;
-import gtna.id.DIDSpace;
+import gtna.id.BIIdentifier;
+import gtna.id.BIIdentifierSpace;
+import gtna.id.DIdentifier;
+import gtna.id.DIdentifierSpace;
 import gtna.id.Identifier;
-import gtna.id.plane.PlaneID;
-import gtna.id.ring.RingID;
-import gtna.networks.p2p.chord.ChordID;
+import gtna.id.plane.PlaneIdentifier;
+import gtna.id.ring.RingIdentifier;
+import gtna.networks.p2p.chord.ChordIdentifier;
 import gtna.transformation.TransformationImpl;
 
 import java.util.Random;
@@ -102,16 +102,16 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 
 	@SuppressWarnings("rawtypes")
 	protected Identifier obfuscateID(Identifier id, Random rand) {
-		if (id instanceof RingID) {
-			RingID ID = (RingID) id;
+		if (id instanceof RingIdentifier) {
+			RingIdentifier ID = (RingIdentifier) id;
 			double sign = rand.nextBoolean() ? 1.0 : -1.0;
 			double epsilon = minEpsilon + rand.nextDouble() * this.size;
 			double position = ID.getPosition() + sign * epsilon;
-			return new RingID(position, ID.getIdSpace());
-		} else if (id instanceof ChordID) {
+			return new RingIdentifier(position, ID.getIdSpace());
+		} else if (id instanceof ChordIdentifier) {
 			// TODO implement
 			return null;
-		} else if (id instanceof PlaneID) {
+		} else if (id instanceof PlaneIdentifier) {
 			// TODO implement
 			return null;
 		} else {
@@ -121,15 +121,15 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 
 	@SuppressWarnings("rawtypes")
 	protected Identifier copyID(Identifier id) {
-		if (id instanceof RingID) {
-			RingID ID = (RingID) id;
-			return new RingID(ID.getPosition(), ID.getIdSpace());
-		} else if (id instanceof ChordID) {
-			ChordID ID = (ChordID) id;
-			return new ChordID(ID.getIdSpace(), ID.getId());
-		} else if (id instanceof PlaneID) {
-			PlaneID ID = (PlaneID) id;
-			return new PlaneID(ID.getX(), ID.getY(), ID.getIdSpace());
+		if (id instanceof RingIdentifier) {
+			RingIdentifier ID = (RingIdentifier) id;
+			return new RingIdentifier(ID.getPosition(), ID.getIdSpace());
+		} else if (id instanceof ChordIdentifier) {
+			ChordIdentifier ID = (ChordIdentifier) id;
+			return new ChordIdentifier(ID.getIdSpace(), ID.getId());
+		} else if (id instanceof PlaneIdentifier) {
+			PlaneIdentifier ID = (PlaneIdentifier) id;
+			return new PlaneIdentifier(ID.getX(), ID.getY(), ID.getIdSpace());
 		} else {
 			return null;
 		}
@@ -139,14 +139,14 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 	public boolean applicable(Graph g) {
 		Random rand = new Random();
 		for (GraphProperty p : g.getProperties("ID_SPACE")) {
-			if (p instanceof DIDSpace) {
-				DID id = (DID) ((DIDSpace) p).randomID(rand);
-				if (!(id instanceof RingID)) {
+			if (p instanceof DIdentifierSpace) {
+				DIdentifier id = (DIdentifier) ((DIdentifierSpace) p).randomID(rand);
+				if (!(id instanceof RingIdentifier)) {
 					return false;
 				}
-			} else if (p instanceof BIIDSpace) {
-				BIID id = (BIID) ((BIIDSpace) p).randomID(rand);
-				if (!(id instanceof ChordID)) {
+			} else if (p instanceof BIIdentifierSpace) {
+				BIIdentifier id = (BIIdentifier) ((BIIdentifierSpace) p).randomID(rand);
+				if (!(id instanceof ChordIdentifier)) {
 					return false;
 				}
 			} else {

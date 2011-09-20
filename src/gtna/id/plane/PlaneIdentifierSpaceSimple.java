@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * RingIDSpace.java
+ * PlaneIdentifierSpaceSimple.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,11 +33,12 @@
  * ---------------------------------------
  *
  */
-package gtna.id.ring;
+package gtna.id.plane;
 
 import gtna.graph.Graph;
-import gtna.id.DIDSpace;
-import gtna.id.Identifier;
+import gtna.id.DIdentifier;
+import gtna.id.DIdentifierSpace;
+import gtna.id.DPartition;
 import gtna.id.Partition;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
@@ -49,43 +50,53 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RingIDSpace implements DIDSpace {
-	private RingPartition[] partitions;
+public class PlaneIdentifierSpaceSimple implements DIdentifierSpace {
+	private PlanePartitionSimple[] partitions;
 
-	protected double modulus;
+	private double modulusX;
 
-	protected boolean wrapAround;
+	private double modulusY;
 
-	protected double maxDistance;
+	private boolean wrapAround;
 
-	public RingIDSpace() {
-		this.partitions = new RingPartition[] {};
-		this.modulus = Double.MAX_VALUE;
-		this.wrapAround = false;
+	private double maxDistance;
+
+	public PlaneIdentifierSpaceSimple() {
+		this.partitions = new PlanePartitionSimple[] {};
+		this.modulusX = Double.MAX_VALUE;
+		this.modulusY = Double.MAX_VALUE;
+		this.wrapAround = true;
 		this.maxDistance = Double.MAX_VALUE;
 	}
 
-	public RingIDSpace(RingPartition[] partitions, double modulus,
-			boolean wrapAround) {
+	public PlaneIdentifierSpaceSimple(PlanePartitionSimple[] partitions,
+			double modulusX, double modulusY, boolean wrapAround) {
 		this.partitions = partitions;
-		this.modulus = modulus;
+		this.modulusX = modulusX;
+		this.modulusY = modulusY;
 		this.wrapAround = wrapAround;
-		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
+		if (this.wrapAround) {
+			this.maxDistance = Math.sqrt(Math.pow(this.modulusX / 2.0, 2)
+					+ Math.pow(this.modulusY / 2.0, 2));
+		} else {
+			this.maxDistance = Math.sqrt(Math.pow(this.modulusX, 2)
+					+ Math.pow(this.modulusY, 2));
+		}
 	}
 
 	@Override
-	public Partition<Double>[] getPartitions() {
+	public DPartition[] getPartitions() {
 		return this.partitions;
 	}
 
 	@Override
 	public void setPartitions(Partition<Double>[] partitions) {
-		this.partitions = (RingPartition[]) partitions;
+		this.partitions = (PlanePartitionSimple[]) partitions;
 	}
 
 	@Override
-	public Identifier<Double> randomID(Random rand) {
-		return RingID.rand(rand, this);
+	public DIdentifier randomID(Random rand) {
+		return this.partitions[rand.nextInt(this.partitions.length)].getId();
 	}
 
 	@Override
@@ -105,9 +116,13 @@ public class RingIDSpace implements DIDSpace {
 		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
 		fw.writeln(key);
 
-		// # MODULUS
-		fw.writeComment("Modulus");
-		fw.writeln(this.modulus);
+		// # MODULUS_X
+		fw.writeComment("Modulus-X");
+		fw.writeln(this.modulusX);
+
+		// # MODULUS_Y
+		fw.writeComment("Modulus-Y");
+		fw.writeln(this.modulusY);
 
 		// # WRAP-AROUND
 		fw.writeComment("Wrap-around");
@@ -121,7 +136,7 @@ public class RingIDSpace implements DIDSpace {
 
 		// PARTITIONS
 		int index = 0;
-		for (RingPartition p : this.partitions) {
+		for (PlanePartitionSimple p : this.partitions) {
 			fw.writeln(index++ + ":" + p.toString());
 		}
 
@@ -138,24 +153,33 @@ public class RingIDSpace implements DIDSpace {
 		// KEY
 		String key = fr.readLine();
 
-		// # MUDULUS
-		this.modulus = Double.parseDouble(fr.readLine());
+		// # MUDULUS_X
+		this.modulusX = Double.parseDouble(fr.readLine());
+
+		// # MUDULUS_Y
+		this.modulusY = Double.parseDouble(fr.readLine());
 
 		// # WRAP-AROUND
 		this.wrapAround = Boolean.parseBoolean(fr.readLine());
 
 		// # PARTITIONS
 		int partitions = Integer.parseInt(fr.readLine());
-		this.partitions = new RingPartition[partitions];
+		this.partitions = new PlanePartitionSimple[partitions];
 
-		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
+		if (this.wrapAround) {
+			this.maxDistance = Math.sqrt(Math.pow(this.modulusX / 2.0, 2)
+					+ Math.pow(this.modulusY / 2.0, 2));
+		} else {
+			this.maxDistance = Math.sqrt(Math.pow(this.modulusX, 2)
+					+ Math.pow(this.modulusY, 2));
+		}
 
 		// PARTITIONS
 		String line = null;
 		while ((line = fr.readLine()) != null) {
 			String[] temp = line.split(":");
 			int index = Integer.parseInt(temp[0]);
-			this.partitions[index] = new RingPartition(temp[1], this);
+			this.partitions[index] = new PlanePartitionSimple(temp[1], this);
 		}
 
 		fr.close();
@@ -164,10 +188,17 @@ public class RingIDSpace implements DIDSpace {
 	}
 
 	/**
-	 * @return the modulus
+	 * @return the modulusX
 	 */
-	public double getModulus() {
-		return this.modulus;
+	public double getModulusX() {
+		return this.modulusX;
+	}
+
+	/**
+	 * @return the modulusY
+	 */
+	public double getModulusY() {
+		return this.modulusY;
 	}
 
 	/**

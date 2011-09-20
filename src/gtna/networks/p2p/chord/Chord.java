@@ -55,7 +55,7 @@ public class Chord extends NetworkImpl implements Network {
 	private int bits;
 
 	private boolean uniform;
-	
+
 	private int rpn;
 
 	public static Chord[] get(int[] nodes, int bits, boolean uniform, int rpn,
@@ -113,7 +113,8 @@ public class Chord extends NetworkImpl implements Network {
 		RandomChordIDSpace t = new RandomChordIDSpace(this.bits, this.uniform);
 		graph = t.transform(graph);
 
-		ChordIDSpace idSpace = (ChordIDSpace) graph.getProperty("ID_SPACE_0");
+		ChordIdentifierSpace idSpace = (ChordIdentifierSpace) graph
+				.getProperty("ID_SPACE_0");
 		ChordPartition[] partitions = (ChordPartition[]) idSpace
 				.getPartitions();
 
@@ -121,21 +122,22 @@ public class Chord extends NetworkImpl implements Network {
 		for (Node node : nodes) {
 			ChordPartition p = partitions[node.getIndex()];
 			BigInteger id = p.getSucc().getId();
-			BigInteger predID = p.getPred().getId();
+			// BigInteger predID = p.getPred().getId();
 			BigInteger succID = id.add(BigInteger.ONE)
 					.mod(idSpace.getModulus());
 
-			int predIndex = this.find(partitions, p.getPred(), node.getIndex());
-			int succIndex = this.find(partitions, new ChordID(idSpace, succID),
-					node.getIndex());
+			// int predIndex = this.find(partitions, p.getPred(),
+			// node.getIndex());
+			int succIndex = this.find(partitions, new ChordIdentifier(idSpace,
+					succID), node.getIndex());
 
 			BigInteger add = BigInteger.ONE;
 			int[] fingerIndex = new int[this.bits];
 			BigInteger[] fingerID = new BigInteger[this.bits];
 			for (int i = 0; i < this.bits; i++) {
 				fingerID[i] = id.add(add).mod(idSpace.getModulus());
-				fingerIndex[i] = this.find(partitions, new ChordID(idSpace,
-						fingerID[i]), node.getIndex());
+				fingerIndex[i] = this.find(partitions, new ChordIdentifier(
+						idSpace, fingerID[i]), node.getIndex());
 				add = add.shiftLeft(1);
 			}
 
@@ -162,7 +164,7 @@ public class Chord extends NetworkImpl implements Network {
 		return graph;
 	}
 
-	private int find(ChordPartition[] partitions, ChordID id, int start) {
+	private int find(ChordPartition[] partitions, ChordIdentifier id, int start) {
 		int index = start;
 		while (!partitions[index].contains(id)) {
 			index = (index + 1) % partitions.length;

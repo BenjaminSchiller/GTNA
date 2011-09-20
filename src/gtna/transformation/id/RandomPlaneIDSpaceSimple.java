@@ -36,8 +36,8 @@
 package gtna.transformation.id;
 
 import gtna.graph.Graph;
-import gtna.id.plane.PlaneID;
-import gtna.id.plane.PlaneIDSpaceSimple;
+import gtna.id.plane.PlaneIdentifier;
+import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
@@ -80,10 +80,10 @@ public class RandomPlaneIDSpaceSimple extends TransformationImpl implements
 		for (int r = 0; r < this.realities; r++) {
 			PlanePartitionSimple[] partitions = new PlanePartitionSimple[graph
 					.getNodes().length];
-			PlaneIDSpaceSimple idSpace = new PlaneIDSpaceSimple(partitions,
+			PlaneIdentifierSpaceSimple idSpace = new PlaneIdentifierSpaceSimple(partitions,
 					this.modulusX, this.modulusY, this.wrapAround);
 			for (int i = 0; i < partitions.length; i++) {
-				partitions[i] = new PlanePartitionSimple(PlaneID.rand(rand,
+				partitions[i] = new PlanePartitionSimple(PlaneIdentifier.rand(rand,
 						idSpace));
 			}
 			graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);

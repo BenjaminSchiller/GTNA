@@ -35,7 +35,7 @@
  */
 package gtna.id.ring;
 
-import gtna.id.DID;
+import gtna.id.DIdentifier;
 import gtna.id.DPartition;
 import gtna.id.Identifier;
 import gtna.id.Partition;
@@ -45,15 +45,15 @@ import gtna.id.Partition;
  * 
  */
 public class RingPartitionSimple implements DPartition {
-	private RingID id;
+	private RingIdentifier id;
 
-	public RingPartitionSimple(RingID id) {
+	public RingPartitionSimple(RingIdentifier id) {
 		this.id = id;
 	}
 
-	public RingPartitionSimple(String string, RingIDSpace idSpace) {
+	public RingPartitionSimple(String string, RingIdentifierSpace idSpace) {
 		string = string.replace("(", "").replace(")", "");
-		this.id = new RingID(Double.parseDouble(string), idSpace);
+		this.id = new RingIdentifier(Double.parseDouble(string), idSpace);
 	}
 
 	public RingPartitionSimple(String string) {
@@ -76,18 +76,18 @@ public class RingPartitionSimple implements DPartition {
 
 	@Override
 	public boolean contains(Identifier<Double> id) {
-		return this.id.equals((RingID) id);
+		return this.id.equals((RingIdentifier) id);
 	}
 
 	@Override
-	public DID getRepresentativeID() {
+	public DIdentifier getRepresentativeID() {
 		return this.id;
 	}
 
 	/**
 	 * @return the id
 	 */
-	public RingID getId() {
+	public RingIdentifier getId() {
 		return this.id;
 	}
 

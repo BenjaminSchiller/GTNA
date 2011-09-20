@@ -36,8 +36,8 @@
 package gtna.transformation.id;
 
 import gtna.graph.Graph;
-import gtna.networks.p2p.chord.ChordID;
-import gtna.networks.p2p.chord.ChordIDSpace;
+import gtna.networks.p2p.chord.ChordIdentifier;
+import gtna.networks.p2p.chord.ChordIdentifierSpace;
 import gtna.networks.p2p.chord.ChordPartition;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
@@ -82,22 +82,22 @@ public class RandomChordIDSpace extends TransformationImpl implements
 	@Override
 	public Graph transform(Graph graph) {
 		Random rand = new Random();
-		ChordIDSpace idSpace = new ChordIDSpace(this.bits);
+		ChordIdentifierSpace idSpace = new ChordIdentifierSpace(this.bits);
 		for (int r = 0; r < this.realities; r++) {
-			ChordID[] ids = new ChordID[graph.getNodes().length];
+			ChordIdentifier[] ids = new ChordIdentifier[graph.getNodes().length];
 			if (this.uniform) {
 				BigInteger stepSize = idSpace.getModulus().divide(
 						new BigInteger("" + graph.getNodes().length));
 				for (int i = 0; i < ids.length; i++) {
-					ids[i] = new ChordID(idSpace,
+					ids[i] = new ChordIdentifier(idSpace,
 							stepSize.multiply(new BigInteger("" + i)));
 				}
 			} else {
 				HashSet<String> idSet = new HashSet<String>();
 				for (int i = 0; i < ids.length; i++) {
-					ChordID id = (ChordID) idSpace.randomID(rand);
+					ChordIdentifier id = (ChordIdentifier) idSpace.randomID(rand);
 					while (idSet.contains(id.toString())) {
-						id = (ChordID) idSpace.randomID(rand);
+						id = (ChordIdentifier) idSpace.randomID(rand);
 					}
 					ids[i] = id;
 					idSet.add(id.toString());

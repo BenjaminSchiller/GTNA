@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * RingIDSpaceSimple.java
+ * RingIDSpace.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -36,7 +36,8 @@
 package gtna.id.ring;
 
 import gtna.graph.Graph;
-import gtna.id.DIDSpace;
+import gtna.id.DIdentifierSpace;
+import gtna.id.Identifier;
 import gtna.id.Partition;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
@@ -48,19 +49,23 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RingIDSpaceSimple extends RingIDSpace implements DIDSpace {
-	private RingPartitionSimple[] partitions;
+public class RingIdentifierSpace implements DIdentifierSpace {
+	private RingPartition[] partitions;
 
-	private double modulus;
+	protected double modulus;
 
-	public RingIDSpaceSimple() {
-		this.partitions = new RingPartitionSimple[] {};
+	protected boolean wrapAround;
+
+	protected double maxDistance;
+
+	public RingIdentifierSpace() {
+		this.partitions = new RingPartition[] {};
 		this.modulus = Double.MAX_VALUE;
 		this.wrapAround = false;
-		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
+		this.maxDistance = Double.MAX_VALUE;
 	}
 
-	public RingIDSpaceSimple(RingPartitionSimple[] partitions, double modulus,
+	public RingIdentifierSpace(RingPartition[] partitions, double modulus,
 			boolean wrapAround) {
 		this.partitions = partitions;
 		this.modulus = modulus;
@@ -75,12 +80,12 @@ public class RingIDSpaceSimple extends RingIDSpace implements DIDSpace {
 
 	@Override
 	public void setPartitions(Partition<Double>[] partitions) {
-		this.partitions = (RingPartitionSimple[]) partitions;
+		this.partitions = (RingPartition[]) partitions;
 	}
 
 	@Override
-	public RingID randomID(Random rand) {
-		return this.partitions[rand.nextInt(this.partitions.length)].getId();
+	public Identifier<Double> randomID(Random rand) {
+		return RingIdentifier.rand(rand, this);
 	}
 
 	@Override
@@ -116,7 +121,7 @@ public class RingIDSpaceSimple extends RingIDSpace implements DIDSpace {
 
 		// PARTITIONS
 		int index = 0;
-		for (RingPartitionSimple p : this.partitions) {
+		for (RingPartition p : this.partitions) {
 			fw.writeln(index++ + ":" + p.toString());
 		}
 
@@ -141,7 +146,7 @@ public class RingIDSpaceSimple extends RingIDSpace implements DIDSpace {
 
 		// # PARTITIONS
 		int partitions = Integer.parseInt(fr.readLine());
-		this.partitions = new RingPartitionSimple[partitions];
+		this.partitions = new RingPartition[partitions];
 
 		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
 
@@ -150,7 +155,7 @@ public class RingIDSpaceSimple extends RingIDSpace implements DIDSpace {
 		while ((line = fr.readLine()) != null) {
 			String[] temp = line.split(":");
 			int index = Integer.parseInt(temp[0]);
-			this.partitions[index] = new RingPartitionSimple(temp[1], this);
+			this.partitions[index] = new RingPartition(temp[1], this);
 		}
 
 		fr.close();

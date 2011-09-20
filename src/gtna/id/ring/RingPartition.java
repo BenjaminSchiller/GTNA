@@ -35,7 +35,7 @@
  */
 package gtna.id.ring;
 
-import gtna.id.DID;
+import gtna.id.DIdentifier;
 import gtna.id.DPartition;
 import gtna.id.Identifier;
 import gtna.id.Partition;
@@ -45,19 +45,19 @@ import gtna.id.Partition;
  * 
  */
 public class RingPartition implements DPartition {
-	private RingID start;
+	private RingIdentifier start;
 
-	private RingID end;
+	private RingIdentifier end;
 
-	public RingPartition(RingID start, RingID end) {
+	public RingPartition(RingIdentifier start, RingIdentifier end) {
 		this.start = start;
 		this.end = end;
 	}
 
-	public RingPartition(String string, RingIDSpace idSpace) {
+	public RingPartition(String string, RingIdentifierSpace idSpace) {
 		String[] temp = string.replace("(", "").replace("]", "").split(",");
-		this.start = new RingID(Double.parseDouble(temp[0]), idSpace);
-		this.end = new RingID(Double.parseDouble(temp[1]), idSpace);
+		this.start = new RingIdentifier(Double.parseDouble(temp[0]), idSpace);
+		this.end = new RingIdentifier(Double.parseDouble(temp[1]), idSpace);
 	}
 
 	public RingPartition(String string) {
@@ -74,8 +74,8 @@ public class RingPartition implements DPartition {
 		if (this.contains(id)) {
 			return 0.0;
 		}
-		return Math.min(this.start.distance((RingID) id),
-				this.end.distance((RingID) id));
+		return Math.min(this.start.distance((RingIdentifier) id),
+				this.end.distance((RingIdentifier) id));
 	}
 
 	@Override
@@ -86,34 +86,34 @@ public class RingPartition implements DPartition {
 
 	@Override
 	public boolean contains(Identifier<Double> id) {
-		if (this.start.getPosition() < ((RingID) id).getPosition()
-				&& this.end.getPosition() >= ((RingID) id).getPosition()) {
+		if (this.start.getPosition() < ((RingIdentifier) id).getPosition()
+				&& this.end.getPosition() >= ((RingIdentifier) id).getPosition()) {
 			return true;
 		}
 		if (this.start.getPosition() > this.end.getPosition()
-				&& (this.start.getPosition() < ((RingID) id).getPosition() || this.end
-						.getPosition() >= ((RingID) id).getPosition())) {
+				&& (this.start.getPosition() < ((RingIdentifier) id).getPosition() || this.end
+						.getPosition() >= ((RingIdentifier) id).getPosition())) {
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public DID getRepresentativeID() {
+	public DIdentifier getRepresentativeID() {
 		return this.end;
 	}
 
 	/**
 	 * @return the start
 	 */
-	public RingID getStart() {
+	public RingIdentifier getStart() {
 		return this.start;
 	}
 
 	/**
 	 * @return the end
 	 */
-	public RingID getEnd() {
+	public RingIdentifier getEnd() {
 		return this.end;
 	}
 

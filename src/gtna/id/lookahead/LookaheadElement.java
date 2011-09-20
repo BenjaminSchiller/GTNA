@@ -35,7 +35,7 @@
  */
 package gtna.id.lookahead;
 
-import gtna.id.DID;
+import gtna.id.DIdentifier;
 import gtna.id.Identifier;
 
 import java.lang.reflect.Constructor;
@@ -57,10 +57,10 @@ public class LookaheadElement {
 		this.via = via;
 	}
 
-	public LookaheadElement(String string, Constructor<DID> constructor) {
+	public LookaheadElement(String string, Constructor<DIdentifier> constructor) {
 		String[] temp = string.split("->");
 		try {
-			this.id = (DID) constructor.newInstance(temp[0]);
+			this.id = (DIdentifier) constructor.newInstance(temp[0]);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (InstantiationException e) {

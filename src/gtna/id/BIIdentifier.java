@@ -41,20 +41,5 @@ import java.math.BigInteger;
  * @author benni
  * 
  */
-public interface BIID extends Identifier<BigInteger> {
-//	/**
-//	 * 
-//	 * @param id
-//	 *            ID to compute the distance to
-//	 * @return distance to the given ID
-//	 */
-//	public BigInteger distance(BIID id);
-//
-//	/**
-//	 * 
-//	 * @param id
-//	 *            ID to compare to
-//	 * @return true if the IDs are equal; false otherwise
-//	 */
-//	public boolean equals(BIID id);
+public interface BIIdentifier extends Identifier<BigInteger> {
 }
