@@ -74,6 +74,10 @@ public class LookaheadLists implements GraphProperty {
 		return this.lists;
 	}
 
+	public LookaheadList getList(int index) {
+		return this.lists[index];
+	}
+
 	@Override
 	public boolean write(String filename, String key) {
 		Filewriter fw = new Filewriter(filename);

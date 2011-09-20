@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Greedy.java
+ * Lookahead.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -40,6 +40,9 @@ import gtna.graph.Node;
 import gtna.id.ID;
 import gtna.id.IDSpace;
 import gtna.id.Partition;
+import gtna.id.lookahead.LookaheadElement;
+import gtna.id.lookahead.LookaheadList;
+import gtna.id.lookahead.LookaheadLists;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -54,16 +57,13 @@ import java.util.Random;
  * 
  */
 public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm {
+	private int ttl;
+
 	private IDSpace idSpace;
 
 	private Partition[] p;
 
-	private int ttl;
-
-	public Lookahead() {
-		super("LOOKAHEAD", new String[] {}, new String[] {});
-		this.ttl = Integer.MAX_VALUE;
-	}
+	private LookaheadLists lists;
 
 	public Lookahead(int ttl) {
 		super("LOOKAHEAD", new String[] { "TTL" }, new String[] { "" + ttl });
@@ -90,42 +90,34 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 		if (route.size() > this.ttl) {
 			return new RouteImpl(route, false);
 		}
-		double currentDist = this.idSpace.getPartitions()[current]
-				.distance(target);
+		LookaheadList list = this.lists.getList(current);
+		double currentDist = this.p[current].distance(target);
 		double minDist = this.idSpace.getMaxDistance();
-		int minNode = -1;
-		for (int out : nodes[current].getOutgoingEdges()) {
-			double dist = this.p[out].distance(target);
+		int via = -1;
+		for (LookaheadElement l : list.getList()) {
+			double dist = l.getId().distance(target);
 			if (dist < minDist && dist < currentDist) {
 				minDist = dist;
-				minNode = out;
-			} else {
-				for (int lookahead : nodes[out].getOutgoingEdges()) {
-					dist = this.p[lookahead].distance(target);
-					if (dist < minDist && dist < currentDist
-							&& !seen.contains(out)) {
-						minDist = dist;
-						minNode = out;
-					}
-				}
+				via = l.getVia();
 			}
 		}
-		if (minNode == -1) {
+		if (via == -1) {
 			return new RouteImpl(route, false);
 		}
-		return this.route(route, minNode, target, rand, nodes, seen);
+		return this.route(route, via, target, rand, nodes, seen);
 	}
 
 	@Override
 	public boolean applicable(Graph graph) {
-		return graph.hasProperty("ID_SPACE_0")
-				&& graph.getProperty("ID_SPACE_0") instanceof IDSpace;
+		return graph.hasProperty("LOOKAHEAD_LIST_0")
+				&& graph.getProperty("LOOKAHEAD_LIST") instanceof LookaheadLists;
 	}
 
 	@Override
 	public void preprocess(Graph graph) {
 		this.idSpace = (IDSpace) graph.getProperty("ID_SPACE_0");
-		this.p = idSpace.getPartitions();
+		this.p = this.idSpace.getPartitions();
+		this.lists = (LookaheadLists) graph.getProperty("LOOKAHEAD_LIST_0");
 	}
 
 }

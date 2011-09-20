@@ -52,7 +52,7 @@ import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.Greedy;
 import gtna.routing.greedy.GreedyBacktracking;
-import gtna.routing.lookahead.Lookahead;
+import gtna.routing.lookahead.LookaheadOld;
 import gtna.routing.lookahead.LookaheadObfuscated;
 import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityGeneration;
@@ -153,7 +153,7 @@ public class NodesTest {
 		Transformation[] t = new Transformation[] { t1 };
 
 		RoutingAlgorithm g = new Greedy(100);
-		RoutingAlgorithm l = new Lookahead(100);
+		RoutingAlgorithm l = new LookaheadOld(100);
 		double[] distances = new double[] { 0.0, 0.1, 1.0E-2, 1.0E-3, 1.0E-4,
 				1.0E-5, 1.0E-6, 1.0E-7, 1.0E-8, 1.0E-9, 1.0E-10 };
 		RoutingAlgorithm[] lo = new RoutingAlgorithm[distances.length];
@@ -201,7 +201,7 @@ public class NodesTest {
 		Transformation[] t_1 = new Transformation[] { t1, t2, t3 };
 		Transformation[] t_2 = new Transformation[] { t4 };
 
-		RoutingAlgorithm ra = new Lookahead(100);
+		RoutingAlgorithm ra = new LookaheadOld(100);
 
 		Network nw_1 = new DescriptionWrapper(new ReadableFile("SPI", "spi",
 				spi, ra, t_1), "SPI-C");
@@ -313,7 +313,7 @@ public class NodesTest {
 		Transformation[] t2 = new Transformation[] { new RandomPlaneIDSpaceSimple() };
 		RoutingAlgorithm r1 = new Greedy(30);
 		RoutingAlgorithm r2 = new GreedyBacktracking(30);
-		RoutingAlgorithm r3 = new Lookahead(30);
+		RoutingAlgorithm r3 = new LookaheadOld(30);
 		// Network nw1 = new ReadableFile("SPI", "spi",
 		// "./resources/SPI-3-LCC/2010-08.spi.txt", r1, t);
 		// Network nw2 = new ReadableFile("SPI", "spi",
