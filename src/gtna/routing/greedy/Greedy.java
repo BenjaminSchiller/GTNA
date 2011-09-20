@@ -36,7 +36,11 @@
 package gtna.routing.greedy;
 
 import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
 import gtna.graph.Node;
+import gtna.id.BIIdentifier;
+import gtna.id.BIIdentifierSpace;
+import gtna.id.BIPartition;
 import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
 import gtna.id.DPartition;
@@ -45,6 +49,7 @@ import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.RoutingAlgorithmImpl;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -53,9 +58,13 @@ import java.util.Random;
  * 
  */
 public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
-	private DIdentifierSpace idSpace;
+	private DIdentifierSpace idSpaceD;
 
-	private DPartition[] p;
+	private DPartition[] pD;
+
+	private BIIdentifierSpace idSpaceBI;
+
+	private BIPartition[] pBI;
 
 	private int ttl;
 
@@ -71,29 +80,75 @@ public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 
 	@Override
 	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
-		DIdentifier target = (DIdentifier) this.idSpace.randomID(rand);
-		while (this.p[start].contains(target)) {
-			target = (DIdentifier) this.idSpace.randomID(rand);
+		if (this.idSpaceBI != null) {
+			return this.routeToRandomTargetBI(graph, start, rand);
+		} else if (this.idSpaceD != null) {
+			return this.routeToRandomTargetD(graph, start, rand);
+		} else {
+			return null;
 		}
-		return this.route(new ArrayList<Integer>(), start, target, rand,
+	}
+
+	private Route routeToRandomTargetBI(Graph graph, int start, Random rand) {
+		BIIdentifier target = (BIIdentifier) this.idSpaceBI.randomID(rand);
+		while (this.pBI[start].contains(target)) {
+			target = (BIIdentifier) this.idSpaceBI.randomID(rand);
+		}
+		return this.routeBI(new ArrayList<Integer>(), start, target, rand,
 				graph.getNodes());
 	}
 
-	private Route route(ArrayList<Integer> route, int current, DIdentifier target,
-			Random rand, Node[] nodes) {
+	private Route routeBI(ArrayList<Integer> route, int current,
+			BIIdentifier target, Random rand, Node[] nodes) {
 		route.add(current);
-		if (this.idSpace.getPartitions()[current].contains(target)) {
+		if (this.idSpaceBI.getPartitions()[current].contains(target)) {
 			return new RouteImpl(route, true);
 		}
 		if (route.size() > this.ttl) {
 			return new RouteImpl(route, false);
 		}
-		double currentDist = this.idSpace.getPartitions()[current]
+		BigInteger currentDist = this.idSpaceBI.getPartitions()[current]
 				.distance(target);
-		double minDist = this.idSpace.getMaxDistance();
+		BigInteger minDist = this.idSpaceBI.getMaxDistance();
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
-			double dist = this.p[out].distance(target);
+			BigInteger dist = this.pBI[out].distance(target);
+			if (dist.compareTo(minDist) == -1
+					&& dist.compareTo(currentDist) == -1) {
+				minDist = dist;
+				minNode = out;
+			}
+		}
+		if (minNode == -1) {
+			return new RouteImpl(route, false);
+		}
+		return this.routeBI(route, minNode, target, rand, nodes);
+	}
+
+	private Route routeToRandomTargetD(Graph graph, int start, Random rand) {
+		DIdentifier target = (DIdentifier) this.idSpaceD.randomID(rand);
+		while (this.pD[start].contains(target)) {
+			target = (DIdentifier) this.idSpaceD.randomID(rand);
+		}
+		return this.routeD(new ArrayList<Integer>(), start, target, rand,
+				graph.getNodes());
+	}
+
+	private Route routeD(ArrayList<Integer> route, int current,
+			DIdentifier target, Random rand, Node[] nodes) {
+		route.add(current);
+		if (this.idSpaceD.getPartitions()[current].contains(target)) {
+			return new RouteImpl(route, true);
+		}
+		if (route.size() > this.ttl) {
+			return new RouteImpl(route, false);
+		}
+		double currentDist = this.idSpaceD.getPartitions()[current]
+				.distance(target);
+		double minDist = this.idSpaceD.getMaxDistance();
+		int minNode = -1;
+		for (int out : nodes[current].getOutgoingEdges()) {
+			double dist = this.pD[out].distance(target);
 			if (dist < minDist && dist < currentDist) {
 				minDist = dist;
 				minNode = out;
@@ -102,19 +157,35 @@ public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 		if (minNode == -1) {
 			return new RouteImpl(route, false);
 		}
-		return this.route(route, minNode, target, rand, nodes);
+		return this.routeD(route, minNode, target, rand, nodes);
 	}
 
 	@Override
 	public boolean applicable(Graph graph) {
 		return graph.hasProperty("ID_SPACE_0")
-				&& graph.getProperty("ID_SPACE_0") instanceof DIdentifierSpace;
+				&& (graph.getProperty("ID_SPACE_0") instanceof DIdentifierSpace || graph
+						.getProperty("ID_SPACE_0") instanceof BIIdentifierSpace);
 	}
 
 	@Override
 	public void preprocess(Graph graph) {
-		this.idSpace = (DIdentifierSpace) graph.getProperty("ID_SPACE_0");
-		this.p = (DPartition[]) idSpace.getPartitions();
+		GraphProperty p = graph.getProperty("ID_SPACE_0");
+		if (p instanceof DIdentifierSpace) {
+			this.idSpaceD = (DIdentifierSpace) p;
+			this.pD = (DPartition[]) this.idSpaceD.getPartitions();
+			this.idSpaceBI = null;
+			this.pBI = null;
+		} else if (p instanceof BIIdentifierSpace) {
+			this.idSpaceD = null;
+			this.pD = null;
+			this.idSpaceBI = (BIIdentifierSpace) p;
+			this.pBI = (BIPartition[]) this.idSpaceBI.getPartitions();
+		} else {
+			this.idSpaceD = null;
+			this.pD = null;
+			this.idSpaceBI = null;
+			this.pBI = null;
+		}
 	}
 
 }

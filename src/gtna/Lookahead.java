@@ -37,6 +37,7 @@ package gtna;
 
 import gtna.data.Series;
 import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
 import gtna.networks.p2p.chord.Chord;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
@@ -52,10 +53,6 @@ import gtna.transformation.lookahead.RandomObfuscatedLookaheadList;
 import gtna.util.Config;
 import gtna.util.Stats;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-
 /**
  * @author benni
  * 
@@ -68,13 +65,25 @@ public class Lookahead {
 	public static void main(String[] args) {
 		Stats stats = new Stats();
 		// Lookahead.testLookahead();
-		ArrayList<String> list = new ArrayList<String>();
-		for (Type t : list.getClass().getGenericInterfaces()) {
-			System.out.println("t: " + t);
-		}
-		for (Field f : list.getClass().getFields()) {
-			System.out.println("f: " + f);
-		}
+
+		boolean generate = true;
+		int times = 1;
+		boolean wot = false;
+		boolean skipExistingFolders = false;
+
+		Config.overwrite("METRICS", "R");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/lookahead/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/lookahead/");
+		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + skipExistingFolders);
+
+		Network nw1 = new ErdosRenyi(1000, 20, true, new Greedy(),
+				new Transformation[] { new RandomRingIDSpace() });
+		Network nw2 = new Chord(1000, 20, true, 5, new Greedy(), null);
+		Network[] nw = new Network[] { nw1, nw2 };
+		Series[] s = Series.generate(nw, 1);
+		Plot.allMulti(s, "TEST/");
+
 		stats.end();
 	}
 
