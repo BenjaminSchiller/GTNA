@@ -35,8 +35,7 @@
  */
 package gtna.transformation.lookahead;
 
-import gtna.id.ID;
-import gtna.id.ring.RingID;
+import gtna.id.Identifier;
 import gtna.transformation.Transformation;
 
 import java.util.Random;
@@ -52,10 +51,10 @@ public class NeighborsFirstLookaheadList extends
 		super("NEIGHBORS_FIRST_LOOKAHEAD_LIST");
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
-	protected ID obfuscateID(ID id, Random rand) {
-		RingID ID = (RingID) id;
-		return new RingID(ID.getPosition(), ID.getIdSpace());
+	protected Identifier obfuscateID(Identifier id, Random rand) {
+		return this.copyID(id);
 	}
 
 }

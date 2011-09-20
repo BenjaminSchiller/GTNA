@@ -39,6 +39,7 @@ import gtna.graph.Graph;
 import gtna.id.BIID;
 import gtna.id.BIIDSpace;
 import gtna.id.BIPartition;
+import gtna.id.Partition;
 
 import java.math.BigInteger;
 import java.util.Random;
@@ -65,7 +66,7 @@ public class ChordIDSpace implements BIIDSpace {
 	}
 
 	@Override
-	public void setPartitions(BIPartition[] partitions) {
+	public void setPartitions(Partition<BigInteger>[] partitions) {
 		this.partitions = (ChordPartition[]) partitions;
 	}
 

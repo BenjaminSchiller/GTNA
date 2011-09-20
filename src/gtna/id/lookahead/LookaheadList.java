@@ -35,7 +35,7 @@
  */
 package gtna.id.lookahead;
 
-import gtna.id.ID;
+import gtna.id.DID;
 import gtna.util.Config;
 
 import java.lang.reflect.Constructor;
@@ -63,7 +63,7 @@ public class LookaheadList {
 		}
 	}
 
-	public LookaheadList(String string, Constructor<ID> constructor) {
+	public LookaheadList(String string, Constructor<DID> constructor) {
 		String sep1 = Config.get("GRAPH_PROPERTY_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_PROPERTY_SEPARATOR_2");
 		String[] temp1 = string.split(sep1);

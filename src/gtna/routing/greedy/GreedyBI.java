@@ -72,9 +72,9 @@ public class GreedyBI extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 
 	@Override
 	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
-		BIID target = this.idSpace.randomID(rand);
+		BIID target = (BIID) this.idSpace.randomID(rand);
 		while (this.p[start].contains(target)) {
-			target = this.idSpace.randomID(rand);
+			target = (BIID) this.idSpace.randomID(rand);
 		}
 		return this.route(new ArrayList<Integer>(), start, target, rand,
 				graph.getNodes());
@@ -116,7 +116,7 @@ public class GreedyBI extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 	@Override
 	public void preprocess(Graph graph) {
 		this.idSpace = (BIIDSpace) graph.getProperty("ID_SPACE_0");
-		this.p = this.idSpace.getPartitions();
+		this.p = (BIPartition[]) this.idSpace.getPartitions();
 	}
 
 }

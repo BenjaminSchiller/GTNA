@@ -37,9 +37,14 @@ package gtna.transformation.lookahead;
 
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
-import gtna.id.ID;
-import gtna.id.IDSpace;
+import gtna.id.BIID;
+import gtna.id.BIIDSpace;
+import gtna.id.DID;
+import gtna.id.DIDSpace;
+import gtna.id.Identifier;
+import gtna.id.plane.PlaneID;
 import gtna.id.ring.RingID;
+import gtna.networks.p2p.chord.ChordID;
 import gtna.transformation.TransformationImpl;
 
 import java.util.Random;
@@ -95,22 +100,56 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 		return newValues;
 	}
 
-	protected ID obfuscateID(ID id, Random rand) {
-		RingID ID = (RingID) id;
-		double sign = rand.nextBoolean() ? 1.0 : -1.0;
-		double epsilon = minEpsilon + rand.nextDouble() * this.size;
-		double position = ID.getPosition() + sign * epsilon;
-		System.out.println("obfuscating: " + ID.getPosition() + " => "
-				+ position);
-		return new RingID(position, ID.getIdSpace());
+	@SuppressWarnings("rawtypes")
+	protected Identifier obfuscateID(Identifier id, Random rand) {
+		if (id instanceof RingID) {
+			RingID ID = (RingID) id;
+			double sign = rand.nextBoolean() ? 1.0 : -1.0;
+			double epsilon = minEpsilon + rand.nextDouble() * this.size;
+			double position = ID.getPosition() + sign * epsilon;
+			return new RingID(position, ID.getIdSpace());
+		} else if (id instanceof ChordID) {
+			// TODO implement
+			return null;
+		} else if (id instanceof PlaneID) {
+			// TODO implement
+			return null;
+		} else {
+			return null;
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	protected Identifier copyID(Identifier id) {
+		if (id instanceof RingID) {
+			RingID ID = (RingID) id;
+			return new RingID(ID.getPosition(), ID.getIdSpace());
+		} else if (id instanceof ChordID) {
+			ChordID ID = (ChordID) id;
+			return new ChordID(ID.getIdSpace(), ID.getId());
+		} else if (id instanceof PlaneID) {
+			PlaneID ID = (PlaneID) id;
+			return new PlaneID(ID.getX(), ID.getY(), ID.getIdSpace());
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	public boolean applicable(Graph g) {
 		Random rand = new Random();
 		for (GraphProperty p : g.getProperties("ID_SPACE")) {
-			ID id = ((IDSpace) p).randomID(rand);
-			if (!(id instanceof RingID)) {
+			if (p instanceof DIDSpace) {
+				DID id = (DID) ((DIDSpace) p).randomID(rand);
+				if (!(id instanceof RingID)) {
+					return false;
+				}
+			} else if (p instanceof BIIDSpace) {
+				BIID id = (BIID) ((BIIDSpace) p).randomID(rand);
+				if (!(id instanceof ChordID)) {
+					return false;
+				}
+			} else {
 				return false;
 			}
 		}

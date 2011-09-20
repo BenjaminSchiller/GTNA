@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * IDSpacePartition.java
+ * Partition.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -39,36 +39,12 @@ package gtna.id;
  * @author benni
  * 
  */
-public interface Partition {
-	/**
-	 * returns the distance to the given ID
-	 * 
-	 * @param id
-	 *            ID to compute the distance to
-	 * @return distance to the given ID
-	 */
-	public double distance(ID id);
+public interface Partition<Type> {
+	public Type distance(Identifier<Type> id);
 
-	/**
-	 * 
-	 * @param partition
-	 *            Partition to compare to
-	 * @return true if the partitions are equal; false otherwise
-	 */
-	public boolean equals(Partition partition);
+	public boolean equals(Partition<Type> p);
 
-	/**
-	 * 
-	 * @param id
-	 *            ID to check
-	 * @return true if the given ID is contained in the interval; false
-	 *         otherwise
-	 */
-	public boolean contains(ID id);
+	public boolean contains(Identifier<Type> id);
 
-	/**
-	 * 
-	 * @return ID that is representative for this partition
-	 */
-	public ID getRepresentativeID();
+	public Identifier<Type> getRepresentativeID();
 }

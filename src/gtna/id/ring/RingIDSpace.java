@@ -36,7 +36,8 @@
 package gtna.id.ring;
 
 import gtna.graph.Graph;
-import gtna.id.IDSpace;
+import gtna.id.DIDSpace;
+import gtna.id.Identifier;
 import gtna.id.Partition;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
@@ -48,13 +49,13 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RingIDSpace implements IDSpace {
+public class RingIDSpace implements DIDSpace {
 	private RingPartition[] partitions;
-	
+
 	protected double modulus;
-	
+
 	protected boolean wrapAround;
-	
+
 	protected double maxDistance;
 
 	public RingIDSpace() {
@@ -64,7 +65,8 @@ public class RingIDSpace implements IDSpace {
 		this.maxDistance = Double.MAX_VALUE;
 	}
 
-	public RingIDSpace(RingPartition[] partitions, double modulus, boolean wrapAround) {
+	public RingIDSpace(RingPartition[] partitions, double modulus,
+			boolean wrapAround) {
 		this.partitions = partitions;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
@@ -72,22 +74,22 @@ public class RingIDSpace implements IDSpace {
 	}
 
 	@Override
-	public Partition[] getPartitions() {
+	public Partition<Double>[] getPartitions() {
 		return this.partitions;
 	}
 
 	@Override
-	public void setPartitions(Partition[] partitions) {
+	public void setPartitions(Partition<Double>[] partitions) {
 		this.partitions = (RingPartition[]) partitions;
 	}
 
 	@Override
-	public RingID randomID(Random rand) {
+	public Identifier<Double> randomID(Random rand) {
 		return RingID.rand(rand, this);
 	}
 
 	@Override
-	public double getMaxDistance() {
+	public Double getMaxDistance() {
 		return this.maxDistance;
 	}
 

@@ -35,7 +35,8 @@
  */
 package gtna.id.plane;
 
-import gtna.id.ID;
+import gtna.id.DID;
+import gtna.id.Identifier;
 
 import java.util.Random;
 
@@ -43,7 +44,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class PlaneID implements ID, Comparable<PlaneID> {
+public class PlaneID implements DID, Comparable<PlaneID> {
 	private double x;
 
 	private double y;
@@ -72,7 +73,7 @@ public class PlaneID implements ID, Comparable<PlaneID> {
 	}
 
 	@Override
-	public double distance(ID id) {
+	public Double distance(Identifier<Double> id) {
 		PlaneID to = (PlaneID) id;
 		if (this.idSpace.isWrapAround()) {
 			double dx = Math.abs(this.x - to.getX())
@@ -88,7 +89,7 @@ public class PlaneID implements ID, Comparable<PlaneID> {
 	}
 
 	@Override
-	public boolean equals(ID id) {
+	public boolean equals(Identifier<Double> id) {
 		return this.x == ((PlaneID) id).getX()
 				&& this.y == ((PlaneID) id).getY();
 	}
@@ -110,6 +111,13 @@ public class PlaneID implements ID, Comparable<PlaneID> {
 	 */
 	public double getY() {
 		return this.y;
+	}
+
+	/**
+	 * @return the idSpace
+	 */
+	public PlaneIDSpaceSimple getIdSpace() {
+		return this.idSpace;
 	}
 
 	@Override

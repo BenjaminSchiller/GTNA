@@ -36,8 +36,9 @@
 package gtna.id.plane;
 
 import gtna.graph.Graph;
-import gtna.id.ID;
-import gtna.id.IDSpace;
+import gtna.id.DID;
+import gtna.id.DIDSpace;
+import gtna.id.DPartition;
 import gtna.id.Partition;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
@@ -49,7 +50,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class PlaneIDSpaceSimple implements IDSpace {
+public class PlaneIDSpaceSimple implements DIDSpace {
 	private PlanePartitionSimple[] partitions;
 
 	private double modulusX;
@@ -84,22 +85,22 @@ public class PlaneIDSpaceSimple implements IDSpace {
 	}
 
 	@Override
-	public Partition[] getPartitions() {
+	public DPartition[] getPartitions() {
 		return this.partitions;
 	}
 
 	@Override
-	public void setPartitions(Partition[] partitions) {
+	public void setPartitions(Partition<Double>[] partitions) {
 		this.partitions = (PlanePartitionSimple[]) partitions;
 	}
 
 	@Override
-	public ID randomID(Random rand) {
+	public DID randomID(Random rand) {
 		return this.partitions[rand.nextInt(this.partitions.length)].getId();
 	}
 
 	@Override
-	public double getMaxDistance() {
+	public Double getMaxDistance() {
 		return this.maxDistance;
 	}
 

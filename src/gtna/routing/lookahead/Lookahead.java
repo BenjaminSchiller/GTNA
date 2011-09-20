@@ -37,9 +37,10 @@ package gtna.routing.lookahead;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.ID;
-import gtna.id.IDSpace;
-import gtna.id.Partition;
+import gtna.id.BIID;
+import gtna.id.DID;
+import gtna.id.DIDSpace;
+import gtna.id.DPartition;
 import gtna.id.lookahead.LookaheadElement;
 import gtna.id.lookahead.LookaheadList;
 import gtna.id.lookahead.LookaheadLists;
@@ -59,9 +60,9 @@ import java.util.Random;
 public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 	private int ttl;
 
-	private IDSpace idSpace;
+	private DIDSpace idSpace;
 
-	private Partition[] p;
+	private DPartition[] p;
 
 	private LookaheadLists lists;
 
@@ -72,15 +73,15 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 
 	@Override
 	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
-		ID target = this.idSpace.randomID(rand);
+		DID target = (DID) this.idSpace.randomID(rand);
 		while (this.p[start].contains(target)) {
-			target = this.idSpace.randomID(rand);
+			target = (DID) this.idSpace.randomID(rand);
 		}
 		return this.route(new ArrayList<Integer>(), start, target, rand,
 				graph.getNodes(), new HashSet<Integer>());
 	}
 
-	private Route route(ArrayList<Integer> route, int current, ID target,
+	private Route route(ArrayList<Integer> route, int current, DID target,
 			Random rand, Node[] nodes, HashSet<Integer> seen) {
 		route.add(current);
 		seen.add(current);
@@ -91,15 +92,23 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 			return new RouteImpl(route, false);
 		}
 		LookaheadList list = this.lists.getList(current);
-		double currentDist = this.p[current].distance(target);
-		double minDist = this.idSpace.getMaxDistance();
+
 		int via = -1;
-		for (LookaheadElement l : list.getList()) {
-			double dist = l.getId().distance(target);
-			if (dist < minDist && dist < currentDist) {
-				minDist = dist;
-				via = l.getVia();
+
+		if (list.getList()[0].getId() instanceof DID) {
+			double currentDist = this.p[current].distance(target);
+			double minDist = this.idSpace.getMaxDistance();
+			for (LookaheadElement l : list.getList()) {
+				double dist = ((DID) l.getId()).distance(target);
+				if (dist < minDist && dist < currentDist) {
+					minDist = dist;
+					via = l.getVia();
+				}
 			}
+		} else if (list.getList()[0].getId() instanceof BIID) {
+
+		} else {
+			return null;
 		}
 		if (via == -1) {
 			return new RouteImpl(route, false);
@@ -110,13 +119,13 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 	@Override
 	public boolean applicable(Graph graph) {
 		return graph.hasProperty("LOOKAHEAD_LIST_0")
-				&& graph.getProperty("LOOKAHEAD_LIST") instanceof LookaheadLists;
+				&& graph.getProperty("LOOKAHEAD_LIST_0") instanceof LookaheadLists;
 	}
 
 	@Override
 	public void preprocess(Graph graph) {
-		this.idSpace = (IDSpace) graph.getProperty("ID_SPACE_0");
-		this.p = this.idSpace.getPartitions();
+		this.idSpace = (DIDSpace) graph.getProperty("ID_SPACE_0");
+		this.p = (DPartition[]) this.idSpace.getPartitions();
 		this.lists = (LookaheadLists) graph.getProperty("LOOKAHEAD_LIST_0");
 	}
 

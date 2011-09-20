@@ -113,7 +113,7 @@ public class Chord extends NetworkImpl implements Network {
 		RandomChordIDSpace t = new RandomChordIDSpace(this.bits, this.uniform);
 		graph = t.transform(graph);
 
-		ChordIDSpace idSpace = (ChordIDSpace) graph.getProperty("ID_SPACE");
+		ChordIDSpace idSpace = (ChordIDSpace) graph.getProperty("ID_SPACE_0");
 		ChordPartition[] partitions = (ChordPartition[]) idSpace
 				.getPartitions();
 

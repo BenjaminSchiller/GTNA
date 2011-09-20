@@ -36,6 +36,7 @@
 package gtna.networks.p2p.chord;
 
 import gtna.id.BIID;
+import gtna.id.Identifier;
 
 import java.math.BigInteger;
 import java.util.Random;
@@ -59,7 +60,7 @@ public class ChordID implements BIID, Comparable<ChordID> {
 		return this.id.compareTo(((ChordID) arg0).getId());
 	}
 
-	public BigInteger distance(BIID id) {
+	public BigInteger distance(Identifier<BigInteger> id) {
 		BigInteger value = ((ChordID) id).getId();
 		BigInteger sub1 = this.id.subtract(value).abs();
 		BigInteger sub2 = this.idSpace.getModulus().subtract(sub1);
@@ -67,7 +68,7 @@ public class ChordID implements BIID, Comparable<ChordID> {
 	}
 
 	@Override
-	public boolean equals(BIID id) {
+	public boolean equals(Identifier<BigInteger> id) {
 		return this.id.equals(((ChordID) id).getId());
 	}
 

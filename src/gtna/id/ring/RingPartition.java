@@ -35,14 +35,16 @@
  */
 package gtna.id.ring;
 
-import gtna.id.ID;
+import gtna.id.DID;
+import gtna.id.DPartition;
+import gtna.id.Identifier;
 import gtna.id.Partition;
 
 /**
  * @author benni
  * 
  */
-public class RingPartition implements Partition {
+public class RingPartition implements DPartition {
 	private RingID start;
 
 	private RingID end;
@@ -68,22 +70,22 @@ public class RingPartition implements Partition {
 	}
 
 	@Override
-	public double distance(ID id) {
+	public Double distance(Identifier<Double> id) {
 		if (this.contains(id)) {
-			return 0;
+			return 0.0;
 		}
 		return Math.min(this.start.distance((RingID) id),
 				this.end.distance((RingID) id));
 	}
 
 	@Override
-	public boolean equals(Partition partition) {
+	public boolean equals(Partition<Double> partition) {
 		return this.start.equals(((RingPartition) partition).getStart())
 				&& this.end.equals(((RingPartition) partition).getEnd());
 	}
 
 	@Override
-	public boolean contains(ID id) {
+	public boolean contains(Identifier<Double> id) {
 		if (this.start.getPosition() < ((RingID) id).getPosition()
 				&& this.end.getPosition() >= ((RingID) id).getPosition()) {
 			return true;
@@ -97,7 +99,7 @@ public class RingPartition implements Partition {
 	}
 
 	@Override
-	public ID getRepresentativeID() {
+	public DID getRepresentativeID() {
 		return this.end;
 	}
 

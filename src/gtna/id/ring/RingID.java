@@ -35,7 +35,8 @@
  */
 package gtna.id.ring;
 
-import gtna.id.ID;
+import gtna.id.DID;
+import gtna.id.Identifier;
 
 import java.util.Random;
 
@@ -47,7 +48,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RingID implements ID, Comparable<RingID> {
+public class RingID implements DID, Comparable<RingID> {
 	private double position;
 
 	private RingIDSpace idSpace;
@@ -72,7 +73,7 @@ public class RingID implements ID, Comparable<RingID> {
 	}
 
 	@Override
-	public double distance(ID id) {
+	public Double distance(Identifier<Double> id) {
 		double dest = ((RingID) id).getPosition();
 		if (this.idSpace.isWrapAround()) {
 			return Math.abs(dest - this.position)
@@ -83,7 +84,7 @@ public class RingID implements ID, Comparable<RingID> {
 	}
 
 	@Override
-	public boolean equals(ID id) {
+	public boolean equals(Identifier<Double> id) {
 		return this.position == ((RingID) id).getPosition();
 	}
 

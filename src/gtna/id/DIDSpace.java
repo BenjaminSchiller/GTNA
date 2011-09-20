@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Identifier.java
+ * IDSpace.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -39,20 +39,12 @@ package gtna.id;
  * @author benni
  * 
  */
-public interface ID {
-	/**
-	 * 
-	 * @param id
-	 *            ID to compute the distance to
-	 * @return distance to the given ID
-	 */
-	public double distance(ID id);
-
-	/**
-	 * 
-	 * @param id
-	 *            ID to compare to
-	 * @return true if the IDs are equal; false otherwise
-	 */
-	public boolean equals(ID id);
+public interface DIDSpace extends IDSpace<Double> {
+	// public DPartition[] getPartitions();
+	//
+	// public void setPartitions(DPartition[] partitions);
+	//
+	// public DID randomID(Random rand);
+	//
+	// public double getMaxDistance();
 }

@@ -35,14 +35,16 @@
  */
 package gtna.id.plane;
 
-import gtna.id.ID;
+import gtna.id.DID;
+import gtna.id.DPartition;
+import gtna.id.Identifier;
 import gtna.id.Partition;
 
 /**
  * @author benni
  * 
  */
-public class PlanePartitionSimple implements Partition {
+public class PlanePartitionSimple implements DPartition {
 	private PlaneID id;
 
 	public PlanePartitionSimple(PlaneID id) {
@@ -62,22 +64,22 @@ public class PlanePartitionSimple implements Partition {
 	}
 
 	@Override
-	public double distance(ID id) {
+	public Double distance(Identifier<Double> id) {
 		return this.id.distance(id);
 	}
 
 	@Override
-	public boolean equals(Partition partition) {
+	public boolean equals(Partition<Double> partition) {
 		return this.id.equals((((PlanePartitionSimple) partition).getId()));
 	}
 
 	@Override
-	public boolean contains(ID id) {
+	public boolean contains(Identifier<Double> id) {
 		return this.id.equals(id);
 	}
 
 	@Override
-	public ID getRepresentativeID() {
+	public DID getRepresentativeID() {
 		return this.id;
 	}
 

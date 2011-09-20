@@ -35,7 +35,8 @@
  */
 package gtna.id.lookahead;
 
-import gtna.id.ID;
+import gtna.id.DID;
+import gtna.id.Identifier;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -45,19 +46,21 @@ import java.lang.reflect.InvocationTargetException;
  * 
  */
 public class LookaheadElement {
-	private ID id;
+	@SuppressWarnings("rawtypes")
+	private Identifier id;
 
 	private int via;
 
-	public LookaheadElement(ID id, int via) {
+	@SuppressWarnings("rawtypes")
+	public LookaheadElement(Identifier id, int via) {
 		this.id = id;
 		this.via = via;
 	}
 
-	public LookaheadElement(String string, Constructor<ID> constructor) {
+	public LookaheadElement(String string, Constructor<DID> constructor) {
 		String[] temp = string.split("->");
 		try {
-			this.id = (ID) constructor.newInstance(temp[0]);
+			this.id = (DID) constructor.newInstance(temp[0]);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (InstantiationException e) {
@@ -74,6 +77,7 @@ public class LookaheadElement {
 		return this.id.toString() + "->" + via;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object arg0) {
 		LookaheadElement l = (LookaheadElement) arg0;
@@ -83,7 +87,8 @@ public class LookaheadElement {
 	/**
 	 * @return the id
 	 */
-	public ID getId() {
+	@SuppressWarnings("rawtypes")
+	public Identifier getId() {
 		return this.id;
 	}
 

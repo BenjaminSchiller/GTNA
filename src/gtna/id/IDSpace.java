@@ -43,12 +43,12 @@ import java.util.Random;
  * @author benni
  * 
  */
-public interface IDSpace extends GraphProperty {
-	public Partition[] getPartitions();
+public interface IDSpace<Type> extends GraphProperty {
+	public Partition<Type>[] getPartitions();
 
-	public void setPartitions(Partition[] partitions);
+	public void setPartitions(Partition<Type>[] partitions);
 
-	public ID randomID(Random rand);
-	
-	public double getMaxDistance();
+	public Identifier<Type> randomID(Random rand);
+
+	public Type getMaxDistance();
 }

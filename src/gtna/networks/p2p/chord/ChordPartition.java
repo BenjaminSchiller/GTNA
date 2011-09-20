@@ -37,6 +37,8 @@ package gtna.networks.p2p.chord;
 
 import gtna.id.BIID;
 import gtna.id.BIPartition;
+import gtna.id.Identifier;
+import gtna.id.Partition;
 
 import java.math.BigInteger;
 
@@ -55,7 +57,7 @@ public class ChordPartition implements BIPartition {
 	}
 
 	@Override
-	public BigInteger distance(BIID id) {
+	public BigInteger distance(Identifier<BigInteger> id) {
 		if (this.contains(id)) {
 			return BigInteger.ZERO;
 		}
@@ -71,14 +73,14 @@ public class ChordPartition implements BIPartition {
 	}
 
 	@Override
-	public boolean equals(BIPartition partition) {
+	public boolean equals(Partition<BigInteger> partition) {
 		ChordPartition compare = (ChordPartition) partition;
 		return this.pred.equals(compare.getPred())
 				&& this.succ.equals(compare.getSucc());
 	}
 
 	@Override
-	public boolean contains(BIID id) {
+	public boolean contains(Identifier<BigInteger> id) {
 		BigInteger v = ((ChordID) id).getId();
 		BigInteger p = this.pred.getId();
 		BigInteger s = this.succ.getId();

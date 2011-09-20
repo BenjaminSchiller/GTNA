@@ -41,36 +41,6 @@ import java.math.BigInteger;
  * @author benni
  * 
  */
-public interface BIPartition {
-	/**
-	 * returns the distance to the given ID
-	 * 
-	 * @param id
-	 *            ID to compute the distance to
-	 * @return distance to the given ID
-	 */
-	public BigInteger distance(BIID id);
-
-	/**
-	 * 
-	 * @param partition
-	 *            Partition to compare to
-	 * @return true if the partitions are equal; false otherwise
-	 */
-	public boolean equals(BIPartition partition);
-
-	/**
-	 * 
-	 * @param id
-	 *            ID to check
-	 * @return true if the given ID is contained in the interval; false
-	 *         otherwise
-	 */
-	public boolean contains(BIID id);
+public interface BIPartition extends Partition<BigInteger> {
 	
-	/**
-	 * 
-	 * @return BIID that is representative for this partition
-	 */
-	public BIID getRepresentativeID();
 }

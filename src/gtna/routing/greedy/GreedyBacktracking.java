@@ -37,9 +37,9 @@ package gtna.routing.greedy;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.ID;
-import gtna.id.IDSpace;
-import gtna.id.Partition;
+import gtna.id.DID;
+import gtna.id.DIDSpace;
+import gtna.id.DPartition;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -55,9 +55,9 @@ import java.util.Random;
  */
 public class GreedyBacktracking extends RoutingAlgorithmImpl implements
 		RoutingAlgorithm {
-	private IDSpace idSpace;
+	private DIDSpace idSpace;
 
-	private Partition[] p;
+	private DPartition[] p;
 
 	private int ttl;
 
@@ -74,15 +74,15 @@ public class GreedyBacktracking extends RoutingAlgorithmImpl implements
 
 	@Override
 	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
-		ID target = this.idSpace.randomID(rand);
+		DID target = (DID) this.idSpace.randomID(rand);
 		while (this.p[start].contains(target)) {
-			target = this.idSpace.randomID(rand);
+			target = (DID) this.idSpace.randomID(rand);
 		}
 		return this.route(new ArrayList<Integer>(), start, target, rand,
 				graph.getNodes(), new HashMap<Integer, Integer>());
 	}
 
-	private Route route(ArrayList<Integer> route, int current, ID target,
+	private Route route(ArrayList<Integer> route, int current, DID target,
 			Random rand, Node[] nodes, HashMap<Integer, Integer> from) {
 		route.add(current);
 		if (this.idSpace.getPartitions()[current].contains(target)) {
@@ -115,13 +115,13 @@ public class GreedyBacktracking extends RoutingAlgorithmImpl implements
 	@Override
 	public boolean applicable(Graph graph) {
 		return graph.hasProperty("ID_SPACE_0")
-				&& graph.getProperty("ID_SPACE_0") instanceof IDSpace;
+				&& graph.getProperty("ID_SPACE_0") instanceof DIDSpace;
 	}
 
 	@Override
 	public void preprocess(Graph graph) {
-		this.idSpace = (IDSpace) graph.getProperty("ID_SPACE_0");
-		this.p = idSpace.getPartitions();
+		this.idSpace = (DIDSpace) graph.getProperty("ID_SPACE_0");
+		this.p = (DPartition[]) idSpace.getPartitions();
 	}
 
 }
