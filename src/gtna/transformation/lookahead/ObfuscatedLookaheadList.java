@@ -48,17 +48,34 @@ import java.util.Random;
  * @author benni
  * 
  */
-public abstract class ObfuscatedLookaheadRouting extends TransformationImpl {
+public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 	protected double minEpsilon;
 
 	protected double maxEpsilon;
 
 	protected double size;
 
-	public ObfuscatedLookaheadRouting(String key, double minEpsilon,
+	protected ObfuscatedLookaheadList(String key, double minEpsilon,
+			double maxEpsilon) {
+		super(key, new String[] { "MIN_EPSILON", "MAX_EPSILON" }, new String[] {
+				"" + minEpsilon, "" + maxEpsilon });
+		this.minEpsilon = minEpsilon;
+		this.maxEpsilon = maxEpsilon;
+		this.size = maxEpsilon - minEpsilon;
+	}
+
+	protected ObfuscatedLookaheadList(String key, String[] configKeys,
+			String[] configValues) {
+		super(key, configKeys, configValues);
+		this.minEpsilon = 0;
+		this.maxEpsilon = 0;
+		this.size = 0;
+	}
+
+	protected ObfuscatedLookaheadList(String key, double minEpsilon,
 			double maxEpsilon, String[] configKeys, String[] configValues) {
-		super(key, ObfuscatedLookaheadRouting.add(configKeys, "MIN_EPSILON",
-				"MAX_EPSILON"), ObfuscatedLookaheadRouting.add(configValues, ""
+		super(key, ObfuscatedLookaheadList.add(configKeys, "MIN_EPSILON",
+				"MAX_EPSILON"), ObfuscatedLookaheadList.add(configValues, ""
 				+ minEpsilon, "" + maxEpsilon));
 		this.minEpsilon = minEpsilon;
 		this.maxEpsilon = maxEpsilon;

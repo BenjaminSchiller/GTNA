@@ -43,17 +43,16 @@ import gtna.transformation.Transformation;
  * 
  */
 public class NeighborsGroupedObfuscatedLookaheadList extends
-		ObfuscatedLookaheadRouting implements Transformation {
+		ObfuscatedLookaheadList implements Transformation {
 
 	public NeighborsGroupedObfuscatedLookaheadList(double minEpsilon,
 			double maxEpsilon) {
-		this("NEIGHBORS_GROUPED_OBFUSCATED_LOOKAHEAD_LIST", minEpsilon,
+		super("NEIGHBORS_GROUPED_OBFUSCATED_LOOKAHEAD_LIST", minEpsilon,
 				maxEpsilon);
 	}
 
-	protected NeighborsGroupedObfuscatedLookaheadList(String key,
-			double minEpsilon, double maxEpsilon) {
-		super(key, minEpsilon, maxEpsilon, new String[] {}, new String[] {});
+	protected NeighborsGroupedObfuscatedLookaheadList(String key) {
+		super(key, new String[] {}, new String[] {});
 	}
 
 	@Override

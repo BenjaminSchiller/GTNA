@@ -52,7 +52,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RandomObfuscatedLookaheadList extends ObfuscatedLookaheadRouting
+public class RandomObfuscatedLookaheadList extends ObfuscatedLookaheadList
 		implements Transformation {
 
 	public RandomObfuscatedLookaheadList(double minEpsilon, double maxEpsilon) {
@@ -60,9 +60,8 @@ public class RandomObfuscatedLookaheadList extends ObfuscatedLookaheadRouting
 				new String[] {}, new String[] {});
 	}
 
-	protected RandomObfuscatedLookaheadList(String key, double minEpsilon,
-			double maxEpsilon) {
-		super(key, minEpsilon, maxEpsilon, new String[] {}, new String[] {});
+	protected RandomObfuscatedLookaheadList(String key) {
+		super(key, new String[] {}, new String[] {});
 	}
 
 	@Override

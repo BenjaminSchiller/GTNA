@@ -49,7 +49,7 @@ public class RandomLookaheadList extends RandomObfuscatedLookaheadList
 		implements Transformation {
 
 	public RandomLookaheadList() {
-		super("RANDOM_LOOKAHEAD_LIST", 0.0, 0.0);
+		super("RANDOM_LOOKAHEAD_LIST");
 	}
 
 	@Override

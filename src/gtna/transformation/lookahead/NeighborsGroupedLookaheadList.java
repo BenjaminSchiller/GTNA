@@ -35,12 +35,11 @@
  */
 package gtna.transformation.lookahead;
 
-import java.util.Random;
-
-import gtna.graph.Graph;
 import gtna.id.ID;
 import gtna.id.ring.RingID;
 import gtna.transformation.Transformation;
+
+import java.util.Random;
 
 /**
  * @author benni
@@ -50,13 +49,7 @@ public class NeighborsGroupedLookaheadList extends
 		NeighborsGroupedObfuscatedLookaheadList implements Transformation {
 
 	public NeighborsGroupedLookaheadList() {
-		super("NEIGHBORS_GROUPED_LOOKAHEAD_LIST", 0.0, 0.0);
-	}
-
-	@Override
-	public Graph transform(Graph g) {
-		// TODO Auto-generated method stub
-		return null;
+		super("NEIGHBORS_GROUPED_LOOKAHEAD_LIST");
 	}
 
 	@Override
