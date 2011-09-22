@@ -56,21 +56,26 @@ public class ChordPartition implements BIPartition {
 		this.succ = succ;
 	}
 
+	public ChordPartition(String string) {
+		this(string, null);
+	}
+
+	public ChordPartition(String string, ChordIdentifierSpace idSpace) {
+		String[] temp = string.replace("(", "").replace("]", "").split(",");
+		this.pred = new ChordIdentifier(idSpace, temp[0]);
+		this.succ = new ChordIdentifier(idSpace, temp[1]);
+	}
+
+	public String toString() {
+		return "(" + this.pred.getId() + "," + this.succ.getId() + "]";
+	}
+
 	@Override
 	public BigInteger distance(Identifier<BigInteger> id) {
 		if (this.contains(id)) {
 			return BigInteger.ZERO;
 		}
-		BigInteger compare = ((ChordIdentifier) id).getId();
 		return this.succ.distance(id);
-//		if (this.succ.getId().compareTo(compare) == -1) {
-//			return compare.subtract(this.succ.getId()).mod(
-//					this.succ.getIdSpace().getModulus());
-//		} else {
-//			return compare.add(this.succ.getIdSpace().getModulus())
-//					.subtract(this.succ.getId())
-//					.mod(this.succ.getIdSpace().getModulus());
-//		}
 	}
 
 	@Override
@@ -125,10 +130,6 @@ public class ChordPartition implements BIPartition {
 	 */
 	public void setSucc(ChordIdentifier succ) {
 		this.succ = succ;
-	}
-
-	public String toString() {
-		return "(" + this.pred.getId() + ", " + this.succ.getId() + "]";
 	}
 
 }

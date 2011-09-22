@@ -56,6 +56,11 @@ public class ChordIdentifier implements BIIdentifier,
 		this.id = id;
 	}
 
+	public ChordIdentifier(ChordIdentifierSpace idSpace, String string) {
+		this.id = null;
+		this.id = new BigInteger(string);
+	}
+
 	@Override
 	public int compareTo(ChordIdentifier arg0) {
 		return this.id.compareTo(((ChordIdentifier) arg0).getId());
@@ -114,7 +119,7 @@ public class ChordIdentifier implements BIIdentifier,
 	}
 
 	public String toString() {
-		return "ChordID(" + this.id + ")";
+		return this.id.toString();
 	}
 
 }

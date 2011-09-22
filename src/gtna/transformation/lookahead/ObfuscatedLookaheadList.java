@@ -41,12 +41,17 @@ import gtna.id.BIIdentifier;
 import gtna.id.BIIdentifierSpace;
 import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
-import gtna.id.Identifier;
+import gtna.id.Partition;
 import gtna.id.plane.PlaneIdentifier;
+import gtna.id.plane.PlanePartitionSimple;
 import gtna.id.ring.RingIdentifier;
+import gtna.id.ring.RingPartition;
+import gtna.id.ring.RingPartitionSimple;
 import gtna.networks.p2p.chord.ChordIdentifier;
+import gtna.networks.p2p.chord.ChordPartition;
 import gtna.transformation.TransformationImpl;
 
+import java.math.BigInteger;
 import java.util.Random;
 
 /**
@@ -60,10 +65,30 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 
 	protected double size;
 
+	protected int minBits;
+
+	protected int maxBits;
+
+	protected BigInteger min;
+
+	protected int diff;
+
+	protected ObfuscatedLookaheadList(String key, int minBits, int maxBits) {
+		super(key, new String[] { "MIN_EPSILON", "MAX_EPSILON" }, new String[] {
+				"" + BigInteger.ONE.shiftLeft(minBits),
+				"" + BigInteger.ONE.shiftLeft(maxBits) });
+		System.out.println("BI");
+		this.minBits = minBits;
+		this.maxBits = maxBits;
+		this.min = BigInteger.ONE.shiftLeft(minBits);
+		this.diff = maxBits - minBits;
+	}
+
 	protected ObfuscatedLookaheadList(String key, double minEpsilon,
 			double maxEpsilon) {
 		super(key, new String[] { "MIN_EPSILON", "MAX_EPSILON" }, new String[] {
 				"" + minEpsilon, "" + maxEpsilon });
+		System.out.println("D");
 		this.minEpsilon = minEpsilon;
 		this.maxEpsilon = maxEpsilon;
 		this.size = maxEpsilon - minEpsilon;
@@ -72,9 +97,6 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 	protected ObfuscatedLookaheadList(String key, String[] configKeys,
 			String[] configValues) {
 		super(key, configKeys, configValues);
-		this.minEpsilon = 0;
-		this.maxEpsilon = 0;
-		this.size = 0;
 	}
 
 	protected ObfuscatedLookaheadList(String key, double minEpsilon,
@@ -85,6 +107,18 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 		this.minEpsilon = minEpsilon;
 		this.maxEpsilon = maxEpsilon;
 		this.size = maxEpsilon - minEpsilon;
+	}
+
+	protected ObfuscatedLookaheadList(String key, int minBits, int maxBits,
+			String[] configKeys, String[] configValues) {
+		super(key, ObfuscatedLookaheadList.add(configKeys, "MIN_EPSILON",
+				"MAX_EPSILON"), ObfuscatedLookaheadList.add(configValues, ""
+				+ BigInteger.ONE.shiftLeft(minBits),
+				"" + BigInteger.ONE.shiftLeft(maxBits)));
+		this.minBits = minBits;
+		this.maxBits = maxBits;
+		this.min = BigInteger.ONE.shiftLeft(minBits);
+		this.diff = maxBits - minBits;
 	}
 
 	private static String[] add(String[] values, String v1, String v2) {
@@ -101,35 +135,78 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 	}
 
 	@SuppressWarnings("rawtypes")
-	protected Identifier obfuscateID(Identifier id, Random rand) {
-		if (id instanceof RingIdentifier) {
-			RingIdentifier ID = (RingIdentifier) id;
+	protected Partition obfuscatePartition(Partition partition, Random rand) {
+		if (partition instanceof RingPartitionSimple) {
+			RingPartitionSimple p = (RingPartitionSimple) partition;
 			double sign = rand.nextBoolean() ? 1.0 : -1.0;
 			double epsilon = minEpsilon + rand.nextDouble() * this.size;
-			double position = ID.getPosition() + sign * epsilon;
-			return new RingIdentifier(position, ID.getIdSpace());
-		} else if (id instanceof ChordIdentifier) {
-			// TODO implement
-			return null;
-		} else if (id instanceof PlaneIdentifier) {
-			// TODO implement
-			return null;
+			double position = p.getId().getPosition() + sign * epsilon;
+			return new RingPartitionSimple(new RingIdentifier(position, p
+					.getId().getIdSpace()));
+		} else if (partition instanceof RingPartition) {
+			RingPartition p = (RingPartition) partition;
+			double sign1 = rand.nextBoolean() ? 1.0 : -1.0;
+			double epsilon1 = minEpsilon + rand.nextDouble() * this.size;
+			double position1 = p.getStart().getPosition() + sign1 * epsilon1;
+			double sign2 = rand.nextBoolean() ? 1.0 : -1.0;
+			double epsilon2 = minEpsilon + rand.nextDouble() * this.size;
+			double position2 = p.getEnd().getPosition() + sign2 * epsilon2;
+			return new RingPartition(new RingIdentifier(position1, p.getStart()
+					.getIdSpace()), new RingIdentifier(position2, p.getEnd()
+					.getIdSpace()));
+		} else if (partition instanceof PlanePartitionSimple) {
+			PlanePartitionSimple p = (PlanePartitionSimple) partition;
+			double sign1 = rand.nextBoolean() ? 1.0 : -1.0;
+			double epsilon1 = minEpsilon + rand.nextDouble() * this.size;
+			double position1 = p.getId().getX() + sign1 * epsilon1;
+			double sign2 = rand.nextBoolean() ? 1.0 : -1.0;
+			double epsilon2 = minEpsilon + rand.nextDouble() * this.size;
+			double position2 = p.getId().getY() + sign2 * epsilon2;
+			return new PlanePartitionSimple(new PlaneIdentifier(position1,
+					position2, p.getId().getIdSpace()));
+		} else if (partition instanceof ChordPartition) {
+			ChordPartition p = (ChordPartition) partition;
+			BigInteger epsilon1 = new BigInteger(this.diff, rand);
+			BigInteger position1 = rand.nextBoolean() ? p.getPred().getId()
+					.add(this.min).add(epsilon1)
+					.mod(p.getPred().getIdSpace().getModulus()) : p.getPred()
+					.getId().subtract(this.min).subtract(epsilon1).abs()
+					.mod(p.getPred().getIdSpace().getModulus());
+			BigInteger epsilon2 = new BigInteger(this.diff, rand);
+			BigInteger position2 = rand.nextBoolean() ? p.getPred().getId()
+					.add(this.min).add(epsilon2)
+					.mod(p.getPred().getIdSpace().getModulus()) : p.getPred()
+					.getId().subtract(this.min).subtract(epsilon2).abs()
+					.mod(p.getPred().getIdSpace().getModulus());
+			return new ChordPartition(new ChordIdentifier(p.getPred()
+					.getIdSpace(), position1), new ChordIdentifier(p.getSucc()
+					.getIdSpace(), position2));
 		} else {
 			return null;
 		}
 	}
 
 	@SuppressWarnings("rawtypes")
-	protected Identifier copyID(Identifier id) {
-		if (id instanceof RingIdentifier) {
-			RingIdentifier ID = (RingIdentifier) id;
-			return new RingIdentifier(ID.getPosition(), ID.getIdSpace());
-		} else if (id instanceof ChordIdentifier) {
-			ChordIdentifier ID = (ChordIdentifier) id;
-			return new ChordIdentifier(ID.getIdSpace(), ID.getId());
-		} else if (id instanceof PlaneIdentifier) {
-			PlaneIdentifier ID = (PlaneIdentifier) id;
-			return new PlaneIdentifier(ID.getX(), ID.getY(), ID.getIdSpace());
+	protected Partition copyPartition(Partition partition) {
+		if (partition instanceof RingPartitionSimple) {
+			RingPartitionSimple p = (RingPartitionSimple) partition;
+			return new RingPartitionSimple(new RingIdentifier(p.getId()
+					.getPosition(), p.getId().getIdSpace()));
+		} else if (partition instanceof RingPartition) {
+			RingPartition p = (RingPartition) partition;
+			return new RingPartition(new RingIdentifier(p.getStart()
+					.getPosition(), p.getStart().getIdSpace()),
+					new RingIdentifier(p.getEnd().getPosition(), p.getEnd()
+							.getIdSpace()));
+		} else if (partition instanceof PlanePartitionSimple) {
+			PlanePartitionSimple p = (PlanePartitionSimple) partition;
+			return new PlanePartitionSimple(new PlaneIdentifier(p.getId()
+					.getX(), p.getId().getY(), p.getId().getIdSpace()));
+		} else if (partition instanceof ChordPartition) {
+			ChordPartition p = (ChordPartition) partition;
+			return new ChordPartition(new ChordIdentifier(p.getPred()
+					.getIdSpace(), p.getPred().getId()), new ChordIdentifier(p
+					.getSucc().getIdSpace(), p.getSucc().getId()));
 		} else {
 			return null;
 		}
@@ -140,12 +217,14 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 		Random rand = new Random();
 		for (GraphProperty p : g.getProperties("ID_SPACE")) {
 			if (p instanceof DIdentifierSpace) {
-				DIdentifier id = (DIdentifier) ((DIdentifierSpace) p).randomID(rand);
+				DIdentifier id = (DIdentifier) ((DIdentifierSpace) p)
+						.randomID(rand);
 				if (!(id instanceof RingIdentifier)) {
 					return false;
 				}
 			} else if (p instanceof BIIdentifierSpace) {
-				BIIdentifier id = (BIIdentifier) ((BIIdentifierSpace) p).randomID(rand);
+				BIIdentifier id = (BIIdentifier) ((BIIdentifierSpace) p)
+						.randomID(rand);
 				if (!(id instanceof ChordIdentifier)) {
 					return false;
 				}

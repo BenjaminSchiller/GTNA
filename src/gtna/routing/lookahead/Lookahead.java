@@ -37,8 +37,8 @@ package gtna.routing.lookahead;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.BIIdentifier;
-import gtna.id.DIdentifier;
+import gtna.id.BIPartition;
+import gtna.id.DPartition;
 import gtna.id.Identifier;
 import gtna.id.IdentifierSpace;
 import gtna.id.Partition;
@@ -98,41 +98,24 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 
 		int via = -1;
 
-		if (list.getList()[0].getId() instanceof DIdentifier) {
+		if (list.getList()[0].getPartition() instanceof DPartition) {
 			double currentDist = (Double) this.p[current].distance(target);
 			double minDist = (Double) this.idSpace.getMaxDistance();
-			for (int neighbor : nodes[current].getOutgoingEdges()) {
-				double dist = (Double) this.p[neighbor].distance(target);
-				if (dist < minDist && dist < currentDist
-						&& !seen.contains(neighbor)) {
-					minDist = dist;
-					via = neighbor;
-				}
-			}
 			for (LookaheadElement l : list.getList()) {
-				double dist = ((DIdentifier) l.getId()).distance(target);
+				double dist = ((DPartition) l.getPartition()).distance(target);
 				if (dist < minDist && dist < currentDist
 						&& !seen.contains(l.getVia())) {
 					minDist = dist;
 					via = l.getVia();
 				}
 			}
-		} else if (list.getList()[0].getId() instanceof BIIdentifier) {
+		} else if (list.getList()[0].getPartition() instanceof BIPartition) {
 			BigInteger currentDist = (BigInteger) this.p[current]
 					.distance(target);
 			BigInteger minDist = (BigInteger) this.idSpace.getMaxDistance();
-			for (int neighbor : nodes[current].getOutgoingEdges()) {
-				BigInteger dist = (BigInteger) this.p[neighbor]
-						.distance(target);
-				if (dist.compareTo(minDist) == -1
-						&& dist.compareTo(currentDist) == -1
-						&& !seen.contains(neighbor)) {
-					minDist = dist;
-					via = neighbor;
-				}
-			}
 			for (LookaheadElement l : list.getList()) {
-				BigInteger dist = ((BIIdentifier) l.getId()).distance(target);
+				BigInteger dist = ((BIPartition) l.getPartition())
+						.distance(target);
 				if (dist.compareTo(minDist) == -1
 						&& dist.compareTo(currentDist) == -1
 						&& !seen.contains(l.getVia())) {

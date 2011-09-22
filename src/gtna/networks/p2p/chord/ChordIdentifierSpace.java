@@ -40,6 +40,10 @@ import gtna.id.BIIdentifier;
 import gtna.id.BIIdentifierSpace;
 import gtna.id.BIPartition;
 import gtna.id.Partition;
+import gtna.id.ring.RingPartition;
+import gtna.io.Filereader;
+import gtna.io.Filewriter;
+import gtna.util.Config;
 
 import java.math.BigInteger;
 import java.util.Random;
@@ -54,6 +58,11 @@ public class ChordIdentifierSpace implements BIIdentifierSpace {
 	private BigInteger modulus;
 
 	private ChordPartition[] partitions;
+
+	public ChordIdentifierSpace() {
+		this.bits = 0;
+		this.modulus = BigInteger.ZERO;
+	}
 
 	public ChordIdentifierSpace(int bits) {
 		this.bits = bits;
@@ -82,14 +91,70 @@ public class ChordIdentifierSpace implements BIIdentifierSpace {
 
 	@Override
 	public boolean write(String filename, String key) {
-		// TODO Auto-generated method stub
-		return false;
+		Filewriter fw = new Filewriter(filename);
+
+		// CLASS
+		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
+		fw.writeln(this.getClass().getCanonicalName().toString());
+
+		// KEY
+		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
+		fw.writeln(key);
+
+		// # BITS
+		fw.writeComment("Bits");
+		fw.writeln(this.bits);
+
+		// # MODULUS
+		fw.writeComment("Modulus");
+		fw.writeln(this.modulus.toString());
+
+		// # PARTITIONS
+		fw.writeComment("Partitions");
+		fw.writeln(this.partitions.length);
+
+		fw.writeln();
+
+		// PARTITIONS
+		int index = 0;
+		for (ChordPartition p : this.partitions) {
+			fw.writeln(index++ + ":" + p.toString());
+		}
+
+		return fw.close();
 	}
 
 	@Override
 	public void read(String filename, Graph graph) {
-		// TODO Auto-generated method stub
+		Filereader fr = new Filereader(filename);
 
+		// CLASS
+		fr.readLine();
+
+		// KEY
+		String key = fr.readLine();
+
+		// # BITS
+		this.bits = Integer.parseInt(fr.readLine());
+
+		// # MUDULUS
+		this.modulus = new BigInteger(fr.readLine());
+
+		// # PARTITIONS
+		int partitions = Integer.parseInt(fr.readLine());
+		this.partitions = new ChordPartition[partitions];
+
+		// PARTITIONS
+		String line = null;
+		while ((line = fr.readLine()) != null) {
+			String[] temp = line.split(":");
+			int index = Integer.parseInt(temp[0]);
+			this.partitions[index] = new ChordPartition(temp[1], this);
+		}
+
+		fr.close();
+
+		graph.addProperty(key, this);
 	}
 
 	/**

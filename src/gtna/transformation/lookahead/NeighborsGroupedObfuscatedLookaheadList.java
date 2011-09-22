@@ -54,15 +54,20 @@ import java.util.Random;
 @SuppressWarnings("rawtypes")
 public class NeighborsGroupedObfuscatedLookaheadList extends
 		ObfuscatedLookaheadList implements Transformation {
+	protected boolean randomizeOrder;
 
 	public NeighborsGroupedObfuscatedLookaheadList(double minEpsilon,
-			double maxEpsilon) {
+			double maxEpsilon, boolean randomizeOrder) {
 		super("NEIGHBORS_GROUPED_OBFUSCATED_LOOKAHEAD_LIST", minEpsilon,
-				maxEpsilon);
+				maxEpsilon, new String[] { "RANDOMIZE_ORDER" },
+				new String[] { "" + randomizeOrder });
+		this.randomizeOrder = randomizeOrder;
 	}
 
-	protected NeighborsGroupedObfuscatedLookaheadList(String key) {
+	protected NeighborsGroupedObfuscatedLookaheadList(String key,
+			boolean randomizeOrder) {
 		super(key, new String[] {}, new String[] {});
+		this.randomizeOrder = randomizeOrder;
 	}
 
 	@Override
@@ -76,17 +81,17 @@ public class NeighborsGroupedObfuscatedLookaheadList extends
 				ArrayList<LookaheadElement> list = new ArrayList<LookaheadElement>();
 				for (int outIndex : n.getOutgoingEdges()) {
 					// add neighbor
-					list.add(new LookaheadElement(ids.getPartitions()[outIndex]
-							.getRepresentativeID(), outIndex));
+					list.add(new LookaheadElement(
+							ids.getPartitions()[outIndex], outIndex));
 					Node out = g.getNode(outIndex);
 					// add neighbor's neighbors
 					for (int lookaheadIndex : out.getOutgoingEdges()) {
 						if (lookaheadIndex == n.getIndex()) {
 							continue;
 						}
-						list.add(new LookaheadElement(this.obfuscateID(ids
-								.getPartitions()[lookaheadIndex]
-								.getRepresentativeID(), rand), outIndex));
+						list.add(new LookaheadElement(this.obfuscatePartition(
+								ids.getPartitions()[lookaheadIndex], rand),
+								outIndex));
 					}
 				}
 				lists.add(new LookaheadList(n.getIndex(), list));

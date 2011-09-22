@@ -58,7 +58,7 @@ public class LookaheadList {
 	public LookaheadList(int index, ArrayList<LookaheadElement> list) {
 		this.index = index;
 		this.list = new LookaheadElement[list.size()];
-		for(int i=0; i<list.size(); i++){
+		for (int i = 0; i < list.size(); i++) {
 			this.list[i] = list.get(i);
 		}
 	}
@@ -67,7 +67,8 @@ public class LookaheadList {
 		String sep1 = Config.get("GRAPH_PROPERTY_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_PROPERTY_SEPARATOR_2");
 		String[] temp1 = string.split(sep1);
-		String[] temp2 = temp1[1].split(sep2);
+		String[] temp2 = temp1.length > 1 ? temp1[1].split(sep2)
+				: new String[0];
 		this.index = Integer.parseInt(temp1[0]);
 		this.list = new LookaheadElement[temp2.length];
 		for (int i = 0; i < temp2.length; i++) {
@@ -87,8 +88,8 @@ public class LookaheadList {
 		}
 		return buff.toString();
 	}
-	
-	public int size(){
+
+	public int size() {
 		return this.list.length;
 	}
 

@@ -57,8 +57,7 @@ public class RandomObfuscatedLookaheadList extends ObfuscatedLookaheadList
 		implements Transformation {
 
 	public RandomObfuscatedLookaheadList(double minEpsilon, double maxEpsilon) {
-		super("RANDOM_OBFUSCATED_LOOKAHEAD_LIST", minEpsilon, maxEpsilon,
-				new String[] {}, new String[] {});
+		super("RANDOM_OBFUSCATED_LOOKAHEAD_LIST", minEpsilon, maxEpsilon);
 	}
 
 	protected RandomObfuscatedLookaheadList(String key) {
@@ -76,17 +75,17 @@ public class RandomObfuscatedLookaheadList extends ObfuscatedLookaheadList
 				ArrayList<LookaheadElement> list = new ArrayList<LookaheadElement>();
 				for (int outIndex : n.getOutgoingEdges()) {
 					// add neighbor
-					list.add(new LookaheadElement(ids.getPartitions()[outIndex]
-							.getRepresentativeID(), outIndex));
+					list.add(new LookaheadElement(
+							ids.getPartitions()[outIndex], outIndex));
 					Node out = g.getNode(outIndex);
 					// add neighbor's neighbors
 					for (int lookaheadIndex : out.getOutgoingEdges()) {
 						if (lookaheadIndex == n.getIndex()) {
 							continue;
 						}
-						list.add(new LookaheadElement(this.obfuscateID(ids
-								.getPartitions()[lookaheadIndex]
-								.getRepresentativeID(), rand), outIndex));
+						list.add(new LookaheadElement(this.obfuscatePartition(
+								ids.getPartitions()[lookaheadIndex], rand),
+								outIndex));
 					}
 				}
 				// shuffle list

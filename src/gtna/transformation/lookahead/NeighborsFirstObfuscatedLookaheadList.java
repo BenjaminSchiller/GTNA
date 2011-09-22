@@ -45,6 +45,7 @@ import gtna.id.lookahead.LookaheadLists;
 import gtna.transformation.Transformation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -53,15 +54,28 @@ import java.util.Random;
  */
 public class NeighborsFirstObfuscatedLookaheadList extends
 		ObfuscatedLookaheadList implements Transformation {
+	protected boolean randomizeOrder;
 
 	public NeighborsFirstObfuscatedLookaheadList(double minEpsilon,
-			double maxEpsilon) {
+			double maxEpsilon, boolean randomizeOrder) {
 		super("NEIGHBORS_FIRST_OBFUSCATED_LOOKAHEAD_LIST", minEpsilon,
-				maxEpsilon);
+				maxEpsilon, new String[] { "RANDOMIZE_ORDER" },
+				new String[] { "" + randomizeOrder });
+		this.randomizeOrder = randomizeOrder;
 	}
 
-	protected NeighborsFirstObfuscatedLookaheadList(String key) {
+	public NeighborsFirstObfuscatedLookaheadList(int minBits, int maxBits,
+			boolean randomizeOrder) {
+		super("NEIGHBORS_FIRST_OBFUSCATED_LOOKAHEAD_LIST", minBits, maxBits,
+				new String[] { "RANDOMIZE_ORDER" }, new String[] { ""
+						+ randomizeOrder });
+		this.randomizeOrder = randomizeOrder;
+	}
+
+	protected NeighborsFirstObfuscatedLookaheadList(String key,
+			boolean randomizeOrder) {
 		super(key, new String[] {}, new String[] {});
+		this.randomizeOrder = randomizeOrder;
 	}
 
 	@Override
@@ -74,22 +88,38 @@ public class NeighborsFirstObfuscatedLookaheadList extends
 			ArrayList<LookaheadList> lists = new ArrayList<LookaheadList>();
 			for (Node n : g.getNodes()) {
 				ArrayList<LookaheadElement> list = new ArrayList<LookaheadElement>();
+
 				// add neighbors
+				ArrayList<LookaheadElement> neighbors = new ArrayList<LookaheadElement>();
 				for (int outIndex : n.getOutgoingEdges()) {
-					list.add(new LookaheadElement(ids.getPartitions()[outIndex]
-							.getRepresentativeID(), outIndex));
+					neighbors.add(new LookaheadElement(
+							ids.getPartitions()[outIndex], outIndex));
 				}
+				if (this.randomizeOrder) {
+					Collections.shuffle(neighbors);
+				}
+				list.addAll(neighbors);
+				if (this.randomizeOrder) {
+					Collections.shuffle(neighbors);
+				}
+
 				// add neighbors' neighbors
-				for (int outIndex : n.getOutgoingEdges()) {
-					Node out = g.getNode(outIndex);
+				for (LookaheadElement neighbor : neighbors) {
+					Node out = g.getNode(neighbor.getVia());
+					ArrayList<LookaheadElement> lookahead = new ArrayList<LookaheadElement>();
 					for (int lookaheadIndex : out.getOutgoingEdges()) {
 						if (lookaheadIndex == n.getIndex()) {
 							continue;
 						}
-						list.add(new LookaheadElement(this.obfuscateID(ids
-								.getPartitions()[lookaheadIndex]
-								.getRepresentativeID(), rand), outIndex));
+						lookahead.add(new LookaheadElement(this
+								.obfuscatePartition(
+										ids.getPartitions()[lookaheadIndex],
+										rand), neighbor.getVia()));
 					}
+					if (this.randomizeOrder) {
+						Collections.shuffle(lookahead);
+					}
+					list.addAll(lookahead);
 				}
 				lists.add(new LookaheadList(n.getIndex(), list));
 			}
