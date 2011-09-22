@@ -35,7 +35,7 @@
  */
 package gtna.transformation.lookahead;
 
-import gtna.id.Identifier;
+import gtna.id.Partition;
 import gtna.transformation.Transformation;
 
 import java.util.Random;
@@ -53,8 +53,8 @@ public class NeighborsGroupedLookaheadList extends
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	protected Identifier obfuscateID(Identifier id, Random rand) {
-		return this.copyID(id);
+	protected Partition obfuscatePartition(Partition partition, Random rand) {
+		return this.copyPartition(partition);
 	}
 
 }

@@ -76,8 +76,8 @@ public class NeighborsFirstObfuscatedLookaheadList extends
 				ArrayList<LookaheadElement> list = new ArrayList<LookaheadElement>();
 				// add neighbors
 				for (int outIndex : n.getOutgoingEdges()) {
-					list.add(new LookaheadElement(ids.getPartitions()[outIndex]
-							.getRepresentativeID(), outIndex));
+					list.add(new LookaheadElement(
+							ids.getPartitions()[outIndex], outIndex));
 				}
 				// add neighbors' neighbors
 				for (int outIndex : n.getOutgoingEdges()) {
@@ -86,9 +86,9 @@ public class NeighborsFirstObfuscatedLookaheadList extends
 						if (lookaheadIndex == n.getIndex()) {
 							continue;
 						}
-						list.add(new LookaheadElement(this.obfuscateID(ids
-								.getPartitions()[lookaheadIndex]
-								.getRepresentativeID(), rand), outIndex));
+						list.add(new LookaheadElement(this.obfuscatePartition(
+								ids.getPartitions()[lookaheadIndex], rand),
+								outIndex));
 					}
 				}
 				lists.add(new LookaheadList(n.getIndex(), list));

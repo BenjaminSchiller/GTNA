@@ -36,7 +36,7 @@
 package gtna.id.lookahead;
 
 import gtna.id.DIdentifier;
-import gtna.id.Identifier;
+import gtna.id.Partition;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -45,22 +45,21 @@ import java.lang.reflect.InvocationTargetException;
  * @author benni
  * 
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class LookaheadElement {
-	@SuppressWarnings("rawtypes")
-	private Identifier id;
+	private Partition partition;
 
 	private int via;
 
-	@SuppressWarnings("rawtypes")
-	public LookaheadElement(Identifier id, int via) {
-		this.id = id;
+	public LookaheadElement(Partition id, int via) {
+		this.partition = id;
 		this.via = via;
 	}
 
 	public LookaheadElement(String string, Constructor<DIdentifier> constructor) {
 		String[] temp = string.split("->");
 		try {
-			this.id = (DIdentifier) constructor.newInstance(temp[0]);
+			this.partition = (Partition) constructor.newInstance(temp[0]);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (InstantiationException e) {
@@ -74,22 +73,20 @@ public class LookaheadElement {
 	}
 
 	public String toString() {
-		return this.id.toString() + "->" + via;
+		return this.partition.toString() + "->" + via;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object arg0) {
 		LookaheadElement l = (LookaheadElement) arg0;
-		return l.id.equals(this.id) && l.via == this.via;
+		return l.partition.equals(this.partition) && l.via == this.via;
 	}
 
 	/**
 	 * @return the id
 	 */
-	@SuppressWarnings("rawtypes")
-	public Identifier getId() {
-		return this.id;
+	public Partition getPartition() {
+		return this.partition;
 	}
 
 	/**

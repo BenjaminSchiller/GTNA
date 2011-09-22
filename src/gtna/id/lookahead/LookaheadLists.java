@@ -94,11 +94,11 @@ public class LookaheadLists implements GraphProperty {
 		fw.writeComment("Lists");
 		fw.writeln(this.lists.length);
 
-		// CLASS OF IDS
-		fw.writeComment("ID Class");
+		// CLASS OF PARTITIONS
+		fw.writeComment("PARTITION Class");
 		for (LookaheadList list : this.lists) {
 			if (list.size() > 0) {
-				fw.writeln(list.getList()[0].getId().getClass()
+				fw.writeln(list.getList()[0].getPartition().getClass()
 						.getCanonicalName().toString());
 				break;
 			}
