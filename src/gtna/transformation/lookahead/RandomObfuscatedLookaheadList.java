@@ -57,8 +57,7 @@ public class RandomObfuscatedLookaheadList extends ObfuscatedLookaheadList
 		implements Transformation {
 
 	public RandomObfuscatedLookaheadList(double minEpsilon, double maxEpsilon) {
-		super("RANDOM_OBFUSCATED_LOOKAHEAD_LIST", minEpsilon, maxEpsilon,
-				new String[] {}, new String[] {});
+		super("RANDOM_OBFUSCATED_LOOKAHEAD_LIST", minEpsilon, maxEpsilon);
 	}
 
 	protected RandomObfuscatedLookaheadList(String key) {

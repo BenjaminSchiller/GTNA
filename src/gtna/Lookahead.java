@@ -35,13 +35,20 @@
  */
 package gtna;
 
+import java.math.BigInteger;
+
 import gtna.data.Series;
+import gtna.graph.Graph;
+import gtna.io.GraphReader;
+import gtna.io.GraphWriter;
 import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
 import gtna.networks.p2p.chord.Chord;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.Greedy;
 import gtna.transformation.Transformation;
+import gtna.transformation.id.RandomChordIDSpace;
 import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.lookahead.NeighborsFirstLookaheadList;
 import gtna.transformation.lookahead.NeighborsFirstObfuscatedLookaheadList;
@@ -74,9 +81,28 @@ public class Lookahead {
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + skipExistingFolders);
 
-		Lookahead.testLookahead(generate, times);
+		// Lookahead.testLookahead(generate, times);
+		Lookahead.testRandomize();
 
 		stats.end();
+	}
+
+	private static void testRandomize() {
+		Network nw = new ErdosRenyi(10, 4, false, null, null);
+		Graph g = nw.generate();
+
+		Transformation t0 = new RandomChordIDSpace(4, false);
+		Transformation t1 = new NeighborsFirstObfuscatedLookaheadList(0, 0,
+				true);
+		Transformation t2 = new NeighborsFirstObfuscatedLookaheadList(0, 0,
+				false);
+		g = t0.transform(g);
+		g = t1.transform(g);
+		g = t2.transform(g);
+		System.out.println(g.getProperties().size());
+		GraphWriter.writeWithProperties(g, "./data/test/graph.txt");
+		Graph g2 = GraphReader.readWithProperties("./data/test/graph.txt");
+		GraphWriter.writeWithProperties(g2, "./data/test/graph2.txt");
 	}
 
 	private static void testLookahead(boolean generate, int times) {
@@ -99,12 +125,12 @@ public class Lookahead {
 
 		Transformation t1 = new RandomRingIDSpace();
 
-		Transformation nfll = new NeighborsFirstLookaheadList();
+		Transformation nfll = new NeighborsFirstLookaheadList(false);
 		Transformation nfoll = new NeighborsFirstObfuscatedLookaheadList(0.0,
-				0.0);
-		Transformation ngll = new NeighborsGroupedLookaheadList();
+				0.0, false);
+		Transformation ngll = new NeighborsGroupedLookaheadList(false);
 		Transformation ngoll = new NeighborsGroupedObfuscatedLookaheadList(0.0,
-				0.0);
+				0.0, false);
 		Transformation rll = new RandomLookaheadList();
 		Transformation roll = new RandomObfuscatedLookaheadList(0.0, 0.0);
 		Transformation[] ll = new Transformation[] { nfll, nfoll, ngll, ngoll,

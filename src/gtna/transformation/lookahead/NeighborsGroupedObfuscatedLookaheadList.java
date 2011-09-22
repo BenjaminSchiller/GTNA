@@ -54,15 +54,20 @@ import java.util.Random;
 @SuppressWarnings("rawtypes")
 public class NeighborsGroupedObfuscatedLookaheadList extends
 		ObfuscatedLookaheadList implements Transformation {
+	protected boolean randomizeOrder;
 
 	public NeighborsGroupedObfuscatedLookaheadList(double minEpsilon,
-			double maxEpsilon) {
+			double maxEpsilon, boolean randomizeOrder) {
 		super("NEIGHBORS_GROUPED_OBFUSCATED_LOOKAHEAD_LIST", minEpsilon,
-				maxEpsilon);
+				maxEpsilon, new String[] { "RANDOMIZE_ORDER" },
+				new String[] { "" + randomizeOrder });
+		this.randomizeOrder = randomizeOrder;
 	}
 
-	protected NeighborsGroupedObfuscatedLookaheadList(String key) {
+	protected NeighborsGroupedObfuscatedLookaheadList(String key,
+			boolean randomizeOrder) {
 		super(key, new String[] {}, new String[] {});
+		this.randomizeOrder = randomizeOrder;
 	}
 
 	@Override

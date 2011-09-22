@@ -77,9 +77,7 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 		super(key, new String[] { "MIN_EPSILON", "MAX_EPSILON" }, new String[] {
 				"" + BigInteger.ONE.shiftLeft(minBits),
 				"" + BigInteger.ONE.shiftLeft(maxBits) });
-		this.minEpsilon = 0;
-		this.maxEpsilon = 0;
-		this.size = 0;
+		System.out.println("BI");
 		this.minBits = minBits;
 		this.maxBits = maxBits;
 		this.min = BigInteger.ONE.shiftLeft(minBits);
@@ -90,25 +88,15 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 			double maxEpsilon) {
 		super(key, new String[] { "MIN_EPSILON", "MAX_EPSILON" }, new String[] {
 				"" + minEpsilon, "" + maxEpsilon });
+		System.out.println("D");
 		this.minEpsilon = minEpsilon;
 		this.maxEpsilon = maxEpsilon;
 		this.size = maxEpsilon - minEpsilon;
-		this.minBits = 0;
-		this.maxBits = 0;
-		this.min = null;
-		this.diff = 0;
 	}
 
 	protected ObfuscatedLookaheadList(String key, String[] configKeys,
 			String[] configValues) {
 		super(key, configKeys, configValues);
-		this.minEpsilon = 0;
-		this.maxEpsilon = 0;
-		this.size = 0;
-		this.minBits = 0;
-		this.maxBits = 0;
-		this.min = null;
-		this.diff = 0;
 	}
 
 	protected ObfuscatedLookaheadList(String key, double minEpsilon,
@@ -119,6 +107,18 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 		this.minEpsilon = minEpsilon;
 		this.maxEpsilon = maxEpsilon;
 		this.size = maxEpsilon - minEpsilon;
+	}
+
+	protected ObfuscatedLookaheadList(String key, int minBits, int maxBits,
+			String[] configKeys, String[] configValues) {
+		super(key, ObfuscatedLookaheadList.add(configKeys, "MIN_EPSILON",
+				"MAX_EPSILON"), ObfuscatedLookaheadList.add(configValues, ""
+				+ BigInteger.ONE.shiftLeft(minBits),
+				"" + BigInteger.ONE.shiftLeft(maxBits)));
+		this.minBits = minBits;
+		this.maxBits = maxBits;
+		this.min = BigInteger.ONE.shiftLeft(minBits);
+		this.diff = maxBits - minBits;
 	}
 
 	private static String[] add(String[] values, String v1, String v2) {

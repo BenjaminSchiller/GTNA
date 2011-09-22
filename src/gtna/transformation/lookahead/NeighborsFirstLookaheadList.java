@@ -47,8 +47,8 @@ import java.util.Random;
 public class NeighborsFirstLookaheadList extends
 		NeighborsFirstObfuscatedLookaheadList implements Transformation {
 
-	public NeighborsFirstLookaheadList() {
-		super("NEIGHBORS_FIRST_LOOKAHEAD_LIST");
+	public NeighborsFirstLookaheadList(boolean randomizeOrder) {
+		super("NEIGHBORS_FIRST_LOOKAHEAD_LIST", randomizeOrder);
 	}
 
 	@SuppressWarnings("rawtypes")
