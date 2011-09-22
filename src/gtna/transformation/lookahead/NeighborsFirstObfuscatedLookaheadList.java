@@ -125,7 +125,6 @@ public class NeighborsFirstObfuscatedLookaheadList extends
 			}
 			g.addProperty(g.getNextKey("LOOKAHEAD_LIST"), new LookaheadLists(
 					lists));
-			System.out.println(g.getProperties().size());
 		}
 		return g;
 	}

@@ -98,7 +98,6 @@ public class LookaheadRouting {
 		g = t0.transform(g);
 		g = t1.transform(g);
 		g = t2.transform(g);
-		System.out.println(g.getProperties().size());
 		GraphWriter.writeWithProperties(g, "./data/test/graph.txt");
 		Graph g2 = GraphReader.readWithProperties("./data/test/graph.txt");
 		GraphWriter.writeWithProperties(g2, "./data/test/graph2.txt");
