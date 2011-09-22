@@ -35,8 +35,6 @@
  */
 package gtna;
 
-import java.math.BigInteger;
-
 import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.io.GraphReader;
@@ -47,6 +45,7 @@ import gtna.networks.p2p.chord.Chord;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.Greedy;
+import gtna.routing.lookahead.Lookahead;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomChordIDSpace;
 import gtna.transformation.id.RandomRingIDSpace;
@@ -63,7 +62,7 @@ import gtna.util.Stats;
  * @author benni
  * 
  */
-public class Lookahead {
+public class LookaheadRouting {
 
 	/**
 	 * @param args
@@ -82,7 +81,7 @@ public class Lookahead {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + skipExistingFolders);
 
 		// Lookahead.testLookahead(generate, times);
-		Lookahead.testRandomize();
+		LookaheadRouting.testRandomize();
 
 		stats.end();
 	}
@@ -146,7 +145,7 @@ public class Lookahead {
 		}
 
 		RoutingAlgorithm greedy = new Greedy(50);
-		RoutingAlgorithm lookahead = new gtna.routing.lookahead.Lookahead(50);
+		RoutingAlgorithm lookahead = new Lookahead(50);
 
 		Network[] nw = new Network[ll.length + 1];
 		// nw[0] = new ReadableFile(name, folder, graph, greedy,
