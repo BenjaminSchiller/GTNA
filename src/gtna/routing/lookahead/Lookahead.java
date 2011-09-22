@@ -39,8 +39,9 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.BIIdentifier;
 import gtna.id.DIdentifier;
-import gtna.id.DIdentifierSpace;
-import gtna.id.DPartition;
+import gtna.id.Identifier;
+import gtna.id.IdentifierSpace;
+import gtna.id.Partition;
 import gtna.id.lookahead.LookaheadElement;
 import gtna.id.lookahead.LookaheadList;
 import gtna.id.lookahead.LookaheadLists;
@@ -49,6 +50,7 @@ import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.RoutingAlgorithmImpl;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
@@ -57,12 +59,13 @@ import java.util.Random;
  * @author benni
  * 
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 	private int ttl;
 
-	private DIdentifierSpace idSpace;
+	private IdentifierSpace idSpace;
 
-	private DPartition[] p;
+	private Partition[] p;
 
 	private LookaheadLists lists;
 
@@ -73,16 +76,16 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 
 	@Override
 	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
-		DIdentifier target = (DIdentifier) this.idSpace.randomID(rand);
+		Identifier target = this.idSpace.randomID(rand);
 		while (this.p[start].contains(target)) {
-			target = (DIdentifier) this.idSpace.randomID(rand);
+			target = this.idSpace.randomID(rand);
 		}
 		return this.route(new ArrayList<Integer>(), start, target, rand,
 				graph.getNodes(), new HashSet<Integer>());
 	}
 
-	private Route route(ArrayList<Integer> route, int current, DIdentifier target,
-			Random rand, Node[] nodes, HashSet<Integer> seen) {
+	private Route route(ArrayList<Integer> route, int current,
+			Identifier target, Random rand, Node[] nodes, HashSet<Integer> seen) {
 		route.add(current);
 		seen.add(current);
 		if (this.idSpace.getPartitions()[current].contains(target)) {
@@ -96,20 +99,51 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 		int via = -1;
 
 		if (list.getList()[0].getId() instanceof DIdentifier) {
-			double currentDist = this.p[current].distance(target);
-			double minDist = this.idSpace.getMaxDistance();
+			double currentDist = (Double) this.p[current].distance(target);
+			double minDist = (Double) this.idSpace.getMaxDistance();
+			for (int neighbor : nodes[current].getOutgoingEdges()) {
+				double dist = (Double) this.p[neighbor].distance(target);
+				if (dist < minDist && dist < currentDist
+						&& !seen.contains(neighbor)) {
+					minDist = dist;
+					via = neighbor;
+				}
+			}
 			for (LookaheadElement l : list.getList()) {
 				double dist = ((DIdentifier) l.getId()).distance(target);
-				if (dist < minDist && dist < currentDist) {
+				if (dist < minDist && dist < currentDist
+						&& !seen.contains(l.getVia())) {
 					minDist = dist;
 					via = l.getVia();
 				}
 			}
 		} else if (list.getList()[0].getId() instanceof BIIdentifier) {
-
+			BigInteger currentDist = (BigInteger) this.p[current]
+					.distance(target);
+			BigInteger minDist = (BigInteger) this.idSpace.getMaxDistance();
+			for (int neighbor : nodes[current].getOutgoingEdges()) {
+				BigInteger dist = (BigInteger) this.p[neighbor]
+						.distance(target);
+				if (dist.compareTo(minDist) == -1
+						&& dist.compareTo(currentDist) == -1
+						&& !seen.contains(neighbor)) {
+					minDist = dist;
+					via = neighbor;
+				}
+			}
+			for (LookaheadElement l : list.getList()) {
+				BigInteger dist = ((BIIdentifier) l.getId()).distance(target);
+				if (dist.compareTo(minDist) == -1
+						&& dist.compareTo(currentDist) == -1
+						&& !seen.contains(l.getVia())) {
+					minDist = dist;
+					via = l.getVia();
+				}
+			}
 		} else {
 			return null;
 		}
+
 		if (via == -1) {
 			return new RouteImpl(route, false);
 		}
@@ -124,8 +158,8 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 
 	@Override
 	public void preprocess(Graph graph) {
-		this.idSpace = (DIdentifierSpace) graph.getProperty("ID_SPACE_0");
-		this.p = (DPartition[]) this.idSpace.getPartitions();
+		this.idSpace = (IdentifierSpace) graph.getProperty("ID_SPACE_0");
+		this.p = (Partition[]) this.idSpace.getPartitions();
 		this.lists = (LookaheadLists) graph.getProperty("LOOKAHEAD_LIST_0");
 	}
 

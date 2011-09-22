@@ -36,18 +36,13 @@
 package gtna;
 
 import gtna.data.Series;
-import gtna.graph.Graph;
-import gtna.io.GraphReader;
-import gtna.io.GraphWriter;
 import gtna.networks.Network;
 import gtna.networks.p2p.chord.Chord;
-import gtna.networks.util.ReadableFile;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.Greedy;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomRingIDSpace;
-import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.lookahead.NeighborsFirstLookaheadList;
 import gtna.transformation.lookahead.NeighborsFirstObfuscatedLookaheadList;
 import gtna.transformation.lookahead.NeighborsGroupedLookaheadList;
@@ -71,96 +66,21 @@ public class Lookahead {
 
 		boolean generate = true;
 		int times = 1;
-		boolean wot = false;
 		boolean skipExistingFolders = false;
-
-		Config.overwrite("METRICS", "R");
-		Config.overwrite("MAIN_DATA_FOLDER", "./data/nico/");
-		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/nico/");
-		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + skipExistingFolders);
-
-		Network nw1 = new ReadableFile("SPI", "spi", "./temp/test/spi.txt",
-				null, null);
-		Graph g = nw1.generate();
-		Transformation t = new RandomRingIDSpaceSimple();
-		g = t.transform(g);
-		GraphWriter.writeWithProperties(g, "./data/nico/graph.txt");
-		
-		Graph g2 = GraphReader.readWithProperties("./data/nico/graph.txt");
-		GraphWriter.writeWithProperties(g2, "./data/nico/graph2.txt");
-		
-//		Network nw2 = new ReadableFile("SPI", "spi", "./temp/test/spi.txt",
-//				new gtna.routing.lookahead.Lookahead(50), new Transformation[] {
-//						new RandomRingIDSpace(), new RandomLookaheadList() });
-//		Series[] s = Series.generate(new Network[] { nw1, nw2 }, 1);
-//		Plot.multiAvg(s, "spi/");
-
-		// Series[] s = Series.generate(CAN.get(1000, new int[]{2, 3, 4, 5}, 1,
-		// null, null), 2);
-
-		// Plot.singlesAvg(s, "singles-new/");
-
-		// Network nw1 = new CAN(1000, 3, 1, null, null);
-		// Network nw2 = new CAN(1000, 4, 1, null, null);
-		//
-		// Series s1 = Series.get(nw1);
-		// Series s2 = Series.get(nw2);
-		//
-		// Plot.multiAvg(new Series[] { s1, s2 }, "multi/");
-		// Plot.singlesAvg(new Series[] { s1, s2 }, "single/");
-
-		// Lookahead.testLookahead();
-
-		// boolean generate = true;
-		// int times = 1;
-		// boolean wot = false;
-		// boolean skipExistingFolders = false;
-		//
-		// Config.overwrite("METRICS", "R");
-		// Config.overwrite("MAIN_DATA_FOLDER", "./data/lookahead/");
-		// Config.overwrite("MAIN_PLOT_FOLDER", "./plots/lookahead/");
-		// Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
-		// Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" +
-		// skipExistingFolders);
-		//
-		// Network nw1 = new ErdosRenyi(1000, 20, true, new Greedy(),
-		// new Transformation[] { new RandomRingIDSpace() });
-		// Network nw2 = new Chord(1000, 20, true, new Greedy(), null);
-		// Network[] nw = new Network[] { nw1, nw2 };
-		// Series[] s = Series.generate(nw, 1);
-		// Plot.allMulti(s, "TEST/");
-
-		// double[] r = new double[] { 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3,
-		// 0.2, 0.1 };
-		// double[] number = new double[r.length];
-		// double[] alpha = new double[r.length];
-		// for (int i = 0; i < r.length; i++) {
-		// double v = 0.25 * r[i];
-		// alpha[i] = Math.asin(v) * 180.0 / Math.PI;
-		// number[i] = Math.floor(360.0 / (2 * alpha[i]));
-		// }
-		// for (int i = 0; i < r.length; i++) {
-		// System.out.println("r = " + r[i] + " => a = " + alpha[i]);
-		// }
-		// for (int i = 0; i < r.length; i++) {
-		// System.out.println("r = " + r[i] + " => # = " + number[i]);
-		// }
-
-		stats.end();
-	}
-
-	private static void testLookahead() {
-		boolean generate = true;
-		int times = 1;
-		boolean wot = false;
-		boolean skipExistingFolders = true;
 
 		Config.overwrite("METRICS", "R");
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/lookahead/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/lookahead/");
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + skipExistingFolders);
+
+		Lookahead.testLookahead(generate, times);
+
+		stats.end();
+	}
+
+	private static void testLookahead(boolean generate, int times) {
+		boolean wot = false;
 
 		String spiGraph = "./temp/test/spi.txt";
 		String wotGraph = "./temp/test/wot.txt";
@@ -172,6 +92,10 @@ public class Lookahead {
 			name = "WOT";
 			folder = "wot";
 		}
+
+		int nodes = 5000;
+		int bits = 20;
+		boolean uniform = false;
 
 		Transformation t1 = new RandomRingIDSpace();
 
@@ -186,6 +110,7 @@ public class Lookahead {
 		Transformation[] ll = new Transformation[] { nfll, nfoll, ngll, ngoll,
 				rll, roll };
 		ll = new Transformation[] { rll, roll };
+		ll = new Transformation[] { nfll };
 		ll = new Transformation[] { nfll, ngll, rll };
 
 		Transformation[][] ts = new Transformation[ll.length][];
@@ -200,16 +125,16 @@ public class Lookahead {
 		Network[] nw = new Network[ll.length + 1];
 		// nw[0] = new ReadableFile(name, folder, graph, greedy,
 		// new Transformation[] { t1 });
-		nw[0] = new Chord(1000, 100, false, greedy, null);
+		nw[0] = new Chord(nodes, bits, uniform, greedy, null);
 		for (int i = 0; i < ts.length; i++) {
 			// nw[i + 1] = new ReadableFile(name, folder, graph, lookahead,
 			// ts[i]);
-			nw[i + 1] = new Chord(1000, 100, false, lookahead, ts[i]);
+			nw[i + 1] = new Chord(nodes, bits, uniform, lookahead, ts[i]);
 		}
 
 		Series[] s = generate ? Series.generate(nw, times) : Series.get(nw);
 
-		Plot.multiAvg(s, "all/");
+		Plot.multiAvg(s, "chord/");
 
 	}
 }
