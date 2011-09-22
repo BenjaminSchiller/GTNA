@@ -38,7 +38,7 @@ package gtna.transformation.lookahead;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
-import gtna.id.DIdentifierSpace;
+import gtna.id.IdentifierSpace;
 import gtna.id.lookahead.LookaheadElement;
 import gtna.id.lookahead.LookaheadList;
 import gtna.id.lookahead.LookaheadLists;
@@ -51,6 +51,7 @@ import java.util.Random;
  * @author benni
  * 
  */
+@SuppressWarnings("rawtypes")
 public class NeighborsGroupedObfuscatedLookaheadList extends
 		ObfuscatedLookaheadList implements Transformation {
 
@@ -69,7 +70,7 @@ public class NeighborsGroupedObfuscatedLookaheadList extends
 		Random rand = new Random();
 		GraphProperty[] gps = g.getProperties("ID_SPACE");
 		for (GraphProperty p : gps) {
-			DIdentifierSpace ids = (DIdentifierSpace) p;
+			IdentifierSpace ids = (IdentifierSpace) p;
 			ArrayList<LookaheadList> lists = new ArrayList<LookaheadList>();
 			for (Node n : g.getNodes()) {
 				ArrayList<LookaheadElement> list = new ArrayList<LookaheadElement>();
