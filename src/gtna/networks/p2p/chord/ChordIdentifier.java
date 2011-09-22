@@ -45,7 +45,8 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class ChordIdentifier implements BIIdentifier, Comparable<ChordIdentifier> {
+public class ChordIdentifier implements BIIdentifier,
+		Comparable<ChordIdentifier> {
 	private ChordIdentifierSpace idSpace;
 
 	private BigInteger id;
@@ -61,10 +62,15 @@ public class ChordIdentifier implements BIIdentifier, Comparable<ChordIdentifier
 	}
 
 	public BigInteger distance(Identifier<BigInteger> id) {
-		BigInteger value = ((ChordIdentifier) id).getId();
-		BigInteger sub1 = this.id.subtract(value).abs();
-		BigInteger sub2 = this.idSpace.getModulus().subtract(sub1);
-		return sub1.min(sub2);
+		BigInteger dest = ((ChordIdentifier) id).getId();
+		if (this.id.compareTo(dest) == -1) {
+			return dest.subtract(this.id);
+		} else {
+			return this.idSpace.getModulus().subtract(this.id).add(dest);
+		}
+		// BigInteger sub1 = this.id.subtract(dest).abs();
+		// BigInteger sub2 = this.idSpace.getModulus().subtract(sub1);
+		// return sub1.min(sub2);
 	}
 
 	@Override
@@ -73,7 +79,8 @@ public class ChordIdentifier implements BIIdentifier, Comparable<ChordIdentifier
 	}
 
 	public static ChordIdentifier rand(Random rand, ChordIdentifierSpace idSpace) {
-		return new ChordIdentifier(idSpace, new BigInteger(idSpace.getBits(), rand));
+		return new ChordIdentifier(idSpace, new BigInteger(idSpace.getBits(),
+				rand));
 	}
 
 	/**

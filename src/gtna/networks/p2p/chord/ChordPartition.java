@@ -62,14 +62,15 @@ public class ChordPartition implements BIPartition {
 			return BigInteger.ZERO;
 		}
 		BigInteger compare = ((ChordIdentifier) id).getId();
-		if (this.succ.getId().compareTo(compare) == -1) {
-			return compare.subtract(this.succ.getId()).mod(
-					this.succ.getIdSpace().getModulus());
-		} else {
-			return compare.add(this.succ.getIdSpace().getModulus())
-					.subtract(this.succ.getId())
-					.mod(this.succ.getIdSpace().getModulus());
-		}
+		return this.succ.distance(id);
+//		if (this.succ.getId().compareTo(compare) == -1) {
+//			return compare.subtract(this.succ.getId()).mod(
+//					this.succ.getIdSpace().getModulus());
+//		} else {
+//			return compare.add(this.succ.getIdSpace().getModulus())
+//					.subtract(this.succ.getId())
+//					.mod(this.succ.getIdSpace().getModulus());
+//		}
 	}
 
 	@Override
