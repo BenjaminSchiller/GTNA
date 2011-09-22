@@ -37,7 +37,6 @@ package gtna;
 
 import gtna.data.Series;
 import gtna.networks.Network;
-import gtna.networks.model.ErdosRenyi;
 import gtna.networks.p2p.chord.Chord;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
@@ -64,11 +63,9 @@ public class Lookahead {
 	 */
 	public static void main(String[] args) {
 		Stats stats = new Stats();
-		// Lookahead.testLookahead();
 
 		boolean generate = true;
 		int times = 1;
-		boolean wot = false;
 		boolean skipExistingFolders = false;
 
 		Config.overwrite("METRICS", "R");
@@ -77,27 +74,13 @@ public class Lookahead {
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + skipExistingFolders);
 
-		Network nw1 = new ErdosRenyi(1000, 20, true, new Greedy(),
-				new Transformation[] { new RandomRingIDSpace() });
-		Network nw2 = new Chord(1000, 20, true, new Greedy(), null);
-		Network[] nw = new Network[] { nw1, nw2 };
-		Series[] s = Series.generate(nw, 1);
-		Plot.allMulti(s, "TEST/");
+		Lookahead.testLookahead(generate, times);
 
 		stats.end();
 	}
 
-	private static void testLookahead() {
-		boolean generate = true;
-		int times = 1;
+	private static void testLookahead(boolean generate, int times) {
 		boolean wot = false;
-		boolean skipExistingFolders = true;
-
-		Config.overwrite("METRICS", "R");
-		Config.overwrite("MAIN_DATA_FOLDER", "./data/lookahead/");
-		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/lookahead/");
-		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + skipExistingFolders);
 
 		String spiGraph = "./temp/test/spi.txt";
 		String wotGraph = "./temp/test/wot.txt";
@@ -109,6 +92,10 @@ public class Lookahead {
 			name = "WOT";
 			folder = "wot";
 		}
+
+		int nodes = 5000;
+		int bits = 20;
+		boolean uniform = false;
 
 		Transformation t1 = new RandomRingIDSpace();
 
@@ -123,6 +110,7 @@ public class Lookahead {
 		Transformation[] ll = new Transformation[] { nfll, nfoll, ngll, ngoll,
 				rll, roll };
 		ll = new Transformation[] { rll, roll };
+		ll = new Transformation[] { nfll };
 		ll = new Transformation[] { nfll, ngll, rll };
 
 		Transformation[][] ts = new Transformation[ll.length][];
@@ -137,16 +125,16 @@ public class Lookahead {
 		Network[] nw = new Network[ll.length + 1];
 		// nw[0] = new ReadableFile(name, folder, graph, greedy,
 		// new Transformation[] { t1 });
-		nw[0] = new Chord(1000, 100, false, greedy, null);
+		nw[0] = new Chord(nodes, bits, uniform, greedy, null);
 		for (int i = 0; i < ts.length; i++) {
 			// nw[i + 1] = new ReadableFile(name, folder, graph, lookahead,
 			// ts[i]);
-			nw[i + 1] = new Chord(1000, 100, false, lookahead, ts[i]);
+			nw[i + 1] = new Chord(nodes, bits, uniform, lookahead, ts[i]);
 		}
 
 		Series[] s = generate ? Series.generate(nw, times) : Series.get(nw);
 
-		Plot.multiAvg(s, "all/");
+		Plot.multiAvg(s, "chord/");
 
 	}
 }

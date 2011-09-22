@@ -40,7 +40,7 @@ import gtna.networks.Network;
 import gtna.networks.p2p.chord.Chord;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
-import gtna.routing.greedy.GreedyBI;
+import gtna.routing.greedy.Greedy;
 import gtna.util.Config;
 import gtna.util.Stats;
 
@@ -71,13 +71,13 @@ public class DHTs {
 		for (int n : nodes) {
 			for (int b : bits) {
 				for (boolean u : uniform) {
-					Network nw = new Chord(n, b, u, new GreedyBI(), null);
+					Network nw = new Chord(n, b, u, new Greedy(), null);
 					// Series.generate(nw, 1);
 				}
 			}
 		}
 
-		RoutingAlgorithm ra = new GreedyBI();
+		RoutingAlgorithm ra = new Greedy();
 
 		Network[] nw1 = Chord.get(nodes, 128, true, ra, null);
 		Network[] nw2 = Chord.get(nodes, 128, false, ra, null);
