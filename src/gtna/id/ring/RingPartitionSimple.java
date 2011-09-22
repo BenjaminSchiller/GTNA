@@ -52,8 +52,8 @@ public class RingPartitionSimple implements DPartition {
 	}
 
 	public RingPartitionSimple(String string, RingIdentifierSpace idSpace) {
-		string = string.replace("(", "").replace(")", "");
-		this.id = new RingIdentifier(Double.parseDouble(string), idSpace);
+		string = string.replace("[", "").replace("]", "");
+		this.id = new RingIdentifier(string, idSpace);
 	}
 
 	public RingPartitionSimple(String string) {
