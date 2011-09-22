@@ -98,6 +98,10 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 
 		int via = -1;
 
+		if (list.getList().length == 0) {
+			return new RouteImpl(route, false);
+		}
+		
 		if (list.getList()[0].getPartition() instanceof DPartition) {
 			double currentDist = (Double) this.p[current].distance(target);
 			double minDist = (Double) this.idSpace.getMaxDistance();
