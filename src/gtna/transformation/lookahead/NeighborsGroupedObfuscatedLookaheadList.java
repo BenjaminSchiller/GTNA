@@ -64,9 +64,18 @@ public class NeighborsGroupedObfuscatedLookaheadList extends
 		this.randomizeOrder = randomizeOrder;
 	}
 
+	public NeighborsGroupedObfuscatedLookaheadList(int minBits, int maxBits,
+			boolean randomizeOrder) {
+		super("NEIGHBORS_GROUPED_OBFUSCATED_LOOKAHEAD_LIST", minBits, maxBits,
+				new String[] { "RANDOMIZE_ORDER" }, new String[] { ""
+						+ randomizeOrder });
+		this.randomizeOrder = randomizeOrder;
+	}
+
 	protected NeighborsGroupedObfuscatedLookaheadList(String key,
 			boolean randomizeOrder) {
-		super(key, new String[] {}, new String[] {});
+		super(key, new String[] { "RANDOMIZE_ORDER" }, new String[] { ""
+				+ randomizeOrder });
 		this.randomizeOrder = randomizeOrder;
 	}
 
@@ -79,19 +88,53 @@ public class NeighborsGroupedObfuscatedLookaheadList extends
 			ArrayList<LookaheadList> lists = new ArrayList<LookaheadList>();
 			for (Node n : g.getNodes()) {
 				ArrayList<LookaheadElement> list = new ArrayList<LookaheadElement>();
-				for (int outIndex : n.getOutgoingEdges()) {
-					// add neighbor
-					list.add(new LookaheadElement(
-							ids.getPartitions()[outIndex], outIndex));
-					Node out = g.getNode(outIndex);
-					// add neighbor's neighbors
-					for (int lookaheadIndex : out.getOutgoingEdges()) {
-						if (lookaheadIndex == n.getIndex()) {
-							continue;
+				if (this.randomizeOrder) {
+					ArrayList<LookaheadElement> neighbors = new ArrayList<LookaheadElement>(
+							n.getOutDegree());
+					for (int outIndex : n.getOutgoingEdges()) {
+						// add neighbor
+						neighbors.add(new LookaheadElement(
+								ids.getPartitions()[outIndex], outIndex));
+					}
+					// if (this.randomizeOrder) {
+					// Collections.shuffle(neighbors);
+					// }
+					for (LookaheadElement neighbor : neighbors) {
+						ArrayList<LookaheadElement> lookahead = new ArrayList<LookaheadElement>(
+								g.getNode(neighbor.getVia()).getOutDegree());
+						Node out = g.getNode(neighbor.getVia());
+						for (int lookaheadIndex : out.getOutgoingEdges()) {
+							if (lookaheadIndex == n.getIndex()) {
+								continue;
+							}
+							lookahead
+									.add(new LookaheadElement(
+											this.obfuscatePartition(
+													ids.getPartitions()[lookaheadIndex],
+													rand), neighbor.getVia()));
 						}
-						list.add(new LookaheadElement(this.obfuscatePartition(
-								ids.getPartitions()[lookaheadIndex], rand),
-								outIndex));
+						// if (this.randomizeOrder) {
+						// Collections.shuffle(lookahead);
+						// }
+						list.add(neighbor);
+						list.addAll(lookahead);
+					}
+				} else {
+					for (int outIndex : n.getOutgoingEdges()) {
+						// add neighbor
+						list.add(new LookaheadElement(
+								ids.getPartitions()[outIndex], outIndex));
+						Node out = g.getNode(outIndex);
+						// add neighbor's neighbors
+						for (int lookaheadIndex : out.getOutgoingEdges()) {
+							if (lookaheadIndex == n.getIndex()) {
+								continue;
+							}
+							list.add(new LookaheadElement(
+									this.obfuscatePartition(
+											ids.getPartitions()[lookaheadIndex],
+											rand), outIndex));
+						}
 					}
 				}
 				lists.add(new LookaheadList(n.getIndex(), list));

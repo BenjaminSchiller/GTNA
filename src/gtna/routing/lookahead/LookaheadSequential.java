@@ -60,7 +60,7 @@ import java.util.Random;
  * 
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm {
+public class LookaheadSequential extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 	private int ttl;
 
 	private IdentifierSpace idSpace;
@@ -69,8 +69,8 @@ public class Lookahead extends RoutingAlgorithmImpl implements RoutingAlgorithm 
 
 	private LookaheadLists lists;
 
-	public Lookahead(int ttl) {
-		super("LOOKAHEAD", new String[] { "TTL" }, new String[] { "" + ttl });
+	public LookaheadSequential(int ttl) {
+		super("LOOKAHEAD_SEQUENTIAL", new String[] { "TTL" }, new String[] { "" + ttl });
 		this.ttl = ttl;
 	}
 

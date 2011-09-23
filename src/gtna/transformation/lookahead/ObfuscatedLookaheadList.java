@@ -69,19 +69,27 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 
 	protected int maxBits;
 
-	protected BigInteger min;
-
 	protected int diff;
+
+	protected BigInteger min;
 
 	protected ObfuscatedLookaheadList(String key, int minBits, int maxBits) {
 		super(key, new String[] { "MIN_EPSILON", "MAX_EPSILON" }, new String[] {
-				"" + BigInteger.ONE.shiftLeft(minBits),
-				"" + BigInteger.ONE.shiftLeft(maxBits) });
+				""
+						+ (minBits == 0 ? BigInteger.ZERO : BigInteger.ONE
+								.shiftLeft(minBits)),
+				""
+						+ (maxBits == 0 ? BigInteger.ZERO : BigInteger.ONE
+								.shiftLeft(maxBits)) });
 		System.out.println("BI");
 		this.minBits = minBits;
 		this.maxBits = maxBits;
-		this.min = BigInteger.ONE.shiftLeft(minBits);
 		this.diff = maxBits - minBits;
+		if (this.minBits == 0) {
+			this.min = BigInteger.ZERO;
+		} else {
+			this.min = BigInteger.ONE.shiftLeft(minBits);
+		}
 	}
 
 	protected ObfuscatedLookaheadList(String key, double minEpsilon,
@@ -112,13 +120,22 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 	protected ObfuscatedLookaheadList(String key, int minBits, int maxBits,
 			String[] configKeys, String[] configValues) {
 		super(key, ObfuscatedLookaheadList.add(configKeys, "MIN_EPSILON",
-				"MAX_EPSILON"), ObfuscatedLookaheadList.add(configValues, ""
-				+ BigInteger.ONE.shiftLeft(minBits),
-				"" + BigInteger.ONE.shiftLeft(maxBits)));
+				"MAX_EPSILON"), ObfuscatedLookaheadList.add(
+				configValues,
+				""
+						+ (minBits == 0 ? BigInteger.ZERO : BigInteger.ONE
+								.shiftLeft(minBits)),
+				""
+						+ (maxBits == 0 ? BigInteger.ZERO : BigInteger.ONE
+								.shiftLeft(maxBits))));
 		this.minBits = minBits;
 		this.maxBits = maxBits;
-		this.min = BigInteger.ONE.shiftLeft(minBits);
 		this.diff = maxBits - minBits;
+		if (this.minBits == 0) {
+			this.min = BigInteger.ZERO;
+		} else {
+			this.min = BigInteger.ONE.shiftLeft(minBits);
+		}
 	}
 
 	private static String[] add(String[] values, String v1, String v2) {
@@ -136,6 +153,9 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 
 	@SuppressWarnings("rawtypes")
 	protected Partition obfuscatePartition(Partition partition, Random rand) {
+		if (this.minBits == 0 && this.maxBits == 0) {
+			return this.copyPartition(partition);
+		}
 		if (partition instanceof RingPartitionSimple) {
 			RingPartitionSimple p = (RingPartitionSimple) partition;
 			double sign = rand.nextBoolean() ? 1.0 : -1.0;
@@ -173,11 +193,11 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 					.getId().subtract(this.min).subtract(epsilon1).abs()
 					.mod(p.getPred().getIdSpace().getModulus());
 			BigInteger epsilon2 = new BigInteger(this.diff, rand);
-			BigInteger position2 = rand.nextBoolean() ? p.getPred().getId()
+			BigInteger position2 = rand.nextBoolean() ? p.getSucc().getId()
 					.add(this.min).add(epsilon2)
-					.mod(p.getPred().getIdSpace().getModulus()) : p.getPred()
-					.getId().subtract(this.min).subtract(epsilon2).abs()
-					.mod(p.getPred().getIdSpace().getModulus());
+					.mod(p.getSucc().getIdSpace().getModulus()) : p.getSucc()
+					.getId().subtract(this.min).subtract(epsilon2)
+					.mod(p.getSucc().getIdSpace().getModulus());
 			return new ChordPartition(new ChordIdentifier(p.getPred()
 					.getIdSpace(), position1), new ChordIdentifier(p.getSucc()
 					.getIdSpace(), position2));
