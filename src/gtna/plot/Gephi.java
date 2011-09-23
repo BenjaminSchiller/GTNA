@@ -67,6 +67,8 @@ public class Gephi {
 	private org.gephi.graph.api.Graph gephiGraph;
 	private org.gephi.graph.api.Node[] gephiNodes;
 	
+	private float ringRadius = 100;
+	
 	public Gephi() {
 		ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
 		pc.newProject();
@@ -119,7 +121,20 @@ public class Gephi {
 		if ( p instanceof PlanePartitionSimple ) {
 				PlaneIdentifier temp = (PlaneIdentifier) p.getRepresentativeID();
 				return new ForceVector((float)temp.getX(), (float)temp.getY());
-		} else throw new RuntimeException("Cannot calculate a position in " + p.getClass());
+		} else if ( p instanceof RingPartition ) {
+			// get the modulus for the ring
+			RingIdentifierSpace idSpace = ((RingPartition) p).getStart().getIdSpace();
+			double modulus = idSpace.getModulus();
+			
+			double positionOnRing = ((RingPartition) p).getEnd().getPosition();
+			double angle = (positionOnRing / modulus) * 360;
+			
+				// Beware! This might be a rotated and mirrored view!
+			return new ForceVector(
+					(float)Math.cos(angle) * ringRadius, (float)Math.sin(angle) * ringRadius
+					);
+		}
+		else throw new RuntimeException("Cannot calculate a position in " + p.getClass());
 	}
 
 	private org.gephi.graph.api.Node addNode ( GraphModel graphModel, org.gephi.graph.api.Graph graph, String name, String label, ForceVector position ) {
