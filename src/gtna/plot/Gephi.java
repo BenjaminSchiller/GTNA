@@ -75,25 +75,17 @@ public class Gephi {
 		
 			// A generic graph might be okay, as we do not really care about directions
 		gephiGraph = graphModel.getGraph();
+		
+			// Next three lines: do *never* draw curved lines!
+        PreviewModel model = Lookup.getDefault().lookup(PreviewController.class).getModel();
+        model.getUndirectedEdgeSupervisor().setCurvedFlag(false);
+        model.getBiEdgeSupervisor().setCurvedFlag(false);		
 	}
 	
 	public void Plot( Graph g, String fileName ) {
-		System.out.println("Called Gephi.Plot :)");
-		
 		gephiNodes = new org.gephi.graph.api.Node[g.getNodes().length];
-		
-		GraphProperty idSpace = g.getProperty("ID_SPACE_0");
-		if ( idSpace instanceof RingIdentifierSpace ) {
-			this.RingPlot(g);
-		} else if ( idSpace instanceof PlaneIdentifierSpaceSimple ) {
-			this.PlanePlot(g);
-		} else throw new RuntimeException("Cannot identify the idSpace: " + idSpace + " given");
-
-        // Next three lines: do *never* draw curved lines!
-        PreviewModel model = Lookup.getDefault().lookup(PreviewController.class).getModel();
-        model.getUndirectedEdgeSupervisor().setCurvedFlag(false);
-        model.getBiEdgeSupervisor().setCurvedFlag(false);
-        
+		this.plotGraph(g);
+      
 		ExportController ec = Lookup.getDefault().lookup(ExportController.class);
 		try {
 		   ec.exportFile(new File( Config.get("MAIN_PLOT_FOLDER") + fileName ));
@@ -103,14 +95,13 @@ public class Gephi {
 		}		
 	}
 	
-	private void PlanePlot(Graph g) {
+	private void plotGraph(Graph g) {
 		IdentifierSpace idSpace = (IdentifierSpace) g.getProperty("ID_SPACE_0");
 		Partition[] p = idSpace.getPartitions();
 		
 		// First run: add all nodes
 		for ( Node n: g.getNodes() ) {
-			PlaneIdentifier nodeID = (PlaneIdentifier) p[n.getIndex()].getRepresentativeID();
-			ForceVector position = new ForceVector((float)nodeID.getX(), (float)nodeID.getY());
+			ForceVector position = getPosition( p[n.getIndex()]);
 			org.gephi.graph.api.Node temp = addNode ( graphModel, gephiGraph, "N" + n.getIndex(), "Node " + n.getIndex(), position);
 			gephiNodes[n.getIndex()] = temp;
 		}
@@ -123,17 +114,14 @@ public class Gephi {
 				
 		}
 	}
-
-	private void RingPlot ( Graph g ) {
-		
-		
-		for ( Node n: g.getNodes() ) {
-			RingIdentifierSpace idSpace = (RingIdentifierSpace) g.getProperty("ID_SPACE_0");
-			RingPartition[] p = (RingPartition[]) idSpace.getPartitions();
-			System.out.println(n + " <<>> Put at: " + p[n.getIndex()].getRepresentativeID());
-		}
-	}
 	
+	private ForceVector getPosition ( Partition p ) {
+		if ( p instanceof PlanePartitionSimple ) {
+				PlaneIdentifier temp = (PlaneIdentifier) p.getRepresentativeID();
+				return new ForceVector((float)temp.getX(), (float)temp.getY());
+		} else throw new RuntimeException("Cannot calculate a position in " + p.getClass());
+	}
+
 	private org.gephi.graph.api.Node addNode ( GraphModel graphModel, org.gephi.graph.api.Graph graph, String name, String label, ForceVector position ) {
 		org.gephi.graph.api.Node temp = graphModel.factory().newNode( name );
 		temp.getNodeData().setLabel(label);
