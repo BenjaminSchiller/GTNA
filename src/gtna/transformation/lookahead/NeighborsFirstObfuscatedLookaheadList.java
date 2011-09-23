@@ -74,7 +74,8 @@ public class NeighborsFirstObfuscatedLookaheadList extends
 
 	protected NeighborsFirstObfuscatedLookaheadList(String key,
 			boolean randomizeOrder) {
-		super(key, new String[] {}, new String[] {});
+		super(key, new String[] { "RANDOMIZE_ORDER" }, new String[] { ""
+				+ randomizeOrder });
 		this.randomizeOrder = randomizeOrder;
 	}
 
