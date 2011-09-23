@@ -108,12 +108,15 @@ public class Gephi {
 			gephiNodes[n.getIndex()] = temp;
 		}
 		
-			// Second run: add the edges - only use outgoing edges to avoid chaos
+			// Second run: add the edges
 		for ( Node n: g.getNodes() ) {
+			System.out.println("Node " + n.getIndex() + " has " + n.getOutgoingEdges().length + " outgoing edges");
 			for (int dest: n.getOutgoingEdges()) {
 				addEdge(graphModel, gephiGraph, gephiNodes[n.getIndex()], gephiNodes[dest]);
 			}
-				
+			for (int dest: n.getIncomingEdges()) {
+				addEdge(graphModel, gephiGraph, gephiNodes[dest], gephiNodes[n.getIndex()]);
+			}				
 		}
 	}
 	
