@@ -39,12 +39,12 @@ import java.io.File;
 import java.io.IOException;
 
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.id.IdentifierSpace;
 import gtna.id.Partition;
+import gtna.id.md.MDIdentifier;
+import gtna.id.md.MDPartitionSimple;
 import gtna.id.plane.PlaneIdentifier;
-import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
@@ -122,8 +122,8 @@ public class Gephi {
 	
 	private ForceVector getPosition ( Partition p ) {
 		if ( p instanceof PlanePartitionSimple ) {
-				PlaneIdentifier temp = (PlaneIdentifier) p.getRepresentativeID();
-				return new ForceVector((float)temp.getX(), (float)temp.getY());
+			PlaneIdentifier temp = (PlaneIdentifier) p.getRepresentativeID();
+			return new ForceVector((float)temp.getX(), (float)temp.getY());
 		} else if ( p instanceof RingPartition ) {
 			// get the modulus for the ring
 			RingIdentifierSpace idSpace = ((RingPartition) p).getStart().getIdSpace();
@@ -136,6 +136,11 @@ public class Gephi {
 			return new ForceVector(
 					(float)Math.cos(angle) * ringRadius, (float)Math.sin(angle) * ringRadius
 					);
+		} else if ( p instanceof MDPartitionSimple ) {
+			MDIdentifier temp = (MDIdentifier)p.getRepresentativeID();
+			if ( temp.getIdSpace().getDimensions() == 2 ) {
+				return new ForceVector( (float)temp.getCoordinate(0), (float)temp.getCoordinate(1) );
+			} else throw new RuntimeException("Cannot yet calculate a responsing coordinate for " + temp.toString() );
 		}
 		else throw new RuntimeException("Cannot calculate a position in " + p.getClass());
 	}
