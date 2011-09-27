@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * LookaheadSequential.java
+ * LookaheadMinVia.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -35,13 +35,12 @@
  */
 package gtna.routing.lookahead;
 
-
 /**
  * @author benni
  * 
  */
-public class LookaheadSequential extends Lookahead {
-	public LookaheadSequential(int ttl) {
-		super("LOOKAHEAD_SEQUENTIAL", ttl, Lookahead.ViaSelection.sequential);
+public class LookaheadMinVia extends Lookahead {
+	public LookaheadMinVia(int ttl) {
+		super("LOOKAHEAD_MIN_VIA", ttl, Lookahead.ViaSelection.minVia);
 	}
 }
