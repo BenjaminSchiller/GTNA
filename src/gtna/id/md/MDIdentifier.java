@@ -92,13 +92,15 @@ public class MDIdentifier implements DIdentifier, Comparable<PlaneIdentifier> {
 			throw new RuntimeException("Cannot compute a distance between MDIntentifiers in spaces with unequal dimensions");
 		}
 		double squarredResult = 0;
+		double temp;
 		for ( int i = 0; i < this.idSpace.getDimensions(); i++ ) {
 			if ( this.idSpace.isWrapAround() ) {
-				squarredResult += Math.abs(this.coordinates[i] - to.getCoordinate(i))
+				 temp = Math.abs(this.coordinates[i] - to.getCoordinate(i))
 					% (this.idSpace.getModulus(i) / 2.0);
 			} else {
-				squarredResult += Math.abs(this.coordinates[i] - to.getCoordinate(i));
+				 temp = Math.abs(this.coordinates[i] - to.getCoordinate(i));
 			}
+			squarredResult += Math.pow(temp, 2);
 		}
 		return Math.sqrt(squarredResult);
 	}
