@@ -61,8 +61,8 @@ Transformation {
 
 	public RandomMDIDSpaceSimple(int realities, double[] modulus, boolean wrapAround) {
 		super("RANDOM_MD_ID_SPACE_SIMPLE", new String[] { "REALITIES",
-				"MODULUS", "WRAP_AROUND" }, new String[] {
-				"" + realities, "" + modulus, "" + wrapAround });
+				"DIMENSIONS", "WRAP_AROUND" }, new String[] {
+				"" + realities, "" + modulus.length, "" + wrapAround });
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
