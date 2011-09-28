@@ -35,6 +35,7 @@
  */
 package gtna.id.md;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import gtna.graph.Graph;
@@ -120,12 +121,7 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 
 		// # MODULUS
 		fw.writeComment("Modulus");
-		StringBuilder modulusString = new StringBuilder();
-		if ( this.getDimensions() >= 0 ) modulusString.append( modulus[0] );
-		for ( int i = 1; i < this.getDimensions(); i++ ) {
-			modulusString.append("," + modulus[i] );
-		}
-		fw.writeln(modulusString.toString());
+		fw.writeln(Arrays.toString(modulus));
 
 		// # WRAP-AROUND
 		fw.writeComment("Wrap-around");
@@ -162,7 +158,7 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 		// # MODULUS_Y
 		this.modulus = new double[dimensions];
 		
-		String[] modulusTemp = fr.readLine().split(",");
+		String[] modulusTemp = fr.readLine().replace("[", "").replace("]", "").split(",");
 		if ( modulusTemp.length != dimensions ) {
 			throw new RuntimeException("Error: written dimension does not match the number of written modulus values");
 		}

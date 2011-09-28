@@ -42,6 +42,7 @@ import gtna.id.BIIdentifierSpace;
 import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
 import gtna.id.Partition;
+import gtna.id.md.MDIdentifier;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlanePartitionSimple;
 import gtna.id.ring.RingIdentifier;
@@ -239,7 +240,7 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 			if (p instanceof DIdentifierSpace) {
 				DIdentifier id = (DIdentifier) ((DIdentifierSpace) p)
 						.randomID(rand);
-				if (!(id instanceof RingIdentifier)) {
+				if (!(id instanceof RingIdentifier) && !(id instanceof MDIdentifier)) {
 					return false;
 				}
 			} else if (p instanceof BIIdentifierSpace) {

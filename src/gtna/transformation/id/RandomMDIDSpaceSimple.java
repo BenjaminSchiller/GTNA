@@ -35,6 +35,8 @@
  */
 package gtna.transformation.id;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Random;
 
 import gtna.graph.Graph;
@@ -61,8 +63,8 @@ Transformation {
 
 	public RandomMDIDSpaceSimple(int realities, double[] modulus, boolean wrapAround) {
 		super("RANDOM_MD_ID_SPACE_SIMPLE", new String[] { "REALITIES",
-				"DIMENSIONS", "WRAP_AROUND" }, new String[] {
-				"" + realities, "" + modulus.length, "" + wrapAround });
+				"DIMENSIONS", "MODULUS", "WRAP_AROUND" }, new String[] {
+				"" + realities, "" + modulus.length, Arrays.toString(modulus), "" + wrapAround });
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
