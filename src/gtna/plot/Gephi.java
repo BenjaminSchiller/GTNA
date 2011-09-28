@@ -69,7 +69,7 @@ public class Gephi {
 	
 	private float ringRadius = 100;
 	
-	public Gephi() {
+	public void Plot( Graph g, String fileName ) {
 		ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
 		pc.newProject();
 		
@@ -81,10 +81,8 @@ public class Gephi {
 			// Next three lines: do *never* draw curved lines!
         PreviewModel model = Lookup.getDefault().lookup(PreviewController.class).getModel();
         model.getUndirectedEdgeSupervisor().setCurvedFlag(false);
-        model.getBiEdgeSupervisor().setCurvedFlag(false);		
-	}
-	
-	public void Plot( Graph g, String fileName ) {
+        model.getBiEdgeSupervisor().setCurvedFlag(false);
+		
 		gephiNodes = new org.gephi.graph.api.Node[g.getNodes().length];
 		this.plotGraph(g);
       
@@ -160,5 +158,5 @@ public class Gephi {
 		Edge temp = graphModel.factory().newEdge( start, end );
 		graph.addEdge(temp);
 		return temp;
-	}	
+	}
 }
