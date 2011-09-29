@@ -45,6 +45,9 @@ import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
 import gtna.plot.Gephi;
+import gtna.transformation.Transformation;
+import gtna.transformation.TransformationImpl;
+import gtna.transformation.id.RandomMDIDSpaceSimple;
 import gtna.util.Config;
 import gtna.util.MDVector;
 
@@ -52,7 +55,17 @@ import gtna.util.MDVector;
  * @author Nico
  *
  */
-public class FruchtermanReingold extends AbstractGD {
+public class FruchtermanReingold extends TransformationImpl implements Transformation {
+	/*
+	 * IDSpace and Partitions we care about
+	 */
+	protected MDIdentifierSpaceSimple idSpace;
+	protected MDPartitionSimple[] partitions;
+	private int realities;
+	private double[] moduli;
+	private Boolean wrapAround;
+	
+	
 		/*
 		 * How many iterations should the algorithm run?
 		 */
@@ -88,6 +101,7 @@ public class FruchtermanReingold extends AbstractGD {
 	private ArrayList<String> handledEdges;
 
 	private Gephi gephi;
+	private Transformation initialPositions;
 	
 	public FruchtermanReingold() {
 		this("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
@@ -99,31 +113,55 @@ public class FruchtermanReingold extends AbstractGD {
 		this.iterations = Config.getInt("GDA_FRUCHTERMAN_REINGOLD_ITERATIONS");
 	}
 		
-	/**
-	 * @param plotter
-	 */
+		/*
+		 * Constructor for the case that we already have set the idspace
+		 */
 	public FruchtermanReingold(Gephi plotter) {
 		this("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
 		this.gephi = plotter;
+		this.initialPositions = null;
+	}
+	
+	public FruchtermanReingold(int realities, double[] moduli, Boolean wrapAround, Gephi plotter) {
+		this("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
+		this.realities = realities;
+		this.moduli = moduli;
+		this.wrapAround = wrapAround;
+		this.gephi = plotter;
+		initialPositions = new RandomMDIDSpaceSimple( this.realities, this.moduli, this.wrapAround);
 	}
 
 	@Override
 	public boolean applicable(Graph g) {
-		Random rand = new Random();
-		this.idSpace = null;
+		return true;
+	}
+	
+	@Override
+	public Graph transform(Graph g) {
+		if ( initialPositions != null ) {
+				/*
+				 * First step: create an idspace
+				 */
+			g = initialPositions.transform(g);
+		}
+		
+			/*
+			 * idspace is now given, extract it
+			 */
 		for (GraphProperty p : g.getProperties("ID_SPACE")) {
 			if (p instanceof MDIdentifierSpaceSimple) {
 				MDIdentifier id = (MDIdentifier) ((MDIdentifierSpaceSimple) p)
-						.randomID(rand);
+				.randomID( new Random() );
 				if (!(id instanceof MDIdentifier)) {
-					return false;
+					throw new RuntimeException("Okay, why do we have a MDIDSpace without a MDIdentifier?");
 				}
-				// as we are going through: remember some values we can use!
-				if ( this.idSpace != null ) {
-					System.err.println("Cannot apply FruchtermanReingold if multiple IDSpaces are set");
-					return false;
-				}
+					/*
+					 * good question: how do we retrieve the number of realities from a given space?
+					 */
+				this.moduli = ((MDIdentifierSpaceSimple) p).getModuli();
+				this.wrapAround = ((MDIdentifierSpaceSimple) p).isWrapAround();
 				this.idSpace = (MDIdentifierSpaceSimple) p;
+				
 				this.partitions = (MDPartitionSimple[]) this.idSpace.getPartitions();
 				double[] moduli = this.idSpace.getModuli();
 				this.area = 1;
@@ -136,39 +174,29 @@ public class FruchtermanReingold extends AbstractGD {
 				for ( int i = 0; i < moduli.length; i++ ) {
 					maxModulus = Math.max(maxModulus, moduli[i]);
 				}
-				this.t = maxModulus;
-			} else {
-				return false;
+				this.t = maxModulus;				
 			}
 		}
-		return true;
-	}
-	
-	@Override
-	public Graph transform(Graph g) {
-		if ( !this.applicable(g) ) {
-			System.err.println("Cannot apply FR");
-			return g;
-		}
+		System.out.println("idSpace: " + this.idSpace + ", dimensions: " + this.idSpace.getDimensions());
 		
-		extractNodePositions(g);
 		for ( int i = 0; i < this.iterations; i++ ) {
 			System.out.println("\n\n   >>> in iteration " + i + " <<<");
-			this.doIteration ( g );
+			g = this.doIteration ( g );
 			if ( gephi != null && i % 10 == 0 ) {
 				gephi.Plot ( g, "test" + i + ".svg" );
 			}
 		}
+		
 		return g;
 	}
-
-	private void doIteration(Graph g) {
+	
+	private Graph doIteration(Graph g) {
 		MDVector delta, currDisp;
 		String identifier;
 		
-		this.handledEdges = new ArrayList<String>();		
-				
-			// First step: repulsive forces
+		this.handledEdges = new ArrayList<String>();
+		
+		// First step: repulsive forces
 		for ( Node v: g.getNodes() ) {
 				// Reset displacement
 			this.disp[v.getIndex()] = new MDVector(idSpace.getDimensions(), 0d);
@@ -176,8 +204,8 @@ public class FruchtermanReingold extends AbstractGD {
 				// Calculate repulsive forces to *all* other nodes
 			for ( Node u: g.getNodes() ) {
 				if ( u.getIndex() == v.getIndex() ) continue;
-				delta = new MDVector( nodePositions[v.getIndex()].getDimension(), nodePositions[v.getIndex()].getCoordinates() );
-				delta.subtract ( nodePositions[u.getIndex()] );
+				delta = ((MDIdentifier) partitions[v.getIndex()].getRepresentativeID()).toMDVector();
+				delta.subtract ( ((MDIdentifier) partitions[u.getIndex()].getRepresentativeID()).toMDVector() );
 				currDisp = new MDVector(delta.getDimension(), delta.getCoordinates());
 				double currDispNorm = currDisp.getNorm(); 
 				if ( Double.isNaN(currDispNorm) ) throw new RuntimeException("You broke it");
@@ -187,7 +215,7 @@ public class FruchtermanReingold extends AbstractGD {
 			}
 		}
 
-			// Second step: attractive forces
+		// Second step: attractive forces
 		for ( Node v: g.getNodes() ) {
 			for ( int uIndex: v.getOutgoingEdges() ) {
 				identifier = Math.min ( v.getIndex(), uIndex) + "-" + Math.max ( v.getIndex(), uIndex);
@@ -196,8 +224,8 @@ public class FruchtermanReingold extends AbstractGD {
 					continue;
 				}
 				
-				delta = new MDVector( nodePositions[v.getIndex()].getDimension(), nodePositions[v.getIndex()].getCoordinates() );
-				delta.subtract ( nodePositions[uIndex] );
+				delta = ((MDIdentifier) partitions[v.getIndex()].getRepresentativeID()).toMDVector();
+				delta.subtract ( ((MDIdentifier) partitions[uIndex].getRepresentativeID()).toMDVector() );
 				currDisp = new MDVector(delta.getDimension(), delta.getCoordinates());
 				double currDispNorm = currDisp.getNorm(); 
 				if ( Double.isNaN(currDispNorm) ) throw new RuntimeException("You broke it");
@@ -213,21 +241,25 @@ public class FruchtermanReingold extends AbstractGD {
 		
 			// Last but not least: assign new coordinates
 		for ( Node v: g.getNodes() ) {
+			MDVector vVector = ((MDIdentifier) partitions[v.getIndex()].getRepresentativeID()).toMDVector();
+			
 			currDisp = new MDVector(disp[v.getIndex()].getDimension(), disp[v.getIndex()].getCoordinates());
 			double currDispNorm = currDisp.getNorm(); 
 			currDisp.divideBy(currDispNorm);
 			currDisp.multiplyWith( Math.min(currDispNorm, t) );
 					
-			System.out.println("Move " + nodePositions[v.getIndex()] + " by " + currDisp + " (calculated disp: " + disp[v.getIndex()] + ", t: " + t + ")" );
-			System.out.println("Old pos: " + nodePositions[v.getIndex()] );
+			System.out.println("Move " + vVector + " by " + currDisp + " (calculated disp: " + disp[v.getIndex()] + ", t: " + t + ")" );
+			System.out.println("Old pos: " + vVector );
 
-			nodePositions[v.getIndex()].add(currDisp);
-			nodePositions[v.getIndex()] = setNormalized ( nodePositions[v.getIndex()] );
+			vVector.add(currDisp);
+			vVector = setNormalized ( vVector );
+			((MDIdentifier) partitions[v.getIndex()].getRepresentativeID()).setCoordinates(vVector.getCoordinates().clone());
 			
-			System.out.println("New pos: " + nodePositions[v.getIndex()] + " for " + v.getIndex());
+			System.out.println("New pos: " + vVector + " for " + v.getIndex());
 		}
 		
-		t = cool ( t );		
+		t = cool ( t );	
+		return g;
 	}
 	
 	private MDVector setNormalized ( MDVector v ) {
@@ -236,7 +268,7 @@ public class FruchtermanReingold extends AbstractGD {
 			v.setCoordinate(i, coordinate);
 		}
 		return v;
-	}
+	}	
 		
 	private double fr ( Double x ) {
 		return ( ( k * k ) / x );

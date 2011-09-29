@@ -41,6 +41,7 @@ import gtna.id.DIdentifier;
 import gtna.id.Identifier;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
+import gtna.util.MDVector;
 
 /**
  * @author Nico
@@ -136,5 +137,9 @@ public class MDIdentifier implements DIdentifier, Comparable<PlaneIdentifier> {
 	public int compareTo(PlaneIdentifier o) {
 		// TODO Auto-generated method stub
 		return 0;
-	}	
+	}
+	
+	public MDVector toMDVector() {
+		return new MDVector(this);
+	}
 }
