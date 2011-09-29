@@ -92,6 +92,13 @@ public class MDVector {
 		}
 	}
 
+	/**
+	 * @param length
+	 */
+	public MDVector(int dimensions) {
+		this (dimensions, new double[dimensions]);
+	}
+
 	public void divideBy ( double divisor ) {
 		for ( int i = 0; i < dimension; i++ ) {
 			coordinates[i] = coordinates[i] / divisor;

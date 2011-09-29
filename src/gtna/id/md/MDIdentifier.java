@@ -126,6 +126,12 @@ public class MDIdentifier implements DIdentifier, Comparable<PlaneIdentifier> {
 	}
 	
 	public void setCoordinates ( double[] newPos ) {
+		if ( newPos.length != coordinates.length ) throw new RuntimeException("Please respect our dimensions!");
+		for ( int i = 0; i < newPos.length; i++ ) {
+			if ( newPos[i] < 0 || newPos[i] > this.idSpace.getModulus(i) ) {
+				throw new RuntimeException("Corrupt new coordinate " + newPos[i] + ", should be between 0 and " + this.idSpace.getModulus(i));
+			}
+		}
 		this.coordinates = newPos.clone();
 	}
 	
