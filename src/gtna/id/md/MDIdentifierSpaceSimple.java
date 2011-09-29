@@ -75,6 +75,13 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 		this.maxDistance = Double.MAX_VALUE;
 	}
 	
+	/**
+	 * @return
+	 */
+	public double[] getModuli() {
+		return this.modulus;
+	}
+
 	public double getModulus(int i) {
 		return this.modulus[i];
 	}

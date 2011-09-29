@@ -56,9 +56,8 @@ public class MDIdentifier implements DIdentifier, Comparable<PlaneIdentifier> {
 		for ( int i = 0; i < this.coordinates.length; i++ ) {
 			this.coordinates[i] = this.coordinates[i] % idSpace.getModulus(i); 
 		}
-		
 		this.idSpace = idSpace;
-	}	
+	}
 	
 	public MDIdentifier(String string, MDIdentifierSpaceSimple idSpace) {
 		String[] temp = string.replace("(", "").replace(")", "").split("/");
@@ -67,7 +66,6 @@ public class MDIdentifier implements DIdentifier, Comparable<PlaneIdentifier> {
 		for ( int i = 0; i < temp.length; i++ ) {
 			this.coordinates[i] = Double.parseDouble(temp[i]) % idSpace.getModulus(i);
 		}
-
 		this.idSpace = idSpace;
 	}
 	
@@ -123,7 +121,11 @@ public class MDIdentifier implements DIdentifier, Comparable<PlaneIdentifier> {
 	}
 
 	public double[] getCoordinates() {
-		return this.coordinates;
+		return this.coordinates.clone();
+	}
+	
+	public void setCoordinates ( double[] newPos ) {
+		this.coordinates = newPos.clone();
 	}
 	
 	public MDIdentifierSpaceSimple getIdSpace() {
