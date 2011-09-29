@@ -77,9 +77,13 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 	private double area;
 	
 		/*
-		 * Optimal distance, named k by FR
+		 * Optimal distance, named k by FR, and a
+		 * factor for the borderRepulsion (setting it to 1 will
+		 * place the vertices on the border lines; increasing it
+		 * will keep them away)
 		 */
 	private double k;
+	private double borderRepulsion = 3;
 	
 		/*
 		 * Global cooling factor
@@ -99,6 +103,12 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 		 * times each!)
 		 */
 	private ArrayList<String> handledEdges;
+	
+		/*
+		 * Internally, we have to use a biased MDVector - so we need to
+		 * store that bias
+		 */
+	private MDVector bias;
 
 	private Gephi gephi;
 	private Transformation initialPositions;
@@ -166,7 +176,7 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 				double[] moduli = this.idSpace.getModuli();
 				this.area = 1;
 				for ( double singleModulus: moduli ) this.area = this.area * singleModulus;
-				k = Math.sqrt( this.area / this.partitions.length );
+				k = Math.sqrt( this.area / this.partitions.length ) / borderRepulsion;
 				System.out.println("Best distance: " + k);
 				this.disp = new MDVector[this.partitions.length];
 				
@@ -179,13 +189,23 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 		}
 		System.out.println("idSpace: " + this.idSpace + ", dimensions: " + this.idSpace.getDimensions());
 		
+		bias = new MDVector(this.moduli.length);
+		String moduliString = "";
+		for ( int i = 0; i < this.moduli.length; i++ ) {
+			moduliString = moduliString + ", " + this.moduli[i];
+			bias.setCoordinate(i, this.moduli[i] / 2);
+		}
+		System.out.println("Moduli: " + moduliString);
+		System.out.println("Bias: " + bias);
+		
 		for ( int i = 0; i < this.iterations; i++ ) {
 			System.out.println("\n\n   >>> in iteration " + i + " <<<");
-			g = this.doIteration ( g );
-			if ( gephi != null && i % 10 == 0 ) {
+			if ( gephi != null && i % 50 == 0 ) {
 				gephi.Plot ( g, "test" + i + ".svg" );
 			}
+			g = this.doIteration ( g );
 		}
+		gephi.Plot ( g, "test" + this.iterations + ".svg" );
 		
 		return g;
 	}
@@ -204,8 +224,8 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 				// Calculate repulsive forces to *all* other nodes
 			for ( Node u: g.getNodes() ) {
 				if ( u.getIndex() == v.getIndex() ) continue;
-				delta = ((MDIdentifier) partitions[v.getIndex()].getRepresentativeID()).toMDVector();
-				delta.subtract ( ((MDIdentifier) partitions[u.getIndex()].getRepresentativeID()).toMDVector() );
+				delta = getCoordinate(v);
+				delta.subtract ( getCoordinate(u) );
 				currDisp = new MDVector(delta.getDimension(), delta.getCoordinates());
 				double currDispNorm = currDisp.getNorm(); 
 				if ( Double.isNaN(currDispNorm) ) throw new RuntimeException("You broke it");
@@ -224,8 +244,8 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 					continue;
 				}
 				
-				delta = ((MDIdentifier) partitions[v.getIndex()].getRepresentativeID()).toMDVector();
-				delta.subtract ( ((MDIdentifier) partitions[uIndex].getRepresentativeID()).toMDVector() );
+				delta = getCoordinate(v);
+				delta.subtract ( getCoordinate(uIndex) );
 				currDisp = new MDVector(delta.getDimension(), delta.getCoordinates());
 				double currDispNorm = currDisp.getNorm(); 
 				if ( Double.isNaN(currDispNorm) ) throw new RuntimeException("You broke it");
@@ -241,21 +261,21 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 		
 			// Last but not least: assign new coordinates
 		for ( Node v: g.getNodes() ) {
-			MDVector vVector = ((MDIdentifier) partitions[v.getIndex()].getRepresentativeID()).toMDVector();
+			MDVector vVector = getCoordinate(v);
 			
 			currDisp = new MDVector(disp[v.getIndex()].getDimension(), disp[v.getIndex()].getCoordinates());
 			double currDispNorm = currDisp.getNorm(); 
 			currDisp.divideBy(currDispNorm);
 			currDisp.multiplyWith( Math.min(currDispNorm, t) );
 					
-			System.out.println("Move " + vVector + " by " + currDisp + " (calculated disp: " + disp[v.getIndex()] + ", t: " + t + ")" );
-			System.out.println("Old pos: " + vVector );
+//			System.out.println("Move " + vVector + " by " + currDisp + " (calculated disp: " + disp[v.getIndex()] + ", t: " + t + ")" );
+//			System.out.println("Old pos: " + vVector );
 
 			vVector.add(currDisp);
 			vVector = setNormalized ( vVector );
-			((MDIdentifier) partitions[v.getIndex()].getRepresentativeID()).setCoordinates(vVector.getCoordinates().clone());
+			setCoordinate(v, vVector);
 			
-			System.out.println("New pos: " + vVector + " for " + v.getIndex());
+//			System.out.println("New pos: " + vVector + " for " + v.getIndex());
 		}
 		
 		t = cool ( t );	
@@ -264,11 +284,30 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 	
 	private MDVector setNormalized ( MDVector v ) {
 		for ( int i = 0; i < v.getDimension(); i++ ) {
-			double coordinate = Math.min(idSpace.getModulus(i), Math.max(-idSpace.getModulus(i), v.getCoordinate(i)));
+			double coordinate = Math.min(idSpace.getModulus(i)/2, Math.max(idSpace.getModulus(i)/-2, v.getCoordinate(i)));
 			v.setCoordinate(i, coordinate);
 		}
 		return v;
 	}	
+	
+	private MDVector getCoordinate( Node n ) {
+		return getCoordinate(n.getIndex());
+	}
+	
+	private MDVector getCoordinate ( int i ) {
+		MDVector iV = ((MDIdentifier) partitions[i].getRepresentativeID()).toMDVector();
+//		System.out.print("Retrieving " + iV);
+		iV.subtract(bias);
+//		System.out.println(" (biased: " + iV + ") for " +i);
+		return iV;
+	}
+	
+	private void setCoordinate ( Node v, MDVector newPos ) {
+//		System.out.print("Setting " + newPos);
+		newPos.add(bias);
+//		System.out.println(" (biased: " + newPos + ")");
+		((MDIdentifier) partitions[v.getIndex()].getRepresentativeID()).setCoordinates(newPos.getCoordinates());
+	}
 		
 	private double fr ( Double x ) {
 		return ( ( k * k ) / x );
