@@ -35,6 +35,8 @@
  */
 package gtna.util;
 
+import gtna.id.md.MDIdentifier;
+
 import java.util.Arrays;
 
 /**
@@ -68,6 +70,11 @@ public class MDVector {
 	}
 
 	private double[] coordinates;
+	
+	public MDVector ( MDIdentifier id ) {
+		this.dimension = id.getIdSpace().getDimensions();
+		this.coordinates = id.getCoordinates().clone();
+	}
 	
 	public MDVector ( int dimension, double[] coordinates ) {
 		this.dimension = dimension;
