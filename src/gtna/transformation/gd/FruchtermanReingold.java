@@ -38,6 +38,7 @@ package gtna.transformation.gd;
 import java.util.ArrayList;
 import java.util.Random;
 
+import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
@@ -65,7 +66,6 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 	private double[] moduli;
 	private Boolean wrapAround;
 	
-	
 		/*
 		 * How many iterations should the algorithm run?
 		 */
@@ -83,7 +83,7 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 		 * will keep them away)
 		 */
 	private double k;
-	private double borderRepulsion = 3;
+	private double borderRepulsion = 1.1;
 	
 		/*
 		 * Global cooling factor
@@ -95,15 +95,7 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 		 * throughout one single iteration
 		 */
 	private MDVector[] disp;
-	
-		/*
-		 * Handled edges - save this as GTNA might deliver corrupt
-		 * values (in an undirected graph, all edges are returned
-		 * when asking for incoming edges - so they are handled two
-		 * times each!)
-		 */
-	private ArrayList<String> handledEdges;
-	
+		
 		/*
 		 * Internally, we have to use a biased MDVector - so we need to
 		 * store that bias
@@ -184,7 +176,7 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 				for ( int i = 0; i < moduli.length; i++ ) {
 					maxModulus = Math.max(maxModulus, moduli[i]);
 				}
-				this.t = maxModulus;				
+				this.t = maxModulus;
 			}
 		}
 		System.out.println("idSpace: " + this.idSpace + ", dimensions: " + this.idSpace.getDimensions());
@@ -236,27 +228,17 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 		}
 
 		// Second step: attractive forces
-		for ( Node v: g.getNodes() ) {
-			for ( int uIndex: v.getOutgoingEdges() ) {
-				identifier = Math.min ( v.getIndex(), uIndex) + "-" + Math.max ( v.getIndex(), uIndex);
-				if ( handledEdges.contains(identifier)) {
-						// Do not handle edges twice
-					continue;
-				}
-				
-				delta = getCoordinate(v);
-				delta.subtract ( getCoordinate(uIndex) );
-				currDisp = new MDVector(delta.getDimension(), delta.getCoordinates());
-				double currDispNorm = currDisp.getNorm(); 
-				if ( Double.isNaN(currDispNorm) ) throw new RuntimeException("You broke it");
-				currDisp.divideBy(currDispNorm);
-				currDisp.multiplyWith(fa ( currDispNorm ) );
+		for ( Edge e: g.generateEdges() ) {
+			delta = getCoordinate( e.getSrc() );
+			delta.subtract ( getCoordinate( e.getDst()) );
+			currDisp = new MDVector(delta.getDimension(), delta.getCoordinates());
+			double currDispNorm = currDisp.getNorm(); 
+			if ( Double.isNaN(currDispNorm) ) throw new RuntimeException("You broke it");
+			currDisp.divideBy(currDispNorm);
+			currDisp.multiplyWith(fa ( currDispNorm ) );
 
-				this.disp[v.getIndex()].subtract(currDisp);
-				this.disp[uIndex].add(currDisp);
-				
-				handledEdges.add(identifier);
-			}
+			this.disp[e.getSrc()].subtract(currDisp);
+			this.disp[e.getDst()].add(currDisp);
 		}
 		
 			// Last but not least: assign new coordinates
