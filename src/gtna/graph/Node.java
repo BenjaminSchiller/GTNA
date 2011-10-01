@@ -149,13 +149,6 @@ public class Node {
 	public void setOutgoingEdges(int[] outgoingEdges) {
 		this.outgoingEdges = outgoingEdges;
 	}
-	
-	public int[] getEdges() {
-		int[] temp = new int[this.incomingEdges.length + this.outgoingEdges.length];
-		System.arraycopy(this.incomingEdges, 0, temp, 0, this.incomingEdges.length);
-		System.arraycopy(this.outgoingEdges, 0, temp, this.incomingEdges.length, this.outgoingEdges.length);
-		return temp;
-	}
 
 	// TODO hasOut, hasIn, addIn, addOut, removeIn, removeOut
 }
