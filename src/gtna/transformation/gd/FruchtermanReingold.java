@@ -179,16 +179,17 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 				this.t = maxModulus;
 			}
 		}
-		System.out.println("idSpace: " + this.idSpace + ", dimensions: " + this.idSpace.getDimensions());
-		
+
+			/*
+			 * A bias is needed as the internal algorithm works on coordinates
+			 * between (-modulus/2) and (+modulus/2) for each dimension
+			 */
 		bias = new MDVector(this.moduli.length);
 		String moduliString = "";
 		for ( int i = 0; i < this.moduli.length; i++ ) {
 			moduliString = moduliString + ", " + this.moduli[i];
 			bias.setCoordinate(i, this.moduli[i] / 2);
 		}
-		System.out.println("Moduli: " + moduliString);
-		System.out.println("Bias: " + bias);
 		
 		for ( int i = 0; i < this.iterations; i++ ) {
 			System.out.println("\n\n   >>> in iteration " + i + " <<<");
@@ -204,9 +205,6 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 	
 	private Graph doIteration(Graph g) {
 		MDVector delta, currDisp;
-		String identifier;
-		
-		this.handledEdges = new ArrayList<String>();
 		
 		// First step: repulsive forces
 		for ( Node v: g.getNodes() ) {
