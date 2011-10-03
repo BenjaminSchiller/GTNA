@@ -77,25 +77,23 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 	private double area;
 	
 		/*
-		 * Optimal distance, named k by FR, and a
-		 * factor for the borderRepulsion (setting it to 1 will
-		 * place the vertices on the border lines; increasing it
-		 * will keep them away)
+		 * Optimal distance, named k by FR
 		 */
 	private double k;
-	private double borderRepulsion = 1.1;
 	
 		/*
-		 * Global cooling factor
+		 * A factor to increase the attraction force and
+		 * the cooling factor which is applied onto the temperature
+		 * in each step
+		 */	
+	private double attractionFactor = 1.0;
+	private double coolingFactor = 0.95;
+	
+		/*
+		 * Global cooling temperature
 		 */
 	private double t;
 	
-		/*
-		 * Displacement array which will hold the displacement
-		 * throughout one single iteration
-		 */
-	private MDVector[] disp;
-		
 		/*
 		 * Internally, we have to use a biased MDVector - so we need to
 		 * store that bias
@@ -168,9 +166,8 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 				double[] moduli = this.idSpace.getModuli();
 				this.area = 1;
 				for ( double singleModulus: moduli ) this.area = this.area * singleModulus;
-				k = Math.sqrt( this.area / this.partitions.length ) / borderRepulsion;
+				k = Math.sqrt( this.area / this.partitions.length );
 				System.out.println("Best distance: " + k);
-				this.disp = new MDVector[this.partitions.length];
 				
 				double maxModulus = 0;
 				for ( int i = 0; i < moduli.length; i++ ) {
@@ -206,10 +203,16 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 	private Graph doIteration(Graph g) {
 		MDVector delta, currDisp;
 		
+			/*
+			 * Displacement array which will hold the displacement
+			 * throughout one single iteration
+			 */		
+		MDVector[] disp = new MDVector[this.partitions.length];
+		
 		// First step: repulsive forces
 		for ( Node v: g.getNodes() ) {
 				// Reset displacement
-			this.disp[v.getIndex()] = new MDVector(idSpace.getDimensions(), 0d);
+			disp[v.getIndex()] = new MDVector(idSpace.getDimensions(), 0d);
 			
 				// Calculate repulsive forces to *all* other nodes
 			for ( Node u: g.getNodes() ) {
@@ -221,7 +224,7 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 				if ( Double.isNaN(currDispNorm) ) throw new RuntimeException("You broke it");
 				currDisp.divideBy(currDispNorm);
 				currDisp.multiplyWith(fr ( currDispNorm ) );
-				this.disp[v.getIndex()].add(currDisp);
+				disp[v.getIndex()].add(currDisp);
 			}
 		}
 
@@ -235,8 +238,8 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 			currDisp.divideBy(currDispNorm);
 			currDisp.multiplyWith(fa ( currDispNorm ) );
 
-			this.disp[e.getSrc()].subtract(currDisp);
-			this.disp[e.getDst()].add(currDisp);
+			disp[e.getSrc()].subtract(currDisp);
+			disp[e.getDst()].add(currDisp);
 		}
 		
 			// Last but not least: assign new coordinates
@@ -294,11 +297,10 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 	}
 	
 	private double fa ( Double x ) {
-		return ( ( x * x ) / k );
+		return attractionFactor * ( ( x * x ) / k );
 	}
 	
 	private double cool ( Double t ) {
-		return 0.95 * t;
+		return coolingFactor * t;
 	}
-
 }
