@@ -75,12 +75,7 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 
 	protected ObfuscatedLookaheadList(String key, int minBits, int maxBits) {
 		super(key, new String[] { "MIN_EPSILON", "MAX_EPSILON" }, new String[] {
-				""
-						+ (minBits == 0 ? BigInteger.ZERO : BigInteger.ONE
-								.shiftLeft(minBits)),
-				""
-						+ (maxBits == 0 ? BigInteger.ZERO : BigInteger.ONE
-								.shiftLeft(maxBits)) });
+				"" + minBits, "" + maxBits });
 		System.out.println("BI");
 		this.minBits = minBits;
 		this.maxBits = maxBits;
@@ -120,14 +115,8 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 	protected ObfuscatedLookaheadList(String key, int minBits, int maxBits,
 			String[] configKeys, String[] configValues) {
 		super(key, ObfuscatedLookaheadList.add(configKeys, "MIN_EPSILON",
-				"MAX_EPSILON"), ObfuscatedLookaheadList.add(
-				configValues,
-				""
-						+ (minBits == 0 ? BigInteger.ZERO : BigInteger.ONE
-								.shiftLeft(minBits)),
-				""
-						+ (maxBits == 0 ? BigInteger.ZERO : BigInteger.ONE
-								.shiftLeft(maxBits))));
+				"MAX_EPSILON"), ObfuscatedLookaheadList.add(configValues, ""
+				+ minBits, "" + maxBits));
 		this.minBits = minBits;
 		this.maxBits = maxBits;
 		this.diff = maxBits - minBits;
@@ -153,7 +142,8 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 
 	@SuppressWarnings("rawtypes")
 	protected Partition obfuscatePartition(Partition partition, Random rand) {
-		if (this.minBits == 0 && this.maxBits == 0) {
+		if (this.minBits == 0 && this.maxBits == 0 && this.minEpsilon == 0.0
+				&& this.maxEpsilon == 0.0) {
 			return this.copyPartition(partition);
 		}
 		if (partition instanceof RingPartitionSimple) {

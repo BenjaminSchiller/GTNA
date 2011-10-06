@@ -35,12 +35,18 @@
  */
 package gtna.routing.lookahead;
 
+import gtna.routing.RoutingAlgorithm;
+
 /**
  * @author benni
  * 
  */
-public class LookaheadMinVia extends Lookahead {
+public class LookaheadMinVia extends Lookahead implements RoutingAlgorithm {
 	public LookaheadMinVia(int ttl) {
 		super("LOOKAHEAD_MIN_VIA", ttl, Lookahead.ViaSelection.minVia);
+	}
+	
+	public LookaheadMinVia(){
+		super("LOOKAHEAD_MIN_VIA", Lookahead.ViaSelection.minVia);
 	}
 }

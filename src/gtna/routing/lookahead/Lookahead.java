@@ -76,8 +76,15 @@ public abstract class Lookahead extends RoutingAlgorithmImpl implements
 		sequential, minVia
 	};
 
+	public Lookahead(String key, ViaSelection viaSelection) {
+		super(key, new String[] {}, new String[] {});
+		this.ttl = Integer.MAX_VALUE;
+		this.viaSelection = viaSelection;
+	}
+
 	public Lookahead(String key, int ttl, ViaSelection viaSelection) {
 		super(key, new String[] { "TTL" }, new String[] { "" + ttl });
+		this.ttl = ttl;
 		this.viaSelection = viaSelection;
 	}
 

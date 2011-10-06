@@ -35,13 +35,18 @@
  */
 package gtna.routing.lookahead;
 
+import gtna.routing.RoutingAlgorithm;
 
 /**
  * @author benni
  * 
  */
-public class LookaheadSequential extends Lookahead {
+public class LookaheadSequential extends Lookahead implements RoutingAlgorithm {
 	public LookaheadSequential(int ttl) {
 		super("LOOKAHEAD_SEQUENTIAL", ttl, Lookahead.ViaSelection.sequential);
+	}
+
+	public LookaheadSequential() {
+		super("LOOKAHEAD_SEQUENTIAL", Lookahead.ViaSelection.sequential);
 	}
 }
