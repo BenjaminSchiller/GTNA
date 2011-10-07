@@ -37,6 +37,7 @@ package gtna.transformation.gd;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
@@ -74,7 +75,8 @@ public class SixTollis extends TransformationImpl implements Transformation {
 	private Boolean wrapAround;
 	
 	private Gephi gephi;
-	private Transformation initialPositions;	
+	private Transformation initialPositions;
+	private ArrayList<String> handledEdges;
 	
 	public SixTollis() {
 		this("GDA_SIX_TOLLIS", new String[]{}, new String[]{});
@@ -141,33 +143,72 @@ public class SixTollis extends TransformationImpl implements Transformation {
 		return g;
 	}
 	
-	private int countAllCrossings( Graph g ) {
-		// See diploma thesis by Michael Baur, page 43
-		
-		Node[] nodeList = g.getNodes();
-		int[] openEdgesIdentifiers = new int[nodeList.length];
 
+	private int countAllCrossings ( Graph g ) {
+		int numCross = 0;
 		Edge[] edgeList = g.generateEdges();
-			// startNode[]: Array over all nodes; contains for each node a list of edges for which this node is the starting poin
-		ArrayList<Integer>[] startNodeIdentifiers = new ArrayList[nodeList.length];
-		ArrayList<Integer>[] targetNodeIdentifiers = new ArrayList[nodeList.length];
-		for ( int i = 0; i < nodeList.length; i++ ) {
-			startNodeIdentifiers[i] = new ArrayList<Integer>();
-			for ( int temp: g.getNode(i).getOutgoingEdges() ) {
-				startNodeIdentifiers[i].add(temp);
-			}
-			targetNodeIdentifiers[i] = new ArrayList<Integer>();
-			for ( int temp: g.getNode(i).getIncomingEdges() ) {
-				targetNodeIdentifiers[i].add(temp);
-			}
+		
+		handledEdges = new ArrayList<String>();
+		for ( Edge e: edgeList ) {
+			numCross += countCrossings(e, edgeList);
 		}
+		System.out.println("Got " + numCross + " crossings");		
+		return numCross;
+	}
+	
+	private int countCrossings ( Edge e, Edge[] list ) {
+		int numCross = 0;
+		for ( Edge f: list ) {
+			if ( hasCrossing(e, f) ) numCross++;
+		}
+		return numCross;
+	}
+	
+	private Boolean hasCrossing ( Edge x, Edge y ) {
+			/*
+			 * There cannot be a crossing between only one edge
+			 */
+		if ( x.equals(y) ) return false;
+		
+		double xStart = Math.min ( getPosition( x.getSrc() ), getPosition( x.getDst() ) );
+		double xEnd = Math.max ( getPosition( x.getSrc() ), getPosition( x.getDst() ) );
+		String xString = xStart + " -> " +xEnd;
+		double yStart = Math.min ( getPosition( y.getSrc() ), getPosition( y.getDst() ) );
+		double yEnd = Math.max ( getPosition( y.getSrc() ), getPosition( y.getDst() ) );
+		String yString = yStart + " -> " + yEnd;
+		String edgeString;
+		if ( xStart < yStart ) edgeString = xString + " and " + yString;
+		else edgeString = yString + " and " + xString;
 		
 			/*
-			 * Sort the nodeList - we want to walk the ring from twelve o'clock clockwise!
+			 * Have we already handled this edge?
 			 */
-		Arrays.sort(nodeList, new NodeRingIDComparator());
+		if ( handledEdges.contains(edgeString) ) {
+			return false;
+		}
+		handledEdges.add(edgeString);
 		
-		return -1;
+		if ( ( xStart < yStart && xEnd > yEnd ) ||
+			 ( yStart < xStart && yEnd > xEnd ) ||
+			 ( yStart > xEnd || xStart > yEnd ) ||
+			 ( yStart == xEnd || xStart == yEnd || xStart == yStart || xEnd == yEnd )
+				) {
+			System.out.println( "No crossing between " + edgeString );
+			return false;
+		}
+		if ( ( xStart < yStart && xEnd < yEnd ) ||
+				( xStart > yStart && xEnd > yEnd )
+			)	{
+			System.out.println("Got a crossing between " + edgeString);
+			return true;
+		}
+		
+		System.err.println( "Unknown case " + edgeString );
+		return false;
+	}
+	
+	private double getPosition ( int i ) {
+		return partitions[i].getStart().getPosition();
 	}
 
 	private class NodeRingIDComparator implements Comparator<Node> {
@@ -177,6 +218,5 @@ public class SixTollis extends TransformationImpl implements Transformation {
 			  double n2ID = partitions[n2.getIndex()].getStart().getPosition();
 			  return Double.compare(n1ID, n2ID);
 		  }
-	}	
-	
+	}
 }
