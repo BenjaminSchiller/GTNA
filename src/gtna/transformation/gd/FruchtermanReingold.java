@@ -47,7 +47,6 @@ import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
 import gtna.plot.Gephi;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
 import gtna.transformation.id.RandomMDIDSpaceSimple;
 import gtna.util.Config;
 import gtna.util.MDVector;
@@ -56,16 +55,7 @@ import gtna.util.MDVector;
  * @author Nico
  *
  */
-public class FruchtermanReingold extends TransformationImpl implements Transformation {
-	/*
-	 * IDSpace and Partitions we care about
-	 */
-	protected MDIdentifierSpaceSimple idSpace;
-	protected MDPartitionSimple[] partitions;
-	private int realities;
-	private double[] moduli;
-	private Boolean wrapAround;
-	
+public class FruchtermanReingold extends ForceDrivenAbstract implements Transformation {
 		/*
 		 * How many iterations should the algorithm run?
 		 */
@@ -94,13 +84,6 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 		 */
 	private double t;
 	
-		/*
-		 * Internally, we have to use a biased MDVector - so we need to
-		 * store that bias
-		 */
-	private MDVector bias;
-
-	private Gephi gephi;
 	private Transformation initialPositions;
 	
 	public FruchtermanReingold() {
@@ -130,11 +113,6 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 		this.gephi = plotter;
 		initialPositions = new RandomMDIDSpaceSimple( this.realities, this.moduli, this.wrapAround);
 	}
-
-	@Override
-	public boolean applicable(Graph g) {
-		return true;
-	}
 	
 	@Override
 	public Graph transform(Graph g) {
@@ -148,46 +126,20 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 			/*
 			 * idspace is now given, extract it
 			 */
-		for (GraphProperty p : g.getProperties("ID_SPACE")) {
-			if (p instanceof MDIdentifierSpaceSimple) {
-				MDIdentifier id = (MDIdentifier) ((MDIdentifierSpaceSimple) p)
-				.randomID( new Random() );
-				if (!(id instanceof MDIdentifier)) {
-					throw new RuntimeException("Okay, why do we have a MDIDSpace without a MDIdentifier?");
-				}
-					/*
-					 * good question: how do we retrieve the number of realities from a given space?
-					 */
-				this.moduli = ((MDIdentifierSpaceSimple) p).getModuli();
-				this.wrapAround = ((MDIdentifierSpaceSimple) p).isWrapAround();
-				this.idSpace = (MDIdentifierSpaceSimple) p;
-				
-				this.partitions = (MDPartitionSimple[]) this.idSpace.getPartitions();
-				double[] moduli = this.idSpace.getModuli();
-				this.area = 1;
-				for ( double singleModulus: moduli ) this.area = this.area * singleModulus;
-				k = Math.sqrt( this.area / this.partitions.length );
-				System.out.println("Best distance: " + k);
-				
-				double maxModulus = 0;
-				for ( int i = 0; i < moduli.length; i++ ) {
-					maxModulus = Math.max(maxModulus, moduli[i]);
-				}
-				this.t = maxModulus;
-			}
-		}
+		initIDSpace(g);
 
-			/*
-			 * A bias is needed as the internal algorithm works on coordinates
-			 * between (-modulus/2) and (+modulus/2) for each dimension
-			 */
-		bias = new MDVector(this.moduli.length);
-		String moduliString = "";
-		for ( int i = 0; i < this.moduli.length; i++ ) {
-			moduliString = moduliString + ", " + this.moduli[i];
-			bias.setCoordinate(i, this.moduli[i] / 2);
-		}
+		double[] moduli = this.idSpace.getModuli();
+		this.area = 1;
+		for ( double singleModulus: moduli ) this.area = this.area * singleModulus;
+		k = Math.sqrt( this.area / this.partitions.length );
+		System.out.println("Best distance: " + k);
 		
+		double maxModulus = 0;
+		for ( int i = 0; i < moduli.length; i++ ) {
+			maxModulus = Math.max(maxModulus, moduli[i]);
+		}
+		this.t = maxModulus;		
+
 		for ( int i = 0; i < this.iterations; i++ ) {
 			System.out.println("\n\n   >>> in iteration " + i + " <<<");
 			if ( gephi != null && i % 50 == 0 ) {
@@ -265,33 +217,6 @@ public class FruchtermanReingold extends TransformationImpl implements Transform
 		return g;
 	}
 	
-	private MDVector setNormalized ( MDVector v ) {
-		for ( int i = 0; i < v.getDimension(); i++ ) {
-			double coordinate = Math.min(idSpace.getModulus(i)/2, Math.max(idSpace.getModulus(i)/-2, v.getCoordinate(i)));
-			v.setCoordinate(i, coordinate);
-		}
-		return v;
-	}	
-	
-	private MDVector getCoordinate( Node n ) {
-		return getCoordinate(n.getIndex());
-	}
-	
-	private MDVector getCoordinate ( int i ) {
-		MDVector iV = ((MDIdentifier) partitions[i].getRepresentativeID()).toMDVector();
-//		System.out.print("Retrieving " + iV);
-		iV.subtract(bias);
-//		System.out.println(" (biased: " + iV + ") for " +i);
-		return iV;
-	}
-	
-	private void setCoordinate ( Node v, MDVector newPos ) {
-//		System.out.print("Setting " + newPos);
-		newPos.add(bias);
-//		System.out.println(" (biased: " + newPos + ")");
-		((MDIdentifier) partitions[v.getIndex()].getRepresentativeID()).setCoordinates(newPos.getCoordinates());
-	}
-		
 	private double fr ( Double x ) {
 		return ( ( k * k ) / x );
 	}
