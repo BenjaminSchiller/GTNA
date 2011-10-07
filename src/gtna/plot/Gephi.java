@@ -102,13 +102,14 @@ public class Gephi {
 		// First run: add all nodes
 		for ( Node n: g.getNodes() ) {
 			ForceVector position = getPosition( p[n.getIndex()]);
+//			System.out.println("Place " + n.getIndex() + " at " + position);
 			org.gephi.graph.api.Node temp = addNode ( graphModel, gephiGraph, "N" + n.getIndex(), "Node " + n.getIndex(), position);
 			gephiNodes[n.getIndex()] = temp;
 		}
 		
 			// Second run: add the edges
 		for ( Node n: g.getNodes() ) {
-			System.out.println("Node " + n.getIndex() + " has " + n.getOutgoingEdges().length + " outgoing edges");
+//			System.out.println("Node " + n.getIndex() + " has " + n.getOutgoingEdges().length + " outgoing edges");
 			for (int dest: n.getOutgoingEdges()) {
 				addEdge(graphModel, gephiGraph, gephiNodes[n.getIndex()], gephiNodes[dest]);
 			}
@@ -130,10 +131,11 @@ public class Gephi {
 			double positionOnRing = ((RingPartition) p).getEnd().getPosition();
 			double angle = (positionOnRing / modulus) * 360;
 			
-				// Beware! This might be a rotated and mirrored view!
-			return new ForceVector(
-					(float)Math.cos(angle) * ringRadius, (float)Math.sin(angle) * ringRadius
+			ForceVector pos = new ForceVector(
+					(float)Math.sin( Math.toRadians(angle) ) * ringRadius, (float)Math.cos(Math.toRadians(angle)) * ringRadius
 					);
+//			System.out.println("Put " + positionOnRing + " with angle " + angle + " and radius " + ringRadius + " at " + pos);
+			return pos;
 		} else if ( p instanceof MDPartitionSimple ) {
 			MDIdentifier temp = (MDIdentifier)p.getRepresentativeID();
 			if ( temp.getIdSpace().getDimensions() == 2 ) {
