@@ -134,11 +134,7 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 		k = Math.sqrt( this.area / this.partitions.length );
 		System.out.println("Best distance: " + k);
 		
-		double maxModulus = 0;
-		for ( int i = 0; i < moduli.length; i++ ) {
-			maxModulus = Math.max(maxModulus, moduli[i]);
-		}
-		this.t = maxModulus;		
+		this.t = idSpace.getMaxModulus();		
 
 		for ( int i = 0; i < this.iterations; i++ ) {
 			System.out.println("\n\n   >>> in iteration " + i + " <<<");
