@@ -99,19 +99,21 @@ public class MDVector {
 		this (dimensions, new double[dimensions]);
 	}
 
-	public void divideBy ( double divisor ) {
+	public MDVector divideBy ( double divisor ) {
 		for ( int i = 0; i < dimension; i++ ) {
 			coordinates[i] = coordinates[i] / divisor;
 		}
+		return this;
 	}
 	
-	public void multiplyWith ( double factor ) {
+	public MDVector multiplyWith ( double factor ) {
 		for ( int i = 0; i < dimension; i++ ) {
 			coordinates[i] = coordinates[i] * factor;
 		}
+		return this;
 	}	
 
-	public void add(MDVector additive) {
+	public MDVector add(MDVector additive) {
 		if ( additive.getDimension() != this.dimension ) {
 			throw new RuntimeException("Cannot add with different dimensions" );
 		}
@@ -120,9 +122,10 @@ public class MDVector {
 			if ( Double.isNaN(additiveVector[i]) ) continue;
 			coordinates[i] = coordinates[i] + additiveVector[i];
 		}
+		return this;
 	}	
 	
-	public void subtract(MDVector subtractor) {
+	public MDVector subtract(MDVector subtractor) {
 		if ( subtractor.getDimension() != this.dimension ) {
 			throw new RuntimeException("Cannot subtract with different dimensions" );
 		}
@@ -130,6 +133,7 @@ public class MDVector {
 		for ( int i = 0; i < dimension; i++ ) {
 			coordinates[i] = coordinates[i] - subtractVector[i];
 		}
+		return this;
 	}
 	
 	public String toString() {

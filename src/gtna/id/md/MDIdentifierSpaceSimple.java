@@ -85,6 +85,22 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 	public double getModulus(int i) {
 		return this.modulus[i];
 	}
+	
+	public double getMaxModulus() {
+		double result = Double.MIN_VALUE;
+		for ( double x: modulus ) {
+			result = Math.max(result, x);
+		}
+		return result;
+	}
+	
+	public double getMinModulus() {
+		double result = Double.MAX_VALUE;
+		for ( double x: modulus ) {
+			result = Math.min(result, x);
+		}
+		return result;
+	}	
 
 	public int getDimensions() {
 		return modulus.length;
