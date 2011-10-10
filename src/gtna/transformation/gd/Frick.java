@@ -82,13 +82,13 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 	 */
 	private double tGlobal = 256;
 	private double tMin = 0.1;
-	private double tMax = 64;
+	private double tMax = 512;
 
 	/*
 	 * Angles for oscillation and rotation detection, and the according
 	 * sensitivity factors. They were not given explicitly in Fricks paper :(
 	 */
-	private double alphaOscillation = Math.PI / 4;
+	private double alphaOscillation = Math.PI / 3;
 	private double alphaRotation = Math.PI / 3;
 	private double sigmaOscillation = 1.5;
 	private double sigmaRotation = 0.5;
@@ -179,6 +179,7 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 			g = this.doIteration(g, v);
 			currIteration++;
 		}
+		System.out.println("Stopped it - did " + currIteration + " iterations (of maximal " + maxIterations + "), and temperature is " + tGlobal + " (minimal: " + tMin + ")");
 		gephi.Plot(g, "frick-end.svg");
 
 		return g;
@@ -215,8 +216,10 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 			delta = getCoordinate(v).subtract(getCoordinate(u));
 			deltaNorm = delta.getNorm();
 			if (deltaNorm != 0) {
-				delta.multiplyWith(eDes * eDes).divideBy(deltaNorm * deltaNorm);
+				System.out.print("Old p: " + p);
+				delta.multiplyWith( eDes * eDes ).divideBy(deltaNorm * deltaNorm);
 				p.add(delta);
+				System.out.println(" -- new p:" + p);
 			}
 		}
 		System.out.println("After all repulsive forces: " + p);
@@ -246,14 +249,15 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 			setCoordinate(v, vPos);
 
 			vPos = getCoordinate(v);
-			System.out.println("New coord: " + vPos);
+			System.out.println(" New coord: " + vPos + "\n");
 		}
 		if (vertexData[v.getIndex()].lastImpulse.getNorm() != 0) {
 			/*
 			 * There has been a movement of this node before
 			 */
+			double oldT = vertexData[v.getIndex()].localT;			
 			double beta = p.angleTo(vertexData[v.getIndex()].lastImpulse);
-			System.out.println("Angle to former movement: " + beta);
+			System.out.println("Angle to former movement " + vertexData[v.getIndex()].lastImpulse +":  " + beta);
 			if (Math.sin(beta) >= Math.sin(Math.toDegrees(Math.PI / 2 + alphaRotation / 2))) {
 				/*
 				 * This looks like a rotation
@@ -266,8 +270,10 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 				 * This looks like an oscillation
 				 */
 				System.out.println("Old localT: " + vertexData[v.getIndex()].localT);
+				System.out.println("sigmaOsc: " + sigmaOscillation + ", cos: " + Math.cos(beta) + " (abs larger than " + Math.cos(Math.toDegrees(alphaOscillation / 2))+")");
 				vertexData[v.getIndex()].localT = vertexData[v.getIndex()].localT * sigmaOscillation * Math.cos(beta);
 				System.out.println("New localT: " + vertexData[v.getIndex()].localT);
+				System.out.println("Handled osc");
 			}
 
 			System.out.println("Old localT: " + vertexData[v.getIndex()].localT + ", skewGauge: "
@@ -275,7 +281,11 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 			vertexData[v.getIndex()].localT = vertexData[v.getIndex()].localT
 					* (1 - Math.abs(vertexData[v.getIndex()].skewGauge));
 			vertexData[v.getIndex()].localT = Math.min(vertexData[v.getIndex()].localT, tMax);
-			System.out.println("Old localT: " + vertexData[v.getIndex()].localT);
+			System.out.println("New localT: " + vertexData[v.getIndex()].localT);
+			double tDelta = oldT - vertexData[v.getIndex()].localT;
+			System.out.println("Old tGlobal: " + tGlobal);
+			tGlobal = tGlobal - ( tDelta / vertexData.length );
+			System.out.println("New tGlobal: " + tGlobal);
 		}
 		vertexData[v.getIndex()].lastImpulse = p.clone();
 
@@ -284,7 +294,7 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 
 	private MDVector getRandomDisturbanceVector() {
 		double minModulus = idSpace.getMinModulus();
-		return new MDVector(idSpace.getDimensions(), rand.nextDouble() * (minModulus / 10000));
+		return new MDVector(idSpace.getDimensions(), rand.nextDouble() * (minModulus / 100));
 	}
 
 	private class VertexData {
