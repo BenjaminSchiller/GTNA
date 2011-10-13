@@ -39,6 +39,7 @@ import gtna.util.Timer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class Graph {
 	private String name;
@@ -180,5 +181,60 @@ public class Graph {
      */
     public Node getNode(int nodeIndex){
         return nodes[nodeIndex];
+    }
+    
+    public Graph getSpanningTree( Node root ) {
+    	Graph result = new Graph(this.name + "-ST");
+    	Node[] resultNodes = new Node[this.nodes.length];
+    	int[] edges;
+    	int nodeCounter = 0;
+    	Node tempNodeFromList, tempNewNode;
+    	  	
+    	LinkedList<Node> todoList = new LinkedList<Node>();
+    	LinkedList<Integer> handledNodes = new LinkedList<Integer>();
+    	LinkedList<Integer> linkedNodes = new LinkedList<Integer>();
+    	LinkedList<Integer> newEdges;
+    	
+    	todoList.add(root);
+    	linkedNodes.add(root.getIndex());
+    	while ( !todoList.isEmpty() ) {
+    		tempNodeFromList = todoList.pop();
+    		if ( handledNodes.contains(tempNodeFromList.getIndex()) ) {
+    				/*
+    				 * Although the current node was fetched from the 
+    				 * todoList, we will continue: this node was already
+    				 * processed
+    				 */
+    			continue;
+    		}
+    		
+    		edges = tempNodeFromList.getOutgoingEdges();
+			newEdges = new LinkedList<Integer>();
+    		for ( int e: edges ) {
+    			if (  !linkedNodes.contains(e) ) {
+    					/*
+    					 * Node e has not been linked yet, so
+    					 * add it to the todoList (to handle it soon)
+    					 * and add the edge from the current node to e
+    					 * to the list of edges 
+    					 */
+    				todoList.add( this.nodes[e] );
+    				newEdges.add(e);
+    				linkedNodes.add(e);
+    			}
+    		}
+    		
+    		tempNewNode = new Node(tempNodeFromList.getIndex(), result);
+    		edges = new int[newEdges.size()];
+    		for ( int i = 0; i < newEdges.size(); i++ ) {
+    			edges[i] = newEdges.get(i);
+    		}
+    		tempNewNode.setOutgoingEdges(edges);
+    		resultNodes[nodeCounter] = tempNewNode;
+    		handledNodes.add(tempNodeFromList.getIndex());
+    		nodeCounter++;
+    	}
+    	result.setNodes(resultNodes);
+    	return result;
     }
 }
