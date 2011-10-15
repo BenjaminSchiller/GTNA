@@ -50,9 +50,11 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 	
 	private Gephi gephi;
 
-	private int[] modifiers;
-	private int[] nodePositions;
+	private int[] heightModifiers, nodeModifiers;
+	private int[] nodePositionsX, nodePositionsY;
 	private int[] nextPos;
+
+	private int modifierSum;
 
 	public WetherellShannon() {
 		this("GDA_WETHERELL_SHANNON", new String[]{}, new String[]{});
@@ -81,14 +83,29 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 		Graph tree = g.getSpanningTree(root);
 		int maxHeight = g.getNodes().length; 
 		
-		modifiers = new int[maxHeight];
+		heightModifiers = new int[maxHeight];
+		nodeModifiers = new int[maxHeight];
 		nextPos = new int[maxHeight];
-		nodePositions = new int[maxHeight];
+		nodePositionsX = new int[maxHeight];
+		nodePositionsY = new int[maxHeight];
 		for ( int i = 0; i < maxHeight; i++ ) {
-			modifiers[i] = 0;
+			heightModifiers[i] = 0;
 			nextPos[i] = 1;
 		}
 		firstWalk ( tree, root, 0 );
+		
+		modifierSum = 0;
+		secondWalk ( tree, root, 0 );
+		
+		for ( Node i: tree.getNodes() ) {
+			if ( i == null ) {
+				System.out.println("Missing node");
+				continue;
+			}
+			System.out.print("Node " + i.getIndex() + " resides at " + nodePositionsX[i.getIndex()] + "|" + nodePositionsY[i.getIndex()] + " and has edges to ");
+			for ( int j: i.getOutgoingEdges() ) System.out.print(j + " ");
+			System.out.println();
+		}			
 		
 		return g;
 	}
@@ -104,7 +121,7 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 			 * and should either have gotten to a leaf or we're on
 			 * the way back to the top of the tree
 			 */
-		int place = 0;;
+		int place = 0;
 		if ( sons.length == 0 ) {
 				/*
 				 * Current node has no childs, so use the
@@ -116,21 +133,34 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 				 * Put the node centered over its children
 				 */
 			for ( int singleSon: sons ) {
-				place += nodePositions[singleSon];
+				place += nodePositionsX[singleSon];
 			}
 			place = place / sons.length;
 		}
 		
-		modifiers[height] = Math.max ( modifiers[height], nextPos[height] - place );
+		heightModifiers[height] = Math.max ( heightModifiers[height], nextPos[height] - place );
 		if ( sons.length == 0 ) {
-			nodePositions[n.getIndex()] = place;
+			nodePositionsX[n.getIndex()] = place;
 		} else {
-			nodePositions[n.getIndex()] = place + modifiers[height];
+			nodePositionsX[n.getIndex()] = place + heightModifiers[height];
 		}
 			/*
 			 * This might be a problematic point, as +2 results from binary trees
 			 */
-		nextPos[height] = nodePositions[n.getIndex()] + 2;
+		nextPos[height] = nodePositionsX[n.getIndex()] + 2;
+		nodeModifiers[n.getIndex()] = heightModifiers[height];
 	}
 	
+	private void secondWalk ( Graph g, Node n, int height ) {
+		nodePositionsX[n.getIndex()] = nodePositionsX[n.getIndex()] + modifierSum;
+		modifierSum = modifierSum + nodeModifiers[n.getIndex()];
+		nodePositionsY[n.getIndex()] = 2 * height + 1;
+		
+		int[] sons = n.getOutgoingEdges();
+		for ( int singleSon: sons ) {
+			secondWalk(g, g.getNode(singleSon), height + 1 );
+		}
+		
+		modifierSum = modifierSum - heightModifiers[n.getIndex()];
+	}
 }
