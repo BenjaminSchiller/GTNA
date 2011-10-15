@@ -187,7 +187,6 @@ public class Graph {
     	Graph result = new Graph(this.name + "-ST");
     	Node[] resultNodes = new Node[this.nodes.length];
     	int[] edges;
-    	int nodeCounter = 0;
     	Node tempNodeFromList, tempNewNode;
     	  	
     	LinkedList<Node> todoList = new LinkedList<Node>();
@@ -230,9 +229,8 @@ public class Graph {
     			edges[i] = newEdges.get(i);
     		}
     		tempNewNode.setOutgoingEdges(edges);
-    		resultNodes[nodeCounter] = tempNewNode;
+    		resultNodes[tempNodeFromList.getIndex()] = tempNewNode;
     		handledNodes.add(tempNodeFromList.getIndex());
-    		nodeCounter++;
     	}
     	result.setNodes(resultNodes);
     	return result;
