@@ -35,15 +35,15 @@
  */
 package gtna;
 
-import gtna.graph.Graph;
+import gtna.data.Series;
 import gtna.io.GraphWriter;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
-import gtna.transformation.Transformation;
-import gtna.transformation.id.RandomRingIDSpace;
-import gtna.transformation.lookahead.RandomLookaheadList;
-import gtna.transformation.lookahead.RandomObfuscatedLookaheadList;
-import gtna.util.Stats;
+import gtna.networks.util.ReadableFile;
+import gtna.networks.util.ReadableFolder;
+import gtna.networks.util.ReadableList;
+import gtna.plot.Plot;
+import gtna.util.Config;
 
 /**
  * @author benni
@@ -55,26 +55,81 @@ public class NodesTest {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		Stats stats = new Stats();
+		Config.overwrite("METRICS", "CC, DD, SP");
+		// OLD VERSION:
+		// CC, DD, RCC, SPL, NF_B_D, NF_B_DI, NF_B_DO, NF_B_R, NF_U_D, NF_U_DI,
+		// NF_U_DO, NF_U_R
+		Config.overwrite(
+				"METRICS",
+				"CC, DD, RCC, SPL, NF_B_D, NF_B_DI, NF_B_DO, NF_B_R, NF_U_D, NF_U_DI, NF_U_DO, NF_U_R");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/malcolm/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/malcolm/");
+		// Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + false);
 
-		Network nw = new ErdosRenyi(3, 2, false, null, null);
-		Graph g = nw.generate();
+		Network nw1 = new ReadableFile("Kademlia", "kademlia", "filename.txt",
+				null, null);
+		Network nw2 = new ReadableFolder("Kademlia", "kademlia", "fodlerName/",
+				null, null);
+		Network nw3 = new ReadableList("Kademlia", "kademlia", new String[] {
+				"file1.txt", "file2.txt" }, null, null);
 
-		Transformation t1 = new RandomRingIDSpace(1, 1.0, true);
-		Transformation t2 = new RandomLookaheadList();
-		Transformation t3 = new RandomObfuscatedLookaheadList(0.001, 0.002);
+		// should only use times = 1, because we only have a single instance of
+		// a graph input file
+		Series s1 = Series.generate(nw1, 1);
 
-		System.out.println(t1.name());
-		System.out.println(t2.name());
-		System.out.println(t3.name());
+		// times should equals the number of input graph files in the folder
+		Series s2 = Series.generate(nw2, 10);
 
-		g = t1.transform(g);
-		g = t2.transform(g);
-		g = t3.transform(g);
+		// times should equal the inputFiles.length
+		Series s3 = Series.generate(nw3, 17);
+
+		Plot.multiAvg(s1, "series-1-kademlia-output-plot-folder/");
 		
-		GraphWriter.writeWithProperties(g, "./temp/test/randomObfuscated.txt");
+		
+		
+		Network er = new ErdosRenyi(100, 10, false, null, null);
+		GraphWriter.write(er.generate(), "./data/malcom/er.txt");
+		
 
-		stats.end();
+		// Network nw1 = new ReadableFile("Name", "folder",
+		// "./temp/kai/spi.txt",
+		// null, null);
+		// Network[] nw = new Network[] { nw1, nw2 };
+		// Series s = Series.generate(nw1, 1);
+		// Plot.allMulti(s, "multi-spi/");
+		// Plot.allSingle(s, "singles-spi/");
+
+		// Graph g1 = GraphReader.readOld("./temp/kai/2005-02-25.wot-bd.txt");
+		// Graph g2 = GraphReader.readOld("./temp/kai/2005-02-25.wot-ud.txt");
+		// Graph g3 = GraphReader.readOld("./temp/kai/2010-08.spi.txt");
+		//
+		// GraphWriter.write(g1, "./temp/kai/_2005-02-25.wot-bd.txt");
+		// GraphWriter.write(g2, "./temp/kai/_2005-02-25.wot-ud.txt");
+		// GraphWriter.write(g3, "./temp/kai/_2010-08.spi.txt");
+
+		// Stats stats = new Stats();
+		//
+		// Network nw = new ErdosRenyi(3, 2, false, null, null);
+		// Graph g = nw.generate();
+		//
+		// Transformation t1 = new RandomRingIDSpaceSimple(1, 1.0, true);
+		// // Transformation t2 = new RandomLookaheadList();
+		// // Transformation t3 = new RandomObfuscatedLookaheadList(0.001,
+		// 0.002);
+		//
+		// System.out.println(t1.name());
+		// // System.out.println(t2.name());
+		// // System.out.println(t3.name());
+		//
+		// g = t1.transform(g);
+		// // g = t2.transform(g);
+		// // g = t3.transform(g);
+		//
+		// GraphWriter.writeWithProperties(g,
+		// "./temp/test/randomObfuscated.txt");
+		//
+		// stats.end();
 	}
 
 }

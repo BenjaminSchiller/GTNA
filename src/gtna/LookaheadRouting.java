@@ -44,9 +44,11 @@ import gtna.networks.util.ReadableFile;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.Greedy;
+import gtna.routing.lookahead.LookaheadMinVia;
 import gtna.routing.lookahead.LookaheadSequential;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomRingIDSpace;
+import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.lookahead.NeighborsFirstLookaheadList;
 import gtna.transformation.lookahead.NeighborsFirstObfuscatedLookaheadList;
 import gtna.transformation.lookahead.NeighborsGroupedLookaheadList;
@@ -54,6 +56,7 @@ import gtna.transformation.lookahead.RandomLookaheadList;
 import gtna.util.Config;
 import gtna.util.Stats;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -68,27 +71,42 @@ public class LookaheadRouting {
 	public static void main(String[] args) {
 		Stats stats = new Stats();
 
-		boolean generate = true;
-		int times = 1;
-		boolean skipExistingFolders = true;
-
-		Input input = Input.Chord;
-
 		Config.overwrite("METRICS", "R");
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/lookahead/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/lookahead/");
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + skipExistingFolders);
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + true);
 
-		// Config.overwrite("GNUPLOT_CMD_TERMINAL",
-		// "set terminal post eps enhanced color dashed \"Helvetica\" 10");
-		// Config.overwrite("PLOT_EXTENSION", ".eps");
+		Config.overwrite("PLOT_EXTENSION", ".png");
+		Config.overwrite("GNUPLOT_CMD_TERMINAL", "set terminal png");
+
+		Config.overwrite("SINGLES_PLOT_LINE_WIDTH", "2");
+		Config.overwrite("SINGLES_PLOT_POINT_WIDTH", "2");
+		Config.overwrite("SINGLES_PLOT_WHISKER_WIDTH", "2");
+		Config.overwrite("AVERAGE_PLOT_LINE_WIDTH", "2");
+		Config.overwrite("AVERAGE_PLOT_POINT_WIDTH", "2");
+		Config.overwrite("AVERAGE_PLOT_DOT_WIDTH", "2");
+		Config.overwrite("CONF_PLOT_LINE_WIDTH", "2");
+		Config.overwrite("CONF_PLOT_WHISKER_WIDTH", "2");
 
 		Config.overwrite("R_HOP_DISTRIBUTION_CDF_PLOT_KEY", "right bottom");
 		Config.overwrite("R_HOP_DISTRIBUTION_ABSOLUTE_CDF_PLOT_KEY",
 				"right bottom");
 
-		LookaheadRouting.testLookahead(generate, times, input);
+		boolean generate = false;
+		int times = 10;
+		int nodes = 1000;
+
+		// LookaheadRouting.obfuscation(generate, times, Input.Chord, nodes);
+		LookaheadRouting.obfuscation(generate, times, Input.SPI, nodes);
+		// LookaheadRouting.obfuscation(generate, times, Input.ErdosRenyi,
+		// nodes);
+		// LookaheadRouting.lookahead(generate, times, nodes);
+
+		// Config.overwrite("METRICS", "DD");
+		// Network nw = new ErdosRenyi(100, 10, true, null, null);
+		// Series s = Series.generate(nw, 3);
+		// Plot.multiAvg(s, "test/");
 
 		stats.end();
 	}
@@ -97,12 +115,125 @@ public class LookaheadRouting {
 		Chord, WOT, SPI, ErdosRenyi
 	}
 
-	private static void testLookahead(boolean generate, int times, Input input) {
-		int chordNodes = 1000;
-		int chordBits = 40;
+	// private static void test() {
+	// Config.overwrite("MAIN_DATA_FOLDER", "./data/test/");
+	// Config.overwrite("MAIN_PLOT_FOLDER", "./plots/test/");
+	//
+	// Transformation t1 = new RandomRingIDSpaceSimple();
+	// Transformation t2 = new NeighborsFirstObfuscatedLookaheadList(.1E-5,
+	// .1E-6, false);
+	// Transformation t3 = new NeighborsFirstLookaheadList(false);
+	//
+	// Network nw1 = new ErdosRenyi(1000, 20, true,
+	// new LookaheadSequential(50), new Transformation[] { t1, t3 });
+	// Network nw2 = new ErdosRenyi(1000, 20, true,
+	// new LookaheadSequential(50), new Transformation[] { t1, t2 });
+	//
+	// Network[] nw = new Network[] { nw1, nw2 };
+	//
+	// Series[] s = Series.generate(nw, 1);
+	// Plot.multiAvg(s, "multi/");
+	// }
+
+	private static void lookahead(boolean generate, int times, int nodes) {
+		int chordNodes = nodes;
+		int chordBits = 20;
 		boolean chordUniform = false;
 
-		int erNodes = 1000;
+		Transformation nf = new NeighborsFirstLookaheadList(false);
+		Transformation nfr = new NeighborsFirstLookaheadList(true);
+		Transformation ng = new NeighborsGroupedLookaheadList(false);
+		Transformation ngr = new NeighborsGroupedLookaheadList(true);
+		Transformation r = new RandomLookaheadList();
+		Transformation[] ll = new Transformation[] { nf, nfr, r, ng, ngr };
+
+		HashMap<Transformation, String> map = new HashMap<Transformation, String>();
+		map.put(nf, "NF");
+		map.put(nfr, "NFR");
+		map.put(ng, "NG");
+		map.put(ngr, "NGR");
+		map.put(r, "R");
+
+		RoutingAlgorithm g = new Greedy(50);
+		RoutingAlgorithm ls = new LookaheadSequential(50);
+		RoutingAlgorithm lmv = new LookaheadMinVia(50);
+
+		for (Transformation l : ll) {
+			Network nw1 = new Chord(chordNodes, chordBits, chordUniform, g,
+					null);
+			Network nw2 = new Chord(chordNodes, chordBits, chordUniform, ls,
+					new Transformation[] { l });
+			Network nw3 = new Chord(chordNodes, chordBits, chordUniform, lmv,
+					new Transformation[] { l });
+			Network[] nw = new Network[] { nw1, nw2, nw3 };
+			Series[] s = generate ? Series.generate(nw, times) : Series.get(nw);
+			// Plot.multiAvg(s, "LRA-" + map.get(l) + "-multi-avg/");
+			// Plot.multiConf(s, "LRA-" + map.get(l) + "-multi-conf/");
+		}
+
+		Network[] sls = new Network[ll.length + 1];
+		sls[0] = new Chord(chordNodes, chordBits, chordUniform, g, null);
+		sls[0] = new DescriptionWrapper(sls[0], "G");
+		Network[] slmv = new Network[ll.length + 1];
+		slmv[0] = new Chord(chordNodes, chordBits, chordUniform, g, null);
+		slmv[0] = new DescriptionWrapper(sls[0], "G");
+		for (int i = 0; i < ll.length; i++) {
+			sls[i + 1] = new Chord(chordNodes, chordBits, chordUniform, ls,
+					new Transformation[] { ll[i] });
+			sls[i + 1] = new DescriptionWrapper(sls[i + 1], map.get(ll[i]));
+			slmv[i + 1] = new Chord(chordNodes, chordBits, chordUniform, lmv,
+					new Transformation[] { ll[i] });
+			slmv[i + 1] = new DescriptionWrapper(slmv[i + 1], map.get(ll[i]));
+		}
+		Plot.multiAvg(Series.get(sls), "LRA-LS-multi-avg/");
+		Plot.multiConf(Series.get(sls), "LRA-LS-multi-conf/");
+		Plot.multiAvg(Series.get(slmv), "LRA-LMV-multi-avg/");
+		Plot.multiConf(Series.get(slmv), "LRA-LMV-multi-conf/");
+		LookaheadRouting.blafasel(Series.get(sls), "LS");
+		LookaheadRouting.blafasel(Series.get(slmv), "LMV");
+	}
+
+	private static void blafasel(Series[] s1, String S) {
+		for (int i = 1; i <= s1.length; i++) {
+			Series[] s = new Series[i];
+			System.arraycopy(s1, 0, s, 0, i);
+			Plot.multiAvg(s, "LRA-" + S + "-multi-avg-" + i + "/");
+			Plot.multiConf(s, "LRA-" + S + "-multi-conf-" + i + "/");
+			String m = Config.get("MAIN_PLOT_FOLDER");
+			String e = Config.get("PLOT_EXTENSION");
+			try {
+				Runtime.getRuntime().exec(
+						"mv " + m + "LRA-" + S + "-multi-avg-" + i
+								+ "/r-hopDistributionAbsolute-cdf" + e + " "
+								+ m + "LRA-" + S
+								+ "-multi-avg/r-hopDistributionAbsolute-cdf-"
+								+ i + e);
+				Runtime.getRuntime().exec(
+						"mv " + m + "LRA-" + S + "-multi-conf-" + i
+								+ "/r-hopDistributionAbsolute-cdf" + e + " "
+								+ m + "LRA-" + S
+								+ "-multi-conf/r-hopDistributionAbsolute-cdf-"
+								+ i + e);
+				Runtime.getRuntime().exec(
+						"rm -r " + m + "LRA-" + S + "-multi-avg-" + i + "/");
+				Runtime.getRuntime().exec(
+						"rm -r " + m + "LRA-" + S + "-multi-conf-" + i + "/");
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			}
+		}
+	}
+
+	private static void obfuscation(boolean generate, int times, Input input,
+			int nodes) {
+		int chordNodes = nodes;
+		int chordBits = 20;
+		boolean chordUniform = false;
+
+		int[] obfuscationBI = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+				12, 13, 14, 15, 16, 17, 18, 19, 20 };
+
+		int erNodes = nodes;
 		double erDegree = 20;
 		boolean erBD = true;
 
@@ -113,6 +244,11 @@ public class LookaheadRouting {
 		String wotGraph = "./temp/test/wot.txt";
 		String wotName = "WOT";
 		String wotFolder = "wot";
+
+		double[] obfuscationD = new double[] { 0.0, .1E-10, .1E-9, .1E-8,
+				.1E-7, .1E-6, .1E-5, .1E-4, .1E-3, .1E-2, .1E-1 };
+//		double[] obfuscationD = new double[] { 0.0, .1E-10, .1E-9, .1E-8,
+//				.1E-7, .1E-6, .1E-5, .1E-4, .1E-3, .1E-2, .1E-1, .1 };
 
 		Transformation t1 = new RandomRingIDSpace();
 
@@ -132,106 +268,19 @@ public class LookaheadRouting {
 
 		if (input == Input.ErdosRenyi || input == Input.SPI
 				|| input == Input.WOT) {
-			Transformation nfo0 = new NeighborsFirstObfuscatedLookaheadList(
-					0.0, 0.0, false);
-			Transformation nfo1 = new NeighborsFirstObfuscatedLookaheadList(
-					.1E0, .1E1, false);
-			Transformation nfo2 = new NeighborsFirstObfuscatedLookaheadList(
-					.1E1, .1E2, false);
-			Transformation nfo3 = new NeighborsFirstObfuscatedLookaheadList(
-					.1E2, .1E3, false);
-			Transformation nfo4 = new NeighborsFirstObfuscatedLookaheadList(
-					.1E3, .1E4, false);
-			Transformation nfo5 = new NeighborsFirstObfuscatedLookaheadList(
-					.1E4, .1E5, false);
-			Transformation nfo6 = new NeighborsFirstObfuscatedLookaheadList(
-					.1E5, .1E6, false);
-			Transformation nfo7 = new NeighborsFirstObfuscatedLookaheadList(
-					.1E6, .1E7, false);
-			Transformation nfo8 = new NeighborsFirstObfuscatedLookaheadList(
-					.1E7, .1E8, false);
-			Transformation nfo9 = new NeighborsFirstObfuscatedLookaheadList(
-					.1E8, .1E9, false);
-			ll = new Transformation[] { nfo0, nfo1, nfo2, nfo3, nfo4, nfo5,
-					nfo6, nfo7, nfo8, nfo9 };
-			ll = new Transformation[] { nfo0 };
-			map.put(nfo0, "NFO-0");
-			map.put(nfo1, "NFO-1");
-			map.put(nfo2, "NFO-2");
-			map.put(nfo3, "NFO-3");
-			map.put(nfo4, "NFO-4");
-			map.put(nfo5, "NFO-5");
-			map.put(nfo6, "NFO-6");
-			map.put(nfo7, "NFO-7");
-			map.put(nfo8, "NFO-8");
-			map.put(nfo9, "NFO-9");
+			ll = new Transformation[obfuscationD.length];
+			for (int i = 0; i < obfuscationD.length; i++) {
+				ll[i] = new NeighborsFirstObfuscatedLookaheadList(0.0,
+						obfuscationD[i], false);
+				map.put(ll[i], "NFO-" + obfuscationD[i]);
+			}
 		} else if (input == Input.Chord) {
-			Transformation nfo0 = new NeighborsFirstObfuscatedLookaheadList(0,
-					0, false);
-			Transformation nfo1 = new NeighborsFirstObfuscatedLookaheadList(0,
-					1, false);
-			Transformation nfo2 = new NeighborsFirstObfuscatedLookaheadList(1,
-					2, false);
-			Transformation nfo3 = new NeighborsFirstObfuscatedLookaheadList(2,
-					3, false);
-			Transformation nfo4 = new NeighborsFirstObfuscatedLookaheadList(3,
-					4, false);
-			Transformation nfo5 = new NeighborsFirstObfuscatedLookaheadList(4,
-					5, false);
-			Transformation nfo6 = new NeighborsFirstObfuscatedLookaheadList(5,
-					6, false);
-			Transformation nfo7 = new NeighborsFirstObfuscatedLookaheadList(6,
-					7, false);
-			Transformation nfo8 = new NeighborsFirstObfuscatedLookaheadList(7,
-					8, false);
-			Transformation nfo9 = new NeighborsFirstObfuscatedLookaheadList(8,
-					9, false);
-			Transformation nfo10 = new NeighborsFirstObfuscatedLookaheadList(9,
-					10, false);
-			Transformation nfo11 = new NeighborsFirstObfuscatedLookaheadList(
-					10, 11, false);
-			Transformation nfo12 = new NeighborsFirstObfuscatedLookaheadList(
-					11, 12, false);
-			Transformation nfo13 = new NeighborsFirstObfuscatedLookaheadList(
-					12, 13, false);
-			Transformation nfo14 = new NeighborsFirstObfuscatedLookaheadList(
-					13, 14, false);
-			Transformation nfo15 = new NeighborsFirstObfuscatedLookaheadList(
-					14, 15, false);
-			Transformation nfo16 = new NeighborsFirstObfuscatedLookaheadList(
-					15, 16, false);
-			Transformation nfo17 = new NeighborsFirstObfuscatedLookaheadList(
-					16, 17, false);
-			Transformation nfo18 = new NeighborsFirstObfuscatedLookaheadList(
-					17, 18, false);
-			Transformation nfo19 = new NeighborsFirstObfuscatedLookaheadList(
-					18, 19, false);
-			Transformation nfo20 = new NeighborsFirstObfuscatedLookaheadList(
-					19, 20, false);
-			ll = new Transformation[] { nfo0, nfo1, nfo2, nfo3, nfo4, nfo5,
-					nfo6, nfo7, nfo8, nfo9, nfo10, nfo11, nfo12, nfo13, nfo14,
-					nfo15, nfo16, nfo16, nfo17, nfo18, nfo19, nfo20 };
-			map.put(nfo0, "NFO-0");
-			map.put(nfo1, "NFO-1");
-			map.put(nfo2, "NFO-2");
-			map.put(nfo3, "NFO-3");
-			map.put(nfo4, "NFO-4");
-			map.put(nfo5, "NFO-5");
-			map.put(nfo6, "NFO-6");
-			map.put(nfo7, "NFO-7");
-			map.put(nfo8, "NFO-8");
-			map.put(nfo9, "NFO-9");
-			map.put(nfo10, "NFO-10");
-			map.put(nfo11, "NFO-11");
-			map.put(nfo12, "NFO-12");
-			map.put(nfo13, "NFO-13");
-			map.put(nfo14, "NFO-14");
-			map.put(nfo15, "NFO-15");
-			map.put(nfo16, "NFO-16");
-			map.put(nfo17, "NFO-17");
-			map.put(nfo18, "NFO-18");
-			map.put(nfo19, "NFO-19");
-			map.put(nfo20, "NFO-20");
+			ll = new Transformation[obfuscationBI.length];
+			for (int i = 0; i < obfuscationBI.length; i++) {
+				ll[i] = new NeighborsFirstObfuscatedLookaheadList(0,
+						obfuscationBI[i], false);
+				map.put(ll[i], "NFO-" + obfuscationBI[i]);
+			}
 		}
 
 		Transformation[][] LL = new Transformation[ll.length][];
@@ -280,13 +329,53 @@ public class LookaheadRouting {
 				index = 1;
 			}
 			nw[i + 1] = new DescriptionWrapper(nw[i + 1], map.get(LL[i][index])
-					+ " - Lookahead");
+					+ " - " + lookahead.nameShort());
 		}
 
-		Series[] s = generate ? Series.generate(nw, times) : Series.get(nw);
+		Series[] s1 = generate ? Series.generate(nw, times) : Series.get(nw);
+		String folderAvgStd = "obfuscation-" + input + "-" + nw[0].nodes()
+				+ "-multi-avg/";
+		String folderConfStd = "obfuscation-" + input + "-" + nw[0].nodes()
+				+ "-multi-conf/";
+		Plot.multiAvg(s1, folderAvgStd);
+		Plot.multiConf(s1, folderConfStd);
 
-		Plot.multiAvg(s, "avg-" + input + "/");
-		Plot.multiConf(s, "conf-" + input + "/");
+		for (int i = 1; i <= s1.length; i++) {
+			Series[] s2 = new Series[i];
+			System.arraycopy(s1, 0, s2, 0, i);
+			String folderAvg = "obfuscation-" + input + "-" + nw[0].nodes()
+					+ "-multi-avg-" + i + "/";
+			String folderConf = "obfuscation-" + input + "-" + nw[0].nodes()
+					+ "-multi-conf-" + i + "/";
+			Plot.multiAvg(s2, folderAvg);
+			Plot.multiConf(s2, folderConf);
+			String e = Config.get("PLOT_EXTENSION");
+			String fromAvg = Config.get("MAIN_PLOT_FOLDER") + folderAvg
+					+ "r-hopDistributionAbsolute-cdf" + e;
+			String toAvg = Config.get("MAIN_PLOT_FOLDER") + folderAvgStd
+					+ "r-hopDistributionAbsolute-cdf-" + i + e;
+			String fromConf = Config.get("MAIN_PLOT_FOLDER") + folderConf
+					+ "r-hopDistributionAbsolute-cdf" + e;
+			String toConf = Config.get("MAIN_PLOT_FOLDER") + folderConfStd
+					+ "r-hopDistributionAbsolute-cdf-" + i + e;
+			try {
+				Runtime.getRuntime().exec("mv " + fromAvg + " " + toAvg);
+				Runtime.getRuntime().exec("mv " + fromConf + " " + toConf);
+				Runtime.getRuntime().exec(
+						"rm -r " + Config.get("MAIN_PLOT_FOLDER") + folderAvg);
+				Runtime.getRuntime().exec(
+						"rm -r " + Config.get("MAIN_PLOT_FOLDER") + folderConf);
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			}
+		}
+
+		// Series[] s2 = new Series[s1.length];
+		// for (int i = 1; i < s1.length; i++) {
+		// s2[i - 1] = s1[i];
+		// }
+		// Plot.singlesAvg(s2, "singles-avg-" + input + "/");
+		// Plot.singlesConf(s2, "singles-conf-" + input + "/");
 
 	}
 }
