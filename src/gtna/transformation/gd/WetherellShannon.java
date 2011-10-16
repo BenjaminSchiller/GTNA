@@ -35,8 +35,13 @@
  */
 package gtna.transformation.gd;
 
+import java.util.Random;
+
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.id.plane.PlaneIdentifier;
+import gtna.id.plane.PlaneIdentifierSpaceSimple;
+import gtna.id.plane.PlanePartitionSimple;
 import gtna.plot.Gephi;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
@@ -53,6 +58,8 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 	private int[] heightModifiers, nodeModifiers;
 	private int[] nodePositionsX, nodePositionsY;
 	private int[] nextPos;
+	
+	private double modulusX, modulusY;
 
 	private int modifierSum;
 
@@ -64,8 +71,10 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 		super(key, configKeys, configValues);
 	}	
 	
-	public WetherellShannon(Gephi plotter) {
-		this("GDA_WETHERELL_SHANNON", new String[]{}, new String[]{});
+	public WetherellShannon(double modulusX, double modulusY, Gephi plotter) {
+		this("GDA_WETHERELL_SHANNON", new String[] {}, new String[] {});
+		this.modulusX = modulusX;
+		this.modulusY = modulusY;
 		this.gephi = plotter;
 	}
 
@@ -91,6 +100,8 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 		for ( int i = 0; i < maxHeight; i++ ) {
 			heightModifiers[i] = 0;
 			nextPos[i] = 1;
+			nodePositionsX[i] = 0;
+			nodePositionsY[i] = 0;
 		}
 		firstWalk ( tree, root, 0 );
 		
@@ -105,7 +116,13 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 			System.out.print("Node " + i.getIndex() + " resides at " + nodePositionsX[i.getIndex()] + "|" + nodePositionsY[i.getIndex()] + " and has edges to ");
 			for ( int j: i.getOutgoingEdges() ) System.out.print(j + " ");
 			System.out.println();
-		}			
+		}
+		
+		setCoordinates(g);
+		gephi.Plot(g, "wsTest.svg");
+
+		setCoordinates(tree);
+		gephi.Plot(tree, "wsTestTree.svg");		
 		
 		return g;
 	}
@@ -161,6 +178,36 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 			secondWalk(g, g.getNode(singleSon), height + 1 );
 		}
 		
-		modifierSum = modifierSum - heightModifiers[n.getIndex()];
+		modifierSum = modifierSum - nodeModifiers[n.getIndex()];
+	}
+	
+	private void setCoordinates( Graph graph ) {
+			/*
+			 * As the current coordinates could exceed the given
+			 * idSpace (or on the other hand use only a tiny pane),
+			 * we need to calculate a scale factor for the coordinates
+			 */
+		double scaleX = 0, scaleY = 0;
+		for ( int i= 0; i < nodePositionsX.length; i++ ) {
+			scaleX = Math.max(scaleX, nodePositionsX[i]);
+			scaleY = Math.max(scaleY, nodePositionsY[i]);
+		}
+			/*
+			 * The current scale factor would also use values on the borders
+			 * of the idSpace (which will be cut to 0 by the modulus). So: scale
+			 * it a tiny bit smaller
+			 */
+		scaleX = scaleX * 1.1;
+		scaleY = scaleY * 1.1;
+		
+		PlaneIdentifier pos;
+		PlanePartitionSimple[] partitions = new PlanePartitionSimple[graph.getNodes().length];
+		PlaneIdentifierSpaceSimple idSpace = new PlaneIdentifierSpaceSimple(partitions, this.modulusX, this.modulusY,
+				false);
+		for (int i = 0; i < nodePositionsX.length; i++) {
+			pos = new PlaneIdentifier(( nodePositionsX[i] / scaleX ) * idSpace.getModulusX(), ( nodePositionsY[i] / scaleY ) * idSpace.getModulusY(), idSpace);
+			partitions[i] = new PlanePartitionSimple(pos);
+		}
+		graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
 	}
 }

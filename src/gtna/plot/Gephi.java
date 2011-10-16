@@ -81,6 +81,7 @@ public class Gephi {
 			// Next three lines: do *never* draw curved lines!
         PreviewModel model = Lookup.getDefault().lookup(PreviewController.class).getModel();
         model.getUndirectedEdgeSupervisor().setCurvedFlag(false);
+        model.getUniEdgeSupervisor().setCurvedFlag(false);
         model.getBiEdgeSupervisor().setCurvedFlag(false);
 		
 		gephiNodes = new org.gephi.graph.api.Node[g.getNodes().length];
@@ -101,6 +102,9 @@ public class Gephi {
 		
 		// First run: add all nodes
 		for ( Node n: g.getNodes() ) {
+			if ( n == null ) {
+				continue;
+			}
 			ForceVector position = getPosition( p[n.getIndex()]);
 //			System.out.println("Place " + n.getIndex() + " at " + position);
 			org.gephi.graph.api.Node temp = addNode ( graphModel, gephiGraph, "N" + n.getIndex(), "Node " + n.getIndex(), position);
@@ -109,7 +113,10 @@ public class Gephi {
 		
 			// Second run: add the edges
 		for ( Node n: g.getNodes() ) {
-//			System.out.println("Node " + n.getIndex() + " has " + n.getOutgoingEdges().length + " outgoing edges");
+			if ( n == null ) {
+				continue;
+			}		
+			
 			for (int dest: n.getOutgoingEdges()) {
 				addEdge(graphModel, gephiGraph, gephiNodes[n.getIndex()], gephiNodes[dest]);
 			}
