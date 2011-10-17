@@ -44,6 +44,7 @@ import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
 import gtna.plot.Gephi;
+import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 import gtna.util.MDVector;
@@ -60,7 +61,7 @@ public abstract class ForceDrivenAbstract extends TransformationImpl {
 	protected double[] moduli;
 	protected Boolean wrapAround;	
 	protected MDVector bias;
-	protected Gephi gephi;	
+	protected GraphPlotter graphPlotter;	
 
 	/**
 	 * @param key

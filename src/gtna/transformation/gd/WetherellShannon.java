@@ -43,6 +43,7 @@ import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
 import gtna.plot.Gephi;
+import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 
@@ -53,7 +54,7 @@ import gtna.transformation.TransformationImpl;
 public class WetherellShannon extends TransformationImpl implements Transformation {
 	private final int firstVisit = 1;
 	
-	private Gephi gephi;
+	private GraphPlotter graphPlotter;
 
 	private int[] heightModifiers, nodeModifiers;
 	private int[] nodePositionsX, nodePositionsY;
@@ -71,11 +72,11 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 		super(key, configKeys, configValues);
 	}	
 	
-	public WetherellShannon(double modulusX, double modulusY, Gephi plotter) {
+	public WetherellShannon(double modulusX, double modulusY, GraphPlotter plotter) {
 		this("GDA_WETHERELL_SHANNON", new String[] {}, new String[] {});
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
-		this.gephi = plotter;
+		this.graphPlotter = plotter;
 	}
 
 	@Override
@@ -119,10 +120,10 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 		}
 		
 		setCoordinates(g);
-		gephi.Plot(g, "wsTest.svg");
-
+		graphPlotter.plotFinalGraph(g);
+		
 		setCoordinates(tree);
-		gephi.Plot(tree, "wsTestTree.svg");		
+		graphPlotter.plot( tree, graphPlotter.getBasename() + "-treeOnly");
 		
 		return g;
 	}
