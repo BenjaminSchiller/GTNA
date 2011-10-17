@@ -44,10 +44,7 @@ import gtna.graph.Graph;
 public class GraphPlotter {
 	private Gephi gephi;
 	private String basename, extension;
-
-	public String getBasename() {
-		return this.basename;
-	}
+	private int iterationModulus = -1;
 
 	public GraphPlotter( String basename, String extension) {
 		this.gephi = new Gephi();
@@ -55,16 +52,25 @@ public class GraphPlotter {
 		this.extension = extension;
 	}
 	
-	public void plot(Graph g) {
-		
+	public void setIterationModulus(int iterationModulus) {
+		this.iterationModulus = iterationModulus;
 	}
-	
+
+	public String getBasename() {
+		return this.basename;
+	}
+
 	public void plot(Graph g, String filename) {
-		gephi.Plot(g, filename + "." + extension);
+		if ( !disabled ) {
+			gephi.Plot(g, filename + "." + extension);
+		}
 	}
 	
 	public void plotIteration(Graph g, int iteration) {
-		plot(g, basename + "-" + iteration);
+		if ( iterationModulus < 0 ) {
+			throw new RuntimeException("iterationModulus for GraphPlotter not set yet or smaller than zero");
+		}
+		if ( iteration % iterationModulus == 0) plot(g, basename + "-" + iteration);
 	}
 	
 	public void plotFinalGraph(Graph g) {

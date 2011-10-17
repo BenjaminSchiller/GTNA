@@ -139,9 +139,7 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 
 		for ( int i = 0; i < this.iterations; i++ ) {
 			System.out.println("\n\n   >>> in iteration " + i + " <<<");
-			if ( graphPlotter != null && i % 50 == 0 ) {
-				graphPlotter.plotIteration(g, i);
-			}
+			graphPlotter.plotIteration(g, i);
 			g = this.doIteration ( g );
 		}
 		graphPlotter.plotFinalGraph(g);
