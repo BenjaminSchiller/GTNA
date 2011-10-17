@@ -47,6 +47,7 @@ import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
 import gtna.plot.Gephi;
+import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomMDIDSpaceSimple;
 import gtna.util.MDVector;
@@ -97,7 +98,7 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 	 * Gravitational constant for the force that is excerted towards the
 	 * barycenter
 	 */
-	private final double gamma = 0.0625;
+	private final double gamma = 10.0625;
 
 	private Transformation initialPositions;
 	private Random rand;
@@ -113,18 +114,18 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 	/*
 	 * Constructor for the case that we already have set the idspace
 	 */
-	public Frick(Gephi plotter) {
+	public Frick(GraphPlotter plotter) {
 		this("GDA_FRICK", new String[] {}, new String[] {});
-		this.gephi = plotter;
+		this.graphPlotter = plotter;
 		this.initialPositions = null;
 	}
 
-	public Frick(int realities, double[] moduli, Boolean wrapAround, Gephi plotter) {
+	public Frick(int realities, double[] moduli, Boolean wrapAround, GraphPlotter plotter) {
 		this("GDA_FRICK", new String[] {}, new String[] {});
 		this.realities = realities;
 		this.moduli = moduli;
 		this.wrapAround = wrapAround;
-		this.gephi = plotter;
+		this.graphPlotter = plotter;
 		initialPositions = new RandomMDIDSpaceSimple(this.realities, this.moduli, this.wrapAround);
 	}
 
@@ -148,7 +149,7 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 		this.area = 1;
 		for (double singleModulus : moduli)
 			this.area = this.area * singleModulus;
-		eDes = Math.sqrt(this.area / this.partitions.length) / 2;
+		eDes = Math.sqrt(this.area / this.partitions.length);
 
 		Node[] nodeList = g.getNodes();
 		maxIterations = 8 * nodeList.length;
@@ -161,8 +162,8 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 		int currIteration = 0;
 		while (tGlobal > tMin && currIteration < maxIterations) {
 			System.out.println("\n\n   >>> in iteration " + currIteration + " <<<");
-			if (gephi != null && currIteration % 50 == 0) {
-				gephi.Plot(g, "frick" + currIteration + ".svg");
+			if (graphPlotter != null && currIteration % 50 == 0) {
+				graphPlotter.plotIteration(g, currIteration);
 			}
 
 			if (currIteration % nodeList.length == 0) {
@@ -180,7 +181,7 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 			currIteration++;
 		}
 		System.out.println("Stopped it - did " + currIteration + " iterations (of maximal " + maxIterations + "), and temperature is " + tGlobal + " (minimal: " + tMin + ")");
-		gephi.Plot(g, "frick-end.svg");
+		graphPlotter.plotFinalGraph(g);
 
 		return g;
 	}
@@ -216,8 +217,10 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 			delta = getCoordinate(v).subtract(getCoordinate(u));
 			deltaNorm = delta.getNorm();
 			if (deltaNorm != 0) {
-				System.out.print("Old p: " + p);
+				System.out.print("Old p: " + p + ", ");
+				System.out.print("Delta: " + delta + ", multiply with " + eDes + "^2, divide by " + deltaNorm + "^2 = ");
 				delta.multiplyWith( eDes * eDes ).divideBy(deltaNorm * deltaNorm);
+				System.out.print(delta);
 				p.add(delta);
 				System.out.println(" -- new p:" + p);
 			}
@@ -229,10 +232,15 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 		 * v.getIncomingEdges() and v.getOutgoingEdges() should be identical
 		 */
 		for (int i : v.getOutgoingEdges()) {
+			System.out.println("Doing attractive force between " + getCoordinate(v) + " and " + getCoordinate(i));
 			delta = getCoordinate(v).subtract(getCoordinate(i));
 			deltaNorm = delta.getNorm();
+			System.out.print("Delta: " + delta + ", multiply with " + deltaNorm + "^2, divide by " + eDes + "^2 * " + PHI + " = ");
 			delta.multiplyWith(deltaNorm * deltaNorm).divideBy(eDes * eDes * PHI);
+			System.out.println(delta);
+			System.out.print("Old p: " + p);
 			p.subtract(delta);
+			System.out.println(" -- new p: " + p);
 		}
 		System.out.println("After all attractive forces: " + p);
 		

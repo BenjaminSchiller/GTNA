@@ -46,6 +46,7 @@ import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
 import gtna.plot.Gephi;
+import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomMDIDSpaceSimple;
 import gtna.util.Config;
@@ -99,18 +100,18 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 		/*
 		 * Constructor for the case that we already have set the idspace
 		 */
-	public FruchtermanReingold(Gephi plotter) {
+	public FruchtermanReingold(GraphPlotter plotter) {
 		this("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
-		this.gephi = plotter;
+		this.graphPlotter = plotter;
 		this.initialPositions = null;
 	}
 	
-	public FruchtermanReingold(int realities, double[] moduli, Boolean wrapAround, Gephi plotter) {
+	public FruchtermanReingold(int realities, double[] moduli, Boolean wrapAround, GraphPlotter plotter) {
 		this("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
 		this.realities = realities;
 		this.moduli = moduli;
 		this.wrapAround = wrapAround;
-		this.gephi = plotter;
+		this.graphPlotter = plotter;
 		initialPositions = new RandomMDIDSpaceSimple( this.realities, this.moduli, this.wrapAround);
 	}
 	
@@ -138,12 +139,12 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 
 		for ( int i = 0; i < this.iterations; i++ ) {
 			System.out.println("\n\n   >>> in iteration " + i + " <<<");
-			if ( gephi != null && i % 50 == 0 ) {
-				gephi.Plot ( g, "test" + i + ".svg" );
+			if ( graphPlotter != null && i % 50 == 0 ) {
+				graphPlotter.plotIteration(g, i);
 			}
 			g = this.doIteration ( g );
 		}
-		gephi.Plot ( g, "test" + this.iterations + ".svg" );
+		graphPlotter.plotFinalGraph(g);
 		
 		return g;
 	}
