@@ -61,9 +61,7 @@ public class GraphPlotter {
 	}
 
 	public void plot(Graph g, String filename) {
-		if ( !disabled ) {
-			gephi.Plot(g, filename + "." + extension);
-		}
+		gephi.Plot(g, filename + "." + extension);
 	}
 	
 	public void plotIteration(Graph g, int iteration) {
