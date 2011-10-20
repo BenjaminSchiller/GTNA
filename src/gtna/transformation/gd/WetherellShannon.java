@@ -35,14 +35,12 @@
  */
 package gtna.transformation.gd;
 
-import java.util.Random;
-
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.graph.spanningTree.SpanningTree;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
-import gtna.plot.Gephi;
 import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
@@ -52,8 +50,6 @@ import gtna.transformation.TransformationImpl;
  *
  */
 public class WetherellShannon extends TransformationImpl implements Transformation {
-	private final int firstVisit = 1;
-	
 	private GraphPlotter graphPlotter;
 
 	private int[] heightModifiers, nodeModifiers;
@@ -63,6 +59,7 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 	private double modulusX, modulusY;
 
 	private int modifierSum;
+	private SpanningTree tree;
 
 	public WetherellShannon() {
 		this("GDA_WETHERELL_SHANNON", new String[]{}, new String[]{});
@@ -81,16 +78,13 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 
 	@Override
 	public boolean applicable(Graph g) {
-		return true;
+		return g.hasProperty("SPANNINGTREE");
 	}
 	
 	@Override
 	public Graph transform(Graph g) {
-			/*
-			 * Is there a better way to retrieve a good root node?
-			 */
-		Node root = g.getNode(0);
-		Graph tree = g.getSpanningTree(root);
+		tree = (SpanningTree) g.getProperty("SPANNINGTREE");
+		int source = tree.getSrc();
 		int maxHeight = g.getNodes().length; 
 		
 		heightModifiers = new int[maxHeight];
@@ -104,34 +98,31 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 			nodePositionsX[i] = 0;
 			nodePositionsY[i] = 0;
 		}
-		firstWalk ( tree, root, 0 );
+		firstWalk ( tree, source, 0 );
 		
 		modifierSum = 0;
-		secondWalk ( tree, root, 0 );
+		secondWalk ( tree, source, 0 );
 		
-		for ( Node i: tree.getNodes() ) {
+		for ( Node i: g.getNodes() ) {
 			if ( i == null ) {
 				System.out.println("Missing node");
 				continue;
 			}
 			System.out.print("Node " + i.getIndex() + " resides at " + nodePositionsX[i.getIndex()] + "|" + nodePositionsY[i.getIndex()] + " and has edges to ");
-			for ( int j: i.getOutgoingEdges() ) System.out.print(j + " ");
+			for ( int j: tree.getChildren(i.getIndex()) ) System.out.print(j + " ");
 			System.out.println();
 		}
 		
 		setCoordinates(g);
 		graphPlotter.plotFinalGraph(g);
 		
-		setCoordinates(tree);
-		graphPlotter.plot( tree, graphPlotter.getBasename() + "-treeOnly");
-		
 		return g;
 	}
 	
-	private void firstWalk ( Graph g, Node n, int height ) {
-		int[] sons = n.getOutgoingEdges();
+	private void firstWalk ( SpanningTree tree, int n, int height ) {
+		int[] sons = tree.getChildren(n);
 		for ( int singleSon: sons ) {
-			firstWalk(g, g.getNode(singleSon), height + 1 );
+			firstWalk(tree, singleSon, height + 1 );
 		}
 		
 			/*
@@ -158,28 +149,28 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 		
 		heightModifiers[height] = Math.max ( heightModifiers[height], nextPos[height] - place );
 		if ( sons.length == 0 ) {
-			nodePositionsX[n.getIndex()] = place;
+			nodePositionsX[n] = place;
 		} else {
-			nodePositionsX[n.getIndex()] = place + heightModifiers[height];
+			nodePositionsX[n] = place + heightModifiers[height];
 		}
 			/*
 			 * This might be a problematic point, as +2 results from binary trees
 			 */
-		nextPos[height] = nodePositionsX[n.getIndex()] + 2;
-		nodeModifiers[n.getIndex()] = heightModifiers[height];
+		nextPos[height] = nodePositionsX[n] + 2;
+		nodeModifiers[n] = heightModifiers[height];
 	}
 	
-	private void secondWalk ( Graph g, Node n, int height ) {
-		nodePositionsX[n.getIndex()] = nodePositionsX[n.getIndex()] + modifierSum;
-		modifierSum = modifierSum + nodeModifiers[n.getIndex()];
-		nodePositionsY[n.getIndex()] = 2 * height + 1;
+	private void secondWalk ( SpanningTree tree, int n, int height ) {
+		nodePositionsX[n] = nodePositionsX[n] + modifierSum;
+		modifierSum = modifierSum + nodeModifiers[n];
+		nodePositionsY[n] = 2 * height + 1;
 		
-		int[] sons = n.getOutgoingEdges();
+		int[] sons = tree.getChildren(n);
 		for ( int singleSon: sons ) {
-			secondWalk(g, g.getNode(singleSon), height + 1 );
+			secondWalk(tree, singleSon, height + 1 );
 		}
 		
-		modifierSum = modifierSum - nodeModifiers[n.getIndex()];
+		modifierSum = modifierSum - nodeModifiers[n];
 	}
 	
 	private void setCoordinates( Graph graph ) {
