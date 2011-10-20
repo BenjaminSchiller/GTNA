@@ -102,7 +102,7 @@ public class BFS extends TransformationImpl implements Transformation {
 		
     	SpanningTree result = new SpanningTree(graph, parentChildList);
     	
-		graph.addProperty(graph.getNextKey("SPANNINGTREE"), result);
+		graph.addProperty("SPANNINGTREE", result);
 		return graph;
 	}
 	
