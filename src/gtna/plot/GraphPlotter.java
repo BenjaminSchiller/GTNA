@@ -45,13 +45,18 @@ public class GraphPlotter {
 	private Gephi gephi;
 	private String basename, extension;
 	private int iterationModulus = -1;
-
+	private boolean disabled = false;
+	
 	public GraphPlotter( String basename, String extension) {
 		this.gephi = new Gephi();
 		this.basename = basename;
 		this.extension = extension;
 	}
 	
+	public GraphPlotter ( boolean disabled ) {
+		this.disabled = disabled;
+	}
+		
 	public void setIterationModulus(int iterationModulus) {
 		this.iterationModulus = iterationModulus;
 	}
@@ -61,10 +66,11 @@ public class GraphPlotter {
 	}
 
 	public void plot(Graph g, String filename) {
-		gephi.Plot(g, filename + "." + extension);
+		if ( !disabled ) gephi.Plot(g, filename + "." + extension);
 	}
 	
 	public void plotIteration(Graph g, int iteration) {
+		if ( disabled ) return;
 		if ( iterationModulus < 0 ) {
 			throw new RuntimeException("iterationModulus for GraphPlotter not set yet or smaller than zero");
 		}
