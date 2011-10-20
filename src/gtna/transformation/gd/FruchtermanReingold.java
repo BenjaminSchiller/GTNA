@@ -132,8 +132,8 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 		double[] moduli = this.idSpace.getModuli();
 		this.area = 1;
 		for ( double singleModulus: moduli ) this.area = this.area * singleModulus;
-		k = Math.sqrt( this.area / this.partitions.length );
-		System.out.println("Best distance: " + k);
+		k = Math.pow( this.area / this.partitions.length, 1.0 / moduli.length );
+//		System.out.println("Best distance: " + k);
 		
 		this.t = idSpace.getMaxModulus();		
 
@@ -158,11 +158,14 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 		
 		// First step: repulsive forces
 		for ( Node v: g.getNodes() ) {
+			if ( v == null ) continue;
+			
 				// Reset displacement
 			disp[v.getIndex()] = new MDVector(idSpace.getDimensions(), 0d);
 			
 				// Calculate repulsive forces to *all* other nodes
 			for ( Node u: g.getNodes() ) {
+				if ( u == null ) continue;
 				if ( u.getIndex() == v.getIndex() ) continue;
 				delta = getCoordinate(v);
 				delta.subtract ( getCoordinate(u) );
@@ -177,11 +180,13 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 
 		// Second step: attractive forces
 		for ( Edge e: g.generateEdges() ) {
+			if ( e == null ) continue;
+			
 			delta = getCoordinate( e.getSrc() );
 			delta.subtract ( getCoordinate( e.getDst()) );
 			currDisp = new MDVector(delta.getDimension(), delta.getCoordinates());
 			double currDispNorm = currDisp.getNorm(); 
-			if ( Double.isNaN(currDispNorm) ) throw new RuntimeException("You broke it");
+			if ( Double.isNaN(currDispNorm) || currDispNorm == 0 ) continue;
 			currDisp.divideBy(currDispNorm);
 			currDisp.multiplyWith(fa ( currDispNorm ) );
 
@@ -197,7 +202,6 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 			double currDispNorm = currDisp.getNorm(); 
 			currDisp.divideBy(currDispNorm);
 			currDisp.multiplyWith( Math.min(currDispNorm, t) );
-					
 //			System.out.println("Move " + vVector + " by " + currDisp + " (calculated disp: " + disp[v.getIndex()] + ", t: " + t + ")" );
 //			System.out.println("Old pos: " + vVector );
 
