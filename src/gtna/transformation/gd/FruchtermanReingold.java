@@ -63,9 +63,9 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 	private int iterations;
 	
 		/*
-		 * Maximal area for the drawing, as defined per the moduli
+		 * Maximal space for the drawing, as defined per the moduli
 		 */
-	private double area;
+	private double space;
 	
 		/*
 		 * Optimal distance, named k by FR
@@ -130,9 +130,9 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 		initIDSpace(g);
 
 		double[] moduli = this.idSpace.getModuli();
-		this.area = 1;
-		for ( double singleModulus: moduli ) this.area = this.area * singleModulus;
-		k = Math.pow( this.area / this.partitions.length, 1.0 / moduli.length );
+		this.space = 1;
+		for ( double singleModulus: moduli ) this.space = this.space * singleModulus;
+		k = Math.pow( this.space / this.partitions.length, 1.0 / moduli.length );
 //		System.out.println("Best distance: " + k);
 		
 		this.t = idSpace.getMaxModulus();		
