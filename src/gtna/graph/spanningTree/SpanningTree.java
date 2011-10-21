@@ -99,7 +99,7 @@ public class SpanningTree implements GraphProperty {
 		int index = 0;
 		Edge[] edges = new Edge[this.parent.length - 1];
 		for (int i = 0; i < this.parent.length; i++) {
-			if (i != -1) {
+			if (this.parent[i] != -1) {
 				edges[index++] = new Edge(this.parent[i], i);
 			}
 		}
@@ -110,7 +110,7 @@ public class SpanningTree implements GraphProperty {
 		int index = 0;
 		Edge[] edges = new Edge[this.parent.length * 2 - 2];
 		for (int i = 0; i < this.parent.length; i++) {
-			if (i != -1) {
+			if (this.parent[i] != -1) {
 				edges[index++] = new Edge(this.parent[i], i);
 				edges[index++] = new Edge(i, this.parent[i]);
 			}
