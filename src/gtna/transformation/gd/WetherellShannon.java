@@ -115,6 +115,7 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 		
 		setCoordinates(g);
 		graphPlotter.plotFinalGraph(g);
+		graphPlotter.plotSpanningTree(g);
 		
 		return g;
 	}

@@ -40,6 +40,7 @@ import java.io.IOException;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.graph.spanningTree.SpanningTree;
 import gtna.id.IdentifierSpace;
 import gtna.id.Partition;
 import gtna.id.md.MDIdentifier;
@@ -66,6 +67,7 @@ public class Gephi {
 	private GraphModel graphModel;
 	private org.gephi.graph.api.Graph gephiGraph;
 	private org.gephi.graph.api.Node[] gephiNodes;
+	private Boolean useSpanningTreeOnNextPlot = false;
 
 	private float ringRadius = 100;
 
@@ -96,6 +98,10 @@ public class Gephi {
 			return;
 		}
 	}
+	
+	public void useSpanningTreeOnNextPlot() {
+		this.useSpanningTreeOnNextPlot = true;
+	}
 
 	private void plotGraph(Graph g) {
 		IdentifierSpace idSpace = (IdentifierSpace) g.getProperty("ID_SPACE_0");
@@ -114,6 +120,15 @@ public class Gephi {
 		}
 
 		// Second run: add the edges
+		if ( useSpanningTreeOnNextPlot ) {
+			useSpanningTreeOnNextPlot = false;
+			addSpanningTreeEdges(g);
+		} else {
+			addAllEdges(g);
+		}
+	}
+	
+	private void addAllEdges( Graph g ) {
 		for (Node n : g.getNodes()) {
 			if (n == null) {
 				continue;
@@ -125,6 +140,18 @@ public class Gephi {
 			for (int dest : n.getIncomingEdges()) {
 				addEdge(graphModel, gephiGraph, gephiNodes[dest], gephiNodes[n.getIndex()]);
 			}
+		}		
+	}
+	
+	private void addSpanningTreeEdges( Graph g) {
+		if ( !g.hasProperty("SPANNINGTREE")) {
+			throw new RuntimeException("Should plot a spanning tree, but given graph misses property");
+		}
+		SpanningTree tree = (SpanningTree) g.getProperty("SPANNINGTREE");
+		gtna.graph.Edge[] edges = tree.generateEdgesUnidirectional();
+		for ( gtna.graph.Edge e: edges ) {
+			if ( e.getSrc() == -1 ) continue;
+			addEdge(graphModel, gephiGraph, gephiNodes[e.getSrc()], gephiNodes[e.getDst()]);
 		}
 	}
 

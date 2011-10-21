@@ -80,4 +80,9 @@ public class GraphPlotter {
 	public void plotFinalGraph(Graph g) {
 		plot(g, basename + "-final");
 	}
+	
+	public void plotSpanningTree(Graph g) {
+		gephi.useSpanningTreeOnNextPlot();
+		plot(g, basename + "-spanningTree");
+	}
 }
