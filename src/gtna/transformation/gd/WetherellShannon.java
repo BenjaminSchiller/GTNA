@@ -38,9 +38,6 @@ package gtna.transformation.gd;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.spanningTree.SpanningTree;
-import gtna.id.plane.PlaneIdentifier;
-import gtna.id.plane.PlaneIdentifierSpaceSimple;
-import gtna.id.plane.PlanePartitionSimple;
 import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
@@ -49,15 +46,10 @@ import gtna.transformation.TransformationImpl;
  * @author Nico
  *
  */
-public class WetherellShannon extends TransformationImpl implements Transformation {
-	private GraphPlotter graphPlotter;
-
+public class WetherellShannon extends HierarchicalAbstract implements Transformation {
 	private int[] heightModifiers, nodeModifiers;
-	private int[] nodePositionsX, nodePositionsY;
 	private int[] nextPos;
 	
-	private double modulusX, modulusY;
-
 	private int modifierSum;
 	private SpanningTree tree;
 
@@ -76,11 +68,6 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 		this.graphPlotter = plotter;
 	}
 
-	@Override
-	public boolean applicable(Graph g) {
-		return g.hasProperty("SPANNINGTREE");
-	}
-	
 	@Override
 	public Graph transform(Graph g) {
 		tree = (SpanningTree) g.getProperty("SPANNINGTREE");
@@ -172,35 +159,5 @@ public class WetherellShannon extends TransformationImpl implements Transformati
 		}
 		
 		modifierSum = modifierSum - nodeModifiers[n];
-	}
-	
-	private void setCoordinates( Graph graph ) {
-			/*
-			 * As the current coordinates could exceed the given
-			 * idSpace (or on the other hand use only a tiny pane),
-			 * we need to calculate a scale factor for the coordinates
-			 */
-		double scaleX = 0, scaleY = 0;
-		for ( int i= 0; i < nodePositionsX.length; i++ ) {
-			scaleX = Math.max(scaleX, nodePositionsX[i]);
-			scaleY = Math.max(scaleY, nodePositionsY[i]);
-		}
-			/*
-			 * The current scale factor would also use values on the borders
-			 * of the idSpace (which will be cut to 0 by the modulus). So: scale
-			 * it a tiny bit smaller
-			 */
-		scaleX = scaleX * 1.1;
-		scaleY = scaleY * 1.1;
-		
-		PlaneIdentifier pos;
-		PlanePartitionSimple[] partitions = new PlanePartitionSimple[graph.getNodes().length];
-		PlaneIdentifierSpaceSimple idSpace = new PlaneIdentifierSpaceSimple(partitions, this.modulusX, this.modulusY,
-				false);
-		for (int i = 0; i < nodePositionsX.length; i++) {
-			pos = new PlaneIdentifier(( nodePositionsX[i] / scaleX ) * idSpace.getModulusX(), ( nodePositionsY[i] / scaleY ) * idSpace.getModulusY(), idSpace);
-			partitions[i] = new PlanePartitionSimple(pos);
-		}
-		graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
 	}
 }
