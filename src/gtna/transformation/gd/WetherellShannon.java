@@ -40,19 +40,16 @@ import gtna.graph.Node;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
 
 /**
  * @author Nico
  *
  */
 public class WetherellShannon extends HierarchicalAbstract implements Transformation {
-	private int[] heightModifiers, nodeModifiers;
-	private int[] nextPos;
+	private double[] heightModifiers, nodeModifiers;
+	private double[] nextPos;
 	
-	private int modifierSum;
-	private SpanningTree tree;
-
+	private double modifierSum;
 	public WetherellShannon() {
 		this("GDA_WETHERELL_SHANNON", new String[]{}, new String[]{});
 	}
@@ -74,11 +71,11 @@ public class WetherellShannon extends HierarchicalAbstract implements Transforma
 		int source = tree.getSrc();
 		int maxHeight = g.getNodes().length; 
 		
-		heightModifiers = new int[maxHeight];
-		nodeModifiers = new int[maxHeight];
-		nextPos = new int[maxHeight];
-		nodePositionsX = new int[maxHeight];
-		nodePositionsY = new int[maxHeight];
+		heightModifiers = new double[maxHeight];
+		nodeModifiers = new double[maxHeight];
+		nextPos = new double[maxHeight];
+		nodePositionsX = new double[maxHeight];
+		nodePositionsY = new double[maxHeight];
 		for ( int i = 0; i < maxHeight; i++ ) {
 			heightModifiers[i] = 0;
 			nextPos[i] = 1;
@@ -118,7 +115,7 @@ public class WetherellShannon extends HierarchicalAbstract implements Transforma
 			 * and should either have gotten to a leaf or we're on
 			 * the way back to the top of the tree
 			 */
-		int place = 0;
+		double place = 0;
 		if ( sons.length == 0 ) {
 				/*
 				 * Current node has no childs, so use the

@@ -36,6 +36,7 @@
 package gtna.transformation.gd;
 
 import gtna.graph.Graph;
+import gtna.graph.spanningTree.SpanningTree;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
@@ -49,10 +50,11 @@ import gtna.transformation.TransformationImpl;
 public abstract class HierarchicalAbstract extends TransformationImpl {
 
 	protected GraphPlotter graphPlotter;
-	protected int[] nodePositionsX;
-	protected int[] nodePositionsY;
+	protected double[] nodePositionsX;
+	protected double[] nodePositionsY;
 	protected double modulusX;
 	protected double modulusY;
+	protected SpanningTree tree;
 
 	public HierarchicalAbstract(String key, String[] configKeys,
 			String[] configValues) {
