@@ -59,8 +59,8 @@ public class PlaneIdentifier implements DIdentifier, Comparable<PlaneIdentifier>
 
 	public PlaneIdentifier(String string, PlaneIdentifierSpaceSimple idSpace) {
 		String[] temp = string.replace("(", "").replace(")", "").split("/");
-		this.x = Integer.parseInt(temp[0]) % idSpace.getModulusX();
-		this.y = Integer.parseInt(temp[1]) % idSpace.getModulusY();
+		this.x = Double.parseDouble(temp[0]) % idSpace.getModulusX();
+		this.y = Double.parseDouble(temp[1]) % idSpace.getModulusY();
 		this.idSpace = idSpace;
 	}
 
