@@ -150,6 +150,7 @@ public class Gephi {
 		SpanningTree tree = (SpanningTree) g.getProperty("SPANNINGTREE");
 		gtna.graph.Edge[] edges = tree.generateEdgesUnidirectional();
 		for ( gtna.graph.Edge e: edges ) {
+			if ( e == null ) continue;
 			if ( e.getSrc() == -1 ) continue;
 			addEdge(graphModel, gephiGraph, gephiNodes[e.getSrc()], gephiNodes[e.getDst()]);
 		}
