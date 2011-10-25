@@ -44,35 +44,38 @@ import gtna.transformation.Transformation;
 import gtna.util.Config;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
 public class ReadableFolder extends NetworkImpl implements Network {
-	private String[] files;
+	private ArrayList<String> files;
 
 	private int index;
 
 	public ReadableFolder(String name, String folder, String srcFolder,
-			RoutingAlgorithm ra, Transformation[] t) {
-		super(ReadableFolder.key(name, folder), Integer.MIN_VALUE, new String[] {},
-				new String[] {}, ra, t);
+			String extension, RoutingAlgorithm ra, Transformation[] t) {
+		super(ReadableFolder.key(name, folder), Integer.MIN_VALUE,
+				new String[] {}, new String[] {}, ra, t);
 		File d = new File(srcFolder);
 		if (!d.exists()) {
-			this.files = new String[0];
+			this.files = new ArrayList<String>();
 		} else {
 			File[] f = d.listFiles();
-			this.files = new String[f.length];
+			this.files = new ArrayList<String>();
 			for (int i = 0; i < f.length; i++) {
-				this.files[i] = f[i].getAbsolutePath();
+				if (f[i].getName().endsWith(extension)) {
+					this.files.add(f[i].getAbsolutePath());
+				}
 			}
 		}
 		this.index = -1;
-		if (this.files.length == 0) {
+		if (this.files.size() == 0) {
 			super.setNodes(0);
 		} else {
-			super.setNodes(GraphReader.nodes(this.files[0]));
+			super.setNodes(GraphReader.nodes(this.files.get(0)));
 		}
 	}
 
@@ -83,16 +86,16 @@ public class ReadableFolder extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		if (this.files.length == 0) {
+		if (this.files.size() == 0) {
 			return null;
 		}
-		this.index = (this.index + 1) % this.files.length;
-		Graph graph = GraphReader.read(this.files[this.index]);
+		this.index = (this.index + 1) % this.files.size();
+		Graph graph = GraphReader.read(this.files.get(this.index));
 		graph.setName(this.description());
 		return graph;
 	}
 
-	public String[] getFiles() {
+	public ArrayList<String> getFiles() {
 		return this.files;
 	}
 }
