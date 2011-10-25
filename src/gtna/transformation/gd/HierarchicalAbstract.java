@@ -74,8 +74,8 @@ public abstract class HierarchicalAbstract extends TransformationImpl {
 			 */
 		double scaleX = 0, scaleY = 0;
 		for ( int i= 0; i < nodePositionsX.length; i++ ) {
-			scaleX = Math.max(scaleX, nodePositionsX[i]);
-			scaleY = Math.max(scaleY, nodePositionsY[i]);
+			scaleX = Math.max(scaleX, Math.abs(nodePositionsX[i]));
+			scaleY = Math.max(scaleY, Math.abs(nodePositionsY[i]));
 		}
 			/*
 			 * The current scale factor would also use values on the borders
