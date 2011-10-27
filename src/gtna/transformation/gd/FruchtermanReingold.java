@@ -60,7 +60,7 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 		/*
 		 * How many iterations should the algorithm run?
 		 */
-	private int iterations;
+	private int iterations = 100;
 	
 		/*
 		 * Maximal space for the drawing, as defined per the moduli
@@ -88,30 +88,25 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 	private Transformation initialPositions;
 	
 	public FruchtermanReingold() {
-		this("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
-	}
-	
-	public FruchtermanReingold(String key, String[] configKeys,
-			String[] configValues) {
-		super(key, configKeys, configValues);
-		this.iterations = Config.getInt("GDA_FRUCHTERMAN_REINGOLD_ITERATIONS");
+		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
 	}
 		
 		/*
 		 * Constructor for the case that we already have set the idspace
 		 */
 	public FruchtermanReingold(GraphPlotter plotter) {
-		this("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
+		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
 		this.graphPlotter = plotter;
 		this.initialPositions = null;
 	}
 	
-	public FruchtermanReingold(int realities, double[] moduli, Boolean wrapAround, GraphPlotter plotter) {
-		this("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
+	public FruchtermanReingold(int realities, double[] moduli, Boolean wrapAround, int iterations, GraphPlotter plotter) {
+		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
 		this.realities = realities;
 		this.moduli = moduli;
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
+		this.iterations = iterations;
 		initialPositions = new RandomMDIDSpaceSimple( this.realities, this.moduli, this.wrapAround);
 	}
 	
