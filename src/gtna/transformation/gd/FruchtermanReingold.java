@@ -85,8 +85,6 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 		 */
 	private double t;
 	
-	private Transformation initialPositions;
-	
 	public FruchtermanReingold() {
 		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
 	}
@@ -97,7 +95,6 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 	public FruchtermanReingold(GraphPlotter plotter) {
 		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
 		this.graphPlotter = plotter;
-		this.initialPositions = null;
 	}
 	
 	public FruchtermanReingold(int realities, double[] moduli, Boolean wrapAround, int iterations, GraphPlotter plotter) {
@@ -107,21 +104,10 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
 		this.iterations = iterations;
-		initialPositions = new RandomMDIDSpaceSimple( this.realities, this.moduli, this.wrapAround);
 	}
 	
 	@Override
 	public Graph transform(Graph g) {
-		if ( initialPositions != null ) {
-				/*
-				 * First step: create an idspace
-				 */
-			g = initialPositions.transform(g);
-		}
-		
-			/*
-			 * idspace is now given, extract it
-			 */
 		initIDSpace(g);
 
 		double[] moduli = this.idSpace.getModuli();
