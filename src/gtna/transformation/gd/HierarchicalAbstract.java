@@ -37,6 +37,7 @@ package gtna.transformation.gd;
 
 import gtna.graph.Graph;
 import gtna.graph.spanningTree.SpanningTree;
+import gtna.id.IdentifierSpace;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
@@ -55,6 +56,7 @@ public abstract class HierarchicalAbstract extends TransformationImpl {
 	protected double modulusX;
 	protected double modulusY;
 	protected SpanningTree tree;
+	protected PlaneIdentifierSpaceSimple idSpace;
 
 	public HierarchicalAbstract(String key, String[] configKeys,
 			String[] configValues) {
@@ -87,7 +89,7 @@ public abstract class HierarchicalAbstract extends TransformationImpl {
 		
 		PlaneIdentifier pos;
 		PlanePartitionSimple[] partitions = new PlanePartitionSimple[graph.getNodes().length];
-		PlaneIdentifierSpaceSimple idSpace = new PlaneIdentifierSpaceSimple(partitions, this.modulusX, this.modulusY,
+		this.idSpace = new PlaneIdentifierSpaceSimple(partitions, this.modulusX, this.modulusY,
 				false);
 		for (int i = 0; i < nodePositionsX.length; i++) {
 			pos = new PlaneIdentifier(( nodePositionsX[i] / scaleX ) * idSpace.getModulusX(), ( nodePositionsY[i] / scaleY ) * idSpace.getModulusY(), idSpace);

@@ -82,8 +82,8 @@ public class MelanconHerman extends HierarchicalAbstract implements Transformati
 		secondWalk(source, 0, 0, 1, 0);
 
 		setCoordinates(g);
-		graphPlotter.plotFinalGraph(g);
-		graphPlotter.plotSpanningTree(g);
+		graphPlotter.plotFinalGraph(g, idSpace);
+		graphPlotter.plotSpanningTree(g, idSpace);
 
 		return g;
 	}

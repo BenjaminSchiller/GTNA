@@ -98,8 +98,8 @@ public class WetherellShannon extends HierarchicalAbstract implements Transforma
 		}
 		
 		setCoordinates(g);
-		graphPlotter.plotFinalGraph(g);
-		graphPlotter.plotSpanningTree(g);
+		graphPlotter.plotFinalGraph(g, idSpace);
+		graphPlotter.plotSpanningTree(g, idSpace);
 		
 		return g;
 	}
