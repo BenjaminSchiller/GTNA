@@ -48,7 +48,7 @@ import gtna.transformation.TransformationImpl;
  * @author Nico
  *
  */
-public abstract class HierarchicalAbstract extends TransformationImpl {
+public abstract class HierarchicalAbstract extends GraphDrawingAbstract {
 
 	protected GraphPlotter graphPlotter;
 	protected double[] nodePositionsX;
@@ -68,7 +68,13 @@ public abstract class HierarchicalAbstract extends TransformationImpl {
 		return g.hasProperty("SPANNINGTREE");
 	}
 
-	protected void setCoordinates(Graph graph) {
+	protected void initIDSpace( Graph g ) {
+		/*
+		 * Nothing to do here
+		 */
+	}
+	
+	protected void writeIDSpace ( Graph g ) {
 			/*
 			 * As the current coordinates could exceed the given
 			 * idSpace (or on the other hand use only a tiny pane),
@@ -88,14 +94,14 @@ public abstract class HierarchicalAbstract extends TransformationImpl {
 		scaleY = scaleY * 1.1;
 		
 		PlaneIdentifier pos;
-		PlanePartitionSimple[] partitions = new PlanePartitionSimple[graph.getNodes().length];
+		PlanePartitionSimple[] partitions = new PlanePartitionSimple[g.getNodes().length];
 		this.idSpace = new PlaneIdentifierSpaceSimple(partitions, this.modulusX, this.modulusY,
 				false);
 		for (int i = 0; i < nodePositionsX.length; i++) {
 			pos = new PlaneIdentifier(( nodePositionsX[i] / scaleX ) * idSpace.getModulusX(), ( nodePositionsY[i] / scaleY ) * idSpace.getModulusY(), idSpace);
 			partitions[i] = new PlanePartitionSimple(pos);
 		}
-		graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
+		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
 	}
 
 }

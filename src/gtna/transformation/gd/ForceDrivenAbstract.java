@@ -38,23 +38,18 @@ package gtna.transformation.gd;
 import java.util.Random;
 
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
-import gtna.plot.Gephi;
 import gtna.plot.GraphPlotter;
-import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
-import gtna.transformation.id.RandomMDIDSpaceSimple;
 import gtna.util.MDVector;
 
 /**
  * @author Nico
  *
  */
-public abstract class ForceDrivenAbstract extends TransformationImpl {
+public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 
 	protected MDIdentifierSpaceSimple idSpace;
 	protected MDPartitionSimple[] partitions;
@@ -80,13 +75,14 @@ public abstract class ForceDrivenAbstract extends TransformationImpl {
 	}
 	
 	protected void initIDSpace( Graph g ) {
-		RandomMDIDSpaceSimple idSpaceTransformation = new RandomMDIDSpaceSimple( this.realities, this.moduli, this.wrapAround);
-		g = idSpaceTransformation.transform(g);
-		
-		this.idSpace = idSpaceTransformation.getIdSpace();
-		this.partitions = (MDPartitionSimple[]) this.idSpace.getPartitions();
-		this.moduli = idSpace.getModuli();
-		this.wrapAround = idSpace.isWrapAround();				
+		Random rand = new Random();
+		for (int r = 0; r < this.realities; r++) {
+			partitions = new MDPartitionSimple[g.getNodes().length];
+			this.idSpace = new MDIdentifierSpaceSimple(partitions, this.moduli, this.wrapAround);
+			for (int i = 0; i < partitions.length; i++) {
+				partitions[i] = new MDPartitionSimple(MDIdentifier.rand(rand, idSpace));
+			}
+		}	
 		
 			/*
 			 * A bias is needed as the internal algorithm works on coordinates
@@ -98,6 +94,10 @@ public abstract class ForceDrivenAbstract extends TransformationImpl {
 			moduliString = moduliString + ", " + this.moduli[i];
 			bias.setCoordinate(i, this.moduli[i] / 2);
 		}		
+	}
+	
+	protected void writeIDSpace ( Graph g ) {
+		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
 	}
 
 	protected MDVector setNormalized(MDVector v) {
