@@ -47,7 +47,7 @@ import gtna.util.MDVector;
  * @author Nico
  *
  */
-public class MDIdentifier implements DIdentifier, Comparable<PlaneIdentifier> {
+public class MDIdentifier implements DIdentifier, Comparable<MDIdentifier> {
 	private double[] coordinates;
 	
 	private MDIdentifierSpaceSimple idSpace;
@@ -128,6 +128,8 @@ public class MDIdentifier implements DIdentifier, Comparable<PlaneIdentifier> {
 	public void setCoordinates ( double[] newPos ) {
 		if ( newPos.length != coordinates.length ) throw new RuntimeException("Please respect our dimensions!");
 		for ( int i = 0; i < newPos.length; i++ ) {
+//			if ( newPos[i] < 0 ) newPos[i] = 0;
+//			if ( newPos[i] > this.idSpace.getModulus(i) ) newPos[i] = this.idSpace.getModulus(i); 
 			if ( newPos[i] < 0 || newPos[i] > this.idSpace.getModulus(i) ) {
 				throw new RuntimeException("Corrupt new coordinate " + newPos[i] + ", should be between 0 and " + this.idSpace.getModulus(i));
 			}
@@ -140,8 +142,7 @@ public class MDIdentifier implements DIdentifier, Comparable<PlaneIdentifier> {
 	}
 
 	@Override
-	public int compareTo(PlaneIdentifier o) {
-		// TODO Auto-generated method stub
+	public int compareTo(MDIdentifier o) {
 		return 0;
 	}
 	
