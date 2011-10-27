@@ -36,6 +36,7 @@
 package gtna.plot;
 
 import gtna.graph.Graph;
+import gtna.id.IdentifierSpace;
 
 /**
  * @author Nico
@@ -65,24 +66,24 @@ public class GraphPlotter {
 		return this.basename;
 	}
 
-	public void plot(Graph g, String filename) {
-		if ( !disabled ) gephi.Plot(g, filename + "." + extension);
+	public void plot(Graph g, IdentifierSpace idSpace, String filename) {
+		if ( !disabled ) gephi.Plot(g, idSpace, filename + "." + extension);
 	}
 	
-	public void plotIteration(Graph g, int iteration) {
+	public void plotIteration(Graph g, IdentifierSpace idSpace, int iteration) {
 		if ( disabled ) return;
 		if ( iterationModulus < 0 ) {
 			throw new RuntimeException("iterationModulus for GraphPlotter not set yet or smaller than zero");
 		}
-		if ( iteration % iterationModulus == 0) plot(g, basename + "-" + iteration);
+		if ( iteration % iterationModulus == 0) plot(g, idSpace, basename + "-" + iteration);
 	}
 	
-	public void plotFinalGraph(Graph g) {
-		plot(g, basename + "-final");
+	public void plotFinalGraph(Graph g, IdentifierSpace idSpace) {
+		plot(g, idSpace, basename + "-final");
 	}
 	
-	public void plotSpanningTree(Graph g) {
+	public void plotSpanningTree(Graph g, IdentifierSpace idSpace) {
 		gephi.useSpanningTreeOnNextPlot();
-		plot(g, basename + "-spanningTree");
+		plot(g, idSpace, basename + "-spanningTree");
 	}
 }
