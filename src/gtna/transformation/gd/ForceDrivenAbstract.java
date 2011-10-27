@@ -47,6 +47,7 @@ import gtna.plot.Gephi;
 import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
+import gtna.transformation.id.RandomMDIDSpaceSimple;
 import gtna.util.MDVector;
 
 /**
@@ -79,23 +80,13 @@ public abstract class ForceDrivenAbstract extends TransformationImpl {
 	}
 	
 	protected void initIDSpace( Graph g ) {
-		for (GraphProperty p : g.getProperties("ID_SPACE")) {
-			if (p instanceof MDIdentifierSpaceSimple) {
-				MDIdentifier id = (MDIdentifier) ((MDIdentifierSpaceSimple) p)
-				.randomID( new Random() );
-				if (!(id instanceof MDIdentifier)) {
-					throw new RuntimeException("Okay, why do we have a MDIDSpace without a MDIdentifier?");
-				}
-					/*
-					 * good question: how do we retrieve the number of realities from a given space?
-					 */
-				this.idSpace = (MDIdentifierSpaceSimple) p;
-				
-				this.partitions = (MDPartitionSimple[]) this.idSpace.getPartitions();
-				this.moduli = idSpace.getModuli();
-				this.wrapAround = idSpace.isWrapAround();				
-			}
-		}	
+		RandomMDIDSpaceSimple idSpaceTransformation = new RandomMDIDSpaceSimple( this.realities, this.moduli, this.wrapAround);
+		g = idSpaceTransformation.transform(g);
+		
+		this.idSpace = idSpaceTransformation.getIdSpace();
+		this.partitions = (MDPartitionSimple[]) this.idSpace.getPartitions();
+		this.moduli = idSpace.getModuli();
+		this.wrapAround = idSpace.isWrapAround();				
 		
 			/*
 			 * A bias is needed as the internal algorithm works on coordinates

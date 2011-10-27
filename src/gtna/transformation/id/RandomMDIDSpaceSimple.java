@@ -50,11 +50,11 @@ import gtna.transformation.TransformationImpl;
  */
 public class RandomMDIDSpaceSimple extends TransformationImpl implements
 Transformation {
+
 	private int realities;
-
 	private double[] modulus;
-
 	private boolean wrapAround;
+	private MDIdentifierSpaceSimple idSpace;
 	
 	public RandomMDIDSpaceSimple() {
 		super("RANDOM_MD_ID_SPACE_SIMPLE", new String[] {}, new String[] {});
@@ -76,7 +76,7 @@ Transformation {
 		for (int r = 0; r < this.realities; r++) {
 			MDPartitionSimple[] partitions = new MDPartitionSimple[graph
 					.getNodes().length];
-			MDIdentifierSpaceSimple idSpace = new MDIdentifierSpaceSimple(partitions,
+			this.idSpace = new MDIdentifierSpaceSimple(partitions,
 					this.modulus, this.wrapAround);
 			for (int i = 0; i < partitions.length; i++) {
 				partitions[i] = new MDPartitionSimple(MDIdentifier.rand(rand,
@@ -90,6 +90,10 @@ Transformation {
 	@Override
 	public boolean applicable(Graph g) {
 		return true;
-	}	
+	}
+	
+	public MDIdentifierSpaceSimple getIdSpace() {
+		return this.idSpace;
+	}
 
 }

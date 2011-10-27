@@ -100,49 +100,32 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 	 */
 	private final double gamma = 10.0625;
 
-	private Transformation initialPositions;
 	private Random rand;
 
 	public Frick() {
-		this("GDA_FRICK", new String[] {}, new String[] {});
-	}
-
-	public Frick(String key, String[] configKeys, String[] configValues) {
-		super(key, configKeys, configValues);
+		super("GDA_FRICK", new String[] {}, new String[] {});
 	}
 
 	/*
 	 * Constructor for the case that we already have set the idspace
 	 */
 	public Frick(GraphPlotter plotter) {
-		this("GDA_FRICK", new String[] {}, new String[] {});
+		super("GDA_FRICK", new String[] {}, new String[] {});
 		this.graphPlotter = plotter;
-		this.initialPositions = null;
 	}
 
 	public Frick(int realities, double[] moduli, Boolean wrapAround, GraphPlotter plotter) {
-		this("GDA_FRICK", new String[] {}, new String[] {});
+		super("GDA_FRICK", new String[] {}, new String[] {});
 		this.realities = realities;
 		this.moduli = moduli;
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
-		initialPositions = new RandomMDIDSpaceSimple(this.realities, this.moduli, this.wrapAround);
 	}
 
 	@Override
 	public Graph transform(Graph g) {
 		rand = new Random();
 
-		if (initialPositions != null) {
-			/*
-			 * First step: create an idspace
-			 */
-			g = initialPositions.transform(g);
-		}
-
-		/*
-		 * idspace is now given, extract it
-		 */
 		initIDSpace(g);
 
 		double[] moduli = this.idSpace.getModuli();
@@ -162,9 +145,7 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 		int currIteration = 0;
 		while (tGlobal > tMin && currIteration < maxIterations) {
 			System.out.println("\n\n   >>> in iteration " + currIteration + " <<<");
-			if (graphPlotter != null && currIteration % 50 == 0) {
-				graphPlotter.plotIteration(g, currIteration);
-			}
+			graphPlotter.plotIteration(g, currIteration);
 
 			if (currIteration % nodeList.length == 0) {
 				/*
