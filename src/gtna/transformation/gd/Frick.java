@@ -145,7 +145,7 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 		int currIteration = 0;
 		while (tGlobal > tMin && currIteration < maxIterations) {
 			System.out.println("\n\n   >>> in iteration " + currIteration + " <<<");
-			graphPlotter.plotIteration(g, currIteration);
+			graphPlotter.plotIteration(g, idSpace, currIteration);
 
 			if (currIteration % nodeList.length == 0) {
 				/*
@@ -162,7 +162,7 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 			currIteration++;
 		}
 		System.out.println("Stopped it - did " + currIteration + " iterations (of maximal " + maxIterations + "), and temperature is " + tGlobal + " (minimal: " + tMin + ")");
-		graphPlotter.plotFinalGraph(g);
+		graphPlotter.plotFinalGraph(g, idSpace);
 
 		return g;
 	}

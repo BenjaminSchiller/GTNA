@@ -88,15 +88,7 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 	public FruchtermanReingold() {
 		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
 	}
-		
-		/*
-		 * Constructor for the case that we already have set the idspace
-		 */
-	public FruchtermanReingold(GraphPlotter plotter) {
-		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
-		this.graphPlotter = plotter;
-	}
-	
+			
 	public FruchtermanReingold(int realities, double[] moduli, Boolean wrapAround, int iterations, GraphPlotter plotter) {
 		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
 		this.realities = realities;
@@ -120,10 +112,10 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 
 		for ( int i = 0; i < this.iterations; i++ ) {
 			System.out.println("\n\n   >>> in iteration " + i + " <<<");
-			graphPlotter.plotIteration(g, i);
+			graphPlotter.plotIteration(g, idSpace, i);
 			g = this.doIteration ( g );
 		}
-		graphPlotter.plotFinalGraph(g);
+		graphPlotter.plotFinalGraph(g, idSpace);
 		
 		return g;
 	}
