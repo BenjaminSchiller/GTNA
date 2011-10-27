@@ -39,25 +39,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
-import gtna.id.md.MDIdentifier;
-import gtna.id.md.MDIdentifierSpaceSimple;
-import gtna.id.md.MDPartitionSimple;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
-import gtna.networks.p2p.chord.ChordIdentifier;
-import gtna.networks.p2p.chord.ChordPartition;
-import gtna.plot.Gephi;
+import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
-import gtna.transformation.id.RandomChordIDSpace;
-import gtna.transformation.id.RandomMDIDSpaceSimple;
 import gtna.transformation.id.RandomRingIDSpace;
 
 /**
@@ -74,9 +68,9 @@ public class SixTollis extends TransformationImpl implements Transformation {
 	private double modulus;
 	private Boolean wrapAround;
 	
-	private Gephi gephi;
 	private Transformation initialPositions;
 	private ArrayList<String> handledEdges;
+	private GraphPlotter graphPlotter;
 	
 	public SixTollis() {
 		this("GDA_SIX_TOLLIS", new String[]{}, new String[]{});
@@ -89,18 +83,18 @@ public class SixTollis extends TransformationImpl implements Transformation {
 		/*
 		 * Constructor for the case that we already have set the idspace
 		 */
-	public SixTollis(Gephi plotter) {
+	public SixTollis(GraphPlotter plotter) {
 		this("GDA_SIX_TOLLIS", new String[]{}, new String[]{});
-		this.gephi = plotter;
+		this.graphPlotter = plotter;
 		this.initialPositions = null;
 	}
 	
-	public SixTollis(int realities, double modulus, boolean wrapAround, Gephi plotter) {
+	public SixTollis(int realities, double modulus, boolean wrapAround, GraphPlotter plotter) {
 		this("GDA_SIX_TOLLIS", new String[]{}, new String[]{});
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
-		this.gephi = plotter;
+		this.graphPlotter = plotter;
 		initialPositions = new RandomRingIDSpace(realities, modulus, wrapAround);
 	}	
 
@@ -111,7 +105,9 @@ public class SixTollis extends TransformationImpl implements Transformation {
 	
 	@Override
 	public Graph transform(Graph g) {
-			if ( initialPositions != null ) {
+		System.err.println("This is not working completely yet, so don't expect good results!");
+		
+		if ( initialPositions != null ) {
 				/*
 				 * First step: create an idspace
 				 */
@@ -137,12 +133,53 @@ public class SixTollis extends TransformationImpl implements Transformation {
 				
 				this.partitions = (RingPartition[]) this.idSpace.getPartitions();
 			}
-	}
+		}
 		
-		countAllCrossings(g);
+			/*
+			 * Phase 1
+			 */
+		Node currentNode = null;
+		List<Node> nodeList = Arrays.asList(g.getNodes());
+		List<Edge> removalList = new ArrayList<Edge>();
+		Collections.sort(nodeList, new NodeDegreeComparator());
+		for ( int counter = 1; counter < ( nodeList.size() - 3 ); counter++ ) {
+			Boolean selectedANodeForThisIteration = false;
+			if ( currentNode != null ) {
+				// try to get a wave front / wave center node
+			}
+			if ( !selectedANodeForThisIteration ) {
+				// We got no node yet - choose one with lowest degree
+				currentNode = nodeList.get(0);
+			}
+			List<Edge> establishedEdges = getPairEdges ( currentNode );
+		}
+		
+		for ( Node n: nodeList ) System.out.println(n + " has degree " + n.getDegree());
+		
+//		countAllCrossings(g);
 		return g;
 	}
 	
+	private List<Edge> getPairEdges ( Node n ) {
+		List<Edge> result = new ArrayList<Edge>();
+		int[] incomingEdges = n.getIncomingEdges();
+		for ( int eDst: incomingEdges ) {
+			if ( isPairEdge( n.getIndex(), eDst ) ) result.add( new Edge(n.getIndex(), eDst));
+		}
+		return result;
+	}
+	
+	private Boolean isPairEdge ( int src, int dst ) {
+		// First test: Node src's endPosition is Node dst's start
+		if ( partitions[src].getEnd().getPosition() == partitions[dst].getStart().getPosition() ) {
+			return true;
+		}
+		// Second test: Node dst's endPosition is Node src's start		
+		if ( partitions[dst].getEnd().getPosition() == partitions[src].getStart().getPosition() ) {
+			return true;
+		}
+		return false;
+	}
 
 	private int countAllCrossings ( Graph g ) {
 		int numCross = 0;
@@ -211,6 +248,15 @@ public class SixTollis extends TransformationImpl implements Transformation {
 		return partitions[i].getStart().getPosition();
 	}
 
+	private class NodeDegreeComparator implements Comparator<Node> {
+		  @Override
+		  public int compare(Node n1, Node n2) {
+			  if ( n1.getDegree() == n2.getDegree() ) return 0;
+			  else if ( n1.getDegree() > n2.getDegree() ) return 1;
+			  else return -1;
+		  }
+	}
+	
 	private class NodeRingIDComparator implements Comparator<Node> {
 		  @Override
 		  public int compare(Node n1, Node n2) {

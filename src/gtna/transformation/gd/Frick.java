@@ -49,7 +49,6 @@ import gtna.id.md.MDPartitionSimple;
 import gtna.plot.Gephi;
 import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
-import gtna.transformation.id.RandomMDIDSpaceSimple;
 import gtna.util.MDVector;
 
 /**
@@ -124,6 +123,8 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 
 	@Override
 	public Graph transform(Graph g) {
+		System.err.println("This is not working completely yet, so don't expect good results!");
+		
 		rand = new Random();
 
 		initIDSpace(g);
@@ -163,7 +164,7 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 		}
 		System.out.println("Stopped it - did " + currIteration + " iterations (of maximal " + maxIterations + "), and temperature is " + tGlobal + " (minimal: " + tMin + ")");
 		graphPlotter.plotFinalGraph(g, idSpace);
-
+		writeIDSpace(g);
 		return g;
 	}
 

@@ -35,21 +35,11 @@
  */
 package gtna.transformation.gd;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import gtna.graph.Edge;
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
 import gtna.graph.Node;
-import gtna.id.md.MDIdentifier;
-import gtna.id.md.MDIdentifierSpaceSimple;
-import gtna.id.md.MDPartitionSimple;
-import gtna.plot.Gephi;
 import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
-import gtna.transformation.id.RandomMDIDSpaceSimple;
-import gtna.util.Config;
 import gtna.util.MDVector;
 
 /**
@@ -116,7 +106,7 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 			g = this.doIteration ( g );
 		}
 		graphPlotter.plotFinalGraph(g, idSpace);
-		
+		writeIDSpace(g);
 		return g;
 	}
 	
