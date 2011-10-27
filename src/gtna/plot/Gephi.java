@@ -71,7 +71,7 @@ public class Gephi {
 
 	private float ringRadius = 100;
 
-	public void Plot(Graph g, String fileName) {
+	public void Plot(Graph g, IdentifierSpace idSpace, String fileName) {
 		ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
 		pc.newProject();
 
@@ -88,7 +88,7 @@ public class Gephi {
 		model.getBiEdgeSupervisor().setCurvedFlag(false);
 
 		gephiNodes = new org.gephi.graph.api.Node[g.getNodes().length];
-		this.plotGraph(g);
+		this.plotGraph(g, idSpace);
 
 		ExportController ec = Lookup.getDefault().lookup(ExportController.class);
 		try {
@@ -103,8 +103,7 @@ public class Gephi {
 		this.useSpanningTreeOnNextPlot = true;
 	}
 
-	private void plotGraph(Graph g) {
-		IdentifierSpace idSpace = (IdentifierSpace) g.getProperty("ID_SPACE_0");
+	private void plotGraph(Graph g, IdentifierSpace idSpace) {
 		Partition[] p = idSpace.getPartitions();
 
 		// First run: add all nodes
