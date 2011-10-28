@@ -40,24 +40,29 @@ import gtna.id.IdentifierSpace;
 
 /**
  * @author Nico
- *
+ * 
  */
 public class GraphPlotter {
 	private Gephi gephi;
 	private String basename, extension;
 	private int iterationModulus = -1;
 	private boolean disabled = false;
-	
-	public GraphPlotter( String basename, String extension) {
+
+	public GraphPlotter(String basename, String extension, int iterationModulus) {
 		this.gephi = new Gephi();
 		this.basename = basename;
 		this.extension = extension;
+		this.iterationModulus = iterationModulus;
 	}
-	
-	public GraphPlotter ( boolean disabled ) {
+
+	public GraphPlotter(String basename, String extension) {
+		this(basename, extension, -1);
+	}
+
+	public GraphPlotter(boolean disabled) {
 		this.disabled = disabled;
 	}
-		
+
 	public void setIterationModulus(int iterationModulus) {
 		this.iterationModulus = iterationModulus;
 	}
@@ -67,21 +72,24 @@ public class GraphPlotter {
 	}
 
 	public void plot(Graph g, IdentifierSpace idSpace, String filename) {
-		if ( !disabled ) gephi.Plot(g, idSpace, filename + "." + extension);
+		if (!disabled)
+			gephi.Plot(g, idSpace, filename + "." + extension);
 	}
-	
+
 	public void plotIteration(Graph g, IdentifierSpace idSpace, int iteration) {
-		if ( disabled ) return;
-		if ( iterationModulus < 0 ) {
+		if (disabled)
+			return;
+		if (iterationModulus < 0) {
 			throw new RuntimeException("iterationModulus for GraphPlotter not set yet or smaller than zero");
 		}
-		if ( iteration % iterationModulus == 0) plot(g, idSpace, basename + "-" + iteration);
+		if (iteration % iterationModulus == 0)
+			plot(g, idSpace, basename + "-" + iteration);
 	}
-	
+
 	public void plotFinalGraph(Graph g, IdentifierSpace idSpace) {
 		plot(g, idSpace, basename + "-final");
 	}
-	
+
 	public void plotSpanningTree(Graph g, IdentifierSpace idSpace) {
 		gephi.useSpanningTreeOnNextPlot();
 		plot(g, idSpace, basename + "-spanningTree");
