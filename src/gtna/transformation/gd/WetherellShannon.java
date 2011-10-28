@@ -51,15 +51,11 @@ public class WetherellShannon extends HierarchicalAbstract implements Transforma
 	
 	private double modifierSum;
 	public WetherellShannon() {
-		this("GDA_WETHERELL_SHANNON", new String[]{}, new String[]{});
+		super("GDA_WETHERELL_SHANNON", new String[]{}, new String[]{});
 	}
 	
-	public WetherellShannon(String key, String[] configKeys, String[] configValues) {
-		super(key, configKeys, configValues);
-	}	
-	
 	public WetherellShannon(double modulusX, double modulusY, GraphPlotter plotter) {
-		this("GDA_WETHERELL_SHANNON", new String[] {}, new String[] {});
+		super("GDA_WETHERELL_SHANNON", new String[] {}, new String[] {});
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;

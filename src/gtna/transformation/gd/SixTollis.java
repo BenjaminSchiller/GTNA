@@ -72,25 +72,17 @@ public class SixTollis extends TransformationImpl implements Transformation {
 	private ArrayList<String> handledEdges;
 	private GraphPlotter graphPlotter;
 	
-	public SixTollis() {
-		this("GDA_SIX_TOLLIS", new String[]{}, new String[]{});
-	}
-	
-	public SixTollis(String key, String[] configKeys, String[] configValues) {
-		super(key, configKeys, configValues);
-	}
-	
 		/*
 		 * Constructor for the case that we already have set the idspace
 		 */
 	public SixTollis(GraphPlotter plotter) {
-		this("GDA_SIX_TOLLIS", new String[]{}, new String[]{});
+		super("GDA_SIX_TOLLIS", new String[]{}, new String[]{});
 		this.graphPlotter = plotter;
 		this.initialPositions = null;
 	}
 	
 	public SixTollis(int realities, double modulus, boolean wrapAround, GraphPlotter plotter) {
-		this("GDA_SIX_TOLLIS", new String[]{}, new String[]{});
+		super("GDA_SIX_TOLLIS", new String[]{}, new String[]{});
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
