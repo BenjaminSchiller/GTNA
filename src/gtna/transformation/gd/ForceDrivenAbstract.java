@@ -59,11 +59,6 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 	protected MDVector bias;
 	protected GraphPlotter graphPlotter;	
 
-	/**
-	 * @param key
-	 * @param configKeys
-	 * @param configValues
-	 */
 	public ForceDrivenAbstract(String key, String[] configKeys,
 			String[] configValues) {
 		super(key, configKeys, configValues);

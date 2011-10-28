@@ -101,18 +101,6 @@ public class Frick extends ForceDrivenAbstract implements Transformation {
 
 	private Random rand;
 
-	public Frick() {
-		super("GDA_FRICK", new String[] {}, new String[] {});
-	}
-
-	/*
-	 * Constructor for the case that we already have set the idspace
-	 */
-	public Frick(GraphPlotter plotter) {
-		super("GDA_FRICK", new String[] {}, new String[] {});
-		this.graphPlotter = plotter;
-	}
-
 	public Frick(int realities, double[] moduli, Boolean wrapAround, GraphPlotter plotter) {
 		super("GDA_FRICK", new String[] {}, new String[] {});
 		this.realities = realities;

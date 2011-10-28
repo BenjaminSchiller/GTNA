@@ -40,14 +40,14 @@ import gtna.transformation.TransformationImpl;
 
 /**
  * @author Nico
- *
+ * 
  */
 public abstract class GraphDrawingAbstract extends TransformationImpl {
-
 	public GraphDrawingAbstract(String key, String[] configKeys, String[] configValues) {
 		super(key, configKeys, configValues);
 	}
 
-	protected abstract void initIDSpace( Graph g );
-	protected abstract void writeIDSpace( Graph g );
+	protected abstract void initIDSpace(Graph g);
+
+	protected abstract void writeIDSpace(Graph g);
 }

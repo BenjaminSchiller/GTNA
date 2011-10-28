@@ -75,10 +75,6 @@ public class FruchtermanReingold extends ForceDrivenAbstract implements Transfor
 		 */
 	private double t;
 	
-	public FruchtermanReingold() {
-		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
-	}
-			
 	public FruchtermanReingold(int realities, double[] moduli, Boolean wrapAround, int iterations, GraphPlotter plotter) {
 		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
 		this.realities = realities;

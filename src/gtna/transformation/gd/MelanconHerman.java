@@ -54,16 +54,8 @@ public class MelanconHerman extends HierarchicalAbstract implements Transformati
 	double d = 20d;
 	double previous = 0;
 
-	public MelanconHerman() {
-		this("GDA_MELANCONHERMAN", new String[] {}, new String[] {});
-	}
-
-	public MelanconHerman(String key, String[] configKeys, String[] configValues) {
-		super(key, configKeys, configValues);
-	}
-
 	public MelanconHerman(double modulusX, double modulusY, GraphPlotter plotter) {
-		this("GDA_MELANCONHERMAN", new String[] {}, new String[] {});
+		super("GDA_MELANCONHERMAN", new String[] {}, new String[] {});
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;
