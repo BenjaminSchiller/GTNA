@@ -57,9 +57,7 @@ import gtna.transformation.id.RandomRingIDSpace;
  *
  */
 public class SixTollis extends CircularAbstract implements Transformation {
-	private GraphPlotter graphPlotter;
-	
-		/*
+	/*
 		 * Constructor for the case that we already have set the idspace
 		 */
 	public SixTollis(GraphPlotter plotter) {
@@ -75,11 +73,6 @@ public class SixTollis extends CircularAbstract implements Transformation {
 		this.graphPlotter = plotter;
 	}	
 
-	@Override
-	public boolean applicable(Graph g) {
-		return true;
-	}
-	
 	@Override
 	public Graph transform(Graph g) {
 		System.err.println("This is not working completely yet, so don't expect good results!");

@@ -41,9 +41,6 @@ import java.util.Random;
 
 import gtna.graph.Edge;
 import gtna.graph.Graph;
-import gtna.id.md.MDIdentifier;
-import gtna.id.md.MDIdentifierSpaceSimple;
-import gtna.id.md.MDPartitionSimple;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
@@ -69,8 +66,8 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 	protected void initIDSpace( Graph g ) {
 		Random rand = new Random();
 		for (int r = 0; r < this.realities; r++) {
-			RingPartition[] partitions = new RingPartition[g.getNodes().length];
-			RingIdentifierSpace idSpace = new RingIdentifierSpace(partitions, this.modulus,
+			partitions = new RingPartition[g.getNodes().length];
+			idSpace = new RingIdentifierSpace(partitions, this.modulus,
 					this.wrapAround);
 			RingIdentifier[] ids = new RingIdentifier[g.getNodes().length];
 			for (int i = 0; i < ids.length; i++) {

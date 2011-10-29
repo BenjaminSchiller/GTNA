@@ -42,7 +42,6 @@ import gtna.graph.Node;
 import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
-import gtna.plot.GraphPlotter;
 import gtna.util.MDVector;
 
 /**
@@ -57,16 +56,9 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 	protected double[] moduli;
 	protected Boolean wrapAround;	
 	protected MDVector bias;
-	protected GraphPlotter graphPlotter;	
-
 	public ForceDrivenAbstract(String key, String[] configKeys,
 			String[] configValues) {
 		super(key, configKeys, configValues);
-	}
-	
-	@Override
-	public boolean applicable(Graph g) {
-		return true;
 	}
 	
 	protected void initIDSpace( Graph g ) {
