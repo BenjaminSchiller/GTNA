@@ -79,10 +79,12 @@ public class GraphPlotter {
 	public void plotIteration(Graph g, IdentifierSpace idSpace, int iteration) {
 		if (disabled)
 			return;
-		if (iterationModulus < 0) {
-			throw new RuntimeException("iterationModulus for GraphPlotter not set yet or smaller than zero");
+		else if (iterationModulus <= 0) {
+				/*
+				 * Assume we should not print any intermediate steps
+				 */
 		}
-		if (iteration % iterationModulus == 0)
+		else if (iteration % iterationModulus == 0)
 			plot(g, idSpace, basename + "-" + iteration);
 	}
 
