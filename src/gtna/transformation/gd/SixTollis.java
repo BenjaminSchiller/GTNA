@@ -47,8 +47,6 @@ import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.id.ring.RingIdentifier;
-import gtna.id.ring.RingIdentifierSpace;
-import gtna.id.ring.RingPartition;
 import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
@@ -58,18 +56,7 @@ import gtna.transformation.id.RandomRingIDSpace;
  * @author Nico
  *
  */
-public class SixTollis extends TransformationImpl implements Transformation {
-	/*
-	 * IDSpace and Partitions we care about
-	 */
-	protected RingIdentifierSpace idSpace;
-	protected RingPartition[] partitions;
-	private int realities;
-	private double modulus;
-	private Boolean wrapAround;
-	
-	private Transformation initialPositions;
-	private ArrayList<String> handledEdges;
+public class SixTollis extends CircularAbstract implements Transformation {
 	private GraphPlotter graphPlotter;
 	
 		/*
@@ -78,7 +65,6 @@ public class SixTollis extends TransformationImpl implements Transformation {
 	public SixTollis(GraphPlotter plotter) {
 		super("GDA_SIX_TOLLIS", new String[]{}, new String[]{});
 		this.graphPlotter = plotter;
-		this.initialPositions = null;
 	}
 	
 	public SixTollis(int realities, double modulus, boolean wrapAround, GraphPlotter plotter) {
@@ -87,7 +73,6 @@ public class SixTollis extends TransformationImpl implements Transformation {
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
-		initialPositions = new RandomRingIDSpace(realities, modulus, wrapAround);
 	}	
 
 	@Override
@@ -99,33 +84,7 @@ public class SixTollis extends TransformationImpl implements Transformation {
 	public Graph transform(Graph g) {
 		System.err.println("This is not working completely yet, so don't expect good results!");
 		
-		if ( initialPositions != null ) {
-				/*
-				 * First step: create an idspace
-				 */
-			g = initialPositions.transform(g);
-		}		
-			
-			/*
-			 * idspace is now given, extract it
-			 */
-		for (GraphProperty p : g.getProperties("ID_SPACE")) {
-			if (p instanceof RingIdentifierSpace) {
-				RingIdentifier id = (RingIdentifier) ((RingIdentifierSpace) p)
-				.randomID( new Random() );
-				if (!(id instanceof RingIdentifier)) {
-					throw new RuntimeException("Okay, why do we have a RingIDSpace without a RingIdentifier?");
-				}
-					/*
-					 * good question: how do we retrieve the number of realities from a given space?
-					 */
-				this.modulus = ((RingIdentifierSpace) p).getModulus();
-				this.wrapAround = ((RingIdentifierSpace) p).isWrapAround();
-				this.idSpace = (RingIdentifierSpace) p;
-				
-				this.partitions = (RingPartition[]) this.idSpace.getPartitions();
-			}
-		}
+		initIDSpace(g);
 		
 			/*
 			 * Phase 1
@@ -149,6 +108,7 @@ public class SixTollis extends TransformationImpl implements Transformation {
 		for ( Node n: nodeList ) System.out.println(n + " has degree " + n.getDegree());
 		
 //		countAllCrossings(g);
+		writeIDSpace(g);
 		return g;
 	}
 	
@@ -171,73 +131,6 @@ public class SixTollis extends TransformationImpl implements Transformation {
 			return true;
 		}
 		return false;
-	}
-
-	private int countAllCrossings ( Graph g ) {
-		int numCross = 0;
-		Edge[] edgeList = g.generateEdges();
-		
-		handledEdges = new ArrayList<String>();
-		for ( Edge e: edgeList ) {
-			numCross += countCrossings(e, edgeList);
-		}
-		System.out.println("Got " + numCross + " crossings");		
-		return numCross;
-	}
-	
-	private int countCrossings ( Edge e, Edge[] list ) {
-		int numCross = 0;
-		for ( Edge f: list ) {
-			if ( hasCrossing(e, f) ) numCross++;
-		}
-		return numCross;
-	}
-	
-	private Boolean hasCrossing ( Edge x, Edge y ) {
-			/*
-			 * There cannot be a crossing between only one edge
-			 */
-		if ( x.equals(y) ) return false;
-		
-		double xStart = Math.min ( getPosition( x.getSrc() ), getPosition( x.getDst() ) );
-		double xEnd = Math.max ( getPosition( x.getSrc() ), getPosition( x.getDst() ) );
-		String xString = xStart + " -> " +xEnd;
-		double yStart = Math.min ( getPosition( y.getSrc() ), getPosition( y.getDst() ) );
-		double yEnd = Math.max ( getPosition( y.getSrc() ), getPosition( y.getDst() ) );
-		String yString = yStart + " -> " + yEnd;
-		String edgeString;
-		if ( xStart < yStart ) edgeString = xString + " and " + yString;
-		else edgeString = yString + " and " + xString;
-		
-			/*
-			 * Have we already handled this edge?
-			 */
-		if ( handledEdges.contains(edgeString) ) {
-			return false;
-		}
-		handledEdges.add(edgeString);
-		
-		if ( ( xStart < yStart && xEnd > yEnd ) ||
-			 ( yStart < xStart && yEnd > xEnd ) ||
-			 ( yStart > xEnd || xStart > yEnd ) ||
-			 ( yStart == xEnd || xStart == yEnd || xStart == yStart || xEnd == yEnd )
-				) {
-			System.out.println( "No crossing between " + edgeString );
-			return false;
-		}
-		if ( ( xStart < yStart && xEnd < yEnd ) ||
-				( xStart > yStart && xEnd > yEnd )
-			)	{
-			System.out.println("Got a crossing between " + edgeString);
-			return true;
-		}
-		
-		System.err.println( "Unknown case " + edgeString );
-		return false;
-	}
-	
-	private double getPosition ( int i ) {
-		return partitions[i].getStart().getPosition();
 	}
 
 	private class NodeDegreeComparator implements Comparator<Node> {
