@@ -36,6 +36,7 @@
 package gtna.transformation.gd;
 
 import gtna.graph.Graph;
+import gtna.plot.GraphPlotter;
 import gtna.transformation.TransformationImpl;
 
 /**
@@ -43,6 +44,8 @@ import gtna.transformation.TransformationImpl;
  * 
  */
 public abstract class GraphDrawingAbstract extends TransformationImpl {
+	protected GraphPlotter graphPlotter;
+	
 	public GraphDrawingAbstract(String key, String[] configKeys, String[] configValues) {
 		super(key, configKeys, configValues);
 	}
@@ -50,4 +53,9 @@ public abstract class GraphDrawingAbstract extends TransformationImpl {
 	protected abstract void initIDSpace(Graph g);
 
 	protected abstract void writeIDSpace(Graph g);
+
+	@Override
+	public boolean applicable(Graph g) {
+		return true;
+	}
 }
