@@ -160,7 +160,11 @@ public class Node {
 		for ( int src: getIncomingEdges() ) {
 			edgeList.add( new Edge(src, this.index) );
 		}
-		return (Edge[]) edgeList.toArray();
+		Edge[] arrayEdgeList = new Edge[edgeList.size()];
+		for ( int i = 0; i < arrayEdgeList.length; i++ ) {
+			arrayEdgeList[i] = edgeList.get(i);
+		}
+		return arrayEdgeList;
 	}
 	
 	// TODO hasOut, hasIn, addIn, addOut, removeIn, removeOut
