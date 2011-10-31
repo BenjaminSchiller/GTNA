@@ -35,6 +35,8 @@
  */
 package gtna.graph;
 
+import java.util.ArrayList;
+
 public class Node {
 	private Graph graph;
 
@@ -150,5 +152,16 @@ public class Node {
 		this.outgoingEdges = outgoingEdges;
 	}
 
+	public Edge[] getAllEdges() {
+		ArrayList<Edge> edgeList = new ArrayList<Edge>();
+		for ( int dst: getOutgoingEdges() ) {
+			edgeList.add( new Edge(this.index, dst) );
+		}
+		for ( int src: getIncomingEdges() ) {
+			edgeList.add( new Edge(src, this.index) );
+		}
+		return (Edge[]) edgeList.toArray();
+	}
+	
 	// TODO hasOut, hasIn, addIn, addOut, removeIn, removeOut
 }
