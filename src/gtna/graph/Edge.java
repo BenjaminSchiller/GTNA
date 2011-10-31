@@ -87,4 +87,8 @@ public class Edge {
 	public void setDst(int dst) {
 		this.dst = dst;
 	}
+	
+	public Boolean equals(Edge e) {
+		return ( e.getSrc() == this.getSrc() ) && ( e.getDst() == this.getDst() );
+	}
 }

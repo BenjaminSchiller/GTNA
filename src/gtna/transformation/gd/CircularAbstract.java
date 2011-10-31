@@ -41,6 +41,7 @@ import java.util.Random;
 
 import gtna.graph.Edge;
 import gtna.graph.Graph;
+import gtna.graph.Node;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
@@ -86,7 +87,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
 	}
 	
-	private int countAllCrossings(Graph g) {
+	protected int countAllCrossings(Graph g) {
 		int numCross = 0;
 		Edge[] edgeList = g.generateEdges();
 		
@@ -97,8 +98,21 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		System.out.println("Got " + numCross + " crossings");		
 		return numCross;
 	}
+	
+	protected int countCrossings (Graph g, Node n) {
+		Edge[] nodeEdges = n.getAllEdges();
+		Edge[] graphEdges = g.generateEdges();
+		int numCross = 0;
+		for ( Edge x: nodeEdges ) {
+			for ( Edge y: graphEdges ) {
+				if ( x.equals(y) ) continue;
+				if ( hasCrossing(x, y) ) numCross++;
+			}
+		}
+		return numCross;
+	}
 
-	private int countCrossings(Edge e, Edge[] list) {
+	protected int countCrossings(Edge e, Edge[] list) {
 		int numCross = 0;
 		for ( Edge f: list ) {
 			if ( hasCrossing(e, f) ) numCross++;
@@ -149,7 +163,33 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		return false;
 	}
 
-	private double getPosition(int i) {
+	protected double getPosition(int i) {
 		return partitions[i].getStart().getPosition();
+	}
+	
+	protected int getPredecessor(int i) {
+		double predEnd = partitions[i].getStart().getPosition();
+		
+		for (int j = 0; j < partitions.length; j++) {
+			if ( partitions[j].getEnd().getPosition() == predEnd ) return j;
+		}
+		
+		throw new RuntimeException("There's a hole in the RingIdentifierSpace!");
+	}
+	
+	protected int getSuccessor(int i) {
+		double succStart = partitions[i].getEnd().getPosition();
+		
+		for (int j = 0; j < partitions.length; j++) {
+			if ( partitions[j].getStart().getPosition() == succStart ) return j;
+		}
+		
+		throw new RuntimeException("There's a hole in the RingIdentifierSpace!");
+	}
+	
+	protected void swapPositions(int i, int j) {
+		RingPartition temp = partitions[i];
+		partitions[i] = partitions[j];
+		partitions[j] = temp;
 	}
 }
