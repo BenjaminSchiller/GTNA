@@ -88,6 +88,10 @@ public class GraphPlotter {
 			plot(g, idSpace, basename + "-" + iteration);
 	}
 
+	public void plotStartGraph(Graph g, IdentifierSpace idSpace) {
+		plot(g, idSpace, basename + "-start");
+	}	
+	
 	public void plotFinalGraph(Graph g, IdentifierSpace idSpace) {
 		plot(g, idSpace, basename + "-final");
 	}
