@@ -40,23 +40,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
-
 import gtna.graph.Edge;
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
 import gtna.graph.Node;
-import gtna.id.ring.RingIdentifier;
 import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
-import gtna.transformation.id.RandomRingIDSpace;
 
 /**
  * @author Nico
  *
  */
-public class SixTollis extends CircularAbstract implements Transformation {
+public class SixTollis extends CircularAbstract {
 	/*
 		 * Constructor for the case that we already have set the idspace
 		 */

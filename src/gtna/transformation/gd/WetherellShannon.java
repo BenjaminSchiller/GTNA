@@ -39,13 +39,12 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
-import gtna.transformation.Transformation;
 
 /**
  * @author Nico
  *
  */
-public class WetherellShannon extends HierarchicalAbstract implements Transformation {
+public class WetherellShannon extends HierarchicalAbstract {
 	private double[] heightModifiers, nodeModifiers;
 	private double[] nextPos;
 	

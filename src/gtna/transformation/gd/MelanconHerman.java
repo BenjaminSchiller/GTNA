@@ -44,7 +44,7 @@ import gtna.transformation.Transformation;
  * @author Nico
  * 
  */
-public class MelanconHerman extends HierarchicalAbstract implements Transformation {
+public class MelanconHerman extends HierarchicalAbstract {
 	private NodeParameter[] np;
 
 	/*
