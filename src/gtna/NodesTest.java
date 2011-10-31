@@ -70,7 +70,7 @@ public class NodesTest {
 		Network nw1 = new ReadableFile("Kademlia", "kademlia", "filename.txt",
 				null, null);
 		Network nw2 = new ReadableFolder("Kademlia", "kademlia", "fodlerName/",
-				null, null);
+				".txt", null, null);
 		Network nw3 = new ReadableList("Kademlia", "kademlia", new String[] {
 				"file1.txt", "file2.txt" }, null, null);
 
@@ -85,12 +85,9 @@ public class NodesTest {
 		Series s3 = Series.generate(nw3, 17);
 
 		Plot.multiAvg(s1, "series-1-kademlia-output-plot-folder/");
-		
-		
-		
+
 		Network er = new ErdosRenyi(100, 10, false, null, null);
 		GraphWriter.write(er.generate(), "./data/malcom/er.txt");
-		
 
 		// Network nw1 = new ReadableFile("Name", "folder",
 		// "./temp/kai/spi.txt",

@@ -79,7 +79,8 @@ public class ShortestPaths extends MetricImpl implements Metric {
 		this.shortestPathLengthDistributionAbsolute = new Distribution(
 				this.computeShortestPathLengthDistributionAbsolute(SPL, graph));
 		this.connectivity = (double) Util.sum(SPL)
-				/ (double) (graph.getNodes().length * (graph.getNodes().length - 1));
+				/ (double) ((double) graph.getNodes().length * (double) (graph
+						.getNodes().length - 1));
 		this.runtime.end();
 	}
 
@@ -94,7 +95,8 @@ public class ShortestPaths extends MetricImpl implements Metric {
 
 	private double[] computeShortestPathLengthDistributionAbsolute(long[] SPL,
 			Graph graph) {
-		long sum = graph.getNodes().length * (graph.getNodes().length - 1);
+		long sum = (long) graph.getNodes().length
+				* (long) (graph.getNodes().length - 1);
 		double[] spld = new double[SPL.length];
 		for (int i = 0; i < SPL.length; i++) {
 			spld[i] = (double) SPL[i] / sum;
