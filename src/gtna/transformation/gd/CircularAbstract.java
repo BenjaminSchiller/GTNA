@@ -35,8 +35,8 @@
  */
 package gtna.transformation.gd;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
 
 import gtna.graph.Edge;
@@ -58,7 +58,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 	protected int realities;
 	protected double modulus;
 	protected Boolean wrapAround;
-	ArrayList<String> handledEdges;
+	HashSet<String> handledEdges;
 	
 	public CircularAbstract(String key, String[] configKeys, String[] configValues) {
 		super(key, configKeys, configValues);
@@ -91,7 +91,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		int numCross = 0;
 		Edge[] edgeList = g.generateEdges();
 		
-		handledEdges = new ArrayList<String>();
+		handledEdges = new HashSet<String>();
 		for ( Edge e: edgeList ) {
 			numCross += countCrossings(e, edgeList);
 		}
@@ -101,7 +101,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 	protected int countCrossings (Graph g, Node n) {
 		Edge[] nodeEdges = n.getAllEdges();
 		Edge[] graphEdges = g.generateEdges();
-		handledEdges = new ArrayList<String>();
+		handledEdges = new HashSet<String>();
 		int numCross = 0;
 		for ( Edge x: nodeEdges ) {
 			for ( Edge y: graphEdges ) {
@@ -124,16 +124,18 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 			 * There cannot be a crossing between only one edge
 			 */
 		if ( x.equals(y) ) return false;
+		if ( ( x.getSrc() == y.getSrc() ) || ( x.getSrc() == y.getDst() ) || ( x.getDst() == y.getSrc() ) || ( x.getDst() == y.getDst() ) ) return false;
 		
 		double xStart = Math.min ( getPosition( x.getSrc() ), getPosition( x.getDst() ) );
 		double xEnd = Math.max ( getPosition( x.getSrc() ), getPosition( x.getDst() ) );
-		String xString = xStart + " -> " +xEnd;
 		double yStart = Math.min ( getPosition( y.getSrc() ), getPosition( y.getDst() ) );
 		double yEnd = Math.max ( getPosition( y.getSrc() ), getPosition( y.getDst() ) );
-		String yString = yStart + " -> " + yEnd;
+
+		String xString = xStart + "-" +xEnd;
+		String yString = yStart + "-" + yEnd;
 		String edgeString;
-		if ( xStart < yStart ) edgeString = xString + " and " + yString;
-		else edgeString = yString + " and " + xString;
+		if ( xStart < yStart ) edgeString = xString + "|" + yString;
+		else edgeString = yString + "|" + xString;
 		
 			/*
 			 * Have we already handled this edge?
@@ -145,9 +147,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		
 		if ( ( xStart < yStart && xEnd > yEnd ) ||
 			 ( yStart < xStart && yEnd > xEnd ) ||
-			 ( yStart > xEnd || xStart > yEnd ) ||
-			 ( yStart == xEnd || xStart == yEnd || xStart == yStart || xEnd == yEnd )
-				) {
+			 ( yStart > xEnd || xStart > yEnd )	) {
 //			System.out.println( "No crossing between " + edgeString );
 			return false;
 		}
