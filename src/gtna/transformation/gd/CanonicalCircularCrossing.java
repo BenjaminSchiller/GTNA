@@ -65,7 +65,7 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 	public Graph transform(Graph g) {
 		int crossingsStart, crossingsEnd;
 		Node currentNode;
-		int currentCrossings, swappedCrossings, predecessor;
+		int currentCrossings, currentCrossingsPred, swappedCrossings, swappedCrossingsPred, predecessor;
 		
 		initIDSpace(g);
 		graphPlotter.plotStartGraph(g, idSpace);
@@ -80,9 +80,11 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 		while ( ( currentNode = todolist.poll() ) != null ) {
 			predecessor = getPredecessor( currentNode.getIndex() );
 			currentCrossings = countCrossings(g, currentNode);
+			currentCrossingsPred = countCrossings(g, g.getNode(predecessor));
 			swapPositions(currentNode.getIndex(), predecessor);
 			swappedCrossings = countCrossings(g, currentNode);
-			if ( swappedCrossings < currentCrossings ) {
+			swappedCrossingsPred = countCrossings(g, g.getNode(predecessor));
+			if ( swappedCrossings < currentCrossings && swappedCrossingsPred < currentCrossingsPred) {
 				/*
 				 * Leave it that way, boy! But: there might be
 				 * some more success with that node...
