@@ -37,13 +37,14 @@ package gtna.transformation.gd;
 
 import gtna.graph.Graph;
 import gtna.plot.GraphPlotter;
+import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 
 /**
  * @author Nico
  * 
  */
-public abstract class GraphDrawingAbstract extends TransformationImpl {
+public abstract class GraphDrawingAbstract extends TransformationImpl implements Transformation {
 	protected GraphPlotter graphPlotter;
 	
 	public GraphDrawingAbstract(String key, String[] configKeys, String[] configValues) {

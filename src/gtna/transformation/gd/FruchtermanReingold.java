@@ -46,7 +46,7 @@ import gtna.util.MDVector;
  * @author Nico
  *
  */
-public class FruchtermanReingold extends ForceDrivenAbstract implements Transformation {
+public class FruchtermanReingold extends ForceDrivenAbstract {
 		/*
 		 * How many iterations should the algorithm run?
 		 */

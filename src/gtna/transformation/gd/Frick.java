@@ -55,7 +55,7 @@ import gtna.util.MDVector;
  * @author Nico
  * 
  */
-public class Frick extends ForceDrivenAbstract implements Transformation {
+public class Frick extends ForceDrivenAbstract {
 	/*
 	 * How many iterations should the algorithm run?
 	 */
