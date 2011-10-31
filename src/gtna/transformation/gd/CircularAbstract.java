@@ -95,17 +95,16 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		for ( Edge e: edgeList ) {
 			numCross += countCrossings(e, edgeList);
 		}
-		System.out.println("Got " + numCross + " crossings");		
 		return numCross;
 	}
 	
 	protected int countCrossings (Graph g, Node n) {
 		Edge[] nodeEdges = n.getAllEdges();
 		Edge[] graphEdges = g.generateEdges();
+		handledEdges = new ArrayList<String>();
 		int numCross = 0;
 		for ( Edge x: nodeEdges ) {
 			for ( Edge y: graphEdges ) {
-				if ( x.equals(y) ) continue;
 				if ( hasCrossing(x, y) ) numCross++;
 			}
 		}
@@ -149,13 +148,13 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 			 ( yStart > xEnd || xStart > yEnd ) ||
 			 ( yStart == xEnd || xStart == yEnd || xStart == yStart || xEnd == yEnd )
 				) {
-			System.out.println( "No crossing between " + edgeString );
+//			System.out.println( "No crossing between " + edgeString );
 			return false;
 		}
 		if ( ( xStart < yStart && xEnd < yEnd ) ||
 				( xStart > yStart && xEnd > yEnd )
 			)	{
-			System.out.println("Got a crossing between " + edgeString);
+//			System.out.println("Got a crossing between " + edgeString);
 			return true;
 		}
 		
