@@ -37,69 +37,77 @@ package gtna.transformation.gd;
 
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.plot.GraphPlotter;
 
 /**
  * @author Nico
- *
+ * 
  */
 public class CanonicalCircularCrossing extends CircularAbstract {
 	public CanonicalCircularCrossing() {
-		super("GDA_CANONICALCIRCULARCROSSING", new String[]{}, new String[]{});
+		super("GDA_CANONICALCIRCULARCROSSING", new String[] {}, new String[] {});
 	}
-	
+
 	public CanonicalCircularCrossing(int realities, double modulus, boolean wrapAround, GraphPlotter plotter) {
-		super("GDA_CANONICALCIRCULARCROSSING", new String[]{}, new String[]{});
+		super("GDA_CANONICALCIRCULARCROSSING", new String[] {}, new String[] {});
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
-	}	
+	}
 
 	@Override
 	public Graph transform(Graph g) {
 		int crossingsStart, crossingsEnd;
 		Node currentNode;
-		int currentCrossings, currentCrossingsPred, swappedCrossings, swappedCrossingsPred, predecessor;
-		
+		int currentCrossings, swappedCrossings, predecessor;
+
 		initIDSpace(g);
 		graphPlotter.plotStartGraph(g, idSpace);
-		
+
 		/*
 		 * Add all nodes to the todolist
 		 */
 		LinkedList<Node> todolist = new LinkedList<Node>();
 		todolist.addAll(Arrays.asList(g.getNodes()));
-		
+
 		crossingsStart = countAllCrossings(g);
-		while ( ( currentNode = todolist.poll() ) != null ) {
-			predecessor = getPredecessor( currentNode.getIndex() );
+		int countLoop = 0;
+		long startTime = System.currentTimeMillis();
+		while ((currentNode = todolist.poll()) != null) {
+			predecessor = getPredecessor(currentNode.getIndex());
 			currentCrossings = countCrossings(g, currentNode);
-			currentCrossingsPred = countCrossings(g, g.getNode(predecessor));
 			swapPositions(currentNode.getIndex(), predecessor);
 			swappedCrossings = countCrossings(g, currentNode);
-			swappedCrossingsPred = countCrossings(g, g.getNode(predecessor));
-			if ( swappedCrossings < currentCrossings && swappedCrossingsPred < currentCrossingsPred) {
+			if (swappedCrossings < currentCrossings) {
 				/*
-				 * Leave it that way, boy! But: there might be
-				 * some more success with that node...
+				 * Leave it that way, boy! But: there might be some more success
+				 * with that node...
+				 * 
+				 * Remark: a prior implementation also checked whether the
+				 * swapping increased the number of crossings for the
+				 * predecessor. This took a lot more time, but did not lead to
+				 * better result. A full check for the predecessor absorbs this
+				 * - because the predecessor might also have a predecessor
+				 * sharing a lot of edge crossings...
 				 */
 				todolist.add(currentNode);
 				todolist.add(g.getNode(predecessor));
 			} else {
 				swapPositions(currentNode.getIndex(), predecessor);
 			}
+			countLoop++;
 		}
+		long endTime = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
 
+		System.out.println("Did " + countLoop + " loops in " + totalTime + " msec");
 		crossingsEnd = countAllCrossings(g);
 		System.out.println("Crossings at the beginning: " + crossingsStart + " - and afterwards: " + crossingsEnd);
-		
-		graphPlotter.plotFinalGraph(g, idSpace);		
+
+		graphPlotter.plotFinalGraph(g, idSpace);
 		writeIDSpace(g);
 		return g;
 	}
