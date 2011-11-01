@@ -11,6 +11,4 @@ bin
 !src/gtna/data
 
 # deploy
-deploy
-deploy2
-deploy3
+deploy*
