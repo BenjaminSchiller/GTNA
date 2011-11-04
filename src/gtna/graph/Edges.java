@@ -113,4 +113,11 @@ public class Edges {
 			outIndex[srcIndex]++;
 		}
 	}
+
+	/**
+	 * @return the edges
+	 */
+	public ArrayList<Edge> getEdges() {
+		return this.edges;
+	}
 }
