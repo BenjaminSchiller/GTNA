@@ -62,7 +62,9 @@ public class Mapping {
 		this.map = new HashMap<String, Integer>();
 		int index = 0;
 		for (String id : idList.getList()) {
-			this.map.put(id, index++);
+			if (!this.map.containsKey(id)) {
+				this.map.put(id, index++);
+			}
 		}
 		this.cid = cid;
 	}

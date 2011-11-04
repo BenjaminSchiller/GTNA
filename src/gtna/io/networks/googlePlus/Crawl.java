@@ -53,7 +53,10 @@ public class Crawl implements Comparable<Crawl> {
 	public Crawl(File folder) {
 		this.folder = folder;
 		this.cid = Integer.parseInt(folder.getName());
+		// this.generateNodeList();
+	}
 
+	private void generateNodeList() {
 		this.nodeList = new ArrayList<File>();
 		File[] taskLists = this.folder.listFiles();
 		for (File taskList : taskLists) {
@@ -87,11 +90,12 @@ public class Crawl implements Comparable<Crawl> {
 	}
 
 	public static ArrayList<Crawl> getCrawls(String dataFolder, int mod,
-			int offset, int minNodes, int minCid) {
+			int offset, int minNodes, int minCid, int maxCid) {
 		ArrayList<Crawl> list = Crawl.getCrawls(dataFolder, mod, offset);
 		ArrayList<Crawl> crawls = new ArrayList<Crawl>();
 		for (Crawl c : list) {
-			if (c.getNodeList().size() >= minNodes && c.getCid() >= minCid) {
+			if ((minNodes <= 0 || c.getNodeList().size() >= minNodes)
+					&& c.getCid() >= minCid && c.getCid() <= maxCid) {
 				crawls.add(c);
 			}
 		}
@@ -120,6 +124,9 @@ public class Crawl implements Comparable<Crawl> {
 	 * @return the nodeList
 	 */
 	public ArrayList<File> getNodeList() {
+		if (this.nodeList == null) {
+			this.generateNodeList();
+		}
 		return this.nodeList;
 	}
 

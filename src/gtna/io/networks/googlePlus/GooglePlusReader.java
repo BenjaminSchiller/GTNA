@@ -63,6 +63,10 @@ public class GooglePlusReader {
 			int tid = Integer.parseInt(temp[0]);
 			int tlid = Integer.parseInt((new File(node.getParent()).getName()));
 			String u_id = temp[1];
+			if (!mapping.getMap().containsKey(u_id)) {
+				continue;
+			}
+			
 			Task task = new Task(tid, mapping.getCid(), tlid, u_id, 0, 0);
 			Node n = null;
 			try {

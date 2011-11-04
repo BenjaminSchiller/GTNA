@@ -37,8 +37,13 @@ package gtna;
 
 import gtna.data.Series;
 import gtna.graph.Graph;
-import gtna.io.Filereader;
+import gtna.id.IdentifierSpace;
+import gtna.id.Partition;
+import gtna.id.plane.PlaneIdentifier;
+import gtna.id.plane.PlaneIdentifierSpaceSimple;
+import gtna.io.GraphReader;
 import gtna.io.GraphWriter;
+import gtna.io.Output;
 import gtna.io.networks.googlePlus.Crawl;
 import gtna.io.networks.googlePlus.CrawlDuration;
 import gtna.io.networks.googlePlus.FileIndexComparator;
@@ -48,21 +53,31 @@ import gtna.io.networks.googlePlus.GooglePlusReader;
 import gtna.io.networks.googlePlus.GraphSizeComparator;
 import gtna.io.networks.googlePlus.IdList;
 import gtna.io.networks.googlePlus.Mapping;
+import gtna.io.networks.googlePlus.Node;
 import gtna.io.networks.googlePlus.Statistics;
+import gtna.io.networks.googlePlus.Task;
+import gtna.io.networks.googlePlus.User;
 import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
+import gtna.plot.Gephi;
 import gtna.plot.Plot;
 import gtna.plot.PlotData;
 import gtna.transformation.Transformation;
+import gtna.transformation.id.RandomPlaneIDSpaceSimple;
+import gtna.transformation.partition.GiantConnectedComponent;
 import gtna.transformation.partition.StrongConnectivityPartition;
 import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.util.Config;
 import gtna.util.Stats;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.HashSet;
 
 /**
  * @author benni
@@ -73,24 +88,36 @@ public class GoogleP {
 	/**
 	 * @param args
 	 * @throws IOException
+	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException,
+			InterruptedException {
 		// if (true) {
+		// double[] ds = new double[] { 5, 10, 15, 20, 25, 30, 35, 40, 45, 50 };
+		// ds = new double[] { 1 };
+		// for (double d : ds) {
+		// Network nw = new Ring(10, null, null);
+		// nw = new ErdosRenyi(100, d, false, null, null);
+		// // nw = new ReadableFile("G+", "g+",
+		// // "/Users/benni/TUD/g+/graphs/1-graph.txt", null, null);
+		// Transformation t1 = new RandomRingIDSpaceSimple(1, 1.0, false);
+		// Graph g = nw.generate();
+		// g = t1.transform(g);
+		// RingIdentifierSpaceSimple ids = (RingIdentifierSpaceSimple) g
+		// .getProperty("ID_SPACE_0");
 		//
-		// Config.overwrite("METRICS",
-		// "WEAK_CONNECTIVITY, STRONG_CONNECTIVITY");
-		// Config.overwrite("MAIN_DATA_FOLDER", "./data/test/");
-		// Config.overwrite("MAIN_PLOT_FOLDER", "./plots/test/");
-		// Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
-		// Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + false);
+		// int counter = 0;
+		// for (Partition<Double> p : ids.getPartitions()) {
+		// ((RingPartitionSimple) p).getId().setPosition(
+		// ((double) counter / ids.getPartitions().length)
+		// * ids.getModulus());
+		// counter++;
+		// }
 		//
-		// Transformation t1 = new WeakConnectivityPartition();
-		// Transformation t2 = new StrongConnectivityPartition();
-		// Network[] nw = ErdosRenyi.get(100, new double[] { 3, 4, 5, 6 },
-		// false, null, new Transformation[] { t1, t2 });
-		// Series[] s = Series.generate(nw, 1);
-		// Plot.multiAvg(s, "multi/");
-		// Plot.singlesAvg(s, "single/");
+		// Gephi gephi = new Gephi();
+		// Config.overwrite("MAIN_PLOT_FOLDER", "./temp/visualization/");
+		// gephi.Plot(g, ids, "plot-" + d + ".svg");
+		// }
 		// return;
 		// }
 
@@ -156,15 +183,17 @@ public class GoogleP {
 		// GooglePlus.consecutiveIntersections(graphs, mod, offset, "-seen.txt",
 		// consecutiveSeen);
 
-		// TODO perform
+		/**
+		 * Combined plots for all crawls
+		 */
 		// String d = main + "graphs-data/";
 		// String p = main + "graphs-plots/";
-		// GoogleP.plotting(graphs, "DD", d + "dd/", p + "dd/", null);
-		// GoogleP.plotting(graphs, "CC", d + "cc/", p + "cc/", null);
-		// TODO move data folders and replot!!!!
-		// GoogleP.plotting(graphs, "SP", d + "sp/", p + "sp/", null);
-		// GoogleP.plotting(graphs, "WEAK_CONNECTIVITY, STRONG_CONNECTIVITY", d
-		// + "conn/", p + "conn/", connT);
+		// GoogleP.plotCombined(graphs, "DD", d + "dd/", p + "dd/", null);
+		// GoogleP.plotCombined(graphs, "CC", d + "cc/", p + "cc/", null);
+		// GoogleP.plotCombined(graphs, "SP", d + "sp/", p + "sp/", null);
+		// GoogleP.plotCombined(graphs,
+		// "WEAK_CONNECTIVITY, STRONG_CONNECTIVITY",
+		// d + "conn/", p + "conn/", connT);
 
 		// int maxOffset = 7;
 		// String suffix1 = "-crawled.txt";
@@ -176,14 +205,483 @@ public class GoogleP {
 		// GooglePlus.statistics(graphs, maxOffset, suffix1, folder1, name1);
 		// GooglePlus.statistics(graphs, maxOffset, suffix2, folder2, name2);x
 
-		GoogleP.readDates(main + "crawl-table.txt", "	");
+		// GoogleP.readDates(main + "crawl-table.txt", "	");
+
+		// IdList idl1 = IdList.read(main + "intersection-crawled/0k.txt", 0);
+		// IdList idl2 = IdList.read(main + "intersection-crawled-full/0k.txt",
+		// 0);
+		// Mapping mappingIntersection = new Mapping(idl1, 0);
+		// Mapping mappingIntersectionFull = new Mapping(idl2, 0);
+		// GoogleP.generateGraphsForMapping(data, main + "graphs_intersection/",
+		// mappingIntersection);
+		// GoogleP.generateGraphsForMapping(data, main
+		// + "graphs_intersection-full/", mappingIntersectionFull);
+
+		// GoogleP.plotGraphs("/Users/benni/TUD/g+/graphs_intersection/",
+		// "/Users/benni/TUD/g+/graphs_intersection-plots/");
+		// GoogleP.plotGraphs("/Users/benni/TUD/g+/graphs_intersection-full/",
+		// "/Users/benni/TUD/g+/graphs_intersection-full-plots/");
+
+		/**
+		 * 1-hop neighborhood of starters
+		 */
+		// String data1hop = main + "1-hop-data/";
+		// String idList1hop = main + "1-hop-ids.txt";
+		// String mapping1hop = main + "1-hop-mapping.txt";
+		// String graphs1hop = main + "1-hop-graphs/";
+		// String graphs1hopCsv = main + "1-hop-graphs-csv/";
+		// String plots1hop = main + "1-hop-plots/";
+		// String plots1hop2 = main + "1-hop-plots-2/";
+		// String plots1hop3 = main + "1-hop-plots-3/";
+		// String plots1hop4 = main + "1-hop-plots-4/";
+		// String basis1hop = data + "81/33605/";
+		// // IdList idl = GoogleP.generateIDList1Hop(basis1hop);
+		// // idl.write(idList1hop);
+		// // Mapping mapping = new Mapping(idl, 0);
+		// // mapping.writeMapping(mapping1hop);
+		// // IdList idl = IdList.read(idList1hop, 0);
+		// Mapping mapping = Mapping.readMapping(mapping1hop);
+		// // GoogleP.generate1HopData(mapping, data, data1hop);
+		// // GoogleP.generateGraphsForMapping(data1hop, graphs1hop, mapping);
+
+		/**
+		 * 1-hop GDA plots
+		 */
+		String b = data + "81/33605/";
+		String graphs1hop = main + "1-hop-graphs/";
+		String p = main + "1-hop-plots/";
+		HashSet<Integer> plot = new HashSet<Integer>();
+		plot.add(1);
+		plot.add(5);
+		plot.add(79);
+		Mapping mapping = Mapping.readMapping(main + "1-hop-mapping.txt");
+		Network nw = new ErdosRenyi(690, 10, false, null, null);
+		Graph g = nw.generate();
+		GoogleP.plotGraphs(graphs1hop, p + "1/",
+				GoogleP.generateIdSpace1(b, mapping, g), plot);
+		GoogleP.plotGraphs(graphs1hop, p + "2/",
+				GoogleP.generateIdSpace2(b, mapping, g), plot);
+		GoogleP.plotGraphs(graphs1hop, p + "3/",
+				GoogleP.generateIdSpace3(b, mapping, g), plot);
+		GoogleP.plotGraphs(graphs1hop, p + "4-0/",
+				GoogleP.generateIdSpace4(b, mapping, g, 0), plot);
+		GoogleP.plotGraphs(graphs1hop, p + "4-1/",
+				GoogleP.generateIdSpace4(b, mapping, g, 1), plot);
+		GoogleP.plotGraphs(graphs1hop, p + "4-2/",
+				GoogleP.generateIdSpace4(b, mapping, g, 2), plot);
+		GoogleP.plotGraphs(graphs1hop, p + "4-3/",
+				GoogleP.generateIdSpace4(b, mapping, g, 3), plot);
+
+		/**
+		 * 1-hop GEXF graph
+		 */
+		// // GraphWriter.writeGEXF(graphs1hop, main + "graph.gexf");
+		// // GoogleP.writeCSV(graphs1hop, graphs1hopCsv);
+
+		/**
+		 * Metrics for 1-hop neighborhoods
+		 */
+		// File[] files = (new File(main + "1-hop-graphs/"))
+		// .listFiles(new FileNameFilter("", "-graph.txt"));
+		// Arrays.sort(files, new FileIndexComparator("-", 0));
+		// Network[] nw = new Network[files.length];
+		// for (int i = 0; i < files.length; i++) {
+		// String filename = files[i].getAbsolutePath();
+		// int cid = Integer.parseInt(files[i].getName().split("-")[0]);
+		// Transformation[] t = new Transformation[] {
+		// new WeakConnectivityPartition(),
+		// new GiantConnectedComponent() };
+		// nw[i] = new GooglePlus(filename, cid, null, t);
+		// }
+		// Config.overwrite("MAIN_DATA_FOLDER", main + "1-hop-metrics-data/");
+		// Config.overwrite("MAIN_PLOT_FOLDER", main + "1-hop-metrics-plots/");
+		// Config.overwrite("METRICS", "DD, CC, SP");
+		// Series[] s = Series.generate(nw, 1);
+		// Plot.multiAvg(s, "multi/");
+		// Plot.singlesAvg(s, "single/");
+
+		/**
+		 * graphsETC for incremental graphs [inc-data => inc-graphs]
+		 */
+		// String incData = main + "inc-data/";
+		// String incGraphs = main + "inc-graphs/";
+		// String incMetricsData = main + "inc-metrics-data/";
+		// String incMetricsPlots = main + "inc-metrics-plots/";
+		// GoogleP.generateGraphsETC(incData, incGraphs, mod, offset, 0, 0, 62);
 
 		stats.end();
 	}
 
+	private static void writeCSV(String src, String dst) {
+		File[] files = (new File(src)).listFiles();
+		for (File f : files) {
+			Graph g = GraphReader.read(f.getAbsolutePath());
+			GraphWriter.writeCSV(g, dst + f.getName().replace(".txt", ".csv"));
+		}
+	}
+
+	private static void plotGraphs(String graphs, String dst,
+			IdentifierSpace idspace, HashSet<Integer> plot) {
+		boolean overwrite = true;
+		File[] files = (new File(graphs)).listFiles(new FileNameFilter("",
+				"-graph.txt"));
+		Arrays.sort(files, new FileIndexComparator("-", 0));
+		int index = 0;
+		for (File f : files) {
+			index++;
+			int cid = Integer.parseInt(f.getName().split("-")[0]);
+			String out = dst + cid + "-plot.pdf";
+			if (!plot.contains(cid)) {
+				continue;
+			}
+			if (((new File(out)).exists() && !overwrite)) {
+				continue;
+			}
+			System.out.println(out);
+			Graph graph = GraphReader.read(f.getAbsolutePath());
+			Gephi gephi = new Gephi();
+			gephi.Plot(graph, idspace, out);
+			gephi = null;
+		}
+	}
+
+	private static PlaneIdentifierSpaceSimple generateIdSpace1(
+			String basis1hop, Mapping mapping, Graph g) {
+		Transformation t = new RandomPlaneIDSpaceSimple(1, 16000, 16000, false);
+		g = t.transform(g);
+		PlaneIdentifierSpaceSimple idspace = (PlaneIdentifierSpaceSimple) g
+				.getProperty("ID_SPACE_0");
+		Partition<Double>[] p = idspace.getPartitions();
+
+		ArrayList<ArrayList<String>> idss = GoogleP
+				.generateNeighborhood1Hop(basis1hop);
+
+		for (int i = 0; i < idss.size(); i++) {
+			ArrayList<String> ids = idss.get(i);
+			int starter = mapping.getMap().get(ids.get(0));
+			PlaneIdentifier starterID = ((PlaneIdentifier) p[starter]
+					.getRepresentativeID());
+			double a = -1;
+			double b = -1;
+			double radius = 700;
+			double offset = 800;
+			double dist = 1600;
+			if (i == 0) {
+				a = 0;
+				b = 0;
+			} else if (i == 1) {
+				a = 1;
+				b = 0;
+			} else if (i == 2) {
+				a = 0;
+				b = 1;
+			} else if (i == 3) {
+				a = 1;
+				b = 1;
+			}
+			starterID.setX(a * dist + offset);
+			starterID.setY(b * dist + offset);
+
+			for (int j = 1; j < ids.size(); j++) {
+				int index = mapping.getMap().get(ids.get(j));
+				PlaneIdentifier nodeID = ((PlaneIdentifier) p[index]
+						.getRepresentativeID());
+				double pos = (double) (j - 1) / (double) (ids.size() - 1);
+				double angle = pos * 360;
+				double x = Math.sin(Math.toRadians(angle)) * radius;
+				double y = Math.cos(Math.toRadians(angle)) * radius;
+				nodeID.setX(x + starterID.getX());
+				nodeID.setY(y + starterID.getY());
+			}
+		}
+
+		return idspace;
+	}
+
+	private static PlaneIdentifierSpaceSimple generateIdSpace2(
+			String basis1hop, Mapping mapping, Graph g) {
+		Transformation t = new RandomPlaneIDSpaceSimple(1, 20000, 20000, false);
+		g = t.transform(g);
+		PlaneIdentifierSpaceSimple idspace = (PlaneIdentifierSpaceSimple) g
+				.getProperty("ID_SPACE_0");
+		Partition<Double>[] p = idspace.getPartitions();
+
+		ArrayList<ArrayList<String>> idss = GoogleP
+				.generateNeighborhood1Hop(basis1hop);
+
+		int counter = 0;
+
+		for (int i = 0; i < idss.size(); i++) {
+			ArrayList<String> ids = idss.get(i);
+			double a = -1;
+			double b = -1;
+			double radius = 10000;
+			double offset = 10000;
+			for (String id : ids) {
+				int index = mapping.getMap().get(id);
+				PlaneIdentifier nodeID = ((PlaneIdentifier) p[index]
+						.getRepresentativeID());
+				double pos = (double) counter / (double) (g.getNodes().length);
+				double angle = pos * 360;
+				double x = Math.sin(Math.toRadians(angle)) * radius;
+				double y = Math.cos(Math.toRadians(angle)) * radius;
+				nodeID.setX(x + offset);
+				nodeID.setY(y + offset);
+				counter++;
+			}
+		}
+
+		return idspace;
+	}
+
+	private static PlaneIdentifierSpaceSimple generateIdSpace3(
+			String basis1hop, Mapping mapping, Graph g) {
+		Transformation t = new RandomPlaneIDSpaceSimple(1, 16000, 16000, false);
+		g = t.transform(g);
+		PlaneIdentifierSpaceSimple idspace = (PlaneIdentifierSpaceSimple) g
+				.getProperty("ID_SPACE_0");
+		Partition<Double>[] p = idspace.getPartitions();
+
+		ArrayList<ArrayList<String>> idss = GoogleP
+				.generateNeighborhood1Hop(basis1hop);
+
+		for (int i = 0; i < idss.size(); i++) {
+			ArrayList<String> ids = idss.get(i);
+			int starter = mapping.getMap().get(ids.get(0));
+			PlaneIdentifier starterID = ((PlaneIdentifier) p[starter]
+					.getRepresentativeID());
+			double a = -1;
+			double b = -1;
+			double radius = 700;
+			double offset = 800;
+			double dist = 1600;
+			if (i == 0) {
+				a = 1;
+				b = 0;
+			} else if (i == 1) {
+				a = 0;
+				b = 0.5;
+				radius = 1000;
+			} else if (i == 2) {
+				a = 0;
+				b = 0.5;
+				radius = 1000;
+			} else if (i == 3) {
+				a = 1;
+				b = 1;
+			}
+			starterID.setX(a * dist + offset);
+			starterID.setY(b * dist + offset);
+
+			for (int j = 1; j < ids.size(); j++) {
+				int index = mapping.getMap().get(ids.get(j));
+				PlaneIdentifier nodeID = ((PlaneIdentifier) p[index]
+						.getRepresentativeID());
+				double pos = (double) (j - 1) / (double) (ids.size() - 1);
+				if (i == 1) {
+					pos = (double) (j - 1)
+							/ (double) (idss.get(1).size() + idss.get(2).size() - 2);
+				} else if (i == 2) {
+					pos = (double) (idss.get(1).size() + j - 2)
+							/ (double) (idss.get(1).size() + idss.get(2).size() - 2);
+				}
+				double angle = pos * 360;
+				double x = Math.sin(Math.toRadians(angle)) * radius;
+				double y = Math.cos(Math.toRadians(angle)) * radius;
+				nodeID.setX(x + starterID.getX());
+				nodeID.setY(y + starterID.getY());
+			}
+		}
+
+		return idspace;
+	}
+
+	private static PlaneIdentifierSpaceSimple generateIdSpace4(
+			String basis1hop, Mapping mapping, Graph g, int single) {
+		Transformation t = new RandomPlaneIDSpaceSimple(1, 16000, 16000, false);
+		g = t.transform(g);
+		PlaneIdentifierSpaceSimple idspace = (PlaneIdentifierSpaceSimple) g
+				.getProperty("ID_SPACE_0");
+		Partition<Double>[] p = idspace.getPartitions();
+
+		ArrayList<ArrayList<String>> idss = GoogleP
+				.generateNeighborhood1Hop(basis1hop);
+
+		for (int i = 0; i < idss.size(); i++) {
+			ArrayList<String> ids = idss.get(i);
+			int starter = mapping.getMap().get(ids.get(0));
+			PlaneIdentifier starterID = ((PlaneIdentifier) p[starter]
+					.getRepresentativeID());
+			double a = 0;
+			double b = 0;
+			double radius = 700;
+			double offset = 800;
+			double dist = 1600;
+			starterID.setX(a * dist + offset);
+			starterID.setY(b * dist + offset);
+
+			for (int j = 1; j < ids.size(); j++) {
+				int index = mapping.getMap().get(ids.get(j));
+				PlaneIdentifier nodeID = ((PlaneIdentifier) p[index]
+						.getRepresentativeID());
+				double pos = (double) (j - 1) / (double) (ids.size() - 1);
+				double angle = pos * 360;
+				double x = Math.sin(Math.toRadians(angle)) * radius;
+				double y = Math.cos(Math.toRadians(angle)) * radius;
+				if (i != single) {
+					x = starterID.getX();
+					y = starterID.getY();
+				}
+				nodeID.setX(x + starterID.getX());
+				nodeID.setY(y + starterID.getY());
+			}
+		}
+
+		return idspace;
+	}
+
+	private static void generate1HopData(Mapping mapping, String data,
+			String data1hop) throws InterruptedException, IOException {
+		File[] files = (new File(data)).listFiles();
+		int[] cids = new int[files.length];
+		for (int i = 0; i < files.length; i++) {
+			cids[i] = Integer.parseInt(files[i].getName());
+		}
+		Arrays.sort(cids);
+		for (int i = 0; i < cids.length; i++) {
+			int cid = cids[i];
+			Crawl crawl = new Crawl(new File(data + cid));
+			System.out.println("\n\nPROCESSING " + crawl);
+			if (i > 0) {
+				String src = data1hop + cids[i - 1] + "/1/";
+				String dst = data1hop + cid + "/1/";
+				GoogleP.cp(src, dst);
+			}
+			int counter = 0;
+			for (File n : crawl.getNodeList()) {
+				String uid = n.getName().split("-")[1];
+				if (mapping.getMap().containsKey(uid)) {
+					String src = n.getAbsolutePath();
+					String dst = data1hop + cid + "/1/0-" + uid;
+					GoogleP.ln(src, dst);
+					counter++;
+				}
+			}
+			System.out.println("ln'ed " + counter + " files => "
+					+ (new File(data1hop + cid + "/1/")).listFiles().length);
+		}
+	}
+
+	private static void cp(String src, String dst) {
+		File[] files = (new File(src)).listFiles();
+		for (File f : files) {
+			String cmd = "cp -R " + f.getAbsolutePath() + " " + dst
+					+ f.getName();
+			GoogleP.execute(cmd);
+			// System.out.println(cmd);
+		}
+		System.out.println("cp'ed " + files.length + " files => "
+				+ (new File(dst)).listFiles().length);
+	}
+
+	private static void ln(String src, String dst) {
+		String cmd = "ln -sf " + src + " " + dst;
+		// System.out.println("  " + cmd);
+		GoogleP.execute(cmd);
+	}
+
+	private static boolean execute(String cmd) {
+		try {
+			Process p = Runtime.getRuntime().exec(cmd);
+
+			InputStream stderr = p.getErrorStream();
+			InputStreamReader isr = new InputStreamReader(stderr);
+			BufferedReader br = new BufferedReader(isr);
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				Output.writeln(line);
+			}
+
+			p.waitFor();
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private static IdList generateIDList1Hop(String basis1hop)
+			throws IOException {
+		ArrayList<ArrayList<String>> list1 = GoogleP
+				.generateNeighborhood1Hop(basis1hop);
+		ArrayList<String> list = new ArrayList<String>();
+		for (ArrayList<String> l : list1) {
+			for (String e : l) {
+				list.add(e);
+			}
+		}
+		IdList idl = new IdList(list, 0);
+		return idl;
+	}
+
+	private static ArrayList<ArrayList<String>> generateNeighborhood1Hop(
+			String basis1hop) {
+		HashSet<String> seen = new HashSet<String>();
+		ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
+		File[] nodes = (new File(basis1hop)).listFiles();
+		for (File n : nodes) {
+			ArrayList<String> neighbors = new ArrayList<String>();
+			String[] temp = n.getName().split("-");
+			String u_id = temp[1];
+			seen.add(u_id);
+		}
+		for (File n : nodes) {
+			ArrayList<String> neighbors = new ArrayList<String>();
+			String[] temp = n.getName().split("-");
+			int tid = Integer.parseInt(temp[0]);
+			int tlid = 0;
+			String u_id = temp[1];
+			Task task = new Task(tid, 0, tlid, u_id, 0, 0);
+			Node node = Node.read(n.getAbsolutePath(), task);
+			neighbors.add(u_id);
+			for (User out : node.getOut()) {
+				if (!seen.contains(out.getId())) {
+					neighbors.add(out.getId());
+					seen.add(out.getId());
+				}
+			}
+			for (User in : node.getIn()) {
+				if (!seen.contains(in.getId())) {
+					neighbors.add(in.getId());
+					seen.add(in.getId());
+				}
+			}
+			list.add(neighbors);
+		}
+		return list;
+	}
+
+	private static void generateGraphsForMapping(String data, String dst,
+			Mapping mapping) {
+		ArrayList<Crawl> crawls = Crawl.getCrawls(data, 1, 0);
+		for (Crawl crawl : crawls) {
+			String graph = dst + crawl.getCid() + "-graph.txt";
+			if (!(new File(graph)).exists()) {
+				System.out.print("generating graph for " + crawl);
+				Graph g = GooglePlusReader.generateGraph(crawl, mapping);
+				GraphWriter.write(g, graph);
+				System.out.println(" ===> " + graph);
+			}
+		}
+	}
+
 	private static void generateGraphsETC(String data, String graphs, int mod,
-			int offset) throws IOException {
-		ArrayList<Crawl> crawls = Crawl.getCrawls(data, mod, offset);
+			int offset, int minNodes, int minCid, int maxCid)
+			throws IOException {
+		ArrayList<Crawl> crawls = Crawl.getCrawls(data, mod, offset, minNodes,
+				minCid, maxCid);
 		for (Crawl crawl : crawls) {
 			String crawled = graphs + crawl.getCid() + "-crawled.txt";
 			String seen = graphs + crawl.getCid() + "-seen.txt";
@@ -249,7 +747,7 @@ public class GoogleP {
 			int offset, String suffix, int minNodes, int minCid, String dst)
 			throws IOException {
 		ArrayList<Crawl> crawls = Crawl.getCrawls(data, mod, offset,
-				minNodes * 1000, minCid);
+				minNodes * 1000, minCid, Integer.MAX_VALUE);
 		IdList intersection = IdList.read(graphs + crawls.get(0).getCid()
 				+ suffix, crawls.get(0).getCid());
 
@@ -328,8 +826,8 @@ public class GoogleP {
 		}
 	}
 
-	private static void plotting(String graphs, String metrics, String dataDst,
-			String plotDst, Transformation[] transformations) {
+	private static void plotCombined(String graphs, String metrics,
+			String dataDst, String plotDst, Transformation[] transformations) {
 		System.out.println("PLOTTING FOR " + metrics + " (from " + dataDst
 				+ ")");
 		Config.overwrite("METRICS", metrics);
@@ -347,8 +845,6 @@ public class GoogleP {
 
 			Network nw = new GooglePlus(f.getAbsolutePath(), cid, null,
 					transformations);
-			// Network nw = new ReadableFile("G+ " + cid, "g+" + cid,
-			// f.getAbsolutePath(), null, transformations);
 			Series s = Series.get(nw);
 
 			if (s != null && s.dataFolders() != null
