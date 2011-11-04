@@ -111,6 +111,13 @@ public class RingIdentifier implements DIdentifier, Comparable<RingIdentifier> {
 	}
 
 	/**
+	 * @param position the position to set
+	 */
+	public void setPosition(double position) {
+		this.position = position;
+	}
+
+	/**
 	 * @return the idSpace
 	 */
 	public RingIdentifierSpace getIdSpace() {
