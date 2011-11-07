@@ -217,4 +217,7 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 		return this.wrapAround;
 	}
 	
+	public MDIdentifierSpaceSimple clone() {
+		return new MDIdentifierSpaceSimple(this.partitions.clone(), this.modulus, this.wrapAround);
+	}
 }

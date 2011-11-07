@@ -208,4 +208,7 @@ public class PlaneIdentifierSpaceSimple implements DIdentifierSpace {
 		return this.wrapAround;
 	}
 
+	public PlaneIdentifierSpaceSimple clone() {
+		return new PlaneIdentifierSpaceSimple(this.partitions.clone(), this.modulusX, this.modulusY, this.wrapAround);
+	}
 }
