@@ -42,6 +42,7 @@ import java.util.Random;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.id.IdentifierSpace;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
@@ -65,6 +66,8 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 	}
 
 	protected void initIDSpace( Graph g ) {
+		if ( !generateIDSpace ) return;
+		
 		Random rand = new Random();
 		for (int r = 0; r < this.realities; r++) {
 			partitions = new RingPartition[g.getNodes().length];
@@ -85,6 +88,13 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 
 	protected void writeIDSpace ( Graph g ) {
 		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
+	}
+	
+	public void setIDSpace(IdentifierSpace idSpace) {
+		this.idSpace = (RingIdentifierSpace) idSpace.clone();
+		this.partitions = (RingPartition[]) this.idSpace.getPartitions();
+		this.modulus = this.idSpace.getModulus();
+		this.generateIDSpace = false;
 	}
 	
 	protected int countAllCrossings(Graph g) {
