@@ -61,8 +61,8 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 	@Override
 	public Graph transform(Graph g) {
 		int crossingsStart, crossingsEnd;
-		Node currentNode;
-		int currentCrossings, swappedCrossings, predecessor;
+		Node currentNode, predecessor;
+		int currentCrossings, swappedCrossings;
 
 		initIDSpace(g);
 		graphPlotter.plotStartGraph(g, idSpace);
@@ -77,10 +77,17 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 		int countLoop = 0;
 		long startTime = System.currentTimeMillis();
 		while ((currentNode = todolist.poll()) != null) {
-			predecessor = getPredecessor(currentNode.getIndex());
-			currentCrossings = countCrossings(g, currentNode);
-			swapPositions(currentNode.getIndex(), predecessor);
-			swappedCrossings = countCrossings(g, currentNode);
+			predecessor = g.getNode(getPredecessor(currentNode.getIndex()));
+			currentCrossings = countCrossings(currentNode, predecessor);
+			if (currentCrossings == 0) {
+					/*
+					 * If there are no actual crossings caused by a node and its predecessor,
+					 * there is nothing to improve
+					 */
+				continue;
+			}
+			swapPositions(currentNode.getIndex(), predecessor.getIndex());
+			swappedCrossings = countCrossings(currentNode, predecessor);
 			if (swappedCrossings < currentCrossings) {
 				/*
 				 * Leave it that way, boy! But: there might be some more success
@@ -94,9 +101,9 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 				 * sharing a lot of edge crossings...
 				 */
 				todolist.add(currentNode);
-				todolist.add(g.getNode(predecessor));
+				todolist.add(predecessor);
 			} else {
-				swapPositions(currentNode.getIndex(), predecessor);
+				swapPositions(currentNode.getIndex(), predecessor.getIndex());
 			}
 			countLoop++;
 		}

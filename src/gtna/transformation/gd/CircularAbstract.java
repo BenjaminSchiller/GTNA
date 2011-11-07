@@ -99,7 +99,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 	}
 	
 	protected int countCrossings (Graph g, Node n) {
-		Edge[] nodeEdges = n.getAllEdges();
+		Edge[] nodeEdges = n.generateAllEdges();
 		Edge[] graphEdges = g.generateEdges();
 		handledEdges = new HashSet<String>();
 		int numCross = 0;
@@ -115,6 +115,20 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		int numCross = 0;
 		for ( Edge f: list ) {
 			if ( hasCrossing(e, f) ) numCross++;
+		}
+		return numCross;
+	}
+	
+	protected int countCrossings(Node n, Node m) {
+		int numCross = 0;
+		handledEdges = new HashSet<String>();
+		Edge[] nEdges = n.generateAllEdges();
+		Edge[] mEdges = m.generateAllEdges();
+		for (Edge nEdge : nEdges) {
+			for (Edge mEdge : mEdges) {
+				if (hasCrossing(nEdge, mEdge))
+					numCross++;
+			}
 		}
 		return numCross;
 	}

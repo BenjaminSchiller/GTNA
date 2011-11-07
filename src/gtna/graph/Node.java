@@ -152,7 +152,7 @@ public class Node {
 		this.outgoingEdges = outgoingEdges;
 	}
 
-	public Edge[] getAllEdges() {
+	public Edge[] generateAllEdges() {
 		ArrayList<Edge> edgeList = new ArrayList<Edge>();
 		for ( int dst: getOutgoingEdges() ) {
 			edgeList.add( new Edge(this.index, dst) );
