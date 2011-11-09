@@ -44,11 +44,11 @@ import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDPartitionSimple;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlanePartitionSimple;
+import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartition;
 import gtna.id.ring.RingPartitionSimple;
-import gtna.util.Config;
 
 import java.io.File;
 import java.io.IOException;
@@ -145,9 +145,6 @@ public class Gephi {
 				continue;
 			}
 			ForceVector position = getPosition(p[n.getIndex()]);
-			// if (n.getIndex() == 12) {
-			// position = new ForceVector(0, 0);
-			// }
 			org.gephi.graph.api.Node temp = addNode(graphModel, gephiGraph, "N"
 					+ n.getIndex(), "Node " + n.getIndex(), position);
 			gephiNodes[n.getIndex()] = temp;
@@ -206,7 +203,8 @@ public class Gephi {
 					.getIdSpace();
 			double modulus = idSpace.getModulus();
 
-			double positionOnRing = ((RingPartition) p).getEnd().getPosition();
+			double positionOnRing = ((RingIdentifier) ((RingPartition) p)
+					.getRepresentativeID()).getPosition();
 			double angle = (positionOnRing / modulus) * 360;
 
 			ForceVector pos = new ForceVector((float) Math.sin(Math
