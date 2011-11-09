@@ -35,12 +35,46 @@
  */
 package gtna;
 
+import gtna.data.Series;
+import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
+import gtna.plot.GraphPlotter;
+import gtna.plot.Plot;
+import gtna.routing.RoutingAlgorithm;
+import gtna.routing.greedy.Greedy;
+import gtna.routing.greedy.GreedyBacktracking;
+import gtna.transformation.Transformation;
+import gtna.transformation.gd.FruchtermanReingold;
+import gtna.util.Config;
+
 /**
  * @author "Benjamin Schiller"
  * 
  */
 // TODO adapt to changes
 public class Routing {
+	public static void main(String[] args) {
+		Config.overwrite("METRICS", "DD, SP, R");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/nico/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/nico/");
+		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + false);
+
+		Transformation[] t1 = new Transformation[] { new FruchtermanReingold(1,
+				new double[] { 100, 100 }, false, 100, new GraphPlotter(true)) };
+		RoutingAlgorithm r1 = new Greedy();
+		Transformation[] t2 = new Transformation[] { new FruchtermanReingold(1,
+				new double[] { 100, 100 }, false, 100, new GraphPlotter(true)) };
+		RoutingAlgorithm r2 = new GreedyBacktracking();
+		Network nw1 = new ErdosRenyi(100, 5.0, true, r1, t1);
+		Network nw2 = new ErdosRenyi(100, 5.0, true, r2, t2);
+		Series[] s = Series.generate(new Network[] { nw1, nw2 }, 4);
+		// Series s = Series.get(nw);
+
+		Plot.allMulti(s, "multi/");
+
+	}
+
 	// public static String SPI = "./resources/SPI-3-LCC/2010-08.spi.txt";
 	//
 	// public static String OUTPUT = "./data/routing/graph.txt";
