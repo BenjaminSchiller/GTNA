@@ -678,6 +678,14 @@ public class Util {
 		}
 		return i;
 	}
+	
+	public static String implode(double[] in) {
+		String result = "";
+		for ( double singleIn: in ) {
+			result += "" + singleIn + ",";
+		}
+		return result.substring(0, result.length() - 1);
+	}
 
 	// ///////////////////////
 	// REMOVE

@@ -40,6 +40,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.plot.GraphPlotter;
 import gtna.util.MDVector;
+import gtna.util.Util;
 
 /**
  * @author Nico
@@ -75,7 +76,7 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 	private double t;
 	
 	public FruchtermanReingold(int realities, double[] moduli, Boolean wrapAround, int iterations, GraphPlotter plotter) {
-		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
+		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{"REALITIES", "MODULI", "WRAPAROUND", "ITERATIONS"}, new String[]{"" + realities, Util.implode(moduli), "" + wrapAround, "" + iterations});
 		this.realities = realities;
 		this.moduli = moduli;
 		this.wrapAround = wrapAround;
