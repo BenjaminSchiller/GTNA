@@ -49,6 +49,7 @@ import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartition;
 import gtna.id.ring.RingPartitionSimple;
+import gtna.util.Config;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,9 +77,14 @@ public class Gephi {
 	private org.gephi.graph.api.Node[] gephiNodes;
 	private Boolean useSpanningTreeOnNextPlot = false;
 
-	private float ringRadius = 100;
+	private float ringRadius;
 
 	public void Plot(Graph g, IdentifierSpace idSpace, String fileName) {
+		ringRadius = Config.getInt("GEPHI_RING_RADIUS");
+		boolean curvedFlag = Config.getBoolean("GEPHI_DRAW_CURVED_EDGES");	
+		float edgeScale = Config.getFloat("GEPHI_EDGE_SCALE");
+		float nodeBorderWidth = Config.getFloat("GEPHI_NODE_BORDER_WIDTH");
+				
 		ProjectController pc = Lookup.getDefault().lookup(
 				ProjectController.class);
 		pc.newProject();
@@ -93,10 +99,6 @@ public class Gephi {
 		// Next three lines: do *never* draw curved lines!
 		PreviewModel model = Lookup.getDefault()
 				.lookup(PreviewController.class).getModel();
-
-		boolean curvedFlag = false;
-		float edgeScale = (float) 0.001;
-		float nodeBorderWidth = (float) 0.1;
 
 		DirectedEdgeSupervisor m1 = model.getUniEdgeSupervisor();
 		DirectedEdgeSupervisor m2 = model.getBiEdgeSupervisor();
@@ -123,8 +125,6 @@ public class Gephi {
 		ExportController ec = Lookup.getDefault()
 				.lookup(ExportController.class);
 		try {
-			// ec.exportFile(new File(Config.get("MAIN_PLOT_FOLDER") +
-			// fileName));
 			ec.exportFile(new File(fileName));
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -210,8 +210,6 @@ public class Gephi {
 			ForceVector pos = new ForceVector((float) Math.sin(Math
 					.toRadians(angle)) * ringRadius, (float) Math.cos(Math
 					.toRadians(angle)) * ringRadius);
-			// System.out.println("Put " + positionOnRing + " with angle " +
-			// angle + " and radius " + ringRadius + " at " + pos);
 			return pos;
 		} else if (p instanceof RingPartitionSimple) {
 			RingPartitionSimple temp = (RingPartitionSimple) p;
