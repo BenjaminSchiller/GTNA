@@ -97,7 +97,7 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 		this.t = idSpace.getMaxModulus();		
 
 		for ( int i = 0; i < this.iterations; i++ ) {
-			System.out.println("\n\n   >>> in iteration " + i + " <<<");
+//			System.out.println("\n\n   >>> in iteration " + i + " <<<");
 			graphPlotter.plotIteration(g, idSpace, i);
 			g = this.doIteration ( g );
 		}

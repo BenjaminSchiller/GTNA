@@ -74,7 +74,7 @@ public class GraphPlotter {
 
 	public void plot(Graph g, IdentifierSpace idSpace, String filename) {
 		if (!disabled)
-			gephi.Plot(g, idSpace, Config.get("MAIN_PLOT_FOLDER") + filename + "." + extension);
+			gephi.plot(g, idSpace, Config.get("MAIN_PLOT_FOLDER") + filename + "." + extension);
 	}
 
 	public void plotIteration(Graph g, IdentifierSpace idSpace, int iteration) {

@@ -79,7 +79,7 @@ public class Gephi {
 
 	private float ringRadius;
 
-	public void Plot(Graph g, IdentifierSpace idSpace, String fileName) {
+	public void plot(Graph g, IdentifierSpace idSpace, String fileName) {
 		ringRadius = Config.getInt("GEPHI_RING_RADIUS");
 		boolean curvedFlag = Config.getBoolean("GEPHI_DRAW_CURVED_EDGES");	
 		float edgeScale = Config.getFloat("GEPHI_EDGE_SCALE");
@@ -96,7 +96,7 @@ public class Gephi {
 		// directions
 		gephiGraph = graphModel.getGraph();
 
-		// Next three lines: do *never* draw curved lines!
+		// Next lines: do *never* draw curved lines!
 		PreviewModel model = Lookup.getDefault()
 				.lookup(PreviewController.class).getModel();
 
@@ -116,7 +116,6 @@ public class Gephi {
 		m2.setShowArrowsFlag(false);
 
 		NodeSupervisor ns = model.getNodeSupervisor();
-
 		ns.setNodeBorderWidth(nodeBorderWidth);
 
 		gephiNodes = new org.gephi.graph.api.Node[g.getNodes().length];
