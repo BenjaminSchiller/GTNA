@@ -46,10 +46,6 @@ import gtna.plot.GraphPlotter;
  * 
  */
 public class CanonicalCircularCrossing extends CircularAbstract {
-	public CanonicalCircularCrossing() {
-		super("GDA_CANONICALCIRCULARCROSSING", new String[] {}, new String[] {});
-	}
-
 	public CanonicalCircularCrossing(int realities, double modulus, boolean wrapAround, GraphPlotter plotter) {
 		super("GDA_CANONICALCIRCULARCROSSING", new String[] {"REALITIES", "MODULUS", "WRAPAROUND"}, new String[] {"" + realities, "" + modulus, "" + wrapAround});
 		this.realities = realities;

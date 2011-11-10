@@ -51,16 +51,8 @@ import gtna.transformation.Transformation;
  *
  */
 public class SixTollis extends CircularAbstract {
-	/*
-		 * Constructor for the case that we already have set the idspace
-		 */
-	public SixTollis(GraphPlotter plotter) {
-		super("GDA_SIX_TOLLIS", new String[]{}, new String[]{});
-		this.graphPlotter = plotter;
-	}
-	
 	public SixTollis(int realities, double modulus, boolean wrapAround, GraphPlotter plotter) {
-		super("GDA_SIX_TOLLIS", new String[]{}, new String[]{});
+		super("GDA_SIX_TOLLIS", new String[] {"REALITIES", "MODULUS", "WRAPAROUND"}, new String[] {"" + realities, "" + modulus, "" + wrapAround});
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;

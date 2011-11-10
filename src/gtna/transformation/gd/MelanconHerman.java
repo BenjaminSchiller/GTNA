@@ -55,7 +55,7 @@ public class MelanconHerman extends HierarchicalAbstract {
 	double previous = 0;
 
 	public MelanconHerman(double modulusX, double modulusY, GraphPlotter plotter) {
-		super("GDA_MELANCONHERMAN", new String[] {}, new String[] {});
+		super("GDA_MELANCONHERMAN", new String[] {"MODULUS_X", "MODULUS_Y"}, new String[] {"" + modulusX, "" + modulusY});
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;

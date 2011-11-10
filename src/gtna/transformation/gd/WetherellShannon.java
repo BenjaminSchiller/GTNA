@@ -54,7 +54,7 @@ public class WetherellShannon extends HierarchicalAbstract {
 	}
 	
 	public WetherellShannon(double modulusX, double modulusY, GraphPlotter plotter) {
-		super("GDA_WETHERELL_SHANNON", new String[] {}, new String[] {});
+		super("GDA_WETHERELL_SHANNON", new String[] {"MODULUS_X", "MODULUS_Y"}, new String[] {"" + modulusX, "" + modulusY});
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;
