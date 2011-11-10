@@ -134,7 +134,8 @@ public class Frick extends ForceDrivenAbstract {
 		int currIteration = 0;
 		while (tGlobal > tMin && currIteration < maxIterations) {
 			System.out.println("\n\n   >>> in iteration " + currIteration + " <<<");
-			graphPlotter.plotIteration(g, idSpace, currIteration);
+			if (graphPlotter != null)
+				graphPlotter.plotIteration(g, idSpace, currIteration);
 
 			if (currIteration % nodeList.length == 0) {
 				/*
@@ -151,7 +152,8 @@ public class Frick extends ForceDrivenAbstract {
 			currIteration++;
 		}
 		System.out.println("Stopped it - did " + currIteration + " iterations (of maximal " + maxIterations + "), and temperature is " + tGlobal + " (minimal: " + tMin + ")");
-		graphPlotter.plotFinalGraph(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotFinalGraph(g, idSpace);
 		writeIDSpace(g);
 		return g;
 	}

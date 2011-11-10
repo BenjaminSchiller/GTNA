@@ -65,7 +65,8 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 		int currentCrossings, swappedCrossings;
 
 		initIDSpace(g);
-		graphPlotter.plotStartGraph(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotStartGraph(g, idSpace);
 
 		/*
 		 * Add all nodes to the todolist
@@ -114,7 +115,8 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 		crossingsEnd = countAllCrossings(g);
 		System.out.println("Crossings at the beginning: " + crossingsStart + " - and afterwards: " + crossingsEnd);
 
-		graphPlotter.plotFinalGraph(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotFinalGraph(g, idSpace);
 		writeIDSpace(g);
 		return g;
 	}

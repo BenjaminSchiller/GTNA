@@ -39,7 +39,6 @@ import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.plot.GraphPlotter;
-import gtna.transformation.Transformation;
 import gtna.util.MDVector;
 
 /**
@@ -98,10 +97,12 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 
 		for ( int i = 0; i < this.iterations; i++ ) {
 //			System.out.println("\n\n   >>> in iteration " + i + " <<<");
-			graphPlotter.plotIteration(g, idSpace, i);
+			if (graphPlotter != null)
+				graphPlotter.plotIteration(g, idSpace, i);
 			g = this.doIteration ( g );
 		}
-		graphPlotter.plotFinalGraph(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotFinalGraph(g, idSpace);
 		writeIDSpace(g);
 		return g;
 	}

@@ -93,8 +93,10 @@ public class WetherellShannon extends HierarchicalAbstract {
 		}
 		
 		writeIDSpace(g);
-		graphPlotter.plotFinalGraph(g, idSpace);
-		graphPlotter.plotSpanningTree(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotFinalGraph(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotSpanningTree(g, idSpace);
 		
 		return g;
 	}
