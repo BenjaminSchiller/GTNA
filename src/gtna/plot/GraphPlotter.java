@@ -37,6 +37,7 @@ package gtna.plot;
 
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
+import gtna.util.Config;
 
 /**
  * @author Nico
@@ -73,7 +74,7 @@ public class GraphPlotter {
 
 	public void plot(Graph g, IdentifierSpace idSpace, String filename) {
 		if (!disabled)
-			gephi.Plot(g, idSpace, filename + "." + extension);
+			gephi.Plot(g, idSpace, Config.get("MAIN_PLOT_FOLDER") + filename + "." + extension);
 	}
 
 	public void plotIteration(Graph g, IdentifierSpace idSpace, int iteration) {
