@@ -50,6 +50,7 @@ import gtna.plot.Gephi;
 import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
 import gtna.util.MDVector;
+import gtna.util.Util;
 
 /**
  * @author Nico
@@ -102,7 +103,7 @@ public class Frick extends ForceDrivenAbstract {
 	private Random rand;
 
 	public Frick(int realities, double[] moduli, Boolean wrapAround, GraphPlotter plotter) {
-		super("GDA_FRICK", new String[] {}, new String[] {});
+		super("GDA_FRICK", new String[]{"REALITIES", "MODULI", "WRAPAROUND"}, new String[]{"" + realities, Util.implode(moduli), "" + wrapAround});
 		this.realities = realities;
 		this.moduli = moduli;
 		this.wrapAround = wrapAround;

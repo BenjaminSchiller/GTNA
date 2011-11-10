@@ -51,7 +51,7 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 	}
 
 	public CanonicalCircularCrossing(int realities, double modulus, boolean wrapAround, GraphPlotter plotter) {
-		super("GDA_CANONICALCIRCULARCROSSING", new String[] {}, new String[] {});
+		super("GDA_CANONICALCIRCULARCROSSING", new String[] {"REALITIES", "MODULUS", "WRAPAROUND"}, new String[] {"" + realities, "" + modulus, "" + wrapAround});
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
