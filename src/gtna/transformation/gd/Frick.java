@@ -35,22 +35,14 @@
  */
 package gtna.transformation.gd;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
 import gtna.graph.Node;
-import gtna.id.md.MDIdentifier;
-import gtna.id.md.MDIdentifierSpaceSimple;
-import gtna.id.md.MDPartitionSimple;
-import gtna.plot.Gephi;
 import gtna.plot.GraphPlotter;
-import gtna.transformation.Transformation;
 import gtna.util.MDVector;
-import gtna.util.Util;
 
 /**
  * @author Nico
@@ -103,7 +95,7 @@ public class Frick extends ForceDrivenAbstract {
 	private Random rand;
 
 	public Frick(int realities, double[] moduli, Boolean wrapAround, GraphPlotter plotter) {
-		super("GDA_FRICK", new String[]{"REALITIES", "MODULI", "WRAPAROUND"}, new String[]{"" + realities, Util.implode(moduli), "" + wrapAround});
+		super("GDA_FRICK", new String[]{"REALITIES", "MODULI", "WRAPAROUND"}, new String[]{"" + realities, Arrays.toString(moduli), "" + wrapAround});
 		this.realities = realities;
 		this.moduli = moduli;
 		this.wrapAround = wrapAround;

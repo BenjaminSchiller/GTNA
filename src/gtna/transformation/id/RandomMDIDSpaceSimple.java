@@ -35,7 +35,6 @@
  */
 package gtna.transformation.id;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -46,41 +45,36 @@ import gtna.transformation.TransformationImpl;
 
 /**
  * @author Nico
- *
+ * 
  */
-public class RandomMDIDSpaceSimple extends TransformationImpl implements
-Transformation {
+public class RandomMDIDSpaceSimple extends TransformationImpl implements Transformation {
 
 	private int realities;
 	private double[] modulus;
 	private boolean wrapAround;
 	private MDIdentifierSpaceSimple idSpace;
-	
+
 	public RandomMDIDSpaceSimple() {
 		super("RANDOM_MD_ID_SPACE_SIMPLE", new String[] {}, new String[] {});
 		this.realities = 1;
 	}
 
 	public RandomMDIDSpaceSimple(int realities, double[] modulus, boolean wrapAround) {
-		super("RANDOM_MD_ID_SPACE_SIMPLE", new String[] { "REALITIES",
-				"DIMENSIONS", "MODULUS", "WRAP_AROUND" }, new String[] {
-				"" + realities, "" + modulus.length, Arrays.toString(modulus), "" + wrapAround });
+		super("RANDOM_MD_ID_SPACE_SIMPLE", new String[] { "REALITIES", "MODULI", "WRAPAROUND" }, new String[] {
+				"" + realities, Arrays.toString(modulus), "" + wrapAround });
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
 	}
-	
+
 	@Override
 	public Graph transform(Graph graph) {
 		Random rand = new Random();
 		for (int r = 0; r < this.realities; r++) {
-			MDPartitionSimple[] partitions = new MDPartitionSimple[graph
-					.getNodes().length];
-			this.idSpace = new MDIdentifierSpaceSimple(partitions,
-					this.modulus, this.wrapAround);
+			MDPartitionSimple[] partitions = new MDPartitionSimple[graph.getNodes().length];
+			this.idSpace = new MDIdentifierSpaceSimple(partitions, this.modulus, this.wrapAround);
 			for (int i = 0; i < partitions.length; i++) {
-				partitions[i] = new MDPartitionSimple(MDIdentifier.rand(rand,
-						idSpace));
+				partitions[i] = new MDPartitionSimple(MDIdentifier.rand(rand, idSpace));
 			}
 			graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
 		}
@@ -91,7 +85,7 @@ Transformation {
 	public boolean applicable(Graph g) {
 		return true;
 	}
-	
+
 	public MDIdentifierSpaceSimple getIdSpace() {
 		return this.idSpace;
 	}
