@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * TestsNico.java
+ * GDATest.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -38,17 +38,13 @@ package gtna;
 import java.util.ArrayList;
 
 import gtna.data.*;
-import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.spanningTree.ParentChild;
 import gtna.graph.spanningTree.SpanningTree;
-import gtna.id.IdentifierSpace;
-import gtna.id.Partition;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
 import gtna.id.ring.RingIdentifierSpace;
-import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.io.GraphReader;
 import gtna.io.GraphWriter;
 import gtna.networks.*;
@@ -58,12 +54,7 @@ import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.*;
 import gtna.routing.lookahead.*;
 import gtna.transformation.*;
-import gtna.transformation.gd.CanonicalCircularCrossing;
-import gtna.transformation.gd.Frick;
-import gtna.transformation.gd.FruchtermanReingold;
-import gtna.transformation.gd.MelanconHerman;
-import gtna.transformation.gd.SixTollis;
-import gtna.transformation.gd.WetherellShannon;
+import gtna.transformation.gd.*;
 import gtna.transformation.id.*;
 import gtna.transformation.lookahead.*;
 import gtna.transformation.spanningtree.BFS;
@@ -90,41 +81,79 @@ public class GDATest {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + skipExistingFolders);
 
 		// Lookahead.testLookahead(generate, times);
-//		TestsNico.testRandomize();
-//		TestsNico.testMD();
-//		TestsNico.randomFRTest();
-//		TestsNico.randomFRTest_multidimensional();
-//		TestsNico.randomFRTestWithSeperateIDSpaceTransformation();
-//		TestsNico.randomFrickTest();
-//		TestsNico.testWS();
-//		TestsNico.testMH();
-//		TestsNico.canonicalCircularCrossingWithSeperateIDSpace();
-		GDATest.testMHRandom();
-//		TestsNico.testSpanningTree();
-//		TestsNico.testSpanningTree_Benni();
-//		TestsNico.testSpanningTree_transform();
-		GDATest.routingTest();
+//		GDATest.testRandomize();
+//		GDATest.testMD();
+//		GDATest.randomFRTest();
+//		GDATest.randomFRTest_multidimensional();
+//		GDATest.randomFRTestWithSeperateIDSpaceTransformation();
+//		GDATest.randomFrickTest();
+//		GDATest.testWS();
+//		GDATest.testMH();
+//		GDATest.canonicalCircularCrossingWithSeperateIDSpace();
+//		GDATest.testMHRandom();
+//		GDATest.testSpanningTree();
+//		GDATest.testSpanningTree_Benni();
+//		GDATest.testSpanningTree_transform();
+//		GDATest.routingTest();
+//		GDATest.testKnuth();
+		GDATest.routingKnuthAgainstWS();
+//		GDATest.routingTestCCCAgainstRandom();
 
 		stats.end();
 	}
 
 	public static void routingTest() {
 		Config.overwrite("METRICS", "DD, SP, R");
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + false);
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + true);
 
-		Transformation[] t1 = new Transformation[] { new FruchtermanReingold(1, new double[] { 100, 100 }, false, 100,
+		Transformation[] t1 = new Transformation[] { new RandomMDIDSpaceSimple(1, new double[] { 100, 100 }, true) };
+		RoutingAlgorithm r1 = new GreedyBacktracking();
+		Transformation[] t2 = new Transformation[] { new FruchtermanReingold(1, new double[] { 100, 100 }, true, 70,
 				null) };
-		RoutingAlgorithm r1 = new Greedy();
-		Transformation[] t2 = new Transformation[] { new FruchtermanReingold(1, new double[] { 100, 100 }, false, 100,
-				null) };
-		RoutingAlgorithm r2 = new GreedyBacktracking();
-		Network nw1 = new ErdosRenyi(100, 5.0, true, r1, t1);
-		Network nw2 = new ErdosRenyi(100, 5.0, true, r2, t2);
-		Series[] s = Series.generate(new Network[] { nw1, nw2 }, 3);
+		Network nw1 = new ErdosRenyi(100, 7.0, true, r1, t1);
+		Network nw2 = new ErdosRenyi(100, 7.0, true, r1, t2);
+		Series[] s = Series.generate(new Network[] { nw1, nw2 }, 5);
+//		Series s = Series.generate(nw1, 10);
 		// Series s = Series.get(nw);
 
 		Plot.allMulti(s, "multi/");
 	}
+	
+	public static void routingTestCCCAgainstRandom() {
+		Config.overwrite("METRICS", "SP, R");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + false);
+
+		Transformation[] t1 = new Transformation[] { new RandomRingIDSpace(1, 100, true) };
+		RoutingAlgorithm r1 = new GreedyBacktracking();
+		Transformation[] t2 = new Transformation[] { new CanonicalCircularCrossing(1, 100, true, null) };
+		RoutingAlgorithm r2 = new GreedyBacktracking();
+		Network nw1 = new ErdosRenyi(300, 9, true, r1, t1);
+		Network nw2 = new ErdosRenyi(300, 9, true, r2, t2);
+		Series[] s = Series.generate(new Network[] { nw1, nw2 }, 3);
+//		Series s = Series.generate(nw1, 3);
+		// Series s = Series.get(nw);
+
+		Plot.allMulti(s, "multi/");
+		Plot.allSingle(s, "single/");
+	}
+	
+	public static void routingKnuthAgainstWS() {
+		Config.overwrite("METRICS", "SP, R");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + false);
+
+		Transformation[] t1 = new Transformation[] { new BFS(), new Knuth(500,500,null) };
+		RoutingAlgorithm r1 = new GreedyBacktracking();
+		Transformation[] t2 = new Transformation[] { new BFS(), new WetherellShannon(500,500,null) };
+		RoutingAlgorithm r2 = new GreedyBacktracking();
+		Network nw1 = new ErdosRenyi(1000, 20, true, r1, t1);
+		Network nw2 = new ErdosRenyi(1000, 20, true, r2, t2);
+		Series[] s = Series.generate(new Network[] { nw1, nw2 }, 30);
+//		Series s = Series.generate(nw1, 3);
+		// Series s = Series.get(nw);
+
+		Plot.allMulti(s, "multi/");
+//		Plot.allSingle(s, "single/");
+	}		
 	
 	/**
 	 * 
@@ -199,6 +228,20 @@ public class GDATest {
 		if ( ! ws.applicable(g) ) throw new RuntimeException("Oh no, can not use WS on g" );
 		g = ws.transform(g);
 	}
+	
+	public static void testKnuth() {
+		Network nw1 = new ErdosRenyi(15, 18, true,
+				new Greedy(), null );
+		Graph g = nw1.generate();
+//		GraphWriter.writeWithProperties(g, "./data/testsNico/testWS.txt");
+//		g = GraphReader.readWithProperties("./data/testsNico/testWS.txt");
+				
+		Transformation bfs = new BFS();
+		g = bfs.transform(g);
+		Transformation knuth = new Knuth( 250, 250, new GraphPlotter( "testKN", "svg") );
+		if ( ! knuth.applicable(g) ) throw new RuntimeException("Oh no, can not use KN on g" );
+		g = knuth.transform(g);
+	}	
 	
 	public static void testSpanningTree() {
 		GraphPlotter plotter = new GraphPlotter("testSpanningTree-FR", "svg", 60);

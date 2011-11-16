@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * WetherellShannon.java
+ * Knuth.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -44,43 +44,34 @@ import gtna.plot.GraphPlotter;
  * @author Nico
  *
  */
-public class WetherellShannon extends HierarchicalAbstract {
-	private double[] heightModifiers, nodeModifiers;
-	private double[] nextPos;
+public class Knuth extends HierarchicalAbstract {
+	int nextFreePosition = 0;
 	
-	private double modifierSum;
-	public WetherellShannon() {
-		super("GDA_WETHERELL_SHANNON", new String[]{}, new String[]{});
+	public Knuth() {
+		super("GDA_KNUTH", new String[]{}, new String[]{});
 	}
 	
-	public WetherellShannon(double modulusX, double modulusY, GraphPlotter plotter) {
-		super("GDA_WETHERELL_SHANNON", new String[] {"MODULUS_X", "MODULUS_Y"}, new String[] {"" + modulusX, "" + modulusY});
+	public Knuth(double modulusX, double modulusY, GraphPlotter plotter) {
+		super("GDA_KNUTH", new String[] {"MODULUS_X", "MODULUS_Y"}, new String[] {"" + modulusX, "" + modulusY});
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;
 	}
-
+	
 	@Override
 	public Graph transform(Graph g) {
 		tree = (SpanningTree) g.getProperty("SPANNINGTREE");
 		int source = tree.getSrc();
 		int maxHeight = g.getNodes().length; 
 		
-		heightModifiers = new double[maxHeight];
-		nodeModifiers = new double[maxHeight];
-		nextPos = new double[maxHeight];
 		nodePositionsX = new double[maxHeight];
 		nodePositionsY = new double[maxHeight];
 		for ( int i = 0; i < maxHeight; i++ ) {
-			heightModifiers[i] = 0;
-			nextPos[i] = 1;
 			nodePositionsX[i] = 0;
 			nodePositionsY[i] = 0;
 		}
-		firstWalk ( tree, source, 0 );
-		
-		modifierSum = 0;
-		secondWalk ( tree, source, 0 );
+
+		walkTree (tree, source, 0);
 		
 		for ( Node i: g.getNodes() ) {
 			if ( i == null ) {
@@ -100,58 +91,24 @@ public class WetherellShannon extends HierarchicalAbstract {
 		
 		return g;
 	}
-	
-	private void firstWalk ( SpanningTree tree, int n, int height ) {
-		int[] sons = tree.getChildren(n);
-		for ( int singleSon: sons ) {
-			firstWalk(tree, singleSon, height + 1 );
-		}
+
+	private void walkTree(SpanningTree tree, int node, int height) {
+		nodePositionsY[node] = height;
 		
+		int[] children = tree.getChildren(node);
+		if ( children.length == 0 ) {
 			/*
-			 * So, for now, we have traveled through all children
-			 * and should either have gotten to a leaf or we're on
-			 * the way back to the top of the tree
+			 * Direct positioning at next place
 			 */
-		double place = 0;
-		if ( sons.length == 0 ) {
-				/*
-				 * Current node has no childs, so use the
-				 * next free position
-				 */
-			place = nextPos[height];
+			nodePositionsX[node] = nextFreePosition++;
 		} else {
-				/*
-				 * Put the node centered over its children
-				 */
-			for ( int singleSon: sons ) {
-				place += nodePositionsX[singleSon];
+			int positionOfParent = (int) Math.floor(children.length / 2);
+			for ( int singleChild: children) {
+				if ( positionOfParent-- == 0 ) {
+					nodePositionsX[node] = nextFreePosition++;
+				}
+				walkTree(tree, singleChild, height + 1);				
 			}
-			place = place / sons.length;
 		}
-		
-		heightModifiers[height] = Math.max ( heightModifiers[height], nextPos[height] - place );
-		if ( sons.length == 0 ) {
-			nodePositionsX[n] = place;
-		} else {
-			nodePositionsX[n] = place + heightModifiers[height];
-		}
-			/*
-			 * This might be a problematic point, as +2 results from binary trees
-			 */
-		nextPos[height] = nodePositionsX[n] + 2;
-		nodeModifiers[n] = heightModifiers[height];
-	}
-	
-	private void secondWalk ( SpanningTree tree, int n, int height ) {
-		nodePositionsX[n] = nodePositionsX[n] + modifierSum;
-		modifierSum = modifierSum + nodeModifiers[n];
-		nodePositionsY[n] = 2 * height + 1;
-		
-		int[] sons = tree.getChildren(n);
-		for ( int singleSon: sons ) {
-			secondWalk(tree, singleSon, height + 1 );
-		}
-		
-		modifierSum = modifierSum - nodeModifiers[n];
 	}
 }
