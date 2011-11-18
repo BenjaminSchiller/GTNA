@@ -35,12 +35,12 @@
  */
 package gtna.transformation.gd;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import gtna.graph.Graph;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
-import gtna.transformation.Transformation;
 
 /**
  * @author Nico
@@ -166,55 +166,72 @@ public class BubbleTree extends HierarchicalAbstract {
 	}
 
 	private double calculateSmallestEnclosingCircle(SpanningTree tree, int node) {
-		ArrayList<Point> pointSet = new ArrayList<Point>();
-		for (int singleChild : tree.getChildren(node)) {
-			pointSet.add(new Point(nodePositionsX[singleChild], nodePositionsY[singleChild]));
+		int[] sons = tree.getChildren(node);
+		LinkedList<Circle> s = new LinkedList<BubbleTree.Circle>();
+		Circle[] b = new Circle[sons.length];
+		for (int singleSon : sons) {
+			Circle temp = new Circle(nodePositionsX[singleSon], nodePositionsY[singleSon], radiuses[singleSon]);
+			s.add(temp);
 		}
-		return smallestEnclosingCircle(pointSet, new ArrayList<Point>());
+		Collections.shuffle(s);
+		Circle c1 = s.removeFirst();
+		Circle c2;
+		while (!s.isEmpty()) {
+			c2 = s.removeFirst();
+			c1 = enclosingCircle(c1, c2);
+		}
+
+		return c1.radius;
 	}
 
-	private double smallestEnclosingCircle(ArrayList<Point> p, ArrayList<Point> r) {
-		if (p.isEmpty() || r.size() == 3) {
-			return calculateRadius(r);
+	private Circle enclosingCircle(Circle c1, Circle c2) {
+		/*
+		 * Thanks to
+		 * http://stackoverflow.com/questions/2084695/finding-the-smallest
+		 * -circle-that-encompasses-other-circles/2086118#2086118
+		 */
+		if (circleInEnclosingCircle(c1, c2)) {
+			return c2;
+		} else if (circleInEnclosingCircle(c2, c1)) {
+			return c1;
 		} else {
-			Point randP = p.remove(rand.nextInt(p.size()));
-			double d = smallestEnclosingCircle(p, r);
-			if (d > randP.distanceToZero()) {
-				r.add(randP);
-				return smallestEnclosingCircle(p, r);
-			} else {
-				return d;
-			}
+			if (c1.radius > c2.radius)
+				return enclosingCircle(c2, c1);
+			double newRadius = (c1.radius + c2.radius + c1.getCenter().distanceTo(c2.getCenter())) / 2;
+			double theta = 0.5 + (c2.radius - c1.radius) / (2 * c1.getCenter().distanceTo(c2.getCenter()));
+			double centerX = (1 - theta) * c1.x + theta * c2.x;
+			double centerY = (1 - theta) * c1.y + theta * c2.y;
+			return new Circle(centerX, centerY, newRadius);
 		}
 	}
 
-	private double calculateRadius(ArrayList<Point> r) {
-		if (r.size() <= 1) {
-			return leafRadius;
-		} else if (r.size() == 2) {
-			return r.get(0).distanceTo(r.get(1));
-		} else if (r.size() == 3) {
-			/*
-			 * Borrowed from
-			 * http://delphiforfun.org/Programs/math_topics/circle_from_3_points
-			 * .htm
-			 */
-			Point x = r.get(0);
-			Point y = r.get(1);
-			Point z = r.get(2);
-			double a = x.distanceTo(y);
-			double b = x.distanceTo(z);
-			double c = y.distanceTo(z);
-			double k = 0.5 * Math.abs((x.x - z.x) * (y.y - x.y) - (x.x - y.x) * (z.y - x.y));
-			return (a * b * c) / (4 * k);
-		} else {
-			throw new RuntimeException("Do not call cR with more than three elements!");
-		}
+	private boolean circleInEnclosingCircle(Circle inner, Circle outer) {
+		double distanceOfCenters = inner.getCenter().distanceTo(outer.getCenter());
+		return (distanceOfCenters + inner.radius < outer.radius);
 	}
 
+	private class Circle {
+		public double x, y, radius;
+
+		public Circle(double x, double y, double radius) {
+			this.x = x;
+			this.y = y;
+			this.radius = radius;
+		}
+
+		public Point getCenter() {
+			return new Point(x, y);
+		}
+	}
+	
 	private void coordAssign(SpanningTree tree, int source, Point center) {
-		throw new RuntimeException("Coordinate assignment is not ready yet");
-	}
+		nodePositionsX[source] = center.x;
+		nodePositionsY[source] = center.y;
+		for (int singleChild : tree.getChildren(source)) {
+			Point temp = new Point(center.x + nodePositionsX[singleChild], center.y + nodePositionsY[singleChild]);
+			coordAssign(tree, singleChild, temp);
+		}
+	}	
 
 	private class Point {
 		public double x, y;
@@ -224,12 +241,9 @@ public class BubbleTree extends HierarchicalAbstract {
 			this.y = nodePositionsY;
 		}
 
-		public double distanceToZero() {
-			return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
-		}
-
 		public double distanceTo(Point p2) {
 			return Math.sqrt(Math.pow(this.x + p2.x, 2) + Math.pow(this.y + p2.y, 2));
 		}
+
 	}
 }
