@@ -37,7 +37,6 @@ package gtna.transformation.gd;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Random;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -92,8 +91,6 @@ public class Frick extends ForceDrivenAbstract {
 	 */
 	private final double gamma = 10.0625;
 
-	private Random rand;
-
 	public Frick(int realities, double[] moduli, Boolean wrapAround, GraphPlotter plotter) {
 		super("GDA_FRICK", new String[]{"REALITIES", "MODULI", "WRAPAROUND"}, new String[]{"" + realities, Arrays.toString(moduli), "" + wrapAround});
 		this.realities = realities;
@@ -106,8 +103,6 @@ public class Frick extends ForceDrivenAbstract {
 	public Graph transform(Graph g) {
 		System.err.println("This is not working completely yet, so don't expect good results!");
 		
-		rand = new Random();
-
 		initIDSpace(g);
 
 		double[] moduli = this.idSpace.getModuli();

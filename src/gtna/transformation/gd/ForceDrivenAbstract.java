@@ -35,8 +35,6 @@
  */
 package gtna.transformation.gd;
 
-import java.util.Random;
-
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.IdentifierSpace;
@@ -65,7 +63,6 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 	protected void initIDSpace( Graph g ) {
 		if ( !generateIDSpace ) return;
 		
-		Random rand = new Random();
 		for (int r = 0; r < this.realities; r++) {
 			partitions = new MDPartitionSimple[g.getNodes().length];
 			this.idSpace = new MDIdentifierSpaceSimple(partitions, this.moduli, this.wrapAround);

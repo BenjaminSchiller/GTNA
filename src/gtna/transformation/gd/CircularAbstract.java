@@ -37,7 +37,6 @@ package gtna.transformation.gd;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Random;
 
 import gtna.graph.Edge;
 import gtna.graph.Graph;
@@ -68,7 +67,6 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 	protected void initIDSpace( Graph g ) {
 		if ( !generateIDSpace ) return;
 		
-		Random rand = new Random();
 		for (int r = 0; r < this.realities; r++) {
 			partitions = new RingPartition[g.getNodes().length];
 			idSpace = new RingIdentifierSpace(partitions, this.modulus,
