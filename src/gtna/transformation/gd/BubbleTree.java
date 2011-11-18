@@ -75,12 +75,24 @@ public class BubbleTree extends HierarchicalAbstract {
 	public Graph transform(Graph g) {
 		tree = (SpanningTree) g.getProperty("SPANNINGTREE");
 		int source = tree.getSrc();
-		radiuses = new double[g.getNodes().length];
-		delta = new double[g.getNodes().length];
-		angularSector = new double[g.getNodes().length];
+
+		int numNodes = g.getNodes().length;
+		nodePositionsX = new double[numNodes];
+		nodePositionsY = new double[numNodes];
+
+		radiuses = new double[numNodes];
+		delta = new double[numNodes];
+		angularSector = new double[numNodes];
 		calculateRadius(tree, source);
-		Point center = new Point(0,0);
+		Point center = new Point(0, 0);
 		coordAssign(tree, source, center);
+
+		writeIDSpace(g);
+		if (graphPlotter != null)
+			graphPlotter.plotFinalGraph(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotSpanningTree(g, idSpace);
+
 		return g;
 	}
 
@@ -166,8 +178,8 @@ public class BubbleTree extends HierarchicalAbstract {
 			return calculateRadius(r);
 		} else {
 			Point randP = p.remove(rand.nextInt(p.size()));
-			double d = smallestEnclosingCircle(p,r);
-			if ( d > randP.distanceToZero() ) {
+			double d = smallestEnclosingCircle(p, r);
+			if (d > randP.distanceToZero()) {
 				r.add(randP);
 				return smallestEnclosingCircle(p, r);
 			} else {
@@ -215,7 +227,7 @@ public class BubbleTree extends HierarchicalAbstract {
 		public double distanceToZero() {
 			return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
 		}
-		
+
 		public double distanceTo(Point p2) {
 			return Math.sqrt(Math.pow(this.x + p2.x, 2) + Math.pow(this.y + p2.y, 2));
 		}
