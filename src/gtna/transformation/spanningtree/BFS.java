@@ -118,15 +118,17 @@ public class BFS extends TransformationImpl implements Transformation {
 		Node[] nodeList = graph.getNodes();
 		if (rootSelector == "zero") {
 			return nodeList[0];
+		} else if (rootSelector == "rand") {
+			return nodeList[rand.nextInt(nodeList.length)];
 		} else if (rootSelector == "hd") {
 			/*
 			 * Select a node with highest degree
 			 */
 			result = nodeList[0];
 			for (int i = 1; i < nodeList.length; i++) {
-				if (nodeList[i].getDegree() > result.getDegree()) {
+				if (nodeList[i].getOutDegree() > result.getOutDegree()) {
 					result = nodeList[i];
-				} else if (nodeList[i].getDegree() == result.getDegree() && rand.nextBoolean()) {
+				} else if (nodeList[i].getOutDegree() == result.getOutDegree() && rand.nextBoolean()) {
 					result = nodeList[i];
 				}
 			}
