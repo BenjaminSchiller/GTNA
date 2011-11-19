@@ -54,6 +54,8 @@ import gtna.util.Config;
 import java.io.File;
 import java.io.IOException;
 
+import javax.management.RuntimeErrorException;
+
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
@@ -144,6 +146,9 @@ public class Gephi {
 				continue;
 			}
 			ForceVector position = getPosition(p[n.getIndex()]);
+			if ( Double.isNaN(position.getNorm()) ) {
+				throw new RuntimeException("Cannot plot graph as it contains nodes with non-existing coordinates");
+			}
 			org.gephi.graph.api.Node temp = addNode(graphModel, gephiGraph, "N"
 					+ n.getIndex(), "Node " + n.getIndex(), position);
 			gephiNodes[n.getIndex()] = temp;

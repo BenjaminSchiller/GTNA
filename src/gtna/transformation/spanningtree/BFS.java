@@ -106,6 +106,12 @@ public class BFS extends TransformationImpl implements Transformation {
 			handledNodes.add(tempNodeFromList.getIndex());
 		}
 
+		int graphNodeSize = graph.getNodes().length;
+		int spanningTreeSize = parentChildList.size() + 1;
+		if (spanningTreeSize < graphNodeSize) {
+			throw new RuntimeException("Error: graph contains " + graphNodeSize + ", but spanning tree only contains "
+					+ spanningTreeSize + " nodes!");
+		}
 		SpanningTree result = new SpanningTree(graph, parentChildList);
 
 		graph.addProperty("SPANNINGTREE", result);
