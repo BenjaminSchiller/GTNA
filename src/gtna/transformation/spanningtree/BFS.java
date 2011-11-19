@@ -37,6 +37,7 @@ package gtna.transformation.spanningtree;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Random;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -50,64 +51,93 @@ import gtna.transformation.TransformationImpl;
  * 
  */
 public class BFS extends TransformationImpl implements Transformation {
+	String rootSelector;
+
 	public BFS() {
-		super("SPANNINGTREE_BFS", new String[] {}, new String[] {});
+		this("zero");
 	}
-	
+
+	public BFS(String rootSelector) {
+		super("SPANNINGTREE_BFS", new String[] { "ROOT_SELECTOR" }, new String[] { rootSelector });
+		this.rootSelector = rootSelector;
+	}
+
 	@Override
 	public Graph transform(Graph graph) {
-		Node root = graph.getNode(0);
-		
+		Node root = selectRoot(graph, rootSelector);
+
 		Node tempNodeFromList;
 		int[] edges;
 		Node[] nodes = graph.getNodes();
-		
-    	LinkedList<Node> todoList = new LinkedList<Node>();
-    	LinkedList<Integer> handledNodes = new LinkedList<Integer>();
-    	LinkedList<Integer> linkedNodes = new LinkedList<Integer>();
-    	
-    	ArrayList<ParentChild> parentChildList = new ArrayList<ParentChild>();
-    	
-    	todoList.add(root);
-    	linkedNodes.add(root.getIndex());
-    	while ( !todoList.isEmpty() ) {
-    		tempNodeFromList = todoList.pop();
-    		if ( handledNodes.contains(tempNodeFromList.getIndex()) ) {
-    				/*
-    				 * Although the current node was fetched from the 
-    				 * todoList, we will continue: this node was already
-    				 * processed
-    				 */
-    			continue;
-    		}
-    		
-    		edges = tempNodeFromList.getOutgoingEdges();
-    		for ( int e: edges ) {
-    			if (  !linkedNodes.contains(e) ) {
-    					/*
-    					 * Node e has not been linked yet, so
-    					 * add it to the todoList (to handle it soon)
-    					 * and add the edge from the current node to e
-    					 * to the list of edges 
-    					 */
-    				todoList.add( nodes[e] );
-    				linkedNodes.add(e);
-    				
-    				parentChildList.add( new ParentChild(tempNodeFromList.getIndex(), e));
-    			}
-    		}
-    		
-    		handledNodes.add(tempNodeFromList.getIndex());
-    	}
-		
-    	SpanningTree result = new SpanningTree(graph, parentChildList);
-    	
+
+		LinkedList<Node> todoList = new LinkedList<Node>();
+		LinkedList<Integer> handledNodes = new LinkedList<Integer>();
+		LinkedList<Integer> linkedNodes = new LinkedList<Integer>();
+
+		ArrayList<ParentChild> parentChildList = new ArrayList<ParentChild>();
+
+		todoList.add(root);
+		linkedNodes.add(root.getIndex());
+		while (!todoList.isEmpty()) {
+			tempNodeFromList = todoList.pop();
+			if (handledNodes.contains(tempNodeFromList.getIndex())) {
+				/*
+				 * Although the current node was fetched from the todoList, we
+				 * will continue: this node was already processed
+				 */
+				continue;
+			}
+
+			edges = tempNodeFromList.getOutgoingEdges();
+			for (int e : edges) {
+				if (!linkedNodes.contains(e)) {
+					/*
+					 * Node e has not been linked yet, so add it to the todoList
+					 * (to handle it soon) and add the edge from the current
+					 * node to e to the list of edges
+					 */
+					todoList.add(nodes[e]);
+					linkedNodes.add(e);
+
+					parentChildList.add(new ParentChild(tempNodeFromList.getIndex(), e));
+				}
+			}
+
+			handledNodes.add(tempNodeFromList.getIndex());
+		}
+
+		SpanningTree result = new SpanningTree(graph, parentChildList);
+
 		graph.addProperty("SPANNINGTREE", result);
 		return graph;
 	}
-	
+
+	private Node selectRoot(Graph graph, String rootSelector) {
+		Random rand = new Random();
+		Node result = null;
+		Node[] nodeList = graph.getNodes();
+		if (rootSelector == "zero") {
+			return nodeList[0];
+		} else if (rootSelector == "hd") {
+			/*
+			 * Select a node with highest degree
+			 */
+			result = nodeList[0];
+			for (int i = 1; i < nodeList.length; i++) {
+				if (nodeList[i].getDegree() > result.getDegree()) {
+					result = nodeList[i];
+				} else if (nodeList[i].getDegree() == result.getDegree() && rand.nextBoolean()) {
+					result = nodeList[i];
+				}
+			}
+		} else {
+			throw new RuntimeException("Unknown root selector " + rootSelector);
+		}
+		return result;
+	}
+
 	@Override
 	public boolean applicable(Graph g) {
 		return true;
-	}	
+	}
 }
