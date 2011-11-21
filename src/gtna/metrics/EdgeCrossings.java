@@ -41,7 +41,6 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.DIdentifierSpace;
 import gtna.id.IdentifierSpace;
-import gtna.id.Partition;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.ring.RingIdentifierSpace;
@@ -50,10 +49,13 @@ import gtna.io.DataWriter;
 import gtna.networks.Network;
 import gtna.util.Distribution;
 import gtna.util.Timer;
-import gtna.util.Util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * @author Nico
@@ -63,7 +65,6 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 	private Timer runtime;
 	private double[] cd;
 	private int maxCrossingNumber;
-	private Partition[] partitions;
 	private HashSet<String> handledEdges;
 	private Distribution crossingDistribution;
 
@@ -77,12 +78,10 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		Edge[] edges = graph.generateEdges();
 
 		DIdentifierSpace idSpace = (DIdentifierSpace) graph.getProperty("ID_SPACE_0");
-		partitions = idSpace.getPartitions();
-
 		int result = calculateCrossings(edges, idSpace);
-		
+
 		double[] finalCD = new double[maxCrossingNumber];
-		for ( int i = 0; i < maxCrossingNumber; i++) {
+		for (int i = 0; i < maxCrossingNumber; i++) {
 			finalCD[i] = cd[i] / result;
 		}
 		this.crossingDistribution = new Distribution(finalCD);
@@ -94,19 +93,96 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		int result = 0;
 		cd = new double[edges.length];
 		maxCrossingNumber = 0;
-		handledEdges = new HashSet<String>();
-		for (Edge singleOuterEdge : edges) {
-			int innerResult = 0;
-			for (Edge singleInnerEdge : edges) {
-				if (hasCrossing(singleInnerEdge, singleOuterEdge, idSpace)) {
-					innerResult++;
+		this.runtime = new Timer();
+
+		if (idSpace instanceof RingIdentifierSpace) {
+			result = calculateRingCrossings(edges, idSpace);
+		} else {
+			handledEdges = new HashSet<String>();
+			for (Edge singleOuterEdge : edges) {
+				int innerResult = 0;
+				for (Edge singleInnerEdge : edges) {
+					if (hasCrossing(singleInnerEdge, singleOuterEdge, idSpace)) {
+						innerResult++;
+					}
+				}
+				cd[innerResult]++;
+				maxCrossingNumber = Math.max(innerResult, maxCrossingNumber);
+				result += innerResult;
+			}
+		}
+		this.runtime.end();
+		System.out.println("Computed crossings with " + edges.length + " edges in " + runtime.getMsec() + " msec");
+		return result;
+	}
+
+	private int calculateRingCrossings(Edge[] edges, IdentifierSpace idSpace) {
+		/*
+		 * The following algorithm is an implementation of Six/Tollis work
+		 */
+		int i = 0;
+		int numCross = 0;
+
+		RingIdentifierSpace ridSpace = (RingIdentifierSpace) idSpace;
+		RingPartition[] partitions = (RingPartition[]) ridSpace.getPartitions();
+
+		Arrays.sort(edges, new EdgeComparator(partitions));
+		ArrayList<RingEdge> ringEdges = new ArrayList<RingEdge>();
+		TreeSet<Double> partPositions = new TreeSet<Double>();
+
+		for (Edge sE : edges) {
+			partPositions.add(getPositionRing(sE.getSrc(), ridSpace));
+		}
+
+		RingEdge tempRingEdge, lastEdge;
+		lastEdge = null;
+		for (Edge sE : edges) {
+			double srcPos = Math.min(getPositionRing(sE.getSrc(), ridSpace), getPositionRing(sE.getDst(), ridSpace));
+			double dstPos = Math.max(getPositionRing(sE.getSrc(), ridSpace), getPositionRing(sE.getDst(), ridSpace));
+			tempRingEdge = new RingEdge(srcPos, dstPos, sE.getSrc(), sE.getDst());
+			if (!tempRingEdge.equals(lastEdge)) {
+				ringEdges.add(tempRingEdge);
+			}
+			lastEdge = tempRingEdge;
+		}
+
+		TreeMap<Double, ArrayList<RingEdge>> startNode = new TreeMap<Double, ArrayList<RingEdge>>();
+		TreeMap<Double, ArrayList<RingEdge>> targetNode = new TreeMap<Double, ArrayList<RingEdge>>();
+		ArrayList<RingEdge> openEdges = new ArrayList<RingEdge>();
+
+		Double[] posList = new Double[partitions.length];
+		for (RingPartition rP : partitions) {
+			posList[i] = rP.getStart().getPosition();
+			startNode.put(posList[i], new ArrayList<RingEdge>());
+			targetNode.put(posList[i], new ArrayList<RingEdge>());
+			i++;
+		}
+		Arrays.sort(posList);
+
+		ArrayList<RingEdge> tempList;
+		for (RingEdge sE : ringEdges) {
+			tempList = startNode.get(sE.src);
+			tempList.add(sE);
+			startNode.put(sE.src, tempList);
+
+			tempList = targetNode.get(sE.dst);
+			tempList.add(sE);
+			targetNode.put(sE.dst, tempList);
+		}
+
+		for (i = 0; i < partitions.length; i++) {
+			openEdges.removeAll(targetNode.get(posList[i]));
+			for (RingEdge sE : targetNode.get(posList[i])) {
+				for (RingEdge sOE : openEdges) {
+					if (sOE.src > sE.src) {
+						numCross++;
+					}
 				}
 			}
-			cd[innerResult]++;
-			maxCrossingNumber = Math.max(innerResult,maxCrossingNumber);
-			result += innerResult;
+			openEdges.addAll(startNode.get(posList[i]));
 		}
-		return result;
+
+		return numCross;
 	}
 
 	public int calculateCrossings(Graph g, Node n, IdentifierSpace idSpace) {
@@ -242,5 +318,27 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 	public Value[] getValues() {
 		Value ecAVG = new Value("EC_AVG", this.crossingDistribution.getAverage());
 		return new Value[] { ecAVG };
+	}
+
+	private class RingEdge {
+		double src, dst;
+		int graphSrc, graphDst;
+
+		public RingEdge(double src, double dst, int graphSrc, int graphDst) {
+			this.src = src;
+			this.dst = dst;
+			this.graphSrc = graphSrc;
+			this.graphDst = graphDst;
+		}
+
+		public boolean equals(RingEdge r) {
+			if (r == null)
+				return false;
+			return (r.src == this.src) && (r.dst == this.dst);
+		}
+
+		public String toString() {
+			return this.src + "->" + this.dst;
+		}
 	}
 }
