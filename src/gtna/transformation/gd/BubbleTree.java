@@ -65,7 +65,7 @@ public class BubbleTree extends HierarchicalAbstract {
 	}
 
 	public BubbleTree(String key, double modulusX, double modulusY, GraphPlotter plotter) {
-		super(key, new String[] {}, new String[] {});
+		super(key, new String[] { "MODULUS_X", "MODULUS_Y" }, new String[] { "" + modulusX, "" + modulusY });
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;
@@ -114,16 +114,16 @@ public class BubbleTree extends HierarchicalAbstract {
 		 * From here on, the currently processed node definitely has children
 		 */
 		calculateAngularSector(tree, node);
-		double deltaSum = 0;
+		double thetaSum = 0;
 		for (int singleSon : sons) {
 			delta[singleSon] = Math.max(leafRadius + radiuses[singleSon],
 					radiuses[singleSon] / Math.sin(angularSector[singleSon] / 2));
-			deltaSum += angularSector[singleSon];
-			nodePositionsX[singleSon] = delta[singleSon] * Math.cos(deltaSum - (angularSector[singleSon] / 2));
-			nodePositionsY[singleSon] = delta[singleSon] * Math.sin(deltaSum - (angularSector[singleSon] / 2));
+			thetaSum += angularSector[singleSon];
+			nodePositionsX[singleSon] = delta[singleSon] * Math.cos(thetaSum - (angularSector[singleSon] / 2));
+			nodePositionsY[singleSon] = delta[singleSon] * Math.sin(thetaSum - (angularSector[singleSon] / 2));
 		}
 
-		radiuses[node] = calculateSmallestEnclosingCircle(tree, node);
+		radiuses[node] = 1.3 * calculateSmallestEnclosingCircle(tree, node);
 	}
 
 	private void calculateAngularSector(SpanningTree tree, int node) {
@@ -210,6 +210,16 @@ public class BubbleTree extends HierarchicalAbstract {
 		return (distanceOfCenters + inner.radius < outer.radius);
 	}
 
+	private void coordAssign(SpanningTree tree, int source, Point center) {
+		nodePositionsX[source] = center.x;
+		nodePositionsY[source] = center.y;
+		for (int singleChild : tree.getChildren(source)) {
+			Point temp = new Point(nodePositionsX[singleChild], nodePositionsY[singleChild]);
+			temp.add(center);
+			coordAssign(tree, singleChild, temp);
+		}
+	}
+
 	private class Circle {
 		public double x, y, radius;
 
@@ -223,15 +233,6 @@ public class BubbleTree extends HierarchicalAbstract {
 			return new Point(x, y);
 		}
 	}
-	
-	private void coordAssign(SpanningTree tree, int source, Point center) {
-		nodePositionsX[source] = center.x;
-		nodePositionsY[source] = center.y;
-		for (int singleChild : tree.getChildren(source)) {
-			Point temp = new Point(center.x + nodePositionsX[singleChild], center.y + nodePositionsY[singleChild]);
-			coordAssign(tree, singleChild, temp);
-		}
-	}	
 
 	private class Point {
 		public double x, y;
@@ -243,6 +244,11 @@ public class BubbleTree extends HierarchicalAbstract {
 
 		public double distanceTo(Point p2) {
 			return Math.sqrt(Math.pow(this.x + p2.x, 2) + Math.pow(this.y + p2.y, 2));
+		}
+
+		public void add(Point p2) {
+			this.x += p2.x;
+			this.y += p2.y;
 		}
 
 	}
