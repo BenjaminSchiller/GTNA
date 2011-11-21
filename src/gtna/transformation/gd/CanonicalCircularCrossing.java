@@ -39,6 +39,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.metrics.EdgeCrossings;
+import gtna.metrics.Metric;
 import gtna.plot.GraphPlotter;
 
 /**
@@ -70,12 +72,14 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 		LinkedList<Node> todolist = new LinkedList<Node>();
 		todolist.addAll(Arrays.asList(g.getNodes()));
 
-		crossingsStart = countAllCrossings(g);
+		EdgeCrossings edgeCrossings = new EdgeCrossings();
+		crossingsStart = edgeCrossings.calculateCrossings(g.generateEdges(), idSpace);
 		int countLoop = 0;
 		long startTime = System.currentTimeMillis();
 		while ((currentNode = todolist.poll()) != null) {
 			predecessor = g.getNode(getPredecessor(currentNode.getIndex()));
-			currentCrossings = countCrossings(currentNode, predecessor);
+			currentCrossings = edgeCrossings.calculateCrossings(currentNode, predecessor, idSpace);
+					
 			if (currentCrossings == 0) {
 					/*
 					 * If there are no actual crossings caused by a node and its predecessor,
@@ -84,7 +88,7 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 				continue;
 			}
 			swapPositions(currentNode.getIndex(), predecessor.getIndex());
-			swappedCrossings = countCrossings(currentNode, predecessor);
+			swappedCrossings = edgeCrossings.calculateCrossings(currentNode, predecessor, idSpace);
 			if (swappedCrossings < currentCrossings) {
 				/*
 				 * Leave it that way, boy! But: there might be some more success
@@ -108,7 +112,7 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 		long totalTime = endTime - startTime;
 
 		System.out.println("Did " + countLoop + " loops in " + totalTime + " msec");
-		crossingsEnd = countAllCrossings(g);
+		crossingsEnd = edgeCrossings.calculateCrossings(g.generateEdges(), idSpace);
 		System.out.println("Crossings at the beginning: " + crossingsStart + " - and afterwards: " + crossingsEnd);
 
 		if (graphPlotter != null)
