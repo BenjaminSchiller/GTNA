@@ -37,6 +37,8 @@ package gtna.transformation.gd;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+
+import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.metrics.EdgeCrossings;
@@ -49,7 +51,8 @@ import gtna.plot.GraphPlotter;
  */
 public class CanonicalCircularCrossing extends CircularAbstract {
 	public CanonicalCircularCrossing(int realities, double modulus, boolean wrapAround, GraphPlotter plotter) {
-		super("GDA_CANONICALCIRCULARCROSSING", new String[] {"REALITIES", "MODULUS", "WRAPAROUND"}, new String[] {"" + realities, "" + modulus, "" + wrapAround});
+		super("GDA_CANONICALCIRCULARCROSSING", new String[] { "REALITIES", "MODULUS", "WRAPAROUND" }, new String[] {
+				"" + realities, "" + modulus, "" + wrapAround });
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
@@ -77,14 +80,32 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 		int countLoop = 0;
 		long startTime = System.currentTimeMillis();
 		while ((currentNode = todolist.poll()) != null) {
+			/*
+			 * Special case handling: current node has a degree of zero
+			 */
+			if (currentNode.getDegree() == 0) {
+				continue;
+			}
+			if (currentNode.getDegree() <= 2) {
+				Edge[] edges = currentNode.generateAllEdges();
+				Edge firstEdge = edges[0];
+				int otherEnd = firstEdge.getDst();
+				if (firstEdge.getDst() == currentNode.getIndex()) {
+					otherEnd = firstEdge.getSrc();
+				}
+				predecessor = g.getNode(getPredecessor(otherEnd));
+				swapPositions(currentNode.getIndex(), predecessor.getIndex());
+				continue;
+			}
+
 			predecessor = g.getNode(getPredecessor(currentNode.getIndex()));
 			currentCrossings = edgeCrossings.calculateCrossings(currentNode, predecessor, idSpace);
-					
+
 			if (currentCrossings == 0) {
-					/*
-					 * If there are no actual crossings caused by a node and its predecessor,
-					 * there is nothing to improve
-					 */
+				/*
+				 * If there are no actual crossings caused by a node and its
+				 * predecessor, there is nothing to improve
+				 */
 				continue;
 			}
 			swapPositions(currentNode.getIndex(), predecessor.getIndex());
