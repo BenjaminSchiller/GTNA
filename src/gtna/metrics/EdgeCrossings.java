@@ -99,10 +99,10 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 			result = calculateRingCrossings(edges, idSpace);
 		} else {
 			handledEdges = new HashSet<String>();
-			for (Edge singleOuterEdge : edges) {
+			for (int outerCounter = 0; outerCounter < edges.length; outerCounter++) {
 				int innerResult = 0;
-				for (Edge singleInnerEdge : edges) {
-					if (hasCrossing(singleInnerEdge, singleOuterEdge, idSpace)) {
+				for (int innerCounter = outerCounter + 1; innerCounter < edges.length; innerCounter++) {
+					if (hasCrossing(edges[innerCounter], edges[outerCounter], idSpace)) {
 						innerResult++;
 					}
 				}
