@@ -41,6 +41,7 @@ import gtna.id.IdentifierSpace;
 import gtna.id.Partition;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
+import gtna.io.Filereader;
 import gtna.io.GraphReader;
 import gtna.io.GraphWriter;
 import gtna.io.Output;
@@ -58,13 +59,11 @@ import gtna.io.networks.googlePlus.Statistics;
 import gtna.io.networks.googlePlus.Task;
 import gtna.io.networks.googlePlus.User;
 import gtna.networks.Network;
-import gtna.networks.model.ErdosRenyi;
 import gtna.plot.Gephi;
 import gtna.plot.Plot;
 import gtna.plot.PlotData;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
-import gtna.transformation.partition.GiantConnectedComponent;
 import gtna.transformation.partition.StrongConnectivityPartition;
 import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.util.Config;
@@ -92,35 +91,9 @@ public class GoogleP {
 	 */
 	public static void main(String[] args) throws IOException,
 			InterruptedException {
-		// if (true) {
-		// double[] ds = new double[] { 5, 10, 15, 20, 25, 30, 35, 40, 45, 50 };
-		// ds = new double[] { 1 };
-		// for (double d : ds) {
-		// Network nw = new Ring(10, null, null);
-		// nw = new ErdosRenyi(100, d, false, null, null);
-		// // nw = new ReadableFile("G+", "g+",
-		// // "/Users/benni/TUD/g+/graphs/1-graph.txt", null, null);
-		// Transformation t1 = new RandomRingIDSpaceSimple(1, 1.0, false);
-		// Graph g = nw.generate();
-		// g = t1.transform(g);
-		// RingIdentifierSpaceSimple ids = (RingIdentifierSpaceSimple) g
-		// .getProperty("ID_SPACE_0");
-		//
-		// int counter = 0;
-		// for (Partition<Double> p : ids.getPartitions()) {
-		// ((RingPartitionSimple) p).getId().setPosition(
-		// ((double) counter / ids.getPartitions().length)
-		// * ids.getModulus());
-		// counter++;
-		// }
-		//
-		// Gephi gephi = new Gephi();
-		// Config.overwrite("MAIN_PLOT_FOLDER", "./temp/visualization/");
-		// gephi.Plot(g, ids, "plot-" + d + ".svg");
-		// }
-		// return;
-		// }
-
+		/**
+		 * SETTINGS
+		 */
 		Stats stats = new Stats();
 		String main = "/home/benni/g+/";
 		if (!(new File(main)).exists()) {
@@ -149,6 +122,125 @@ public class GoogleP {
 		Transformation[] connT = new Transformation[] {
 				new WeakConnectivityPartition(),
 				new StrongConnectivityPartition() };
+
+		/**
+		 * external computation of XX
+		 */
+		// if (args.length != 3) {
+		// System.err.println("expecting 3 parameters...");
+		// return;
+		// }
+		// String graphFolder = args[0];
+		// String dataFolder = args[1];
+		// String metrics = args[2];
+		//
+		// // String graphFolder =
+		// // "/Users/benni/TUD/GTNA/deploy4/temp/graphs/";
+		// // String dataFolder =
+		// // "/Users/benni/TUD/GTNA/deploy4/temp/data/g+/dd/";
+		// // String metrics = "DD";
+		//
+		// Config.overwrite("MAIN_DATA_FOLDER", dataFolder);
+		// Config.overwrite("METRICS", metrics);
+		//
+		// while (true) {
+		// File[] files = (new File(graphFolder))
+		// .listFiles(new FileNameFilter("", "-graph.txt"));
+		// boolean foundGraph = false;
+		// System.out.println("looking for new graph...");
+		// for (File f : files) {
+		// String filename = f.getAbsolutePath();
+		// int cid = Integer.parseInt(f.getName().split("-")[0]);
+		// Network nw = new GooglePlus(filename, cid, null, null);
+		// File test = new File(dataFolder + nw.nodes() + "/"
+		// + nw.folder());
+		// if (!test.exists()) {
+		// System.out.println("NEW : " + f.getAbsolutePath());
+		// foundGraph = true;
+		// Series.generate(nw, 1);
+		// break;
+		// } else {
+		// System.out.println("OLD : " + f.getAbsolutePath());
+		// }
+		// }
+		// if (!foundGraph) {
+		// System.out.println("no new graph found, quitting...");
+		// return;
+		// }
+		// }
+
+		/**
+		 * external plot of XX
+		 */
+		// if (args.length != 4) {
+		// System.err.println("expecting 4 parameters...");
+		// return;
+		// }
+		// String graphFolder = args[0];
+		// String dataFolder = args[1];
+		// String plotFolder = args[2];
+		// String metrics = args[3];
+		//
+		// // String graphFolder =
+		// // "/Users/benni/TUD/GTNA/deploy4/temp/graphs/";
+		// // String dataFolder =
+		// // "/Users/benni/TUD/GTNA/deploy4/temp/data/g+/dd/";
+		// // String metrics = "DD";
+		//
+		// Config.overwrite("MAIN_DATA_FOLDER", dataFolder);
+		// Config.overwrite("MAIN_PLOT_FOLDER", plotFolder);
+		// Config.overwrite("METRICS", metrics);
+		//
+		// File[] files = (new File(graphFolder)).listFiles(new
+		// FileNameFilter("",
+		// "-graph.txt"));
+		// Arrays.sort(files, new FileIndexComparator("-", 0));
+		// ArrayList<Series> list = new ArrayList<Series>();
+		// for (File f : files) {
+		// String filename = f.getAbsolutePath();
+		// int cid = Integer.parseInt(f.getName().split("-")[0]);
+		// Network nw = new GooglePlus(filename, cid, null, null);
+		// Series s = Series.get(nw);
+		// if (s != null && s.graphFolders() != null
+		// && s.graphFolders().length != 0) {
+		// list.add(s);
+		// }
+		// }
+		// Series[] s = new Series[list.size()];
+		// for (int i = 0; i < list.size(); i++) {
+		// s[i] = list.get(i);
+		// }
+		// // Plot.multiAvg(s, "multi/");
+		// Plot.singlesAvg(s, "single/");
+
+		// if (true) {
+		// double[] ds = new double[] { 5, 10, 15, 20, 25, 30, 35, 40, 45, 50 };
+		// ds = new double[] { 1 };
+		// for (double d : ds) {
+		// Network nw = new Ring(10, null, null);
+		// nw = new ErdosRenyi(100, d, false, null, null);
+		// // nw = new ReadableFile("G+", "g+",
+		// // "/Users/benni/TUD/g+/graphs/1-graph.txt", null, null);
+		// Transformation t1 = new RandomRingIDSpaceSimple(1, 1.0, false);
+		// Graph g = nw.generate();
+		// g = t1.transform(g);
+		// RingIdentifierSpaceSimple ids = (RingIdentifierSpaceSimple) g
+		// .getProperty("ID_SPACE_0");
+		//
+		// int counter = 0;
+		// for (Partition<Double> p : ids.getPartitions()) {
+		// ((RingPartitionSimple) p).getId().setPosition(
+		// ((double) counter / ids.getPartitions().length)
+		// * ids.getModulus());
+		// counter++;
+		// }
+		//
+		// Gephi gephi = new Gephi();
+		// Config.overwrite("MAIN_PLOT_FOLDER", "./temp/visualization/");
+		// gephi.Plot(g, ids, "plot-" + d + ".svg");
+		// }
+		// return;
+		// }
 
 		// GooglePlus.generateGraphsETC(data, graphs, mod, offset);
 
@@ -247,30 +339,30 @@ public class GoogleP {
 		/**
 		 * 1-hop GDA plots
 		 */
-		String b = data + "81/33605/";
-		String graphs1hop = main + "1-hop-graphs/";
-		String p = main + "1-hop-plots/";
-		HashSet<Integer> plot = new HashSet<Integer>();
-		plot.add(1);
-		plot.add(5);
-		plot.add(79);
-		Mapping mapping = Mapping.readMapping(main + "1-hop-mapping.txt");
-		Network nw = new ErdosRenyi(690, 10, false, null, null);
-		Graph g = nw.generate();
-		GoogleP.plotGraphs(graphs1hop, p + "1/",
-				GoogleP.generateIdSpace1(b, mapping, g), plot);
-		GoogleP.plotGraphs(graphs1hop, p + "2/",
-				GoogleP.generateIdSpace2(b, mapping, g), plot);
-		GoogleP.plotGraphs(graphs1hop, p + "3/",
-				GoogleP.generateIdSpace3(b, mapping, g), plot);
-		GoogleP.plotGraphs(graphs1hop, p + "4-0/",
-				GoogleP.generateIdSpace4(b, mapping, g, 0), plot);
-		GoogleP.plotGraphs(graphs1hop, p + "4-1/",
-				GoogleP.generateIdSpace4(b, mapping, g, 1), plot);
-		GoogleP.plotGraphs(graphs1hop, p + "4-2/",
-				GoogleP.generateIdSpace4(b, mapping, g, 2), plot);
-		GoogleP.plotGraphs(graphs1hop, p + "4-3/",
-				GoogleP.generateIdSpace4(b, mapping, g, 3), plot);
+		// String b = data + "81/33605/";
+		// String graphs1hop = main + "1-hop-graphs/";
+		// String p = main + "1-hop-plots/";
+		// HashSet<Integer> plot = new HashSet<Integer>();
+		// plot.add(1);
+		// plot.add(5);
+		// plot.add(81);
+		// Mapping mapping = Mapping.readMapping(main + "1-hop-mapping.txt");
+		// Network nw = new ErdosRenyi(690, 10, false, null, null);
+		// Graph g = nw.generate();
+		// GoogleP.plotGraphs(graphs1hop, p + "1/",
+		// GoogleP.generateIdSpace1(b, mapping, g), plot);
+		// GoogleP.plotGraphs(graphs1hop, p + "2/",
+		// GoogleP.generateIdSpace2(b, mapping, g), plot);
+		// GoogleP.plotGraphs(graphs1hop, p + "3/",
+		// GoogleP.generateIdSpace3(b, mapping, g), plot);
+		// GoogleP.plotGraphs(graphs1hop, p + "4-0/",
+		// GoogleP.generateIdSpace4(b, mapping, g, 0), plot);
+		// GoogleP.plotGraphs(graphs1hop, p + "4-1/",
+		// GoogleP.generateIdSpace4(b, mapping, g, 1), plot);
+		// GoogleP.plotGraphs(graphs1hop, p + "4-2/",
+		// GoogleP.generateIdSpace4(b, mapping, g, 2), plot);
+		// GoogleP.plotGraphs(graphs1hop, p + "4-3/",
+		// GoogleP.generateIdSpace4(b, mapping, g, 3), plot);
 
 		/**
 		 * 1-hop GEXF graph
@@ -295,21 +387,177 @@ public class GoogleP {
 		// }
 		// Config.overwrite("MAIN_DATA_FOLDER", main + "1-hop-metrics-data/");
 		// Config.overwrite("MAIN_PLOT_FOLDER", main + "1-hop-metrics-plots/");
-		// Config.overwrite("METRICS", "DD, CC, SP");
+		// Config.overwrite("METRICS",
+		// "DD, CC, SP, WEAK_CONNECTIVITY, STRONG_CONNECTIVITY");
 		// Series[] s = Series.generate(nw, 1);
 		// Plot.multiAvg(s, "multi/");
 		// Plot.singlesAvg(s, "single/");
 
 		/**
-		 * graphsETC for incremental graphs [inc-data => inc-graphs]
+		 * INC - graph generation [inc-data => inc-graphs]
 		 */
 		// String incData = main + "inc-data/";
 		// String incGraphs = main + "inc-graphs/";
 		// String incMetricsData = main + "inc-metrics-data/";
 		// String incMetricsPlots = main + "inc-metrics-plots/";
-		// GoogleP.generateGraphsETC(incData, incGraphs, mod, offset, 0, 0, 62);
+		// ArrayList<Crawl> crawls = Crawl.getCrawls(data, mod, offset, 0, 0,
+		// 100);
+		// GoogleP.generateGraphsETC(incData, incGraphs, crawls);
+
+		/**
+		 * INC - graph generation [inc-data => inc-graphs] simple version
+		 */
+		// String dataSrc = main + "data/";
+		// String graphsDst = main + "graphs/";
+		// ArrayList<Crawl> crawls = new ArrayList<Crawl>();
+		// int[] cids = new int[] { 82, 83, 84, 85, 86 };
+		// for (int i = 0; i < cids.length; i++) {
+		// if ((i % mod) == offset) {
+		// crawls.add(new Crawl(new File(dataSrc + cids[i])));
+		// }
+		// }
+		// GoogleP.generateGraphsETC(dataSrc, graphsDst, crawls);
+
+		/**
+		 * INC - metric computation
+		 */
+		// Network[] nwInc = new Network[8];
+		// for (int i = 0; i < nwInc.length; i++) {
+		// nwInc[i] = new GooglePlus(main + "temp/inc-graphs/" + (i + 1)
+		// + "-graph.txt", i + 1, null, null);
+		// }
+		// Config.overwrite("METRICS", "CC");
+		// Config.overwrite("MAIN_DATA_FOLDER", main +
+		// "temp/inc-metrics-data/cc/");
+		// Config.overwrite("MAIN_PLOT_FOLDER", main +
+		// "temp/inc-metrics-plots/cc/");
+		// Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + true);
+		// Series[] s = Series.get(nwInc);
+		// // Plot.multiAvg(s, "multi/");
+		// Plot.singlesAvg(s, "single/");
+
+		/**
+		 * stats from WC
+		 */
+		double[] seen = GoogleP.statsFromWC(main + "stats/seenUsers.log");
+		double[] crawled = GoogleP.statsFromWC(main + "stats/crawledUsers.log");
+		double[] edges = GoogleP.statsFromWC(main + "stats/edges.log");
+		double[] seenInc = GoogleP.statsFromWC(main + "stats/seenUsersInc.log");
+		double[] crawledInc = GoogleP.statsFromWC(main
+				+ "stats/crawledUsersInc.log");
+		double[] edgesInc = GoogleP.statsFromWC(main + "stats/edgesInc.log");
+		Config.overwrite("MAIN_PLOT_FOLDER", main + "stats/plots/");
+
+		Plot.fast(new double[][] { crawled, seen }, new String[] {
+				"Crawled Users", "Seen Users" }, "Users in each crawl", "CID",
+				"# of Users", "crawled-seen.pdf");
+		Plot.fast(new double[][] { crawled }, new String[] { "Crawled Users" },
+				"Users in each crawl", "CID", "# of Users", "crawled.pdf");
+		Plot.fast(new double[][] { seen }, new String[] { "Seen Users" },
+				"Users in each crawl", "CID", "# of Users", "seen.pdf");
+
+		Plot.fast(new double[][] { crawledInc, seenInc }, new String[] {
+				"Crawled Users (INC)", "Seen Users (INC)" },
+				"Users (INC) in each crawl", "CID", "# of Users (INC)",
+				"inc-crawled-seen.pdf");
+		Plot.fast(new double[][] { crawledInc },
+				new String[] { "Crawled Users (INC)" },
+				"Users (INC) in each crawl", "CID", "# of Users (INC)",
+				"inc-crawled.pdf");
+		Plot.fast(new double[][] { seenInc },
+				new String[] { "Seen Users (INC)" },
+				"Users (INC) in each crawl", "CID", "# of Users (INC)",
+				"inc-seen.pdf");
+
+		Plot.fast(new double[][] { edges }, new String[] { "Edges" },
+				"Edges in each crawl", "CID", "# of Edges", "edges.pdf");
+		Plot.fast(new double[][] { edgesInc }, new String[] { "Edges (INC)" },
+				"Edges (INC) in each crawl", "CID", "# of Edges (INC)",
+				"inc-edges.pdf");
 
 		stats.end();
+	}
+
+	private static double[] statsFromWC(String filename) {
+		Filereader fr = new Filereader(filename);
+		String line = null;
+		ArrayList<int[]> list = new ArrayList<int[]>();
+		int maxIndex = 0;
+		while ((line = fr.readLine()) != null) {
+			String[] temp = line.trim().split(" ");
+			String[] temp2 = temp[1].split("/");
+			String[] temp3 = temp2[temp2.length - 1].split("-");
+			try {
+				int value = Integer.parseInt(temp[0]);
+				int index = Integer.parseInt(temp3[0]);
+				list.add(new int[] { index, value });
+				if (index > maxIndex) {
+					maxIndex = index;
+				}
+			} catch (NumberFormatException e) {
+
+			}
+		}
+		fr.close();
+		double[] stats = new double[maxIndex + 1];
+		for (int[] entry : list) {
+			stats[entry[0]] = entry[1];
+		}
+		return stats;
+	}
+
+	private static void generateGraphsETC(String data, String graphs,
+			ArrayList<Crawl> crawls) throws IOException {
+		for (Crawl crawl : crawls) {
+			System.out.println("\nCG - PROCESSING " + crawl);
+
+			String crawled = graphs + crawl.getCid() + "-crawled.txt";
+			String seen = graphs + crawl.getCid() + "-seen.txt";
+			String mapping = graphs + crawl.getCid() + "-mapping.txt";
+			String graph = graphs + crawl.getCid() + "-graph.txt";
+
+			if ((new File(crawled)).exists() && (new File(seen)).exists()
+					&& (new File(mapping)).exists()
+					&& (new File(graph)).exists()) {
+				System.out.println("nothing to do...");
+				continue;
+			}
+
+			IdList crawledList = null;
+
+			if (!(new File(crawled)).exists()) {
+				crawledList = IdList.generateCrawledIdList(crawl);
+				crawledList.write(crawled);
+				System.out.println("crawledList => " + crawled);
+			}
+
+			if (!(new File(seen)).exists()) {
+				IdList seenList = IdList.generateSeenIdList(crawl);
+				seenList.write(seen);
+				System.out.println("seenList => " + seen);
+			}
+
+			Mapping crawledMapping = null;
+
+			if (!(new File(mapping)).exists()) {
+				if (crawledList == null) {
+					crawledList = IdList.read(crawled);
+				}
+				crawledMapping = new Mapping(crawledList, crawl.getCid());
+				crawledMapping.writeMapping(mapping);
+				System.out.println("crawledMapping => " + mapping);
+			}
+
+			if (!(new File(graph)).exists()) {
+				if (crawledMapping == null) {
+					crawledMapping = Mapping.readMapping(mapping);
+				}
+				Graph crawledGraph = GooglePlusReader.generateGraph(crawl,
+						crawledMapping);
+				GraphWriter.write(crawledGraph, graph);
+				System.out.println("crawledGraph => " + graph);
+			}
+		}
 	}
 
 	private static void writeCSV(String src, String dst) {
@@ -673,62 +921,6 @@ public class GoogleP {
 				Graph g = GooglePlusReader.generateGraph(crawl, mapping);
 				GraphWriter.write(g, graph);
 				System.out.println(" ===> " + graph);
-			}
-		}
-	}
-
-	private static void generateGraphsETC(String data, String graphs, int mod,
-			int offset, int minNodes, int minCid, int maxCid)
-			throws IOException {
-		ArrayList<Crawl> crawls = Crawl.getCrawls(data, mod, offset, minNodes,
-				minCid, maxCid);
-		for (Crawl crawl : crawls) {
-			String crawled = graphs + crawl.getCid() + "-crawled.txt";
-			String seen = graphs + crawl.getCid() + "-seen.txt";
-			String mapping = graphs + crawl.getCid() + "-mapping.txt";
-			String graph = graphs + crawl.getCid() + "-graph.txt";
-
-			if ((new File(crawled)).exists() && (new File(seen)).exists()
-					&& (new File(mapping)).exists()
-					&& (new File(graph)).exists()) {
-				continue;
-			}
-
-			System.out.println("\nCG - PROCESSING " + crawl);
-
-			IdList crawledList = null;
-
-			if (!(new File(crawled)).exists()) {
-				crawledList = IdList.generateCrawledIdList(crawl);
-				crawledList.write(crawled);
-				System.out.println("crawledList => " + crawled);
-			}
-
-			if (!(new File(seen)).exists()) {
-				IdList seenList = IdList.generateSeenIdList(crawl);
-				seenList.write(seen);
-				System.out.println("seenList => " + seen);
-			}
-
-			Mapping crawledMapping = null;
-
-			if (!(new File(mapping)).exists()) {
-				if (crawledList == null) {
-					crawledList = IdList.read(crawled);
-				}
-				crawledMapping = new Mapping(crawledList, crawl.getCid());
-				crawledMapping.writeMapping(mapping);
-				System.out.println("crawledMapping => " + mapping);
-			}
-
-			if (!(new File(graph)).exists()) {
-				if (crawledMapping == null) {
-					crawledMapping = Mapping.readMapping(mapping);
-				}
-				Graph crawledGraph = GooglePlusReader.generateGraph(crawl,
-						crawledMapping);
-				GraphWriter.write(crawledGraph, graph);
-				System.out.println("crawledGraph => " + graph);
 			}
 		}
 	}
