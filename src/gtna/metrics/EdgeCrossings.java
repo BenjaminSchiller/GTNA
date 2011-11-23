@@ -41,8 +41,13 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.DIdentifierSpace;
 import gtna.id.IdentifierSpace;
+import gtna.id.Partition;
+import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
+import gtna.id.md.MDPartitionSimple;
+import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
+import gtna.id.plane.PlanePartitionSimple;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
 import gtna.io.DataWriter;
@@ -67,6 +72,7 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 	private int maxCrossingNumber;
 	private HashSet<String> handledEdges;
 	private Distribution crossingDistribution;
+	private Partition[] partitions;
 
 	public EdgeCrossings() {
 		super("EC");
@@ -99,6 +105,7 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 			result = calculateRingCrossings(edges, idSpace);
 		} else {
 			handledEdges = new HashSet<String>();
+			partitions = idSpace.getPartitions();
 			for (int outerCounter = 0; outerCounter < edges.length; outerCounter++) {
 				int innerResult = 0;
 				for (int innerCounter = outerCounter + 1; innerCounter < edges.length; innerCounter++) {
@@ -124,21 +131,21 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		int numCross = 0;
 
 		RingIdentifierSpace ridSpace = (RingIdentifierSpace) idSpace;
-		RingPartition[] partitions = (RingPartition[]) ridSpace.getPartitions();
+		partitions = (RingPartition[]) ridSpace.getPartitions();
 
-		Arrays.sort(edges, new EdgeComparator(partitions));
+		Arrays.sort(edges, new EdgeComparator((RingPartition[]) partitions));
 		ArrayList<RingEdge> ringEdges = new ArrayList<RingEdge>();
 		TreeSet<Double> partPositions = new TreeSet<Double>();
 
 		for (Edge sE : edges) {
-			partPositions.add(getPositionRing(sE.getSrc(), ridSpace));
+			partPositions.add(getPositionRing(sE.getSrc()));
 		}
 
 		RingEdge tempRingEdge, lastEdge;
 		lastEdge = null;
 		for (Edge sE : edges) {
-			double srcPos = Math.min(getPositionRing(sE.getSrc(), ridSpace), getPositionRing(sE.getDst(), ridSpace));
-			double dstPos = Math.max(getPositionRing(sE.getSrc(), ridSpace), getPositionRing(sE.getDst(), ridSpace));
+			double srcPos = Math.min(getPositionRing(sE.getSrc()), getPositionRing(sE.getDst()));
+			double dstPos = Math.max(getPositionRing(sE.getSrc()), getPositionRing(sE.getDst()));
 			tempRingEdge = new RingEdge(srcPos, dstPos, sE.getSrc(), sE.getDst());
 			if (!tempRingEdge.equals(lastEdge)) {
 				ringEdges.add(tempRingEdge);
@@ -151,8 +158,8 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		ArrayList<RingEdge> openEdges = new ArrayList<RingEdge>();
 
 		Double[] posList = new Double[partitions.length];
-		for (RingPartition rP : partitions) {
-			posList[i] = rP.getStart().getPosition();
+		for (Partition rP : partitions) {
+			posList[i] = ((RingPartition) rP).getStart().getPosition();
 			startNode.put(posList[i], new ArrayList<RingEdge>());
 			targetNode.put(posList[i], new ArrayList<RingEdge>());
 			i++;
@@ -223,13 +230,13 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 				|| (x.getDst() == y.getDst()))
 			return false;
 		if (idSpace instanceof PlaneIdentifierSpaceSimple) {
-			return hasCrossingPlane(x, y, (PlaneIdentifierSpaceSimple) idSpace);
+			return hasCrossingPlane(x, y);
 		} else if (idSpace instanceof RingIdentifierSpace) {
-			return hasCrossingRing(x, y, (RingIdentifierSpace) idSpace);
+			return hasCrossingRing(x, y);
 		} else if (idSpace instanceof MDIdentifierSpaceSimple) {
 			int dim = ((MDIdentifierSpaceSimple) idSpace).getDimensions();
 			if (dim == 2) {
-				return hasCrossingMD(x, y, (MDIdentifierSpaceSimple) idSpace);
+				return hasCrossingMD(x, y);
 			} else {
 				throw new RuntimeException("Cannot calculate crossings in " + idSpace.getClass() + " with " + dim
 						+ " dimensions");
@@ -239,28 +246,52 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		}
 	}
 
-	/**
-	 * @param x
-	 * @param y
-	 * @param idSpace
-	 * @return
-	 */
-	private boolean hasCrossingMD(Edge x, Edge y, MDIdentifierSpaceSimple idSpace) {
-		// TODO Auto-generated method stub
-		return false;
+	private PlaneEdge getPlaneEdgeFromPI(Edge x) {
+		PlaneIdentifier startID = (PlaneIdentifier) ((PlanePartitionSimple) partitions[x.getSrc()])
+				.getRepresentativeID();
+		double startX = startID.getX();
+		double startY = startID.getY();
+		PlaneIdentifier endID = (PlaneIdentifier) ((PlanePartitionSimple) partitions[x.getDst()]).getRepresentativeID();
+		double endX = endID.getX();
+		double endY = endID.getY();
+		return new PlaneEdge(startX, startY, endX, endY);
 	}
 
-	/**
-	 * @param x
-	 * @param y
-	 * @param idSpace
-	 * @return
-	 */
-	private boolean hasCrossingRing(Edge x, Edge y, RingIdentifierSpace idSpace) {
-		double xStart = Math.min(getPositionRing(x.getSrc(), idSpace), getPositionRing(x.getDst(), idSpace));
-		double xEnd = Math.max(getPositionRing(x.getSrc(), idSpace), getPositionRing(x.getDst(), idSpace));
-		double yStart = Math.min(getPositionRing(y.getSrc(), idSpace), getPositionRing(y.getDst(), idSpace));
-		double yEnd = Math.max(getPositionRing(y.getSrc(), idSpace), getPositionRing(y.getDst(), idSpace));
+	private boolean hasCrossingPlane(Edge x, Edge y) {
+		return hasCrossing(getPlaneEdgeFromPI(x), getPlaneEdgeFromPI(y));
+	}
+
+	private PlaneEdge getPlaneEdgeFromMD(Edge x) {
+		MDIdentifier startID = (MDIdentifier) ((MDPartitionSimple) partitions[x.getSrc()]).getRepresentativeID();
+		if (startID.getCoordinates().length > 2) {
+			throw new RuntimeException("Cannot calculate crossings  with " + startID.getCoordinates().length
+					+ " dimensions");
+		}
+		double startX = startID.getCoordinate(0);
+		double startY = startID.getCoordinate(1);
+		MDIdentifier endID = (MDIdentifier) ((MDPartitionSimple) partitions[x.getDst()]).getRepresentativeID();
+		if (endID.getCoordinates().length > 2) {
+			throw new RuntimeException("Cannot calculate crossings with " + endID.getCoordinates().length
+					+ " dimensions");
+		}
+		double endX = endID.getCoordinate(0);
+		double endY = endID.getCoordinate(1);
+		return new PlaneEdge(startX, startY, endX, endY);
+	}
+
+	private boolean hasCrossingMD(Edge x, Edge y) {
+		return hasCrossing(getPlaneEdgeFromMD(x), getPlaneEdgeFromMD(y));
+	}
+
+	private boolean hasCrossing(PlaneEdge x, PlaneEdge y) {
+		throw new RuntimeException("Can not yet calculate crossings in the plane");
+	}
+
+	private boolean hasCrossingRing(Edge x, Edge y) {
+		double xStart = Math.min(getPositionRing(x.getSrc()), getPositionRing(x.getDst()));
+		double xEnd = Math.max(getPositionRing(x.getSrc()), getPositionRing(x.getDst()));
+		double yStart = Math.min(getPositionRing(y.getSrc()), getPositionRing(y.getDst()));
+		double yEnd = Math.max(getPositionRing(y.getSrc()), getPositionRing(y.getDst()));
 
 		String xString = xStart + "-" + xEnd;
 		String yString = yStart + "-" + yEnd;
@@ -291,19 +322,8 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		return false;
 	}
 
-	protected double getPositionRing(int i, RingIdentifierSpace idSpace) {
-		return ((RingPartition) (idSpace.getPartitions())[i]).getStart().getPosition();
-	}
-
-	/**
-	 * @param x
-	 * @param y
-	 * @param idSpace
-	 * @return
-	 */
-	private boolean hasCrossingPlane(Edge x, Edge y, PlaneIdentifierSpaceSimple idSpace) {
-		// TODO Auto-generated method stub
-		return false;
+	protected double getPositionRing(int i) {
+		return ((RingPartition) partitions[i]).getStart().getPosition();
 	}
 
 	@Override
@@ -318,6 +338,21 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 	public Value[] getValues() {
 		Value ecAVG = new Value("EC_AVG", this.crossingDistribution.getAverage());
 		return new Value[] { ecAVG };
+	}
+
+	private class PlaneEdge {
+		double startX, startY, endX, endY;
+
+		public PlaneEdge(double startX, double startY, double endX, double endY) {
+			this.startX = startX;
+			this.startY = startY;
+			this.endX = endX;
+			this.endY = endY;
+		}
+
+		public String toString() {
+			return "(" + startX + "|" + startY + ")->(" + endX + "|" + endY + ")";
+		}
 	}
 
 	private class RingEdge {
