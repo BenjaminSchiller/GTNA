@@ -35,13 +35,13 @@
  */
 package gtna.transformation.gd;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
+import java.util.HashSet;
 
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.id.IdentifierSpace;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
@@ -58,14 +58,15 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 	protected int realities;
 	protected double modulus;
 	protected Boolean wrapAround;
-	ArrayList<String> handledEdges;
+	HashSet<String> handledEdges;
 	
 	public CircularAbstract(String key, String[] configKeys, String[] configValues) {
 		super(key, configKeys, configValues);
 	}
 
 	protected void initIDSpace( Graph g ) {
-		Random rand = new Random();
+		if ( !generateIDSpace ) return;
+		
 		for (int r = 0; r < this.realities; r++) {
 			partitions = new RingPartition[g.getNodes().length];
 			idSpace = new RingIdentifierSpace(partitions, this.modulus,
@@ -87,85 +88,13 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
 	}
 	
-	protected int countAllCrossings(Graph g) {
-		int numCross = 0;
-		Edge[] edgeList = g.generateEdges();
-		
-		handledEdges = new ArrayList<String>();
-		for ( Edge e: edgeList ) {
-			numCross += countCrossings(e, edgeList);
-		}
-		return numCross;
-	}
-	
-	protected int countCrossings (Graph g, Node n) {
-		Edge[] nodeEdges = n.getAllEdges();
-		Edge[] graphEdges = g.generateEdges();
-		handledEdges = new ArrayList<String>();
-		int numCross = 0;
-		for ( Edge x: nodeEdges ) {
-			for ( Edge y: graphEdges ) {
-				if ( hasCrossing(x, y) ) numCross++;
-			}
-		}
-		return numCross;
+	public void setIDSpace(IdentifierSpace idSpace) {
+		this.idSpace = (RingIdentifierSpace) idSpace.clone();
+		this.partitions = (RingPartition[]) this.idSpace.getPartitions();
+		this.modulus = this.idSpace.getModulus();
+		this.generateIDSpace = false;
 	}
 
-	protected int countCrossings(Edge e, Edge[] list) {
-		int numCross = 0;
-		for ( Edge f: list ) {
-			if ( hasCrossing(e, f) ) numCross++;
-		}
-		return numCross;
-	}
-
-	private Boolean hasCrossing(Edge x, Edge y) {
-			/*
-			 * There cannot be a crossing between only one edge
-			 */
-		if ( x.equals(y) ) return false;
-		
-		double xStart = Math.min ( getPosition( x.getSrc() ), getPosition( x.getDst() ) );
-		double xEnd = Math.max ( getPosition( x.getSrc() ), getPosition( x.getDst() ) );
-		String xString = xStart + " -> " +xEnd;
-		double yStart = Math.min ( getPosition( y.getSrc() ), getPosition( y.getDst() ) );
-		double yEnd = Math.max ( getPosition( y.getSrc() ), getPosition( y.getDst() ) );
-		String yString = yStart + " -> " + yEnd;
-		String edgeString;
-		if ( xStart < yStart ) edgeString = xString + " and " + yString;
-		else edgeString = yString + " and " + xString;
-		
-			/*
-			 * Have we already handled this edge?
-			 */
-		if ( handledEdges.contains(edgeString) ) {
-			return false;
-		}
-		handledEdges.add(edgeString);
-		
-		if ( ( xStart < yStart && xEnd > yEnd ) ||
-			 ( yStart < xStart && yEnd > xEnd ) ||
-			 ( yStart > xEnd || xStart > yEnd ) ||
-			 ( yStart == xEnd || xStart == yEnd || xStart == yStart || xEnd == yEnd )
-				) {
-//			System.out.println( "No crossing between " + edgeString );
-			return false;
-		}
-		if ( ( xStart < yStart && xEnd < yEnd ) ||
-				( xStart > yStart && xEnd > yEnd )
-			)	{
-//			System.out.println("Got a crossing between " + edgeString);
-			return true;
-		}
-		
-		System.err.println( "Unknown case " + edgeString );
-		return false;
-	}
-
-	protected double getPosition(int i) {
-		return partitions[i].getStart().getPosition();
-	}
-	
 	protected int getPredecessor(int i) {
 		double predEnd = partitions[i].getStart().getPosition();
 		

@@ -21,35 +21,56 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * IdentifierSpace.java
+ * EdgeComparator.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: benni;
+ * Original Author: Nico;
  * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
  *
  */
-package gtna.id;
+package gtna.metrics;
 
-import gtna.graph.GraphProperty;
-import java.util.Random;
+import gtna.graph.Edge;
+import gtna.id.IdentifierSpace;
+import gtna.id.ring.RingIdentifierSpace;
+import gtna.id.ring.RingPartition;
+
+import java.util.Comparator;
 
 /**
- * @author benni
+ * @author Nico
  * 
  */
-public interface IdentifierSpace<Type> extends GraphProperty, Cloneable {
-	public Partition<Type>[] getPartitions();
+public class EdgeComparator implements Comparator<Edge> {
 
-	public void setPartitions(Partition<Type>[] partitions);
+	private RingPartition[] partitions;
 
-	public Identifier<Type> randomID(Random rand);
+	public EdgeComparator(RingPartition[] partitions) {
+		this.partitions = partitions;
+	}
 
-	public Type getMaxDistance();
+	@Override
+	public int compare(Edge x, Edge y) {
+		double xStart = Math.min(getPositionRing(x.getSrc()), getPositionRing(x.getDst()));
+		double xEnd = Math.max(getPositionRing(x.getSrc()), getPositionRing(x.getDst()));
+		double yStart = Math.min(getPositionRing(y.getSrc()), getPositionRing(y.getDst()));
+		double yEnd = Math.max(getPositionRing(y.getSrc()), getPositionRing(y.getDst()));
+		if (xStart > yStart) {
+			return 1;
+		}
+		if ( xStart == yStart ) {
+			if ( xEnd > yEnd ){ return 1;}
+		}
+		return -1;
+	}
 
-	public IdentifierSpace<Type> clone();
+	protected double getPositionRing(int i) {
+		return partitions[i].getStart().getPosition();
+	}
+
 }

@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * GraphDrawingAbstract.java
+ * RandomMDIDSpaceSimple.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,13 +33,13 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.gd;
+package gtna.transformation.id;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import gtna.graph.Graph;
-import gtna.id.IdentifierSpace;
-import gtna.plot.GraphPlotter;
+import gtna.id.md.*;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 
@@ -47,24 +47,47 @@ import gtna.transformation.TransformationImpl;
  * @author Nico
  * 
  */
-public abstract class GraphDrawingAbstract extends TransformationImpl implements Transformation {
-	protected GraphPlotter graphPlotter;
-	protected boolean generateIDSpace = true;	
-	Random rand;
-	
-	public GraphDrawingAbstract(String key, String[] configKeys, String[] configValues) {
-		super(key, configKeys, configValues);
-		rand = new Random();
+public class RandomMDIDSpaceSimple extends TransformationImpl implements Transformation {
+
+	private int realities;
+	private double[] modulus;
+	private boolean wrapAround;
+	private MDIdentifierSpaceSimple idSpace;
+
+	public RandomMDIDSpaceSimple() {
+		super("RANDOM_MD_ID_SPACE_SIMPLE", new String[] {}, new String[] {});
+		this.realities = 1;
 	}
 
-	protected abstract void initIDSpace(Graph g);
+	public RandomMDIDSpaceSimple(int realities, double[] modulus, boolean wrapAround) {
+		super("RANDOM_MD_ID_SPACE_SIMPLE", new String[] { "REALITIES", "MODULI", "WRAPAROUND" }, new String[] {
+				"" + realities, Arrays.toString(modulus), "" + wrapAround });
+		this.realities = realities;
+		this.modulus = modulus;
+		this.wrapAround = wrapAround;
+	}
 
-	protected abstract void writeIDSpace(Graph g);
+	@Override
+	public Graph transform(Graph graph) {
+		Random rand = new Random();
+		for (int r = 0; r < this.realities; r++) {
+			MDPartitionSimple[] partitions = new MDPartitionSimple[graph.getNodes().length];
+			this.idSpace = new MDIdentifierSpaceSimple(partitions, this.modulus, this.wrapAround);
+			for (int i = 0; i < partitions.length; i++) {
+				partitions[i] = new MDPartitionSimple(MDIdentifier.rand(rand, idSpace));
+			}
+			graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
+		}
+		return graph;
+	}
 
-	public abstract void setIDSpace(IdentifierSpace idSpace);
-	
 	@Override
 	public boolean applicable(Graph g) {
 		return true;
 	}
+
+	public MDIdentifierSpaceSimple getIdSpace() {
+		return this.idSpace;
+	}
+
 }

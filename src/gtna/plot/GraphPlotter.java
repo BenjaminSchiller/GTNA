@@ -37,6 +37,7 @@ package gtna.plot;
 
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
+import gtna.util.Config;
 
 /**
  * @author Nico
@@ -46,7 +47,6 @@ public class GraphPlotter {
 	private Gephi gephi;
 	private String basename, extension;
 	private int iterationModulus = -1;
-	private boolean disabled = false;
 
 	public GraphPlotter(String basename, String extension, int iterationModulus) {
 		this.gephi = new Gephi();
@@ -59,10 +59,6 @@ public class GraphPlotter {
 		this(basename, extension, -1);
 	}
 
-	public GraphPlotter(boolean disabled) {
-		this.disabled = disabled;
-	}
-
 	public void setIterationModulus(int iterationModulus) {
 		this.iterationModulus = iterationModulus;
 	}
@@ -72,14 +68,11 @@ public class GraphPlotter {
 	}
 
 	public void plot(Graph g, IdentifierSpace idSpace, String filename) {
-		if (!disabled)
-			gephi.Plot(g, idSpace, filename + "." + extension);
+		gephi.plot(g, idSpace, Config.get("MAIN_PLOT_FOLDER") + filename + "." + extension);
 	}
 
 	public void plotIteration(Graph g, IdentifierSpace idSpace, int iteration) {
-		if (disabled)
-			return;
-		else if (iterationModulus <= 0) {
+		if (iterationModulus <= 0) {
 				/*
 				 * Assume we should not print any intermediate steps
 				 */

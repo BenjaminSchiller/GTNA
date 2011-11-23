@@ -21,35 +21,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * IdentifierSpace.java
+ * BubbleTree_BoundingBox.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: benni;
+ * Original Author: Nico;
  * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
  *
  */
-package gtna.id;
+package gtna.transformation.gd;
 
-import gtna.graph.GraphProperty;
-import java.util.Random;
+import gtna.graph.spanningTree.SpanningTree;
+import gtna.plot.GraphPlotter;
 
 /**
- * @author benni
- * 
+ * @author Nico
+ *
  */
-public interface IdentifierSpace<Type> extends GraphProperty, Cloneable {
-	public Partition<Type>[] getPartitions();
-
-	public void setPartitions(Partition<Type>[] partitions);
-
-	public Identifier<Type> randomID(Random rand);
-
-	public Type getMaxDistance();
-
-	public IdentifierSpace<Type> clone();
+public class BubbleTree_BoundingBox extends BubbleTree {
+	public BubbleTree_BoundingBox(double modulusX, double modulusY, GraphPlotter plotter) {
+		super("GDA_BUBBLETREE_BOUNDINGBOX", modulusX, modulusY, plotter);
+		throw new RuntimeException("Bubble tree with bounding box is not ready yet");
+	}
+	
+	private double calculateSmallestEnclosingCircle(SpanningTree tree, int node) {
+		//TODO implement Bennis bounding box
+		return -1;
+	}
 }

@@ -35,12 +35,14 @@
  */
 package gtna.transformation.gd;
 
+import java.util.Arrays;
+
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.plot.GraphPlotter;
-import gtna.transformation.Transformation;
 import gtna.util.MDVector;
+import gtna.util.Util;
 
 /**
  * @author Nico
@@ -76,7 +78,7 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 	private double t;
 	
 	public FruchtermanReingold(int realities, double[] moduli, Boolean wrapAround, int iterations, GraphPlotter plotter) {
-		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
+		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{"REALITIES", "MODULI", "WRAPAROUND", "ITERATIONS"}, new String[]{"" + realities, Arrays.toString(moduli), "" + wrapAround, "" + iterations});
 		this.realities = realities;
 		this.moduli = moduli;
 		this.wrapAround = wrapAround;
@@ -97,11 +99,13 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 		this.t = idSpace.getMaxModulus();		
 
 		for ( int i = 0; i < this.iterations; i++ ) {
-			System.out.println("\n\n   >>> in iteration " + i + " <<<");
-			graphPlotter.plotIteration(g, idSpace, i);
+//			System.out.println("\n\n   >>> in iteration " + i + " <<<");
+			if (graphPlotter != null)
+				graphPlotter.plotIteration(g, idSpace, i);
 			g = this.doIteration ( g );
 		}
-		graphPlotter.plotFinalGraph(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotFinalGraph(g, idSpace);
 		writeIDSpace(g);
 		return g;
 	}

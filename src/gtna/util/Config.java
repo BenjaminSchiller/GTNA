@@ -79,6 +79,10 @@ public class Config {
 	public static double getDouble(String key) {
 		return Double.parseDouble(get(key));
 	}
+	
+	public static float getFloat(String key) {
+		return Float.parseFloat(get(key));
+	}	
 
 	public static void overwrite(String key, String value) {
 		try {
