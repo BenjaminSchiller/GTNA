@@ -76,7 +76,7 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 		todolist.addAll(Arrays.asList(g.getNodes()));
 
 		EdgeCrossings edgeCrossings = new EdgeCrossings();
-		crossingsStart = edgeCrossings.calculateCrossings(g.generateEdges(), idSpace);
+		crossingsStart = edgeCrossings.calculateCrossings(g.generateEdges(), idSpace, true);
 		int countLoop = 0;
 		long startTime = System.currentTimeMillis();
 		while ((currentNode = todolist.poll()) != null) {
@@ -133,7 +133,7 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 		long totalTime = endTime - startTime;
 
 		System.out.println("Did " + countLoop + " loops in " + totalTime + " msec");
-		crossingsEnd = edgeCrossings.calculateCrossings(g.generateEdges(), idSpace);
+		crossingsEnd = edgeCrossings.calculateCrossings(g.generateEdges(), idSpace, true);
 		System.out.println("Crossings at the beginning: " + crossingsStart + " - and afterwards: " + crossingsEnd);
 
 		if (graphPlotter != null)

@@ -84,7 +84,7 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		Edge[] edges = graph.generateEdges();
 
 		DIdentifierSpace idSpace = (DIdentifierSpace) graph.getProperty("ID_SPACE_0");
-		int result = calculateCrossings(edges, idSpace);
+		int result = calculateCrossings(edges, idSpace, false);
 
 		double[] finalCD = new double[maxCrossingNumber];
 		for (int i = 0; i < maxCrossingNumber; i++) {
@@ -95,13 +95,13 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		this.runtime.end();
 	}
 
-	public int calculateCrossings(Edge[] edges, IdentifierSpace idSpace) {
+	public int calculateCrossings(Edge[] edges, IdentifierSpace idSpace, boolean useShortcuts) {
 		int result = 0;
 		cd = new double[edges.length];
 		maxCrossingNumber = 0;
 		this.runtime = new Timer();
 
-		if (idSpace instanceof RingIdentifierSpace) {
+		if (useShortcuts && idSpace instanceof RingIdentifierSpace) {
 			result = calculateRingCrossings(edges, idSpace);
 		} else {
 			handledEdges = new HashSet<String>();
@@ -119,7 +119,8 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 			}
 		}
 		this.runtime.end();
-		System.out.println("Computed crossings with " + edges.length + " edges in " + runtime.getMsec() + " msec");
+		System.out.println("Computed " + result + " crossings with " + edges.length + " edges in " + runtime.getMsec()
+				+ " msec");
 		return result;
 	}
 
@@ -284,7 +285,51 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 	}
 
 	private boolean hasCrossing(PlaneEdge x, PlaneEdge y) {
-		throw new RuntimeException("Can not yet calculate crossings in the plane");
+		/*
+		 * Have we already handled this edge?
+		 */
+		String edgeString = x + " " + y;
+		if (y.startX < x.startX) {
+			edgeString = y + " " + x;
+		}
+		if (handledEdges.contains(edgeString)) {
+			return false;
+		}
+		handledEdges.add(edgeString);
+
+		/*
+		 * calculation according to
+		 * http://www.ahristov.com/tutorial/geometry-games
+		 * /intersection-lines.html
+		 */
+		double d = (x.startX - x.endX) * (y.startY - y.endY) - (x.startY - x.endY) * (y.startX - y.endX);
+		if (d == 0) {
+			return false;
+		}
+
+		double xi = ((y.startX - y.endX) * (x.startX * x.endY - x.startY * x.endX) - (x.startX - x.endX)
+				* (y.startX * y.endY - y.startY * y.endX))
+				/ d;
+		double yi = ((y.startY - y.endY) * (x.startX * x.endY - x.startY * x.endX) - (x.startY - x.endY)
+				* (y.startX * y.endY - y.startY * y.endX))
+				/ d;
+		/*
+		 * xi/yi is a possible intersection point - check whether it lies on one
+		 * of the edges
+		 */
+		if (isBetween(x.startX, x.endX, xi) && isBetween(x.startY, x.endY, yi) && isBetween(y.startX, y.endX, xi)
+				&& isBetween(y.startY, y.endY, yi)) {
+			return true;
+		}
+		return false;
+
+	}
+
+	private boolean isBetween(double rangeStart, double rangeEnd, double value) {
+		if (rangeStart > rangeEnd) {
+			return isBetween(rangeEnd, rangeStart, value);
+		}
+		return (rangeStart < value) && (rangeEnd > value);
 	}
 
 	private boolean hasCrossingRing(Edge x, Edge y) {
@@ -344,10 +389,17 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		double startX, startY, endX, endY;
 
 		public PlaneEdge(double startX, double startY, double endX, double endY) {
-			this.startX = startX;
-			this.startY = startY;
-			this.endX = endX;
-			this.endY = endY;
+			if (startX > endX) {
+				this.startX = endX;
+				this.endX = startX;
+				this.startY = endY;
+				this.endY = startY;
+			} else {
+				this.startX = startX;
+				this.endX = endX;
+				this.startY = startY;
+				this.endY = endY;
+			}
 		}
 
 		public String toString() {
