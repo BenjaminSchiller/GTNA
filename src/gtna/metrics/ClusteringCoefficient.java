@@ -61,7 +61,7 @@ public class ClusteringCoefficient extends MetricImpl implements Metric {
 	private Timer runtime;
 
 	public ClusteringCoefficient() {
-		super("CC");
+		super("CLUSTERING_COEFFICIENT");
 	}
 
 	@Override
@@ -113,9 +113,9 @@ public class ClusteringCoefficient extends MetricImpl implements Metric {
 
 	@Override
 	public Value[] getValues() {
-		Value clusteringCoefficient = new Value("CC_CLUSTERING_COEFFICIENT",
+		Value clusteringCoefficient = new Value("CLUSTERING_COEFFICIENT_CLUSTERING_COEFFICIENT",
 				this.clusteringCoefficient);
-		Value runtime = new Value("CC_RUNTIME", this.runtime.getRuntime());
+		Value runtime = new Value("CLUSTERING_COEFFICIENT_RUNTIME", this.runtime.getRuntime());
 		return new Value[] { clusteringCoefficient, runtime };
 	}
 }
