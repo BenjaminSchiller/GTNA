@@ -90,6 +90,10 @@ public class Partition implements GraphProperty {
 	public int[][] getComponents() {
 		return this.components;
 	}
+	
+	public int[] getLargestComponent(){
+		return this.components[0];
+	}
 
 	@Override
 	public boolean write(String filename, String key) {
