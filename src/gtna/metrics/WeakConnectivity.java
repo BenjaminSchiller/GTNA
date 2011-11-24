@@ -35,14 +35,24 @@
  */
 package gtna.metrics;
 
+import gtna.graph.Graph;
+import gtna.transformation.Transformation;
+import gtna.transformation.partition.WeakConnectivityPartition;
+
 /**
  * @author benni
- *
+ * 
  */
 public class WeakConnectivity extends Partitioning implements Metric {
 
 	public WeakConnectivity() {
 		super("WEAK_CONNECTIVITY", "WEAK_CONNECTIVITY_PARTITION");
+	}
+
+	@Override
+	protected Graph addProperty(Graph g) {
+		Transformation t = new WeakConnectivityPartition();
+		return t.transform(g);
 	}
 
 }
