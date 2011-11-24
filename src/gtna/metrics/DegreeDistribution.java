@@ -59,7 +59,7 @@ public class DegreeDistribution extends MetricImpl implements Metric {
 	private Timer runtime;
 
 	public DegreeDistribution() {
-		super("DD");
+		super("DEGREE_DISTRIBUTION");
 	}
 
 	public void computeData(Graph graph, Network nw, HashMap<String, Metric> m) {
@@ -119,37 +119,38 @@ public class DegreeDistribution extends MetricImpl implements Metric {
 	}
 
 	public Value[] getValues() {
-		Value nodes = new Value("DD_NODES", this.nodes);
-		Value edges = new Value("DD_EDGES", this.edges);
+		Value nodes = new Value("DEGREE_DISTRIBUTION_NODES", this.nodes);
+		Value edges = new Value("DEGREE_DISTRIBUTION_EDGES", this.edges);
 
-		Value degreeMin = new Value("DD_DEGREE_MIN",
+		Value degreeMin = new Value("DEGREE_DISTRIBUTION_DEGREE_MIN",
 				this.degreeDistribution.getMin());
-		Value degreeMed = new Value("DD_DEGREE_MED",
+		Value degreeMed = new Value("DEGREE_DISTRIBUTION_DEGREE_MED",
 				this.degreeDistribution.getMedian());
-		Value degreeAvg = new Value("DD_DEGREE_AVG",
+		Value degreeAvg = new Value("DEGREE_DISTRIBUTION_DEGREE_AVG",
 				this.degreeDistribution.getAverage());
-		Value degreeMax = new Value("DD_DEGREE_MAX",
+		Value degreeMax = new Value("DEGREE_DISTRIBUTION_DEGREE_MAX",
 				this.degreeDistribution.getMax());
 
-		Value inDegreeMin = new Value("DD_IN_DEGREE_MIN",
+		Value inDegreeMin = new Value("DEGREE_DISTRIBUTION_IN_DEGREE_MIN",
 				this.inDegreeDistribution.getMin());
-		Value inDegreeMed = new Value("DD_IN_DEGREE_MED",
+		Value inDegreeMed = new Value("DEGREE_DISTRIBUTION_IN_DEGREE_MED",
 				this.inDegreeDistribution.getMedian());
-		Value inDegreeAvg = new Value("DD_IN_DEGREE_AVG",
+		Value inDegreeAvg = new Value("DEGREE_DISTRIBUTION_IN_DEGREE_AVG",
 				this.inDegreeDistribution.getAverage());
-		Value inDegreeMax = new Value("DD_IN_DEGREE_MAX",
+		Value inDegreeMax = new Value("DEGREE_DISTRIBUTION_IN_DEGREE_MAX",
 				this.inDegreeDistribution.getMax());
 
-		Value outDegreeMin = new Value("DD_OUT_DEGREE_MIN",
+		Value outDegreeMin = new Value("DEGREE_DISTRIBUTION_OUT_DEGREE_MIN",
 				this.outDegreeDistribution.getMin());
-		Value outDegreeMed = new Value("DD_OUT_DEGREE_MED",
+		Value outDegreeMed = new Value("DEGREE_DISTRIBUTION_OUT_DEGREE_MED",
 				this.outDegreeDistribution.getMedian());
-		Value outDegreeAvg = new Value("DD_OUT_DEGREE_AVG",
+		Value outDegreeAvg = new Value("DEGREE_DISTRIBUTION_OUT_DEGREE_AVG",
 				this.outDegreeDistribution.getAverage());
-		Value outDegreeMax = new Value("DD_OUT_DEGREE_MAX",
+		Value outDegreeMax = new Value("DEGREE_DISTRIBUTION_OUT_DEGREE_MAX",
 				this.outDegreeDistribution.getMax());
 
-		Value runtime = new Value("DD_RUNTIME", this.runtime.getRuntime());
+		Value runtime = new Value("DEGREE_DISTRIBUTION_RUNTIME",
+				this.runtime.getRuntime());
 
 		return new Value[] { nodes, edges, degreeMin, degreeMed, degreeAvg,
 				degreeMax, inDegreeMin, inDegreeMed, inDegreeAvg, inDegreeMax,
@@ -160,21 +161,21 @@ public class DegreeDistribution extends MetricImpl implements Metric {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(
 				this.degreeDistribution.getDistribution(),
-				"DD_DEGREE_DISTRIBUTION", folder);
+				"DEGREE_DISTRIBUTION_DEGREE_DISTRIBUTION", folder);
 		success &= DataWriter.writeWithIndex(this.degreeDistribution.getCdf(),
-				"DD_DEGREE_DISTRIBUTION_CDF", folder);
+				"DEGREE_DISTRIBUTION_DEGREE_DISTRIBUTION_CDF", folder);
 		success &= DataWriter.writeWithIndex(
 				this.inDegreeDistribution.getDistribution(),
-				"DD_IN_DEGREE_DISTRIBUTION", folder);
+				"DEGREE_DISTRIBUTION_IN_DEGREE_DISTRIBUTION", folder);
 		success &= DataWriter.writeWithIndex(
 				this.inDegreeDistribution.getCdf(),
-				"DD_IN_DEGREE_DISTRIBUTION_CDF", folder);
+				"DEGREE_DISTRIBUTION_IN_DEGREE_DISTRIBUTION_CDF", folder);
 		success &= DataWriter.writeWithIndex(
 				this.outDegreeDistribution.getDistribution(),
-				"DD_OUT_DEGREE_DISTRIBUTION", folder);
+				"DEGREE_DISTRIBUTION_OUT_DEGREE_DISTRIBUTION", folder);
 		success &= DataWriter.writeWithIndex(
 				this.outDegreeDistribution.getCdf(),
-				"DD_OUT_DEGREE_DISTRIBUTION_CDF", folder);
+				"DEGREE_DISTRIBUTION_OUT_DEGREE_DISTRIBUTION_CDF", folder);
 		return success;
 	}
 
