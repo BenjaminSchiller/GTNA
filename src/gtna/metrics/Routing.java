@@ -63,20 +63,20 @@ public class Routing extends MetricImpl implements Metric {
 	private Timer runtime;
 
 	public Routing() {
-		super("R");
+		super("ROUTING");
 	}
 
 	@Override
 	public void computeData(Graph graph, Network network,
 			HashMap<String, Metric> metrics) {
-		this.runtime = new Timer();
 		RoutingAlgorithm ra = network.routingAlgorithm();
 		if (ra == null || !ra.applicable(graph)) {
 			this.initEmpty();
 			return;
 		}
+		this.runtime = new Timer();
 		ra.preprocess(graph);
-		int times = Config.getInt("R_ROUTES_PER_NODE");
+		int times = Config.getInt("ROUTING_ROUTES_PER_NODE");
 		Random rand = new Random();
 		this.routes = new Route[graph.getNodes().length * times];
 		int index = 0;
@@ -141,41 +141,45 @@ public class Routing extends MetricImpl implements Metric {
 	private void initEmpty() {
 		this.hopDistribution = new Distribution(new double[] { 0 });
 		this.hopDistributionAbsolute = new Distribution(new double[] { 0 });
-		this.betweennessCentrality = new double[0];
+		this.betweennessCentrality = new double[] { 0 };
 		this.routes = new Route[0];
+		this.runtime = new Timer();
+		this.runtime.end();
 	}
 
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(
-				this.hopDistribution.getDistribution(), "R_HOP_DISTRIBUTION",
-				folder);
+				this.hopDistribution.getDistribution(),
+				"ROUTING_HOP_DISTRIBUTION", folder);
 		success &= DataWriter.writeWithIndex(this.hopDistribution.getCdf(),
-				"R_HOP_DISTRIBUTION_CDF", folder);
+				"ROUTING_HOP_DISTRIBUTION_CDF", folder);
 		success &= DataWriter.writeWithIndex(
 				this.hopDistributionAbsolute.getDistribution(),
-				"R_HOP_DISTRIBUTION_ABSOLUTE", folder);
+				"ROUTING_HOP_DISTRIBUTION_ABSOLUTE", folder);
 		success &= DataWriter.writeWithIndex(
 				this.hopDistributionAbsolute.getCdf(),
-				"R_HOP_DISTRIBUTION_ABSOLUTE_CDF", folder);
+				"ROUTING_HOP_DISTRIBUTION_ABSOLUTE_CDF", folder);
 		success &= DataWriter.writeWithIndex(this.betweennessCentrality,
-				"R_BETWEENNESS_CENTRALITY", folder);
+				"ROUTING_BETWEENNESS_CENTRALITY", folder);
 		return success;
 	}
 
 	@Override
 	public Value[] getValues() {
-		Value averageHops = new Value("R_HOPS_AVG",
+		Value averageHops = new Value("ROUTING_HOPS_AVG",
 				this.hopDistribution.getAverage());
-		Value medianHops = new Value("R_HOPS_MED",
+		Value medianHops = new Value("ROUTING_HOPS_MED",
 				this.hopDistribution.getMedian());
-		Value maximumHops = new Value("R_HOPS_MAX",
+		Value maximumHops = new Value("ROUTING_HOPS_MAX",
 				this.hopDistribution.getMax());
 		double[] cdf = this.hopDistributionAbsolute.getCdf();
-		Value successRate = new Value("R_SUCCESS_RATE", cdf[cdf.length - 1]);
-		Value failureRate = new Value("R_FAILURE_RATE", 1 - cdf[cdf.length - 1]);
-		Value runtime = new Value("R_RUNTIME", this.runtime.getRuntime());
+		Value successRate = new Value("ROUTING_SUCCESS_RATE",
+				cdf[cdf.length - 1]);
+		Value failureRate = new Value("ROUTING_FAILURE_RATE",
+				1 - cdf[cdf.length - 1]);
+		Value runtime = new Value("ROUTING_RUNTIME", this.runtime.getRuntime());
 		return new Value[] { averageHops, medianHops, maximumHops, successRate,
 				failureRate, runtime };
 	}
