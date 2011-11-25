@@ -71,7 +71,7 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 	private double[] cd;
 	private int maxCrossingNumber;
 	private HashSet<String> handledEdges;
-	private Distribution crossingDistribution;
+	private Distribution completeCrossingDistribution, crossingsOnlyDistribution;
 	private Partition[] partitions;
 
 	public EdgeCrossings() {
@@ -90,7 +90,8 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		for (int i = 0; i < maxCrossingNumber + 1; i++) {
 			finalCD[i] = cd[i] / edges.length;
 		}
-		this.crossingDistribution = new Distribution(finalCD);
+		this.completeCrossingDistribution = new Distribution(finalCD);
+		this.crossingsOnlyDistribution = new Distribution(Arrays.copyOfRange(finalCD, 1, finalCD.length));
 
 		this.runtime.end();
 	}
@@ -123,8 +124,9 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 			}
 		}
 		this.runtime.end();
-//		System.out.println("Computed " + result + " crossings with " + edges.length + " edges in " + runtime.getMsec()
-//				+ " msec");
+		// System.out.println("Computed " + result + " crossings with " +
+		// edges.length + " edges in " + runtime.getMsec()
+		// + " msec");
 		return result;
 	}
 
@@ -380,14 +382,18 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(this.crossingDistribution.getDistribution(), "EC_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(this.crossingDistribution.getCdf(), "EC_DISTRIBUTION_CDF", folder);
+		success &= DataWriter.writeWithIndex(this.completeCrossingDistribution.getDistribution(), "EC_COMPLETE_DISTRIBUTION",
+				folder);
+		success &= DataWriter.writeWithIndex(this.completeCrossingDistribution.getCdf(), "EC_COMPLETE_DISTRIBUTION_CDF", folder);
+		success &= DataWriter.writeWithIndex(this.crossingsOnlyDistribution.getDistribution(), "EC_CROSSINGSONLY_DISTRIBUTION",
+				folder);
+		success &= DataWriter.writeWithIndex(this.crossingsOnlyDistribution.getCdf(), "EC_CROSSINGSONLY_DISTRIBUTION_CDF", folder);		
 		return success;
 	}
 
 	@Override
 	public Value[] getValues() {
-		Value ecAVG = new Value("EC_AVG", this.crossingDistribution.getAverage());
+		Value ecAVG = new Value("EC_AVG", this.completeCrossingDistribution.getAverage());
 		return new Value[] { ecAVG };
 	}
 
