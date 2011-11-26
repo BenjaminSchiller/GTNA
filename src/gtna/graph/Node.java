@@ -167,5 +167,15 @@ public class Node {
 		return arrayEdgeList;
 	}
 	
+	public boolean isConnectedTo(Node n) {
+		for (int src: getIncomingEdges() ) {
+			if ( src == n.getIndex() ) return true;
+		}
+		for (int dst: getOutgoingEdges() ) {
+			if ( dst == n.getIndex() ) return true;
+		}		
+		return false;
+	}
+	
 	// TODO hasOut, hasIn, addIn, addOut, removeIn, removeOut
 }
