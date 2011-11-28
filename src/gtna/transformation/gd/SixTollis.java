@@ -58,6 +58,8 @@ public class SixTollis extends CircularAbstract {
 	private TreeSet<Node> waveCenterNodes, waveFrontNodes, removedNodes;
 	private List<Node> nodeList;
 	private HashMap<String, Edge> removalList;
+	private ArrayList<Edge>[] additionalEdges;
+	private TreeNode deepestNode;
 
 	public SixTollis(int realities, double modulus, boolean wrapAround, GraphPlotter plotter) {
 		super("GDA_SIX_TOLLIS", new String[] { "REALITIES", "MODULUS", "WRAPAROUND" }, new String[] { "" + realities,
@@ -82,38 +84,36 @@ public class SixTollis extends CircularAbstract {
 		Node lastNode = null;
 		removalList = new HashMap<String, Edge>();
 		HashSet<Edge> pairEdges = null;
-		removedNodes = new TreeSet<Node>( new NodeComparator() );
-		waveCenterNodes = new TreeSet<Node>(new NodeComparator() );
-		waveFrontNodes = new TreeSet<Node>(new NodeComparator() );
+		removedNodes = new TreeSet<Node>(new NodeComparator());
+		waveCenterNodes = new TreeSet<Node>(new NodeComparator());
+		waveFrontNodes = new TreeSet<Node>(new NodeComparator());
+
+		additionalEdges = new ArrayList[g.getNodes().length];
+		for (int i = 0; i < g.getNodes().length; i++) {
+			additionalEdges[i] = new ArrayList<Edge>();
+		}
 
 		nodeList = Arrays.asList(g.getNodes());
 		Collections.sort(nodeList, new NodeDegreeComparator());
 		for (int counter = 1; counter < (nodeList.size() - 3); counter++) {
 			currentNode = getNode(lastNode);
 			pairEdges = getPairEdges(g, currentNode);
-			for ( Edge singleEdge: pairEdges ) {
+			for (Edge singleEdge : pairEdges) {
 				removalList.put(singleEdge.toString(), singleEdge);
 			}
 
 			if (pairEdges.size() < (currentNode.getDegree() - 1)) {
 				System.err.println("Do something to introduce new pairedges!");
+				/*
+				 * Add constructed pair edges to additionalEdges!
+				 */
 			}
 
 			/*
 			 * Keep track of wave front and wave center nodes!
 			 */
 
-			for (Edge i : currentNode.generateAllEdges()) {
-				int otherEnd;
-				if (i.getDst() == currentNode.getIndex()) {
-					otherEnd = i.getSrc();
-				} else {
-					otherEnd = i.getDst();
-				}
-				tempNode = g.getNode(otherEnd);
-				if (removedNodes.contains(tempNode)) {
-					continue;
-				}
+			for (Edge i : getEdges(g, currentNode)) {
 				waveFrontNodes.add(tempNode);
 				waveCenterNodes.add(tempNode);
 			}
@@ -123,7 +123,7 @@ public class SixTollis extends CircularAbstract {
 		/*
 		 * Do the DFS here
 		 */
-		 LinkedList<Node> longestPath = longestPath(g);
+		LinkedList<Node> longestPath = longestPath(g);
 
 		for (Node n : nodeList)
 			System.out.println(n + " has degree " + n.getDegree());
@@ -133,8 +133,33 @@ public class SixTollis extends CircularAbstract {
 		return g;
 	}
 
+	private ArrayList<Edge> getEdges(Graph g, Node n) {
+		Node tempNode = null;
+		ArrayList<Edge> edges = new ArrayList<Edge>();
+
+		for (Edge i : n.generateAllEdges()) {
+			int otherEnd;
+			if (i.getDst() == n.getIndex()) {
+				otherEnd = i.getSrc();
+			} else {
+				otherEnd = i.getDst();
+			}
+			tempNode = g.getNode(otherEnd);
+			if (removedNodes.contains(tempNode)) {
+				continue;
+			}
+			edges.add(i);
+		}
+		/*
+		 * Add pair edges introduced by additionalEdges here!
+		 */
+		System.err.println("New pairedges need to be taken into account in getEdges!");
+		return edges;
+	}
+
 	private LinkedList<Node> longestPath(Graph g) {
-		TreeNode root = new TreeNode(null, 0);
+		TreeNode root = new TreeNode(null, 0, 0);
+		deepestNode = root;
 		dfs(g, g.getNode(0), root, new ArrayList<Integer>());
 
 		/*
@@ -145,14 +170,18 @@ public class SixTollis extends CircularAbstract {
 	private void dfs(Graph g, Node n, TreeNode root, ArrayList<Integer> visited) {
 		int otherEnd;
 
-		if ( visited.contains(n.getIndex() ) ) {
+		if (visited.contains(n.getIndex())) {
 			return;
 		}
-		
+
 		visited.add(n.getIndex());
-		TreeNode current = new TreeNode(root, n.getIndex());
+		TreeNode current = new TreeNode(root, n.getIndex(), root.depth + 1);
 		root.children.add(current);
-		for (Edge mEdge : n.generateAllEdges()) {
+		if (current.depth > deepestNode.depth) {
+			deepestNode = current;
+		}
+
+		for (Edge mEdge : getEdges(g, n)) {
 			if (removalList.containsKey(mEdge.toString())) {
 				/*
 				 * Please, respect our removalList!
@@ -210,14 +239,14 @@ public class SixTollis extends CircularAbstract {
 		Edge tempEdge;
 		int otherOuterEnd, otherInnerEnd;
 
-		Edge[] allOuterEdges = n.generateAllEdges();
+		ArrayList<Edge> allOuterEdges = getEdges(g, n);
 		for (Edge tempOuterEdge : allOuterEdges) {
 			if (tempOuterEdge.getDst() == n.getIndex()) {
 				otherOuterEnd = tempOuterEdge.getSrc();
 			} else {
 				otherOuterEnd = tempOuterEdge.getDst();
 			}
-			Edge[] allInnerEdges = g.getNode(otherOuterEnd).generateAllEdges();
+			ArrayList<Edge> allInnerEdges = getEdges(g, g.getNode(otherOuterEnd));
 			for (Edge tempInnerEdge : allInnerEdges) {
 				if (tempInnerEdge.getDst() == n.getIndex()) {
 					otherInnerEnd = tempInnerEdge.getSrc();
@@ -228,9 +257,6 @@ public class SixTollis extends CircularAbstract {
 					continue;
 				}
 				tempInnerNode = g.getNode(otherInnerEnd);
-				if (removedNodes.contains(tempInnerNode)) {
-					continue;
-				}
 				if (tempInnerNode.isConnectedTo(n)) {
 					tempEdge = new Edge(Math.min(otherInnerEnd, otherOuterEnd), Math.max(otherInnerEnd, otherOuterEnd));
 					result.add(tempEdge);
@@ -267,12 +293,13 @@ public class SixTollis extends CircularAbstract {
 
 	private class TreeNode {
 		public TreeNode root;
-		public int index;
+		public int index, depth;
 		public ArrayList<TreeNode> children;
 
-		public TreeNode(TreeNode root, int index) {
+		public TreeNode(TreeNode root, int index, int depth) {
 			this.root = root;
 			this.index = index;
+			this.depth = depth;
 			this.children = new ArrayList<TreeNode>();
 		}
 	}
