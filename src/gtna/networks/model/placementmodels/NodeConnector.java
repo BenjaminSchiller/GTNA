@@ -33,30 +33,18 @@
  */
 package gtna.networks.model.placementmodels;
 
-import gtna.graph.Graph;
+import gtna.graph.Edges;
+import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
-import gtna.networks.Network;
-import gtna.routing.RoutingAlgorithm;
-import gtna.transformation.Transformation;
 
-public class GridModel extends AbstractPlacementModel implements Network {
-	private int cols;
-	private int rows;
+/**
+ * @author Flipp
+ *
+ */
+public interface NodeConnector {
 	
-	public GridModel(double width, double height, int cols, int rows, NodeConnector nc, RoutingAlgorithm ra, Transformation[] t) {
-		super("GRIDMODEL", (cols*rows), new String[] {"COLS", "ROWS"}, new String[] {Integer.toString(cols), Integer.toString(rows)}, width, height, nc, ra, t);
-		this.cols = cols;
-		this.rows = rows;
+	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids);
 		
-		this.setNodes(cols * rows);
-
-		setCoords(new PlaneIdentifierSpaceSimple(null, width, height, false));
-	}
-
-	public Graph generate() {
-		getCoords().setPartitions(Placement.placeByGridModel(getWidth(), getHeight(), cols, rows, getCoords()));
-
-		return finish();
-	}
+	public String getDescription();
 
 }

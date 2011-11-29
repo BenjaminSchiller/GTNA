@@ -21,25 +21,65 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * ConnectionType.java
+ * NodeConnector.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Flipp;
+ * Original Author: Philipp Neubrand;
  * Contributors:    -;
  *
- * Changes since 2011-05-17
  * ---------------------------------------
- *
  */
 package gtna.networks.model.placementmodels;
+
+import gtna.graph.Edges;
+import gtna.graph.Node;
+import gtna.id.plane.PlaneIdentifierSpaceSimple;
 
 /**
  * @author Flipp
  *
  */
-public enum ConnectionType {
-	udg
+public class UDGConnector implements NodeConnector {
+
+	private int range;
+
+	/**
+	 * @param i
+	 */
+	public UDGConnector(int i) {
+		range = i;
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.networks.model.placementmodels.NodeConnector#connect(gtna.graph.Node[], gtna.id.plane.PlaneIdentifierSpaceSimple)
+	 */
+	@Override
+	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids) {
+
+		
+		Edges edges = new Edges(nodes, nodes.length * (nodes.length - 1));
+		
+		for(int i = 0; i < nodes.length; i++){
+			for(int j=0; j < nodes.length; j++){
+				if(i != j && ids.getPartitions()[i].distance( (ids.getPartitions()[j].getRepresentativeID()) ) < range) {
+					edges.add(i, j);
+				}
+			}
+		}
+		
+		edges.fill();
+		
+		return edges;
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.networks.model.placementmodels.NodeConnector#getValue()
+	 */
+	@Override
+	public String getDescription() {
+		return "udg";
+	}
 
 }

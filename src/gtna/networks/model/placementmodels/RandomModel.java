@@ -1,3 +1,36 @@
+/* ===========================================================
+ * GTNA : Graph-Theoretic Network Analyzer
+ * ===========================================================
+ *
+ * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
+ * and Contributors
+ *
+ * Project Info:  http://www.p2p.tu-darmstadt.de/research/gtna/
+ *
+ * GTNA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GTNA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * ---------------------------------------
+ * NodeConnector.java
+ * ---------------------------------------
+ * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
+ * and Contributors 
+ *
+ * Original Author: Philipp Neubrand;
+ * Contributors:    -;
+ *
+ * ---------------------------------------
+ */
 package gtna.networks.model.placementmodels;
 
 import gtna.graph.Graph;
@@ -9,26 +42,18 @@ import gtna.transformation.Transformation;
 public class RandomModel extends AbstractPlacementModel implements Network {
 	private boolean inCenter;
 	private int width;
-	private double x;
-	private double y;
 	private int height;
 	
-	public RandomModel(int nodes, double x, double y, int width, int height, double sigma, boolean inCenter, double range, double modx, double mody, boolean wraparound, ConnectionType ct, RoutingAlgorithm ra, Transformation[] t) {
-		super("RANDOMMODEL", nodes, range, new String[] {"centerx", "centery", "inCenter"}, new String[] {Double.toString(x), Double.toString(y), Boolean.toString(inCenter)}, ct, ra, t);
-		if(x < width)
-			x = width;
-		this.x = x;
-		if(y < height)
-			y = height;
-		this.y = y;
+	public RandomModel(int nodes, double width, double height, boolean inCenter, NodeConnector nc, RoutingAlgorithm ra, Transformation[] t) {
+		super("RANDOMMODEL", nodes, new String[] {"inCenter"}, new String[] {Boolean.toString(inCenter)}, width, height, nc, ra, t);
+
 		this.inCenter = inCenter;
-		this.width = width;
-		this.height = height;
-		setCoords(new PlaneIdentifierSpaceSimple(null, modx, mody, wraparound));
+
+		setCoords(new PlaneIdentifierSpaceSimple(null, width, height, false));
 	}
 
 	public Graph generate() {
-		getCoords().setPartitions(Placement.placeByRandomModel(x, y, width, height, nodes(), inCenter, getCoords()));
+		getCoords().setPartitions(Placement.placeByRandomModel(width, height, nodes(), inCenter, getCoords()));
 
 		return finish();
 	}

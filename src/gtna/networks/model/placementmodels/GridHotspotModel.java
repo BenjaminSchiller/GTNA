@@ -1,3 +1,36 @@
+/* ===========================================================
+ * GTNA : Graph-Theoretic Network Analyzer
+ * ===========================================================
+ *
+ * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
+ * and Contributors
+ *
+ * Project Info:  http://www.p2p.tu-darmstadt.de/research/gtna/
+ *
+ * GTNA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GTNA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * ---------------------------------------
+ * NodeConnector.java
+ * ---------------------------------------
+ * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
+ * and Contributors 
+ *
+ * Original Author: Philipp Neubrand;
+ * Contributors:    -;
+ *
+ * ---------------------------------------
+ */
 package gtna.networks.model.placementmodels;
 
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
@@ -7,29 +40,27 @@ import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 
 public class GridHotspotModel extends AbstractHotspotModel implements Network {
-	private double overallWidth;
-	private double overallHeight;
 	private int cols;
 	private int rows;
-	private double x;
-	private double y;
 
-	public GridHotspotModel(int spots, int nodes, double x, double y, double overallWidth, double overallHeight, int cols, int rows, int hotspotWidth, int hotspotHeight, double hotspotSigma, boolean hotspotInCenter, double range, double modx, double mody, boolean wraparound, ConnectionType ct, RoutingAlgorithm ra, Transformation[] t) {
-		super("GRID", spots, nodes, hotspotWidth, hotspotHeight, hotspotSigma, hotspotInCenter, range, modx, mody, wraparound, new String[] {"centerx", "centery", "overallWidth", "overallHeight", "cols", "rows"}, new String[] {Double.toString(x), Double.toString(y), Double.toString(overallWidth), Double.toString(overallHeight), Integer.toString(cols), Integer.toString(rows)}, ct, ra, t);
-		if(x < overallWidth)
-			x = overallWidth;
-		this.x = x;
-		if(y < overallHeight)
-			y = overallHeight;
-		this.y = y;
-		this.overallWidth = overallWidth;
-		this.overallHeight = overallHeight;
-		setCoords(new PlaneIdentifierSpaceSimple(null, modx, mody, wraparound));
+	public GridHotspotModel(int spots, int nodesperspot, double overallWidth,
+			double overallHeight, int cols, int rows, int spotWidth,
+			int spotHeight, double sigma, boolean inCenter, NodeConnector nc,
+			RoutingAlgorithm ra, Transformation[] t) {
+		super("GRID_", spots, nodesperspot, overallWidth, overallHeight,
+				spotWidth, spotHeight, sigma, inCenter, new String[] { "COLS",
+						"ROWS" }, new String[] { Integer.toString(cols),
+						Integer.toString(rows) }, nc, ra, t);
+		
+		this.cols = cols;
+		this.rows = rows;
 	}
 
 	@Override
-	protected PlanePartitionSimple[] getHotspots(PlaneIdentifierSpaceSimple idspace) {
-		return Placement.placeByGridModel(x, y, overallWidth, overallHeight, cols, rows, idspace);
+	protected PlanePartitionSimple[] getHotspots(
+			PlaneIdentifierSpaceSimple idspace) {
+		return Placement.placeByGridModel(getWidth(), getHeight(), cols, rows,
+				idspace);
 	}
 
 }

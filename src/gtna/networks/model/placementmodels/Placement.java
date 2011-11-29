@@ -21,17 +21,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Placement.java
+ * NodeConnector.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Flipp;
+ * Original Author: Philipp Neubrand;
  * Contributors:    -;
  *
- * Changes since 2011-05-17
  * ---------------------------------------
- *
  */
 package gtna.networks.model.placementmodels;
 
@@ -43,125 +41,160 @@ import java.util.Random;
 
 /**
  * @author Flipp
- *
+ * 
  */
 public class Placement {
 	private static Random rnd = new Random();
-	
-	private static final int maxFails = 50;
-	
 
-	public static PlanePartitionSimple[] placeByCommunityModel(double x, double y, int width, int height, int count, double sigma, boolean inCenter, PlaneIdentifierSpaceSimple idspace){
+	private static final int maxTries = 50;
+
+	public static PlanePartitionSimple[] placeByCommunityModel(double width,
+			double height, int count, double sigma, boolean inCenter,
+			PlaneIdentifierSpaceSimple idspace) {
 		PlanePartitionSimple[] ret = new PlanePartitionSimple[count];
-		
+
 		int i = 0;
 		double dx = 0;
 		double dy = 0;
-		int fails = 0;
-		
-		if(inCenter){
-			ret[0] = new PlanePartitionSimple(new PlaneIdentifier(x, y, idspace));
+		int tries;
+
+		if (inCenter) {
+			ret[0] = new PlanePartitionSimple(new PlaneIdentifier((width / 2),
+					(height / 2), idspace));
 			i++;
 		}
-		while(i < count){
-			
-			fails = 0;
-			
-			x = Double.MAX_VALUE;
-			y = Double.MAX_VALUE;
-			
-			while(Math.abs(x) > width && Math.abs(y) > height && fails < maxFails){
-				dx = rnd.nextGaussian() * sigma * width;
-				dy = rnd.nextGaussian() * sigma * height;
-				fails++;
-			}
-			if(fails == maxFails)
-				throw new PlacementNotPossibleException("Could not place node " + i + " for settings: x='" + x + "' y='"+y+"' width='" + width + "' height='"+height+"' sigma='" + sigma + "'");
-			
-			ret[i] = new PlanePartitionSimple(new PlaneIdentifier(x+dx, y+dy, idspace));
-			
-			i++;			
+		while (i < count) {
+
+			tries = 0;
+			do {
+				dx = rnd.nextGaussian() * sigma;
+				dy = rnd.nextGaussian() * sigma;
+				tries++;
+			} while ((dx < 0 || dx > width || dy < 0 || dy > height)
+					&& tries <= maxTries);
+			if (tries > maxTries)
+				throw new PlacementNotPossibleException("Could not place node "
+						+ i + " for settings: F=(" + width + ", " + height
+						+ "), count=" + count + ", sigma=" + sigma
+						+ ", inCenter=" + inCenter);
+
+			ret[i] = new PlanePartitionSimple(new PlaneIdentifier(dx, dy,
+					idspace));
+
+			i++;
 		}
-		
+
 		return ret;
 	}
-	
-	
-	public static PlanePartitionSimple[] placeByRandomModel(double x, double y, double width, double height, int count, boolean inCenter, PlaneIdentifierSpaceSimple idspace){
+
+	public static PlanePartitionSimple[] placeByRandomModel(double width,
+			double height, int count, boolean inCenter,
+			PlaneIdentifierSpaceSimple idspace) {
 		PlanePartitionSimple[] ret = new PlanePartitionSimple[count];
 		double dx = 0;
 		double dy = 0;
 		int i = 0;
-		
-		if(inCenter){
-			ret[0] = new PlanePartitionSimple(new PlaneIdentifier(x, y, idspace));
+
+		if (inCenter) {
+			ret[0] = new PlanePartitionSimple(new PlaneIdentifier((width / 2),
+					(height / 2), idspace));
 			i++;
 		}
-		
-		while (i < count){
-			x = width * (rnd.nextDouble() - 0.5);
-			y = height * (rnd.nextDouble() - 0.5);
-			
-			ret[i] = new PlanePartitionSimple(new PlaneIdentifier(x+dx, y+dy, idspace));
-		
+
+		while (i < count) {
+			dx = width * (rnd.nextDouble() - 0.5);
+			dy = height * (rnd.nextDouble() - 0.5);
+
+			ret[i] = new PlanePartitionSimple(new PlaneIdentifier(dx, dy,
+					idspace));
+
 			i++;
 		}
-		
+
 		return ret;
 	}
-	
-	public static  PlanePartitionSimple[] placeByGridModel(double x, double y, double width, double height, int col, int row, PlaneIdentifierSpaceSimple idspace){
-		PlanePartitionSimple[] ret = new PlanePartitionSimple[col*row];
-		double xoffset = width / col;
-		double yoffset = height / row;
-		
-		for(int i = 0; i < col; i++){
-			for(int j = 0; i < row; i++){
-				ret[i] = new PlanePartitionSimple(new PlaneIdentifier(x+i * xoffset, y+j * yoffset, idspace));
+
+	public static PlanePartitionSimple[] placeByGridModel(double width,
+			double height, int cols, int rows,
+			PlaneIdentifierSpaceSimple idspace) {
+		PlanePartitionSimple[] ret = new PlanePartitionSimple[cols * rows];
+		double xoffset = width / cols;
+		double yoffset = height / rows;
+
+		for (int i = 0; i < cols; i++) {
+			for (int j = 0; j < rows; j++) {
+				System.out.println("Creating");
+				ret[(i*cols)+j] = new PlanePartitionSimple(new PlaneIdentifier(i
+						* xoffset, j * yoffset, idspace));
 			}
 		}
-		
+
 		return ret;
 	}
-	
-	public static  PlanePartitionSimple[] placeByCircleModel(double x, double y, double radius, int count, DistributionType oalpha, DistributionType od, PlaneIdentifierSpaceSimple idspace){
+
+	public static PlanePartitionSimple[] placeByCircleModel(double centerx,
+			double centery, double radius, double width, double height,
+			int count, DistributionType oalpha, DistributionType od,
+			PlaneIdentifierSpaceSimple idspace) {
 		PlanePartitionSimple[] ret = new PlanePartitionSimple[count];
-		double gamma = (2 * Math.PI) / count;
+		double gamma = (2 * Math.PI) / (double) count;
 		double alpha = 0;
 		double d = 0;
-		
-		for(int i = 0; i < count; i++){
-			switch(oalpha){
-			case FIXED:
-				alpha = (i + 0.5) * gamma;
-				break;
-			case UNIFORM:
-				alpha = i * gamma + rnd.nextDouble() * gamma;
-				break;
-			case NORMAL:
-				alpha = (i + 0.5) * gamma + rnd.nextGaussian() * (gamma / 6);
+		double x;
+		double y;
+
+		int tries;
+
+		for (int i = 0; i < count; i++) {
+			tries = 0;
+			do {
+
+				switch (oalpha) {
+				case FIXED:
+					alpha = (i + 0.5) * gamma;
+					break;
+				case UNIFORM:
+					alpha = i * gamma + rnd.nextDouble() * gamma;
+					break;
+				case NORMAL:
+					alpha = (i + 0.5) * gamma + rnd.nextGaussian()
+							* (gamma / 6);
+					break;
+				}
+
+				switch (od) {
+				case FIXED:
+					d = radius;
+					break;
+				case UNIFORM:
+					d = rnd.nextDouble() * 2 * radius;
+					break;
+				case NORMAL:
+					d = radius
+							+ rnd.nextGaussian()
+									* (radius / 3);
+					break;
+				}
 				
-				break;
-			}
-			switch(od){
-			case FIXED:
-				d = radius;
-				break;
-			case UNIFORM:
-				d = (int) Math.floor(rnd.nextDouble() * 2 * radius);
-				break;
-			case NORMAL:
-				d = radius + (int) Math.floor(rnd.nextGaussian() * (radius / 3));
-				break;
-			}
-			
-			ret[i] = new PlanePartitionSimple(new PlaneIdentifier(x+d * Math.cos(alpha), y+d * Math.sin(alpha), idspace));
-			
+				x = centerx + d * Math.cos(alpha);
+				System.out.println(d);
+				y = centery + d * Math.sin(alpha);
+				tries++;
+			} while ((x < 0 || x > width || y < 0 || y > height)
+					&& tries <= maxTries);
+			if (tries > maxTries)
+				throw new PlacementNotPossibleException("Could not place node "
+						+ i + " for settings: center=(" + centerx + ", "
+						+ centery + "), radius=" + radius + ", F=(" + width
+						+ ", " + height + "), count=" + count + ", Distribs=("
+						+ oalpha + ", " + od + ")");
+			System.out.println("Setting to " + x +" " +y);
+			ret[i] = new PlanePartitionSimple(
+					new PlaneIdentifier(x, y, idspace));
+
 		}
-		
+
 		return ret;
 	}
-	
-	
 
 }

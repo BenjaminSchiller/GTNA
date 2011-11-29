@@ -21,17 +21,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * PlacementNotPossibleException.java
+ * NodeConnector.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Flipp;
+ * Original Author: Philipp Neubrand;
  * Contributors:    -;
  *
- * Changes since 2011-05-17
  * ---------------------------------------
- *
  */
 package gtna.networks.model.placementmodels;
 

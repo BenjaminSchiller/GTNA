@@ -1,7 +1,39 @@
+/* ===========================================================
+ * GTNA : Graph-Theoretic Network Analyzer
+ * ===========================================================
+ *
+ * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
+ * and Contributors
+ *
+ * Project Info:  http://www.p2p.tu-darmstadt.de/research/gtna/
+ *
+ * GTNA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GTNA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * ---------------------------------------
+ * NodeConnector.java
+ * ---------------------------------------
+ * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
+ * and Contributors 
+ *
+ * Original Author: Philipp Neubrand;
+ * Contributors:    -;
+ *
+ * ---------------------------------------
+ */
 package gtna.networks.model.placementmodels;
 
 import gtna.graph.Graph;
-import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.networks.Network;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
@@ -9,28 +41,16 @@ import gtna.transformation.Transformation;
 public class CommunityModel extends AbstractPlacementModel implements Network {
 	private double sigma;
 	private boolean inCenter;
-	private int width;
-	private double x;
-	private double y;
-	private int height;
 	
-	public CommunityModel(int nodes, double x, double y, int width, int height, double sigma, boolean inCenter, double range, double modx, double mody, boolean wraparound, ConnectionType ct, RoutingAlgorithm ra, Transformation[] t) {
-		super("COMMUNITYMODEL", nodes, range, new String[] {"centerx", "centery", "sigma", "inCenter"}, new String[] {Double.toString(x), Double.toString(y), Double.toString(sigma), Boolean.toString(inCenter)}, ct, ra, t);
+	public CommunityModel(int nodes, int width, int height, double sigma, boolean inCenter, NodeConnector nc, RoutingAlgorithm ra, Transformation[] t) {
+		super("COMMUNITYMODEL", nodes, new String[] {"SIGMA", "IN_CENTER"}, new String[] {Double.toString(sigma), Boolean.toString(inCenter)}, width, height, nc, ra, t);
 		this.sigma = sigma;
-		if(x < width)
-			x = width;
-		this.x = x;
-		if(y < height)
-			y = height;
-		this.y = y;
+	
 		this.inCenter = inCenter;
-		this.width = width;
-		this.height = height;
-		setCoords(new PlaneIdentifierSpaceSimple(null, modx, mody, wraparound));
 	}
 
 	public Graph generate() {
-		getCoords().setPartitions(Placement.placeByCommunityModel(x, y, width, height, nodes(), sigma, inCenter, getCoords()));
+		getCoords().setPartitions(Placement.placeByCommunityModel(getWidth(), getHeight(), nodes(), sigma, inCenter, getCoords()));
 
 		return finish();
 	}
