@@ -168,6 +168,7 @@ public class SixTollis extends CircularAbstract {
 			 * Keep track of wave front and wave center nodes!
 			 */
 
+			waveFrontNodes = new TreeSet<Node>(new NodeComparator());
 			for (Edge i : getEdges(currentNode).values()) {
 				int otherEnd;
 				if (i.getDst() == currentNode.getIndex()) {
@@ -307,6 +308,7 @@ public class SixTollis extends CircularAbstract {
 		if (waveFrontNodes != null) {
 			for (Node tempNode : waveFrontNodes) {
 				if (!removedNodes.contains(tempNode)) {
+					waveFrontNodes.remove(tempNode);
 					return tempNode;
 				}
 			}
@@ -317,6 +319,7 @@ public class SixTollis extends CircularAbstract {
 		if (waveCenterNodes != null) {
 			for (Node tempNode : waveCenterNodes) {
 				if (!removedNodes.contains(tempNode)) {
+					waveCenterNodes.remove(tempNode);
 					return tempNode;
 				}
 			}
