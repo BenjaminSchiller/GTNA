@@ -47,6 +47,10 @@ import java.util.TreeSet;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.id.ring.RingIdentifier;
+import gtna.id.ring.RingIdentifierSpace;
+import gtna.id.ring.RingPartition;
+import gtna.metrics.EdgeCrossings;
 import gtna.plot.GraphPlotter;
 
 /**
@@ -73,9 +77,15 @@ public class SixTollis extends CircularAbstract {
 
 	@Override
 	public Graph transform(Graph g) {
-		System.err.println("This is not working completely yet, so don't expect good results!");
-
 		initIDSpace(g);
+		if (graphPlotter != null)
+			graphPlotter.plotStartGraph(g, idSpace);
+
+		EdgeCrossings ec = new EdgeCrossings();
+		int countCrossings;
+		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
+		// true);
+		// System.out.println("Crossings randomized: " + countCrossings);
 		this.g = g;
 
 		/*
@@ -199,13 +209,61 @@ public class SixTollis extends CircularAbstract {
 		 * Do the DFS here
 		 */
 		LinkedList<Node> longestPath = longestPath();
-		System.out.println("\nLongest path:");
-		for (Node sN : longestPath) {
-			System.out.println(sN);
+
+		/*
+		 * Check which nodes still need to be placed, as they do not lie on the
+		 * longestPath
+		 */
+		ArrayList<Node> todoList = new ArrayList<Node>();
+		todoList.addAll(nodeList);
+		todoList.removeAll(longestPath);
+		
+		Node neighbor, singleNode;
+		int neighborPosition = -1;
+		int errors = 0;
+		int modCounter = 0;
+		while (!todoList.isEmpty()) {
+			singleNode = todoList.get(modCounter % todoList.size());
+			for (int singleNeighbor : singleNode.getOutgoingEdges()) {
+				neighbor = g.getNode(singleNeighbor);
+				neighborPosition = longestPath.indexOf(neighbor);
+				if (neighborPosition > -1) {
+					break;
+				}
+			}
+			if (neighborPosition != -1) {
+				todoList.remove(singleNode);
+				longestPath.add(neighborPosition, singleNode);
+			} else {
+				modCounter = (modCounter + 1) % todoList.size();
+				System.err.println("Cannot place " + singleNode + " yet, errors=" + errors);
+				if (errors++ == 50) {
+					System.exit(0);
+				}
+			}
 		}
 
-		// countAllCrossings(g);
+		partitions = new RingPartition[g.getNodes().length];
+		idSpace = new RingIdentifierSpace(partitions, this.modulus, this.wrapAround);
+		RingIdentifier[] ids = new RingIdentifier[partitions.length];
+		double lastPos = 0;
+		double posDiff = modulus / partitions.length;
+		for (int i = 0; i < partitions.length; i++) {
+			ids[i] = new RingIdentifier(lastPos, idSpace);
+			lastPos += posDiff;
+		}
+		for (int i = 0; i < partitions.length; i++) {
+			partitions[i] = new RingPartition(ids[i], ids[(i + 1) % ids.length]);
+		}
+
 		writeIDSpace(g);
+
+		if (graphPlotter != null)
+			graphPlotter.plotFinalGraph(g, idSpace);
+		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
+		// true);
+		// System.out.println("Crossings enhanced: " + countCrossings);
+
 		return g;
 	}
 
