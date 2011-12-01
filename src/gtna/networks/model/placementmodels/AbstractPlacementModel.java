@@ -47,11 +47,10 @@ public abstract class AbstractPlacementModel extends NetworkImpl implements Netw
 	private double width;
 	private double height;
 	
-	public AbstractPlacementModel(String key, int nodes, String[] keys,
-			String[] values, double width, double height, NodeConnector nc,
+	public AbstractPlacementModel(String key, int nodes, double width,
+			double height, String[] keys, String[] values, NodeConnector nc,
 			RoutingAlgorithm ra, Transformation[] t) {
-		super(key, nodes, addToArray(keys, "NC"), addToArray(values, nc.getDescription()), ra, t);
-		System.out.println("Setting nodes to " + nodes);
+		super(key, nodes, addToArray(keys, new String[]{"NC", "WIDTH", "HEIGHT"}), addToArray(values, new String[]{nc.getDescription(), Double.toString(width), Double.toString(height)}), ra, t);
 		setNodes(nodes);
 		setWidth(width);
 		setHeight(height);

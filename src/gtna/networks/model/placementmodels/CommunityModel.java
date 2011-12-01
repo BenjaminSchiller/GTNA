@@ -43,7 +43,7 @@ public class CommunityModel extends AbstractPlacementModel implements Network {
 	private boolean inCenter;
 	
 	public CommunityModel(int nodes, int width, int height, double sigma, boolean inCenter, NodeConnector nc, RoutingAlgorithm ra, Transformation[] t) {
-		super("COMMUNITYMODEL", nodes, new String[] {"SIGMA", "IN_CENTER"}, new String[] {Double.toString(sigma), Boolean.toString(inCenter)}, width, height, nc, ra, t);
+		super("COMMUNITYMODEL", nodes, width, height, new String[] {"SIGMA", "IN_CENTER"}, new String[] {Double.toString(sigma), Boolean.toString(inCenter)}, nc, ra, t);
 		this.sigma = sigma;
 	
 		this.inCenter = inCenter;

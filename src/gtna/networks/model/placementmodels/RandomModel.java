@@ -45,7 +45,7 @@ public class RandomModel extends AbstractPlacementModel implements Network {
 	private int height;
 	
 	public RandomModel(int nodes, double width, double height, boolean inCenter, NodeConnector nc, RoutingAlgorithm ra, Transformation[] t) {
-		super("RANDOMMODEL", nodes, new String[] {"inCenter"}, new String[] {Boolean.toString(inCenter)}, width, height, nc, ra, t);
+		super("RANDOMMODEL", nodes, width, height, new String[] {"inCenter"}, new String[] {Boolean.toString(inCenter)}, nc, ra, t);
 
 		this.inCenter = inCenter;
 

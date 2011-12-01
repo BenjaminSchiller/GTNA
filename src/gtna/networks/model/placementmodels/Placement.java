@@ -46,7 +46,7 @@ import java.util.Random;
 public class Placement {
 	private static Random rnd = new Random();
 
-	private static final int maxTries = 50;
+	private static final int maxTries = 100;
 
 	public static PlanePartitionSimple[] placeByCommunityModel(double width,
 			double height, int count, double sigma, boolean inCenter,

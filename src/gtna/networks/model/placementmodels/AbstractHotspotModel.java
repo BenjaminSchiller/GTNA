@@ -49,18 +49,35 @@ public abstract class AbstractHotspotModel extends AbstractPlacementModel
 	private int cur = 0;
 	protected int spots;
 
+	/**
+	 * Prefix 
+	 * @param prefix
+	 * @param spots
+	 * @param nodesperspot
+	 * @param overallWidth
+	 * @param overallHeight
+	 * @param spotWidth
+	 * @param spotHeight
+	 * @param sigma
+	 * @param inCenter
+	 * @param keys
+	 * @param vals
+	 * @param nc
+	 * @param ra
+	 * @param t
+	 */
 	public AbstractHotspotModel(String prefix, int spots, int nodesperspot,
 			double overallWidth, double overallHeight, double spotWidth,
 			double spotHeight, double sigma, boolean inCenter, String[] keys,
 			String[] vals, NodeConnector nc, RoutingAlgorithm ra,
 			Transformation[] t) {
-		super(prefix + "HOTSPOTMODEL", nodesperspot * spots, addToArray(keys,
-				new String[] { "SPOTS", "SPOT_WIDTH", "SPOT_HEIGHT" }),
+		super(prefix + "HOTSPOTMODEL", nodesperspot * spots, overallWidth,
+				overallHeight, addToArray(keys,
+										new String[] { "SPOTS", "SPOT_WIDTH", "SPOT_HEIGHT" }),
 				addToArray(vals,
 						new String[] { Integer.toString(spots),
 								Double.toString(spotWidth),
-								Double.toString(spotHeight) }), overallWidth,
-				overallHeight, nc, ra, t);
+								Double.toString(spotHeight) }), nc, ra, t);
 		this.sigma = sigma;
 		this.spotWidth = spotWidth;
 		this.spotHeight = spotHeight;

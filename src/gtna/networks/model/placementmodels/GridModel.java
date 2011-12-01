@@ -44,7 +44,7 @@ public class GridModel extends AbstractPlacementModel implements Network {
 	private int rows;
 	
 	public GridModel(double width, double height, int cols, int rows, NodeConnector nc, RoutingAlgorithm ra, Transformation[] t) {
-		super("GRIDMODEL", (cols*rows), new String[] {"COLS", "ROWS"}, new String[] {Integer.toString(cols), Integer.toString(rows)}, width, height, nc, ra, t);
+		super("GRIDMODEL", (cols*rows), width, height, new String[] {"COLS", "ROWS"}, new String[] {Integer.toString(cols), Integer.toString(rows)}, nc, ra, t);
 		this.cols = cols;
 		this.rows = rows;
 		

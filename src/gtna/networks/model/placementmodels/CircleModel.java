@@ -45,14 +45,28 @@ public class CircleModel extends AbstractPlacementModel implements Network {
 	private double centerx;
 	private double centery;
 
-	public CircleModel(int nodes, double centerx, double centery, double width,
-			double height, double radius, DistributionType oalpha,
+	/**
+	 * nodes, F {width, height}, ModelParams {centerx, centery, radius, oalpha, od}, NodeConnector, GraphStuff {Routing Algorithm, Transformation}
+	 * @param nodes
+	 * @param width
+	 * @param height
+	 * @param centerx
+	 * @param centery
+	 * @param radius
+	 * @param oalpha
+	 * @param od
+	 * @param nc
+	 * @param ra
+	 * @param t
+	 */
+	public CircleModel(int nodes, double width, double height, double centerx,
+			double centery, double radius, DistributionType oalpha,
 			DistributionType od, NodeConnector nc, RoutingAlgorithm ra,
 			Transformation[] t) {
-		super("CIRCLEMODEL", nodes, new String[] { "CENTER_X", "CENTER_Y",
-				"RADIUS" }, new String[] { Double.toString(centerx),
-				Double.toString(centery), Double.toString(radius) }, width,
-				height, nc, ra, t);
+		super("CIRCLEMODEL", nodes, width, height, new String[] { "CENTER_X", "CENTER_Y",
+						"RADIUS" },
+				new String[] { Double.toString(centerx),
+				Double.toString(centery), Double.toString(radius) }, nc, ra, t);
 
 		this.oalpha = oalpha;
 		this.od = od;
