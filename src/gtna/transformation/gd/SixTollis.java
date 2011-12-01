@@ -83,8 +83,9 @@ public class SixTollis extends CircularAbstract {
 			graphPlotter.plotStartGraph(g, idSpace);
 
 		EdgeCrossings ec = new EdgeCrossings();
-		int countCrossings;
-		countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace, true);
+		int countCrossings = -1;
+		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
+		// true);
 		System.out.println("Crossings randomized: " + countCrossings);
 		this.g = g;
 
@@ -134,12 +135,22 @@ public class SixTollis extends CircularAbstract {
 			// System.out.println();
 
 			int firstCounter = 0;
-			int secondCounter = 1;
+			int secondCounter = 0;
 			while (triangulationEdgesCount > 0) {
+				secondCounter++;
+				if (secondCounter == currentNodeDegree) {
+					firstCounter++;
+					secondCounter = firstCounter;
+				}
+
+				if (firstCounter == (currentNodeDegree-1))
+					throw new RuntimeException("Could not find anymore pair edges for " + currentNode.getIndex() + " which has an degree of " + currentNodeDegree);				
+				
 				randDst1 = g.getNode(outgoingEdges[firstCounter]);
 				randDst2 = g.getNode(outgoingEdges[secondCounter]);
-				if (randDst1.equals(randDst2))
+				if (randDst1.equals(randDst2)) {
 					continue;
+				}
 				if (removedNodes.contains(randDst1) || removedNodes.contains(randDst2)) {
 					continue;
 				}
@@ -170,15 +181,6 @@ public class SixTollis extends CircularAbstract {
 					// " is already connected to "
 					// + randDst2.getIndex());
 				}
-
-				secondCounter++;
-				if (secondCounter == (currentNodeDegree - 1)) {
-					firstCounter++;
-					secondCounter = firstCounter + 1;
-				}
-
-				if (firstCounter == (currentNodeDegree - 1))
-					throw new RuntimeException("Could not find anymore pair edges for " + currentNode.getIndex());
 			}
 
 			/*
@@ -202,8 +204,7 @@ public class SixTollis extends CircularAbstract {
 			}
 			lastNode = currentNode;
 			removedNodes.add(currentNode);
-			// System.out.println("Adding " + currentNode.getIndex() +
-			// " to removedNodes");
+			System.out.println("Adding " + currentNode.getIndex() + " to removedNodes");
 		}
 
 		/*
@@ -263,19 +264,21 @@ public class SixTollis extends CircularAbstract {
 			lastNode = n;
 		}
 
-		countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace, true);
-		System.out.println("Crossings after phase 1: " + countCrossings);		
+		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
+		// true);
+		System.out.println("Crossings after phase 1: " + countCrossings);
 		if (graphPlotter != null)
 			graphPlotter.plot(g, idSpace, graphPlotter.getBasename() + "-afterPhase1");
-		
+
 		reduceCrossingsBySwapping(g);
-		
+
 		writeIDSpace(g);
 
 		if (graphPlotter != null)
 			graphPlotter.plotFinalGraph(g, idSpace);
 
-		countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace, true);
+		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
+		// true);
 		System.out.println("Final crossings: " + countCrossings);
 
 		return g;
@@ -283,10 +286,10 @@ public class SixTollis extends CircularAbstract {
 
 	private ArrayList<Edge> getAllEdges(Node n) {
 		ArrayList<Edge> nodeEdges = new ArrayList<Edge>();
-		if ( edges[n.getIndex()] == null) {
+		if (edges[n.getIndex()] == null) {
 			edges[n.getIndex()] = n.generateAllEdges();
 		}
-		
+
 		for (Edge e : n.generateAllEdges())
 			nodeEdges.add(e);
 		if (!useOriginalGraphWithoutRemovalList) {
