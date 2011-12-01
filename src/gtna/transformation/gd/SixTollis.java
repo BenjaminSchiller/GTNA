@@ -64,7 +64,7 @@ public class SixTollis extends CircularAbstract {
 	private HashMap<String, Edge>[] additionalEdges;
 	private Edge[][] edges;
 	private TreeNode deepestNode;
-	private Boolean useOriginalGraphWithoutRemovalList = false;
+	private Boolean useOriginalGraphWithoutRemovalList;
 	private Graph g;
 
 	public SixTollis(int realities, double modulus, boolean wrapAround, GraphPlotter plotter) {
@@ -78,6 +78,8 @@ public class SixTollis extends CircularAbstract {
 
 	@Override
 	public Graph transform(Graph g) {
+		useOriginalGraphWithoutRemovalList = false;
+		
 		initIDSpace(g);
 		if (graphPlotter != null)
 			graphPlotter.plotStartGraph(g, idSpace);
