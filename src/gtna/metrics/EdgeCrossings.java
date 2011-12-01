@@ -101,12 +101,12 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		cd = new double[edges.length];
 		maxCrossingNumber = 0;
 		this.runtime = new Timer();
-
+		partitions = idSpace.getPartitions();
+		
 		if (useShortcuts && idSpace instanceof RingIdentifierSpace) {
 			result = calculateRingCrossings(edges, idSpace);
 		} else {
 			handledEdges = new HashSet<String>();
-			partitions = idSpace.getPartitions();
 			for (int outerCounter = 0; outerCounter < edges.length; outerCounter++) {
 				int innerResult = 0;
 				int innerStart = outerCounter + 1;
@@ -218,6 +218,7 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		Edge[] nEdges = n.generateAllEdges();
 		Edge[] mEdges = m.generateAllEdges();
 		handledEdges = new HashSet<String>();
+		partitions = idSpace.getPartitions();
 		for (Edge nEdge : nEdges) {
 			for (Edge mEdge : mEdges) {
 				if (hasCrossing(nEdge, mEdge, idSpace, true))
