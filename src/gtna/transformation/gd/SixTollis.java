@@ -83,9 +83,8 @@ public class SixTollis extends CircularAbstract {
 
 		EdgeCrossings ec = new EdgeCrossings();
 		int countCrossings;
-		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
-		// true);
-		// System.out.println("Crossings randomized: " + countCrossings);
+		countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace, true);
+		System.out.println("Crossings randomized: " + countCrossings);
 		this.g = g;
 
 		/*
@@ -209,6 +208,11 @@ public class SixTollis extends CircularAbstract {
 		 * Do the DFS here
 		 */
 		LinkedList<Node> longestPath = longestPath();
+		// System.out.println("Longest path:");
+		// for (Node sN : longestPath) {
+		// System.out.print("->" + sN.getIndex());
+		// }
+		// System.out.println();
 
 		/*
 		 * Check which nodes still need to be placed, as they do not lie on the
@@ -217,7 +221,7 @@ public class SixTollis extends CircularAbstract {
 		ArrayList<Node> todoList = new ArrayList<Node>();
 		todoList.addAll(nodeList);
 		todoList.removeAll(longestPath);
-		
+
 		Node neighbor, singleNode;
 		int neighborPosition = -1;
 		int errors = 0;
@@ -243,26 +247,28 @@ public class SixTollis extends CircularAbstract {
 			}
 		}
 
-		partitions = new RingPartition[g.getNodes().length];
-		idSpace = new RingIdentifierSpace(partitions, this.modulus, this.wrapAround);
-		RingIdentifier[] ids = new RingIdentifier[partitions.length];
 		double lastPos = 0;
 		double posDiff = modulus / partitions.length;
-		for (Node n: longestPath) {
+		RingIdentifier[] ids = new RingIdentifier[g.getNodes().length];
+		for (Node n : longestPath) {
 			ids[n.getIndex()] = new RingIdentifier(lastPos, idSpace);
+			// System.out.println("Place " + n.getIndex() + " at " + lastPos);
 			lastPos += posDiff;
 		}
-		for (int i = 0; i < partitions.length; i++) {
-			partitions[i] = new RingPartition(ids[i], ids[(i + 1) % ids.length]);
+
+		lastNode = longestPath.getLast();
+		for (Node n : longestPath) {
+			partitions[n.getIndex()] = new RingPartition(ids[lastNode.getIndex()], ids[n.getIndex()]);
+			lastNode = n;
 		}
 
 		writeIDSpace(g);
 
 		if (graphPlotter != null)
 			graphPlotter.plotFinalGraph(g, idSpace);
-		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
-		// true);
-		// System.out.println("Crossings enhanced: " + countCrossings);
+
+		countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace, false);
+		System.out.println("Crossings enhanced: " + countCrossings);
 
 		return g;
 	}
@@ -321,29 +327,54 @@ public class SixTollis extends CircularAbstract {
 		return false;
 	}
 
+	private LinkedList<TreeNode> findLongestPath(TreeNode source, TreeNode comingFrom) {
+		LinkedList<TreeNode> connections = source.children;
+		connections.add(source.root);
+		connections.remove(comingFrom);
+		if (connections.size() == 0) {
+			connections.add(source);
+			return connections;
+		}
+		LinkedList<TreeNode> longestPath, tempPath;
+		longestPath = new LinkedList<TreeNode>();
+		for (TreeNode singleConnection : connections) {
+			if (singleConnection == null) {
+				/*
+				 * This is the roots parent!
+				 */
+				continue;
+			}
+			tempPath = findLongestPath(singleConnection, source);
+			if (tempPath.size() > longestPath.size()) {
+				longestPath = tempPath;
+			}
+		}
+		longestPath.add(source);
+		return longestPath;
+	}
+
 	private LinkedList<Node> longestPath() {
 		LinkedList<Node> result = new LinkedList<Node>();
 
 		useOriginalGraphWithoutRemovalList = true;
-		Node start = removedNodes.get(0);
-		TreeNode root = new TreeNode(null, start.getIndex(), 0);
-		deepestNode = root;
-		dfs(start, root, new ArrayList<Integer>());
 
-		/*
-		 * Create the path now by doing a second dfs starting from the
-		 * deepestNode
-		 */
-		TreeNode sourceOfLongestPath = new TreeNode(null, deepestNode.index, 0);
-		deepestNode = sourceOfLongestPath;
-		dfs(g.getNode(sourceOfLongestPath.index), sourceOfLongestPath, new ArrayList<Integer>());
-		/*
-		 * Find the path between sourceOfLongestPath and deepestNode
-		 */
+		int startIndex = 0;
+		Node start;
 		do {
-			result.push(g.getNode(deepestNode.index));
-			deepestNode = deepestNode.root;
-		} while (!deepestNode.equals(sourceOfLongestPath));
+			start = removedNodes.get(startIndex++);
+		} while (start.getOutDegree() == 0);
+		TreeNode root = new TreeNode(null, -1, 0);
+		deepestNode = root;
+		// System.out.println("Starting DFS at " + start);
+		dfs(start, root, new ArrayList<Integer>());
+		// root.printTree();
+
+		LinkedList<TreeNode> resultInTree = findLongestPath(deepestNode, null);
+		for (TreeNode tempNode : resultInTree) {
+			if (tempNode == root)
+				continue;
+			result.add(g.getNode(tempNode.index));
+		}
 		return result;
 	}
 
@@ -487,13 +518,27 @@ public class SixTollis extends CircularAbstract {
 	private class TreeNode {
 		public TreeNode root;
 		public int index, depth;
-		public ArrayList<TreeNode> children;
+		public LinkedList<TreeNode> children;
 
 		public TreeNode(TreeNode root, int index, int depth) {
 			this.root = root;
 			this.index = index;
 			this.depth = depth;
-			this.children = new ArrayList<TreeNode>();
+			this.children = new LinkedList<TreeNode>();
+		}
+
+		/**
+		 * 
+		 */
+		public void printTree() {
+			System.out.print("Node " + index + " in depth " + depth + ", connections to");
+			for (TreeNode singleChild : children) {
+				System.out.print(" " + singleChild.index);
+			}
+			System.out.println();
+			for (TreeNode singleChild : children) {
+				singleChild.printTree();
+			}
 		}
 
 		public boolean equals(TreeNode x) {
