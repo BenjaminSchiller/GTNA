@@ -248,8 +248,8 @@ public class SixTollis extends CircularAbstract {
 		RingIdentifier[] ids = new RingIdentifier[partitions.length];
 		double lastPos = 0;
 		double posDiff = modulus / partitions.length;
-		for (int i = 0; i < partitions.length; i++) {
-			ids[i] = new RingIdentifier(lastPos, idSpace);
+		for (Node n: longestPath) {
+			ids[n.getIndex()] = new RingIdentifier(lastPos, idSpace);
 			lastPos += posDiff;
 		}
 		for (int i = 0; i < partitions.length; i++) {
