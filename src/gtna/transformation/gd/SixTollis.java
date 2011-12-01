@@ -135,52 +135,48 @@ public class SixTollis extends CircularAbstract {
 			// System.out.println();
 
 			int firstCounter = 0;
-			int secondCounter = 0;
+			int secondCounter = 1;
 			while (triangulationEdgesCount > 0) {
-				secondCounter++;
-				if (secondCounter == currentNodeDegree) {
-					firstCounter++;
-					secondCounter = firstCounter;
-				}
-
-				if (firstCounter == (currentNodeDegree-1))
-					throw new RuntimeException("Could not find anymore pair edges for " + currentNode.getIndex() + " which has an degree of " + currentNodeDegree);				
-				
 				randDst1 = g.getNode(outgoingEdges[firstCounter]);
 				randDst2 = g.getNode(outgoingEdges[secondCounter]);
-				if (randDst1.equals(randDst2)) {
-					continue;
-				}
-				if (removedNodes.contains(randDst1) || removedNodes.contains(randDst2)) {
-					continue;
-				}
+				if (!randDst1.equals(randDst2) && !removedNodes.contains(randDst1) && !removedNodes.contains(randDst2)) {
 
-				// System.out.println("rand1: " + randDst1.getIndex() +
-				// "; rand2: " + randDst2.getIndex());
-				// System.out.print("Outgoing edges for r1:");
-				// for (int i : filterOutgoingEdges(randDst1,
-				// getEdges(randDst1))) {
-				// System.out.print(" " + i);
-				// }
-				// System.out.println("");
+					// System.out.println("rand1: " + randDst1.getIndex() +
+					// "; rand2: " + randDst2.getIndex());
+					// System.out.print("Outgoing edges for r1:");
+					// for (int i : filterOutgoingEdges(randDst1,
+					// getEdges(randDst1))) {
+					// System.out.print(" " + i);
+					// }
+					// System.out.println("");
 
-				if (!connected(randDst1, randDst2)) {
-					tempEdge = new Edge(Math.min(randDst1.getIndex(), randDst2.getIndex()), Math.max(
-							randDst1.getIndex(), randDst2.getIndex()));
-					tempEdgeString = getEdgeString(tempEdge);
-					if (randDst1.getIndex() != randDst2.getIndex()
-							&& !additionalEdges[randDst1.getIndex()].containsKey(tempEdgeString)) {
-						// System.out.println("Adding triangulation edge " +
-						// tempEdge);
-						additionalEdges[randDst1.getIndex()].put(tempEdgeString, tempEdge);
-						additionalEdges[randDst2.getIndex()].put(tempEdgeString, tempEdge);
-						triangulationEdgesCount--;
+					if (!connected(randDst1, randDst2)) {
+						tempEdge = new Edge(Math.min(randDst1.getIndex(), randDst2.getIndex()), Math.max(
+								randDst1.getIndex(), randDst2.getIndex()));
+						tempEdgeString = getEdgeString(tempEdge);
+						if (randDst1.getIndex() != randDst2.getIndex()
+								&& !additionalEdges[randDst1.getIndex()].containsKey(tempEdgeString)) {
+							// System.out.println("Adding triangulation edge " +
+							// tempEdge);
+							additionalEdges[randDst1.getIndex()].put(tempEdgeString, tempEdge);
+							additionalEdges[randDst2.getIndex()].put(tempEdgeString, tempEdge);
+							triangulationEdgesCount--;
+						}
+					} else {
+						// System.out.println("Node " + randDst1.getIndex() +
+						// " is already connected to "
+						// + randDst2.getIndex());
 					}
-				} else {
-					// System.out.println("Node " + randDst1.getIndex() +
-					// " is already connected to "
-					// + randDst2.getIndex());
 				}
+				
+				secondCounter++;
+				if (secondCounter == (currentNodeDegree)) {
+					firstCounter++;
+					secondCounter = firstCounter + 1;
+				}
+
+				if (firstCounter == (currentNodeDegree - 1) && triangulationEdgesCount > 0)
+					throw new RuntimeException("Could not find anymore pair edges for " + currentNode.getIndex());
 			}
 
 			/*
@@ -204,7 +200,8 @@ public class SixTollis extends CircularAbstract {
 			}
 			lastNode = currentNode;
 			removedNodes.add(currentNode);
-			System.out.println("Adding " + currentNode.getIndex() + " to removedNodes");
+			// System.out.println("Adding " + currentNode.getIndex() +
+			// " to removedNodes");
 		}
 
 		/*
