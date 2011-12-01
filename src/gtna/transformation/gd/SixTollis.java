@@ -62,6 +62,7 @@ public class SixTollis extends CircularAbstract {
 	private List<Node> nodeList, removedNodes;
 	private HashMap<String, Edge> removalList;
 	private HashMap<String, Edge>[] additionalEdges;
+	private Edge[][] edges;
 	private TreeNode deepestNode;
 	private Boolean useOriginalGraphWithoutRemovalList = false;
 	private Graph g;
@@ -90,6 +91,7 @@ public class SixTollis extends CircularAbstract {
 		/*
 		 * Phase 1
 		 */
+		edges = new Edge[g.getNodes().length][];
 		Node tempNode = null;
 		Node currentNode = null;
 		Node lastNode = null;
@@ -240,9 +242,8 @@ public class SixTollis extends CircularAbstract {
 				longestPath.add(neighborPosition, singleNode);
 			} else {
 				modCounter = (modCounter + 1) % todoList.size();
-				System.err.println("Cannot place " + singleNode + " yet, errors=" + errors);
 				if (errors++ == 50) {
-					System.exit(0);
+					throw new RuntimeException("Cannot find an order for the vertices");
 				}
 			}
 		}
@@ -262,25 +263,36 @@ public class SixTollis extends CircularAbstract {
 			lastNode = n;
 		}
 
+		countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace, true);
+		System.out.println("Crossings after phase 1: " + countCrossings);		
+		if (graphPlotter != null)
+			graphPlotter.plot(g, idSpace, graphPlotter.getBasename() + "-afterPhase1");
+		
+		reduceCrossingsBySwapping(g);
+		
 		writeIDSpace(g);
 
 		if (graphPlotter != null)
 			graphPlotter.plotFinalGraph(g, idSpace);
 
-		countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace, false);
-		System.out.println("Crossings enhanced: " + countCrossings);
+		countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace, true);
+		System.out.println("Final crossings: " + countCrossings);
 
 		return g;
 	}
 
 	private ArrayList<Edge> getAllEdges(Node n) {
-		ArrayList<Edge> edges = new ArrayList<Edge>();
-		for (Edge e : n.generateAllEdges())
-			edges.add(e);
-		if (!useOriginalGraphWithoutRemovalList) {
-			edges.addAll(additionalEdges[n.getIndex()].values());
+		ArrayList<Edge> nodeEdges = new ArrayList<Edge>();
+		if ( edges[n.getIndex()] == null) {
+			edges[n.getIndex()] = n.generateAllEdges();
 		}
-		return edges;
+		
+		for (Edge e : n.generateAllEdges())
+			nodeEdges.add(e);
+		if (!useOriginalGraphWithoutRemovalList) {
+			nodeEdges.addAll(additionalEdges[n.getIndex()].values());
+		}
+		return nodeEdges;
 	}
 
 	private HashMap<String, Edge> getEdges(Node n) {
