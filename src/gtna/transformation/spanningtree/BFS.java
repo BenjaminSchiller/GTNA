@@ -36,6 +36,7 @@
 package gtna.transformation.spanningtree;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -69,12 +70,13 @@ public class BFS extends TransformationImpl implements Transformation {
 		Node tempNodeFromList;
 		int[] edges;
 		Node[] nodes = graph.getNodes();
+		int depth;
 
 		LinkedList<Node> todoList = new LinkedList<Node>();
 		LinkedList<Integer> handledNodes = new LinkedList<Integer>();
 		LinkedList<Integer> linkedNodes = new LinkedList<Integer>();
 
-		ArrayList<ParentChild> parentChildList = new ArrayList<ParentChild>();
+		HashMap<Integer, ParentChild> parentChildMap = new HashMap<Integer, ParentChild>();
 
 		todoList.add(root);
 		linkedNodes.add(root.getIndex());
@@ -88,6 +90,13 @@ public class BFS extends TransformationImpl implements Transformation {
 				continue;
 			}
 
+			ParentChild parent = parentChildMap.get(tempNodeFromList.getIndex());
+			if ( parent == null ) {
+				depth = 0;
+			} else {
+				depth = parent.getDepth();
+			}			
+			
 			edges = tempNodeFromList.getOutgoingEdges();
 			for (int e : edges) {
 				if (!linkedNodes.contains(e)) {
@@ -99,7 +108,7 @@ public class BFS extends TransformationImpl implements Transformation {
 					todoList.add(nodes[e]);
 					linkedNodes.add(e);
 
-					parentChildList.add(new ParentChild(tempNodeFromList.getIndex(), e));
+					parentChildMap.put(e, new ParentChild(tempNodeFromList.getIndex(), e, depth + 1));
 				}
 			}
 
@@ -107,11 +116,13 @@ public class BFS extends TransformationImpl implements Transformation {
 		}
 
 		int graphNodeSize = graph.getNodes().length;
-		int spanningTreeSize = parentChildList.size() + 1;
+		int spanningTreeSize = parentChildMap.size() + 1;
 		if (spanningTreeSize < graphNodeSize) {
 			throw new RuntimeException("Error: graph contains " + graphNodeSize + ", but spanning tree only contains "
 					+ spanningTreeSize + " nodes!");
 		}
+		ArrayList<ParentChild> parentChildList = new ArrayList<ParentChild>();
+		parentChildList.addAll(parentChildMap.values());
 		SpanningTree result = new SpanningTree(graph, parentChildList);
 
 		graph.addProperty("SPANNINGTREE", result);

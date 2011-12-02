@@ -37,26 +37,28 @@ package gtna.graph.spanningTree;
 
 /**
  * @author benni
- *
+ * 
  */
 public class ParentChild {
 	private int parent;
-	
 	private int child;
-	
-	public ParentChild(String string){
+	private int depth;
+
+	public ParentChild(String string) {
 		String[] temp = string.split(";");
 		this.parent = Integer.parseInt(temp[0]);
 		this.child = Integer.parseInt(temp[1]);
+		this.depth = Integer.parseInt(temp[2]);
 	}
-	
-	public ParentChild(int parent, int child){
+
+	public ParentChild(int parent, int child, int depth) {
 		this.parent = parent;
 		this.child = child;
+		this.depth = depth;
 	}
-	
-	public String toString(){
-		return this.parent + ";" + this.child;
+
+	public String toString() {
+		return this.parent + ";" + this.child + ";" + this.depth;
 	}
 
 	/**
@@ -71,5 +73,12 @@ public class ParentChild {
 	 */
 	public int getChild() {
 		return this.child;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getDepth() {
+		return this.depth;
 	}
 }
