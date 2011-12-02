@@ -47,6 +47,8 @@ import java.util.TreeSet;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.graph.spanningTree.ParentChild;
+import gtna.graph.spanningTree.SpanningTree;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
@@ -63,7 +65,7 @@ public class SixTollis extends CircularAbstract {
 	private HashMap<String, Edge> removalList;
 	private HashMap<String, Edge>[] additionalEdges;
 	private Edge[][] edges;
-	private TreeNode deepestNode;
+	private ParentChild deepestNode;
 	private Boolean useOriginalGraphWithoutRemovalList;
 	private Graph g;
 
@@ -341,24 +343,30 @@ public class SixTollis extends CircularAbstract {
 		return false;
 	}
 
-	private LinkedList<TreeNode> findLongestPath(TreeNode source, TreeNode comingFrom) {
-		LinkedList<TreeNode> connections = source.children;
-		connections.add(source.root);
-		connections.remove(comingFrom);
+	private LinkedList<Integer> findLongestPath(SpanningTree tree, int source, int comingFrom) {
+		LinkedList<Integer> connections = new LinkedList<Integer>();
+		for (int singleSrc : tree.getChildren(source)) {
+			if ( singleSrc == source ) continue;
+			connections.add(singleSrc);
+		}
+		connections.add(tree.getParent(source));
+		connections.removeFirstOccurrence(source);
+		connections.removeFirstOccurrence(comingFrom);
+
 		if (connections.size() == 0) {
 			connections.add(source);
 			return connections;
 		}
-		LinkedList<TreeNode> longestPath, tempPath;
-		longestPath = new LinkedList<TreeNode>();
-		for (TreeNode singleConnection : connections) {
+		LinkedList<Integer> longestPath, tempPath;
+		longestPath = new LinkedList<Integer>();
+		for (Integer singleConnection : connections) {
 			if (singleConnection == null) {
 				/*
 				 * This is the roots parent!
 				 */
 				continue;
 			}
-			tempPath = findLongestPath(singleConnection, source);
+			tempPath = findLongestPath(tree, singleConnection, source);
 			if (tempPath.size() > longestPath.size()) {
 				longestPath = tempPath;
 			}
@@ -377,32 +385,34 @@ public class SixTollis extends CircularAbstract {
 		do {
 			start = removedNodes.get(startIndex++);
 		} while (start.getOutDegree() == 0);
-		TreeNode root = new TreeNode(null, -1, 0);
-		deepestNode = root;
-		// System.out.println("Starting DFS at " + start);
-		dfs(start, root, new ArrayList<Integer>());
-		// root.printTree();
 
-		LinkedList<TreeNode> resultInTree = findLongestPath(deepestNode, null);
-		for (TreeNode tempNode : resultInTree) {
-			if (tempNode == root)
-				continue;
-			result.add(g.getNode(tempNode.index));
+		deepestNode = new ParentChild(-1, start.getIndex(), -1);
+		// System.out.println("Starting DFS at " + start);
+		
+		HashMap<Integer, ParentChild> parentChildMap = new HashMap<Integer, ParentChild>();
+		dfs(start, deepestNode, parentChildMap);
+		ArrayList<ParentChild> parentChildList = new ArrayList<ParentChild>();
+		parentChildList.addAll(parentChildMap.values());
+
+		SpanningTree tree = new SpanningTree(g, parentChildList);
+
+		LinkedList<Integer> resultInTree = findLongestPath(tree, deepestNode.getChild(), -1);
+		for (Integer tempNode : resultInTree) {
+			result.add(g.getNode(tempNode));
 		}
 		return result;
 	}
 
-	private void dfs(Node n, TreeNode root, ArrayList<Integer> visited) {
+	private void dfs(Node n, ParentChild root, HashMap<Integer, ParentChild> visited) {
 		int otherEnd;
 
-		if (visited.contains(n.getIndex())) {
+		if (visited.containsKey(n.getIndex())) {
 			return;
 		}
 
-		visited.add(n.getIndex());
-		TreeNode current = new TreeNode(root, n.getIndex(), root.depth + 1);
-		root.children.add(current);
-		if (current.depth > deepestNode.depth) {
+		ParentChild current = new ParentChild(root.getChild(), n.getIndex(), root.getDepth() + 1);
+		visited.put(n.getIndex(), current);
+		if (current.getDepth() > deepestNode.getDepth()) {
 			deepestNode = current;
 		}
 
@@ -526,37 +536,6 @@ public class SixTollis extends CircularAbstract {
 				return 1;
 			else
 				return -1;
-		}
-	}
-
-	private class TreeNode {
-		public TreeNode root;
-		public int index, depth;
-		public LinkedList<TreeNode> children;
-
-		public TreeNode(TreeNode root, int index, int depth) {
-			this.root = root;
-			this.index = index;
-			this.depth = depth;
-			this.children = new LinkedList<TreeNode>();
-		}
-
-		/**
-		 * 
-		 */
-		public void printTree() {
-			System.out.print("Node " + index + " in depth " + depth + ", connections to");
-			for (TreeNode singleChild : children) {
-				System.out.print(" " + singleChild.index);
-			}
-			System.out.println();
-			for (TreeNode singleChild : children) {
-				singleChild.printTree();
-			}
-		}
-
-		public boolean equals(TreeNode x) {
-			return (x.index == this.index);
 		}
 	}
 }

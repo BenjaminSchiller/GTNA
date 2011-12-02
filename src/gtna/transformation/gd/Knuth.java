@@ -71,7 +71,7 @@ public class Knuth extends HierarchicalAbstract {
 			nodePositionsY[i] = 0;
 		}
 
-		walkTree (tree, source, 0);
+		walkTree (tree, source);
 		
 		for ( Node i: g.getNodes() ) {
 			if ( i == null ) {
@@ -92,9 +92,10 @@ public class Knuth extends HierarchicalAbstract {
 		return g;
 	}
 
-	private void walkTree(SpanningTree tree, int node, int height) {
-		nodePositionsY[node] = height;
-		
+	private void walkTree(SpanningTree tree, int node) {
+		int depth = tree.getDepth(node);
+		nodePositionsY[node] = depth;
+
 		int[] children = tree.getChildren(node);
 		if ( children.length == 0 ) {
 			/*
@@ -107,7 +108,7 @@ public class Knuth extends HierarchicalAbstract {
 				if ( positionOfParent-- == 0 ) {
 					nodePositionsX[node] = nextFreePosition++;
 				}
-				walkTree(tree, singleChild, height + 1);				
+				walkTree(tree, singleChild);				
 			}
 		}
 	}
