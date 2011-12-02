@@ -92,9 +92,9 @@ public class BFS extends TransformationImpl implements Transformation {
 
 			ParentChild parent = parentChildMap.get(tempNodeFromList.getIndex());
 			if ( parent == null ) {
-				depth = 0;
+				depth = 1;
 			} else {
-				depth = parent.getDepth();
+				depth = parent.getDepth() + 1;
 			}			
 			
 			edges = tempNodeFromList.getOutgoingEdges();
@@ -108,7 +108,7 @@ public class BFS extends TransformationImpl implements Transformation {
 					todoList.add(nodes[e]);
 					linkedNodes.add(e);
 
-					parentChildMap.put(e, new ParentChild(tempNodeFromList.getIndex(), e, depth + 1));
+					parentChildMap.put(e, new ParentChild(tempNodeFromList.getIndex(), e, depth));
 				}
 			}
 
