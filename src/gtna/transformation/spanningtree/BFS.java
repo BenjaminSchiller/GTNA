@@ -68,7 +68,7 @@ public class BFS extends TransformationImpl implements Transformation {
 		Node root = selectRoot(graph, rootSelector);
 
 		Node tempNodeFromList;
-		int[] edges;
+		Integer[] edges;
 		Node[] nodes = graph.getNodes();
 		int depth;
 
@@ -89,13 +89,13 @@ public class BFS extends TransformationImpl implements Transformation {
 			}
 
 			ParentChild parent = parentChildMap.get(tempNodeFromList.getIndex());
-			if ( parent == null ) {
+			if (parent == null) {
 				depth = 1;
 			} else {
 				depth = parent.getDepth() + 1;
-			}			
-			
-			edges = tempNodeFromList.getOutgoingEdges();
+			}
+
+			edges = tempNodeFromList.generateOutgoingEdgesByDegree();
 			for (int e : edges) {
 				if (!linkedNodes.contains(e)) {
 					/*
@@ -112,8 +112,8 @@ public class BFS extends TransformationImpl implements Transformation {
 		}
 
 		int graphNodeSize = graph.getNodes().length;
-		int spanningTreeSize = parentChildMap.size() + 1;
-		if (spanningTreeSize < graphNodeSize) {
+		int spanningTreeSize = parentChildMap.size();
+		if ((spanningTreeSize + 1) < graphNodeSize) {
 			throw new RuntimeException("Error: graph contains " + graphNodeSize + ", but spanning tree only contains "
 					+ spanningTreeSize + " nodes - graph might be disconnected");
 		}

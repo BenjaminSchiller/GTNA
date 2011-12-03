@@ -36,6 +36,8 @@
 package gtna.graph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class Node {
 	private Graph graph;
@@ -176,6 +178,37 @@ public class Node {
 		}		
 		return false;
 	}
+
+	/**
+	 * @return
+	 */
+	public Integer[] generateOutgoingEdgesByDegree() {
+		int[] edges = getOutgoingEdges();
+		Integer[] integerEdges = new Integer[edges.length];
+		for ( int i = 0; i < edges.length; i++) integerEdges[i] = edges[i];
+		Arrays.sort(integerEdges, new DescendingDegreeComparator(graph));
+		return integerEdges;
+	}
+	
+	private class DescendingDegreeComparator implements Comparator<Integer> {
+		private Graph g;
+
+		public DescendingDegreeComparator(Graph g) {
+			this.g = g;
+		}
+
+		public int compare(Integer n, Integer m) {
+			int nDegree = g.getNode(n).getDegree();
+			int mDegree = g.getNode(m).getDegree();
+			if (nDegree < mDegree)
+				return 1;
+			else if (nDegree == mDegree)
+				return 0;
+			else
+				return -1;
+		}
+
+	}	
 	
 	// TODO hasOut, hasIn, addIn, addOut, removeIn, removeOut
 }
