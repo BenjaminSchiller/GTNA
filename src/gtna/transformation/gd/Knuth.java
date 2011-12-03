@@ -45,7 +45,7 @@ import gtna.plot.GraphPlotter;
  *
  */
 public class Knuth extends HierarchicalAbstract {
-	int nextFreePosition = 0;
+	int nextFreePosition;
 	
 	public Knuth() {
 		super("GDA_KNUTH", new String[]{}, new String[]{});
@@ -63,6 +63,7 @@ public class Knuth extends HierarchicalAbstract {
 		tree = (SpanningTree) g.getProperty("SPANNINGTREE");
 		int source = tree.getSrc();
 		int maxHeight = g.getNodes().length; 
+		nextFreePosition = 0;
 		
 		nodePositionsX = new double[maxHeight];
 		nodePositionsY = new double[maxHeight];

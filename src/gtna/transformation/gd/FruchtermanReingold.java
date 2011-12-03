@@ -69,8 +69,8 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 		 * the cooling factor which is applied onto the temperature
 		 * in each step
 		 */	
-	private double attractionFactor = 1.0;
-	private double coolingFactor = 0.95;
+	private final double attractionFactor = 1.0;
+	private final double coolingFactor = 0.95;
 	
 		/*
 		 * Global cooling temperature

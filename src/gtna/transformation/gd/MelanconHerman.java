@@ -38,7 +38,6 @@ package gtna.transformation.gd;
 import gtna.graph.Graph;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
-import gtna.transformation.Transformation;
 
 /**
  * @author Nico
@@ -50,9 +49,7 @@ public class MelanconHerman extends HierarchicalAbstract {
 	/*
 	 * leafRadius will hold the radius of a single leaf node
 	 */
-	double leafRadius = 2d;
-	double d = 20d;
-	double previous = 0;
+	private final double leafRadius = 2d;
 
 	public MelanconHerman(double modulusX, double modulusY, GraphPlotter plotter) {
 		super("GDA_MELANCONHERMAN", new String[] {"MODULUS_X", "MODULUS_Y"}, new String[] {"" + modulusX, "" + modulusY});
