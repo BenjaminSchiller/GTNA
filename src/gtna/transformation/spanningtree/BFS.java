@@ -73,16 +73,14 @@ public class BFS extends TransformationImpl implements Transformation {
 		int depth;
 
 		LinkedList<Node> todoList = new LinkedList<Node>();
-		LinkedList<Integer> handledNodes = new LinkedList<Integer>();
 		LinkedList<Integer> linkedNodes = new LinkedList<Integer>();
 
 		HashMap<Integer, ParentChild> parentChildMap = new HashMap<Integer, ParentChild>();
 
 		todoList.add(root);
-		linkedNodes.add(root.getIndex());
 		while (!todoList.isEmpty()) {
 			tempNodeFromList = todoList.pop();
-			if (handledNodes.contains(tempNodeFromList.getIndex())) {
+			if (linkedNodes.contains(tempNodeFromList.getIndex())) {
 				/*
 				 * Although the current node was fetched from the todoList, we
 				 * will continue: this node was already processed
@@ -106,20 +104,18 @@ public class BFS extends TransformationImpl implements Transformation {
 					 * node to e to the list of edges
 					 */
 					todoList.add(nodes[e]);
-					linkedNodes.add(e);
 
 					parentChildMap.put(e, new ParentChild(tempNodeFromList.getIndex(), e, depth));
 				}
 			}
-
-			handledNodes.add(tempNodeFromList.getIndex());
+			linkedNodes.add(tempNodeFromList.getIndex());
 		}
 
 		int graphNodeSize = graph.getNodes().length;
 		int spanningTreeSize = parentChildMap.size() + 1;
 		if (spanningTreeSize < graphNodeSize) {
 			throw new RuntimeException("Error: graph contains " + graphNodeSize + ", but spanning tree only contains "
-					+ spanningTreeSize + " nodes!");
+					+ spanningTreeSize + " nodes - graph might be disconnected");
 		}
 		ArrayList<ParentChild> parentChildList = new ArrayList<ParentChild>();
 		parentChildList.addAll(parentChildMap.values());
