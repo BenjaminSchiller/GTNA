@@ -73,20 +73,13 @@ public class BFS extends TransformationImpl implements Transformation {
 		int depth;
 
 		LinkedList<Node> todoList = new LinkedList<Node>();
-		LinkedList<Integer> linkedNodes = new LinkedList<Integer>();
 
 		HashMap<Integer, ParentChild> parentChildMap = new HashMap<Integer, ParentChild>();
 
 		todoList.add(root);
+		parentChildMap.put(root.getIndex(), new ParentChild(-1, root.getIndex(), 0));
 		while (!todoList.isEmpty()) {
 			tempNodeFromList = todoList.pop();
-			if (linkedNodes.contains(tempNodeFromList.getIndex())) {
-				/*
-				 * Although the current node was fetched from the todoList, we
-				 * will continue: this node was already processed
-				 */
-				continue;
-			}
 
 			ParentChild parent = parentChildMap.get(tempNodeFromList.getIndex());
 			if (parent == null) {
@@ -97,7 +90,7 @@ public class BFS extends TransformationImpl implements Transformation {
 
 			edges = tempNodeFromList.generateOutgoingEdgesByDegree();
 			for (int e : edges) {
-				if (!linkedNodes.contains(e)) {
+				if (!parentChildMap.containsKey(e)) {
 					/*
 					 * Node e has not been linked yet, so add it to the todoList
 					 * (to handle it soon) and add the edge from the current
@@ -108,7 +101,6 @@ public class BFS extends TransformationImpl implements Transformation {
 					parentChildMap.put(e, new ParentChild(tempNodeFromList.getIndex(), e, depth));
 				}
 			}
-			linkedNodes.add(tempNodeFromList.getIndex());
 		}
 
 		int graphNodeSize = graph.getNodes().length;

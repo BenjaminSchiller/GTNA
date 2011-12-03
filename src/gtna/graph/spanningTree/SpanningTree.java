@@ -74,6 +74,7 @@ public class SpanningTree implements GraphProperty {
 		int[] counter = new int[nodes];
 		// fill parent and depth list
 		for (ParentChild pc : pcs) {
+			if ( pc.getParent() == -1 ) continue;
 			this.parent[pc.getChild()] = pc.getParent();
 			this.depth[pc.getChild()] = pc.getDepth();
 			counter[pc.getParent()]++;
@@ -84,6 +85,7 @@ public class SpanningTree implements GraphProperty {
 		}
 		// fill children list
 		for (ParentChild pc : pcs) {
+			if ( pc.getParent() == -1 ) continue;
 			this.children[pc.getParent()][this.children[pc.getParent()].length
 					- counter[pc.getParent()]] = pc.getChild();
 			counter[pc.getParent()]--;
