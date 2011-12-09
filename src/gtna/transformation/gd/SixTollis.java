@@ -142,7 +142,8 @@ public class SixTollis extends CircularAbstract {
 			while (triangulationEdgesCount > 0) {
 				randDst1 = g.getNode(outgoingEdges[firstCounter]);
 				randDst2 = g.getNode(outgoingEdges[secondCounter]);
-				if (!randDst1.equals(randDst2) && !removedVertices.contains(randDst1) && !removedVertices.contains(randDst2)) {
+				if (!randDst1.equals(randDst2) && !removedVertices.contains(randDst1)
+						&& !removedVertices.contains(randDst2)) {
 
 					// System.out.println("rand1: " + randDst1.getIndex() +
 					// "; rand2: " + randDst2.getIndex());
@@ -290,7 +291,7 @@ public class SixTollis extends CircularAbstract {
 			edges[n.getIndex()] = n.generateAllEdges();
 		}
 
-		for (Edge e : n.generateAllEdges())
+		for (Edge e : edges[n.getIndex()])
 			vertexEdges.add(e);
 		if (!useOriginalGraphWithoutRemovalList) {
 			vertexEdges.addAll(additionalEdges[n.getIndex()].values());
@@ -299,18 +300,12 @@ public class SixTollis extends CircularAbstract {
 	}
 
 	private HashMap<String, Edge> getEdges(Node n) {
-		Node tempNode = null;
 		HashMap<String, Edge> edges = new HashMap<String, Edge>();
 
 		for (Edge i : getAllEdges(n)) {
-			int otherEnd;
-			if (i.getDst() == n.getIndex()) {
-				otherEnd = i.getSrc();
-			} else {
-				otherEnd = i.getDst();
-			}
-			tempNode = g.getNode(otherEnd);
-			if (!useOriginalGraphWithoutRemovalList && removedVertices.contains(tempNode)) {
+			if (!useOriginalGraphWithoutRemovalList
+					&& (removedVertices.contains(g.getNode(i.getDst())) || removedVertices.contains(g.getNode(i
+							.getSrc())))) {
 				continue;
 			}
 			edges.put(getEdgeString(i), i);
@@ -345,7 +340,8 @@ public class SixTollis extends CircularAbstract {
 	private LinkedList<Integer> findLongestPath(SpanningTree tree, int source, int comingFrom) {
 		LinkedList<Integer> connections = new LinkedList<Integer>();
 		for (int singleSrc : tree.getChildren(source)) {
-			if ( singleSrc == source ) continue;
+			if (singleSrc == source)
+				continue;
 			connections.add(singleSrc);
 		}
 		connections.add(tree.getParent(source));
