@@ -111,6 +111,8 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 
 		int countLoop = 0;
 		while ((currentNode = todolist.poll()) != null) {
+			countLoop++;			
+			
 			/*
 			 * Special case handling: current node has a degree of zero
 			 */
@@ -158,7 +160,6 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 			} else {
 				swapPositions(currentNode.getIndex(), predecessor.getIndex());
 			}
-			countLoop++;
 		}
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
