@@ -98,7 +98,6 @@ public class SixTollis extends CircularAbstract {
 		edges = new Edge[g.getNodes().length][];
 		Node tempVertex = null;
 		Node currentVertex = null;
-		Node lastVertex = null;
 		Node randDst1, randDst2;
 		Edge tempEdge;
 		String tempEdgeString;
@@ -202,94 +201,14 @@ public class SixTollis extends CircularAbstract {
 				waveFrontVertices.add(tempVertex);
 				waveCenterVertices.add(tempVertex);
 			}
-			lastVertex = currentVertex;
 			removedVertices.add(currentVertex);
 			// System.out.println("Adding " + currentVertex.getIndex() +
 			// " to removedVertices");
 		}
 
-		/*
-		 * Do the DFS here
-		 */
-		LinkedList<Node> longestPath = longestPath();
-		// System.out.println("Longest path:");
-		// for (Node sN : longestPath) {
-		// System.out.print("->" + sN.getIndex());
-		// }
-		// System.out.println();
-
-		/*
-		 * Check which vertices still need to be placed, as they do not lie on
-		 * the longestPath
-		 */
-		ArrayList<Node> todoList = new ArrayList<Node>();
-		todoList.addAll(vertexList);
-		todoList.removeAll(longestPath);
-
-		Node neighbor, singleVertex;
-		int neighborPosition;
-		int errors = 0;
-		int modCounter = 0;
-		while (!todoList.isEmpty()) {
-			neighborPosition = -1;
-			singleVertex = todoList.get(modCounter % todoList.size());
-			int[] outgoingEdges = singleVertex.getOutgoingEdges();
-			if (outgoingEdges.length == 0) {
-				/*
-				 * Current vertex is not connected, so place it anywhere
-				 */
-				neighborPosition = rand.nextInt(longestPath.size());
-			} else if (outgoingEdges.length == 1 && todoList.contains(g.getNode(outgoingEdges[0]))) {
-				/*
-				 * Current vertex has only one connection, and the vertex on the
-				 * other end is also in todoList, so also place this one
-				 * anywhere to ensure that all vertices get placed - phase 2
-				 * will do the rest
-				 */
-				neighborPosition = rand.nextInt(longestPath.size());
-			} else {
-				for (int singleNeighbor : outgoingEdges) {
-					neighbor = g.getNode(singleNeighbor);
-					neighborPosition = longestPath.indexOf(neighbor);
-					if (neighborPosition > -1) {
-						break;
-					}
-				}
-			}
-			if (neighborPosition != -1) {
-				todoList.remove(singleVertex);
-				longestPath.add(neighborPosition, singleVertex);
-			} else {
-				modCounter = (modCounter + 1) % todoList.size();
-				if (errors++ == 50) {
-					System.err.println("Still in todoList:");
-					for (Node sN : todoList) {
-						System.err.print(sN + " missing, connections to ");
-						for (int e : sN.generateOutgoingEdgesByDegree()) {
-							System.err.print(e + " ");
-						}
-						System.err.println();
-					}
-					throw new RuntimeException("Cannot find an order for the vertices");
-				}
-			}
-		}
-
-		double lastPos = 0;
-		double posDiff = modulus / partitions.length;
-		RingIdentifier[] ids = new RingIdentifier[g.getNodes().length];
-		for (Node n : longestPath) {
-			ids[n.getIndex()] = new RingIdentifier(lastPos, idSpace);
-			// System.out.println("Place " + n.getIndex() + " at " + lastPos);
-			lastPos += posDiff;
-		}
-
-		lastVertex = longestPath.getLast();
-		for (Node n : longestPath) {
-			partitions[n.getIndex()] = new RingPartition(ids[lastVertex.getIndex()], ids[n.getIndex()]);
-			lastVertex = n;
-		}
-
+		LinkedList<Node> orderedVertices = orderVertices();
+		placeVertices(orderedVertices);
+		
 		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
 		// true);
 		// System.out.println("Crossings after phase 1: " + countCrossings);
@@ -308,6 +227,121 @@ public class SixTollis extends CircularAbstract {
 		// System.out.println("Final crossings: " + countCrossings);
 
 		return g;
+	}
+
+	private void placeVertices(LinkedList<Node> orderedVertices) {
+		Node lastVertex = null;
+		double lastPos = 0;
+		double posDiff = modulus / partitions.length;
+
+		/*
+		 * Create new RingIdentifiers in the order that was computed...
+		 */
+		RingIdentifier[] ids = new RingIdentifier[g.getNodes().length];
+		for (Node n : orderedVertices) {
+			ids[n.getIndex()] = new RingIdentifier(lastPos, idSpace);
+			// System.out.println("Place " + n.getIndex() + " at " + lastPos);
+			lastPos += posDiff;
+		}
+
+		/*
+		 * ...and assign these ids to the partitions
+		 */
+		lastVertex = orderedVertices.getLast();
+		for (Node n : orderedVertices) {
+			partitions[n.getIndex()] = new RingPartition(ids[lastVertex.getIndex()], ids[n.getIndex()]);
+			lastVertex = n;
+		}
+		
+	}
+
+	private LinkedList<Node> orderVertices() {
+		/*
+		 * Compute the longest path in a spanning tree created by DFS
+		 */
+		LinkedList<Node> longestPath = longestPath();
+
+		/*
+		 * Check which vertices still need to be placed, as they do not lie on
+		 * the longestPath
+		 */
+		ArrayList<Node> todoList = new ArrayList<Node>();
+		todoList.addAll(vertexList);
+		todoList.removeAll(longestPath);
+
+		Node neighbor, singleVertex;
+		int errors = 0;
+		int modCounter = 0;
+		while (!todoList.isEmpty()) {
+			int neighborPosition = -1;
+
+			/*
+			 * We will walk through the todoList with a counter: there might be
+			 * vertices that can not be placed yet, as they do have only
+			 * connections to other not yet connected vertices
+			 */
+			singleVertex = todoList.get(modCounter % todoList.size());
+
+			int[] outgoingEdges = singleVertex.getOutgoingEdges();
+			if (outgoingEdges.length == 0) {
+				/*
+				 * Current vertex is not connected, so place it anywhere
+				 */
+				neighborPosition = rand.nextInt(longestPath.size());
+			} else if (outgoingEdges.length == 1 && todoList.contains(g.getNode(outgoingEdges[0]))) {
+				/*
+				 * Current vertex has only one connection, and the vertex on the
+				 * other end is also in todoList, so also place this one
+				 * anywhere to ensure that all vertices get placed - phase 2
+				 * will do the rest
+				 */
+				neighborPosition = rand.nextInt(longestPath.size());
+			} else {
+				/*
+				 * Current vertex has more than one connection (or one
+				 * connection to a connected vertex), so let's check them
+				 */
+				for (int singleNeighbor : outgoingEdges) {
+					neighbor = g.getNode(singleNeighbor);
+					neighborPosition = longestPath.indexOf(neighbor);
+					if (neighborPosition > -1) {
+						/*
+						 * We found a neighbor that is contained in the list of
+						 * connected vertices - stop searching
+						 */
+						break;
+					}
+				}
+			}
+			if (neighborPosition != -1) {
+				/*
+				 * As a possible position for this vertex is found: remove it
+				 * from the todoList and place it in the longestPath. Following
+				 * elements get shifted to the right
+				 */
+				todoList.remove(singleVertex);
+				longestPath.add(neighborPosition, singleVertex);
+			} else {
+				/*
+				 * The current vertex can not be placed yet, so increase the
+				 * modCounter by 1. If it reaches a limit, we skip searching as
+				 * it seems impossible to find an order for all vertices :(
+				 */
+				modCounter = (modCounter + 1) % todoList.size();
+				if (errors++ == 50) {
+					System.err.println("Still in todoList:");
+					for (Node sN : todoList) {
+						System.err.print(sN + " missing, connections to ");
+						for (int e : sN.generateOutgoingEdgesByDegree()) {
+							System.err.print(e + " ");
+						}
+						System.err.println();
+					}
+					throw new RuntimeException("Cannot find an order for the vertices");
+				}
+			}
+		}
+		return longestPath;
 	}
 
 	private ArrayList<Edge> getAllEdges(Node n) {
