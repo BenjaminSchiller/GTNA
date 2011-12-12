@@ -80,7 +80,7 @@ public class SixTollis extends CircularAbstract {
 	@Override
 	public Graph transform(Graph g) {
 		useOriginalGraphWithoutRemovalList = false;
-		
+
 		initIDSpace(g);
 		if (graphPlotter != null)
 			graphPlotter.plotStartGraph(g, idSpace);
@@ -89,7 +89,7 @@ public class SixTollis extends CircularAbstract {
 		int countCrossings = -1;
 		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
 		// true);
-//		System.out.println("Crossings randomized: " + countCrossings);
+		// System.out.println("Crossings randomized: " + countCrossings);
 		this.g = g;
 
 		/*
@@ -172,7 +172,7 @@ public class SixTollis extends CircularAbstract {
 						// + randDst2.getIndex());
 					}
 				}
-				
+
 				secondCounter++;
 				if (secondCounter == (currentVertexDegree)) {
 					firstCounter++;
@@ -219,24 +219,41 @@ public class SixTollis extends CircularAbstract {
 		// System.out.println();
 
 		/*
-		 * Check which vertices still need to be placed, as they do not lie on the
-		 * longestPath
+		 * Check which vertices still need to be placed, as they do not lie on
+		 * the longestPath
 		 */
 		ArrayList<Node> todoList = new ArrayList<Node>();
 		todoList.addAll(vertexList);
 		todoList.removeAll(longestPath);
 
 		Node neighbor, singleVertex;
-		int neighborPosition = -1;
+		int neighborPosition;
 		int errors = 0;
 		int modCounter = 0;
 		while (!todoList.isEmpty()) {
+			neighborPosition = -1;
 			singleVertex = todoList.get(modCounter % todoList.size());
-			for (int singleNeighbor : singleVertex.getOutgoingEdges()) {
-				neighbor = g.getNode(singleNeighbor);
-				neighborPosition = longestPath.indexOf(neighbor);
-				if (neighborPosition > -1) {
-					break;
+			int[] outgoingEdges = singleVertex.getOutgoingEdges();
+			if (outgoingEdges.length == 0) {
+				/*
+				 * Current vertex is not connected, so place it anywhere
+				 */
+				neighborPosition = rand.nextInt(longestPath.size());
+			} else if (outgoingEdges.length == 1 && todoList.contains(g.getNode(outgoingEdges[0]))) {
+				/*
+				 * Current vertex has only one connection, and the vertex on the
+				 * other end is also in todoList, so also place this one
+				 * anywhere to ensure that all vertices get placed - phase 2
+				 * will do the rest
+				 */
+				neighborPosition = rand.nextInt(longestPath.size());
+			} else {
+				for (int singleNeighbor : outgoingEdges) {
+					neighbor = g.getNode(singleNeighbor);
+					neighborPosition = longestPath.indexOf(neighbor);
+					if (neighborPosition > -1) {
+						break;
+					}
 				}
 			}
 			if (neighborPosition != -1) {
@@ -245,6 +262,14 @@ public class SixTollis extends CircularAbstract {
 			} else {
 				modCounter = (modCounter + 1) % todoList.size();
 				if (errors++ == 50) {
+					System.err.println("Still in todoList:");
+					for (Node sN : todoList) {
+						System.err.print(sN + " missing, connections to ");
+						for (int e : sN.generateOutgoingEdgesByDegree()) {
+							System.err.print(e + " ");
+						}
+						System.err.println();
+					}
 					throw new RuntimeException("Cannot find an order for the vertices");
 				}
 			}
@@ -265,9 +290,9 @@ public class SixTollis extends CircularAbstract {
 			lastVertex = n;
 		}
 
-//		 countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
-//		 true);
-//		System.out.println("Crossings after phase 1: " + countCrossings);
+		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
+		// true);
+		// System.out.println("Crossings after phase 1: " + countCrossings);
 		if (graphPlotter != null)
 			graphPlotter.plot(g, idSpace, graphPlotter.getBasename() + "-afterPhase1");
 
@@ -278,9 +303,9 @@ public class SixTollis extends CircularAbstract {
 		if (graphPlotter != null)
 			graphPlotter.plotFinalGraph(g, idSpace);
 
-//		 countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
-//		 true);
-//		System.out.println("Final crossings: " + countCrossings);
+		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
+		// true);
+		// System.out.println("Final crossings: " + countCrossings);
 
 		return g;
 	}
@@ -383,7 +408,7 @@ public class SixTollis extends CircularAbstract {
 
 		deepestVertex = new ParentChild(-1, start.getIndex(), -1);
 		// System.out.println("Starting DFS at " + start);
-		
+
 		HashMap<Integer, ParentChild> parentChildMap = new HashMap<Integer, ParentChild>();
 		dfs(start, deepestVertex, parentChildMap);
 		ArrayList<ParentChild> parentChildList = new ArrayList<ParentChild>();
