@@ -63,6 +63,10 @@ public class WetherellShannon extends HierarchicalAbstract {
 	@Override
 	public Graph transform(Graph g) {
 		tree = (SpanningTree) g.getProperty("SPANNINGTREE");
+		if ( tree == null ) {
+			throw new RuntimeException("SpanningTree property missing");
+		}		
+		
 		int source = tree.getSrc();
 		int maxHeight = g.getNodes().length; 
 		

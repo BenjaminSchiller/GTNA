@@ -61,6 +61,10 @@ public class MelanconHerman extends HierarchicalAbstract {
 	@Override
 	public Graph transform(Graph g) {
 		tree = (SpanningTree) g.getProperty("SPANNINGTREE");
+		if ( tree == null ) {
+			throw new RuntimeException("SpanningTree property missing");
+		}		
+		
 		int source = tree.getSrc();
 		np = new NodeParameter[g.getNodes().length];
 		nodePositionsX = new double[g.getNodes().length];

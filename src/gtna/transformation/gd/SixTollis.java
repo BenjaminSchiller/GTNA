@@ -89,7 +89,7 @@ public class SixTollis extends CircularAbstract {
 		int countCrossings = -1;
 		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
 		// true);
-		System.out.println("Crossings randomized: " + countCrossings);
+//		System.out.println("Crossings randomized: " + countCrossings);
 		this.g = g;
 
 		/*
@@ -265,9 +265,9 @@ public class SixTollis extends CircularAbstract {
 			lastVertex = n;
 		}
 
-		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
-		// true);
-		System.out.println("Crossings after phase 1: " + countCrossings);
+//		 countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
+//		 true);
+//		System.out.println("Crossings after phase 1: " + countCrossings);
 		if (graphPlotter != null)
 			graphPlotter.plot(g, idSpace, graphPlotter.getBasename() + "-afterPhase1");
 
@@ -278,9 +278,9 @@ public class SixTollis extends CircularAbstract {
 		if (graphPlotter != null)
 			graphPlotter.plotFinalGraph(g, idSpace);
 
-		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
-		// true);
-		System.out.println("Final crossings: " + countCrossings);
+//		 countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
+//		 true);
+//		System.out.println("Final crossings: " + countCrossings);
 
 		return g;
 	}

@@ -60,12 +60,12 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 		if (graphPlotter != null)
 			graphPlotter.plotStartGraph(g, idSpace);
 
-		crossingsStart = edgeCrossings.calculateCrossings(g.generateEdges(), idSpace, true);
+//		crossingsStart = edgeCrossings.calculateCrossings(g.generateEdges(), idSpace, true);
 
 		reduceCrossingsBySwapping(g);
 
-		crossingsEnd = edgeCrossings.calculateCrossings(g.generateEdges(), idSpace, true);
-		System.out.println("Crossings at the beginning: " + crossingsStart + " - and afterwards: " + crossingsEnd);
+//		crossingsEnd = edgeCrossings.calculateCrossings(g.generateEdges(), idSpace, true);
+//		System.out.println("Crossings at the beginning: " + crossingsStart + " - and afterwards: " + crossingsEnd);
 
 		if (graphPlotter != null)
 			graphPlotter.plotFinalGraph(g, idSpace);

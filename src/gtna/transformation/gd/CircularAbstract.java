@@ -163,7 +163,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		}
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
-		System.out.println("Did " + countLoop + " loops in " + totalTime + " msec");
+//		System.out.println("Did " + countLoop + " loops in " + totalTime + " msec");
 	}
 
 	protected int getPredecessor(int i) {

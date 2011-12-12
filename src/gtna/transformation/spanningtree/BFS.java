@@ -106,6 +106,15 @@ public class BFS extends TransformationImpl implements Transformation {
 		int graphNodeSize = graph.getNodes().length;
 		int spanningTreeSize = parentChildMap.size();
 		if ((spanningTreeSize + 1) < graphNodeSize) {
+			for ( Node sN: nodes) {
+				if ( !parentChildMap.containsKey(sN.getIndex())) {
+					System.err.print(sN + " missing, connections to ");
+					for ( int e: sN.generateOutgoingEdgesByDegree() ) {
+						System.err.print(e + " ");
+					}
+					System.err.println();
+				}
+			}
 			throw new RuntimeException("Error: graph contains " + graphNodeSize + ", but spanning tree only contains "
 					+ spanningTreeSize + " nodes - graph might be disconnected");
 		}
