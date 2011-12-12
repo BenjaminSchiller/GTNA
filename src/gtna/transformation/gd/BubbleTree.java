@@ -59,6 +59,7 @@ public class BubbleTree extends HierarchicalAbstract {
 
 	double[] delta;
 	double[] angularSector;
+	double[] rotationAngles;
 
 	public BubbleTree(double modulusX, double modulusY, GraphPlotter plotter) {
 		this("GDA_BUBBLETREE", modulusX, modulusY, plotter);
@@ -74,9 +75,9 @@ public class BubbleTree extends HierarchicalAbstract {
 	@Override
 	public Graph transform(Graph g) {
 		tree = (SpanningTree) g.getProperty("SPANNINGTREE");
-		if ( tree == null ) {
+		if (tree == null) {
 			throw new RuntimeException("SpanningTree property missing");
-		}		
+		}
 		int source = tree.getSrc();
 
 		int numNodes = g.getNodes().length;
@@ -88,6 +89,10 @@ public class BubbleTree extends HierarchicalAbstract {
 		angularSector = new double[numNodes];
 		calculateRadius(tree, source);
 		Point center = new Point(0, 0);
+
+		rotationAngles = new double[numNodes];
+		calculateRotation(tree, source);
+
 		coordAssign(tree, source, center);
 
 		writeIDSpace(g);
@@ -97,6 +102,16 @@ public class BubbleTree extends HierarchicalAbstract {
 			graphPlotter.plotSpanningTree(g, idSpace);
 
 		return g;
+	}
+
+	private void calculateRotation(SpanningTree tree, int node) {
+		int[] sons = tree.getChildren(node);
+		double currAngle = rotationAngles[node] + Math.PI;
+		for (int singleSon : sons) {
+			currAngle += angularSector[singleSon];
+			rotationAngles[singleSon] = currAngle % (2 * Math.PI);
+			calculateRotation(tree, singleSon);
+		}
 	}
 
 	private void calculateRadius(SpanningTree tree, int node) {
@@ -218,6 +233,7 @@ public class BubbleTree extends HierarchicalAbstract {
 		nodePositionsY[source] = center.y;
 		for (int singleChild : tree.getChildren(source)) {
 			Point temp = new Point(nodePositionsX[singleChild], nodePositionsY[singleChild]);
+			temp.rotateBy(rotationAngles[source]);
 			temp.add(center);
 			coordAssign(tree, singleChild, temp);
 		}
@@ -254,5 +270,11 @@ public class BubbleTree extends HierarchicalAbstract {
 			this.y += p2.y;
 		}
 
+		public void rotateBy(double angle) {
+			double newX = x * Math.cos(angle) - y * Math.sin(angle);
+			double newY = x * Math.sin(angle) + y * Math.cos(angle);
+			this.x = newX;
+			this.y = newY;
+		}
 	}
 }
