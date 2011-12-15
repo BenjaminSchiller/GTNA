@@ -77,6 +77,8 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 		 */
 	private double t;
 	
+	private Edge[] edgeList;
+	
 	public FruchtermanReingold(int realities, double[] moduli, Boolean wrapAround, int iterations, GraphPlotter plotter) {
 		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{"REALITIES", "MODULI", "WRAPAROUND", "ITERATIONS"}, new String[]{"" + realities, Arrays.toString(moduli), "" + wrapAround, "" + iterations});
 		this.realities = realities;
@@ -96,7 +98,8 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 		k = Math.pow( this.space / this.partitions.length, 1.0 / moduli.length );
 //		System.out.println("Best distance: " + k);
 		
-		this.t = idSpace.getMaxModulus();		
+		this.t = idSpace.getMaxModulus();
+		edgeList = g.generateEdges();
 
 		for ( int i = 0; i < this.iterations; i++ ) {
 //			System.out.println("\n\n   >>> in iteration " + i + " <<<");
@@ -142,7 +145,7 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 		}
 
 		// Second step: attractive forces
-		for ( Edge e: g.generateEdges() ) {
+		for ( Edge e: edgeList ) {
 			if ( e == null ) continue;
 			
 			delta = getCoordinate( e.getSrc() );
