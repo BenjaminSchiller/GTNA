@@ -93,6 +93,12 @@ public class BubbleTree extends HierarchicalAbstract {
 		rotationAngles = new double[numNodes];
 		calculateRotation(tree, source);
 
+		System.out.println("Source: " + source);
+		for (int i = 0; i < numNodes; i++) {
+			System.out.println("angSector for " + i + ": " + angularSector[i] + " (" + Math.toDegrees(angularSector[i])
+					+ ")");
+			System.out.println("Rotation for " + i + ": " + Math.toDegrees(rotationAngles[i]));
+		}
 		coordAssign(tree, source, center);
 
 		writeIDSpace(g);
@@ -139,6 +145,8 @@ public class BubbleTree extends HierarchicalAbstract {
 			thetaSum += angularSector[singleSon];
 			nodePositionsX[singleSon] = delta[singleSon] * Math.cos(thetaSum - (angularSector[singleSon] / 2));
 			nodePositionsY[singleSon] = delta[singleSon] * Math.sin(thetaSum - (angularSector[singleSon] / 2));
+			System.out.println("Put " + singleSon + " with an angle of " + Math.toDegrees(angularSector[singleSon]) + " to ("
+					+ nodePositionsX[singleSon] + "|" + nodePositionsY[singleSon] + "), tS = " + Math.toDegrees(thetaSum));
 		}
 
 		radiuses[node] = 1.3 * calculateSmallestEnclosingCircle(tree, node);
@@ -233,7 +241,9 @@ public class BubbleTree extends HierarchicalAbstract {
 		nodePositionsY[source] = center.y;
 		for (int singleChild : tree.getChildren(source)) {
 			Point temp = new Point(nodePositionsX[singleChild], nodePositionsY[singleChild]);
-			temp.rotateBy(rotationAngles[source]);
+			double currRotation = rotationAngles[source];
+			System.out.println("Rotating " + singleChild + " by " + Math.toDegrees(currRotation));
+			temp.rotateBy(currRotation);
 			temp.add(center);
 			coordAssign(tree, singleChild, temp);
 		}

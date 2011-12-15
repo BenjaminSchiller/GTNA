@@ -88,7 +88,7 @@ public class GDATest {
 		// GDATest.randomFRTest_multidimensional();
 		// GDATest.randomFRTestWithSeperateIDSpaceTransformation();
 		// GDATest.randomFrickTest();
-		// GDATest.testWS();
+//		 GDATest.testWS();
 		// GDATest.testMH();
 		// GDATest.canonicalCircularCrossingWithSeperateIDSpace();
 		// GDATest.testMHRandom();
@@ -97,12 +97,15 @@ public class GDATest {
 		// GDATest.testSpanningTree_Benni();
 		// GDATest.testSpanningTree_transform();
 		// GDATest.routingTest();
-		// GDATest.testKnuth();
-		// GDATest.routingKnuthAgainstWS();
-		GDATest.routingWS_BFSChange();
-		// GDATest.testBT();
+//		 GDATest.testKnuth();
+//		 GDATest.routingKnuthAgainstWS();
+		// GDATest.routingWS_BFSChange();
+		 GDATest.testBT();
 		// GDATest.routingBT_BFSChange();
 		// GDATest.routingTestCCCAgainstRandom();
+//		GDATest.randomSTTest();
+//		GDATest.timeMeasurements();
+//		 GDATest.compareKnuthWS();
 
 		stats.end();
 	}
@@ -146,12 +149,11 @@ public class GDATest {
 		Config.overwrite("METRICS", "SP, R");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + true);
 
+		RoutingAlgorithm r1 = new GreedyBacktracking(24);
 		Transformation[] t1 = new Transformation[] { new BFS("hd"), new Knuth(500, 500, null) };
-		RoutingAlgorithm r1 = new GreedyBacktracking(36);
 		Transformation[] t2 = new Transformation[] { new BFS("hd"), new WetherellShannon(500, 500, null) };
-		RoutingAlgorithm r2 = new GreedyBacktracking(36);
-		Network nw1 = new ErdosRenyi(5000, 30, true, r1, t1);
-		Network nw2 = new ErdosRenyi(5000, 30, true, r2, t2);
+		Network nw1 = new ErdosRenyi(5000, 20, true, r1, t1);
+		Network nw2 = new ErdosRenyi(5000, 20, true, r1, t2);
 		Series[] s = Series.generate(new Network[] { nw1, nw2 }, 50);
 		// Series s = Series.generate(nw1, 3);
 		// Series s = Series.get(nw);
@@ -259,10 +261,10 @@ public class GDATest {
 	}
 
 	public static void testBT() {
-		Network nw1 = new ErdosRenyi(100, 15, true, new Greedy(), null);
+		Network nw1 = new ErdosRenyi(20, 7, true, new Greedy(), null);
 		Graph g = nw1.generate();
 
-		Transformation bfs = new BFS("rand");
+		Transformation bfs = new BFS("hd");
 		g = bfs.transform(g);
 		Transformation ws = new BubbleTree(122, 122, new GraphPlotter("testBT", "svg"));
 		if (!ws.applicable(g))
@@ -310,6 +312,17 @@ public class GDATest {
 		g = knuth.transform(g);
 	}
 
+	public static void compareKnuthWS() {
+		Network nw1 = new ErdosRenyi(15, 6, true, new Greedy(), null);
+		Graph g = nw1.generate();
+		Transformation bfs = new BFS("hd");
+		g = bfs.transform(g);
+		Transformation knuth = new Knuth(50, 50, new GraphPlotter("compareKnuthWS-KN", "pdf"));
+		g = knuth.transform(g);
+		Transformation ws = new WetherellShannon(50, 50, new GraphPlotter("compareKnuthWS-WS", "pdf"));
+		g = ws.transform(g);
+	}
+	
 	public static void testSpanningTree() {
 		GraphPlotter plotter = new GraphPlotter("testSpanningTree-FR", "svg", 60);
 
@@ -335,9 +348,10 @@ public class GDATest {
 
 	public static void randomFRTest() {
 		GraphPlotter plotter = new GraphPlotter("randomFR", "svg", 500);
+		plotter = null;
 
-		Network nw1 = new ErdosRenyi(8, 7, true, new Greedy(), new Transformation[] { new FruchtermanReingold(1,
-				new double[] { 100, 100 }, false, 50, plotter) });
+		Network nw1 = new ErdosRenyi(20, 7, true, new Greedy(), new Transformation[] { new FruchtermanReingold(1,
+				new double[] { 100, 100 }, false, 10, plotter) });
 
 		Graph g = nw1.generate();
 		Transformation[] t = nw1.transformations();
@@ -410,21 +424,60 @@ public class GDATest {
 		g = frick.transform(g);
 	}
 
+	public static void timeMeasurements() {
+		Transformation[] t = new Transformation[]{
+//				new Knuth(100, 100, null),
+//				new WetherellShannon(100, 100, null),
+//				new MelanconHerman(100, 100, null),
+//				new BubbleTree(100, 100, null),
+//				new CanonicalCircularCrossing(1, 500, true, null),
+//				new SixTollis(1, 500, true, null),
+				new FruchtermanReingold(1, new double[]{100,100}, false, 100, null)
+		};
+		Network nw;
+		Graph g;
+		BFS bfs = new BFS("hd");
+
+		for (Transformation sT : t) {
+			System.out.println("Starting " + sT.name());
+			double runtimeComplete = 0;
+			int iterations = 10;
+			for (int i = 0; i < iterations; i++) {
+				double thisIterationStart = System.currentTimeMillis();
+				nw = new ErdosRenyi(2000, 17, true, null, null);
+				g = nw.generate();
+				if ( sT instanceof HierarchicalAbstract ) {
+					g = bfs.transform(g);
+				}
+				g = sT.transform(g);
+				double thisIterationDuration = System.currentTimeMillis() - thisIterationStart;
+				System.out.println("Did loop " + (i + 1) + " of " + iterations + " in " + thisIterationDuration);
+				runtimeComplete += (thisIterationDuration);
+			}
+			System.out.println("Complete runtime: " + runtimeComplete + " msec");
+			System.out.println("Per graph / transformation: " + (runtimeComplete / iterations) + " msec\n");
+		}
+	}
+
 	public static void randomSTTest() {
-		GraphPlotter plotter = new GraphPlotter("randomST", "svg");
-		Network nw1 = new ErdosRenyi(10, 3, true, new Greedy(), new Transformation[] { new SixTollis(1, 100, false,
-				plotter) });
+		Config.overwrite("GEPHI_RING_RADIUS", "100");
+		Config.overwrite("GEPHI_EDGE_SCALE", "0.4");
+		GraphPlotter plotter = new GraphPlotter("randomST", "pdf");
+//		plotter = null;
+		Network nw1 = new ErdosRenyi(20, 5, true, null, null);
 
 		Graph g = nw1.generate();
-		System.out.println("# Edges: " + g.generateEdges().length);
-		Transformation[] t = nw1.transformations();
-		for (int j = 0; j < t.length; j++) {
-			if (t[j].applicable(g)) {
-				System.out.println("Apply >>" + t[j].getClass() + "<<");
-				g = t[j].transform(g);
-			} else
-				System.out.println("Cannot apply " + t[j].getClass());
-		}
+		// System.out.println("# Edges: " + g.generateEdges().length);
+		//
+		// for ( Node n: g.getNodes() ) {
+		// System.out.print("\nNode " + n.getIndex() + " has edges to");
+		// for (int m: n.getOutgoingEdges()) {
+		// System.out.print(" " + m);
+		// }
+		// }
+
+		SixTollis st = new SixTollis(1, 50, false, plotter);
+		g = st.transform(g);
 	}
 
 	public static void testMD() {
@@ -549,7 +602,7 @@ public class GDATest {
 		GraphWriter.write(g, "./temp/test/spanningTree-graph.txt");
 		ArrayList<ParentChild> pcs = new ArrayList<ParentChild>();
 		for (int i = 0; i < g.getNodes().length - 1; i++) {
-			pcs.add(new ParentChild(i, i + 1));
+			pcs.add(new ParentChild(i, i + 1, 0));
 		}
 		SpanningTree st = new SpanningTree(g, pcs);
 		st.write("./temp/test/spanningTree.txt", "key");
