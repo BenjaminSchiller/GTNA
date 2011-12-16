@@ -33,7 +33,7 @@
  * Changes since 2011-05-17
  * ---------------------------------------
 */
-package gtna.networksOld.model;
+package gtna.trash.networks.model;
 
 // TODO reimplement Kleinberg
 public class Kleinberg {

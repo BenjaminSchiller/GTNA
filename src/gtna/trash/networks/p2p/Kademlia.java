@@ -33,7 +33,7 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.networksOld.p2p;
+package gtna.trash.networks.p2p;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;

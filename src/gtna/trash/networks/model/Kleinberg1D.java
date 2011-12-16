@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.networksOld.model;
+package gtna.trash.networks.model;
 
 
 /**
