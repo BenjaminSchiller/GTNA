@@ -85,7 +85,7 @@ public class Graph {
 			index++;
 		}
 		GraphProperty[] array = new GraphProperty[list.size()];
-		for(int i=0; i<array.length; i++){
+		for (int i = 0; i < array.length; i++) {
 			array[i] = (GraphProperty) list.get(i);
 		}
 		return array;
@@ -124,6 +124,25 @@ public class Graph {
 			}
 		}
 		return edges;
+	}
+
+	private Edges edges = null;
+
+	public Edges getEdges() {
+		if (this.edges != null) {
+			return this.edges;
+		}
+		int E = 0;
+		for (Node n : this.nodes) {
+			E += n.getOutDegree();
+		}
+		this.edges = new Edges(this.nodes, E);
+		for (Node n : this.nodes) {
+			for (int out : n.getOutgoingEdges()) {
+				this.edges.add(n.getIndex(), out);
+			}
+		}
+		return this.edges;
 	}
 
 	/**
@@ -174,11 +193,11 @@ public class Graph {
 		this.timer.end();
 	}
 
-    /**
-     * @param nodeIndex
-     * @return the node with index nodeIndex
-     */
-    public Node getNode(int nodeIndex){
-        return nodes[nodeIndex];
-    }
+	/**
+	 * @param nodeIndex
+	 * @return the node with index nodeIndex
+	 */
+	public Node getNode(int nodeIndex) {
+		return nodes[nodeIndex];
+	}
 }
