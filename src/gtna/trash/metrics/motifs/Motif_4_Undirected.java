@@ -33,7 +33,7 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.trash.motifs;
+package gtna.trash.metrics.motifs;
 
 
 // TODO reimplement Motif_4_Undirected
