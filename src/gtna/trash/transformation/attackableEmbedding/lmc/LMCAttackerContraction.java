@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * LMCAttackerKleinberg.java
+ * LMCAttackerContraction.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,42 +33,51 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.attackableEmbedding.lmc;
+package gtna.trash.transformation.attackableEmbedding.lmc;
 
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
-// TODO reimplement LMCAttackerKleinberg
-public class LMCAttackerKleinberg {
-	// public class LMCAttackerKleinberg extends LMCNode {
+// TODO reimplement LMCAttackerContraction
+public class LMCAttackerContraction {
+	// public class LMCAttackerContraction extends LMCNode {
 	//
-	// public LMCAttackerKleinberg(int index, double pos, LMC lmc) {
+	// private LMCNode neighbor = null;
+	//
+	// private int index;
+	//
+	// public LMCAttackerContraction(int index, double pos, LMC lmc) {
 	// super(index, pos, lmc);
 	// }
 	//
 	// /**
-	// * select ID at longest distance to any node
+	// * choose an ID close to the selected neighbor
 	// */
 	// public void turn(Random rand) {
-	// double[] neighbors = this.knownIDs.clone();
-	// this.getID().pos = (SwappingAttackerKleinberg.maxMiddle(neighbors) + rand
-	// .nextDouble()
-	// * this.lmc.delta) % 1.0;
+	// this.getID().pos = this.ask(this, rand);
 	// }
 	//
 	// /**
-	// * return ID close to neighbor to keep it from changing IDs
+	// * return an ID close to one selected neighbor hoping all neighbors will
+	// * converge to this position
 	// */
 	// protected double ask(LMCNode caller, Random rand) {
-	// int index = this.position.get(caller);
+	// // choose a random neighbor to contract to
+	// if (this.neighbor == null) {
+	// Node[] out = this.out();
+	// this.index = rand.nextInt(out.length);
+	// this.neighbor = (LMCNode) out[this.index];
+	// }
+	//
+	// // return ID close to the selected neighbor
 	// if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
-	// return (this.knownIDs[index] + this.lmc.delta
+	// return (this.knownIDs[this.index] + this.lmc.delta
 	// * (1.0 + rand.nextDouble())) % 1.0;
 	// } else {
-	// return (this.knownIDs[index] + this.lmc.delta * rand.nextDouble()) % 1.0;
+	// return (this.knownIDs[this.index] + this.lmc.delta
+	// * rand.nextDouble()) % 1.0;
 	// }
 	// }
-
 }

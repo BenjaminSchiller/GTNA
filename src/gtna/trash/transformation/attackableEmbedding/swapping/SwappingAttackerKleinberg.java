@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.attackableEmbedding.swapping;
+package gtna.trash.transformation.attackableEmbedding.swapping;
 
 
 /**

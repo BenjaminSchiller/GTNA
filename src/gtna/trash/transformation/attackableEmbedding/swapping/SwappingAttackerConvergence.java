@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * LMCAttackerConvergence.java
+ * SwappingAttackerConvergence.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,32 +33,57 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.attackableEmbedding.lmc;
+package gtna.trash.transformation.attackableEmbedding.swapping;
 
 
 /**
- * @author "Benjamin Schiller"
- * 
+ * @author "Benjamin Schiller" idea: offer random ids to prevent convergence
  */
-// TODO reimplement LMCAttackerConvergence
-public class LMCAttackerConvergence {
-	// public class LMCAttackerConvergence extends LMCNode {
+// TODO reimplement SwappingAttackerConvergence
+public class SwappingAttackerConvergence{
+	// public class SwappingAttackerConvergence extends SwappingNode {
 	//
-	// public LMCAttackerConvergence(int index, double pos, LMC lmc) {
-	// super(index, pos, lmc);
+	// public SwappingAttackerConvergence(int index, double pos, Swapping
+	// swapping) {
+	// super(index, pos, swapping);
 	// }
 	//
 	// /**
-	// * select a random ID
+	// * offer randomly chosen id to a random node (TTL taken randomly from [1,
+	// 6]
+	// * use neighborhood at furthest distance (id + 0.5 + \delta) to make
+	// * receiving node accept it at all times
 	// */
 	// public void turn(Random rand) {
+	// // select random id
 	// this.getID().pos = rand.nextDouble();
+	//
+	// // offer random id
+	// int ttl = rand.nextInt(6) + 1;
+	// double id = rand.nextDouble();
+	// double[] neighbors = new double[this.out().length];
+	// for (int i = 0; i < neighbors.length; i++) {
+	// neighbors[i] = (id + 0.5 + rand.nextDouble() * this.swapping.delta) %
+	// 1.0;
+	// }
+	// Node[] out = this.out();
+	// int index = rand.nextInt(out.length);
+	// ((SwappingNode) out[index]).swap(id, neighbors, ttl, rand);
 	// }
 	//
 	// /**
-	// * return a random ID
+	// * return randomly chosen id
 	// */
-	// protected double ask(LMCNode caller, Random rand) {
+	// protected double ask(SwappingNode caller, Random rand) {
+	// return rand.nextDouble();
+	// }
+	//
+	// /**
+	// * return randomly chosen id
+	// */
+	// protected double swap(double callerID, double[] callerNeighborIDs, int
+	// ttl,
+	// Random rand) {
 	// return rand.nextDouble();
 	// }
 

@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.attackableEmbedding.lmc;
+package gtna.trash.transformation.attackableEmbedding.lmc;
 
 
 /**
