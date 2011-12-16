@@ -35,18 +35,16 @@
  */
 package gtna.trash.networks.p2p;
 
-import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
-import gtna.routingOld.node.IDNode;
-import gtna.routingOld.node.identifier.GridID;
-import gtna.routingOld.node.identifier.Identifier;
 import gtna.transformation.Transformation;
-import gtna.util.Timer;
+import gtna.trash.routing.node.IDNode;
+import gtna.trash.routing.node.identifier.GridID;
+import gtna.trash.routing.node.identifier.Identifier;
 
 import java.util.ArrayList;
 import java.util.Random;

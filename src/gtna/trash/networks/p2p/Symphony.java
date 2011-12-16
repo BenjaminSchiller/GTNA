@@ -41,9 +41,9 @@ import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
-import gtna.routingOld.node.IDNode;
-import gtna.routingOld.node.identifier.Identifier;
 import gtna.transformation.Transformation;
+import gtna.trash.routing.node.IDNode;
+import gtna.trash.routing.node.identifier.Identifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;

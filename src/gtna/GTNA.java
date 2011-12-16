@@ -38,8 +38,8 @@ package gtna;
 import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.networks.Network;
-import gtna.networksOld.p2p.CAN;
 import gtna.plot.Plot;
+import gtna.trash.networks.p2p.CAN;
 import gtna.util.Config;
 import gtna.util.Stats;
 
