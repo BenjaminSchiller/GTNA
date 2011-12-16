@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  * 
  * ---------------------------------------
- * Nothing.java
+ * Bidirectional.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,29 +33,46 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.transformationOld;
+package gtna.trash.transformation.edges;
 
-import gtna.graph.Graph;
-import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
 
 /**
- * Transformation that does nothing.
+ * Transforms the given graph into a bidirectional version by adding every
+ * reverse edge that is not already contained, i.e., for every edge (a,b) add
+ * edge (b,a) if it does not exist.
  * 
  * @author benni
  * 
  */
-public class Nothing extends TransformationImpl implements Transformation {
-	public Nothing() {
-		super("NOTHING", new String[] {}, new String[] {});
-	}
-
-	public boolean applicable(Graph g) {
-		return true;
-	}
-
-	public Graph transform(Graph g) {
-		return g;
-	}
+// TODO reimplement Bidirectional
+public class Bidirectional {
+	// public class Bidirectional extends TransformationImpl implements
+	// Transformation {
+	// public Bidirectional() {
+	// super("BIDIRECTIONAL", new String[] {}, new String[] {});
+	// }
+	//
+	// public boolean applicable(Graph g) {
+	// return true;
+	// }
+	//
+	// public Graph transform(Graph g) {
+	// if (GraphProperties.bidirectional(g)) {
+	// return g;
+	// }
+	// Edges edgeSet = new Edges(g.nodes, g.edges * 2);
+	// Edge[] edges = g.edges();
+	// edgeSet.add(edges);
+	// for (int i = 0; i < edges.length; i++) {
+	// Edge back = new Edge(edges[i].dst, edges[i].src);
+	// if (!edgeSet.contains(back)) {
+	// edgeSet.add(back);
+	// }
+	// }
+	// edgeSet.fill();
+	// g.computeDegrees();
+	// g.computeEdges();
+	// return g;
+	// }
 
 }

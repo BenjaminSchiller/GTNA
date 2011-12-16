@@ -33,7 +33,7 @@
  * Changes since 2011-05-17
  * ---------------------------------------
 */
-package gtna.transformationOld.degree;
+package gtna.trash.transformation.degree;
 
 
 /**

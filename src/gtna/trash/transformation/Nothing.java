@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  * 
  * ---------------------------------------
- * RemoveDeadNodes.java
+ * Nothing.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,48 +33,29 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.transformationOld.degree;
+package gtna.trash.transformation;
 
+import gtna.graph.Graph;
+import gtna.transformation.Transformation;
+import gtna.transformation.TransformationImpl;
 
 /**
- * Transforms the given graph by removing all nodes with no incoming of outgoing
- * edges.
+ * Transformation that does nothing.
  * 
  * @author benni
  * 
  */
-// TODO reimplement RemoveDeadNodes
-public class RemoveDeadNodes {
-	// public class RemoveDeadNodes extends TransformationImpl implements
-	// Transformation {
-	// public RemoveDeadNodes() {
-	// super("REMOVE_DEAD_NODES", new String[] {}, new String[] {});
-	// }
-	//
-	// public boolean applicable(Graph g) {
-	// return true;
-	// }
-	//
-	// public Graph transform(Graph g) {
-	// Hashtable<Integer, Integer> ids = new Hashtable<Integer, Integer>(
-	// g.nodes.length);
-	// int index = 0;
-	// for (int i = 0; i < g.nodes.length; i++) {
-	// if (g.nodes[i].out().length > 0 || g.nodes[i].in().length > 0) {
-	// ids.put(i, index++);
-	// }
-	// }
-	// Node[] nodes = new Node[index];
-	// for (int i = 0; i < g.nodes.length; i++) {
-	// if (ids.containsKey(i)) {
-	// nodes[ids.get(i)] = g.nodes[i];
-	// nodes[ids.get(i)].setIndex(ids.get(i));
-	// }
-	// }
-	// g.nodes = nodes;
-	// g.computeDegrees();
-	// g.computeEdges();
-	// return g;
-	// }
+public class Nothing extends TransformationImpl implements Transformation {
+	public Nothing() {
+		super("NOTHING", new String[] {}, new String[] {});
+	}
+
+	public boolean applicable(Graph g) {
+		return true;
+	}
+
+	public Graph transform(Graph g) {
+		return g;
+	}
 
 }

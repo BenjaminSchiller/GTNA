@@ -36,7 +36,7 @@
  * 2011-06-05 : exchanged use of FreenetNode with RingNode (BS)
  * 
  */
-package gtna.transformationOld.identifier;
+package gtna.trash.transformation.identifier;
 
 
 // TODO reimplement SwappingSorting

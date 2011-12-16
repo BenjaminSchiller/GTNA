@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  * 
  * ---------------------------------------
- * Bidirectional.java
+ * RemoveDeadNodes.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,23 +33,22 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.transformationOld.edges;
+package gtna.trash.transformation.degree;
 
 
 /**
- * Transforms the given graph into a bidirectional version by adding every
- * reverse edge that is not already contained, i.e., for every edge (a,b) add
- * edge (b,a) if it does not exist.
+ * Transforms the given graph by removing all nodes with no incoming of outgoing
+ * edges.
  * 
  * @author benni
  * 
  */
-// TODO reimplement Bidirectional
-public class Bidirectional {
-	// public class Bidirectional extends TransformationImpl implements
+// TODO reimplement RemoveDeadNodes
+public class RemoveDeadNodes {
+	// public class RemoveDeadNodes extends TransformationImpl implements
 	// Transformation {
-	// public Bidirectional() {
-	// super("BIDIRECTIONAL", new String[] {}, new String[] {});
+	// public RemoveDeadNodes() {
+	// super("REMOVE_DEAD_NODES", new String[] {}, new String[] {});
 	// }
 	//
 	// public boolean applicable(Graph g) {
@@ -57,19 +56,22 @@ public class Bidirectional {
 	// }
 	//
 	// public Graph transform(Graph g) {
-	// if (GraphProperties.bidirectional(g)) {
-	// return g;
-	// }
-	// Edges edgeSet = new Edges(g.nodes, g.edges * 2);
-	// Edge[] edges = g.edges();
-	// edgeSet.add(edges);
-	// for (int i = 0; i < edges.length; i++) {
-	// Edge back = new Edge(edges[i].dst, edges[i].src);
-	// if (!edgeSet.contains(back)) {
-	// edgeSet.add(back);
+	// Hashtable<Integer, Integer> ids = new Hashtable<Integer, Integer>(
+	// g.nodes.length);
+	// int index = 0;
+	// for (int i = 0; i < g.nodes.length; i++) {
+	// if (g.nodes[i].out().length > 0 || g.nodes[i].in().length > 0) {
+	// ids.put(i, index++);
 	// }
 	// }
-	// edgeSet.fill();
+	// Node[] nodes = new Node[index];
+	// for (int i = 0; i < g.nodes.length; i++) {
+	// if (ids.containsKey(i)) {
+	// nodes[ids.get(i)] = g.nodes[i];
+	// nodes[ids.get(i)].setIndex(ids.get(i));
+	// }
+	// }
+	// g.nodes = nodes;
 	// g.computeDegrees();
 	// g.computeEdges();
 	// return g;
