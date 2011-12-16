@@ -34,7 +34,7 @@
  * 2011-06-12 : v1 (BS)
  *
  */
-package gtna;
+package gtna.projects;
 
 /**
  * @author "Benjamin Schiller"

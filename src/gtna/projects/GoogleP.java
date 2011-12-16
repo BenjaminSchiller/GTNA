@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna;
+package gtna.projects;
 
 import gtna.data.Series;
 import gtna.graph.Graph;
