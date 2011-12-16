@@ -1,108 +1,108 @@
-/*
- * ===========================================================
- * GTNA : Graph-Theoretic Network Analyzer
- * ===========================================================
- * 
- * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
- * and Contributors
- * 
- * Project Info:  http://www.p2p.tu-darmstadt.de/research/gtna/
- * 
- * GTNA is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * GTNA is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- * 
- * ---------------------------------------
- * TwoPhaseLookaheadRegistration.java
- * ---------------------------------------
- * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
- * and Contributors 
- * 
- * Original Author: Benjamin Schiller;
- * Contributors:    -;
- * 
- * Changes since 2011-05-17
- * ---------------------------------------
- */
-package gtna.trash.routing.twoPhase;
-
-
-// TODO reimplement TwoPhaseLookaheadRegistration
-public class TwoPhaseLookaheadRegistration {
-	// public class TwoPhaseLookaheadRegistration extends TwoPhaseLookahead
-	// implements
-	// RoutingAlgorithm {
-	// public TwoPhaseLookaheadRegistration() {
-	// super("TWO_PHASE_LOOKAHEAD_REGISTRATION", new String[] {},
-	// new String[] {});
-	// }
-	//
-	// public boolean applicable(Node n) {
-	// return n instanceof RingNode;
-	// }
-	//
-	// public void init(Node[] nodes) {
-	// for (int i = 0; i < nodes.length; i++) {
-	// this.register((RingNode) nodes[i]);
-	// }
-	// }
-	//
-	// private void register(RingNode n) {
-	// this.registerPhase1(n, ((RingNode) n).getID());
-	// }
-	//
-	// private void registerPhase1(RingNode current, RingID id) {
-	// Node[] out = current.out();
-	// Node max = null;
-	// int maxD = current.out().length + current.in().length;
-	// for (int i = 0; i < out.length; i++) {
-	// if (maxD < out[i].out().length + out[i].in().length) {
-	// max = out[i];
-	// maxD = out[i].out().length + out[i].in().length;
-	// }
-	// }
-	// if (max == null) {
-	// this.registerPhase2(current, id,
-	// new HashSet<RingNode>());
-	// } else {
-	// this.registerPhase1((RingNode) max, id);
-	// }
-	// }
-	//
-	// private void registerPhase2(RingNode n, RingID id,
-	// Set<RingNode> seen) {
-	// seen.add(n);
-	// Node[] out = n.out();
-	// Node min = null;
-	// double minD = n.dist(id);
-	// for (int i = 0; i < out.length; i++) {
-	// if (((IDNode) out[i]).dist(id) < minD) {
-	// min = out[i];
-	// minD = ((IDNode) out[i]).dist(id);
-	// }
-	// Node[] lookahead = out[i].out();
-	// for (int j = 0; j < lookahead.length; j++) {
-	// if (((IDNode) lookahead[j]).dist(id) < minD
-	// && !seen
-	// .contains((RingNode) lookahead[j])) {
-	// min = lookahead[j];
-	// minD = ((IDNode) lookahead[j]).dist(id);
-	// }
-	// }
-	// }
-	// if (min == null) {
-	// n.register(id);
-	// } else {
-	// this.registerPhase2((RingNode) min, id, seen);
-	// }
-	// }
-}
+///*
+// * ===========================================================
+// * GTNA : Graph-Theoretic Network Analyzer
+// * ===========================================================
+// * 
+// * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
+// * and Contributors
+// * 
+// * Project Info:  http://www.p2p.tu-darmstadt.de/research/gtna/
+// * 
+// * GTNA is free software: you can redistribute it and/or modify
+// * it under the terms of the GNU General Public License as published by
+// * the Free Software Foundation, either version 3 of the License, or
+// * (at your option) any later version.
+// * 
+// * GTNA is distributed in the hope that it will be useful,
+// * but WITHOUT ANY WARRANTY; without even the implied warranty of
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// * GNU General Public License for more details.
+// * 
+// * You should have received a copy of the GNU General Public License
+// * along with this program. If not, see <http://www.gnu.org/licenses/>.
+// * 
+// * ---------------------------------------
+// * TwoPhaseLookaheadRegistration.java
+// * ---------------------------------------
+// * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
+// * and Contributors 
+// * 
+// * Original Author: Benjamin Schiller;
+// * Contributors:    -;
+// * 
+// * Changes since 2011-05-17
+// * ---------------------------------------
+// */
+//package gtna.trash.routing.twoPhase;
+//
+//
+//// TODO reimplement TwoPhaseLookaheadRegistration
+//public class TwoPhaseLookaheadRegistration {
+//	// public class TwoPhaseLookaheadRegistration extends TwoPhaseLookahead
+//	// implements
+//	// RoutingAlgorithm {
+//	// public TwoPhaseLookaheadRegistration() {
+//	// super("TWO_PHASE_LOOKAHEAD_REGISTRATION", new String[] {},
+//	// new String[] {});
+//	// }
+//	//
+//	// public boolean applicable(Node n) {
+//	// return n instanceof RingNode;
+//	// }
+//	//
+//	// public void init(Node[] nodes) {
+//	// for (int i = 0; i < nodes.length; i++) {
+//	// this.register((RingNode) nodes[i]);
+//	// }
+//	// }
+//	//
+//	// private void register(RingNode n) {
+//	// this.registerPhase1(n, ((RingNode) n).getID());
+//	// }
+//	//
+//	// private void registerPhase1(RingNode current, RingID id) {
+//	// Node[] out = current.out();
+//	// Node max = null;
+//	// int maxD = current.out().length + current.in().length;
+//	// for (int i = 0; i < out.length; i++) {
+//	// if (maxD < out[i].out().length + out[i].in().length) {
+//	// max = out[i];
+//	// maxD = out[i].out().length + out[i].in().length;
+//	// }
+//	// }
+//	// if (max == null) {
+//	// this.registerPhase2(current, id,
+//	// new HashSet<RingNode>());
+//	// } else {
+//	// this.registerPhase1((RingNode) max, id);
+//	// }
+//	// }
+//	//
+//	// private void registerPhase2(RingNode n, RingID id,
+//	// Set<RingNode> seen) {
+//	// seen.add(n);
+//	// Node[] out = n.out();
+//	// Node min = null;
+//	// double minD = n.dist(id);
+//	// for (int i = 0; i < out.length; i++) {
+//	// if (((IDNode) out[i]).dist(id) < minD) {
+//	// min = out[i];
+//	// minD = ((IDNode) out[i]).dist(id);
+//	// }
+//	// Node[] lookahead = out[i].out();
+//	// for (int j = 0; j < lookahead.length; j++) {
+//	// if (((IDNode) lookahead[j]).dist(id) < minD
+//	// && !seen
+//	// .contains((RingNode) lookahead[j])) {
+//	// min = lookahead[j];
+//	// minD = ((IDNode) lookahead[j]).dist(id);
+//	// }
+//	// }
+//	// }
+//	// if (min == null) {
+//	// n.register(id);
+//	// } else {
+//	// this.registerPhase2((RingNode) min, id, seen);
+//	// }
+//	// }
+//}
