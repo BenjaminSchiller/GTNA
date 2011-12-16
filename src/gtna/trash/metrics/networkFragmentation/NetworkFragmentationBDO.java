@@ -33,7 +33,7 @@
  * Changes since 2011-05-17
  * ---------------------------------------
 */
-package gtna.metricsOld.networkFragmentation;
+package gtna.trash.metrics.networkFragmentation;
 
 
 //TODO reimplement NetworkFragmentationBDO

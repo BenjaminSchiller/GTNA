@@ -34,7 +34,7 @@
  * 2011-07-03 : v1 (BS)
  *
  */
-package gtna.metricsOld;
+package gtna.trash.metrics;
 
 /**
  * @author "Benjamin Schiller"

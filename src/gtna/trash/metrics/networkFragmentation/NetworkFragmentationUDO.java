@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  * 
  * ---------------------------------------
- * NetworkFragmentationBDI.java
+ * NetworkFragmentationUDO.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,14 +33,13 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.metricsOld.networkFragmentation;
+package gtna.trash.metrics.networkFragmentation;
 
-
-// TODO reimplement NetworkFragmentationBDI
-public class NetworkFragmentationBDI {
-	// public class NetworkFragmentationBDI extends NetworkFragmentation
+//TODO reimplement NetworkFragmentationUDO
+public class NetworkFragmentationUDO {
+	// public class NetworkFragmentationUDO extends NetworkFragmentation
 	// implements Metric {
-	// public NetworkFragmentationBDI(){
-	// super(NetworkFragmentation.IN_DEGREE_DESC, true);
+	// public NetworkFragmentationUDO(){
+	// super(NetworkFragmentation.OUT_DEGREE_DESC, false);
 	// }
 }

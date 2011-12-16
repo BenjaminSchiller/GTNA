@@ -35,7 +35,7 @@
  * 2011-06-09 : added skewed version (BS, SR)
  *
  */
-package gtna.metricsOld;
+package gtna.trash.metrics;
 
 //TODO reimplement IDSpace
 public class IDSpace {

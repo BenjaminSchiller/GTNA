@@ -34,7 +34,7 @@
  * ---------------------------------------
  * 2011-06-01 : appended multipleR to all names / keywords (BS)
  */
-package gtna.metricsOld;
+package gtna.trash.metrics;
 
 //TODO reimplement IdentifierSpaceMultipleR
 public class IdentifierSpaceMultipleR {

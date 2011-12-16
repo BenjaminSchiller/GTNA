@@ -46,7 +46,6 @@ import gtna.id.Identifier;
 import gtna.id.IdentifierSpace;
 import gtna.id.storage.Storage;
 import gtna.id.storage.StorageList;
-import gtna.metricsOld.IDSpace;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 
@@ -68,7 +67,6 @@ public class TwoPhaseStorage extends TransformationImpl implements
 		this.register = register;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public Graph transform(Graph g) {
 		GraphProperty[] gps = g.getProperties("ID_SPACE");

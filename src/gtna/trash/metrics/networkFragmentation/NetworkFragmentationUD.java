@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  * 
  * ---------------------------------------
- * NetworkFragmentationUDI.java
+ * NetworkFragmentationUD.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,13 +33,13 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.metricsOld.networkFragmentation;
+package gtna.trash.metrics.networkFragmentation;
 
-//TODO reimplement NetworkFragmentationUDI
-public class NetworkFragmentationUDI {
-	// public class NetworkFragmentationUDI extends NetworkFragmentation
+//TODO reimplement NetworkFragmentationUD
+public class NetworkFragmentationUD {
+	// public class NetworkFragmentationUD extends NetworkFragmentation
 	// implements Metric {
-	// public NetworkFragmentationUDI(){
-	// super(NetworkFragmentation.IN_DEGREE_DESC, false);
+	// public NetworkFragmentationUD() {
+	// super(NetworkFragmentation.DEGREE_DESC, false);
 	// }
 }
