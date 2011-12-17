@@ -57,9 +57,8 @@ public class BubbleTree extends HierarchicalAbstract {
 	 */
 	double[] radiuses;
 
-	double[] delta;
 	double[] angularSector;
-	double[] rotationAngles;
+	double[] freeAngle;
 
 	public BubbleTree(double modulusX, double modulusY, GraphPlotter plotter) {
 		this("GDA_BUBBLETREE", modulusX, modulusY, plotter);
@@ -85,20 +84,20 @@ public class BubbleTree extends HierarchicalAbstract {
 		nodePositionsY = new double[numNodes];
 
 		radiuses = new double[numNodes];
-		delta = new double[numNodes];
 		angularSector = new double[numNodes];
+		freeAngle = new double[numNodes];
 		calculateRadius(tree, source);
 		Point center = new Point(0, 0);
 
-		rotationAngles = new double[numNodes];
-		calculateRotation(tree, source);
+		// System.out.println("Source: " + source);
+		// for (int i = 0; i < numNodes; i++) {
+		// System.out.println("angSector for " + i + ": " + angularSector[i] +
+		// " (" + Math.toDegrees(angularSector[i])
+		// + ")");
+		// System.out.println("Free angle for " + i + ": " +
+		// Math.toDegrees(freeAngle[i]));
+		// }
 
-		System.out.println("Source: " + source);
-		for (int i = 0; i < numNodes; i++) {
-			System.out.println("angSector for " + i + ": " + angularSector[i] + " (" + Math.toDegrees(angularSector[i])
-					+ ")");
-			System.out.println("Rotation for " + i + ": " + Math.toDegrees(rotationAngles[i]));
-		}
 		coordAssign(tree, source, center);
 
 		writeIDSpace(g);
@@ -108,16 +107,6 @@ public class BubbleTree extends HierarchicalAbstract {
 			graphPlotter.plotSpanningTree(g, idSpace);
 
 		return g;
-	}
-
-	private void calculateRotation(SpanningTree tree, int node) {
-		int[] sons = tree.getChildren(node);
-		double currAngle = rotationAngles[node] + Math.PI;
-		for (int singleSon : sons) {
-			currAngle += angularSector[singleSon];
-			rotationAngles[singleSon] = currAngle % (2 * Math.PI);
-			calculateRotation(tree, singleSon);
-		}
 	}
 
 	private void calculateRadius(SpanningTree tree, int node) {
@@ -139,16 +128,20 @@ public class BubbleTree extends HierarchicalAbstract {
 		 */
 		calculateAngularSector(tree, node);
 		double thetaSum = 0;
+		double delta;
 		for (int singleSon : sons) {
-			delta[singleSon] = Math.max(leafRadius + radiuses[singleSon],
+			delta = Math.max(leafRadius + radiuses[singleSon],
 					radiuses[singleSon] / Math.sin(angularSector[singleSon] / 2));
 			thetaSum += angularSector[singleSon];
-			nodePositionsX[singleSon] = delta[singleSon] * Math.cos(thetaSum - (angularSector[singleSon] / 2));
-			nodePositionsY[singleSon] = delta[singleSon] * Math.sin(thetaSum - (angularSector[singleSon] / 2));
-			System.out.println("Put " + singleSon + " with an angle of " + Math.toDegrees(angularSector[singleSon]) + " to ("
-					+ nodePositionsX[singleSon] + "|" + nodePositionsY[singleSon] + "), tS = " + Math.toDegrees(thetaSum));
+			nodePositionsX[singleSon] = delta * Math.cos(thetaSum - (angularSector[singleSon] / 2));
+			nodePositionsY[singleSon] = delta * Math.sin(thetaSum - (angularSector[singleSon] / 2));
+			// System.out.println("Put " + singleSon + " with an angle of " +
+			// Math.toDegrees(angularSector[singleSon])
+			// + " to (" + nodePositionsX[singleSon] + "|" +
+			// nodePositionsY[singleSon] + "), tS = "
+			// + Math.toDegrees(thetaSum));
 		}
-
+		freeAngle[node] = (2 * Math.PI) - thetaSum;
 		radiuses[node] = 1.3 * calculateSmallestEnclosingCircle(tree, node);
 	}
 
@@ -194,7 +187,6 @@ public class BubbleTree extends HierarchicalAbstract {
 	private double calculateSmallestEnclosingCircle(SpanningTree tree, int node) {
 		int[] sons = tree.getChildren(node);
 		LinkedList<Circle> s = new LinkedList<BubbleTree.Circle>();
-		Circle[] b = new Circle[sons.length];
 		for (int singleSon : sons) {
 			Circle temp = new Circle(nodePositionsX[singleSon], nodePositionsY[singleSon], radiuses[singleSon]);
 			s.add(temp);
@@ -239,11 +231,38 @@ public class BubbleTree extends HierarchicalAbstract {
 	private void coordAssign(SpanningTree tree, int source, Point center) {
 		nodePositionsX[source] = center.x;
 		nodePositionsY[source] = center.y;
-		for (int singleChild : tree.getChildren(source)) {
+
+		int[] children = tree.getChildren(source);
+		if (children.length == 0) {
+			/*
+			 * No more to do for a leaf
+			 */
+			return;
+		}
+
+		double rotation = 0;
+		int parentID = tree.getParent(source);
+		if (parentID != -1) {
+			Point parent = new Point(nodePositionsX[parentID], nodePositionsY[parentID]);
+			rotation = parent.angleTo(center);
+			if (center.x > parent.x) {
+				rotation = rotation + Math.PI;
+			}
+			// System.out.println("Calculated an angle of " +
+			// Math.toDegrees(rotation) + " between " + source + " at "
+			// + center + " and its parent " + parentID + " at " + parent);
+			// System.out.print("Setting rotation to -" +
+			// Math.toDegrees(rotation) + " + "
+			// + Math.toDegrees(freeAngle[source] / 2) + "=");
+			rotation = rotation + (freeAngle[source] / 2);
+			// System.out.println(Math.toDegrees(rotation));
+		}
+
+		for (int singleChild : children) {
 			Point temp = new Point(nodePositionsX[singleChild], nodePositionsY[singleChild]);
-			double currRotation = rotationAngles[source];
-			System.out.println("Rotating " + singleChild + " by " + Math.toDegrees(currRotation));
-			temp.rotateBy(currRotation);
+			// System.out.println("Rotating " + singleChild + " by " +
+			// Math.toDegrees(rotation));
+			temp.rotateBy(rotation);
 			temp.add(center);
 			coordAssign(tree, singleChild, temp);
 		}
@@ -285,6 +304,14 @@ public class BubbleTree extends HierarchicalAbstract {
 			double newY = x * Math.sin(angle) + y * Math.cos(angle);
 			this.x = newX;
 			this.y = newY;
+		}
+
+		public double angleTo(Point p2) {
+			return Math.atan((p2.y - this.y) / (p2.x - this.x));
+		}
+
+		public String toString() {
+			return "(" + x + "|" + y + ")";
 		}
 	}
 }
