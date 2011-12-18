@@ -95,7 +95,6 @@ public class Routing extends MetricImpl implements Metric {
 				end = graph.getNodes().length - 1;
 			}
 			threads[i] = new RoutingThread(start, end, times, graph, ra, rand);
-			System.out.println(threads[i]);
 			threads[i].start();
 		}
 		int index = 0;
