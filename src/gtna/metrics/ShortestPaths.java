@@ -65,7 +65,7 @@ public class ShortestPaths extends MetricImpl implements Metric {
 	private Timer runtime;
 
 	public ShortestPaths() {
-		super("SP");
+		super("SHORTEST_PATHS");
 	}
 
 	@Override
@@ -154,32 +154,32 @@ public class ShortestPaths extends MetricImpl implements Metric {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(
 				this.shortestPathLengthDistribution.getDistribution(),
-				"SP_SHORTEST_PATH_LENGTH_DISTRIBUTION", folder);
+				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION", folder);
 		success &= DataWriter.writeWithIndex(
 				this.shortestPathLengthDistribution.getCdf(),
-				"SP_SHORTEST_PATH_LENGTH_DISTRIBUTION_CDF", folder);
+				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_CDF", folder);
 		success &= DataWriter.writeWithIndex(
 				this.shortestPathLengthDistributionAbsolute.getDistribution(),
-				"SP_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE", folder);
+				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE", folder);
 		success &= DataWriter.writeWithIndex(
 				this.shortestPathLengthDistributionAbsolute.getCdf(),
-				"SP_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE_CDF", folder);
+				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE_CDF", folder);
 		return success;
 	}
 
 	@Override
 	public Value[] getValues() {
 		Value averageShortestPathLength = new Value(
-				"SP_SHORTEST_PATH_LENGTH_AVG",
+				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_AVG",
 				this.shortestPathLengthDistribution.getAverage());
 		Value medianShortestPathLength = new Value(
-				"SP_SHORTEST_PATH_LENGTH_MED",
+				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_MED",
 				this.shortestPathLengthDistribution.getMedian());
 		Value maximumShortestPathLength = new Value(
-				"SP_SHORTEST_PATH_LENGTH_MAX",
+				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_MAX",
 				this.shortestPathLengthDistribution.getMax());
-		Value connectivity = new Value("SP_CONNECTIVITY", this.connectivity);
-		Value runtime = new Value("SP_RUNTIME", this.runtime.getRuntime());
+		Value connectivity = new Value("SHORTEST_PATHS_CONNECTIVITY", this.connectivity);
+		Value runtime = new Value("SHORTEST_PATHS_RUNTIME", this.runtime.getRuntime());
 		return new Value[] { averageShortestPathLength,
 				medianShortestPathLength, maximumShortestPathLength,
 				connectivity, runtime };

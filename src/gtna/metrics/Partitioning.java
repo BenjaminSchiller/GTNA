@@ -40,6 +40,7 @@ import gtna.graph.Graph;
 import gtna.graph.partition.Partition;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
+import gtna.util.Timer;
 
 import java.util.HashMap;
 
@@ -57,6 +58,8 @@ public abstract class Partitioning extends MetricImpl implements Metric {
 	private double[] componentsFraction;
 
 	private String property;
+	
+	private Timer runtime;
 
 	public Partitioning(String key, String property) {
 		super(key);
@@ -66,12 +69,9 @@ public abstract class Partitioning extends MetricImpl implements Metric {
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		if (!g.hasProperty(this.property + "_0")) {
-			this.largestComponent = 0;
-			this.largestComponentFraction = 0;
-			this.components = new double[0];
-			this.componentsFraction = new double[0];
-			return;
+			g = this.addProperty(g);
 		}
+		this.runtime = new Timer();
 		Partition p = (Partition) g.getProperty(this.property + "_0");
 		this.largestComponent = p.getComponents()[0].length;
 		this.largestComponentFraction = this.largestComponent
@@ -83,6 +83,7 @@ public abstract class Partitioning extends MetricImpl implements Metric {
 			this.componentsFraction[i] = this.components[i]
 					/ (double) g.getNodes().length;
 		}
+		this.runtime.end();
 	}
 
 	@Override
@@ -97,11 +98,14 @@ public abstract class Partitioning extends MetricImpl implements Metric {
 
 	@Override
 	public Value[] getValues() {
-		Value LC = new Value(this.key() + "_LARGEST_COMPONENT",
+		Value largestComponent = new Value(this.key() + "_LARGEST_COMPONENT",
 				this.largestComponent);
-		Value LCF = new Value(this.key() + "_LARGEST_COMPONENT_FRACTION",
+		Value largestComponentFraction = new Value(this.key() + "_LARGEST_COMPONENT_FRACTION",
 				this.largestComponentFraction);
-		return new Value[] { LC, LCF };
+		Value runtime = new Value(this.key() + "_RUNTIME", this.runtime.getRuntime());
+		return new Value[] { largestComponent, largestComponentFraction, runtime };
 	}
+	
+	protected abstract Graph addProperty(Graph g);
 
 }

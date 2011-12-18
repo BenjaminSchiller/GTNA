@@ -1,5 +1,5 @@
 /* ===========================================================
- * GTNA : Graph-Theoretic Network Analyzer
+y * GTNA : Graph-Theoretic Network Analyzer
  * ===========================================================
  *
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
@@ -35,6 +35,10 @@
  */
 package gtna.metrics;
 
+import gtna.graph.Graph;
+import gtna.transformation.Transformation;
+import gtna.transformation.partition.StrongConnectivityPartition;
+
 
 /**
  * @author benni
@@ -44,6 +48,12 @@ public class StrongConnectivity extends Partitioning implements Metric {
 
 	public StrongConnectivity() {
 		super("STRONG_CONNECTIVITY", "STRONG_CONNECTIVITY_PARTITION");
+	}
+
+	@Override
+	protected Graph addProperty(Graph g) {
+		Transformation t = new StrongConnectivityPartition();
+		return t.transform(g);
 	}
 
 }
