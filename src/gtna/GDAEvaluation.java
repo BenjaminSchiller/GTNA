@@ -49,8 +49,11 @@ import gtna.routing.greedy.Greedy;
 import gtna.routing.greedy.GreedyBacktracking;
 import gtna.routing.lookahead.LookaheadSequential;
 import gtna.transformation.Transformation;
+import gtna.transformation.edges.Bidirectional;
 import gtna.transformation.gd.*;
 import gtna.transformation.lookahead.NeighborsFirstLookaheadList;
+import gtna.transformation.partition.GiantConnectedComponent;
+import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.transformation.spanningtree.BFS;
 import gtna.util.Config;
 import gtna.util.Stats;
@@ -77,6 +80,9 @@ public class GDAEvaluation {
 		ConcurrentHashMap<String, Integer> lastCounter = new ConcurrentHashMap<String, Integer>();
 
 		BFS bfs = new BFS("hd");
+		Transformation bidirectional = new Bidirectional();
+		Transformation wcp = new WeakConnectivityPartition();
+		Transformation gcc = new GiantConnectedComponent();
 		NeighborsFirstLookaheadList lal = new NeighborsFirstLookaheadList(false);
 
 		ArrayList<Network> todoList = new ArrayList<Network>();
@@ -88,9 +94,9 @@ public class GDAEvaluation {
 				new FruchtermanReingold(1, new double[] { 100, 100 }, false, 100, null) };
 		for (Transformation singleT : t) {
 			if (singleT instanceof HierarchicalAbstract) {
-				sTArray = new Transformation[] { bfs, singleT, lal };
+				sTArray = new Transformation[] { bidirectional, wcp, gcc, bfs, singleT, lal };
 			} else {
-				sTArray = new Transformation[] { singleT, lal };
+				sTArray = new Transformation[] { bidirectional, wcp, gcc, singleT, lal };
 			}
 			for (int i = 1; i <= 10; i++) {
 				for (int j = 0; j < times; j++) {

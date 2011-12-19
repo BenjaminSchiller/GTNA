@@ -95,7 +95,7 @@ public class SixTollis extends CircularAbstract {
 		/*
 		 * Phase 1
 		 */
-		edges = new Edge[g.getNodes().length][];
+		edges = new Edge[g.getMaxNodeIndex() + 1][];
 		Node tempVertex = null;
 		Node currentVertex = null;
 		Node randDst1, randDst2;
@@ -107,8 +107,8 @@ public class SixTollis extends CircularAbstract {
 		waveCenterVertices = new TreeSet<Node>(new VertexDegreeComparator());
 		waveFrontVertices = new TreeSet<Node>(new VertexDegreeComparator());
 
-		additionalEdges = new HashMap[g.getNodes().length];
-		for (int i = 0; i < g.getNodes().length; i++) {
+		additionalEdges = new HashMap[g.getMaxNodeIndex() + 1];
+		for (int i = 0; i < g.getMaxNodeIndex() + 1; i++) {
 			additionalEdges[i] = new HashMap<String, Edge>();
 		}
 
@@ -237,7 +237,7 @@ public class SixTollis extends CircularAbstract {
 		/*
 		 * Create new RingIdentifiers in the order that was computed...
 		 */
-		RingIdentifier[] ids = new RingIdentifier[g.getNodes().length];
+		RingIdentifier[] ids = new RingIdentifier[g.getMaxNodeIndex() + 1];
 		for (Node n : orderedVertices) {
 			ids[n.getIndex()] = new RingIdentifier(lastPos, idSpace);
 			// System.out.println("Place " + n.getIndex() + " at " + lastPos);
