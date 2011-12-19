@@ -85,9 +85,7 @@ public class GDAEvaluation {
 			 * Missing here: WOT and SPI
 			 */
 			};
-			for (Network sN : nw) {
-				Series[] s = Series.generate(nw, 50);
-			}
+			Series[] s = Series.generate(nw, 50);
 		}
 
 		stats.end();
