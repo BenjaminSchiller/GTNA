@@ -35,15 +35,22 @@
  */
 package gtna;
 
-import gtna.data.Series;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
+
+import gtna.graph.Graph;
+import gtna.io.GraphWriter;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.ErdosRenyi;
-import gtna.networks.util.ReadableFile;
 import gtna.routing.RoutingAlgorithm;
+import gtna.routing.greedy.Greedy;
 import gtna.routing.greedy.GreedyBacktracking;
+import gtna.routing.lookahead.LookaheadSequential;
 import gtna.transformation.Transformation;
 import gtna.transformation.gd.*;
+import gtna.transformation.lookahead.NeighborsFirstLookaheadList;
 import gtna.transformation.spanningtree.BFS;
 import gtna.util.Config;
 import gtna.util.Stats;
@@ -55,6 +62,8 @@ import gtna.util.Stats;
 public class GDAEvaluation {
 	public static void main(String[] args) {
 		Stats stats = new Stats();
+		int times = 3;
+		int threads = 5;
 
 		Config.overwrite("METRICS", "R");
 		// R for routing
@@ -64,30 +73,92 @@ public class GDAEvaluation {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + true);
 
 		Transformation[] sTArray;
+		Network nw;
+		ConcurrentHashMap<String, Integer> lastCounter = new ConcurrentHashMap<String, Integer>();
 
 		BFS bfs = new BFS("hd");
-		RoutingAlgorithm rA = new GreedyBacktracking(25);
+		NeighborsFirstLookaheadList lal = new NeighborsFirstLookaheadList(false);
+
+		ArrayList<Network> todoList = new ArrayList<Network>();
+		RoutingAlgorithm[] rA = new RoutingAlgorithm[] { new Greedy(25), new GreedyBacktracking(25),
+				new LookaheadSequential(25) };
 		Transformation[] t = new Transformation[] { new CanonicalCircularCrossing(1, 100, true, null),
 				new SixTollis(1, 100, true, null), new WetherellShannon(100, 100, null), new Knuth(100, 100, null),
 				new MelanconHerman(100, 100, null), new BubbleTree(100, 100, null),
 				new FruchtermanReingold(1, new double[] { 100, 100 }, false, 100, null) };
-
-		for (Transformation sT : t) {
-			if (sT instanceof HierarchicalAbstract) {
-				sTArray = new Transformation[] { bfs, sT };
+		for (Transformation singleT : t) {
+			if (singleT instanceof HierarchicalAbstract) {
+				sTArray = new Transformation[] { bfs, singleT, lal };
 			} else {
-				sTArray = new Transformation[] { sT };
+				sTArray = new Transformation[] { singleT, lal };
 			}
-			Network[] nw = new Network[] { new ErdosRenyi(500, 10, true, rA, sTArray),
-					new BarabasiAlbert(500, 10, rA, sTArray),
-					new ReadableFile("CAIDA", "./data", "cycle-aslinks.l7.t1.c001749.20111206.txt.gtna", rA, sTArray)
-			/*
-			 * Missing here: WOT and SPI
-			 */
-			};
-			Series[] s = Series.generate(nw, 50);
+			for (int i = 1; i <= 10; i++) {
+				for (int j = 0; j < times; j++) {
+					nw = new ErdosRenyi(i * 100, 10, true, null, sTArray);
+					lastCounter.put((i * 100) + "/" + nw.folder(), 0);
+					todoList.add(nw);
+
+					nw = new BarabasiAlbert(i * 100, 10, null, sTArray);
+					lastCounter.put((i * 100) + "/" + nw.folder(), 0);
+					todoList.add(nw);
+				}
+			}
+		}
+
+		NetworkThread[] nwThreads = new NetworkThread[threads];
+		for (int i = 0; i < threads; i++) {
+			nwThreads[i] = new NetworkThread(lastCounter);
+		}
+
+		Collections.shuffle(todoList);
+		
+		int counter = 0;
+		for (Network n : todoList) {
+			// System.out.println(n.nodes() + "/" + n.folder());
+			nwThreads[counter].add(n);
+			counter = (counter + 1) % threads;
+		}
+		for (int i = 0; i < threads; i++) {
+			nwThreads[i].run();
+		}
+		for (int i = 0; i < threads; i++) {
+			try {
+				nwThreads[i].join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		stats.end();
+	}
+
+	private static class NetworkThread extends Thread {
+		ArrayList<Network> nws;
+		ConcurrentHashMap<String, Integer> lastCounter;
+
+		public NetworkThread(ConcurrentHashMap<String, Integer> lastCounter) {
+			this.nws = new ArrayList<Network>();
+			this.lastCounter = lastCounter;
+		}
+
+		public void add(Network nw) {
+			this.nws.add(nw);
+		}
+
+		public void run() {
+			for (Network nw : nws) {
+				Graph g = nw.generate();
+				for (Transformation t : nw.transformations()) {
+					g = t.transform(g);
+				}
+				String folderName = "./data/evaluation/" + g.getNodes().length + "/" + nw.folder() + "/";
+				int i = lastCounter.get(g.getNodes().length + "/" + nw.folder());
+				lastCounter.put(g.getNodes().length + "/" + nw.folder(), (i + 1));
+
+				GraphWriter.writeWithProperties(g, folderName + i + ".txt");
+				System.out.println("Wrote " + folderName + i);
+			}
+		}
 	}
 }
