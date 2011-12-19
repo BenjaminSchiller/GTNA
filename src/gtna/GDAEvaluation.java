@@ -155,12 +155,13 @@ public class GDAEvaluation {
 		public void run() {
 			for (Network nw : nws) {
 				Graph g = nw.generate();
+				int graphSize = g.getNodes().length;
 				for (Transformation t : nw.transformations()) {
 					g = t.transform(g);
 				}
-				String folderName = "./data/evaluation/" + g.getNodes().length + "/" + nw.folder();
-				int i = lastCounter.get(g.getNodes().length + "/" + nw.folder());
-				lastCounter.put(g.getNodes().length + "/" + nw.folder(), (i + 1));
+				String folderName = "./data/evaluation/" + graphSize + "/" + nw.folder();
+				int i = lastCounter.get(graphSize + "/" + nw.folder());
+				lastCounter.put(graphSize + "/" + nw.folder(), (i + 1));
 
 				GraphWriter.writeWithProperties(g, folderName + i + ".txt");
 				System.out.println("Wrote " + folderName + i);
