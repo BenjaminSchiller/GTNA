@@ -119,7 +119,7 @@ public class GDAEvaluation {
 			counter = (counter + 1) % threads;
 		}
 		for (int i = 0; i < threads; i++) {
-			nwThreads[i].run();
+			nwThreads[i].start();
 		}
 		for (int i = 0; i < threads; i++) {
 			try {
@@ -152,7 +152,7 @@ public class GDAEvaluation {
 				for (Transformation t : nw.transformations()) {
 					g = t.transform(g);
 				}
-				String folderName = "./data/evaluation/" + g.getNodes().length + "/" + nw.folder() + "/";
+				String folderName = "./data/evaluation/" + g.getNodes().length + "/" + nw.folder();
 				int i = lastCounter.get(g.getNodes().length + "/" + nw.folder());
 				lastCounter.put(g.getNodes().length + "/" + nw.folder(), (i + 1));
 
