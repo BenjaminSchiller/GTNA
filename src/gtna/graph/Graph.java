@@ -182,14 +182,6 @@ public class Graph {
 		return this.nodes;
 	}
 	
-	public int getMaxNodeIndex() {
-		int result = -1;
-		for ( Node singleNode: nodes ) {
-			result = Math.max(result, singleNode.getIndex());
-		}
-		return result;
-	}
-
 	/**
 	 * sets the nodes and ends the timer starte during graph initialization
 	 * 
