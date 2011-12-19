@@ -21,38 +21,41 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * NodeConnector.java
+ * SimplePartitioner.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Philipp Neubrand;
+ * Original Author: Flipp;
  * Contributors:    -;
  *
+ * Changes since 2011-05-17
  * ---------------------------------------
+ *
  */
 package gtna.networks.model.placementmodels;
 
-import gtna.graph.Graph;
-import gtna.networks.Network;
-import gtna.routing.RoutingAlgorithm;
-import gtna.transformation.Transformation;
+/**
+ * @author Flipp
+ * 
+ */
+public class SimplePartitioner extends AbstractPartitioner {
 
-public class CommunityModel extends AbstractPlacementModel implements Network {
-	private double sigma;
-	private boolean inCenter;
-	
-	public CommunityModel(int nodes, int width, int height, double sigma, boolean inCenter, NodeConnector nc, RoutingAlgorithm ra, Transformation[] t) {
-		super("COMMUNITYMODEL", nodes, width, height, new String[] {"SIGMA", "IN_CENTER"}, new String[] {Double.toString(sigma), Boolean.toString(inCenter)}, nc, ra, t);
-		this.sigma = sigma;
-	
-		this.inCenter = inCenter;
+	public SimplePartitioner() {
+		setKey("Simple");
 	}
 
-	public Graph generate() {
-		getCoords().setPartitions(Placement.placeByCommunityModel(getWidth(), getHeight(), nodes(), sigma, inCenter, getCoords()));
+	@Override
+	public int[] partition(int nodes, int hotspots) {
+		int t = nodes % hotspots;
+		int[] ret = new int[hotspots];
+		for (int i = 0; i < hotspots; i++) {
+			ret[i] = nodes / hotspots;
+			if (i < t)
+				ret[i]++;
 
-		return finish();
+		}
+		return ret;
 	}
 
 }

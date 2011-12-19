@@ -39,12 +39,49 @@ import gtna.id.plane.PlaneIdentifierSpaceSimple;
 
 /**
  * @author Flipp
- *
+ * 
  */
-public interface NodeConnector {
-	
-	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids);
-		
-	public String getDescription();
+public abstract class AbstractNodeConnector {
+	private String key;
+
+	private String[] additionalConfigKeys;
+
+	private String[] additionalConfigValues;
+
+	public void setAdditionalConfigKeys(String[] additionalConfigKeys) {
+		this.additionalConfigKeys = additionalConfigKeys;
+	}
+
+	public void setAdditionalConfigValues(String[] additionalConfigValues) {
+		this.additionalConfigValues = additionalConfigValues;
+	}
+
+	public abstract Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids);
+
+	/**
+	 * @return
+	 */
+	public String[] getConfigKeys() {
+		return Util.addToArray(new String[] { "KEY" }, additionalConfigKeys);
+	}
+
+	/**
+	 * @return
+	 */
+	public String[] getConfigValues() {
+		return Util.addToArray(new String[] { getKey() },
+				additionalConfigValues);
+	}
+
+	/**
+	 * @return
+	 */
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
 
 }

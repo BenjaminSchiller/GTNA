@@ -21,15 +21,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * NodeConnector.java
+ * Partitioner.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Philipp Neubrand;
+ * Original Author: Flipp;
  * Contributors:    -;
  *
+ * Changes since 2011-05-17
  * ---------------------------------------
+ *
  */
 package gtna.networks.model.placementmodels;
 
@@ -37,7 +39,52 @@ package gtna.networks.model.placementmodels;
  * @author Flipp
  * 
  */
-public enum DistributionType {
-	NORMAL, FIXED, UNIFORM
+public abstract class AbstractPartitioner {
+	private String key;
+
+	private String[] additionalConfigKeys;
+
+	private String[] additionalConfigValues;
+
+	public void setAdditionalConfigKeys(String[] additionalConfigKeys) {
+		this.additionalConfigKeys = additionalConfigKeys;
+	}
+
+	public void setAdditionalConfigValues(String[] additionalConfigValues) {
+		this.additionalConfigValues = additionalConfigValues;
+	}
+
+	/**
+	 * @param nodes
+	 * @param hotspots
+	 * @return
+	 */
+	public abstract int[] partition(int nodes, int hotspots);
+
+	/**
+	 * @return
+	 */
+	public String[] getConfigKeys() {
+		return Util.addToArray(new String[] { "KEY" }, additionalConfigKeys);
+	}
+
+	/**
+	 * @return
+	 */
+	public String[] getConfigValues() {
+		return Util.addToArray(new String[] { getKey() },
+				additionalConfigValues);
+	}
+
+	/**
+	 * @return
+	 */
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
 
 }

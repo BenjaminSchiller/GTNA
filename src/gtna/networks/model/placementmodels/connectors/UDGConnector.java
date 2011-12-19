@@ -31,36 +31,49 @@
  *
  * ---------------------------------------
  */
-package gtna.networks.model.placementmodels;
+package gtna.networks.model.placementmodels.connectors;
 
+import gtna.graph.Edges;
+import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
-import gtna.id.plane.PlanePartitionSimple;
-import gtna.networks.Network;
-import gtna.routing.RoutingAlgorithm;
-import gtna.transformation.Transformation;
+import gtna.networks.model.placementmodels.AbstractNodeConnector;
 
-public class GridHotspotModel extends AbstractHotspotModel implements Network {
-	private int cols;
-	private int rows;
+/**
+ * @author Flipp
+ * 
+ */
+public class UDGConnector extends AbstractNodeConnector {
 
-	public GridHotspotModel(int spots, int nodesperspot, double overallWidth,
-			double overallHeight, int cols, int rows, int spotWidth,
-			int spotHeight, double sigma, boolean inCenter, NodeConnector nc,
-			RoutingAlgorithm ra, Transformation[] t) {
-		super("GRID_", spots, nodesperspot, overallWidth, overallHeight,
-				spotWidth, spotHeight, sigma, inCenter, new String[] { "COLS",
-						"ROWS" }, new String[] { Integer.toString(cols),
-						Integer.toString(rows) }, nc, ra, t);
-		
-		this.cols = cols;
-		this.rows = rows;
+	private double range;
+
+	/**
+	 * @param i
+	 */
+	public UDGConnector(double range) {
+		this.range = range;
+		setKey("UDG");
+		setAdditionalConfigKeys(new String[] { "RANGE" });
+		setAdditionalConfigValues(new String[] { Double.toString(range) });
 	}
 
 	@Override
-	protected PlanePartitionSimple[] getHotspots(
-			PlaneIdentifierSpaceSimple idspace) {
-		return Placement.placeByGridModel(getWidth(), getHeight(), cols, rows,
-				idspace);
-	}
+	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids) {
 
+		Edges edges = new Edges(nodes, nodes.length * (nodes.length - 1));
+
+		for (int i = 0; i < nodes.length; i++) {
+			for (int j = 0; j < nodes.length; j++) {
+				if (i != j
+						&& ids.getPartitions()[i]
+								.distance((ids.getPartitions()[j]
+										.getRepresentativeID())) < range) {
+					edges.add(i, j);
+				}
+			}
+		}
+
+		edges.fill();
+
+		return edges;
+	}
 }

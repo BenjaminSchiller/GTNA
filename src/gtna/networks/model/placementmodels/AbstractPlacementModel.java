@@ -21,101 +21,93 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * NodeConnector.java
+ * PlacementModel.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Philipp Neubrand;
+ * Original Author: Flipp;
  * Contributors:    -;
  *
+ * Changes since 2011-05-17
  * ---------------------------------------
+ *
  */
 package gtna.networks.model.placementmodels;
 
-import gtna.graph.Graph;
-import gtna.graph.Node;
-import gtna.id.plane.PlaneIdentifierSpaceSimple;
-import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
-import gtna.transformation.Transformation;
-
-public abstract class AbstractPlacementModel extends NetworkImpl implements Network {
-	private PlaneIdentifierSpaceSimple coords;
-	private NodeConnector nc;
+/**
+ * @author Flipp
+ * 
+ */
+public abstract class AbstractPlacementModel {
 	private double width;
 	private double height;
-	
-	public AbstractPlacementModel(String key, int nodes, double width,
-			double height, String[] keys, String[] values, NodeConnector nc,
-			RoutingAlgorithm ra, Transformation[] t) {
-		super(key, nodes, addToArray(keys, new String[]{"NC", "WIDTH", "HEIGHT"}), addToArray(values, new String[]{nc.getDescription(), Double.toString(width), Double.toString(height)}), ra, t);
-		setNodes(nodes);
-		setWidth(width);
-		setHeight(height);
-		setNodeConnector(nc);
-		setCoords(new PlaneIdentifierSpaceSimple(null, width, height, false));
-	}
-	
+	private String key;
+	private String[] additionalConfigKeys;
+	private String[] additionalConfigValues;
 
-	public void setNodeConnector(NodeConnector nc) {
-		this.nc = nc;
-	}
-	
-	public NodeConnector getNodeConnector(){
-		return nc;
-	}
+	/**
+	 * @param hotspots
+	 * @return
+	 */
+	public abstract Point[] place(int hotspots);
 
-	public static String[] addToArray(String[] array, String val){
-		return addToArray(array, new String[]{val});
-	}
-	
-	public static String[] addToArray(String[] array, String[] tba) {
-		String[] ret = new String[array.length+tba.length];
-		for(int i = 0; i < array.length; i++){
-			ret[i] = array[i];
-		}
-		for(int i = 0; i < tba.length; i++){
-			ret[array.length + i] = tba[i];
-		}
-		
-		return ret;
-	}
-	
-	protected Graph finish(){
-		Graph graph = new Graph(this.description());
-		graph.addProperty("PlacementCoords", coords);
-		Node[] nodes = Node.init(this.nodes(), graph);
-		
-		getNodeConnector().connect(nodes, getCoords());
-		
-		graph.setNodes(nodes);
-
-		return graph;
-	}
-
-	public PlaneIdentifierSpaceSimple getCoords() {
-		return this.coords;
-	}
-
-	public void setCoords(PlaneIdentifierSpaceSimple coords) {
-		this.coords = coords;
-	}
-	
-	public double getWidth(){
-		return width;
-	}
-	
-	public void setWidth(double width){
-		this.width = width;
-	}
-	
-	public void setHeight(double height){
-		this.height = height;
-	}
-	
-	public double getHeight(){
+	/**
+	 * @return
+	 */
+	public double getHeight() {
 		return height;
 	}
+
+	/**
+	 * @return
+	 */
+	public double getWidth() {
+		return width;
+	}
+
+	public void setHeight(double height) {
+		this.height = height;
+	}
+
+	public void setWidth(double width) {
+		this.width = width;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+	/**
+	 * @return
+	 */
+	public String[] getConfigKeys() {
+		return Util.addToArray(new String[] { "KEY", "WIDTH", "HEIGHT" },
+				additionalConfigKeys);
+	}
+
+	public void setAdditionalConfigKeys(String[] arr) {
+		additionalConfigKeys = arr;
+	}
+
+	public void setAdditionalConfigValues(String[] arr) {
+		additionalConfigValues = arr;
+	}
+
+	/**
+	 * @return
+	 */
+	public String[] getConfigValues() {
+		return Util.addToArray(new String[] { getKey(),
+				Double.toString(getWidth()), Double.toString(getHeight()) },
+				additionalConfigValues);
+	}
+
 }

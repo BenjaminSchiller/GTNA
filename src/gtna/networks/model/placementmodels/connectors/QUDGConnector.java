@@ -31,55 +31,56 @@
  *
  * ---------------------------------------
  */
-package gtna.networks.model.placementmodels;
+package gtna.networks.model.placementmodels.connectors;
 
 import gtna.graph.Edges;
 import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
+import gtna.networks.model.placementmodels.AbstractNodeConnector;
 
 /**
  * @author Flipp
- *
+ * 
  */
-public class UDGConnector implements NodeConnector {
+public class QUDGConnector extends AbstractNodeConnector {
 
-	private int range;
+	private double range1;
+	private double range2;
+	private double perc;
 
 	/**
 	 * @param i
 	 */
-	public UDGConnector(int i) {
-		range = i;
+	public QUDGConnector(double range1, double range2, double perc) {
+		this.range1 = range1;
+		this.range2 = range2;
+		this.perc = perc;
+		setKey("UDG");
+		setAdditionalConfigKeys(new String[] { "RANGE1", "RANGE2", "PERC" });
+		setAdditionalConfigValues(new String[] { Double.toString(range1),
+				Double.toString(range2), Double.toString(perc) });
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.networks.model.placementmodels.NodeConnector#connect(gtna.graph.Node[], gtna.id.plane.PlaneIdentifierSpaceSimple)
-	 */
 	@Override
 	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids) {
 
-		
 		Edges edges = new Edges(nodes, nodes.length * (nodes.length - 1));
-		
-		for(int i = 0; i < nodes.length; i++){
-			for(int j=0; j < nodes.length; j++){
-				if(i != j && ids.getPartitions()[i].distance( (ids.getPartitions()[j].getRepresentativeID()) ) < range) {
+		double dist;
+		for (int i = 0; i < nodes.length; i++) {
+			for (int j = 0; j < nodes.length; j++) {
+				if (i == j)
+					continue;
+				dist = ids.getPartitions()[i].distance((ids.getPartitions()[j]
+						.getRepresentativeID()));
+				if (dist < range1)
 					edges.add(i, j);
-				}
+				else if (dist < range2 && Math.random() < perc)
+					edges.add(i, j);
 			}
 		}
-		
+
 		edges.fill();
-		
+
 		return edges;
 	}
-
-	/* (non-Javadoc)
-	 * @see gtna.networks.model.placementmodels.NodeConnector#getValue()
-	 */
-	@Override
-	public String getDescription() {
-		return "udg";
-	}
-
 }

@@ -21,42 +21,57 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * NodeConnector.java
+ * Util.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Philipp Neubrand;
+ * Original Author: Flipp;
  * Contributors:    -;
  *
+ * Changes since 2011-05-17
  * ---------------------------------------
+ *
  */
 package gtna.networks.model.placementmodels;
 
-import gtna.graph.Graph;
-import gtna.id.plane.PlaneIdentifierSpaceSimple;
-import gtna.networks.Network;
-import gtna.routing.RoutingAlgorithm;
-import gtna.transformation.Transformation;
+/**
+ * @author Flipp
+ * 
+ */
+public class Util {
 
-public class GridModel extends AbstractPlacementModel implements Network {
-	private int cols;
-	private int rows;
-	
-	public GridModel(double width, double height, int cols, int rows, NodeConnector nc, RoutingAlgorithm ra, Transformation[] t) {
-		super("GRIDMODEL", (cols*rows), width, height, new String[] {"COLS", "ROWS"}, new String[] {Integer.toString(cols), Integer.toString(rows)}, nc, ra, t);
-		this.cols = cols;
-		this.rows = rows;
-		
-		this.setNodes(cols * rows);
+	/**
+	 * @param strings
+	 * @param configKeys
+	 * @return
+	 */
+	public static String[] addToArray(String[] arr1, String[] arr2) {
+		if (arr2 == null)
+			return arr1;
+		if (arr1 == null)
+			return arr2;
 
-		setCoords(new PlaneIdentifierSpaceSimple(null, width, height, false));
+		String[] ret = new String[arr1.length + arr2.length];
+		for (int i = 0; i < arr1.length; i++)
+			ret[i] = arr1[i];
+		for (int i = 0; i < arr2.length; i++)
+			ret[arr1.length + i] = arr2[i];
+
+		return ret;
 	}
 
-	public Graph generate() {
-		getCoords().setPartitions(Placement.placeByGridModel(getWidth(), getHeight(), cols, rows, getCoords()));
+	/**
+	 * @param string
+	 * @param configKeys
+	 * @return
+	 */
+	static String[] addPrefix(String str, String[] arr1) {
+		for (int i = 0; i < arr1.length; i++) {
+			arr1[i] = str + arr1[i];
+		}
 
-		return finish();
+		return arr1;
 	}
 
 }

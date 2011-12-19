@@ -31,43 +31,57 @@
  *
  * ---------------------------------------
  */
-package gtna.networks.model.placementmodels;
+package gtna.networks.model.placementmodels.connectors;
 
+import gtna.graph.Edges;
+import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
-import gtna.id.plane.PlanePartitionSimple;
-import gtna.networks.Network;
-import gtna.routing.RoutingAlgorithm;
-import gtna.transformation.Transformation;
+import gtna.networks.model.placementmodels.AbstractNodeConnector;
 
-public class CircleHotspotModel extends AbstractHotspotModel implements Network {
-	private double radius;
-	private DistributionType oalpha;
-	private DistributionType od;
-	private double centerX;
-	private double centerY;
+/**
+ * @author Flipp
+ * 
+ */
+public class LogDistanceConnector extends AbstractNodeConnector {
 
-	public CircleHotspotModel(int spots, int nodesperspot, double centerX,
-			double centerY, double radius, double overallWidth,
-			double overallHeight, double spotWidth, double spotHeight,
-			DistributionType oalpha, DistributionType od, double sigma,
-			boolean inCenter, NodeConnector nc, RoutingAlgorithm ra,
-			Transformation[] t) {
-		super("CIRCLE_", spots, nodesperspot, overallWidth, overallHeight,
-				spotWidth, spotHeight, sigma, inCenter,
-				new String[] { "RADIUS" }, new String[] { Double
-						.toString(radius) }, nc, ra, t);
-		this.oalpha = oalpha;
-		this.od = od;
-		this.centerX = centerX;
-		this.centerY = centerY;
-		this.radius = radius;
+	private double range;
+	private double gamma;
+	private double d0;
+
+	/**
+	 * @param i
+	 */
+	public LogDistanceConnector(double range, double gamma, double d0) {
+		this.range = range;
+		this.gamma = gamma;
+		this.d0 = d0;
+		setKey("LOG");
+		setAdditionalConfigKeys(new String[] { "RANGE", "GAMMA", "D0" });
+		setAdditionalConfigValues(new String[] { Double.toString(range),
+				Double.toString(gamma), Double.toString(d0) });
 	}
 
 	@Override
-	protected PlanePartitionSimple[] getHotspots(
-			PlaneIdentifierSpaceSimple idspace) {
-		return Placement.placeByCircleModel(centerX, centerY, radius, getWidth(),
-				getHeight(),spots, oalpha, od, idspace);
-	}
+	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids) {
 
+		Edges edges = new Edges(nodes, nodes.length * (nodes.length - 1));
+		double dist;
+		for (int i = 0; i < nodes.length; i++) {
+			for (int j = 0; j < nodes.length; j++) {
+				if (i == j)
+					continue;
+				dist = 10
+						* gamma
+						* Math.log10(ids.getPartitions()[i].distance((ids
+								.getPartitions()[j].getRepresentativeID()))
+								/ d0) * Math.random();
+				if (dist < range)
+					edges.add(i, j);
+			}
+		}
+
+		edges.fill();
+
+		return edges;
+	}
 }

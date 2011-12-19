@@ -21,41 +21,67 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * NodeConnector.java
+ * RandomPlacementModel.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Philipp Neubrand;
+ * Original Author: Flipp;
  * Contributors:    -;
  *
+ * Changes since 2011-05-17
  * ---------------------------------------
+ *
  */
-package gtna.networks.model.placementmodels;
+package gtna.networks.model.placementmodels.models;
 
-import gtna.graph.Graph;
-import gtna.id.plane.PlaneIdentifierSpaceSimple;
-import gtna.networks.Network;
-import gtna.routing.RoutingAlgorithm;
-import gtna.transformation.Transformation;
+import gtna.networks.model.placementmodels.AbstractPlacementModel;
+import gtna.networks.model.placementmodels.Point;
 
-public class RandomModel extends AbstractPlacementModel implements Network {
+import java.util.Random;
+
+/**
+ * @author Flipp
+ * 
+ */
+public class RandomPlacementModel extends AbstractPlacementModel {
+
 	private boolean inCenter;
-	private int width;
-	private int height;
-	
-	public RandomModel(int nodes, double width, double height, boolean inCenter, NodeConnector nc, RoutingAlgorithm ra, Transformation[] t) {
-		super("RANDOMMODEL", nodes, width, height, new String[] {"inCenter"}, new String[] {Boolean.toString(inCenter)}, nc, ra, t);
 
+	public RandomPlacementModel(double width, double height, boolean inCenter) {
+		setWidth(width);
+		setHeight(height);
 		this.inCenter = inCenter;
-
-		setCoords(new PlaneIdentifierSpaceSimple(null, width, height, false));
+		setKey("RANDOM");
+		setAdditionalConfigKeys(new String[] { "IN_CENTER" });
+		setAdditionalConfigValues(new String[] { Boolean.toString(inCenter) });
 	}
 
-	public Graph generate() {
-		getCoords().setPartitions(Placement.placeByRandomModel(width, height, nodes(), inCenter, getCoords()));
+	@Override
+	public Point[] place(int count) {
+		Random rnd = new Random();
 
-		return finish();
+		double dx = 0;
+		double dy = 0;
+		int i = 0;
+
+		Point[] ret = new Point[count];
+
+		if (inCenter) {
+			ret[0] = new Point(getWidth() / 2, getHeight() / 2);
+			i++;
+		}
+
+		while (i < count) {
+			dx = getWidth() * (rnd.nextDouble());
+			dy = getHeight() * (rnd.nextDouble());
+
+			ret[i] = new Point(dx, dy);
+
+			i++;
+		}
+
+		return ret;
 	}
 
 }

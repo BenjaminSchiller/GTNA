@@ -21,34 +21,62 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * NodeConnector.java
+ * GridPlacementModel.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Philipp Neubrand;
+ * Original Author: Flipp;
  * Contributors:    -;
  *
+ * Changes since 2011-05-17
  * ---------------------------------------
+ *
  */
-package gtna.networks.model.placementmodels;
+package gtna.networks.model.placementmodels.models;
+
+import gtna.networks.model.placementmodels.AbstractPlacementModel;
+import gtna.networks.model.placementmodels.PlacementNotPossibleException;
+import gtna.networks.model.placementmodels.Point;
 
 /**
  * @author Flipp
  * 
  */
-public class PlacementNotPossibleException extends RuntimeException {
+public class GridPlacementModel extends AbstractPlacementModel {
 
-	/**
-	 * @param string
-	 */
-	public PlacementNotPossibleException(String string) {
-		super(string);
+	private int rows;
+	private int cols;
+
+	public GridPlacementModel(double width, double height, int cols, int rows) {
+		setWidth(width);
+		setHeight(height);
+		this.cols = cols;
+		this.rows = rows;
+		setKey("GRID");
+		setAdditionalConfigKeys(new String[] { "COLS", "ROWS" });
+		setAdditionalConfigValues(new String[] { Integer.toString(cols),
+				Integer.toString(rows) });
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7153169638545167362L;
+	@Override
+	public Point[] place(int count) {
+		if (count > rows * cols)
+			throw new PlacementNotPossibleException("Can not place " + count
+					+ " nodes in a Grid with only " + rows + " rows and "
+					+ cols + " cols.");
+
+		Point[] ret = new Point[count];
+		double xoffset = getWidth() / cols;
+		double yoffset = getHeight() / rows;
+
+		for (int i = 0; i < count; i++) {
+			ret[i] = new Point((i % cols) * xoffset, (Math.floor(i / cols))
+					* yoffset);
+
+		}
+
+		return ret;
+	}
 
 }
