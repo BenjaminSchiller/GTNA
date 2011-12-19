@@ -79,13 +79,36 @@ public class Routing extends MetricImpl implements Metric {
 		int times = Config.getInt("ROUTING_ROUTES_PER_NODE");
 		Random rand = new Random();
 		this.routes = new Route[graph.getNodes().length * times];
+		// int index = 0;
+		// for (Node start : graph.getNodes()) {
+		// for (int i = 0; i < times; i++) {
+		// this.routes[index++] = ra.routeToRandomTarget(graph,
+		// start.getIndex(), rand);
+		// }
+		// }
+		RoutingThread[] threads = new RoutingThread[Config
+				.getInt("PARALLEL_ROUTINGS")];
+		for (int i = 0; i < threads.length; i++) {
+			int start = graph.getNodes().length / threads.length * i;
+			int end = graph.getNodes().length / threads.length * (i + 1) - 1;
+			if (i == threads.length - 1) {
+				end = graph.getNodes().length - 1;
+			}
+			threads[i] = new RoutingThread(start, end, times, graph, ra, rand);
+			threads[i].start();
+		}
 		int index = 0;
-		for (Node start : graph.getNodes()) {
-			for (int i = 0; i < times; i++) {
-				this.routes[index++] = ra.routeToRandomTarget(graph,
-						start.getIndex(), rand);
+		for (RoutingThread t : threads) {
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			for (Route r : t.getRoutes()) {
+				this.routes[index++] = r;
 			}
 		}
+
 		this.hopDistribution = this.computeHopDistribution();
 		this.hopDistributionAbsolute = this.computeHopDistributionAbsolute();
 		this.betweennessCentrality = this.computeBetweennessCentrality(graph
@@ -182,5 +205,53 @@ public class Routing extends MetricImpl implements Metric {
 		Value runtime = new Value("ROUTING_RUNTIME", this.runtime.getRuntime());
 		return new Value[] { averageHops, medianHops, maximumHops, successRate,
 				failureRate, runtime };
+	}
+
+	private class RoutingThread extends Thread {
+		private int start;
+
+		private int end;
+
+		private int times;
+
+		private Graph graph;
+
+		private RoutingAlgorithm ra;
+
+		private Random rand;
+
+		private Route[] routes;
+
+		private RoutingThread(int start, int end, int times, Graph graph,
+				RoutingAlgorithm ra, Random rand) {
+			this.start = start;
+			this.end = end;
+			this.times = times;
+			this.graph = graph;
+			this.ra = ra;
+			this.rand = rand;
+			this.routes = new Route[(end - start + 1) * times];
+		}
+
+		public void run() {
+			int index = 0;
+			for (int i = this.start; i <= this.end; i++) {
+				for (int j = 0; j < this.times; j++) {
+					this.routes[index++] = ra.routeToRandomTarget(graph, i,
+							rand);
+				}
+			}
+		}
+
+		/**
+		 * @return the routes
+		 */
+		public Route[] getRoutes() {
+			return this.routes;
+		}
+
+		public String toString() {
+			return this.start + " => " + this.end;
+		}
 	}
 }
