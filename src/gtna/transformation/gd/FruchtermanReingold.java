@@ -41,6 +41,7 @@ import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.plot.GraphPlotter;
+import gtna.transformation.Transformation;
 import gtna.util.MDVector;
 import gtna.util.Util;
 
@@ -86,6 +87,10 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
 		this.iterations = iterations;
+	}
+	
+	public GraphDrawingAbstract clone() {
+		return new FruchtermanReingold(iterations, moduli, wrapAround, iterations, graphPlotter);
 	}
 	
 	@Override

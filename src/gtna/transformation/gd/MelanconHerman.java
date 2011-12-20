@@ -38,6 +38,7 @@ package gtna.transformation.gd;
 import gtna.graph.Graph;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
+import gtna.transformation.Transformation;
 
 /**
  * @author Nico
@@ -56,6 +57,10 @@ public class MelanconHerman extends HierarchicalAbstract {
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;
+	}
+	
+	public GraphDrawingAbstract clone() {
+		return new MelanconHerman(modulusX, modulusY, graphPlotter);
 	}
 
 	@Override

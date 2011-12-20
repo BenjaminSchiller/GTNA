@@ -39,6 +39,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
+import gtna.transformation.Transformation;
 
 /**
  * @author Nico
@@ -47,15 +48,15 @@ import gtna.plot.GraphPlotter;
 public class Knuth extends HierarchicalAbstract {
 	int nextFreePosition;
 	
-	public Knuth() {
-		super("GDA_KNUTH", new String[]{}, new String[]{});
-	}
-	
 	public Knuth(double modulusX, double modulusY, GraphPlotter plotter) {
 		super("GDA_KNUTH", new String[] {"MODULUS_X", "MODULUS_Y"}, new String[] {"" + modulusX, "" + modulusY});
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;
+	}
+
+	public GraphDrawingAbstract clone() {
+		return new Knuth(modulusX, modulusY, graphPlotter);
 	}
 	
 	@Override

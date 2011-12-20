@@ -41,6 +41,7 @@ import java.util.Collections;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.plot.GraphPlotter;
+import gtna.transformation.Transformation;
 import gtna.util.MDVector;
 
 /**
@@ -97,6 +98,10 @@ public class Frick extends ForceDrivenAbstract {
 		this.moduli = moduli;
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
+	}
+	
+	public GraphDrawingAbstract clone() {
+		return new Frick(realities, moduli, wrapAround, graphPlotter);
 	}
 
 	@Override

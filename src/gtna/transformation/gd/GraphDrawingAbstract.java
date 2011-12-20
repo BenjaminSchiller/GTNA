@@ -47,7 +47,7 @@ import gtna.transformation.TransformationImpl;
  * @author Nico
  * 
  */
-public abstract class GraphDrawingAbstract extends TransformationImpl implements Transformation {
+public abstract class GraphDrawingAbstract extends TransformationImpl implements Transformation, Cloneable {
 	protected GraphPlotter graphPlotter;
 	protected boolean generateIDSpace = true;	
 	Random rand;
@@ -67,4 +67,6 @@ public abstract class GraphDrawingAbstract extends TransformationImpl implements
 	public boolean applicable(Graph g) {
 		return true;
 	}
+	
+	public abstract GraphDrawingAbstract clone();
 }

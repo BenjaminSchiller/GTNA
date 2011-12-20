@@ -86,23 +86,44 @@ public class GDAEvaluation {
 		NeighborsFirstLookaheadList lal = new NeighborsFirstLookaheadList(false);
 
 		ArrayList<Network> todoList = new ArrayList<Network>();
-		RoutingAlgorithm[] rA = new RoutingAlgorithm[] { new Greedy(25), new GreedyBacktracking(25),
-				new LookaheadSequential(25) };
-		Transformation[] t = new Transformation[] { new CanonicalCircularCrossing(1, 100, true, null),
-				new SixTollis(1, 100, true, null), new WetherellShannon(100, 100, null), new Knuth(100, 100, null),
-				new MelanconHerman(100, 100, null), new BubbleTree(100, 100, null),
-				new FruchtermanReingold(1, new double[] { 100, 100 }, false, 100, null) };
-		for (Transformation singleT : t) {
-			if (singleT instanceof HierarchicalAbstract) {
-				sTArray = new Transformation[] { bidirectional, wcp, gcc, bfs, singleT, lal };
-			} else {
-				sTArray = new Transformation[] { bidirectional, wcp, gcc, singleT, lal };
-			}
+		RoutingAlgorithm[] rA = new RoutingAlgorithm[] { new Greedy(25),
+				new GreedyBacktracking(25), new LookaheadSequential(25) };
+		GraphDrawingAbstract[] t = new GraphDrawingAbstract[] {
+				new CanonicalCircularCrossing(1, 100, true, null),
+				new SixTollis(1, 100, true, null),
+				new WetherellShannon(100, 100, null),
+				new Knuth(100, 100, null),
+				new MelanconHerman(100, 100, null),
+				new BubbleTree(100, 100, null),
+				new FruchtermanReingold(1, new double[] { 100, 100 }, false,
+						100, null) };
+		for (GraphDrawingAbstract originalT : t) {
+
 			for (int i = 1; i <= 10; i++) {
 				for (int j = 0; j < times; j++) {
+					GraphDrawingAbstract singleT = originalT.clone();
+
+					if (singleT instanceof HierarchicalAbstract) {
+						sTArray = new Transformation[] { bidirectional, wcp,
+								gcc, bfs, singleT, lal };
+					} else {
+						sTArray = new Transformation[] { bidirectional, wcp,
+								gcc, singleT, lal };
+					}
+
 					nw = new ErdosRenyi(i * 100, 10, true, null, sTArray);
 					lastCounter.put((i * 100) + "/" + nw.folder(), 0);
 					todoList.add(nw);
+
+					singleT = originalT.clone();
+
+					if (singleT instanceof HierarchicalAbstract) {
+						sTArray = new Transformation[] { bidirectional, wcp,
+								gcc, bfs, singleT, lal };
+					} else {
+						sTArray = new Transformation[] { bidirectional, wcp,
+								gcc, singleT, lal };
+					}
 
 					nw = new BarabasiAlbert(i * 100, 10, null, sTArray);
 					lastCounter.put((i * 100) + "/" + nw.folder(), 0);
@@ -117,7 +138,7 @@ public class GDAEvaluation {
 		}
 
 		Collections.shuffle(todoList);
-		
+
 		int counter = 0;
 		for (Network n : todoList) {
 			// System.out.println(n.nodes() + "/" + n.folder());
@@ -159,7 +180,8 @@ public class GDAEvaluation {
 				for (Transformation t : nw.transformations()) {
 					g = t.transform(g);
 				}
-				String folderName = "./data/evaluation/" + graphSize + "/" + nw.folder();
+				String folderName = "./data/evaluation/" + graphSize + "/"
+						+ nw.folder();
 				int i = lastCounter.get(graphSize + "/" + nw.folder());
 				lastCounter.put(graphSize + "/" + nw.folder(), (i + 1));
 

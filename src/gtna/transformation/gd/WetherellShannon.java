@@ -39,6 +39,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
+import gtna.transformation.Transformation;
 
 /**
  * @author Nico
@@ -49,9 +50,6 @@ public class WetherellShannon extends HierarchicalAbstract {
 	private double[] nextPos;
 	
 	private double modifierSum;
-	public WetherellShannon() {
-		super("GDA_WETHERELL_SHANNON", new String[]{}, new String[]{});
-	}
 	
 	public WetherellShannon(double modulusX, double modulusY, GraphPlotter plotter) {
 		super("GDA_WETHERELL_SHANNON", new String[] {"MODULUS_X", "MODULUS_Y"}, new String[] {"" + modulusX, "" + modulusY});
@@ -59,7 +57,11 @@ public class WetherellShannon extends HierarchicalAbstract {
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;
 	}
-
+	
+	public GraphDrawingAbstract clone() {
+		return new WetherellShannon(modulusX, modulusY, graphPlotter);
+	}
+	
 	@Override
 	public Graph transform(Graph g) {
 		tree = (SpanningTree) g.getProperty("SPANNINGTREE");

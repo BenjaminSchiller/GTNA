@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import gtna.graph.Graph;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
+import gtna.transformation.Transformation;
 
 /**
  * @author Nico
@@ -61,14 +62,14 @@ public class BubbleTree extends HierarchicalAbstract {
 	double[] freeAngle;
 
 	public BubbleTree(double modulusX, double modulusY, GraphPlotter plotter) {
-		this("GDA_BUBBLETREE", modulusX, modulusY, plotter);
-	}
-
-	public BubbleTree(String key, double modulusX, double modulusY, GraphPlotter plotter) {
-		super(key, new String[] { "MODULUS_X", "MODULUS_Y" }, new String[] { "" + modulusX, "" + modulusY });
+		super("GDA_BUBBLETREE", new String[] { "MODULUS_X", "MODULUS_Y" }, new String[] { "" + modulusX, "" + modulusY });
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;
+	}
+	
+	public GraphDrawingAbstract clone() {
+		return new BubbleTree(modulusX, modulusY, graphPlotter);
 	}
 
 	@Override

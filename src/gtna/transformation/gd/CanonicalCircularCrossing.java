@@ -37,6 +37,7 @@ package gtna.transformation.gd;
 
 import gtna.graph.Graph;
 import gtna.plot.GraphPlotter;
+import gtna.transformation.Transformation;
 
 /**
  * @author Nico
@@ -50,6 +51,10 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
+	}
+	
+	public GraphDrawingAbstract clone() {
+		return new CanonicalCircularCrossing(realities, modulus, wrapAround, graphPlotter);
 	}
 
 	@Override

@@ -53,6 +53,7 @@ import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingPartition;
 import gtna.metrics.EdgeCrossings;
 import gtna.plot.GraphPlotter;
+import gtna.transformation.Transformation;
 
 /**
  * @author Nico
@@ -75,6 +76,10 @@ public class SixTollis extends CircularAbstract {
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
+	}
+	
+	public GraphDrawingAbstract clone() {
+		return new SixTollis(realities, modulus, wrapAround, graphPlotter);
 	}
 
 	@Override
