@@ -35,6 +35,7 @@
  */
 package gtna;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
@@ -86,17 +87,12 @@ public class GDAEvaluation {
 		NeighborsFirstLookaheadList lal = new NeighborsFirstLookaheadList(false);
 
 		ArrayList<Network> todoList = new ArrayList<Network>();
-		RoutingAlgorithm[] rA = new RoutingAlgorithm[] { new Greedy(25),
-				new GreedyBacktracking(25), new LookaheadSequential(25) };
-		GraphDrawingAbstract[] t = new GraphDrawingAbstract[] {
-				new CanonicalCircularCrossing(1, 100, true, null),
-				new SixTollis(1, 100, true, null),
-				new WetherellShannon(100, 100, null),
-				new Knuth(100, 100, null),
-				new MelanconHerman(100, 100, null),
-				new BubbleTree(100, 100, null),
-				new FruchtermanReingold(1, new double[] { 100, 100 }, false,
-						100, null) };
+		RoutingAlgorithm[] rA = new RoutingAlgorithm[] { new Greedy(25), new GreedyBacktracking(25),
+				new LookaheadSequential(25) };
+		GraphDrawingAbstract[] t = new GraphDrawingAbstract[] { new CanonicalCircularCrossing(1, 100, true, null),
+				new SixTollis(1, 100, true, null), new WetherellShannon(100, 100, null), new Knuth(100, 100, null),
+				new MelanconHerman(100, 100, null), new BubbleTree(100, 100, null),
+				new FruchtermanReingold(1, new double[] { 100, 100 }, false, 100, null) };
 		for (GraphDrawingAbstract originalT : t) {
 
 			for (int i = 1; i <= 10; i++) {
@@ -104,11 +100,9 @@ public class GDAEvaluation {
 					GraphDrawingAbstract singleT = originalT.clone();
 
 					if (singleT instanceof HierarchicalAbstract) {
-						sTArray = new Transformation[] { bidirectional, wcp,
-								gcc, bfs, singleT, lal };
+						sTArray = new Transformation[] { bidirectional, wcp, gcc, bfs, singleT, lal };
 					} else {
-						sTArray = new Transformation[] { bidirectional, wcp,
-								gcc, singleT, lal };
+						sTArray = new Transformation[] { bidirectional, wcp, gcc, singleT, lal };
 					}
 
 					nw = new ErdosRenyi(i * 100, 10, true, null, sTArray);
@@ -118,11 +112,9 @@ public class GDAEvaluation {
 					singleT = originalT.clone();
 
 					if (singleT instanceof HierarchicalAbstract) {
-						sTArray = new Transformation[] { bidirectional, wcp,
-								gcc, bfs, singleT, lal };
+						sTArray = new Transformation[] { bidirectional, wcp, gcc, bfs, singleT, lal };
 					} else {
-						sTArray = new Transformation[] { bidirectional, wcp,
-								gcc, singleT, lal };
+						sTArray = new Transformation[] { bidirectional, wcp, gcc, singleT, lal };
 					}
 
 					nw = new BarabasiAlbert(i * 100, 10, null, sTArray);
@@ -177,17 +169,40 @@ public class GDAEvaluation {
 			for (Network nw : nws) {
 				Graph g = nw.generate();
 				int graphSize = g.getNodes().length;
-				for (Transformation t : nw.transformations()) {
-					g = t.transform(g);
-				}
-				String folderName = "./data/evaluation/" + graphSize + "/"
-						+ nw.folder();
+
+				String folderName = "./data/evaluation/" + graphSize + "/" + nw.folder();
 				int i = lastCounter.get(graphSize + "/" + nw.folder());
 				lastCounter.put(graphSize + "/" + nw.folder(), (i + 1));
 
+				if (isCompleteDataset(folderName + i)) {
+					/*
+					 * This seems to be a complete data file: the lookahead list
+					 * is generated as the last transformation, and if a list
+					 * was exported, the whole set of transformations was
+					 * already done
+					 */
+					System.out.println("Skipping " + folderName + i + ".txt");
+					continue;
+				}
+
+				for (Transformation t : nw.transformations()) {
+					g = t.transform(g);
+				}
+
 				GraphWriter.writeWithProperties(g, folderName + i + ".txt");
-				System.out.println("Wrote " + folderName + i);
+				System.out.println("Wrote " + folderName + i + ".txt");
 			}
+		}
+
+		public boolean isCompleteDataset(String prefix) {
+			File temp;
+			temp = new File(prefix + "_LOOKAHEAD_LIST_0");
+			if (!temp.exists())
+				return false;
+			temp = new File(prefix + "_ID_SPACE_0");
+			if (!temp.exists())
+				return false;
+			return true;
 		}
 	}
 }
