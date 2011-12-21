@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
 import gtna.graph.Graph;
+import gtna.io.Filewriter;
 import gtna.io.GraphWriter;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
@@ -185,9 +186,14 @@ public class GDAEvaluation {
 					continue;
 				}
 
+				double startTime = System.currentTimeMillis();
+				Filewriter runtimeLogger = new Filewriter(folderName + i + ".txt_RUNTIME");				
 				for (Transformation t : nw.transformations()) {
 					g = t.transform(g);
+					runtimeLogger.writeln(t.key() + ":" + ( System.currentTimeMillis() - startTime ));
+					startTime = System.currentTimeMillis();
 				}
+				runtimeLogger.close();
 
 				GraphWriter.writeWithProperties(g, folderName + i + ".txt");
 				System.out.println("Wrote " + folderName + i + ".txt");
@@ -199,6 +205,9 @@ public class GDAEvaluation {
 			temp = new File(prefix + "_LOOKAHEAD_LIST_0");
 			if (!temp.exists())
 				return false;
+			temp = new File(prefix + "_RUNTIME");
+			if (!temp.exists())
+				return false;			
 			temp = new File(prefix + "_ID_SPACE_0");
 			if (!temp.exists())
 				return false;
