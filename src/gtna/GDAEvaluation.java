@@ -81,12 +81,6 @@ public class GDAEvaluation {
 		Network nw;
 		ConcurrentHashMap<String, Integer> lastCounter = new ConcurrentHashMap<String, Integer>();
 
-		BFS bfs = new BFS("hd");
-		Transformation bidirectional = new Bidirectional();
-		Transformation wcp = new WeakConnectivityPartition();
-		Transformation gcc = new GiantConnectedComponent();
-		NeighborsFirstLookaheadList lal = new NeighborsFirstLookaheadList(false);
-
 		ArrayList<Network> todoList = new ArrayList<Network>();
 		RoutingAlgorithm[] rA = new RoutingAlgorithm[] { new Greedy(25), new GreedyBacktracking(25),
 				new LookaheadSequential(25) };
@@ -101,9 +95,11 @@ public class GDAEvaluation {
 					GraphDrawingAbstract singleT = originalT.clone();
 
 					if (singleT instanceof HierarchicalAbstract) {
-						sTArray = new Transformation[] { bidirectional, wcp, gcc, bfs, singleT, lal };
+						sTArray = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
+								new GiantConnectedComponent(), new BFS("hd"), singleT, new NeighborsFirstLookaheadList(false) };
 					} else {
-						sTArray = new Transformation[] { bidirectional, wcp, gcc, singleT, lal };
+						sTArray = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
+								new GiantConnectedComponent(), singleT, new NeighborsFirstLookaheadList(false) };
 					}
 
 					nw = new ErdosRenyi(i * 100, 10, true, null, sTArray);
@@ -113,9 +109,11 @@ public class GDAEvaluation {
 					singleT = originalT.clone();
 
 					if (singleT instanceof HierarchicalAbstract) {
-						sTArray = new Transformation[] { bidirectional, wcp, gcc, bfs, singleT, lal };
+						sTArray = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
+								new GiantConnectedComponent(), new BFS("hd"), singleT, new NeighborsFirstLookaheadList(false) };
 					} else {
-						sTArray = new Transformation[] { bidirectional, wcp, gcc, singleT, lal };
+						sTArray = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
+								new GiantConnectedComponent(), singleT, new NeighborsFirstLookaheadList(false) };
 					}
 
 					nw = new BarabasiAlbert(i * 100, 10, null, sTArray);
@@ -187,10 +185,10 @@ public class GDAEvaluation {
 				}
 
 				double startTime = System.currentTimeMillis();
-				Filewriter runtimeLogger = new Filewriter(folderName + i + ".txt_RUNTIME");				
+				Filewriter runtimeLogger = new Filewriter(folderName + i + ".txt_RUNTIME");
 				for (Transformation t : nw.transformations()) {
 					g = t.transform(g);
-					runtimeLogger.writeln(t.key() + ":" + ( System.currentTimeMillis() - startTime ));
+					runtimeLogger.writeln(t.key() + ":" + (System.currentTimeMillis() - startTime));
 					startTime = System.currentTimeMillis();
 				}
 				runtimeLogger.close();
@@ -207,7 +205,7 @@ public class GDAEvaluation {
 				return false;
 			temp = new File(prefix + "_RUNTIME");
 			if (!temp.exists())
-				return false;			
+				return false;
 			temp = new File(prefix + "_ID_SPACE_0");
 			if (!temp.exists())
 				return false;
