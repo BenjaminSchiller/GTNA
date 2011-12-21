@@ -69,6 +69,8 @@ public class GDAEvaluation {
 		Stats stats = new Stats();
 		int times = 3;
 		int threads = 5;
+		int sizeFactor = 1000;
+		int degree = 10;
 
 		Config.overwrite("METRICS", "R");
 		// R for routing
@@ -102,8 +104,8 @@ public class GDAEvaluation {
 								new GiantConnectedComponent(), singleT, new NeighborsFirstLookaheadList(false) };
 					}
 
-					nw = new ErdosRenyi(i * 100, 10, true, null, sTArray);
-					lastCounter.put((i * 100) + "/" + nw.folder(), 0);
+					nw = new ErdosRenyi(i * sizeFactor, degree, true, null, sTArray);
+					lastCounter.put((i * sizeFactor) + "/" + nw.folder(), 0);
 					todoList.add(nw);
 
 					singleT = originalT.clone();
@@ -116,8 +118,8 @@ public class GDAEvaluation {
 								new GiantConnectedComponent(), singleT, new NeighborsFirstLookaheadList(false) };
 					}
 
-					nw = new BarabasiAlbert(i * 100, 10, null, sTArray);
-					lastCounter.put((i * 100) + "/" + nw.folder(), 0);
+					nw = new BarabasiAlbert(i * sizeFactor, degree, null, sTArray);
+					lastCounter.put((i * sizeFactor) + "/" + nw.folder(), 0);
 					todoList.add(nw);
 				}
 			}
