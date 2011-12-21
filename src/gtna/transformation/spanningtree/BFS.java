@@ -36,8 +36,11 @@
 package gtna.transformation.spanningtree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import gtna.graph.Graph;
@@ -106,10 +109,10 @@ public class BFS extends TransformationImpl implements Transformation {
 		int graphNodeSize = graph.getNodes().length;
 		int spanningTreeSize = parentChildMap.size();
 		if ((spanningTreeSize + 1) < graphNodeSize) {
-			for ( Node sN: nodes) {
-				if ( !parentChildMap.containsKey(sN.getIndex())) {
+			for (Node sN : nodes) {
+				if (!parentChildMap.containsKey(sN.getIndex())) {
 					System.err.print(sN + " missing, connections to ");
-					for ( int e: sN.generateOutgoingEdgesByDegree() ) {
+					for (int e : sN.generateOutgoingEdgesByDegree()) {
 						System.err.print(e + " ");
 					}
 					System.err.println();
@@ -136,16 +139,13 @@ public class BFS extends TransformationImpl implements Transformation {
 			return nodeList[rand.nextInt(nodeList.length)];
 		} else if (rootSelector == "hd") {
 			/*
-			 * Select a node with highest degree
+			 * Here, one of the nodes with highest degree will be chosen
 			 */
-			result = nodeList[0];
-			for (int i = 1; i < nodeList.length; i++) {
-				if (nodeList[i].getOutDegree() > result.getOutDegree()) {
-					result = nodeList[i];
-				} else if (nodeList[i].getOutDegree() == result.getOutDegree() && rand.nextBoolean()) {
-					result = nodeList[i];
-				}
-			}
+			List<Node> sortedNodeList = Arrays.asList(nodeList.clone());
+			Collections.sort(sortedNodeList);
+			List<Node> highestDegreeNodes = sortedNodeList.subList((int) (0.9 * sortedNodeList.size()),
+					sortedNodeList.size());
+			result = highestDegreeNodes.get(rand.nextInt(highestDegreeNodes.size()));
 		} else {
 			throw new RuntimeException("Unknown root selector " + rootSelector);
 		}
