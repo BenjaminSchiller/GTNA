@@ -109,8 +109,8 @@ public class SixTollis extends CircularAbstract {
 		removalList = new HashMap<String, Edge>();
 		HashMap<String, Edge> pairEdges = null;
 		removedVertices = new ArrayList<Node>();
-		waveCenterVertices = new TreeSet<Node>(new VertexDegreeComparator());
-		waveFrontVertices = new TreeSet<Node>(new VertexDegreeComparator());
+		waveCenterVertices = new TreeSet<Node>();
+		waveFrontVertices = new TreeSet<Node>();
 
 		additionalEdges = new HashMap[g.getNodes().length];
 		for (int i = 0; i < g.getNodes().length; i++) {
@@ -118,7 +118,8 @@ public class SixTollis extends CircularAbstract {
 		}
 
 		vertexList = Arrays.asList(g.getNodes().clone());
-		Collections.sort(vertexList, new VertexDegreeComparator());
+
+		Collections.sort(vertexList);
 		for (int counter = 1; counter < (vertexList.size() - 3); counter++) {
 			currentVertex = getVertex();
 			pairEdges = getPairEdges(currentVertex);
@@ -191,7 +192,7 @@ public class SixTollis extends CircularAbstract {
 			 * Keep track of wave front and wave center vertices!
 			 */
 
-			waveFrontVertices = new TreeSet<Node>(new VertexDegreeComparator());
+			waveFrontVertices = new TreeSet<Node>();
 			for (Edge i : getEdges(currentVertex).values()) {
 				int otherEnd;
 				if (i.getDst() == currentVertex.getIndex()) {
@@ -568,18 +569,6 @@ public class SixTollis extends CircularAbstract {
 		}
 
 		return result;
-	}
-
-	private class VertexDegreeComparator implements Comparator<Node> {
-		@Override
-		public int compare(Node n1, Node n2) {
-			if (n1.getDegree() == n2.getDegree())
-				return 0;
-			else if (n1.getDegree() > n2.getDegree())
-				return 1;
-			else
-				return -1;
-		}
 	}
 
 	private String getEdgeString(Edge e) {

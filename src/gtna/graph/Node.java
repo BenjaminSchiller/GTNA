@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class Node {
+public class Node implements Comparable<Node> {
 	private Graph graph;
 
 	private int index;
@@ -189,6 +189,15 @@ public class Node {
 		Arrays.sort(integerEdges, new DescendingDegreeComparator(graph));
 		return integerEdges;
 	}
+	
+	public int compareTo(Node n2) {
+		if (this.getDegree() == n2.getDegree())
+			return 0;
+		else if (this.getDegree() > n2.getDegree())
+			return 1;
+		else
+			return -1;
+	}	
 	
 	private class DescendingDegreeComparator implements Comparator<Integer> {
 		private Graph g;
