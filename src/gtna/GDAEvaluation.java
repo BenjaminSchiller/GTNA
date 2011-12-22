@@ -53,7 +53,6 @@ import gtna.routing.lookahead.LookaheadSequential;
 import gtna.transformation.Transformation;
 import gtna.transformation.edges.Bidirectional;
 import gtna.transformation.gd.*;
-import gtna.transformation.lookahead.NeighborsFirstLookaheadList;
 import gtna.transformation.partition.GiantConnectedComponent;
 import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.transformation.spanningtree.BFS;
@@ -68,11 +67,11 @@ public class GDAEvaluation {
 	public static void main(String[] args) {
 		Stats stats = new Stats();
 		int times = 3;
-		int threads = 5;
-		int sizeFactor = 1000;
+		int threads = 10;
+		int sizeFactor = 100;
 		int degree = 10;
 
-		Config.overwrite("METRICS", "R");
+		Config.overwrite("METRICS", "ROUTING");
 		// R for routing
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/GDAevaluation/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/GDAevaluation/");
@@ -98,10 +97,10 @@ public class GDAEvaluation {
 
 					if (singleT instanceof HierarchicalAbstract) {
 						sTArray = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
-								new GiantConnectedComponent(), new BFS("hd"), singleT, new NeighborsFirstLookaheadList(false) };
+								new GiantConnectedComponent(), new BFS("hd"), singleT };
 					} else {
 						sTArray = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
-								new GiantConnectedComponent(), singleT, new NeighborsFirstLookaheadList(false) };
+								new GiantConnectedComponent(), singleT };
 					}
 
 					nw = new ErdosRenyi(i * sizeFactor, degree, true, null, sTArray);
@@ -112,10 +111,10 @@ public class GDAEvaluation {
 
 					if (singleT instanceof HierarchicalAbstract) {
 						sTArray = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
-								new GiantConnectedComponent(), new BFS("hd"), singleT, new NeighborsFirstLookaheadList(false) };
+								new GiantConnectedComponent(), new BFS("hd"), singleT };
 					} else {
 						sTArray = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
-								new GiantConnectedComponent(), singleT, new NeighborsFirstLookaheadList(false) };
+								new GiantConnectedComponent(), singleT };
 					}
 
 					nw = new BarabasiAlbert(i * sizeFactor, degree, null, sTArray);
@@ -138,6 +137,8 @@ public class GDAEvaluation {
 			nwThreads[counter].add(n);
 			counter = (counter + 1) % threads;
 		}
+		
+		System.out.println("Starting to generate " + todoList.size() + " networks");
 		for (int i = 0; i < threads; i++) {
 			nwThreads[i].start();
 		}
@@ -171,23 +172,24 @@ public class GDAEvaluation {
 				Graph g = nw.generate();
 				int graphSize = g.getNodes().length;
 
-				String folderName = "./data/evaluation/" + graphSize + "/" + nw.folder();
+				String folderName = "./resources/evaluation/" + graphSize + "/" + nw.folder();
 				int i = lastCounter.get(graphSize + "/" + nw.folder());
 				lastCounter.put(graphSize + "/" + nw.folder(), (i + 1));
 
-				if (isCompleteDataset(folderName + i)) {
+				String fileName = folderName + i + ".txt";
+				if (isCompleteDataset(fileName)) {
 					/*
 					 * This seems to be a complete data file: the lookahead list
 					 * is generated as the last transformation, and if a list
 					 * was exported, the whole set of transformations was
 					 * already done
 					 */
-					System.out.println("Skipping " + folderName + i + ".txt");
+					System.out.println("Skipping " + fileName);
 					continue;
 				}
 
 				double startTime = System.currentTimeMillis();
-				Filewriter runtimeLogger = new Filewriter(folderName + i + ".txt_RUNTIME");
+				Filewriter runtimeLogger = new Filewriter(fileName + ".RUNTIME");
 				for (Transformation t : nw.transformations()) {
 					g = t.transform(g);
 					runtimeLogger.writeln(t.key() + ":" + (System.currentTimeMillis() - startTime));
@@ -195,22 +197,25 @@ public class GDAEvaluation {
 				}
 				runtimeLogger.close();
 
-				GraphWriter.writeWithProperties(g, folderName + i + ".txt");
-				System.out.println("Wrote " + folderName + i + ".txt");
+				GraphWriter.writeWithProperties(g, fileName);
+				System.out.println("Wrote " + fileName);
 			}
 		}
 
 		public boolean isCompleteDataset(String prefix) {
 			File temp;
 			temp = new File(prefix + "_LOOKAHEAD_LIST_0");
-			if (!temp.exists())
+			if (!temp.exists()) {
+//				return false;
+			}
+			temp = new File(prefix + ".RUNTIME");
+			if (!temp.exists()) {
 				return false;
-			temp = new File(prefix + "_RUNTIME");
-			if (!temp.exists())
-				return false;
+			}
 			temp = new File(prefix + "_ID_SPACE_0");
-			if (!temp.exists())
+			if (!temp.exists()) {
 				return false;
+			}
 			return true;
 		}
 	}
