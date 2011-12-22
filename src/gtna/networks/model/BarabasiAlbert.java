@@ -73,7 +73,7 @@ public class BarabasiAlbert extends NetworkImpl implements Network {
 
 	// TODO takes very long for small network sizes
 	public Graph generate() {
-		System.out.println("Generate");
+//		System.out.println("Generate");
 		Graph graph = new Graph(this.description());
 		Random rand = new Random(System.currentTimeMillis());
 		Node[] nodes = Node.init(this.nodes(), graph);

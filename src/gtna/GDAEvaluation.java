@@ -38,6 +38,7 @@ package gtna;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 import gtna.graph.Graph;
@@ -66,10 +67,12 @@ import gtna.util.Stats;
 public class GDAEvaluation {
 	public static void main(String[] args) {
 		Stats stats = new Stats();
-		int times = 3;
+		int times = 5;
 		int threads = 10;
-		int sizeFactor = 100;
+		int sizeFactor = 1000;
 		int degree = 10;
+
+		ProgressMonitor pm = new ProgressMonitor();
 
 		Config.overwrite("METRICS", "ROUTING");
 		// R for routing
@@ -126,7 +129,7 @@ public class GDAEvaluation {
 
 		NetworkThread[] nwThreads = new NetworkThread[threads];
 		for (int i = 0; i < threads; i++) {
-			nwThreads[i] = new NetworkThread(lastCounter);
+			nwThreads[i] = new NetworkThread(i, lastCounter, pm);
 		}
 
 		Collections.shuffle(todoList);
@@ -137,8 +140,10 @@ public class GDAEvaluation {
 			nwThreads[counter].add(n);
 			counter = (counter + 1) % threads;
 		}
+
+		pm.output("Starting to generate " + todoList.size() + " networks");
+		pm.setMaxNetworks(todoList.size());
 		
-		System.out.println("Starting to generate " + todoList.size() + " networks");
 		for (int i = 0; i < threads; i++) {
 			nwThreads[i].start();
 		}
@@ -154,13 +159,42 @@ public class GDAEvaluation {
 		stats.end();
 	}
 
-	private static class NetworkThread extends Thread {
-		ArrayList<Network> nws;
-		ConcurrentHashMap<String, Integer> lastCounter;
+	private static class ProgressMonitor {
+		private Date start;
+		private int generatedNetworks = 0;
+		private int maxNetworks;
 
-		public NetworkThread(ConcurrentHashMap<String, Integer> lastCounter) {
+		public ProgressMonitor() {
+			start = new Date();
+			output("Started ProgressMonitor");
+		}
+
+		public void setMaxNetworks(int mNW) {
+			this.maxNetworks = mNW;
+		}
+
+		public void tickNW() {
+			generatedNetworks++;
+			double runtime = new Date().getTime() - start.getTime();
+			output("Generated network " + generatedNetworks + " of " + maxNetworks + " after running for " + (runtime/1000) + " seconds");
+		}
+
+		public void output(String text) {
+			System.out.println((new Date()) + " -- " + text);
+		}
+	}
+
+	private static class NetworkThread extends Thread {
+		private ArrayList<Network> nws;
+		private ConcurrentHashMap<String, Integer> lastCounter;
+		private ProgressMonitor pm;
+		private int id;
+
+		public NetworkThread(int id, ConcurrentHashMap<String, Integer> lastCounter, ProgressMonitor pm) {
 			this.nws = new ArrayList<Network>();
 			this.lastCounter = lastCounter;
+			this.pm = pm;
+			this.id = id;
 		}
 
 		public void add(Network nw) {
@@ -184,10 +218,13 @@ public class GDAEvaluation {
 					 * was exported, the whole set of transformations was
 					 * already done
 					 */
-					System.out.println("Skipping " + fileName);
+					pm.output("Skipping " + fileName);
+					pm.tickNW();
 					continue;
 				}
 
+				pm.output("Thread " + id + " starts generation of " + fileName);
+				
 				double startTime = System.currentTimeMillis();
 				Filewriter runtimeLogger = new Filewriter(fileName + ".RUNTIME");
 				for (Transformation t : nw.transformations()) {
@@ -198,7 +235,8 @@ public class GDAEvaluation {
 				runtimeLogger.close();
 
 				GraphWriter.writeWithProperties(g, fileName);
-				System.out.println("Wrote " + fileName);
+				pm.output("Thread " + id + " wrote " + fileName + " after " + (System.currentTimeMillis() - startTime)/1000 + " seconds");
+				pm.tickNW();
 			}
 		}
 
@@ -206,7 +244,7 @@ public class GDAEvaluation {
 			File temp;
 			temp = new File(prefix + "_LOOKAHEAD_LIST_0");
 			if (!temp.exists()) {
-//				return false;
+				// return false;
 			}
 			temp = new File(prefix + ".RUNTIME");
 			if (!temp.exists()) {
