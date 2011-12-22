@@ -73,7 +73,7 @@ public class ReadableFile extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Graph graph = GraphReader.read(this.filename);
+		Graph graph = GraphReader.readWithProperties(this.filename);
 		graph.setName(this.description());
 		return graph;
 	}

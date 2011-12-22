@@ -79,7 +79,7 @@ public class ReadableList extends NetworkImpl implements Network {
 
 	public Graph generate() {
 		this.index = (this.index + 1) % this.files.length;
-		Graph graph = GraphReader.read(this.files[this.index]);
+		Graph graph = GraphReader.readWithProperties(this.files[this.index]);
 		graph.setName(this.description());
 		return graph;
 	}
