@@ -53,12 +53,13 @@ public class MelanconHerman extends HierarchicalAbstract {
 	private final double leafRadius = 2d;
 
 	public MelanconHerman(double modulusX, double modulusY, GraphPlotter plotter) {
-		super("GDA_MELANCONHERMAN", new String[] {"MODULUS_X", "MODULUS_Y"}, new String[] {"" + modulusX, "" + modulusY});
+		super("GDA_MELANCONHERMAN", new String[] { "MODULUS_X", "MODULUS_Y" }, new String[] { "" + modulusX,
+				"" + modulusY });
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;
 	}
-	
+
 	public GraphDrawingAbstract clone() {
 		return new MelanconHerman(modulusX, modulusY, graphPlotter);
 	}
@@ -66,10 +67,10 @@ public class MelanconHerman extends HierarchicalAbstract {
 	@Override
 	public Graph transform(Graph g) {
 		tree = (SpanningTree) g.getProperty("SPANNINGTREE");
-		if ( tree == null ) {
+		if (tree == null) {
 			throw new RuntimeException("SpanningTree property missing");
-		}		
-		
+		}
+
 		int source = tree.getSrc();
 		np = new NodeParameter[g.getNodes().length];
 		nodePositionsX = new double[g.getNodes().length];
@@ -96,7 +97,9 @@ public class MelanconHerman extends HierarchicalAbstract {
 		for (int k : sons) {
 			firstWalk(k);
 			np[node].d = Math.max(np[node].d, np[k].r);
-			np[k].alpha = Math.atan( np[k].r / ( np[node].d + np[k].r) );
+		}
+		for (int k : sons) {
+			np[k].alpha = Math.atan(np[k].r / (np[node].d + np[k].r));
 			s += np[k].alpha;
 		}
 		adjustChildren(node, s);
@@ -120,22 +123,23 @@ public class MelanconHerman extends HierarchicalAbstract {
 	private void secondWalk(int node, double x, double y, double lambda, double theta) {
 		nodePositionsX[node] = x;
 		nodePositionsY[node] = y;
-		
+
+		int[] children = tree.getChildren(node);
+
 		double dd = lambda * np[node].d;
 		double gamma = theta + Math.PI;
-		double freeSpace = np[node].f / (tree.getChildren(node).length + 1 );
+		double freeSpace = np[node].f / children.length;
 		double previous = 0;
 		double currAlpha, currRadius;
 
-		for (int singleSon : tree.getChildren(node)) {
+		for (int singleSon : children) {
 			currAlpha = np[node].c * np[singleSon].alpha;
 			currRadius = np[node].d * (Math.tan(currAlpha) / (1 - Math.tan(currAlpha)));
-			gamma = ( gamma + previous + np[singleSon].alpha + freeSpace );// % ( 2 * Math.PI );
+			gamma = gamma + previous + np[singleSon].alpha + freeSpace;
 			double kX = (lambda * currRadius + dd) * Math.cos(gamma);
 			double kY = (lambda * currRadius + dd) * Math.sin(gamma);
 			previous = np[singleSon].alpha;
-			secondWalk(singleSon, kX + x, kY
-					+ y, lambda * (currRadius / np[singleSon].r), gamma);
+			secondWalk(singleSon, kX + x, kY + y, lambda * (currRadius / np[singleSon].r), gamma);
 		}
 	}
 
