@@ -36,6 +36,7 @@ package gtna.networks.model.placementmodels;
 import gtna.graph.Edges;
 import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
+import gtna.util.Util;
 
 /**
  * @author Flipp
@@ -62,14 +63,14 @@ public abstract class AbstractNodeConnector {
 	 * @return
 	 */
 	public String[] getConfigKeys() {
-		return Util.addToArray(new String[] { "KEY" }, additionalConfigKeys);
+		return Util.mergeArrays(new String[] { "KEY" }, additionalConfigKeys);
 	}
 
 	/**
 	 * @return
 	 */
 	public String[] getConfigValues() {
-		return Util.addToArray(new String[] { getKey() },
+		return Util.mergeArrays(new String[] { getKey() },
 				additionalConfigValues);
 	}
 

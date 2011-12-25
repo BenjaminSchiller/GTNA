@@ -35,6 +35,8 @@
  */
 package gtna.networks.model.placementmodels;
 
+import gtna.util.Util;
+
 /**
  * @author Flipp
  * 
@@ -65,14 +67,14 @@ public abstract class AbstractPartitioner {
 	 * @return
 	 */
 	public String[] getConfigKeys() {
-		return Util.addToArray(new String[] { "KEY" }, additionalConfigKeys);
+		return Util.mergeArrays(new String[] { "KEY" }, additionalConfigKeys);
 	}
 
 	/**
 	 * @return
 	 */
 	public String[] getConfigValues() {
-		return Util.addToArray(new String[] { getKey() },
+		return Util.mergeArrays(new String[] { getKey() },
 				additionalConfigValues);
 	}
 

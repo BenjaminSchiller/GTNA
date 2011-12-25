@@ -35,6 +35,8 @@
  */
 package gtna.networks.model.placementmodels;
 
+import gtna.util.Util;
+
 /**
  * @author Flipp
  * 
@@ -89,7 +91,7 @@ public abstract class AbstractPlacementModel {
 	 * @return
 	 */
 	public String[] getConfigKeys() {
-		return Util.addToArray(new String[] { "KEY", "WIDTH", "HEIGHT" },
+		return Util.mergeArrays(new String[] { "KEY", "WIDTH", "HEIGHT" },
 				additionalConfigKeys);
 	}
 
@@ -105,7 +107,7 @@ public abstract class AbstractPlacementModel {
 	 * @return
 	 */
 	public String[] getConfigValues() {
-		return Util.addToArray(new String[] { getKey(),
+		return Util.mergeArrays(new String[] { getKey(),
 				Double.toString(getWidth()), Double.toString(getHeight()) },
 				additionalConfigValues);
 	}

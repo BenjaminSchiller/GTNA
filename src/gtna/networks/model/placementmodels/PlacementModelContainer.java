@@ -43,6 +43,7 @@ import gtna.id.plane.PlanePartitionSimple;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.Util;
 
 /**
  * @author Flipp
@@ -97,9 +98,9 @@ public class PlacementModelContainer extends NetworkImpl {
 			AbstractPlacementModel hotspotPlacer,
 			AbstractPlacementModel nodePlacer, AbstractNodeConnector connector,
 			AbstractPartitioner partitioner) {
-		return Util.addToArray(new String[] { "KEY" }, Util.addToArray(
-				partitioner.getConfigValues(), Util.addToArray(connector
-						.getConfigValues(), Util.addToArray(hotspotPlacer
+		return Util.mergeArrays(new String[] { "KEY" }, Util.mergeArrays(
+				partitioner.getConfigValues(), Util.mergeArrays(connector
+						.getConfigValues(), Util.mergeArrays(hotspotPlacer
 						.getConfigValues(), nodePlacer.getConfigValues()))));
 	}
 
@@ -111,12 +112,12 @@ public class PlacementModelContainer extends NetworkImpl {
 	private static String[] getConfigKeys(AbstractPlacementModel hotspotPlacer,
 			AbstractPlacementModel nodePlacer, AbstractNodeConnector connector,
 			AbstractPartitioner partitioner) {
-		return Util.addToArray(
+		return Util.mergeArrays(
 				new String[] { getKey(hotspotPlacer, nodePlacer) }, Util
-						.addToArray(Util.addPrefix("PART_", partitioner
-								.getConfigKeys()), Util.addToArray(Util
+						.mergeArrays(Util.addPrefix("PART_", partitioner
+								.getConfigKeys()), Util.mergeArrays(Util
 								.addPrefix("CON_", connector.getConfigKeys()),
-								Util.addToArray(Util.addPrefix("HP_",
+								Util.mergeArrays(Util.addPrefix("HP_",
 										hotspotPlacer.getConfigKeys()), Util
 										.addPrefix("NP_", nodePlacer
 												.getConfigKeys())))));

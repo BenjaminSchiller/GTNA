@@ -679,6 +679,54 @@ public class Util {
 		return i;
 	}
 
+	/**
+	 * Merges the two given String arrays. The elements of the second array are
+	 * added after the elements of the first array, the order inside the arrays
+	 * is preserved. If the first array is null, the second array is returned,
+	 * if the second array is null, the first array is returned, if both arrays
+	 * are null, null is returned.
+	 * 
+	 * @param arr1
+	 *            The first array that is to be merged.
+	 * @param arr2
+	 *            The second array that is to be merged.
+	 * @return A new String array of length arr1.length+arr2.length containing
+	 *         the elements of arr1 and arr2.
+	 * @author Philipp Neubrand
+	 */
+	public static String[] mergeArrays(String[] arr1, String[] arr2) {
+		if (arr2 == null)
+			return arr1;
+		if (arr1 == null)
+			return arr2;
+
+		String[] ret = new String[arr1.length + arr2.length];
+		for (int i = 0; i < arr1.length; i++)
+			ret[i] = arr1[i];
+		for (int i = 0; i < arr2.length; i++)
+			ret[arr1.length + i] = arr2[i];
+
+		return ret;
+	}
+
+	/**
+	 * Prefixes all values in the array with the given prefix.
+	 * 
+	 * @param prefix
+	 *            The prefix to be attached to all values in the array.
+	 * @param arr
+	 *            The array to which the prefix is to be attached.
+	 * @return The same String array with prefix attached to all the values.
+	 * @author Philipp Neubrand
+	 */
+	public static String[] addPrefix(String prefix, String[] arr) {
+		for (int i = 0; i < arr.length; i++) {
+			arr[i] = prefix + arr[i];
+		}
+
+		return arr;
+	}
+
 	// ///////////////////////
 	// REMOVE
 	// ///////////////////////
