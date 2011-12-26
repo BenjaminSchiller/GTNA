@@ -22,7 +22,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 # 
 # ---------------------------------------
-# DistRestrictGreedy.properties
+# DepthFirstGreedy.properties
 # ---------------------------------------
 # (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
 # and Contributors 
@@ -35,18 +35,14 @@
 # 
 
 ##########################################################
-## gtna.routing.greedyVariations.DistRestrictGreedy
+## gtna.routing.greedyStef.DepthFirstGreedy
 ##########################################################
 
-DIST_RESTRICT_GREEDY_NAME = DIST_RESTRICT Greedy
-DIST_RESTRICT_GREEDY_NAME_LONG = DIST_RESTRICTGreedy
-DIST_RESTRICT_GREEDY_NAME_SHORT = DRG
-DIST_RESTRICT_GREEDY_FOLDER = DRG
+DEPTHFIRST_GREEDY_NAME = DEPTHFIRST Greedy
+DEPTHFIRST_GREEDY_NAME_LONG = DEPTHFIRSTGreedy
+DEPTHFIRST_GREEDY_NAME_SHORT = DFG
+DEPTHFIRST_GREEDY_FOLDER = DFG
 
-DIST_RESTRICT_GREEDY_TTL_NAME = TTL
-DIST_RESTRICT_GREEDY_TTL_NAME_LONG = ttl
-DIST_RESTRICT_GREEDY_TTL_NAME_SHORT = t
-
-DIST_RESTRICT_GREEDY_MAXBACK_NAME = maxback
-DIST_RESTRICT_GREEDY_MAXBACK_NAME_LONG = maxback
-DIST_RESTRICT_GREEDY_MAXBACK_NAME_SHORT = mb
+DEPTHFIRST_GREEDY_TTL_NAME = TTL
+DEPTHFIRST_GREEDY_TTL_NAME_LONG = ttl
+DEPTHFIRST_GREEDY_TTL_NAME_SHORT = t

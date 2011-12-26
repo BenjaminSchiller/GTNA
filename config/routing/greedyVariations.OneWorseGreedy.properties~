@@ -22,7 +22,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 # 
 # ---------------------------------------
-# DistRestrictGreedy.properties
+# OneWorseGreedy.properties
 # ---------------------------------------
 # (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
 # and Contributors 
@@ -35,18 +35,14 @@
 # 
 
 ##########################################################
-## gtna.routing.greedyVariations.DistRestrictGreedy
+## gtna.routing.greedyStef.OneWorseGreedy
 ##########################################################
 
-DIST_RESTRICT_GREEDY_NAME = DIST_RESTRICT Greedy
-DIST_RESTRICT_GREEDY_NAME_LONG = DIST_RESTRICTGreedy
-DIST_RESTRICT_GREEDY_NAME_SHORT = DRG
-DIST_RESTRICT_GREEDY_FOLDER = DRG
+ONEWORSE_GREEDY_NAME = ONEWORSE Greedy
+ONEWORSE_GREEDY_NAME_LONG = ONEWORSEGreedy
+ONEWORSE_GREEDY_NAME_SHORT = WG
+ONEWORSE_GREEDY_FOLDER = WG
 
-DIST_RESTRICT_GREEDY_TTL_NAME = TTL
-DIST_RESTRICT_GREEDY_TTL_NAME_LONG = ttl
-DIST_RESTRICT_GREEDY_TTL_NAME_SHORT = t
-
-DIST_RESTRICT_GREEDY_MAXBACK_NAME = maxback
-DIST_RESTRICT_GREEDY_MAXBACK_NAME_LONG = maxback
-DIST_RESTRICT_GREEDY_MAXBACK_NAME_SHORT = mb
+ONEWORSE_GREEDY_TTL_NAME = TTL
+ONEWORSE_GREEDY_TTL_NAME_LONG = ttl
+ONEWORSE_GREEDY_TTL_NAME_SHORT = t

@@ -22,7 +22,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 # 
 # ---------------------------------------
-# DistRestrictGreedy.properties
+# PureGreedy.properties
 # ---------------------------------------
 # (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
 # and Contributors 
@@ -35,18 +35,14 @@
 # 
 
 ##########################################################
-## gtna.routing.greedyVariations.DistRestrictGreedy
+## gtna.routing.greedyStef.PureGreedy
 ##########################################################
 
-DIST_RESTRICT_GREEDY_NAME = DIST_RESTRICT Greedy
-DIST_RESTRICT_GREEDY_NAME_LONG = DIST_RESTRICTGreedy
-DIST_RESTRICT_GREEDY_NAME_SHORT = DRG
-DIST_RESTRICT_GREEDY_FOLDER = DRG
+PURE_GREEDY_NAME = Pure Greedy
+PURE_GREEDY_NAME_LONG = pureGreedy
+PURE_GREEDY_NAME_SHORT = PG
+PURE_GREEDY_FOLDER = PG
 
-DIST_RESTRICT_GREEDY_TTL_NAME = TTL
-DIST_RESTRICT_GREEDY_TTL_NAME_LONG = ttl
-DIST_RESTRICT_GREEDY_TTL_NAME_SHORT = t
-
-DIST_RESTRICT_GREEDY_MAXBACK_NAME = maxback
-DIST_RESTRICT_GREEDY_MAXBACK_NAME_LONG = maxback
-DIST_RESTRICT_GREEDY_MAXBACK_NAME_SHORT = mb
+PURE_GREEDY_TTL_NAME = TTL
+PURE_GREEDY_TTL_NAME_LONG = ttl
+PURE_GREEDY_TTL_NAME_SHORT = t

@@ -22,7 +22,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 # 
 # ---------------------------------------
-# DistRestrictGreedy.properties
+# DepthFirstEdgeGreedy.properties
 # ---------------------------------------
 # (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
 # and Contributors 
@@ -35,18 +35,14 @@
 # 
 
 ##########################################################
-## gtna.routing.greedyVariations.DistRestrictGreedy
+## gtna.routing.greedyVariations.GRAVITY_PRESSURE
 ##########################################################
 
-DIST_RESTRICT_GREEDY_NAME = DIST_RESTRICT Greedy
-DIST_RESTRICT_GREEDY_NAME_LONG = DIST_RESTRICTGreedy
-DIST_RESTRICT_GREEDY_NAME_SHORT = DRG
-DIST_RESTRICT_GREEDY_FOLDER = DRG
+GRAVITY_PRESSURE_NAME =  Gravity-Pressure
+GRAVITY_PRESSURE_NAME_LONG = Gravity-Pressure Routing
+GRAVITY_PRESSURE_NAME_SHORT = GP
+GRAVITY_PRESSURE_FOLDER = GP
 
-DIST_RESTRICT_GREEDY_TTL_NAME = TTL
-DIST_RESTRICT_GREEDY_TTL_NAME_LONG = ttl
-DIST_RESTRICT_GREEDY_TTL_NAME_SHORT = t
-
-DIST_RESTRICT_GREEDY_MAXBACK_NAME = maxback
-DIST_RESTRICT_GREEDY_MAXBACK_NAME_LONG = maxback
-DIST_RESTRICT_GREEDY_MAXBACK_NAME_SHORT = mb
+GRAVITY_PRESSURE_TTL_NAME = TTL
+GRAVITY_PRESSURE_TTL_NAME_LONG = ttl
+GRAVITY_PRESSURE_TTL_SHORT = t

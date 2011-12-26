@@ -8,12 +8,12 @@
 # 
 # Project Info:  http://www.p2p.tu-darmstadt.de/research/gtna/
 # 
-# GTNA is free software: you can redistribute it and/or modify
+# GTNA is free software: you can reFACTORribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 # 
-# GTNA is distributed in the hope that it will be useful,
+# GTNA is FACTORributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -22,7 +22,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 # 
 # ---------------------------------------
-# DistRestrictGreedy.properties
+# FactorRestrictEdgeGreedy.properties
 # ---------------------------------------
 # (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
 # and Contributors 
@@ -35,18 +35,18 @@
 # 
 
 ##########################################################
-## gtna.routing.greedyVariations.DistRestrictGreedy
+## gtna.routing.greedyVariations.FactorRestrictEdgeGreedy
 ##########################################################
 
-DIST_RESTRICT_GREEDY_NAME = DIST_RESTRICT Greedy
-DIST_RESTRICT_GREEDY_NAME_LONG = DIST_RESTRICTGreedy
-DIST_RESTRICT_GREEDY_NAME_SHORT = DRG
-DIST_RESTRICT_GREEDY_FOLDER = DRG
+FACTOR_RESTRICT_EDGE_GREEDY_NAME = FACTOR_RESTRICT Edge Greedy
+FACTOR_RESTRICT_EDGE_GREEDY_NAME_LONG = FACTOR_RESTRICT EdgeGreedy
+FACTOR_RESTRICT_EDGE_GREEDY_NAME_SHORT = FREG
+FACTOR_RESTRICT_EDGE_GREEDY_FOLDER = FREG
 
-DIST_RESTRICT_GREEDY_TTL_NAME = TTL
-DIST_RESTRICT_GREEDY_TTL_NAME_LONG = ttl
-DIST_RESTRICT_GREEDY_TTL_NAME_SHORT = t
+FACTOR_RESTRICT_EDGE_GREEDY_TTL_NAME = TTL
+FACTOR_RESTRICT_EDGE_GREEDY_TTL_NAME_LONG = ttl
+FACTOR_RESTRICT_EDGE_GREEDY_TTL_NAME_SHORT = t
 
-DIST_RESTRICT_GREEDY_MAXBACK_NAME = maxback
-DIST_RESTRICT_GREEDY_MAXBACK_NAME_LONG = maxback
-DIST_RESTRICT_GREEDY_MAXBACK_NAME_SHORT = mb
+FACTOR_RESTRICT_EDGE_GREEDY_MAXBACK_NAME = maxback
+FACTOR_RESTRICT_EDGE_GREEDY_TTL_MAXBACK_NAME_LONG = maxback
+FACTOR_RESTRICT_EDGE_GREEDY_TTL_MAXBACK_NAME_SHORT = mb
