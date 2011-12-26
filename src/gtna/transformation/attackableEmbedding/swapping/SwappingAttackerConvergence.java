@@ -43,7 +43,9 @@ import java.util.Random;
 
 
 /**
- * @author "Benjamin Schiller" idea: offer random ids to prevent convergence
+ * attacker behaving randomly
+ * @author stefanieroos
+ *
  */
 public class SwappingAttackerConvergence extends SwappingNode {
 	

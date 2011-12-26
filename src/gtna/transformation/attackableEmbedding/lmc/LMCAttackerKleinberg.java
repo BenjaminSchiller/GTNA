@@ -42,8 +42,9 @@ import java.util.Random;
 
 
 /**
- * @author "Benjamin Schiller"
- * 
+ * Attacker preventing nodes from adapting 
+ * @author stefanieroos
+ *
  */
 
 public class LMCAttackerKleinberg extends LMCNode{

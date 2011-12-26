@@ -45,8 +45,9 @@ import java.util.Random;
 
 
 /**
- * @author "Benjamin Schiller"
- * 
+ * abstract Node type for round-based embeddings
+ * @author stefanieroos
+ *
  */
 
 public abstract class AttackableEmbeddingNode extends Node{

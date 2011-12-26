@@ -41,8 +41,9 @@ import java.util.Random;
 
 
 /**
- * @author "Benjamin Schiller"
- * 
+ * attacker behaving randomly
+ * @author stefanieroos
+ *
  */
 public class LMCAttackerConvergence extends LMCNode{
 	

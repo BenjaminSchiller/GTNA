@@ -45,8 +45,9 @@ import java.util.Random;
 
 
 /**
- * @author "Benjamin Schiller"
- * 
+ * regular swapping behavior
+ * @author stefanieroos
+ *
  */
 public class SwappingNode extends AttackableEmbeddingNode {
 	

@@ -44,8 +44,9 @@ import java.util.Random;
 
 
 /**
- * @author "Benjamin Schiller"
- * 
+ * attacker that tries to make the ID space contract in one point
+ * @author stefanieroos
+ *
  */
 
 public class LMCAttackerContraction extends LMCNode{

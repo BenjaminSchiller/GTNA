@@ -49,8 +49,11 @@ import java.util.Random;
 
 
 /**
- * @author "Benjamin Schiller"
+ * execute LMC embedding on a graph with node IDs in [0,1)
+ * as described in Schiller et al:  "Attack Resistant Network Embeddings for Darknets"
  * 
+ * @author stefanieroos
+ *
  */
 
 public class LMC extends AttackableEmbedding{
@@ -111,7 +114,7 @@ public class LMC extends AttackableEmbedding{
 	 C,
 	 String attack, String attackerSelection, int attackers) {
 	 super(iterations, "LMC", new String[] { "ITERATIONS", "MODE", "P",
-	 "DELTA", "C", "ATTACK", "ATTACKER_SELECTION", "ATTACKERS" },
+	 "DELTA", "C", "ATTACK", "ATTACKERSELECTION", "ATTACKERS" },
 	 new String[] { "" + iterations, mode, "" + P, deltaMode,
 	 "" + C, attack, attackerSelection, "" + attackers });
 	 this.mode = mode;

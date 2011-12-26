@@ -47,8 +47,9 @@ import java.util.Random;
 
 
 /**
- * @author "Benjamin Schiller"
- * 
+ * regular node behaviors in LMC
+ * @author stefanieroos
+ *
  */
 
 public class LMCNode extends AttackableEmbeddingNode{

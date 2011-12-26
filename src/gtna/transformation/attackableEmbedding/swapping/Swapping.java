@@ -48,8 +48,10 @@ import java.util.Random;
 
 
 /**
- * @author "Benjamin Schiller"
- * 
+ * an embedding achieved by swapping IDs as described in Sandberg:
+ * "Searching in a Small World " 
+ * @author stefanieroos
+ *
  */
 
 public class Swapping extends AttackableEmbedding{
@@ -93,7 +95,7 @@ public class Swapping extends AttackableEmbedding{
 	 public Swapping(int iterations, double delta, String attack,
 	 String attackerSelection, int attackers) {
 	 super(iterations, "SWAPPING", new String[] { "ITERATIONS", "DELTA",
-	 "ATTACK", "ATTACKER_SELECTION", "ATTACKERS" }, new String[] {
+	 "ATTACK", "ATTACKERSELECTION", "ATTACKERS" }, new String[] {
 	 "" + iterations, "" + delta, attack, attackerSelection,
 	 "" + attackers });
 	 this.iterations = iterations;

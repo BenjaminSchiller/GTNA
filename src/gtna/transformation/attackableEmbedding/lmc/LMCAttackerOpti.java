@@ -1,11 +1,19 @@
 package gtna.transformation.attackableEmbedding.lmc;
 
 import gtna.graph.Graph;
+
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
 
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * attacker that has the knowledge of victim's neighbor's IDs and based on this knowledge
+ * minimizines  the expected improvement, i.e., the difference between the product of distance 
+ * after and before one embedding step
+ * @author stefanieroos
+ *
+ */
 
 public class LMCAttackerOpti extends LMCNode {
 	public static double interval = 0.001;
@@ -85,6 +93,16 @@ public class LMCAttackerOpti extends LMCNode {
 				return (b-a)*(fa + fb)/2;
 			}
 			
+			/**
+			 * compute the expectation given the neighbors and a suggested attacker position
+			 * using rectangular numerical integration
+			 * @param neighbors
+			 * @param attacker
+			 * @param a
+			 * @param b
+			 * @param victim
+			 * @return
+			 */
 			public static double getIntegralLMCRectangular(double[] neighbors, double attacker, double a, double b, double victim){
 				double x = (a+b)/2;
 				double po = 1;
@@ -104,7 +122,16 @@ public class LMCAttackerOpti extends LMCNode {
 				return getIntegralRectangular(a,b,f);
 				
 			}
-			
+			/**
+			 * compute the expectation given the neighbors and a suggested attacker position
+			 * using Trapez numerical integration
+			 * @param neighbors
+			 * @param attacker
+			 * @param a
+			 * @param b
+			 * @param victim
+			 * @return
+			 */
 			public static double getIntegralLMCTrapez(double[] neighbors, double attacker, double a, double b, double victim){
 				double po = 1;
 				for (int i = 0; i < neighbors.length; i++){
