@@ -49,6 +49,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
+ * implement the Kleinberg Small World Model as described in Kleinberg's
+ * 'The Small-World Phenomenon: An Algorithmic Perspective'
  * @author stefanie
  *
  */
@@ -67,7 +69,6 @@ public class Kleinberg extends NetworkImpl {
 		
 		private boolean WRAPAROUND;
 		
-		private boolean MANHATTAN;
 		
 		/**
 		 * 
@@ -78,19 +79,18 @@ public class Kleinberg extends NetworkImpl {
 		 * @param CLUSTERING_EXPONENT
 		 * @param BIDIRECTIONAL
 		 * @param WRAPAROUND: wraparound with modulus edgeLength?
-		 * @param MANHATTAN: manhattan distance or euclidean
 		 * @param ra
 		 * @param t
 		 */
 	
 		public Kleinberg(int edgeLength, int DIMENSIONS, int LOCAL_DISTANCE,
 				int LONG_RANGE_CONTACTS, double CLUSTERING_EXPONENT,
-				boolean BIDIRECTIONAL, boolean WRAPAROUND, boolean MANHATTAN, RoutingAlgorithm ra, Transformation[] t) {
+				boolean BIDIRECTIONAL, boolean WRAPAROUND, RoutingAlgorithm ra, Transformation[] t) {
 			super("KLEINBERG", (int)Math.pow(edgeLength,DIMENSIONS), new String[] { "DIMENSIONS",
 					"LOCAL_DISTANCE", "LONG_RANGE_CONTACTS", "CLUSTERING_EXPONENT",
-					"BIDIRECTIONAL", "WRAPAROUND", "MANHATTAN"}, new String[] { "" + DIMENSIONS,
+					"BIDIRECTIONAL", "WRAPAROUND"}, new String[] { "" + DIMENSIONS,
 					"" + LOCAL_DISTANCE, "" + LONG_RANGE_CONTACTS,
-					"" + CLUSTERING_EXPONENT, "" + BIDIRECTIONAL, ""+WRAPAROUND, ""+MANHATTAN }, ra, t);
+					"" + CLUSTERING_EXPONENT, "" + BIDIRECTIONAL, ""+WRAPAROUND}, ra, t);
 			this.EDGELENGTH = edgeLength;
 			this.DIMENSIONS = DIMENSIONS;
 			this.LOCAL_DISTANCE = LOCAL_DISTANCE;
@@ -98,7 +98,6 @@ public class Kleinberg extends NetworkImpl {
 			this.CLUSTERING_EXPONENT = CLUSTERING_EXPONENT;
 			this.BIDIRECTIONAL = BIDIRECTIONAL;
 			this.WRAPAROUND = WRAPAROUND;
-			this.MANHATTAN = MANHATTAN;
 		}
 	
 		public Graph generate() {
@@ -229,91 +228,91 @@ public class Kleinberg extends NetworkImpl {
 		}
 	
 		public static Kleinberg[] get(int[] n, int d, int p, int q, double r,
-				boolean b, boolean w, boolean m, RoutingAlgorithm ra, Transformation[] t) {
+				boolean b, boolean w, RoutingAlgorithm ra, Transformation[] t) {
 			Kleinberg[] nw = new Kleinberg[n.length];
 			for (int i = 0; i < n.length; i++) {
-				nw[i] = new Kleinberg(n[i], d, p, q, r, b,w,m, ra, t);
+				nw[i] = new Kleinberg(n[i], d, p, q, r, b,w,ra, t);
 			}
 			return nw;
 		}
 	
 		public static Kleinberg[] get(int n, int d, int[] p, int q, double r,
-				boolean b, boolean w, boolean m, RoutingAlgorithm ra, Transformation[] t) {
+				boolean b, boolean w,  RoutingAlgorithm ra, Transformation[] t) {
 			Kleinberg[] nw = new Kleinberg[p.length];
 			for (int i = 0; i < p.length; i++) {
-				nw[i] = new Kleinberg(n, d, p[i], q, r, b, w,m, ra, t);
+				nw[i] = new Kleinberg(n, d, p[i], q, r, b, w, ra, t);
 			}
 			return nw;
 		}
 	
 		public static Kleinberg[] get(int n, int d, int p, int[] q, double r,
-				boolean b, boolean w, boolean m, RoutingAlgorithm ra, Transformation[] t) {
+				boolean b, boolean w,  RoutingAlgorithm ra, Transformation[] t) {
 			Kleinberg[] nw = new Kleinberg[q.length];
 			for (int i = 0; i < q.length; i++) {
-				nw[i] = new Kleinberg(n, d, p, q[i], r, b, w,m, ra, t);
+				nw[i] = new Kleinberg(n, d, p, q[i], r, b, w, ra, t);
 			}
 			return nw;
 		}
 	
 		public static Kleinberg[] get(int n, int d, int p, int q, double[] r,
-				boolean b, boolean w, boolean m, RoutingAlgorithm ra, Transformation[] t) {
+				boolean b, boolean w,  RoutingAlgorithm ra, Transformation[] t) {
 			Kleinberg[] nw = new Kleinberg[r.length];
 			for (int i = 0; i < r.length; i++) {
-				nw[i] = new Kleinberg(n, d, p, q, r[i], b, w, m, ra, t);
+				nw[i] = new Kleinberg(n, d, p, q, r[i], b, w,  ra, t);
 			}
 			return nw;
 		}
 	
 		public static Kleinberg[][] getXY(int n, int d, int[] p, int[] q, double r,
-				boolean b, boolean w, boolean m, RoutingAlgorithm ra, Transformation[] t) {
+				boolean b, boolean w,  RoutingAlgorithm ra, Transformation[] t) {
 			Kleinberg[][] nw = new Kleinberg[q.length][];
 			for (int i = 0; i < q.length; i++) {
-				nw[i] = Kleinberg.get(n, d, p, q[i], r, b, w, m, ra, t);
+				nw[i] = Kleinberg.get(n, d, p, q[i], r, b, w,  ra, t);
 			}
 			return nw;
 		}
 	
 		public static Kleinberg[][] getYX(int n, int d, int[] p, int[] q, double r,
-				boolean b, boolean w, boolean m, RoutingAlgorithm ra, Transformation[] t) {
+				boolean b, boolean w,  RoutingAlgorithm ra, Transformation[] t) {
 			Kleinberg[][] nw = new Kleinberg[p.length][];
 			for (int i = 0; i < p.length; i++) {
-				nw[i] = Kleinberg.get(n, d, p[i], q, r, b, w, m, ra, t);
+				nw[i] = Kleinberg.get(n, d, p[i], q, r, b, w,  ra, t);
 			}
 			return nw;
 		}
 	
 		public static Kleinberg[][] getXY(int n, int d, int[] p, int q, double[] r,
-				boolean b, boolean w, boolean m, RoutingAlgorithm ra, Transformation[] t) {
+				boolean b, boolean w,  RoutingAlgorithm ra, Transformation[] t) {
 			Kleinberg[][] nw = new Kleinberg[r.length][];
 			for (int i = 0; i < r.length; i++) {
-				nw[i] = Kleinberg.get(n, d, p, q, r[i], b, w, m, ra, t);
+				nw[i] = Kleinberg.get(n, d, p, q, r[i], b, w, ra, t);
 			}
 			return nw;
 		}
 	
 		public static Kleinberg[][] getYX(int n, int d, int[] p, int q, double[] r,
-				boolean b, boolean w, boolean m, RoutingAlgorithm ra, Transformation[] t) {
+				boolean b, boolean w,  RoutingAlgorithm ra, Transformation[] t) {
 			Kleinberg[][] nw = new Kleinberg[p.length][];
 			for (int i = 0; i < p.length; i++) {
-				nw[i] = Kleinberg.get(n, d, p[i], q, r, b, w, m, ra, t);
+				nw[i] = Kleinberg.get(n, d, p[i], q, r, b, w,  ra, t);
 			}
 			return nw;
 		}
 	
 		public static Kleinberg[][] getXY(int n, int d, int p, int q[], double[] r,
-				boolean b, boolean w, boolean m, RoutingAlgorithm ra, Transformation[] t) {
+				boolean b, boolean w,  RoutingAlgorithm ra, Transformation[] t) {
 			Kleinberg[][] nw = new Kleinberg[r.length][];
 			for (int i = 0; i < r.length; i++) {
-				nw[i] = Kleinberg.get(n, d, p, q, r[i], b, w, m, ra, t);
+				nw[i] = Kleinberg.get(n, d, p, q, r[i], b, w, ra, t);
 			}
 			return nw;
 		}
 	
 		public static Kleinberg[][] getYX(int n, int d, int p, int[] q, double[] r,
-				boolean b, boolean w, boolean m, RoutingAlgorithm ra, Transformation[] t) {
+				boolean b, boolean w,  RoutingAlgorithm ra, Transformation[] t) {
 			Kleinberg[][] nw = new Kleinberg[q.length][];
 			for (int i = 0; i < q.length; i++) {
-				nw[i] = Kleinberg.get(n, d, p, q[i], r, b, w, m, ra, t);
+				nw[i] = Kleinberg.get(n, d, p, q[i], r, b, w,  ra, t);
 			}
 			return nw;
 		}

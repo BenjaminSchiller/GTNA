@@ -43,12 +43,18 @@ import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartitionSimple;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
+import gtna.transformation.Transformation;
 
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Vector;
 
-/**
+/** 
+ * creating a graph with IDs on a ring and
+ *   - a scale-free degree distribution
+ *   - undirected
+ *   - local links to neighbors within distance C for some constant C
+ *   - long-distance links with P(l = d) ~ 1/d, where l is the distance of connected nodes 
  * @author stefanie
  *
  */
@@ -58,9 +64,10 @@ public class ScaleFreeUndirected extends NetworkImpl {
 	private double alpha;
 	private int cutoff;
 	
-	public ScaleFreeUndirected(int nodes, double alpha, int C, int cutoff, RoutingAlgorithm ra){
+	public ScaleFreeUndirected(int nodes, double alpha, int C, int cutoff, RoutingAlgorithm ra,
+			 Transformation[] t){
 		super("SCALEFREE_SMALL_WORLD", nodes, new String[]{"SIZE", "C", "ALPHA", "CUTOFF"}, 
-				new String[]{""+nodes, ""+C,""+alpha, ""+cutoff}, ra, null); 
+				new String[]{""+nodes, ""+C,""+alpha, ""+cutoff}, ra, t); 
 		this.interval = (double)1/nodes;
 		this.C = C;
 		this.alpha = alpha;
@@ -86,7 +93,7 @@ public class ScaleFreeUndirected extends NetworkImpl {
 		}
 		idSpace.setPartitions(parts);
 		
-		//label distribution
+		//label distribution: each node is given a label that determines its potential degree distribution
 		double sum = 0;
 		for (int k = 1; k <= this.cutoff; k++){
 			sum = sum + Math.pow((double)k,-this.alpha);
@@ -114,7 +121,8 @@ public class ScaleFreeUndirected extends NetworkImpl {
 		}
 		
 		Edges edges = new Edges(nodes,(int)Math.round(sum*this.nodes()));
-		//create local edges
+		
+		//create local edges: randomly choose node within distance C
 		for (int i = 0; i < nodes.length; i++){
 			int n1 = (i + rand.nextInt(this.C)+1) % nodes.length;
 			edges.add(i, n1);
@@ -123,7 +131,7 @@ public class ScaleFreeUndirected extends NetworkImpl {
 			edges.add(i, n2);
 			edges.add(n2,i);
 		}
-		//create long-range edges
+		//create long-range edges: use labels and distance for each pair of nodes
 		double norm = 0;
 		for (int i = 1; i <= nodes.length/2; i++){
 			norm = norm + 2/(i*this.interval);

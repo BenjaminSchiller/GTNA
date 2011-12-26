@@ -49,6 +49,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
+ * implement the Kleinberg model in one dimension
+ * 'The Small-World Phenomenon: An Algorithmic Perspective'
  * @author stefanie
  *
  */

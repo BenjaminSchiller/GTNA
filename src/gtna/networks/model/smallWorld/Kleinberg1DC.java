@@ -14,6 +14,9 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
+ * implement the Kleinberg model in one dimension, chosen neighbors within distance C
+ * as local contacts instead of ring neighbors
+ * 'The Small-World Phenomenon: An Algorithmic Perspective'
  * @author stefanie
  *
  */
