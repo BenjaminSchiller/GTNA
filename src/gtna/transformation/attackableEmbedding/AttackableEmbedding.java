@@ -54,8 +54,9 @@ import java.util.HashSet;
 import java.util.Random;
 
 /**
- * @author "Benjamin Schiller"
- * 
+ * abstract class for an embedding, including possibility of malicious nodes
+ * @author stefanieroos
+ *
  */
 
 	public abstract class AttackableEmbedding extends TransformationImpl
@@ -78,7 +79,14 @@ import java.util.Random;
 	 }
 	
 	 public boolean applicable(Graph g) {
+		 GraphProperty[] prop = g.getProperties("ID_SPACE");
+		 if (prop.length == 0){
+			 return false;
+		 }
+		 if (prop[0] instanceof DIdentifierSpace){
 		 return true;
+		 }
+		 return false;
 	  //return g.nodes[0] instanceof RingNode;
 	 }
 	
