@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.routing.greddyStef;
+package gtna.routing.greedyVariations;
 
 import gtna.graph.Node;
 import gtna.id.BIIdentifier;
@@ -43,6 +43,7 @@ import java.math.BigInteger;
 import java.util.Random;
 
 /**
+ * greedy normal
  * @author stefanie
  *
  */

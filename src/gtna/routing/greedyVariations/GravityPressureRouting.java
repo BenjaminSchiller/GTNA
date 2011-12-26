@@ -1,4 +1,4 @@
-package gtna.routing.greddyStef;
+package gtna.routing.greedyVariations;
 
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
@@ -16,6 +16,13 @@ import gtna.routing.RoutingAlgorithmImpl;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Random;
+
+/**
+ * GravityPressure Routing as described in 'Hyperbolic Embedding and Routing for
+ *  Dynamic Graphs' by Andrej Cvetkovski Mark Crovella
+ * @author stefanieroos
+ *
+ */
 
 public class GravityPressureRouting extends RoutingAlgorithmImpl{
 	int ttl;
@@ -136,14 +143,27 @@ public class GravityPressureRouting extends RoutingAlgorithmImpl{
 		}
 	}
 	
+	/**
+	 * returns the index of next node as well the minimal distance to target of all nodes
+	 * seen up to that point
+	 * @param current
+	 * @param target
+	 * @param rand
+	 * @param nodes
+	 * @param minDist
+	 * @return
+	 */
 	public double[] getNextD(int current,
 			DIdentifier target, Random rand, Node[] nodes, double minDist){
 		double currentDist = this.idSpaceD.getPartitions()[current]
 				.distance(target);
+		//check if in Pressure phase
 		if (this.mode == false){
+			//change to Gravity mode if node offers an improvement
 			if (currentDist < minDist){
 				this.mode = true;
 			} else {
+				//choose node closest to target among those with least visits
 				int minVisits = Integer.MAX_VALUE;
 				double min = Double.MAX_VALUE;
 				int minNode = -1;
@@ -165,6 +185,7 @@ public class GravityPressureRouting extends RoutingAlgorithmImpl{
 			}
 		}
 		if (this.mode){
+			//determine neighbor closest to target
 			double min = Double.MAX_VALUE;
 			int minNode = -1;
 			for (int out : nodes[current].getOutgoingEdges()) {
@@ -177,7 +198,8 @@ public class GravityPressureRouting extends RoutingAlgorithmImpl{
 			if (min < minDist){
 				return new double[]{(double)minNode,min};
 			} else {
-				this.mode = true;
+				//change to pressure mode if node is farer away from destination
+				this.mode = false;
 				return this.getNextD(current, target, rand, nodes, minDist);
 			}
 		}

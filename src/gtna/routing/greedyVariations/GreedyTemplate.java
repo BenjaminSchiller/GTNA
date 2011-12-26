@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.routing.greddyStef;
+package gtna.routing.greedyVariations;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -54,6 +54,7 @@ import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithmImpl;
 
 /**
+ * templete for greedy-like algorithms
  * @author stefanie
  *
  */
@@ -89,6 +90,9 @@ public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
 		this.ttl = ttl;
 	}
 
+	/**
+	 * routing to a target, determine if double of BigInteger identifier
+	 */
 	@Override
 	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
 		this.setSets(graph.getNodes().length);
@@ -101,6 +105,13 @@ public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
 		}
 	}
 
+	/**
+	 * the route request
+	 * @param graph
+	 * @param start
+	 * @param rand
+	 * @return
+	 */
 	private Route routeToRandomTargetBI(Graph graph, int start, Random rand) {
 		BIIdentifier target = (BIIdentifier) this.idSpaceBI.randomID(rand);
 		while (this.pBI[start].contains(target)) {
@@ -110,6 +121,16 @@ public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
 				graph.getNodes());
 	}
 
+	/**
+	 * generic method for the routing procedure:
+	 * check if target is reached, if not select the next node or fail
+	 * @param route
+	 * @param current
+	 * @param target
+	 * @param rand
+	 * @param nodes
+	 * @return
+	 */
 	private Route routeBI(ArrayList<Integer> route, int current,
 			BIIdentifier target, Random rand, Node[] nodes) {
 		route.add(current);
@@ -126,6 +147,13 @@ public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
 		return this.routeBI(route, minNode, target, rand, nodes);
 	}
 
+	/**
+	 * route request
+	 * @param graph
+	 * @param start
+	 * @param rand
+	 * @return
+	 */
 	private Route routeToRandomTargetD(Graph graph, int start, Random rand) {
 		DIdentifier target = (DIdentifier) this.idSpaceD.randomID(rand);
 		while (this.pD[start].contains(target)) {
@@ -135,6 +163,16 @@ public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
 				graph.getNodes());
 	}
 
+	/**
+	 * generic method for the routing procedure:
+	 * check if target is reached, if not select the next node or fail
+	 * @param route
+	 * @param current
+	 * @param target
+	 * @param rand
+	 * @param nodes
+	 * @return
+	 */
 	private Route routeD(ArrayList<Integer> route, int current,
 			DIdentifier target, Random rand, Node[] nodes) {
 		route.add(current);
@@ -179,12 +217,25 @@ public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
 		}
 	}
 	
+	/**
+	 * abstract method for getting the next nodes
+	 * @param current
+	 * @param target
+	 * @param rand
+	 * @param nodes
+	 * @return
+	 */
 	public abstract int getNextD(int current,
 			DIdentifier target, Random rand, Node[] nodes);
 	
 	public abstract int getNextBI(int current,
 			BIIdentifier target, Random rand, Node[] nodes);
 	
+	
+	/**
+	 * abstract method initiating the necessary objects
+	 * @param nr
+	 */
 	public abstract void setSets(int nr);
 
 }

@@ -33,11 +33,12 @@
  * ---------------------------------------
  *
  */
-package gtna.routing.greddyStef;
+package gtna.routing.greedyVariations;
 
 import java.util.HashMap;
 
 /**
+ * abstract class for greedy variations marking nodes
  * @author stefanie
  *
  */

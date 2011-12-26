@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.routing.greddyStef;
+package gtna.routing.greedyVariations;
 
 import gtna.graph.Node;
 import gtna.id.BIIdentifier;
@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 /**
+ * a weighted depth first search (= Freenet routing)
  * @author stefanie
  *
  */
