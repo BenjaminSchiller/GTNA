@@ -94,8 +94,8 @@ public class MDIdentifier implements DIdentifier, Comparable<MDIdentifier> {
 		double temp;
 		for ( int i = 0; i < this.idSpace.getDimensions(); i++ ) {
 			if ( this.idSpace.isWrapAround() ) {
-				 temp = Math.abs(this.coordinates[i] - to.getCoordinate(i))
-					% (this.idSpace.getModulus(i) / 2.0);
+				 temp = Math.min(Math.abs(this.coordinates[i]-to.getCoordinate(i)), 
+						 Math.min(this.idSpace.getModulus(i)+this.coordinates[i]-to.getCoordinate(i), this.idSpace.getModulus(i)-this.coordinates[i]+to.getCoordinate(i)));
 			} else {
 				 temp = Math.abs(this.coordinates[i] - to.getCoordinate(i));
 			}

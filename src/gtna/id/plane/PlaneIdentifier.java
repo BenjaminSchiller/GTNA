@@ -76,10 +76,16 @@ public class PlaneIdentifier implements DIdentifier, Comparable<PlaneIdentifier>
 	public Double distance(Identifier<Double> id) {
 		PlaneIdentifier to = (PlaneIdentifier) id;
 		if (this.idSpace.isWrapAround()) {
-			double dx = Math.abs(this.x - to.getX())
-					% (this.idSpace.getModulusX() / 2.0);
-			double dy = Math.abs(this.y - to.getY())
-					% (this.idSpace.getModulusY() / 2.0);
+//			double dx = Math.abs(this.x - to.getX())
+//					% (this.idSpace.getModulusX() / 2.0);
+//			double dy = Math.abs(this.y - to.getY())
+//					% (this.idSpace.getModulusY() / 2.0);
+			double dx = Math.min(Math.abs(this.x - to.getX()), 
+					             Math.min(this.getIdSpace().getModulusX()+ this.x - to.getX(), 
+					            		  this.getIdSpace().getModulusX()- this.x + to.getX()));
+			double dy = Math.min(Math.abs(this.y - to.getY()), 
+		             Math.min(this.getIdSpace().getModulusY()+ this.y - to.getY(), 
+		            		  this.getIdSpace().getModulusY()- this.y + to.getY()));
 			return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 		} else {
 			double dx = this.x - to.getX();
