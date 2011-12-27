@@ -36,9 +36,11 @@
 package gtna;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import gtna.graph.Graph;
@@ -47,6 +49,7 @@ import gtna.io.GraphWriter;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.ErdosRenyi;
+import gtna.networks.util.ReadableFile;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.Greedy;
 import gtna.routing.greedy.GreedyBacktracking;
@@ -67,12 +70,13 @@ import gtna.util.Stats;
 public class GDAEvaluation {
 	public static void main(String[] args) {
 		Stats stats = new Stats();
-		int times = 5;
+		int times = 40;
 		int threads = 10;
 		int sizeFactor = 1000;
 		int degree = 10;
 
 		ProgressMonitor pm = new ProgressMonitor();
+		Random rand = new Random();
 
 		Config.overwrite("METRICS", "ROUTING");
 		// R for routing
@@ -93,35 +97,26 @@ public class GDAEvaluation {
 				new MelanconHerman(100, 100, null), new BubbleTree(100, 100, null),
 				new FruchtermanReingold(1, new double[] { 100, 100 }, false, 100, null) };
 		for (GraphDrawingAbstract originalT : t) {
+			for (int j = 0; j < times; j++) {
+				sTArray = getTransformations(originalT, rand);		
+				Network caida = new ReadableFile("caida", "CAIDA", "./data/cycle-aslinks.l7.t1.c001749.20111206.txt.gtna", null, sTArray);
+				todoList.add(caida);
+				
+				sTArray = getTransformations(originalT, rand);
+				Network wot = new ReadableFile("wot", "WOT", "./data/graph-wot.txt", null, sTArray);
+				todoList.add(wot);
+				
+				sTArray = getTransformations(originalT, rand);
+				Network spi = new ReadableFile("spi", "SPI", "./data/graph-spi.txt", null, sTArray);
+				todoList.add(spi);				
 
-			for (int i = 1; i <= 10; i++) {
-				for (int j = 0; j < times; j++) {
-					GraphDrawingAbstract singleT = originalT.clone();
-
-					if (singleT instanceof HierarchicalAbstract) {
-						sTArray = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
-								new GiantConnectedComponent(), new BFS("hd"), singleT };
-					} else {
-						sTArray = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
-								new GiantConnectedComponent(), singleT };
-					}
-
+				for (int i = 1; i <= 10; i++) {
+					sTArray = getTransformations(originalT, rand);
 					nw = new ErdosRenyi(i * sizeFactor, degree, true, null, sTArray);
-					lastCounter.put((i * sizeFactor) + "/" + nw.folder(), 0);
 					todoList.add(nw);
-
-					singleT = originalT.clone();
-
-					if (singleT instanceof HierarchicalAbstract) {
-						sTArray = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
-								new GiantConnectedComponent(), new BFS("hd"), singleT };
-					} else {
-						sTArray = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
-								new GiantConnectedComponent(), singleT };
-					}
-
+					
+					sTArray = getTransformations(originalT, rand);
 					nw = new BarabasiAlbert(i * sizeFactor, degree, null, sTArray);
-					lastCounter.put((i * sizeFactor) + "/" + nw.folder(), 0);
 					todoList.add(nw);
 				}
 			}
@@ -143,7 +138,7 @@ public class GDAEvaluation {
 
 		pm.output("Starting to generate " + todoList.size() + " networks");
 		pm.setMaxNetworks(todoList.size());
-		
+
 		for (int i = 0; i < threads; i++) {
 			nwThreads[i].start();
 		}
@@ -151,22 +146,40 @@ public class GDAEvaluation {
 			try {
 				nwThreads[i].join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
 		stats.end();
 	}
+	
+	private static Transformation[] getTransformations(GraphDrawingAbstract gda, Random rand) {
+		BFS bfs = new BFS("hd");
+		if (rand.nextBoolean()) {
+			bfs = new BFS("rand");
+		}
+
+		Transformation[] t;
+		if (gda instanceof HierarchicalAbstract) {
+			t = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
+					new GiantConnectedComponent(), bfs, gda.clone() };
+		} else {
+			t = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
+					new GiantConnectedComponent(), gda.clone() };
+		}
+		return t;
+	}
 
 	private static class ProgressMonitor {
 		private Date start;
 		private int generatedNetworks = 0;
 		private int maxNetworks;
+		Random rand;
 
 		public ProgressMonitor() {
 			start = new Date();
 			output("Started ProgressMonitor");
+			rand = new Random();
 		}
 
 		public void setMaxNetworks(int mNW) {
@@ -176,11 +189,16 @@ public class GDAEvaluation {
 		public void tickNW() {
 			generatedNetworks++;
 			double runtime = new Date().getTime() - start.getTime();
-			output("Generated network " + generatedNetworks + " of " + maxNetworks + " after running for " + (runtime/1000) + " seconds");
+			output("Generated network " + generatedNetworks + " of " + maxNetworks + " after running for "
+					+ (runtime / 1000) + " seconds");
+			if (rand.nextBoolean() && rand.nextBoolean()) {
+				System.gc();
+			}
 		}
 
 		public void output(String text) {
-			System.out.println((new Date()) + " -- " + text);
+			SimpleDateFormat ts = new SimpleDateFormat("MMM d HH:mm:ss");
+			System.out.println(ts.format(new Date()) + " -- " + text);
 		}
 	}
 
@@ -207,7 +225,9 @@ public class GDAEvaluation {
 				int graphSize = g.getNodes().length;
 
 				String folderName = "./resources/evaluation/" + graphSize + "/" + nw.folder();
-				int i = lastCounter.get(graphSize + "/" + nw.folder());
+				Integer i = lastCounter.get(graphSize + "/" + nw.folder());
+				if (i == null)
+					i = 0;
 				lastCounter.put(graphSize + "/" + nw.folder(), (i + 1));
 
 				String fileName = folderName + i + ".txt";
@@ -224,18 +244,27 @@ public class GDAEvaluation {
 				}
 
 				pm.output("Thread " + id + " starts generation of " + fileName);
-				
+
 				double startTime = System.currentTimeMillis();
+				double completeTransformationTime = System.currentTimeMillis();
 				Filewriter runtimeLogger = new Filewriter(fileName + ".RUNTIME");
 				for (Transformation t : nw.transformations()) {
+					try {
 					g = t.transform(g);
+					} catch ( GDTransformationException e ) {
+						/*
+						 * Accept an exception *once*, but not twice for the same transformation
+						 */
+						g = t.transform(g);
+					}
 					runtimeLogger.writeln(t.key() + ":" + (System.currentTimeMillis() - startTime));
 					startTime = System.currentTimeMillis();
 				}
 				runtimeLogger.close();
 
 				GraphWriter.writeWithProperties(g, fileName);
-				pm.output("Thread " + id + " wrote " + fileName + " after " + (System.currentTimeMillis() - startTime)/1000 + " seconds");
+				pm.output("Thread " + id + " wrote " + fileName + " after "
+						+ (System.currentTimeMillis() - completeTransformationTime) / 1000 + " seconds");
 				pm.tickNW();
 			}
 		}
