@@ -120,7 +120,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 				continue;
 			}
 			if (currentNode.getDegree() <= 2) {
-				Edge[] edges = currentNode.generateAllEdges();
+				Edge[] edges = currentNode.getEdges();
 				Edge firstEdge = edges[0];
 				int otherEnd = firstEdge.getDst();
 				if (firstEdge.getDst() == currentNode.getIndex()) {

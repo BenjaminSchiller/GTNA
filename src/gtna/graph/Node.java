@@ -48,6 +48,8 @@ public class Node implements Comparable<Node> {
 
 	private int[] outgoingEdges;
 
+	private Edge[] edges = null;
+
 	public Node(int index, Graph graph) {
 		this.index = index;
 		this.graph = graph;
@@ -152,6 +154,13 @@ public class Node implements Comparable<Node> {
 	 */
 	public void setOutgoingEdges(int[] outgoingEdges) {
 		this.outgoingEdges = outgoingEdges;
+	}
+	
+	public Edge[] getEdges() {
+		if ( this.edges == null ) {
+			this.edges = generateAllEdges();
+		}
+		return this.edges;
 	}
 
 	public Edge[] generateAllEdges() {

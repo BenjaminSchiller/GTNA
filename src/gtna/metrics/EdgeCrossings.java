@@ -215,8 +215,8 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 
 	public int calculateCrossings(Node n, Node m, IdentifierSpace idSpace) {
 		int numCross = 0;
-		Edge[] nEdges = n.generateAllEdges();
-		Edge[] mEdges = m.generateAllEdges();
+		Edge[] nEdges = n.getEdges();
+		Edge[] mEdges = m.getEdges();
 		handledEdges = new HashSet<String>();
 		partitions = idSpace.getPartitions();
 		for (Edge nEdge : nEdges) {
