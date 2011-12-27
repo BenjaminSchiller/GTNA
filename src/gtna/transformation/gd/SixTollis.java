@@ -38,7 +38,6 @@ package gtna.transformation.gd;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,7 +52,6 @@ import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingPartition;
 import gtna.metrics.EdgeCrossings;
 import gtna.plot.GraphPlotter;
-import gtna.transformation.Transformation;
 
 /**
  * @author Nico
@@ -106,6 +104,8 @@ public class SixTollis extends CircularAbstract {
 		Node randDst1, randDst2;
 		Edge tempEdge;
 		String tempEdgeString;
+		ArrayList<Node> verticesToAdd;
+		
 		removalList = new HashMap<String, Edge>();
 		HashMap<String, Edge> pairEdges = null;
 		removedVertices = new ArrayList<Node>();
@@ -185,14 +185,14 @@ public class SixTollis extends CircularAbstract {
 				}
 
 				if (firstCounter == (currentVertexDegree - 1) && triangulationEdgesCount > 0)
-					throw new RuntimeException("Could not find anymore pair edges for " + currentVertex.getIndex());
+					throw new GDTransformationException("Could not find anymore pair edges for " + currentVertex.getIndex());
 			}
 
 			/*
 			 * Keep track of wave front and wave center vertices!
 			 */
 
-			waveFrontVertices = new TreeSet<Node>();
+			verticesToAdd = new ArrayList<Node>();
 			for (Edge i : getEdges(currentVertex).values()) {
 				int otherEnd;
 				if (i.getDst() == currentVertex.getIndex()) {
@@ -204,9 +204,13 @@ public class SixTollis extends CircularAbstract {
 				if (removedVertices.contains(tempVertex)) {
 					continue;
 				}
-				waveFrontVertices.add(tempVertex);
-				waveCenterVertices.add(tempVertex);
+				verticesToAdd.add(tempVertex);
 			}
+			Collections.shuffle(verticesToAdd);
+			waveFrontVertices = new TreeSet<Node>(verticesToAdd);
+			Collections.shuffle(verticesToAdd);
+			waveCenterVertices.addAll(verticesToAdd);
+			
 			removedVertices.add(currentVertex);
 			// System.out.println("Adding " + currentVertex.getIndex() +
 			// " to removedVertices");
@@ -343,7 +347,7 @@ public class SixTollis extends CircularAbstract {
 						}
 						System.err.println();
 					}
-					throw new RuntimeException("Cannot find an order for the vertices");
+					throw new GDTransformationException("Cannot find an order for the vertices");
 				}
 			}
 		}
@@ -521,7 +525,7 @@ public class SixTollis extends CircularAbstract {
 				return tempVertex;
 			}
 		}
-		throw new RuntimeException("No vertex left");
+		throw new GDTransformationException("No vertex left");
 	}
 
 	private HashMap<String, Edge> getPairEdges(Node n) {
