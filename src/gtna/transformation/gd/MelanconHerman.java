@@ -68,7 +68,7 @@ public class MelanconHerman extends HierarchicalAbstract {
 	public Graph transform(Graph g) {
 		tree = (SpanningTree) g.getProperty("SPANNINGTREE");
 		if (tree == null) {
-			throw new RuntimeException("SpanningTree property missing");
+			throw new GDTransformationException("SpanningTree property missing");
 		}
 
 		int source = tree.getSrc();
@@ -127,7 +127,7 @@ public class MelanconHerman extends HierarchicalAbstract {
 		int[] children = tree.getChildren(node);
 
 		double dd = lambda * np[node].d;
-		double gamma = theta + Math.PI;
+		double phi = theta + Math.PI;
 		double freeSpace = np[node].f / children.length;
 		double previous = 0;
 		double currAlpha, currRadius;
@@ -135,11 +135,11 @@ public class MelanconHerman extends HierarchicalAbstract {
 		for (int singleSon : children) {
 			currAlpha = np[node].c * np[singleSon].alpha;
 			currRadius = np[node].d * (Math.tan(currAlpha) / (1 - Math.tan(currAlpha)));
-			gamma = gamma + previous + np[singleSon].alpha + freeSpace;
-			double kX = (lambda * currRadius + dd) * Math.cos(gamma);
-			double kY = (lambda * currRadius + dd) * Math.sin(gamma);
+			phi = phi + previous + np[singleSon].alpha + freeSpace;
+			double kX = (lambda * currRadius + dd) * Math.cos(phi);
+			double kY = (lambda * currRadius + dd) * Math.sin(phi);
 			previous = np[singleSon].alpha;
-			secondWalk(singleSon, kX + x, kY + y, lambda * (currRadius / np[singleSon].r), gamma);
+			secondWalk(singleSon, kX + x, kY + y, lambda * (currRadius / np[singleSon].r), phi);
 		}
 	}
 

@@ -142,7 +142,7 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 				delta.subtract ( getCoordinate(u) );
 				currDisp = new MDVector(delta.getDimension(), delta.getCoordinates());
 				double currDispNorm = currDisp.getNorm(); 
-				if ( Double.isNaN(currDispNorm) ) throw new RuntimeException("You broke it");
+				if ( Double.isNaN(currDispNorm) ) throw new GDTransformationException("You broke it");
 				currDisp.divideBy(currDispNorm);
 				currDisp.multiplyWith(fr ( currDispNorm ) );
 				disp[v.getIndex()].add(currDisp);

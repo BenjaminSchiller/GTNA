@@ -174,7 +174,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 				return j;
 		}
 
-		throw new RuntimeException("There's a hole in the RingIdentifierSpace!");
+		throw new GDTransformationException("There's a hole in the RingIdentifierSpace!");
 	}
 
 	protected int getSuccessor(int i) {
@@ -185,7 +185,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 				return j;
 		}
 
-		throw new RuntimeException("There's a hole in the RingIdentifierSpace!");
+		throw new GDTransformationException("There's a hole in the RingIdentifierSpace!");
 	}
 
 	protected void swapPositions(int i, int j) {
