@@ -41,7 +41,6 @@ import java.util.LinkedList;
 import gtna.graph.Graph;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
-import gtna.transformation.Transformation;
 
 /**
  * @author Nico
@@ -205,9 +204,7 @@ public class BubbleTree extends HierarchicalAbstract {
 
 	private Circle enclosingCircle(Circle c1, Circle c2) {
 		/*
-		 * Thanks to
-		 * http://stackoverflow.com/questions/2084695/finding-the-smallest
-		 * -circle-that-encompasses-other-circles/2086118#2086118
+		 * Thanks to http://stackoverflow.com/a/2086118/1116230
 		 */
 		if (circleInEnclosingCircle(c1, c2)) {
 			return c2;
