@@ -40,8 +40,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 
 import gtna.graph.Graph;
 import gtna.io.Filewriter;
@@ -69,14 +69,18 @@ import gtna.util.Stats;
  */
 public class GDAEvaluation {
 	public static void main(String[] args) {
-		Stats stats = new Stats();
-		int times = 40;
+
+		int times = 60;
 		int threads = 10;
 		int sizeFactor = 1000;
 		int degree = 10;
 
+		GDAEvaluation gdae = new GDAEvaluation(times, threads, sizeFactor, degree);
+	}
+
+	public GDAEvaluation(int times, int threads, int sizeFactor, int degree) {
+		Stats stats = new Stats();
 		ProgressMonitor pm = new ProgressMonitor();
-		Random rand = new Random();
 
 		Config.overwrite("METRICS", "ROUTING");
 		// R for routing
@@ -85,11 +89,12 @@ public class GDAEvaluation {
 		Config.overwrite("GNUPLOT_PATH", "C:\\Cygwin\\bin\\gnuplot.exe");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + true);
 
+		String bfsRoot;
 		Transformation[] sTArray;
 		Network nw;
-		ConcurrentHashMap<String, Integer> lastCounter = new ConcurrentHashMap<String, Integer>();
+		HashMap<String, Integer> lastCounter = new HashMap<String, Integer>();
 
-		ArrayList<Network> todoList = new ArrayList<Network>();
+		ArrayList<NetworkTask> todoList = new ArrayList<NetworkTask>();
 		RoutingAlgorithm[] rA = new RoutingAlgorithm[] { new Greedy(25), new GreedyBacktracking(25),
 				new LookaheadSequential(25) };
 		GraphDrawingAbstract[] t = new GraphDrawingAbstract[] { new CanonicalCircularCrossing(1, 100, true, null),
@@ -97,40 +102,52 @@ public class GDAEvaluation {
 				new MelanconHerman(100, 100, null), new BubbleTree(100, 100, null),
 				new FruchtermanReingold(1, new double[] { 100, 100 }, false, 100, null) };
 		for (GraphDrawingAbstract originalT : t) {
+			if (originalT instanceof HierarchicalAbstract) {
+				times = times * 2;
+			}
+			bfsRoot = "hd";
 			for (int j = 0; j < times; j++) {
-				sTArray = getTransformations(originalT, rand);		
-				Network caida = new ReadableFile("caida", "CAIDA", "./data/cycle-aslinks.l7.t1.c001749.20111206.txt.gtna", null, sTArray);
-				todoList.add(caida);
-				
-				sTArray = getTransformations(originalT, rand);
-				Network wot = new ReadableFile("wot", "WOT", "./data/graph-wot.txt", null, sTArray);
-				todoList.add(wot);
-				
-				sTArray = getTransformations(originalT, rand);
-				Network spi = new ReadableFile("spi", "SPI", "./data/graph-spi.txt", null, sTArray);
-				todoList.add(spi);				
-
-				for (int i = 1; i <= 10; i++) {
-					sTArray = getTransformations(originalT, rand);
-					nw = new ErdosRenyi(i * sizeFactor, degree, true, null, sTArray);
-					todoList.add(nw);
-					
-					sTArray = getTransformations(originalT, rand);
-					nw = new BarabasiAlbert(i * sizeFactor, degree, null, sTArray);
-					todoList.add(nw);
+				if (originalT instanceof HierarchicalAbstract && j == times / 2) {
+					bfsRoot = "rand";
 				}
+
+				sTArray = getTransformations(originalT, bfsRoot);
+				Network caida = new ReadableFile("caida", "CAIDA",
+						"./data/cycle-aslinks.l7.t1.c001749.20111206.txt.gtna", null, sTArray);
+				checkAndAdd(caida, lastCounter, todoList);
+
+				sTArray = getTransformations(originalT, bfsRoot);
+				Network wot = new ReadableFile("wot", "WOT", "./data/graph-wot.txt", null, sTArray);
+				checkAndAdd(wot, lastCounter, todoList);
+
+				sTArray = getTransformations(originalT, bfsRoot);
+				Network spi = new ReadableFile("spi", "SPI", "./data/graph-spi.txt", null, sTArray);
+				checkAndAdd(spi, lastCounter, todoList);
+
+				for (int i : new int[] { 1, 5, 10 }) {
+					sTArray = getTransformations(originalT, bfsRoot);
+					nw = new ErdosRenyi(i * sizeFactor, degree, true, null, sTArray);
+					checkAndAdd(nw, lastCounter, todoList);
+
+					sTArray = getTransformations(originalT, bfsRoot);
+					nw = new BarabasiAlbert(i * sizeFactor, degree, null, sTArray);
+					checkAndAdd(nw, lastCounter, todoList);
+				}
+			}
+			if (originalT instanceof HierarchicalAbstract) {
+				times = times / 2;
 			}
 		}
 
 		NetworkThread[] nwThreads = new NetworkThread[threads];
 		for (int i = 0; i < threads; i++) {
-			nwThreads[i] = new NetworkThread(i, lastCounter, pm);
+			nwThreads[i] = new NetworkThread(i, pm);
 		}
 
 		Collections.shuffle(todoList);
 
 		int counter = 0;
-		for (Network n : todoList) {
+		for (NetworkTask n : todoList) {
 			// System.out.println(n.nodes() + "/" + n.folder());
 			nwThreads[counter].add(n);
 			counter = (counter + 1) % threads;
@@ -152,12 +169,9 @@ public class GDAEvaluation {
 
 		stats.end();
 	}
-	
-	private static Transformation[] getTransformations(GraphDrawingAbstract gda, Random rand) {
-		BFS bfs = new BFS("hd");
-		if (rand.nextBoolean()) {
-			bfs = new BFS("rand");
-		}
+
+	private Transformation[] getTransformations(GraphDrawingAbstract gda, String bfsRoot) {
+		BFS bfs = new BFS(bfsRoot);
 
 		Transformation[] t;
 		if (gda instanceof HierarchicalAbstract) {
@@ -170,7 +184,36 @@ public class GDAEvaluation {
 		return t;
 	}
 
-	private static class ProgressMonitor {
+	public void checkAndAdd(Network nw, HashMap<String, Integer> lastCounter, ArrayList<NetworkTask> todoList) {
+		Integer i = lastCounter.get(nw.nodes() + "/" + nw.folder());
+		if (i == null)
+			i = 0;
+		lastCounter.put(nw.nodes() + "/" + nw.folder(), (i + 1));
+		if (!isCompleteDataset(nw, i)) {
+			NetworkTask nwt = new NetworkTask(nw, i);
+			todoList.add(nwt);
+		}
+	}
+
+	public boolean isCompleteDataset(Network nw, int counter) {
+		String prefix = "./resources/evaluation/" + nw.nodes() + "/" + nw.folder() + counter + ".txt";
+		File temp;
+		temp = new File(prefix + "_LOOKAHEAD_LIST_0");
+		if (!temp.exists()) {
+			// return false;
+		}
+		temp = new File(prefix + ".RUNTIME");
+		if (!temp.exists()) {
+			return false;
+		}
+		temp = new File(prefix + "_ID_SPACE_0");
+		if (!temp.exists()) {
+			return false;
+		}
+		return true;
+	}
+
+	private class ProgressMonitor {
 		private Date start;
 		private int generatedNetworks = 0;
 		private int maxNetworks;
@@ -202,47 +245,42 @@ public class GDAEvaluation {
 		}
 	}
 
-	private static class NetworkThread extends Thread {
-		private ArrayList<Network> nws;
-		private ConcurrentHashMap<String, Integer> lastCounter;
+	private class NetworkTask {
+		public Network nw;
+		public int id;
+
+		public NetworkTask(Network nw, int id) {
+			this.nw = nw;
+			this.id = id;
+		}
+
+	}
+
+	private class NetworkThread extends Thread {
+		private ArrayList<NetworkTask> nws;
 		private ProgressMonitor pm;
 		private int id;
 
-		public NetworkThread(int id, ConcurrentHashMap<String, Integer> lastCounter, ProgressMonitor pm) {
-			this.nws = new ArrayList<Network>();
-			this.lastCounter = lastCounter;
+		public NetworkThread(int id, ProgressMonitor pm) {
+			this.nws = new ArrayList<NetworkTask>();
 			this.pm = pm;
 			this.id = id;
 		}
 
-		public void add(Network nw) {
+		public void add(NetworkTask nw) {
 			this.nws.add(nw);
 		}
 
 		public void run() {
-			for (Network nw : nws) {
+			for (NetworkTask nwTask : nws) {
+				Network nw = nwTask.nw;
+				Integer i = nwTask.id;
+
 				Graph g = nw.generate();
 				int graphSize = g.getNodes().length;
 
 				String folderName = "./resources/evaluation/" + graphSize + "/" + nw.folder();
-				Integer i = lastCounter.get(graphSize + "/" + nw.folder());
-				if (i == null)
-					i = 0;
-				lastCounter.put(graphSize + "/" + nw.folder(), (i + 1));
-
 				String fileName = folderName + i + ".txt";
-				if (isCompleteDataset(fileName)) {
-					/*
-					 * This seems to be a complete data file: the lookahead list
-					 * is generated as the last transformation, and if a list
-					 * was exported, the whole set of transformations was
-					 * already done
-					 */
-					pm.output("Skipping " + fileName);
-					pm.tickNW();
-					continue;
-				}
-
 				pm.output("Thread " + id + " starts generation of " + fileName);
 
 				double startTime = System.currentTimeMillis();
@@ -250,11 +288,14 @@ public class GDAEvaluation {
 				Filewriter runtimeLogger = new Filewriter(fileName + ".RUNTIME");
 				for (Transformation t : nw.transformations()) {
 					try {
-					g = t.transform(g);
-					} catch ( GDTransformationException e ) {
+						g = t.transform(g);
+					} catch (GDTransformationException e) {
 						/*
-						 * Accept an exception *once*, but not twice for the same transformation
+						 * Accept an exception *once*, but not twice for the
+						 * same transformation
 						 */
+						pm.output("Thread " + id + " restarts generation of " + fileName
+								+ " after an exception was caught");
 						g = t.transform(g);
 					}
 					runtimeLogger.writeln(t.key() + ":" + (System.currentTimeMillis() - startTime));
@@ -267,23 +308,6 @@ public class GDAEvaluation {
 						+ (System.currentTimeMillis() - completeTransformationTime) / 1000 + " seconds");
 				pm.tickNW();
 			}
-		}
-
-		public boolean isCompleteDataset(String prefix) {
-			File temp;
-			temp = new File(prefix + "_LOOKAHEAD_LIST_0");
-			if (!temp.exists()) {
-				// return false;
-			}
-			temp = new File(prefix + ".RUNTIME");
-			if (!temp.exists()) {
-				return false;
-			}
-			temp = new File(prefix + "_ID_SPACE_0");
-			if (!temp.exists()) {
-				return false;
-			}
-			return true;
 		}
 	}
 }
