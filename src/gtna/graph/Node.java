@@ -36,6 +36,11 @@
 package gtna.graph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
+
 
 public class Node {
 	private Graph graph;
@@ -45,6 +50,9 @@ public class Node {
 	private int[] incomingEdges;
 
 	private int[] outgoingEdges;
+	
+	//flag declaring if incomingEdges, outgoingEdges are sorted
+	private boolean sorted = false;
 
 	public Node(int index, Graph graph) {
 		this.index = index;
@@ -167,5 +175,120 @@ public class Node {
 		return arrayEdgeList;
 	}
 	
-	// TODO hasOut, hasIn, addIn, addOut, removeIn, removeOut
+	public boolean hasOut(int index){
+		if (!this.sorted){
+			sortEdges();
+		}
+		int i = Arrays.binarySearch(this.getOutgoingEdges(), index);
+		if (i < 0){
+			return false;
+		}else {
+			return true;
+		}
+	}
+	
+	public boolean hasIn(int index){
+		if (!this.sorted){
+			sortEdges();
+		}
+		int i = Arrays.binarySearch(this.getIncomingEdges(), index);
+		if (i < 0){
+			return false;
+		}else {
+			return true;
+		}
+	}
+	
+	public void addIn(int index){
+		int[] array = this.expand(this.getIncomingEdges(),1);
+		array[array.length-1] = index;
+		this.sorted = false;
+	}
+	
+	public void addOut(int index){
+		int[] array = this.expand(this.getOutgoingEdges(),1);
+		array[array.length-1] = index;
+		this.sorted = false;
+	}
+	
+	public boolean removeIn(int index){
+		int[] res = this.removeEntry(this.getIncomingEdges(), index);
+		if (res.length < this.getIncomingEdges().length){
+			this.setIncomingEdges(res);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean removeOut(int index){
+		int[] res = this.removeEntry(this.getOutgoingEdges(), index);
+		if (res.length < this.getOutgoingEdges().length){
+			this.setOutgoingEdges(res);
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * is node with index a neighbor (in or out)
+	 * @param index
+	 * @return
+	 */
+	public boolean hasNeighbor(int index){
+		return this.hasIn(index) || this.hasOut(index);
+	}
+	
+	
+	/**
+	 * remove a value from an array
+	 * @param array
+	 * @param val
+	 * @return
+	 */
+	private int[] removeEntry(int[] array, int val){
+		if (array.length == 0) return array;
+		int[] res = new int[array.length-1];
+		boolean found = false;
+		for (int i = 0; i < array.length; i++){
+			if (found){
+				res[i-1] = array[i];
+			} else {
+				found = array[i]==val?true:false;
+				if (!found & i < array.length-1){
+					res[i] = array[i];
+				}
+			}
+		}
+		if (found){
+			return res;
+		} else {
+			return array;
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * sort incoming/outgoing edges by index
+	 */
+	private void sortEdges(){
+		Arrays.sort(this.incomingEdges);
+		Arrays.sort(this.outgoingEdges);
+		this.sorted = true;
+	}
+	
+	/**
+	 * expand array by inc entries
+	 * @param array
+	 * @param inc
+	 * @return
+	 */
+	private int[] expand(int[] array, int inc) {
+	    int[] temp = new int[array.length + inc];
+	    System.arraycopy(array, 0, temp, 0, array.length);
+	    for(int j = array.length; j < temp.length; j++)
+	        temp[j] = 0;
+	    return temp;
+	}
 }
