@@ -106,7 +106,7 @@ public class SixTollis extends CircularAbstract {
 		String tempEdgeString;
 		ArrayList<Node> verticesToAdd;
 		
-		removalList = new HashMap<String, Edge>();
+		removalList = new HashMap<String, Edge>(g.computeNumberOfEdges());
 		HashMap<String, Edge> pairEdges = null;
 		removedVertices = new ArrayList<Node>();
 		waveCenterVertices = new TreeSet<Node>();
@@ -369,7 +369,7 @@ public class SixTollis extends CircularAbstract {
 	}
 
 	private HashMap<String, Edge> getEdges(Node n) {
-		HashMap<String, Edge> edges = new HashMap<String, Edge>();
+		HashMap<String, Edge> edges = new HashMap<String, Edge>(n.getDegree());
 
 		for (Edge i : getAllEdges(n)) {
 			if (!useOriginalGraphWithoutRemovalList
@@ -453,7 +453,7 @@ public class SixTollis extends CircularAbstract {
 		deepestVertex = new ParentChild(-1, start.getIndex(), -1);
 		// System.out.println("Starting DFS at " + start);
 
-		HashMap<Integer, ParentChild> parentChildMap = new HashMap<Integer, ParentChild>();
+		HashMap<Integer, ParentChild> parentChildMap = new HashMap<Integer, ParentChild>(vertexList.size());
 		dfs(start, deepestVertex, parentChildMap);
 		ArrayList<ParentChild> parentChildList = new ArrayList<ParentChild>();
 		parentChildList.addAll(parentChildMap.values());

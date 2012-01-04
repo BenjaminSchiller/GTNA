@@ -106,7 +106,7 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		if (useShortcuts && idSpace instanceof RingIdentifierSpace) {
 			result = calculateRingCrossings(edges, idSpace);
 		} else {
-			handledEdges = new HashSet<String>();
+			handledEdges = new HashSet<String>(edges.length * edges.length);
 			for (int outerCounter = 0; outerCounter < edges.length; outerCounter++) {
 				int innerResult = 0;
 				int innerStart = outerCounter + 1;
@@ -203,7 +203,7 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		int numCross = 0;
 		Edge[] nodeEdges = n.generateAllEdges();
 		Edge[] graphEdges = g.generateEdges();
-		handledEdges = new HashSet<String>();
+		handledEdges = new HashSet<String>(nodeEdges.length * graphEdges.length);
 		for (Edge x : nodeEdges) {
 			for (Edge y : graphEdges) {
 				if (hasCrossing(x, y, idSpace, true))
@@ -217,7 +217,7 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		int numCross = 0;
 		Edge[] nEdges = n.getEdges();
 		Edge[] mEdges = m.getEdges();
-		handledEdges = new HashSet<String>();
+		handledEdges = new HashSet<String>( nEdges.length * mEdges.length );
 		partitions = idSpace.getPartitions();
 		for (Edge nEdge : nEdges) {
 			for (Edge mEdge : mEdges) {
