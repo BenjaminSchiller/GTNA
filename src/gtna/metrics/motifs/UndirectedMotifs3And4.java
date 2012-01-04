@@ -40,6 +40,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Timer;
 
 import java.util.HashMap;
 
@@ -61,6 +62,8 @@ public class UndirectedMotifs3And4 extends MotifCounter {
 	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
+		runtime = new Timer();
+		this.counts = new double[8];
 		Node[] nodes = g.getNodes();
 		Edge[] neighbors, neighbors2;
 		//maximal number of edges, nodes => only those that are actual part of motif are evaluated 
@@ -207,7 +210,7 @@ public class UndirectedMotifs3And4 extends MotifCounter {
         		}
         	}
         }
-
+      runtime.end();
 	}
 
 }
