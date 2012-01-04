@@ -234,7 +234,7 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 			if (p instanceof DIdentifierSpace) {
 				DIdentifier id = (DIdentifier) ((DIdentifierSpace) p)
 						.randomID(rand);
-				if (!(id instanceof RingIdentifier) && !(id instanceof MDIdentifier)) {
+				if (!(id instanceof RingIdentifier) && !(id instanceof MDIdentifier) && !(id instanceof PlaneIdentifier)) {
 					return false;
 				}
 			} else if (p instanceof BIIdentifierSpace) {
