@@ -48,6 +48,9 @@ public class Node implements Comparable<Node> {
 
 	private int[] outgoingEdges;
 
+	// flag declaring if incomingEdges, outgoingEdges are sorted
+	private boolean sorted = false;
+
 	private Edge[] edges = null;
 
 	public Node(int index, Graph graph) {
@@ -155,9 +158,9 @@ public class Node implements Comparable<Node> {
 	public void setOutgoingEdges(int[] outgoingEdges) {
 		this.outgoingEdges = outgoingEdges;
 	}
-	
+
 	public Edge[] getEdges() {
-		if ( this.edges == null ) {
+		if (this.edges == null) {
 			this.edges = generateAllEdges();
 		}
 		return this.edges;
@@ -165,26 +168,28 @@ public class Node implements Comparable<Node> {
 
 	public Edge[] generateAllEdges() {
 		ArrayList<Edge> edgeList = new ArrayList<Edge>();
-		for ( int dst: getOutgoingEdges() ) {
-			edgeList.add( new Edge(this.index, dst) );
+		for (int dst : getOutgoingEdges()) {
+			edgeList.add(new Edge(this.index, dst));
 		}
-		for ( int src: getIncomingEdges() ) {
-			edgeList.add( new Edge(src, this.index) );
+		for (int src : getIncomingEdges()) {
+			edgeList.add(new Edge(src, this.index));
 		}
 		Edge[] arrayEdgeList = new Edge[edgeList.size()];
-		for ( int i = 0; i < arrayEdgeList.length; i++ ) {
+		for (int i = 0; i < arrayEdgeList.length; i++) {
 			arrayEdgeList[i] = edgeList.get(i);
 		}
 		return arrayEdgeList;
 	}
-	
+
 	public boolean isConnectedTo(Node n) {
-		for (int src: getIncomingEdges() ) {
-			if ( src == n.getIndex() ) return true;
+		for (int src : getIncomingEdges()) {
+			if (src == n.getIndex())
+				return true;
 		}
-		for (int dst: getOutgoingEdges() ) {
-			if ( dst == n.getIndex() ) return true;
-		}		
+		for (int dst : getOutgoingEdges()) {
+			if (dst == n.getIndex())
+				return true;
+		}
 		return false;
 	}
 
@@ -194,11 +199,12 @@ public class Node implements Comparable<Node> {
 	public Integer[] generateOutgoingEdgesByDegree() {
 		int[] edges = getOutgoingEdges();
 		Integer[] integerEdges = new Integer[edges.length];
-		for ( int i = 0; i < edges.length; i++) integerEdges[i] = edges[i];
+		for (int i = 0; i < edges.length; i++)
+			integerEdges[i] = edges[i];
 		Arrays.sort(integerEdges, new DescendingDegreeComparator(graph));
 		return integerEdges;
 	}
-	
+
 	public int compareTo(Node n2) {
 		if (this.getDegree() == n2.getDegree())
 			return 0;
@@ -206,8 +212,8 @@ public class Node implements Comparable<Node> {
 			return 1;
 		else
 			return -1;
-	}	
-	
+	}
+
 	private class DescendingDegreeComparator implements Comparator<Integer> {
 		private Graph g;
 
@@ -226,7 +232,122 @@ public class Node implements Comparable<Node> {
 				return -1;
 		}
 
-	}	
-	
-	// TODO hasOut, hasIn, addIn, addOut, removeIn, removeOut
+	}
+
+	public boolean hasOut(int index) {
+		if (!this.sorted) {
+			sortEdges();
+		}
+		int i = Arrays.binarySearch(this.getOutgoingEdges(), index);
+		if (i < 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public boolean hasIn(int index) {
+		if (!this.sorted) {
+			sortEdges();
+		}
+		int i = Arrays.binarySearch(this.getIncomingEdges(), index);
+		if (i < 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public void addIn(int index) {
+		int[] array = this.expand(this.getIncomingEdges(), 1);
+		array[array.length - 1] = index;
+		this.sorted = false;
+	}
+
+	public void addOut(int index) {
+		int[] array = this.expand(this.getOutgoingEdges(), 1);
+		array[array.length - 1] = index;
+		this.sorted = false;
+	}
+
+	public boolean removeIn(int index) {
+		int[] res = this.removeEntry(this.getIncomingEdges(), index);
+		if (res.length < this.getIncomingEdges().length) {
+			this.setIncomingEdges(res);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean removeOut(int index) {
+		int[] res = this.removeEntry(this.getOutgoingEdges(), index);
+		if (res.length < this.getOutgoingEdges().length) {
+			this.setOutgoingEdges(res);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * is node with index a neighbor (in or out)
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public boolean hasNeighbor(int index) {
+		return this.hasIn(index) || this.hasOut(index);
+	}
+
+	/**
+	 * remove a value from an array
+	 * 
+	 * @param array
+	 * @param val
+	 * @return
+	 */
+	private int[] removeEntry(int[] array, int val) {
+		if (array.length == 0)
+			return array;
+		int[] res = new int[array.length - 1];
+		boolean found = false;
+		for (int i = 0; i < array.length; i++) {
+			if (found) {
+				res[i - 1] = array[i];
+			} else {
+				found = array[i] == val ? true : false;
+				if (!found & i < array.length - 1) {
+					res[i] = array[i];
+				}
+			}
+		}
+		if (found) {
+			return res;
+		} else {
+			return array;
+		}
+	}
+
+	/**
+	 * sort incoming/outgoing edges by index
+	 */
+	private void sortEdges() {
+		Arrays.sort(this.incomingEdges);
+		Arrays.sort(this.outgoingEdges);
+		this.sorted = true;
+	}
+
+	/**
+	 * expand array by inc entries
+	 * 
+	 * @param array
+	 * @param inc
+	 * @return
+	 */
+	private int[] expand(int[] array, int inc) {
+		int[] temp = new int[array.length + inc];
+		System.arraycopy(array, 0, temp, 0, array.length);
+		for (int j = array.length; j < temp.length; j++)
+			temp[j] = 0;
+		return temp;
+	}
 }
