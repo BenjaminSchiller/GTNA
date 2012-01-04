@@ -54,7 +54,7 @@ import java.util.HashMap;
  */
 public abstract class MotifCounter extends MetricImpl {
 	protected double[] counts;
-	private Timer runtime;
+	protected Timer runtime;
 	/**
 	 * @param key
 	 */
