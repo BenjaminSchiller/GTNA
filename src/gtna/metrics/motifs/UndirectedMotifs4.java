@@ -45,25 +45,23 @@ import gtna.util.Timer;
 import java.util.HashMap;
 
 /**
- * retrieve or analyze all undirected 3/4 nodes motifs
- * 1: A--B, B--C (SemiClique3)
- * 2: A--B, B--C, C--A (Clique3)
- * 3: A--B, A--C, A--D (TwoV)
- * 4: A--B, B--C, C--D (FourChain)
- * 5: A--B, B--C, C--A, A--D (ThreeLoopOut)
- * 6: A--B, B--C, C--D, D--A (FoutLoop)
- * 7: A--B, B--C, C--D, D--A, A--C (SemiClique4)
- * 8: A--B, A--C, A--D, B--C, B--D, C--D (Clique4)
+ * retrieve or analyze all undirected 4 nodes motifs
+ * 1: A--B, A--C, A--D (TwoV)
+ * 2: A--B, B--C, C--D (FourChain)
+ * 3: A--B, B--C, C--A, A--D (ThreeLoopOut)
+ * 4: A--B, B--C, C--D, D--A (FoutLoop)
+ * 5: A--B, B--C, C--D, D--A, A--C (SemiClique4)
+ * 6: A--B, A--C, A--D, B--C, B--D, C--D (Clique4)
  * @author stef
  * based on work by Lachezar Krumov
  */
-public class UndirectedMotifs3And4 extends MotifCounter {
+public class UndirectedMotifs4 extends MotifCounter {
 
 	/**
 	 * @param key
 	 */
-	public UndirectedMotifs3And4() {
-		super("UNDIRECTED_MOTIFS_3AND4");
+	public UndirectedMotifs4() {
+		super("UNDIRECTED_MOTIFS_4");
 	}
 
 	/* (non-Javadoc)
@@ -72,7 +70,7 @@ public class UndirectedMotifs3And4 extends MotifCounter {
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		runtime = new Timer();
-		this.counts = new double[8];
+		this.counts = new double[6];
 		Node[] nodes = g.getNodes();
 		int[] neighbors, neighbors2;
 		//maximal number of edges, nodes => only those that are actual part of motif are evaluated 
@@ -90,9 +88,8 @@ public class UndirectedMotifs3And4 extends MotifCounter {
         			motifNodes[2] = nodes[neighbors[k]];
         			motifEdges[2] = motifNodes[1].hasNeighbor(motifNodes[2].getIndex());
         			if (!motifEdges[2]){
-        				//case: motif #1 found
-        				this.counts[0]++;
-        				//determine TwoV (motif #3) 
+        				
+        				//determine TwoV (motif #1) 
         				for (int l = k + 1; l < neighbors.length; l++){
         					motifEdges[2] = true;
                 			motifNodes[3] = nodes[neighbors[l]];
@@ -100,18 +97,18 @@ public class UndirectedMotifs3And4 extends MotifCounter {
                 			motifEdges[4] = motifNodes[3].hasNeighbor(motifNodes[2].getIndex());
                 		    if (!motifEdges[3]){
                 		    	if (!motifEdges[4]){
-                		    	   counts[2]++;
+                		    	   counts[0]++;
                 		    	} 
                 		    } 
                 		    if (motifEdges[3] && motifEdges[4] ){
                 		    	if (motifNodes[0].getIndex() < motifNodes[3].getIndex()
                 		    		&& motifNodes[0].getIndex() < motifNodes[1].getIndex()){
-                		    	this.counts[6]++;
+                		    	this.counts[4]++;
                 		    	}
                 		    }
         				}
         				
-        				//determine 4Chain (#4) + 4Loop (#6)
+        				//determine 4Chain (#2) + 4Loop (#4)
         				if (motifNodes[0].getIndex() < motifNodes[1].getIndex()){
         				neighbors2 = motifNodes[1].getOutgoingEdges();
         				for (int l = 0; l < neighbors2.length; l++){
@@ -125,10 +122,10 @@ public class UndirectedMotifs3And4 extends MotifCounter {
                 			}
                 			motifEdges[3] = motifNodes[3].hasNeighbor(motifNodes[2].getIndex());
                 			if (!motifEdges[3]){
-                				this.counts[3]++;
+                				this.counts[1]++;
                 			} else {
                 				if(motifNodes[0].getIndex() < motifNodes[3].getIndex()){
-                					this.counts[5]++;
+                					this.counts[3]++;
                 				}
                 			}
         				}
@@ -148,7 +145,7 @@ public class UndirectedMotifs3And4 extends MotifCounter {
                 			}
                 			motifEdges[3] = motifNodes[3].hasNeighbor(motifNodes[1].getIndex());
                 			if (!motifEdges[3]){
-                				this.counts[3]++;
+                				this.counts[1]++;
                 			} 
         				}
         				}
@@ -156,7 +153,7 @@ public class UndirectedMotifs3And4 extends MotifCounter {
         				//found motif #2 (need to break symmetry)
         				if (motifNodes[0].getIndex() < motifNodes[1].getIndex() &&
         						motifNodes[0].getIndex() < motifNodes[2].getIndex()){
-        					this.counts[1]++;
+        		
         					
         					//determine Semi4Clique + 4Clique (#8)
         					for (int l = k+1; l < neighbors.length; l++){
@@ -168,10 +165,10 @@ public class UndirectedMotifs3And4 extends MotifCounter {
         							
         						} else {
         							    if (!motifEdges[4] || !motifEdges[5]){
-        							    	this.counts[6]++;
+        							    	this.counts[4]++;
         								}else {
         									if(motifNodes[0].getIndex() < motifNodes[3].getIndex()) {
-        									 this.counts[7]++;
+        									 this.counts[5]++;
         									} 
         								}
         							
@@ -193,7 +190,7 @@ public class UndirectedMotifs3And4 extends MotifCounter {
                     			motifEdges[4] = motifNodes[3].hasNeighbor(motifNodes[2].getIndex());
                     			if (motifEdges[4]){
                     				if(motifNodes[0].getIndex() < motifNodes[3].getIndex()){
-                    					this.counts[6]++;
+                    					this.counts[4]++;
                     				}
                     			}
             				}
@@ -209,7 +206,7 @@ public class UndirectedMotifs3And4 extends MotifCounter {
     						motifEdges[4] = motifNodes[1].hasNeighbor(motifNodes[3].getIndex());
     						motifEdges[5] = motifNodes[2].hasNeighbor(motifNodes[3].getIndex());
     						if (!motifEdges[4]&& !motifEdges[5]){
-    							this.counts[4]++;
+    							this.counts[2]++;
     						} 
     					}
         			}
