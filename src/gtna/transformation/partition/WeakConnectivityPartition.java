@@ -119,13 +119,13 @@ public class WeakConnectivityPartition extends TransformationImpl implements
 				Node node = g.getNode(queue.poll());
 				current.add(node.getIndex());
 				for (int out : node.getOutgoingEdges()) {
-					if (!seen[out] || isDeleted[out]) {
+					if (!seen[out] && !isDeleted[out]) {
 						queue.add(out);
 						seen[out] = true;
 					}
 				}
 				for (int in : node.getIncomingEdges()) {
-					if (!seen[in] || isDeleted[in]) {
+					if (!seen[in] && !isDeleted[in]) {
 						queue.add(in);
 						seen[in] = true;
 					}
