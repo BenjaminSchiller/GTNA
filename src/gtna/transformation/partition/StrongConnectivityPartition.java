@@ -36,9 +36,11 @@
 package gtna.transformation.partition;
 
 import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
 import gtna.graph.partition.Partition;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
+import gtna.transformation.failure.Deleted;
 import gtna.util.Util;
 
 import java.util.ArrayList;
@@ -60,6 +62,10 @@ public class StrongConnectivityPartition extends TransformationImpl implements
 
 	@Override
 	public Graph transform(Graph g) {
+		GraphProperty[] prop = g.getProperties("Deleted");
+		if (prop.length > 0){
+			return this.transformDelete(g);
+		}
 		ArrayList<ArrayList<Integer>> components = new ArrayList<ArrayList<Integer>>();
 		int[] index = Util.initIntArray(g.getNodes().length, -1);
 		int[] lowlink = new int[g.getNodes().length];
@@ -89,6 +95,63 @@ public class StrongConnectivityPartition extends TransformationImpl implements
 
 		// Consider successors of v
 		for (int w : g.getNode(v).getOutgoingEdges()) {
+			if (index[w] == -1) {
+				// Successor w has not yet been visited; recurse on it
+				this.strongConnect(w, g, index, lowlink, S, components);
+				lowlink[v] = Math.min(lowlink[v], lowlink[w]);
+			} else if (S.contains(w)) {
+				// Successor w is in stack S and hence in the current SCC
+				lowlink[v] = Math.min(lowlink[v], index[w]);
+			}
+		}
+
+		// If v is a root node, pop the stack and generate an SCC
+		if (lowlink[v] == index[v]) {
+			ArrayList<Integer> newComponent = new ArrayList<Integer>();
+			int w = -1;
+			while (w != v) {
+				w = S.pop();
+				newComponent.add(w);
+			}
+			components.add(newComponent);
+		}
+	}
+	
+	private Graph transformDelete(Graph g){
+		GraphProperty[] prop = g.getProperties("Deleted");
+		boolean[] isDeleted = ((Deleted) prop[prop.length-1]).getDeleted();
+		ArrayList<ArrayList<Integer>> components = new ArrayList<ArrayList<Integer>>();
+		int[] index = Util.initIntArray(g.getNodes().length, -1);
+		int[] lowlink = new int[g.getNodes().length];
+		Stack<Integer> S = new Stack<Integer>();
+		this.index = 0;
+
+		for (int v = 0; v < g.getNodes().length; v++) {
+			if (index[v] == -1 && !isDeleted[v]) {
+				this.strongConnectDelete(v, g, index, lowlink, S, components, isDeleted);
+			}
+		}
+
+		Partition p = new Partition(components);
+		g.addProperty(g.getNextKey("STRONG_CONNECTIVITY_PARTITION"), p);
+		g.addProperty(g.getNextKey("PARTITION"), p);
+
+		return g;
+	}
+	
+	private void strongConnectDelete(int v, Graph g, int[] index, int[] lowlink,
+			Stack<Integer> S, ArrayList<ArrayList<Integer>> components, boolean[] isDeleted) {
+		// Set the depth index for v to the smallest unused index
+		index[v] = this.index;
+		lowlink[v] = this.index;
+		this.index++;
+		S.push(v);
+
+		// Consider successors of v
+		for (int w : g.getNode(v).getOutgoingEdges()) {
+			if (isDeleted[w]){
+				continue;
+			}
 			if (index[w] == -1) {
 				// Successor w has not yet been visited; recurse on it
 				this.strongConnect(w, g, index, lowlink, S, components);

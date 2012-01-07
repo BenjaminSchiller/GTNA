@@ -15,7 +15,10 @@ public abstract class NodeFailure extends Failure{
 	@Override
 	public Graph transform(Graph g) {
 		GraphProperty[] prop = g.getProperties("Deleted");
-        Deleted p =  (Deleted)prop[prop.length-1] ;
+		Deleted p = null;
+		if (prop.length > 0){
+           p =  (Deleted)prop[prop.length-1] ;
+		}
         if (p == null || p.isClosed()){
         	p = new Deleted(g);
         	g.addProperty(g.getNextKey("Deleted"), p);
