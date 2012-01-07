@@ -8,7 +8,7 @@ import java.util.Random;
 public class RandomFailure extends NodeFailure{
 
 	public RandomFailure(int failure) {
-		super("RandomFailure", new String[]{"FAILURE"}, new String[] {""+failure});
+		super("RANDOMFAILURE", new String[]{"FAILURE"}, new String[] {""+failure});
 		this.failures = failure;
 	}
 

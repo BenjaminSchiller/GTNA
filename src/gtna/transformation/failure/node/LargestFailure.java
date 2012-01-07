@@ -17,7 +17,7 @@ import java.util.Vector;
 public class LargestFailure extends NodeFailure {
 
 	public LargestFailure(int failure) {
-		super("LargestFailure", new String[]{"FAILURE"}, new String[] {""+failure});
+		super("LARGESTFAILURE", new String[]{"FAILURE"}, new String[] {""+failure});
 		this.failures = failure;
 	}
 
@@ -31,9 +31,18 @@ public class LargestFailure extends NodeFailure {
 			if (deleted[i]){
 				continue;
 			}
+			if (list.size() == 0){
+				current = new Vector<Integer>();
+				current.add(i);
+				list.add(current);
+				size++;
+				countList.add(nodes[i].getDegree());
+				continue;
+			}
 			int c = -1;
 			int index = list.size() -1;
-			while (countList.get(index) <= nodes[i].getDegree() && index > -1){
+			
+			while (index > -1 && countList.get(index) <= nodes[i].getDegree()){
 				c = countList.get(index);
 				index--;
 			}
@@ -46,12 +55,14 @@ public class LargestFailure extends NodeFailure {
 						current = new Vector<Integer>();
 						current.add(i);
 						list.add(current);
+						countList.add(nodes[i].getDegree());
 						size++;
 					} 
 				} else {
 					current = new Vector<Integer>();
 					current.add(i);
 					list.add(index+1,current);
+					countList.add(index+1, nodes[i].getDegree());
 					size++;
 				}
 			}
