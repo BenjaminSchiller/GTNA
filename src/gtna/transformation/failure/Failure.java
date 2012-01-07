@@ -4,7 +4,7 @@ import gtna.graph.Graph;
 import gtna.transformation.TransformationImpl;
 
 public abstract class Failure extends TransformationImpl {
-	protected double p;
+	protected int failures;
 	
 
 	public Failure(String key, String[] configKeys, String[] configValues) {
@@ -12,8 +12,8 @@ public abstract class Failure extends TransformationImpl {
 	}
 
 
-   public double getPercentage(){
-	   return this.p;
+   public int getFailures(){
+	   return this.failures;
    }
 
 	
