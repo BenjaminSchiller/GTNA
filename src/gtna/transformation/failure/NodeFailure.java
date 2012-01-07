@@ -14,10 +14,11 @@ public abstract class NodeFailure extends Failure{
 	
 	@Override
 	public Graph transform(Graph g) {
-        Deleted p =  (Deleted) g.getProperty("Deleted_"+this.key());
-        if (p == null){
+		GraphProperty[] prop = g.getProperties("Deleted");
+        Deleted p =  (Deleted)prop[prop.length-1] ;
+        if (p == null || p.isClosed()){
         	p = new Deleted(g);
-        	g.addProperty("Deleted_"+this.key(), p);
+        	g.addProperty(g.getNextKey("Deleted"), p);
         }
 		p.deleteNodes(this.getDeletedSet(g.getNodes(), p.getDeleted()));
         
