@@ -57,6 +57,7 @@ import java.util.HashMap;
 public abstract class ResilienceNodeFailureStrong extends MetricImpl {
      protected NodeFailure failure;
      private int deleted;
+     private double fraction;
      private double[] sequence;
      private Timer runtime;
 	
@@ -95,7 +96,8 @@ public abstract class ResilienceNodeFailureStrong extends MetricImpl {
         boolean found = false;
         //System.out.println(count);
         if (count == 0){
-        	deleted = 0;
+        	this.deleted = 0;
+        	this.fraction = 0;
         	sequence = new double[0];
         } else {
         	GraphProperty[] prop = g.getProperties("Deleted");
@@ -118,6 +120,7 @@ public abstract class ResilienceNodeFailureStrong extends MetricImpl {
         		this.sequence[j] = list.get(j);
         	}
         	this.deleted = this.sequence.length;
+        	this.fraction = (double)this.deleted/(double)g.getNodes().length;
         	deleted.setClosed(true);
         }
         runtime.end();
@@ -143,7 +146,7 @@ public abstract class ResilienceNodeFailureStrong extends MetricImpl {
 	@Override
 	public Value[] getValues() {
 		// TODO Auto-generated method stub
-		return new Value[] {new Value(this.key() + "_DELETED", this.deleted), new Value(this.key() + "_RUNTIME", this.runtime.getRuntime())};
+		return new Value[] {new Value(this.key() + "_DELETED", this.deleted), new Value(this.key() + "_FRACTION", this.fraction), new Value(this.key() + "_RUNTIME", this.runtime.getRuntime())};
 	}
 
 }
