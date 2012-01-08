@@ -80,7 +80,8 @@ public abstract class ResilienceNodeFailureStrong extends MetricImpl {
         int count = 0;
         int onePercent = oldsize/100;
 		this.initFailure(onePercent);
-        while (!halfed){
+        while (!halfed && count < g.getNodes().length){
+        	g.removeProperty("STRONG_CONNECTIVITY_PARTITION_0");
         	conn.computeData(g, n, m);
     		newsize = (int) conn.getValues()[0].value;
     		if (newsize <= oldsize/2){
@@ -89,8 +90,10 @@ public abstract class ResilienceNodeFailureStrong extends MetricImpl {
     		}
     		g = this.failure.transform(g);
     		count = count + onePercent;
+    		oldsize = oldsize - onePercent;
         }
         boolean found = false;
+        //System.out.println(count);
         if (count == 0){
         	deleted = 0;
         	sequence = new double[0];
@@ -102,8 +105,10 @@ public abstract class ResilienceNodeFailureStrong extends MetricImpl {
         	while (!found){
         		count--;
         		isDeleted[list.get(count)] = false;
+        		g.removeProperty("STRONG_CONNECTIVITY_PARTITION_0");
         		conn.computeData(g, n, m);
         		newsize = (int) conn.getValues()[0].value;
+        		oldsize++;
         		if (newsize > oldsize/2){
         			found = true;
         		}

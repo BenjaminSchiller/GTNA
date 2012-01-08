@@ -68,6 +68,10 @@ public class Graph {
 	public void addProperty(String key, GraphProperty property) {
 		this.properties.put(key, property);
 	}
+	
+	public void removeProperty(String key) {
+		this.properties.remove(key);
+	}
 
 	public boolean hasProperty(String key) {
 		return this.properties.containsKey(key);
