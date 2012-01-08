@@ -60,7 +60,7 @@ import gtna.plot.GraphPlotter;
 public class SixTollis extends CircularAbstract {
 	private TreeSet<Node> waveCenterVertices, waveFrontVertices;
 	private List<Node> vertexList, removedVertices;
-	private HashMap<String, Edge> removalList;
+	private HashMap<String, Edge> removedEdges;
 	private HashMap<String, Edge>[] additionalEdges;
 	private Edge[][] edges;
 	private ParentChild deepestVertex;
@@ -75,7 +75,7 @@ public class SixTollis extends CircularAbstract {
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
 	}
-	
+
 	public GraphDrawingAbstract clone() {
 		return new SixTollis(realities, modulus, wrapAround, graphPlotter);
 	}
@@ -105,8 +105,8 @@ public class SixTollis extends CircularAbstract {
 		Edge tempEdge;
 		String tempEdgeString;
 		ArrayList<Node> verticesToAdd;
-		
-		removalList = new HashMap<String, Edge>(g.computeNumberOfEdges());
+
+		removedEdges = new HashMap<String, Edge>(g.computeNumberOfEdges());
 		HashMap<String, Edge> pairEdges = null;
 		removedVertices = new ArrayList<Node>();
 		waveCenterVertices = new TreeSet<Node>();
@@ -119,12 +119,15 @@ public class SixTollis extends CircularAbstract {
 
 		vertexList = Arrays.asList(g.getNodes().clone());
 
-		Collections.sort(vertexList);
 		for (int counter = 1; counter < (vertexList.size() - 3); counter++) {
 			currentVertex = getVertex();
+			// System.out.println("Processing " + currentVertex +
+			// " with a degree of " + getEdges(currentVertex).size()
+			// + " (vertex " + counter + " of " + (vertexList.size() - 3) +
+			// ")");
 			pairEdges = getPairEdges(currentVertex);
 			for (Edge singleEdge : pairEdges.values()) {
-				removalList.put(getEdgeString(singleEdge), singleEdge);
+				removedEdges.put(getEdgeString(singleEdge), singleEdge);
 			}
 
 			HashMap<String, Edge> currentVertexConnections = getEdges(currentVertex);
@@ -163,8 +166,8 @@ public class SixTollis extends CircularAbstract {
 						tempEdge = new Edge(Math.min(randDst1.getIndex(), randDst2.getIndex()), Math.max(
 								randDst1.getIndex(), randDst2.getIndex()));
 						tempEdgeString = getEdgeString(tempEdge);
-						if (randDst1.getIndex() != randDst2.getIndex()
-								&& !additionalEdges[randDst1.getIndex()].containsKey(tempEdgeString)) {
+						if (!additionalEdges[randDst1.getIndex()].containsKey(tempEdgeString)
+								&& !additionalEdges[randDst2.getIndex()].containsKey(tempEdgeString)) {
 							// System.out.println("Adding triangulation edge " +
 							// tempEdge);
 							additionalEdges[randDst1.getIndex()].put(tempEdgeString, tempEdge);
@@ -179,13 +182,14 @@ public class SixTollis extends CircularAbstract {
 				}
 
 				secondCounter++;
-				if (secondCounter == (currentVertexDegree)) {
+				if (secondCounter == currentVertexDegree) {
 					firstCounter++;
 					secondCounter = firstCounter + 1;
 				}
 
 				if (firstCounter == (currentVertexDegree - 1) && triangulationEdgesCount > 0)
-					throw new GDTransformationException("Could not find anymore pair edges for " + currentVertex.getIndex());
+					throw new GDTransformationException("Could not find anymore pair edges for "
+							+ currentVertex.getIndex());
 			}
 
 			/*
@@ -210,21 +214,23 @@ public class SixTollis extends CircularAbstract {
 			waveFrontVertices = new TreeSet<Node>(verticesToAdd);
 			Collections.shuffle(verticesToAdd);
 			waveCenterVertices.addAll(verticesToAdd);
-			
+
 			removedVertices.add(currentVertex);
 			// System.out.println("Adding " + currentVertex.getIndex() +
-			// " to removedVertices");
+			// " to removedVertices, now containing "
+			// + removedVertices.size() + " vertices");
 		}
 
 		LinkedList<Node> orderedVertices = orderVertices();
 		placeVertices(orderedVertices);
-		
+
 		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
 		// true);
 		// System.out.println("Crossings after phase 1: " + countCrossings);
 		if (graphPlotter != null)
 			graphPlotter.plot(g, idSpace, graphPlotter.getBasename() + "-afterPhase1");
 
+		// System.out.println("Done with phase 1 of S/T");
 		reduceCrossingsBySwapping(g);
 
 		writeIDSpace(g);
@@ -262,7 +268,6 @@ public class SixTollis extends CircularAbstract {
 			partitions[n.getIndex()] = new RingPartition(ids[lastVertex.getIndex()], ids[n.getIndex()]);
 			lastVertex = n;
 		}
-		
 	}
 
 	private LinkedList<Node> orderVertices() {
@@ -323,33 +328,21 @@ public class SixTollis extends CircularAbstract {
 					}
 				}
 			}
-			if (neighborPosition != -1) {
+			if (neighborPosition == -1) {
 				/*
-				 * As a possible position for this vertex is found: remove it
-				 * from the todoList and place it in the longestPath. Following
-				 * elements get shifted to the right
+				 * The current vertex does not yet have any connection to the
+				 * longest path, so place it at a random position
 				 */
-				todoList.remove(singleVertex);
-				longestPath.add(neighborPosition, singleVertex);
-			} else {
-				/*
-				 * The current vertex can not be placed yet, so increase the
-				 * modCounter by 1. If it reaches a limit, we skip searching as
-				 * it seems impossible to find an order for all vertices :(
-				 */
-				modCounter = (modCounter + 1) % todoList.size();
-				if (errors++ == 50) {
-					System.err.println("Still in todoList:");
-					for (Node sN : todoList) {
-						System.err.print(sN + " missing, connections to ");
-						for (int e : sN.generateOutgoingEdgesByDegree()) {
-							System.err.print(e + " ");
-						}
-						System.err.println();
-					}
-					throw new GDTransformationException("Cannot find an order for the vertices");
-				}
+				neighborPosition = rand.nextInt(longestPath.size());
 			}
+
+			/*
+			 * As a possible position for this vertex is found: remove it from
+			 * the todoList and place it in the longestPath. Following elements
+			 * get shifted to the right
+			 */
+			todoList.remove(singleVertex);
+			longestPath.add(neighborPosition, singleVertex);
 		}
 		return longestPath;
 	}
@@ -498,34 +491,93 @@ public class SixTollis extends CircularAbstract {
 		/*
 		 * Retrieve any wave front vertex...
 		 */
+		int vDegree, tempVDegree;
+		Node result = null;
+
+		vDegree = Integer.MAX_VALUE;
 		if (waveFrontVertices != null) {
 			for (Node tempVertex : waveFrontVertices) {
 				if (!removedVertices.contains(tempVertex)) {
-					waveFrontVertices.remove(tempVertex);
-					return tempVertex;
+					tempVDegree = getEdges(tempVertex).size();
+					if (tempVDegree < vDegree) {
+						result = tempVertex;
+						vDegree = tempVDegree;
+					}
 				}
+			}
+			if (result != null) {
+				waveFrontVertices.remove(result);
+				return result;
 			}
 		}
 		/*
 		 * ...or a wave center vertex...
 		 */
+		vDegree = Integer.MAX_VALUE;
 		if (waveCenterVertices != null) {
 			for (Node tempVertex : waveCenterVertices) {
 				if (!removedVertices.contains(tempVertex)) {
-					waveCenterVertices.remove(tempVertex);
-					return tempVertex;
+					tempVDegree = getEdges(tempVertex).size();
+					if (tempVDegree < vDegree) {
+						result = tempVertex;
+						vDegree = tempVDegree;
+					}
 				}
+			}
+			if (result != null) {
+				waveCenterVertices.remove(result);
+				return result;
 			}
 		}
 		/*
 		 * ...or any lowest degree vertex
 		 */
+		resortVertexlist();
 		for (Node tempVertex : vertexList) {
 			if (!removedVertices.contains(tempVertex)) {
 				return tempVertex;
 			}
 		}
 		throw new GDTransformationException("No vertex left");
+	}
+
+	private void resortVertexlist() {
+		if (removedVertices.isEmpty() && removedEdges.isEmpty()) {
+			Collections.sort(vertexList);
+			return;
+		}
+		// System.out.println("Resorting vertexList as already " +
+		// removedVertices.size() + " vertices (of a total of "
+		// + vertexList.size() + ") and " + removedEdges.size() +
+		// " edges were removed");
+
+		/*
+		 * We may not delete vertices from the vertex list, as orderVertices
+		 * needs this later. So: as we are only interested in the vertices with
+		 * low degree, set the (internal) degree of removed vertices to the
+		 * total number of vertices
+		 */
+		int vDegree;
+		int highestDegree = vertexList.size();
+		ArrayList<Node>[] tempVertexList = new ArrayList[highestDegree + 1];
+		for (int i = 0; i <= highestDegree; i++) {
+			tempVertexList[i] = new ArrayList<Node>();
+		}
+
+		for (Node v : vertexList) {
+			if (removedVertices.contains(v)) {
+				vDegree = highestDegree;
+			} else {
+				vDegree = getEdges(v).size();
+			}
+			tempVertexList[vDegree].add(v);
+		}
+
+		List<Node> newVertexList = new ArrayList<Node>(vertexList.size());
+		for (int i = 0; i <= highestDegree; i++) {
+			newVertexList.addAll(tempVertexList[i]);
+		}
+		vertexList = newVertexList;
 	}
 
 	private HashMap<String, Edge> getPairEdges(Node n) {
