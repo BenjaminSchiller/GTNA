@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * ResilienceNodeFailureStrong.java
+ * ResilienceNodeFailureWeak.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -41,7 +41,7 @@ import gtna.graph.GraphProperty;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.metrics.MetricImpl;
-import gtna.metrics.StrongConnectivity;
+import gtna.metrics.WeakConnectivity;
 import gtna.networks.Network;
 import gtna.transformation.failure.Deleted;
 import gtna.transformation.failure.NodeFailure;
@@ -54,8 +54,9 @@ import java.util.HashMap;
  * @author stef
  *
  */
-public abstract class ResilienceNodeFailureStrong extends MetricImpl {
-     protected NodeFailure failure;
+public abstract class ResilienceNodeFailureWeak extends MetricImpl {
+
+	 protected NodeFailure failure;
      private int deleted;
      private double fraction;
      private double[] sequence;
@@ -64,7 +65,7 @@ public abstract class ResilienceNodeFailureStrong extends MetricImpl {
 	/**
 	 * @param key
 	 */
-	public ResilienceNodeFailureStrong(String key) {
+	public ResilienceNodeFailureWeak(String key) {
 		super(key);
 	}
 
@@ -74,7 +75,7 @@ public abstract class ResilienceNodeFailureStrong extends MetricImpl {
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		runtime = new Timer();
-		StrongConnectivity conn = new StrongConnectivity();
+		WeakConnectivity conn = new WeakConnectivity();
 		 boolean halfed = false;
         int oldsize = g.getNodes().length;
         int newsize;
@@ -82,7 +83,7 @@ public abstract class ResilienceNodeFailureStrong extends MetricImpl {
         int onePercent = Math.max(oldsize/100,1);
 		this.initFailure(onePercent);
         while (!halfed && count < g.getNodes().length){
-        	g.removeProperty("STRONG_CONNECTIVITY_PARTITION_0");
+        	g.removeProperty("WEAK_CONNECTIVITY_PARTITION_0");
         	conn.computeData(g, n, m);
     		newsize = (int) conn.getValues()[0].value;
     		if (newsize <= oldsize/2){
@@ -107,7 +108,7 @@ public abstract class ResilienceNodeFailureStrong extends MetricImpl {
         	while (!found){
         		count--;
         		isDeleted[list.get(count)] = false;
-        		g.removeProperty("STRONG_CONNECTIVITY_PARTITION_0");
+        		g.removeProperty("WEAK_CONNECTIVITY_PARTITION_0");
         		conn.computeData(g, n, m);
         		newsize = (int) conn.getValues()[0].value;
         		oldsize++;
