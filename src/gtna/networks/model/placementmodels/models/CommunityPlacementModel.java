@@ -51,6 +51,20 @@ public class CommunityPlacementModel extends AbstractPlacementModel {
 	private double sigma;
 	private final int maxTries = 100;
 
+	/**
+	 * 
+	 * @param width
+	 *            The width of the field in which the nodes are to be
+	 *            distributed.
+	 * @param height
+	 *            The height of the field in which the nodes are to be
+	 *            distributed.
+	 * @param sigma
+	 *            The variance of the uniform distribution used to distribute
+	 *            nodes within the field.
+	 * @param inCenter
+	 *            If a node should be placed in the center of the model.
+	 */
 	public CommunityPlacementModel(double width, double height, double sigma,
 			boolean inCenter) {
 		setWidth(width);

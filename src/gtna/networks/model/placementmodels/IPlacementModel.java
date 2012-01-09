@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * PlacementModel.java
+ * IPlacementModel.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -35,77 +35,41 @@
  */
 package gtna.networks.model.placementmodels;
 
-import gtna.util.Util;
-
 /**
- * 
- * 
- * @author Philipp Neubrand
- * 
+ * @author Flipp
+ *
  */
-public abstract class AbstractPlacementModel implements IPlacementModel {
-	private double width;
-	private double height;
-	private String key;
-	private String[] additionalConfigKeys;
-	private String[] additionalConfigValues;
+public interface IPlacementModel {
+
+	/**
+	 * @param hotspots
+	 * @return
+	 */
+	public Point[] place(int hotspots);
 
 	/**
 	 * @return
 	 */
-	public double getHeight() {
-		return height;
-	}
+	public String getKey();
 
 	/**
 	 * @return
 	 */
-	public double getWidth() {
-		return width;
-	}
-
-	public void setHeight(double height) {
-		this.height = height;
-	}
-
-	public void setWidth(double width) {
-		this.width = width;
-	}
+	public double getWidth();
 
 	/**
 	 * @return
 	 */
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
+	public double getHeight();
 
 	/**
 	 * @return
 	 */
-	public String[] getConfigKeys() {
-		return Util.mergeArrays(new String[] { "KEY", "WIDTH", "HEIGHT" },
-				additionalConfigKeys);
-	}
-
-	public void setAdditionalConfigKeys(String[] arr) {
-		additionalConfigKeys = arr;
-	}
-
-	public void setAdditionalConfigValues(String[] arr) {
-		additionalConfigValues = arr;
-	}
+	public String[] getConfigValues();
 
 	/**
 	 * @return
 	 */
-	public String[] getConfigValues() {
-		return Util.mergeArrays(new String[] { getKey(),
-				Double.toString(getWidth()), Double.toString(getHeight()) },
-				additionalConfigValues);
-	}
+	public String[] getConfigKeys();
 
 }

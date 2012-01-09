@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * PlacementModel.java
+ * IPartitioner.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -35,77 +35,45 @@
  */
 package gtna.networks.model.placementmodels;
 
-import gtna.util.Util;
-
 /**
- * 
+ * An <code>IPartitioner</code> distributes a number of nodes to a number of
+ * hotspots. In the most simple case, the nodes are distributed even among the
+ * hotspots, but more complex algorithms are possible.
  * 
  * @author Philipp Neubrand
  * 
  */
-public abstract class AbstractPlacementModel implements IPlacementModel {
-	private double width;
-	private double height;
-	private String key;
-	private String[] additionalConfigKeys;
-	private String[] additionalConfigValues;
+public interface IPartitioner {
 
 	/**
-	 * @return
+	 * The main method of an <code>IPartitioner</code>, its implementation
+	 * defines how the nodes are distributed among the hotspots.
+	 * 
+	 * @param nodes
+	 *            The number of nodes to be distributed.
+	 * @param hotspots
+	 *            The number of hotspots the nodes are to be distributed among.
+	 * @return An array of size <code>hotspots</code> containing the number of
+	 *         nodes for each hotspot.
 	 */
-	public double getHeight() {
-		return height;
-	}
+	public int[] partition(int nodes, int hotspots);
 
 	/**
-	 * @return
+	 * Getter for a String array of all the configuration keys. The first value
+	 * should be "KEY", identifying the key of the particular Partitioner.
+	 * 
+	 * @return A String array containing all configuration keys.
 	 */
-	public double getWidth() {
-		return width;
-	}
-
-	public void setHeight(double height) {
-		this.height = height;
-	}
-
-	public void setWidth(double width) {
-		this.width = width;
-	}
+	public String[] getConfigKeys();
 
 	/**
-	 * @return
+	 * Getter for a String array of all the configuration values. Has to have
+	 * the same order as the array returned by <code>getConfigKeys()</code>.
+	 * Therefore, the first value should be the actual key of the particular
+	 * Partitioner.
+	 * 
+	 * @return A String array containing all configuration values.
 	 */
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	/**
-	 * @return
-	 */
-	public String[] getConfigKeys() {
-		return Util.mergeArrays(new String[] { "KEY", "WIDTH", "HEIGHT" },
-				additionalConfigKeys);
-	}
-
-	public void setAdditionalConfigKeys(String[] arr) {
-		additionalConfigKeys = arr;
-	}
-
-	public void setAdditionalConfigValues(String[] arr) {
-		additionalConfigValues = arr;
-	}
-
-	/**
-	 * @return
-	 */
-	public String[] getConfigValues() {
-		return Util.mergeArrays(new String[] { getKey(),
-				Double.toString(getWidth()), Double.toString(getHeight()) },
-				additionalConfigValues);
-	}
+	public String[] getConfigValues();
 
 }

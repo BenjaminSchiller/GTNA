@@ -38,53 +38,78 @@ package gtna.networks.model.placementmodels;
 import gtna.util.Util;
 
 /**
- * @author Flipp
+ * Abstract implementation of the <code>IPartitioner</code> interface,
+ * implementing all the common functionality of Partitioners. The only abstract
+ * method left to be implemented is
+ * <code>partition(int nodes, int hotspots)</code>, defining the actual
+ * behaviour of the particular Partitioner.
+ * 
+ * @author Philipp Neubrand
  * 
  */
-public abstract class AbstractPartitioner {
+public abstract class AbstractPartitioner implements IPartitioner {
+	// contains the key for the partitioner
 	private String key;
 
+	// contains all additional config keys, this array will be returned in
+	// addition to "KEY"
 	private String[] additionalConfigKeys;
 
+	// contains all additional config values, this array will be returned in
+	// addition to the key of this partitioner
 	private String[] additionalConfigValues;
 
+	/**
+	 * Setter for additionalConfigKeys. Should be called in the Constructor of
+	 * the implementing class to store any additional configuration keys for the
+	 * particular Partitioner.
+	 * 
+	 * @param additionalConfigKeys
+	 *            A String array containing all the additional configuration
+	 *            keys.
+	 */
 	public void setAdditionalConfigKeys(String[] additionalConfigKeys) {
 		this.additionalConfigKeys = additionalConfigKeys;
 	}
 
+	/**
+	 * Setter for additionalConfigValues. Should be called in the Constructor of
+	 * the implementing class to store any additional configuration values for
+	 * the particular Partitioner.
+	 * 
+	 * @param additionalConfigKeys
+	 *            A String array containing all the additional configuration
+	 *            values.
+	 */
 	public void setAdditionalConfigValues(String[] additionalConfigValues) {
 		this.additionalConfigValues = additionalConfigValues;
 	}
 
 	/**
-	 * @param nodes
-	 * @param hotspots
-	 * @return
-	 */
-	public abstract int[] partition(int nodes, int hotspots);
-
-	/**
-	 * @return
+	 * Default implementation of <code>getConfigKeys</code>. Will return "KEY"
+	 * as well as any additional configuration keys stored in
+	 * <code>additionalConfigKeys</code>.
 	 */
 	public String[] getConfigKeys() {
 		return Util.mergeArrays(new String[] { "KEY" }, additionalConfigKeys);
 	}
 
 	/**
-	 * @return
+	 * Default implementation of <code>getConfigValues</code>. Will return the
+	 * key as well as any additional configuration values stored in
+	 * <code>additionalConfigValues</code>.
 	 */
 	public String[] getConfigValues() {
-		return Util.mergeArrays(new String[] { getKey() },
-				additionalConfigValues);
+		return Util.mergeArrays(new String[] { key }, additionalConfigValues);
 	}
 
 	/**
-	 * @return
+	 * Setter for the key of the particular Partitioner. Should be called in the
+	 * Constructor and set to a distinct value.
+	 * 
+	 * @param key
+	 *            The key for this Partitioner.
 	 */
-	public String getKey() {
-		return key;
-	}
-
 	public void setKey(String key) {
 		this.key = key;
 	}

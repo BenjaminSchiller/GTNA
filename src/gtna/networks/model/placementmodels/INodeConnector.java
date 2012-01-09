@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * PlacementModel.java
+ * INodeConnector.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -35,77 +35,49 @@
  */
 package gtna.networks.model.placementmodels;
 
-import gtna.util.Util;
+import gtna.graph.Edges;
+import gtna.graph.Node;
+import gtna.id.plane.PlaneIdentifierSpaceSimple;
 
 /**
- * 
+ * An <code>INodeConnector</code> connects the nodes in a given graph based on
+ * their coordinates.
  * 
  * @author Philipp Neubrand
  * 
  */
-public abstract class AbstractPlacementModel implements IPlacementModel {
-	private double width;
-	private double height;
-	private String key;
-	private String[] additionalConfigKeys;
-	private String[] additionalConfigValues;
+public interface INodeConnector {
 
 	/**
-	 * @return
+	 * Connects the supplied nodes based on their coordinates. Can be as simple
+	 * as an UDG or something much more complex.
+	 * 
+	 * @param nodes
+	 *            An array of nodes in the graph.
+	 * @param coordinates
+	 *            The coordinates of the nodes in the graph.
+	 * @return An Edges object containing the connections between the nodes.
 	 */
-	public double getHeight() {
-		return height;
-	}
+	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple coordinates);
 
 	/**
-	 * @return
+	 * The Getter for the configuration keys for the particular
+	 * <code>NodeConnector</code>.
+	 * 
+	 * @return A String array containing the keys, the first value should be
+	 *         "KEY", identifying the key for the particular NodeConnector.
 	 */
-	public double getWidth() {
-		return width;
-	}
-
-	public void setHeight(double height) {
-		this.height = height;
-	}
-
-	public void setWidth(double width) {
-		this.width = width;
-	}
+	public String[] getConfigKeys();
 
 	/**
-	 * @return
+	 * The Getter for the configuration values for the particular
+	 * <code>NodeConnector</code>.
+	 * 
+	 * @return A String array containing the values, the first value should be
+	 *         the key of the particular <code>NodeConnector</code>. Has to have
+	 *         the same order as the <code>getConfigKeys()</code> array.
+	 * 
 	 */
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	/**
-	 * @return
-	 */
-	public String[] getConfigKeys() {
-		return Util.mergeArrays(new String[] { "KEY", "WIDTH", "HEIGHT" },
-				additionalConfigKeys);
-	}
-
-	public void setAdditionalConfigKeys(String[] arr) {
-		additionalConfigKeys = arr;
-	}
-
-	public void setAdditionalConfigValues(String[] arr) {
-		additionalConfigValues = arr;
-	}
-
-	/**
-	 * @return
-	 */
-	public String[] getConfigValues() {
-		return Util.mergeArrays(new String[] { getKey(),
-				Double.toString(getWidth()), Double.toString(getHeight()) },
-				additionalConfigValues);
-	}
+	public String[] getConfigValues();
 
 }

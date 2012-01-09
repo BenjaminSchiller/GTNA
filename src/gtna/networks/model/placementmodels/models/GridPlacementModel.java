@@ -48,6 +48,19 @@ public class GridPlacementModel extends AbstractPlacementModel {
 	private int rows;
 	private int cols;
 
+	/**
+	 * 
+	 * @param width
+	 *            The width of the field in which the nodes are to be
+	 *            distributed.
+	 * @param height
+	 *            The height of the field in which the nodes are to be
+	 *            distributed.
+	 * @param cols
+	 *            The number of columns in the grid.
+	 * @param rows
+	 *            The number of rows in the grid.
+	 */
 	public GridPlacementModel(double width, double height, int cols, int rows) {
 		setWidth(width);
 		setHeight(height);

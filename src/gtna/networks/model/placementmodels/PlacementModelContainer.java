@@ -52,16 +52,16 @@ import gtna.util.Util;
 public class PlacementModelContainer extends NetworkImpl {
 	private int nodes;
 	private int hotspots;
-	private AbstractPartitioner partitioner;
-	private AbstractPlacementModel hotspotPlacer;
-	private AbstractPlacementModel nodePlacer;
-	private AbstractNodeConnector connector;
+	private IPartitioner partitioner;
+	private IPlacementModel hotspotPlacer;
+	private IPlacementModel nodePlacer;
+	private INodeConnector connector;
 	private PlaneIdentifierSpaceSimple idSpace;
 
 	public PlacementModelContainer(int nodes, int hotspots,
-			AbstractPlacementModel hotspotPlacer,
-			AbstractPlacementModel nodePlacer, AbstractPartitioner partitioner,
-			AbstractNodeConnector nodeConnector, RoutingAlgorithm r,
+			IPlacementModel hotspotPlacer,
+			IPlacementModel nodePlacer, IPartitioner partitioner,
+			INodeConnector nodeConnector, RoutingAlgorithm r,
 			Transformation[] t) {
 		super("HSM", nodes, getConfigKeys(hotspotPlacer, nodePlacer,
 				nodeConnector, partitioner), getConfigValues(hotspotPlacer,
@@ -82,8 +82,8 @@ public class PlacementModelContainer extends NetworkImpl {
 	 * @param nodePlacer
 	 * @return
 	 */
-	private static String getKey(AbstractPlacementModel hotspotPlacer,
-			AbstractPlacementModel nodePlacer) {
+	private static String getKey(IPlacementModel hotspotPlacer,
+			IPlacementModel nodePlacer) {
 		return "HSM_" + hotspotPlacer.getKey() + "_" + nodePlacer.getKey();
 	}
 
@@ -95,9 +95,9 @@ public class PlacementModelContainer extends NetworkImpl {
 	 * @return
 	 */
 	private static String[] getConfigValues(
-			AbstractPlacementModel hotspotPlacer,
-			AbstractPlacementModel nodePlacer, AbstractNodeConnector connector,
-			AbstractPartitioner partitioner) {
+			IPlacementModel hotspotPlacer,
+			IPlacementModel nodePlacer, INodeConnector connector,
+			IPartitioner partitioner) {
 		return Util.mergeArrays(new String[] { "KEY" }, Util.mergeArrays(
 				partitioner.getConfigValues(), Util.mergeArrays(connector
 						.getConfigValues(), Util.mergeArrays(hotspotPlacer
@@ -109,9 +109,9 @@ public class PlacementModelContainer extends NetworkImpl {
 	 * @param nodePlacer
 	 * @return
 	 */
-	private static String[] getConfigKeys(AbstractPlacementModel hotspotPlacer,
-			AbstractPlacementModel nodePlacer, AbstractNodeConnector connector,
-			AbstractPartitioner partitioner) {
+	private static String[] getConfigKeys(IPlacementModel hotspotPlacer,
+			IPlacementModel nodePlacer, INodeConnector connector,
+			IPartitioner partitioner) {
 		return Util.mergeArrays(
 				new String[] { getKey(hotspotPlacer, nodePlacer) }, Util
 						.mergeArrays(Util.addPrefix("PART_", partitioner

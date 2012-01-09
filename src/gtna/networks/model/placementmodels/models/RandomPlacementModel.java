@@ -48,6 +48,17 @@ public class RandomPlacementModel extends AbstractPlacementModel {
 
 	private boolean inCenter;
 
+	/**
+	 * 
+	 * @param width
+	 *            The width of the field in which the nodes are to be
+	 *            distributed.
+	 * @param height
+	 *            The height of the field in which the nodes are to be
+	 *            distributed.
+	 * @param inCenter
+	 *            If a node should be placed in the center of the model.
+	 */
 	public RandomPlacementModel(double width, double height, boolean inCenter) {
 		setWidth(width);
 		setHeight(height);

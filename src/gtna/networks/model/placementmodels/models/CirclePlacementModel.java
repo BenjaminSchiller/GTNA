@@ -53,6 +53,26 @@ public class CirclePlacementModel extends AbstractPlacementModel {
 	private DistributionType od;
 	private final int maxTries = 100;
 
+	/**
+	 * @param width
+	 *            The width of the field in which the nodes are to be placed.
+	 * @param height
+	 *            The height of the field in which the nodes are to be placed.
+	 * @param radius
+	 *            The radius of the circle on which the nodes are to be placed.
+	 * @param oalpha
+	 *            The distribution type of alpha. "FIXED" will place node i at
+	 *            <code>i*(360/nodes)</code> degrees. "UNIFORM" will place nodes
+	 *            uniformly distributed around the center determined by the
+	 *            "FIXED" distribution. "NORMAL" will place nodes normal
+	 *            distributed around the center determined by the "FIXED"
+	 *            distribution.
+	 * @param od
+	 *            The distribution type of the radius. If "FIXED", all nodes are
+	 *            placed at distance "r" from the center. If "UNIFORM", the
+	 *            distance from the center is uniformly distributed, if "NORMAL"
+	 *            it is normally distributed.
+	 */
 	public CirclePlacementModel(double width, double height, double radius,
 			DistributionType oalpha, DistributionType od) {
 		setWidth(width);

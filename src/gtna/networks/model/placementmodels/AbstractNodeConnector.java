@@ -33,56 +33,76 @@
  */
 package gtna.networks.model.placementmodels;
 
-import gtna.graph.Edges;
-import gtna.graph.Node;
-import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.util.Util;
 
 /**
- * @author Flipp
+ * An <code>AbstractNodeConnector</code> is the abstract implementation of the
+ * <code>INodeConnector</code> interface. It implements all but the actual
+ * <code>connect(...)</code> method. Mainly, it provides a way to add additional
+ * configuration keys and values which will be returned by the
+ * <code>getConfigKeys()</code>/<code>getConfigValues()</code> in addition to
+ * the key of the NodeConnector. This is done by setting those additional keys
+ * and values by calling
+ * <code>setAdditionalConfigKeys/Values(String[] arr)</code>
+ * 
+ * @author Philipp Neubrand
  * 
  */
-public abstract class AbstractNodeConnector {
+public abstract class AbstractNodeConnector implements INodeConnector {
 	private String key;
 
 	private String[] additionalConfigKeys;
 
 	private String[] additionalConfigValues;
 
+	/**
+	 * Sets additional configuration keys of this NodeConnector, to be returned
+	 * by getConfigKeys().
+	 * 
+	 * @param additionalConfigKeys
+	 *            The additional configuration keys to be set.
+	 */
 	public void setAdditionalConfigKeys(String[] additionalConfigKeys) {
 		this.additionalConfigKeys = additionalConfigKeys;
 	}
 
+	/**
+	 * Sets additional configuration values of this NodeConnector, to be
+	 * returned by getConfigKeys().
+	 * 
+	 * @param additionalConfigValues
+	 *            The additional configuration values to be set.
+	 */
 	public void setAdditionalConfigValues(String[] additionalConfigValues) {
 		this.additionalConfigValues = additionalConfigValues;
 	}
 
-	public abstract Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids);
+	/**
+	 * Sets the key of the current NodeConnector. Will be returned as the first
+	 * key/value pair for the in the configuration keys and values.
+	 * 
+	 * @param key
+	 *            The key of the NodeConnector.
+	 */
+	public void setKey(String key) {
+		this.key = key;
+	}
 
 	/**
-	 * @return
+	 * Returns a String array containing "KEY" as the first value and all values
+	 * set with <code>setAdditionalConfigKeys()</code>.
 	 */
+	@Override
 	public String[] getConfigKeys() {
 		return Util.mergeArrays(new String[] { "KEY" }, additionalConfigKeys);
 	}
 
 	/**
-	 * @return
+	 * Returns a String array containing the key of this NodeConnector followed
+	 * by all values set by <code>setAdditionalConfigValues()</code>.
 	 */
+	@Override
 	public String[] getConfigValues() {
-		return Util.mergeArrays(new String[] { getKey() },
-				additionalConfigValues);
+		return Util.mergeArrays(new String[] { key }, additionalConfigValues);
 	}
-
-	/**
-	 * @return
-	 */
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
-
 }
