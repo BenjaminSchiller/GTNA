@@ -43,7 +43,7 @@ import gtna.util.Util;
  * @author Philipp Neubrand
  * 
  */
-public abstract class AbstractPlacementModel implements IPlacementModel {
+public abstract class PlacementModelImpl implements PlacementModel {
 	private double width;
 	private double height;
 	private String key;

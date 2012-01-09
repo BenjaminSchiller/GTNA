@@ -33,13 +33,15 @@
  * ---------------------------------------
  *
  */
-package gtna.networks.model.placementmodels;
+package gtna.networks.model.partitioners;
+
+import gtna.networks.model.placementmodels.PartitionerImpl;
 
 /**
  * @author Flipp
  * 
  */
-public class SimplePartitioner extends AbstractPartitioner {
+public class SimplePartitioner extends PartitionerImpl {
 
 	public SimplePartitioner() {
 		setKey("Simple");

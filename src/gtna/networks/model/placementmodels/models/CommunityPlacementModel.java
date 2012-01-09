@@ -35,7 +35,7 @@
  */
 package gtna.networks.model.placementmodels.models;
 
-import gtna.networks.model.placementmodels.AbstractPlacementModel;
+import gtna.networks.model.placementmodels.PlacementModelImpl;
 import gtna.networks.model.placementmodels.PlacementNotPossibleException;
 import gtna.networks.model.placementmodels.Point;
 
@@ -45,7 +45,7 @@ import java.util.Random;
  * @author Flipp
  * 
  */
-public class CommunityPlacementModel extends AbstractPlacementModel {
+public class CommunityPlacementModel extends PlacementModelImpl {
 
 	private boolean inCenter;
 	private double sigma;
@@ -60,8 +60,10 @@ public class CommunityPlacementModel extends AbstractPlacementModel {
 	 *            The height of the field in which the nodes are to be
 	 *            distributed.
 	 * @param sigma
-	 *            The variance of the uniform distribution used to distribute
-	 *            nodes within the field.
+	 *            The variance of the gaussian distribution used to distribute
+	 *            nodes within the field. The nodes are placed at
+	 *            <code> (getWidth() / 2) + Math.nextGaussian() * sigma * (getWidth() / 2)</code>
+	 *            (similar with height).
 	 * @param inCenter
 	 *            If a node should be placed in the center of the model.
 	 */
@@ -88,17 +90,20 @@ public class CommunityPlacementModel extends AbstractPlacementModel {
 		double dx = 0;
 		double dy = 0;
 		int tries;
+		double centerx = getWidth() / 2;
+		double centery = getHeight() / 2;
 
 		if (inCenter) {
-			ret[0] = new Point((getWidth() / 2), (getHeight() / 2));
+			ret[0] = new Point(centerx, centery);
 			i++;
 		}
+
 		while (i < count) {
 
 			tries = 0;
 			do {
-				dx = rnd.nextGaussian() * sigma;
-				dy = rnd.nextGaussian() * sigma;
+				dx = centerx + rnd.nextGaussian() * sigma * centerx;
+				dy = centery + rnd.nextGaussian() * sigma * centery;
 				tries++;
 			} while ((dx < 0 || dx > getWidth() || dy < 0 || dy > getHeight())
 					&& tries <= maxTries);

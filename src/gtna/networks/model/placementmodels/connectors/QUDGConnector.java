@@ -36,13 +36,13 @@ package gtna.networks.model.placementmodels.connectors;
 import gtna.graph.Edges;
 import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
-import gtna.networks.model.placementmodels.AbstractNodeConnector;
+import gtna.networks.model.placementmodels.NodeConnectorImpl;
 
 /**
  * @author Flipp
  * 
  */
-public class QUDGConnector extends AbstractNodeConnector {
+public class QUDGConnector extends NodeConnectorImpl {
 
 	private double range1;
 	private double range2;

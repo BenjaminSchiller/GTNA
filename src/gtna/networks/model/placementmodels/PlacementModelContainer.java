@@ -52,16 +52,16 @@ import gtna.util.Util;
 public class PlacementModelContainer extends NetworkImpl {
 	private int nodes;
 	private int hotspots;
-	private IPartitioner partitioner;
-	private IPlacementModel hotspotPlacer;
-	private IPlacementModel nodePlacer;
-	private INodeConnector connector;
+	private Partitioner partitioner;
+	private PlacementModel hotspotPlacer;
+	private PlacementModel nodePlacer;
+	private NodeConnector connector;
 	private PlaneIdentifierSpaceSimple idSpace;
 
 	public PlacementModelContainer(int nodes, int hotspots,
-			IPlacementModel hotspotPlacer,
-			IPlacementModel nodePlacer, IPartitioner partitioner,
-			INodeConnector nodeConnector, RoutingAlgorithm r,
+			PlacementModel hotspotPlacer,
+			PlacementModel nodePlacer, Partitioner partitioner,
+			NodeConnector nodeConnector, RoutingAlgorithm r,
 			Transformation[] t) {
 		super("HSM", nodes, getConfigKeys(hotspotPlacer, nodePlacer,
 				nodeConnector, partitioner), getConfigValues(hotspotPlacer,
@@ -82,8 +82,8 @@ public class PlacementModelContainer extends NetworkImpl {
 	 * @param nodePlacer
 	 * @return
 	 */
-	private static String getKey(IPlacementModel hotspotPlacer,
-			IPlacementModel nodePlacer) {
+	private static String getKey(PlacementModel hotspotPlacer,
+			PlacementModel nodePlacer) {
 		return "HSM_" + hotspotPlacer.getKey() + "_" + nodePlacer.getKey();
 	}
 
@@ -95,9 +95,9 @@ public class PlacementModelContainer extends NetworkImpl {
 	 * @return
 	 */
 	private static String[] getConfigValues(
-			IPlacementModel hotspotPlacer,
-			IPlacementModel nodePlacer, INodeConnector connector,
-			IPartitioner partitioner) {
+			PlacementModel hotspotPlacer,
+			PlacementModel nodePlacer, NodeConnector connector,
+			Partitioner partitioner) {
 		return Util.mergeArrays(new String[] { "KEY" }, Util.mergeArrays(
 				partitioner.getConfigValues(), Util.mergeArrays(connector
 						.getConfigValues(), Util.mergeArrays(hotspotPlacer
@@ -109,9 +109,9 @@ public class PlacementModelContainer extends NetworkImpl {
 	 * @param nodePlacer
 	 * @return
 	 */
-	private static String[] getConfigKeys(IPlacementModel hotspotPlacer,
-			IPlacementModel nodePlacer, INodeConnector connector,
-			IPartitioner partitioner) {
+	private static String[] getConfigKeys(PlacementModel hotspotPlacer,
+			PlacementModel nodePlacer, NodeConnector connector,
+			Partitioner partitioner) {
 		return Util.mergeArrays(
 				new String[] { getKey(hotspotPlacer, nodePlacer) }, Util
 						.mergeArrays(Util.addPrefix("PART_", partitioner

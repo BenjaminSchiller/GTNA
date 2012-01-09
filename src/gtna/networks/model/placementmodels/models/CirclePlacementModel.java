@@ -35,8 +35,7 @@
  */
 package gtna.networks.model.placementmodels.models;
 
-import gtna.networks.model.placementmodels.AbstractPlacementModel;
-import gtna.networks.model.placementmodels.DistributionType;
+import gtna.networks.model.placementmodels.PlacementModelImpl;
 import gtna.networks.model.placementmodels.PlacementNotPossibleException;
 import gtna.networks.model.placementmodels.Point;
 
@@ -46,8 +45,10 @@ import java.util.Random;
  * @author Flipp
  * 
  */
-public class CirclePlacementModel extends AbstractPlacementModel {
-
+public class CirclePlacementModel extends PlacementModelImpl {
+	public enum DistributionType {
+		NORMAL, FIXED, UNIFORM
+	}
 	private double radius;
 	private DistributionType oalpha;
 	private DistributionType od;
@@ -129,7 +130,6 @@ public class CirclePlacementModel extends AbstractPlacementModel {
 				}
 
 				x = centerx + d * Math.cos(alpha);
-				System.out.println(d);
 				y = centery + d * Math.sin(alpha);
 				tries++;
 			} while ((x < 0 || x > getWidth() || y < 0 || y > getHeight())
@@ -140,7 +140,6 @@ public class CirclePlacementModel extends AbstractPlacementModel {
 						+ centery + "), radius=" + radius + ", F=("
 						+ getWidth() + ", " + getHeight() + "), count=" + count
 						+ ", Distribs=(" + oalpha + ", " + od + ")");
-			System.out.println("Setting to " + x + " " + y);
 			ret[i] = new Point(x, y);
 
 		}

@@ -396,11 +396,7 @@ public abstract class NetworkImpl implements Network {
 			} else {
 				String name = Config.get(this.key + "_" + this.configKeys[i]
 						+ "_NAME_" + mode);
-				System.out.println(this.configKeys[i]);
 				String value = this.configValues[i];
-				System.out.println(this.key + "_" + this.configKeys[i]
-						+ "_NAME_" + mode);
-				System.out.println(this.configValues[i]);
 				if (!this.configValues[i].equals(x.configValues()[i])) {
 					value = Config.get("NETWORK_COMPARE_DIFFERENT_VALUE_X");
 				} else if (!this.configValues[i].equals(y.configValues()[i])) {
@@ -417,7 +413,6 @@ public abstract class NetworkImpl implements Network {
 		}
 
 		String description = Config.get(pre);
-		System.out.println(description);
 		String nodes = this.nodes() + "";
 		String edges = this.edges + "";
 		if (this.nodes != x.nodes()) {
@@ -457,7 +452,6 @@ public abstract class NetworkImpl implements Network {
 		} else {
 			t = t.replace("%T", ts);
 		}
-		System.out.println(name());
 		description = description.replace("%NAME", this.name());
 		description = description.replace("%NODES", nodes);
 		description = description.replace("%EDGES", edges);

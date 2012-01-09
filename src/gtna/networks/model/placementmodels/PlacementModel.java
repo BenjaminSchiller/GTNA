@@ -21,23 +21,55 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * NodeConnector.java
+ * IPlacementModel.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Philipp Neubrand;
+ * Original Author: Flipp;
  * Contributors:    -;
  *
+ * Changes since 2011-05-17
  * ---------------------------------------
+ *
  */
 package gtna.networks.model.placementmodels;
 
 /**
  * @author Flipp
- * 
+ *
  */
-public enum DistributionType {
-	NORMAL, FIXED, UNIFORM
+public interface PlacementModel {
+
+	/**
+	 * @param hotspots
+	 * @return
+	 */
+	public Point[] place(int hotspots);
+
+	/**
+	 * @return
+	 */
+	public String getKey();
+
+	/**
+	 * @return
+	 */
+	public double getWidth();
+
+	/**
+	 * @return
+	 */
+	public double getHeight();
+
+	/**
+	 * @return
+	 */
+	public String[] getConfigValues();
+
+	/**
+	 * @return
+	 */
+	public String[] getConfigKeys();
 
 }

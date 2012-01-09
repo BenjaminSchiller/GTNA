@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * IPlacementModel.java
+ * INodeConnector.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -35,41 +35,49 @@
  */
 package gtna.networks.model.placementmodels;
 
+import gtna.graph.Edges;
+import gtna.graph.Node;
+import gtna.id.plane.PlaneIdentifierSpaceSimple;
+
 /**
- * @author Flipp
- *
+ * An <code>INodeConnector</code> connects the nodes in a given graph based on
+ * their coordinates.
+ * 
+ * @author Philipp Neubrand
+ * 
  */
-public interface IPlacementModel {
+public interface NodeConnector {
 
 	/**
-	 * @param hotspots
-	 * @return
+	 * Connects the supplied nodes based on their coordinates. Can be as simple
+	 * as an UDG or something much more complex.
+	 * 
+	 * @param nodes
+	 *            An array of nodes in the graph.
+	 * @param coordinates
+	 *            The coordinates of the nodes in the graph.
+	 * @return An Edges object containing the connections between the nodes.
 	 */
-	public Point[] place(int hotspots);
+	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple coordinates);
 
 	/**
-	 * @return
-	 */
-	public String getKey();
-
-	/**
-	 * @return
-	 */
-	public double getWidth();
-
-	/**
-	 * @return
-	 */
-	public double getHeight();
-
-	/**
-	 * @return
-	 */
-	public String[] getConfigValues();
-
-	/**
-	 * @return
+	 * The Getter for the configuration keys for the particular
+	 * <code>NodeConnector</code>.
+	 * 
+	 * @return A String array containing the keys, the first value should be
+	 *         "KEY", identifying the key for the particular NodeConnector.
 	 */
 	public String[] getConfigKeys();
+
+	/**
+	 * The Getter for the configuration values for the particular
+	 * <code>NodeConnector</code>.
+	 * 
+	 * @return A String array containing the values, the first value should be
+	 *         the key of the particular <code>NodeConnector</code>. Has to have
+	 *         the same order as the <code>getConfigKeys()</code> array.
+	 * 
+	 */
+	public String[] getConfigValues();
 
 }

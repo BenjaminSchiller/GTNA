@@ -35,22 +35,14 @@
  */
 package gtna;
 
-import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.networks.Network;
-import gtna.networks.model.placementmodels.AbstractNodeConnector;
-import gtna.networks.model.placementmodels.AbstractPartitioner;
-import gtna.networks.model.placementmodels.AbstractPlacementModel;
-import gtna.networks.model.placementmodels.DistributionType;
+import gtna.networks.model.partitioners.SimplePartitioner;
 import gtna.networks.model.placementmodels.PlacementModelContainer;
-import gtna.networks.model.placementmodels.SimplePartitioner;
 import gtna.networks.model.placementmodels.connectors.LogDistanceConnector;
-import gtna.networks.model.placementmodels.connectors.QUDGConnector;
-import gtna.networks.model.placementmodels.connectors.UDGConnector;
 import gtna.networks.model.placementmodels.models.GridPlacementModel;
 import gtna.plot.Gephi;
-import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.Greedy;
 
 /**
@@ -62,7 +54,7 @@ public class Main {
 		Network nw = new PlacementModelContainer(500, 25,
 				new GridPlacementModel(1000, 1000, 5, 5),
 				new GridPlacementModel(50, 50, 4, 5), new SimplePartitioner(),
-				new LogDistanceConnector(0.025, 5, 15), new Greedy(), null);
+				new LogDistanceConnector(0.025, 5, 15, 1), new Greedy(), null);
 		// public PlacementModelContainer(int nodes, int hotspots,
 		// AbstractPlacementModel hotspotPlacer,
 		// AbstractPlacementModel nodePlacer, AbstractPartitioner partitioner,
@@ -71,8 +63,6 @@ public class Main {
 		Graph g = nw.generate();
 		Gephi ge = new Gephi();
 		ge.Plot(g, (IdentifierSpace) g.getProperty("id_space_0"), "test.pdf");
-
-		System.out.println(g.getProperty("id_space_0"));
 
 	}
 }

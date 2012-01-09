@@ -33,37 +33,41 @@
  */
 package gtna.networks.model.placementmodels.connectors;
 
+import java.util.Random;
+
 import gtna.graph.Edges;
 import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
-import gtna.networks.model.placementmodels.AbstractNodeConnector;
+import gtna.networks.model.placementmodels.NodeConnectorImpl;
 
 /**
  * @author Flipp
  * 
  */
-public class LogDistanceConnector extends AbstractNodeConnector {
+public class LogDistanceConnector extends NodeConnectorImpl {
 
 	private double range;
 	private double gamma;
 	private double d0;
+	private double sigma;
 
 	/**
 	 * @param i
 	 */
-	public LogDistanceConnector(double range, double gamma, double d0) {
+	public LogDistanceConnector(double range, double gamma, double d0, double sigma) {
 		this.range = range;
 		this.gamma = gamma;
 		this.d0 = d0;
+		this.sigma = sigma;
 		setKey("LOG");
-		setAdditionalConfigKeys(new String[] { "RANGE", "GAMMA", "D0" });
+		setAdditionalConfigKeys(new String[] { "RANGE", "GAMMA", "D0", "SIGMA" });
 		setAdditionalConfigValues(new String[] { Double.toString(range),
-				Double.toString(gamma), Double.toString(d0) });
+				Double.toString(gamma), Double.toString(d0), Double.toString(sigma) });
 	}
 
 	@Override
 	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids) {
-
+		Random rnd = new Random();
 		Edges edges = new Edges(nodes, nodes.length * (nodes.length - 1));
 		double dist;
 		for (int i = 0; i < nodes.length; i++) {
@@ -74,7 +78,7 @@ public class LogDistanceConnector extends AbstractNodeConnector {
 						* gamma
 						* Math.log10(ids.getPartitions()[i].distance((ids
 								.getPartitions()[j].getRepresentativeID()))
-								/ d0) * Math.random();
+								/ d0) + rnd.nextGaussian() * sigma;
 				if (dist < range)
 					edges.add(i, j);
 			}

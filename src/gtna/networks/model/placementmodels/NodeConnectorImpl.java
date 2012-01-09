@@ -48,7 +48,7 @@ import gtna.util.Util;
  * @author Philipp Neubrand
  * 
  */
-public abstract class AbstractNodeConnector implements INodeConnector {
+public abstract class NodeConnectorImpl implements NodeConnector {
 	private String key;
 
 	private String[] additionalConfigKeys;

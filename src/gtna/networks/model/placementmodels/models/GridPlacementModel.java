@@ -35,7 +35,7 @@
  */
 package gtna.networks.model.placementmodels.models;
 
-import gtna.networks.model.placementmodels.AbstractPlacementModel;
+import gtna.networks.model.placementmodels.PlacementModelImpl;
 import gtna.networks.model.placementmodels.PlacementNotPossibleException;
 import gtna.networks.model.placementmodels.Point;
 
@@ -43,7 +43,7 @@ import gtna.networks.model.placementmodels.Point;
  * @author Flipp
  * 
  */
-public class GridPlacementModel extends AbstractPlacementModel {
+public class GridPlacementModel extends PlacementModelImpl {
 
 	private int rows;
 	private int cols;

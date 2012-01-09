@@ -35,7 +35,7 @@
  */
 package gtna.networks.model.placementmodels.models;
 
-import gtna.networks.model.placementmodels.AbstractPlacementModel;
+import gtna.networks.model.placementmodels.PlacementModelImpl;
 import gtna.networks.model.placementmodels.Point;
 
 import java.util.Random;
@@ -44,7 +44,7 @@ import java.util.Random;
  * @author Flipp
  * 
  */
-public class RandomPlacementModel extends AbstractPlacementModel {
+public class RandomPlacementModel extends PlacementModelImpl {
 
 	private boolean inCenter;
 

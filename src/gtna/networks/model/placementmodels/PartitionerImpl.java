@@ -47,7 +47,7 @@ import gtna.util.Util;
  * @author Philipp Neubrand
  * 
  */
-public abstract class AbstractPartitioner implements IPartitioner {
+public abstract class PartitionerImpl implements Partitioner {
 	// contains the key for the partitioner
 	private String key;
 
