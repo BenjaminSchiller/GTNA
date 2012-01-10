@@ -39,7 +39,13 @@ import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.networks.model.placementmodels.NodeConnectorImpl;
 
 /**
- * @author Flipp
+ * A <code>QUDGConnector</code> connects nodes based on their distance. If the
+ * distance is smaller than or equal to <code>range1</code>, they will always
+ * get an edge. If the distance is smaller than or equal to <code>range2</code>,
+ * the nodes will have a connection with probability <code>p</code>. Else, they
+ * will not have an edge.
+ * 
+ * @author Philipp Neubrand
  * 
  */
 public class QUDGConnector extends NodeConnectorImpl {
@@ -49,18 +55,34 @@ public class QUDGConnector extends NodeConnectorImpl {
 	private double perc;
 
 	/**
-	 * @param i
+	 * Standard constructor for this class.
+	 * 
+	 * @param range1
+	 *            The range below which nodes will always be connected.
+	 * @param range2
+	 *            The range below which nodes might be connected with
+	 *            probability perc.
+	 * @param perc
+	 *            The probability for which nodes that are between range1 and
+	 *            range2 are connected.
 	 */
 	public QUDGConnector(double range1, double range2, double perc) {
 		this.range1 = range1;
 		this.range2 = range2;
 		this.perc = perc;
-		setKey("UDG");
+		setKey("QUDG");
 		setAdditionalConfigKeys(new String[] { "RANGE1", "RANGE2", "PERC" });
 		setAdditionalConfigValues(new String[] { Double.toString(range1),
 				Double.toString(range2), Double.toString(perc) });
 	}
 
+	/**
+	 * Connects nodes based on their range. If the distance is smaller than or
+	 * equal to <code>range1</code>, they will always get an edge. If the
+	 * distance is smaller than or equal to <code>range2</code>, the nodes will
+	 * have a connection with probability <code>p</code>. Else, they will not
+	 * have an edge.
+	 */
 	@Override
 	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids) {
 
@@ -72,9 +94,9 @@ public class QUDGConnector extends NodeConnectorImpl {
 					continue;
 				dist = ids.getPartitions()[i].distance((ids.getPartitions()[j]
 						.getRepresentativeID()));
-				if (dist < range1)
+				if (dist <= range1)
 					edges.add(i, j);
-				else if (dist < range2 && Math.random() < perc)
+				else if (dist <= range2 && Math.random() < perc)
 					edges.add(i, j);
 			}
 		}

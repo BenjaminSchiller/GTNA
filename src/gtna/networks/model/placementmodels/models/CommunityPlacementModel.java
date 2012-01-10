@@ -42,7 +42,10 @@ import gtna.networks.model.placementmodels.Point;
 import java.util.Random;
 
 /**
- * @author Flipp
+ * Places the nodes normally distributed within the field of the
+ * <code>PlacementModel</code> with variance <code>sigma</code>.
+ * 
+ * @author Philipp Neubrand
  * 
  */
 public class CommunityPlacementModel extends PlacementModelImpl {
@@ -62,6 +65,7 @@ public class CommunityPlacementModel extends PlacementModelImpl {
 	 * @param sigma
 	 *            The variance of the gaussian distribution used to distribute
 	 *            nodes within the field. The nodes are placed at
+	 * 
 	 *            <code> (getWidth() / 2) + Math.nextGaussian() * sigma * (getWidth() / 2)</code>
 	 *            (similar with height).
 	 * @param inCenter
@@ -80,6 +84,10 @@ public class CommunityPlacementModel extends PlacementModelImpl {
 				Boolean.toString(inCenter) });
 	}
 
+	/**
+	 * Places the nodes normally distributed within the field of the
+	 * <code>PlacementModel</code> with variance <code>sigma</code>.
+	 */
 	@Override
 	public Point[] place(int count) {
 		Random rnd = new Random();

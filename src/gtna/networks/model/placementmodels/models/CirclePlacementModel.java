@@ -42,13 +42,34 @@ import gtna.networks.model.placementmodels.Point;
 import java.util.Random;
 
 /**
- * @author Flipp
+ * A <code>CirclePlacementModel</code> places the nodes around the center of the
+ * field at radius <code>r</code>.
+ * 
+ * @author Philipp Neubrand
  * 
  */
 public class CirclePlacementModel extends PlacementModelImpl {
+	/**
+	 * Identifies the distribution type for alpha and the radius.
+	 * <ul>
+	 * <li><code>FIXED</code>: will not vary those values at all: nodes will be
+	 * placed exactly at distance r every (360/n) degrees (angle = (i+0.5) *
+	 * (360/n)).</li>
+	 * <li><code>UNIFORM</code>: will distribute the angle uniformly around the
+	 * center of their interval (angle = i * angle + angle * rnd.nextDouble()),
+	 * the radius uniformly between 0 and 2r.</li>
+	 * <li><code>NORMAL</code>: will distribute the angle normal around the
+	 * center of their interval with variance (gamma/6) and r normal around r
+	 * with variance (r/3)</li>
+	 * </ul>
+	 * 
+	 * @author Philipp Neubrand
+	 * 
+	 */
 	public enum DistributionType {
 		NORMAL, FIXED, UNIFORM
 	}
+
 	private double radius;
 	private DistributionType oalpha;
 	private DistributionType od;
@@ -87,6 +108,9 @@ public class CirclePlacementModel extends PlacementModelImpl {
 				oalpha.toString(), od.toString() });
 	}
 
+	/**
+	 * Places the nodes on a circle around the center of the field.
+	 */
 	@Override
 	public Point[] place(int count) {
 		Random rnd = new Random();

@@ -39,7 +39,11 @@ import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.networks.model.placementmodels.NodeConnectorImpl;
 
 /**
- * @author Flipp
+ * Connects nodes based on their distance. If the distance is below
+ * <code>range</code> the nodes are connect, else they are not.
+ * 
+ * 
+ * @author Philipp Neubrand
  * 
  */
 public class UDGConnector extends NodeConnectorImpl {
@@ -47,7 +51,10 @@ public class UDGConnector extends NodeConnectorImpl {
 	private double range;
 
 	/**
-	 * @param i
+	 * The standard constructor for this class.
+	 * 
+	 * @param range
+	 *            The range below which all nodes are connected.
 	 */
 	public UDGConnector(double range) {
 		this.range = range;
@@ -56,6 +63,10 @@ public class UDGConnector extends NodeConnectorImpl {
 		setAdditionalConfigValues(new String[] { Double.toString(range) });
 	}
 
+	/**
+	 * Connects nodes based on their distance. If the distance is below
+	 * <code>range</code> the nodes are connect, else they are not.
+	 */
 	@Override
 	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids) {
 
@@ -66,7 +77,7 @@ public class UDGConnector extends NodeConnectorImpl {
 				if (i != j
 						&& ids.getPartitions()[i]
 								.distance((ids.getPartitions()[j]
-										.getRepresentativeID())) < range) {
+										.getRepresentativeID())) <= range) {
 					edges.add(i, j);
 				}
 			}

@@ -40,7 +40,11 @@ import gtna.networks.model.placementmodels.PlacementNotPossibleException;
 import gtna.networks.model.placementmodels.Point;
 
 /**
- * @author Flipp
+ * Places the nodes in a grid with <code>rows</code> rows and <code>cols</code>
+ * columns. Will throw an exception if more nodes are to be placed than is space
+ * in the grid.
+ * 
+ * @author Philipp Neubrand
  * 
  */
 public class GridPlacementModel extends PlacementModelImpl {
@@ -72,6 +76,11 @@ public class GridPlacementModel extends PlacementModelImpl {
 				Integer.toString(rows) });
 	}
 
+	/**
+	 * Places the nodes in a grid with <code>rows</code> rows and
+	 * <code>cols</code> columns. Will throw an exception if more nodes are to
+	 * be placed than is space in the grid.
+	 */
 	@Override
 	public Point[] place(int count) {
 		if (count > rows * cols)

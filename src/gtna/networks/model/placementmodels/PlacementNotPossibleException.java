@@ -34,21 +34,19 @@
 package gtna.networks.model.placementmodels;
 
 /**
- * @author Flipp
+ * A <code>PlacementNotPossibleException</code> is thrown when the placement of
+ * the nodes is not possible, for example when trying to place 21 nodes in a
+ * grid containing 20 cells.
+ * 
+ * @author Philipp Neubrand
  * 
  */
 public class PlacementNotPossibleException extends RuntimeException {
 
-	/**
-	 * @param string
-	 */
 	public PlacementNotPossibleException(String string) {
 		super(string);
 	}
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7153169638545167362L;
 
 }

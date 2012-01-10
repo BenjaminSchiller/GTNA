@@ -33,20 +33,33 @@
  * ---------------------------------------
  *
  */
-package gtna.networks.model.partitioners;
+package gtna.networks.model.placementmodels.partitioners;
 
 import gtna.networks.model.placementmodels.PartitionerImpl;
 
 /**
- * @author Flipp
+ * Distributes the nodes evenly among the hotspots. Every hotspot will contain
+ * <code>Math.floor(nodes / hotspots)</code> nodes, with the remaining nodes
+ * evenly distributed among the hotspots (the first (nodes % hotspots) hotspots
+ * will contain an additional node).
+ * 
+ * @author Philipp Neubrand
  * 
  */
 public class SimplePartitioner extends PartitionerImpl {
 
+	/**
+	 * Standard constructor, no configuration values are needed.
+	 */
 	public SimplePartitioner() {
 		setKey("Simple");
 	}
 
+	/**
+	 * Distributes the nodes among the hotspots, (nodes % hotspots) hotspots
+	 * will contain (floor(nodes / hotspots) + 1) nodes, the rest will contain
+	 * (nodes / hotspots) nodes.
+	 */
 	@Override
 	public int[] partition(int nodes, int hotspots) {
 		int t = nodes % hotspots;

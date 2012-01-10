@@ -41,7 +41,9 @@ import gtna.networks.model.placementmodels.Point;
 import java.util.Random;
 
 /**
- * @author Flipp
+ * Places the nodes uniformly in the field.
+ * 
+ * @author Philipp Neubrand
  * 
  */
 public class RandomPlacementModel extends PlacementModelImpl {
@@ -68,6 +70,9 @@ public class RandomPlacementModel extends PlacementModelImpl {
 		setAdditionalConfigValues(new String[] { Boolean.toString(inCenter) });
 	}
 
+	/**
+	 * Places the nodes uniformly in the field.
+	 */
 	@Override
 	public Point[] place(int count) {
 		Random rnd = new Random();

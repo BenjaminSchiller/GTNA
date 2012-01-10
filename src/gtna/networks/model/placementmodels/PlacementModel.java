@@ -36,39 +36,59 @@
 package gtna.networks.model.placementmodels;
 
 /**
- * @author Flipp
- *
+ * A <code>PlacementModel</code> is a way to determine a number of positions in
+ * a two-dimensional coordinate system. These positions can then be used to
+ * construct a graph. All positions are to be within the field defined by
+ * <code>getWidth()</code> and <code>getHeight()</code>.
+ * 
+ * @author Philipp Neubrand
+ * 
  */
 public interface PlacementModel {
 
 	/**
-	 * @param hotspots
-	 * @return
+	 * Finds and returns <code>number</code> positions.
+	 * 
+	 * @param number
+	 *            The number of positions to be returned.
+	 * @return An array of positions.
 	 */
-	public Point[] place(int hotspots);
+	public Point[] place(int number);
 
 	/**
-	 * @return
+	 * Getter for the key of the particular placement model.
+	 * 
+	 * @return The key of the placement model.
 	 */
 	public String getKey();
 
 	/**
-	 * @return
+	 * Getter for the width of the field in which the positions are to be
+	 * determined.
+	 * 
+	 * @return The width of the field.
 	 */
 	public double getWidth();
 
 	/**
-	 * @return
+	 * Getter for the height of the field in which the positions are to be
+	 * determined.
+	 * 
+	 * @return The height of the field.
 	 */
 	public double getHeight();
 
 	/**
-	 * @return
+	 * Getter for all the configuration values.
+	 * 
+	 * @return A string array containing all the configuration values.
 	 */
 	public String[] getConfigValues();
 
 	/**
-	 * @return
+	 * Getter for all the configuration keys.
+	 * 
+	 * @return A string array containing all the configuration values.
 	 */
 	public String[] getConfigKeys();
 

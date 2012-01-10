@@ -41,7 +41,15 @@ import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.networks.model.placementmodels.NodeConnectorImpl;
 
 /**
- * @author Flipp
+ * The <code>LogDistanceConnector</code> connects nodes based on their distance.
+ * The probability of two nodes being connected follows a log-normal
+ * distribution, depending on the distance. The distance is calculated as
+ * <code>(10 * gamma * Math.log10(distance / d0)) + rnd.nextGaussian() * sigma</code>
+ * . If the resulting value is smaller or equal to <code>range</code> the nodes
+ * are connected, otherwise they are not connected.
+ * 
+ * 
+ * @author Philipp Neubrand
  * 
  */
 public class LogDistanceConnector extends NodeConnectorImpl {
@@ -52,9 +60,22 @@ public class LogDistanceConnector extends NodeConnectorImpl {
 	private double sigma;
 
 	/**
-	 * @param i
+	 * Standard constructor for this class, takes all the necessary information.
+	 * As mentioned, an edge is determined by calculating
+	 * <code>((10 * gamma * Math.log10(distance/d0) + rnd.nextGaussian() * sigma</code>
+	 * and checking if the result is smaller than <code>range</code>.
+	 * 
+	 * @param range
+	 *            The range from the formula.
+	 * @param gamma
+	 *            Gamma from the formula.
+	 * @param d0
+	 *            D0 from the formula.
+	 * @param sigma
+	 *            Sigma from the formula.
 	 */
-	public LogDistanceConnector(double range, double gamma, double d0, double sigma) {
+	public LogDistanceConnector(double range, double gamma, double d0,
+			double sigma) {
 		this.range = range;
 		this.gamma = gamma;
 		this.d0 = d0;
@@ -62,9 +83,18 @@ public class LogDistanceConnector extends NodeConnectorImpl {
 		setKey("LOG");
 		setAdditionalConfigKeys(new String[] { "RANGE", "GAMMA", "D0", "SIGMA" });
 		setAdditionalConfigValues(new String[] { Double.toString(range),
-				Double.toString(gamma), Double.toString(d0), Double.toString(sigma) });
+				Double.toString(gamma), Double.toString(d0),
+				Double.toString(sigma) });
 	}
 
+	/**
+	 * The probability of two nodes being connected follows a log-normal
+	 * distribution, depending on the distance. The distance is calculated as
+	 * <code>(10 * gamma * Math.log10(distance / d0)) + rnd.nextGaussian() * sigma</code>
+	 * . If the resulting value is smaller or equal to <code>range</code> the
+	 * nodes are connected, otherwise they are not connected.
+	 * 
+	 */
 	@Override
 	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids) {
 		Random rnd = new Random();

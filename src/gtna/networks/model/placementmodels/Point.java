@@ -36,7 +36,9 @@
 package gtna.networks.model.placementmodels;
 
 /**
- * @author Flipp
+ * A <code>Point</code> identifies a point in a two-dimensional coordinate system. Coordinates are stored and returned as <code>Double</code>.
+ * 
+ * @author Philipp Neubrand
  * 
  */
 public class Point {
@@ -44,25 +46,15 @@ public class Point {
 	private double x;
 	private double y;
 
-	/**
-	 * @param d
-	 * @param e
-	 */
 	public Point(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
 
-	/**
-	 * @return
-	 */
 	public double getX() {
 		return x;
 	}
 
-	/**
-	 * @return
-	 */
 	public double getY() {
 		return y;
 	}
