@@ -3,6 +3,11 @@ package gtna.transformation.failure;
 import gtna.graph.Graph;
 import gtna.transformation.TransformationImpl;
 
+/**
+ * abstract class for failures
+ * @author stef
+ *
+ */
 public abstract class Failure extends TransformationImpl {
 	protected int failures;
 	

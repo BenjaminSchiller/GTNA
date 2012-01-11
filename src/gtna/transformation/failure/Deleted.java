@@ -42,6 +42,8 @@ import gtna.graph.Node;
 import java.util.ArrayList;
 
 /**
+ * graph property marking deleted node and keeping track of
+ * sequence of deletions
  * @author stef
  *
  */

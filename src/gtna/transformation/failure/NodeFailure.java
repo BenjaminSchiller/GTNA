@@ -4,6 +4,11 @@ import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 
+/**
+ * abstract class for node failures
+ * @author stef
+ *
+ */
 public abstract class NodeFailure extends Failure{
 	
 

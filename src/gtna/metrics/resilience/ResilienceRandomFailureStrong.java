@@ -38,6 +38,9 @@ package gtna.metrics.resilience;
 import gtna.transformation.failure.node.RandomFailure;
 
 /**
+ * 
+ * compute the resilience against failure of random nodes,
+ * in terms of strong connectivity
  * @author stef
  *
  */

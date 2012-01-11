@@ -22,7 +22,8 @@ public class RandomFailure extends NodeFailure{
 		int count = 0;
 		Random rand = new Random();
 		int next;
-		while (pos < fails.length && count < nodes.length){
+		//randomly choose next node from set of nodes not deleted yet, include counter to prevent endless loops if all nodes are deleted
+		while (pos < fails.length && count < nodes.length* nodes.length){
 			next = rand.nextInt(nodes.length);
 			if (!deleted[next]){
 				deleted[next] = true;

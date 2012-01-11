@@ -38,6 +38,8 @@ package gtna.metrics.resilience;
 import gtna.transformation.failure.node.LargestFailure;
 
 /**
+ * compute the resilience against failure of largest nodes,
+ * in terms of strong connectivity
  * @author stef
  *
  */

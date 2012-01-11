@@ -51,6 +51,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ * abstract metric for resilience of graphs in terms of weak connectivity
+ * here: resilience = number of nodes need to be removed so that each component of the graph
+ * contains at most half the nodes
  * @author stef
  *
  */
