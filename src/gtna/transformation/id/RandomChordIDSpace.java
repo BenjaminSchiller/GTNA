@@ -82,8 +82,8 @@ public class RandomChordIDSpace extends TransformationImpl implements
 	@Override
 	public Graph transform(Graph graph) {
 		Random rand = new Random();
-		ChordIdentifierSpace idSpace = new ChordIdentifierSpace(this.bits);
 		for (int r = 0; r < this.realities; r++) {
+			ChordIdentifierSpace idSpace = new ChordIdentifierSpace(this.bits);
 			ChordIdentifier[] ids = new ChordIdentifier[graph.getNodes().length];
 			if (this.uniform) {
 				BigInteger stepSize = idSpace.getModulus().divide(

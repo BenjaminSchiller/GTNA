@@ -76,8 +76,9 @@ public class RingIdentifier implements DIdentifier, Comparable<RingIdentifier> {
 	public Double distance(Identifier<Double> id) {
 		double dest = ((RingIdentifier) id).getPosition();
 		if (this.idSpace.isWrapAround()) {
-			return Math.abs(dest - this.position)
-					% (this.idSpace.getModulus() / 2.0);
+			return Math.min(Math.abs(this.position - dest), 
+		             Math.min(this.getIdSpace().getModulus()+ this.position - dest, 
+		            		  this.getIdSpace().getModulus()- this.position + dest));
 		} else {
 			return Math.abs(dest - this.position);
 		}
