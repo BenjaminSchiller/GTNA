@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * GephiDecorator.java
+ * HideSmallDegree.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -35,34 +35,38 @@
  */
 package gtna.plot.GephiUtils;
 
-import org.gephi.graph.api.Edge;
+import java.util.ArrayList;
 
 import gtna.graph.Graph;
 
-/**
- * @author Nico
- * 
- */
-public abstract class GephiDecorator {
-	protected boolean initialized = false;
+import org.gephi.graph.api.Edge;
+import org.gephi.graph.api.Node;
+import org.gephi.graph.spi.LayoutData;
 
-	public GephiDecorator() {
+public class HideSmallDegree extends GephiDecorator {
+	private int degreeLimit = 0;
+	private ArrayList<Integer> hiddenNodes;
+
+	public HideSmallDegree(int limit) {
+		this.degreeLimit = limit;
 	}
 
-	public abstract void init(Graph g);
-
+	public void init(Graph g) {
+		this.hiddenNodes = new ArrayList<Integer>();
+	}
+	
 	public boolean showNode(gtna.graph.Node gtnaNode) {
-		return true;
-	}
-
-	public void decorateNode(org.gephi.graph.api.Node gephiNode, gtna.graph.Node gtnaNode) {
+		if ( gtnaNode.getDegree() < degreeLimit) {
+			hiddenNodes.add(gtnaNode.getIndex());
+			System.out.println("hiding " + gtnaNode.getIndex());
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	public boolean showEdge(int src, int dest) {
-		return true;
-	}
-
-	public void decorateEdge(Edge temp, int src, int dest) {
+		return (!hiddenNodes.contains(src) && !hiddenNodes.contains(dest));
 	}
 
 }

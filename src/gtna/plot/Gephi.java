@@ -106,7 +106,8 @@ public class Gephi {
 		props.putValue(PreviewProperty.EDGE_THICKNESS, edgeScale);
 		props.putValue(PreviewProperty.ARROW_SIZE, 0);
 		props.putValue(PreviewProperty.NODE_BORDER_WIDTH, nodeBorderWidth);
-		
+		// props.putValue(PreviewProperty.SHOW_NODE_LABELS, Boolean.TRUE);
+
 		if (decorators == null) {
 			decorators = new GephiDecorator[0];
 		}
@@ -132,6 +133,7 @@ public class Gephi {
 
 	private void plotGraph(Graph g, IdentifierSpace idSpace) {
 		Partition[] p = idSpace.getPartitions();
+		boolean showNode;
 
 		// First run: add all nodes
 		for (Node n : g.getNodes()) {
@@ -142,6 +144,12 @@ public class Gephi {
 			if (Double.isNaN(position.getNorm())) {
 				throw new RuntimeException("Cannot plot graph as it contains nodes with non-existing coordinates");
 			}
+			showNode = true;
+			for (GephiDecorator sD : decorators) {
+				showNode = showNode && sD.showNode(n);
+			}
+			if (!showNode)
+				continue;
 			org.gephi.graph.api.Node temp = addNode(graphModel, gephiGraph, "N" + n.getIndex(), "Node " + n.getIndex(),
 					position);
 			for (GephiDecorator sD : decorators) {
@@ -161,6 +169,7 @@ public class Gephi {
 
 	private void addAllEdges(Graph g) {
 		Edge temp;
+		boolean showEdge;
 
 		for (Node n : g.getNodes()) {
 			if (n == null) {
@@ -168,12 +177,24 @@ public class Gephi {
 			}
 
 			for (int dest : n.getOutgoingEdges()) {
+				showEdge = true;
+				for (GephiDecorator sD : decorators) {
+					showEdge = showEdge && sD.showEdge(n.getIndex(), dest);
+				}
+				if (!showEdge)
+					continue;
 				temp = addEdge(graphModel, gephiGraph, gephiNodes[n.getIndex()], gephiNodes[dest]);
 				for (GephiDecorator sD : decorators) {
 					sD.decorateEdge(temp, n.getIndex(), dest);
 				}
 			}
 			for (int src : n.getIncomingEdges()) {
+				showEdge = true;
+				for (GephiDecorator sD : decorators) {
+					showEdge = showEdge && sD.showEdge(src, n.getIndex());
+				}
+				if (!showEdge)
+					continue;
 				temp = addEdge(graphModel, gephiGraph, gephiNodes[src], gephiNodes[n.getIndex()]);
 				for (GephiDecorator sD : decorators) {
 					sD.decorateEdge(temp, src, n.getIndex());
@@ -184,6 +205,8 @@ public class Gephi {
 
 	private void addSpanningTreeEdges(Graph g) {
 		Edge temp;
+		boolean showEdge;
+
 		if (!g.hasProperty("SPANNINGTREE")) {
 			throw new RuntimeException("Should plot a spanning tree, but given graph misses property");
 		}
@@ -193,6 +216,12 @@ public class Gephi {
 			if (e == null)
 				continue;
 			if (e.getSrc() == -1)
+				continue;
+			showEdge = true;
+			for (GephiDecorator sD : decorators) {
+				showEdge = showEdge && sD.showEdge(e.getSrc(), e.getDst());
+			}
+			if (!showEdge)
 				continue;
 			temp = addEdge(graphModel, gephiGraph, gephiNodes[e.getSrc()], gephiNodes[e.getDst()]);
 			for (GephiDecorator sD : decorators) {
