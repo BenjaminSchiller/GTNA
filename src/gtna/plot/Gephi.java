@@ -62,9 +62,8 @@ import org.gephi.io.exporter.api.ExportController;
 import org.gephi.layout.plugin.force.ForceVector;
 import org.gephi.preview.api.PreviewController;
 import org.gephi.preview.api.PreviewModel;
-import org.gephi.preview.api.supervisors.DirectedEdgeSupervisor;
-import org.gephi.preview.api.supervisors.NodeSupervisor;
-import org.gephi.preview.api.supervisors.UndirectedEdgeSupervisor;
+import org.gephi.preview.api.PreviewProperties;
+import org.gephi.preview.api.PreviewProperty;
 import org.gephi.project.api.ProjectController;
 import org.openide.util.Lookup;
 
@@ -102,25 +101,12 @@ public class Gephi {
 
 		// Next lines: do *never* draw curved lines!
 		PreviewModel model = Lookup.getDefault().lookup(PreviewController.class).getModel();
-
-		DirectedEdgeSupervisor m1 = model.getUniEdgeSupervisor();
-		DirectedEdgeSupervisor m2 = model.getBiEdgeSupervisor();
-		UndirectedEdgeSupervisor m3 = model.getUndirectedEdgeSupervisor();
-
-		m1.setCurvedFlag(curvedFlag);
-		m2.setCurvedFlag(curvedFlag);
-		m3.setCurvedFlag(curvedFlag);
-
-		m1.setEdgeScale(edgeScale);
-		m2.setEdgeScale(edgeScale);
-		m3.setEdgeScale(edgeScale);
-
-		m1.setShowArrowsFlag(false);
-		m2.setShowArrowsFlag(false);
-
-		NodeSupervisor ns = model.getNodeSupervisor();
-		ns.setNodeBorderWidth(nodeBorderWidth);
-
+		PreviewProperties props = model.getProperties();
+		props.putValue(PreviewProperty.EDGE_CURVED, curvedFlag);
+		props.putValue(PreviewProperty.EDGE_THICKNESS, edgeScale);
+		props.putValue(PreviewProperty.ARROW_SIZE, 0);
+		props.putValue(PreviewProperty.NODE_BORDER_WIDTH, nodeBorderWidth);
+		
 		if (decorators == null) {
 			decorators = new GephiDecorator[0];
 		}
