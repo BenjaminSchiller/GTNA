@@ -98,6 +98,8 @@ public class LMC extends AttackableEmbedding {
 	protected String attackerSelection;
 
 	protected int attackers;
+	
+	protected double precision;
 
 	public static int MEDIAN_SET_SIZE = 500;
 
@@ -110,10 +112,15 @@ public class LMC extends AttackableEmbedding {
 
 	public LMC(int iterations, String mode, double P, String deltaMode, int C,
 			String attack, String attackerSelection, int attackers) {
+		this(iterations, mode, P, deltaMode, C, attack, attackerSelection, attackers,0.001);
+	}
+	
+	public LMC(int iterations, String mode, double P, String deltaMode, int C,
+			String attack, String attackerSelection, int attackers, double precision) {
 		super(iterations, "LMC", new String[] { "ITERATIONS", "MODE", "P",
-				"DELTA", "C", "ATTACK", "ATTACKERSELECTION", "ATTACKERS" },
+				"DELTA", "C", "ATTACK", "ATTACKERSELECTION", "ATTACKERS", "PRECISION" },
 				new String[] { "" + iterations, mode, "" + P, deltaMode,
-						"" + C, attack, attackerSelection, "" + attackers });
+						"" + C, attack, attackerSelection, "" + attackers, ""+precision });
 		this.mode = mode;
 		this.P = P;
 		this.deltaMode = deltaMode;
@@ -122,6 +129,7 @@ public class LMC extends AttackableEmbedding {
 		this.attack = attack;
 		this.attackerSelection = attackerSelection;
 		this.attackers = attackers;
+		this.precision = precision;
 	}
 
 	protected AttackableEmbeddingNode[] generateNodes(Graph g, Random rand) {
