@@ -73,26 +73,29 @@ public class Routing_HopDegreeDistribution extends MetricImpl implements Metric 
 		Routing routing = (Routing) metrics.get("ROUTING");
 
 		hopSteps = Config.getInt("ROUTING_HOPDEGREEDISTRIBUTION_HOPS");
-		
+
 		Route[] routes = routing.getRoutes();
-		long[][] degrees = new long[hopSteps+1][];
+		long[][] degrees = new long[hopSteps + 1][];
 		for (int i = 0; i <= hopSteps; i++) {
 			degrees[i] = new long[1];
 		}
 
 		int tempDegree;
 		int[] hops;
+		int counter = 0;
 		for (Route singleRoute : routes) {
 			hops = singleRoute.getRoute();
 			for (int i = 0; i <= hopSteps; i++) {
-				if ( i > (hops.length-1)) {
+				if (i > (hops.length - 1)) {
 					continue;
 				}
 				tempDegree = graph.getNode(hops[i]).getDegree();
 				degrees[i] = inc(degrees[i], tempDegree);
+				if (i == hopSteps)
+					counter++;
 			}
 		}
-		this.hopDegree = new Distribution(degrees[hopSteps], routes.length);
+		this.hopDegree = new Distribution(degrees[hopSteps], counter);
 	}
 
 	private void initEmpty() {
@@ -116,8 +119,8 @@ public class Routing_HopDegreeDistribution extends MetricImpl implements Metric 
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(this.hopDegree.getDistribution(),
 				"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(this.hopDegree.getCdf(),
-				"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF", folder);		
+		success &= DataWriter.writeWithIndex(this.hopDegree.getCdf(), "ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF",
+				folder);
 		return success;
 	}
 
