@@ -43,12 +43,11 @@ import gtna.routing.Route;
 import gtna.util.Config;
 import gtna.util.Distribution;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Routing_HopDegreeDistribution extends MetricImpl implements Metric {
 	private int hopSteps;
-	private Distribution hopDegree;
+	private Distribution[] hopDegree;
 
 	public Routing_HopDegreeDistribution() {
 		super("ROUTING_HOPDEGREEDISTRIBUTION");
@@ -56,6 +55,76 @@ public class Routing_HopDegreeDistribution extends MetricImpl implements Metric 
 
 	@Override
 	public void computeData(Graph graph, Network network, HashMap<String, Metric> metrics) {
+		hopSteps = Config.getInt("ROUTING_HOPDEGREEDISTRIBUTION_HOPS");
+		String formerDataKeys = Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DATA_KEYS");
+		String formerDataPlots = Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DATA_PLOTS");
+		if (!formerDataKeys.contains("_HOP_" + hopSteps)) {
+			String newDataKeys = "";
+			String newDataPlots = "";
+			for (int i = 0; i <= hopSteps; i++) {
+				if (formerDataKeys.contains("_HOP_" + i)) {
+					throw new RuntimeException("Caught doubled initialization of RHDD");
+				}
+				if (i > 0) {
+					newDataKeys += ", ";
+					newDataPlots += ", ";
+				}
+				newDataKeys += formerDataKeys.replace("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION",
+						"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i);
+				newDataPlots += formerDataPlots.replace("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION",
+						"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i);
+
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_DATA_NAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_DATA_NAME"));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_DATA_FILENAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_DATA_FILENAME") + "-" + i);
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_DATA_NAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_DATA_NAME"));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_DATA_FILENAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_DATA_FILENAME") + "-" + i);
+
+				Config.overwrite(
+						"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_DATA",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_DATA").replace(
+								"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION",
+								"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_FILENAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_FILENAME") + "-" + i);
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_TITLE",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_TITLE") + " after " + i + " hops");
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_X",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_X"));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_Y",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_Y"));
+
+				Config.overwrite(
+						"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_DATA",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_DATA").replace(
+								"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION",
+								"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_FILENAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_FILENAME") + "-" + i);
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_TITLE",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_TITLE") + " after " + i
+								+ " hops");
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_X",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_X"));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_Y",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_Y"));
+
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_AVG_SINGLE_NAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_AVG_SINGLE_NAME") + "-" + i);
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_MED_SINGLE_NAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_MED_SINGLE_NAME") + "-" + i);
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_MAX_SINGLE_NAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_MAX_SINGLE_NAME") + "-" + i);
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_MIN_SINGLE_NAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_MIN_SINGLE_NAME") + "-" + i);
+			}
+			Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DATA_KEYS", newDataKeys);
+			Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DATA_PLOTS", newDataPlots);
+		}
+
 		/*
 		 * First: check whether routing was already applied
 		 */
@@ -72,17 +141,17 @@ public class Routing_HopDegreeDistribution extends MetricImpl implements Metric 
 		}
 		Routing routing = (Routing) metrics.get("ROUTING");
 
-		hopSteps = Config.getInt("ROUTING_HOPDEGREEDISTRIBUTION_HOPS");
-
 		Route[] routes = routing.getRoutes();
 		long[][] degrees = new long[hopSteps + 1][];
+		int[] counter = new int[hopSteps + 1];
 		for (int i = 0; i <= hopSteps; i++) {
-			degrees[i] = new long[1];
+			degrees[i] = new long[] { 0 };
+			counter[i] = 0;
 		}
 
 		int tempDegree;
 		int[] hops;
-		int counter = 0;
+
 		for (Route singleRoute : routes) {
 			hops = singleRoute.getRoute();
 			for (int i = 0; i <= hopSteps; i++) {
@@ -91,15 +160,22 @@ public class Routing_HopDegreeDistribution extends MetricImpl implements Metric 
 				}
 				tempDegree = graph.getNode(hops[i]).getDegree();
 				degrees[i] = inc(degrees[i], tempDegree);
-				if (i == hopSteps)
-					counter++;
+				counter[i]++;
 			}
 		}
-		this.hopDegree = new Distribution(degrees[hopSteps], counter);
+
+		this.hopDegree = new Distribution[hopSteps + 1];
+		for (int i = 0; i <= hopSteps; i++) {
+			this.hopDegree[i] = new Distribution(degrees[i], counter[i]);
+		}
 	}
 
 	private void initEmpty() {
-		this.hopDegree = new Distribution(new double[] { 0 });
+		this.hopSteps = -1;
+		this.hopDegree = new Distribution[hopSteps + 1];
+		for (int i = 0; i <= hopSteps; i++) {
+			this.hopDegree[i] = new Distribution(new double[] { 0 });
+		}
 	}
 
 	private long[] inc(long[] values, int index) {
@@ -117,19 +193,26 @@ public class Routing_HopDegreeDistribution extends MetricImpl implements Metric 
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(this.hopDegree.getDistribution(),
-				"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(this.hopDegree.getCdf(), "ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF",
-				folder);
+		for (int i = 0; i <= hopSteps; i++) {
+			success &= DataWriter.writeWithIndex(this.hopDegree[i].getDistribution(),
+					"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i, folder);
+			success &= DataWriter.writeWithIndex(this.hopDegree[i].getCdf(),
+					"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF", folder);
+		}
 		return success;
 	}
 
 	@Override
 	public Value[] getValues() {
-		Value averageHopDegree = new Value("ROUTING_HOPDEGREEDISTRIBUTION_AVG", this.hopDegree.getAverage());
-		Value medianHopDegree = new Value("ROUTING_HOPDEGREEDISTRIBUTION_MED", this.hopDegree.getMedian());
-		Value maximumHopDegree = new Value("ROUTING_HOPDEGREEDISTRIBUTION_MAX", this.hopDegree.getMax());
-		Value minimumHopDegree = new Value("ROUTING_HOPDEGREEDISTRIBUTION_MIN", this.hopDegree.getMin());
-		return new Value[] { averageHopDegree, medianHopDegree, maximumHopDegree, minimumHopDegree };
+		Value[] result = new Value[(hopSteps + 1) * 4];
+		int counter = 0;
+
+		for (int i = 0; i <= hopSteps; i++) {
+			result[counter++] = new Value("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_AVG", this.hopDegree[i].getAverage());
+			result[counter++] = new Value("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_MED", this.hopDegree[i].getMedian());
+			result[counter++] = new Value("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_MAX", this.hopDegree[i].getMax());
+			result[counter++] = new Value("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_MIN", this.hopDegree[i].getMin());
+		}
+		return result;
 	}
 }
