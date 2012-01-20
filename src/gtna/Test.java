@@ -52,13 +52,12 @@ import gtna.routing.greedyVariations.DistRestrictGreedy;
 import gtna.routing.greedyVariations.FactorRestrictEdgeGreedy;
 import gtna.routing.greedyVariations.FactorRestrictGreedy;
 import gtna.routing.greedyVariations.GravityPressureRouting;
+import gtna.routing.greedyVariations.KWorseGreedy;
 import gtna.routing.greedyVariations.OneWorseGreedy;
 import gtna.routing.greedyVariations.PureGreedy;
 import gtna.transformation.Transformation;
 import gtna.transformation.attackableEmbedding.lmc.LMC;
 import gtna.transformation.attackableEmbedding.swapping.Swapping;
-import gtna.transformation.failure.node.LargestFailure;
-import gtna.transformation.failure.node.RandomFailure;
 import gtna.util.Config;
 
 /**
@@ -68,8 +67,21 @@ import gtna.util.Config;
 public class Test {
 	
 	public static void main(String[] args){
-		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, RESILIENCE_LARGEST_FAILURE_WEAK, RESILIENCE_RANDOM_FAILURE_WEAK ");
-		testFailures();
+//		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, CLUSTERING_COEFFICIENT, SHORTEST_PATHS ");
+////		int[] sizes = {1000,10000,100000};
+////		int[] C = {1,5,10};
+//		int[] sizes = {20000,30000, 400000, 50000, 60000, 70000, 80000, 90000};
+//		int[] C = {5};
+//		for (int i = 0; i < sizes.length; i++){
+//			for (int j = 0; j < C.length; j++){
+//				testKleinberg1C(sizes[i], C[j]);
+//			}
+//		}
+		Config.overwrite("METRICS", "ROUTING");
+		int size = Integer.parseInt(args[0]);
+		int C = Integer.parseInt(args[1]);
+		int iter = Integer.parseInt(args[2]);
+		testKWorse(size, C, iter);
 	}
 	
 	private static void testEmbedding(){
@@ -90,6 +102,12 @@ public class Test {
 			Series.generate(barabasi, 1);
 		}
 	}
+	
+	private static void testKWorse(int size, int C, int iter){
+		RoutingAlgorithm ra = new KWorseGreedy(2);
+		Network kleinbergC = new Kleinberg1DC(size,1,1,1,true,true,C,ra,null);
+		Series.generate(kleinbergC, iter);
+	}
 
 	private static void testSmallWorld(){
 		Network kleinberg = new Kleinberg(10,3,1,1,3,true,true,null,null);
@@ -100,6 +118,13 @@ public class Test {
 		Series.generate(kleinbergC, 1);
 		Network scalefree = new ScaleFreeUndirected(10,3,1,10,null,null);
 		Series.generate(scalefree, 1);
+	}
+	
+	private static void testKleinberg1C(int size, int C){
+		
+		Network kleinbergC = new Kleinberg1DC(size,1,1,1,true,true,C,null,null);
+		Series.generate(kleinbergC, 5);
+		
 	}
 	
 	private static void testMotifs(){
