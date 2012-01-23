@@ -13,12 +13,16 @@ import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 import gtna.util.Config;
+import gtna.util.Util;
 
 public class CommunityDetectionLPAExtended extends TransformationImpl implements
 		Transformation {
+	
+	public static final String key = "COMMUNITY_DETECTION_LPAEXTENDED";
+	
 	public CommunityDetectionLPAExtended() {
-		super("COMMUNITY_DETECTION_LPAEXT", new String[] {"COM_LPAEXT_W", "COM_LPAEXT_F", "COM_LPAEXT_D", "COM_LPAEXT_M"},
-				new String[] {Config.get("COM_LPAEXT_W"), Config.get("COM_LPAEXT_F"), Config.get("COM_LPAEXT_D"), Config.get("COM_LPAEXT_M")});
+		super(key, Util.addPrefix(key, new String[] {"_W", "_F", "_D", "_M"}),
+				new String[] {Config.get(key + "_W"), Config.get(key + "_F"), Config.get(key + "_D"), Config.get(key + "_M")});
 	}
 
 	public static interface EdgeWeight {
@@ -45,17 +49,17 @@ public class CommunityDetectionLPAExtended extends TransformationImpl implements
 		EdgeWeight w = null;
 		NodeCharacteristic f = null;
 		try {
-			w = (EdgeWeight) Class.forName(Config.get("COM_LPAEXT_W"))
+			w = (EdgeWeight) Class.forName(Config.get(key() + "_W"))
 					.newInstance();
-			f = (NodeCharacteristic) Class.forName(Config.get("COM_LPAEXT_F"))
+			f = (NodeCharacteristic) Class.forName(Config.get(key() + "_F"))
 					.newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("invalid config - "
 					+ e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
-		double m = Double.parseDouble(Config.get("COM_LPAEXT_M"));
-		double d = Double.parseDouble(Config.get("COM_LPAEXT_D"));
+		double m = Double.parseDouble(Config.get(key() + "_M"));
+		double d = Double.parseDouble(Config.get(key() + "_D"));
 
 		int[] labels = new int[nodes.length];
 		double[] scores = new double[nodes.length];

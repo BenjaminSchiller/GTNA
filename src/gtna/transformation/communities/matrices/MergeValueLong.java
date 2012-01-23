@@ -1,18 +1,18 @@
-package gtna.transformation.communities.matrizes;
+package gtna.transformation.communities.matrices;
 
-public class MergeValueInt {
+public class MergeValueLong {
 	
 	public int i;
 	public int j;
-	public int value;
+	public long value;
 	
-	public MergeValueInt(int i, int j, int value){
+	public MergeValueLong(int i, int j, long value){
 		this.i = i;
 		this.j = j;
 		this.value = value;
 	}
 
-	public MergeValueInt(int i2, int j2) {
+	public MergeValueLong(int i2, int j2) {
 		this.i = i2;
 		this.j = j2;
 	}
@@ -47,4 +47,7 @@ public class MergeValueInt {
 	
 		return false;
 	}
+	
+
+
 }

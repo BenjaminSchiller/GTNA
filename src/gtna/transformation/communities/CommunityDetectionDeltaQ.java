@@ -11,14 +11,14 @@ import gtna.graph.Node;
 import gtna.io.Log;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
-import gtna.transformation.communities.matrizes.IMyEMatrix;
-import gtna.transformation.communities.matrizes.IMyQMatrix;
-import gtna.transformation.communities.matrizes.MyEMatrixInt;
-import gtna.transformation.communities.matrizes.MyEMatrixLong;
-import gtna.transformation.communities.matrizes.MyQEMatrixInt;
-import gtna.transformation.communities.matrizes.MyQEMatrixLong;
-import gtna.transformation.communities.matrizes.MyQMatrixInt;
-import gtna.transformation.communities.matrizes.MyQMatrixLong;
+import gtna.transformation.communities.matrices.IMyEMatrix;
+import gtna.transformation.communities.matrices.IMyQMatrix;
+import gtna.transformation.communities.matrices.MyEMatrixInt;
+import gtna.transformation.communities.matrices.MyEMatrixLong;
+import gtna.transformation.communities.matrices.MyQEMatrixInt;
+import gtna.transformation.communities.matrices.MyQEMatrixLong;
+import gtna.transformation.communities.matrices.MyQMatrixInt;
+import gtna.transformation.communities.matrices.MyQMatrixLong;
 import gtna.util.Config;
 
 /**
@@ -57,9 +57,9 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements Tran
 		
 		int nodes = g.getNodes().length;
 
-		boolean forceSeparated = Config.getBoolean("CDQ_FORCESEPARATED");
+		boolean forceSeparated = Config.getBoolean(key() + "_FORCESEPARATED");
 
-		String internalFormat = Config.get("CDQ_INTERNALFORMAT");
+		String internalFormat = Config.get(key() + "_INTERNALFORMAT");
 
 		// Create the needed matrices. Note that due to generics being limited
 		// to non-primitive types, using them is not possible. It would be
@@ -86,13 +86,10 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements Tran
 			}
 		}
 
-		Log.info("Starting community detection algorithm deltaQ with " + internalFormat
-				+ " as the internalFormat and forceSeparated=" + forceSeparated);
-
 		// Initialize the algorithm
 		double mod = 0;
 		int t = 0;
-		int maxT = Config.getInt("CDQ_MAXITERATIONS");
+		int maxT = Config.getInt(key() + "_MAXITERATIONS");
 		if (maxT == 0 || maxT > nodes - 1)
 			maxT = nodes - 1;
 

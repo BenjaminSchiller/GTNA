@@ -1,4 +1,4 @@
-package gtna.transformation.communities.matrizes;
+package gtna.transformation.communities.matrices;
 
 import java.util.TreeSet;
 

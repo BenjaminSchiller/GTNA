@@ -1,4 +1,4 @@
-package gtna.transformation.communities.matrizes;
+package gtna.transformation.communities.matrices;
 
 import gtna.graph.Edge;
 import gtna.graph.Graph;

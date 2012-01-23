@@ -1,17 +1,17 @@
-package gtna.transformation.communities.matrizes;
+package gtna.transformation.communities.matrices;
 
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.io.Log;
 
 /**
- * An implementation combining the Q and E matrix into one class, using long
+ * An implementation combining the Q and E matrix into one class, using int
  * for internal storage.
  * 
  * @author Philipp Neubrand
  * 
  */
-public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
+public class MyQEMatrixInt implements IMyEMatrix, IMyQMatrix {
 
 	// stores the change in modularity for the last merge
 	private double lastDelta;
@@ -23,10 +23,10 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 	private int edges;
 
 	// stores the actual data of the matrix.
-	private long[][] data;
+	private int[][] data;
 
 	// buffer for the row sums
-	private long[] rowSums;
+	private int[] rowSums;
 
 	// flags if a row/column was deleted
 	private boolean[] deleted;
@@ -45,11 +45,11 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 	 *            The graph from which to create the QEMatrix
 	 * @return a fully initialized QEMatrix ready to use
 	 */
-	public static MyQEMatrixLong createFromGraph(Graph graph) {
+	public static MyQEMatrixInt createFromGraph(Graph graph) {
 		// initialize a matrix with the given dimension
 		int dimension = graph.getNodes().length;
 		int edges = graph.getEdges().size();
-		MyQEMatrixLong ret = new MyQEMatrixLong(dimension);
+		MyQEMatrixInt ret = new MyQEMatrixInt(dimension);
 
 		// insert the values for all the edges that are present
 		for (Edge akt : graph.getEdges().getEdges()) {
@@ -57,8 +57,9 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 				ret.setValue(akt.getDst(), akt.getSrc(), 1);
 			else
 				ret.setValue(akt.getSrc(), akt.getDst(), 1);
-		}
 
+		}
+		
 		// calculate all row sums for the first time
 		ret.calcAllRowSums();
 
@@ -66,15 +67,17 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 		for (int i = 0; i < dimension; i++) {
 			for (int j = i + 1; j < dimension; j++) {
 				if (ret.getValue(i, j) == 0)
-					ret.setValue(j, i, Long.MAX_VALUE);
+					ret.setValue(j, i, Integer.MAX_VALUE);
 				// if there is no edge between two nodes they can not be joined
 				// and therefore the associated value in the QMatrix is set to
-				// Long.MAX_VALUE so this join will be ignored
+				// Integer.MAX_VALUE so this join will be ignored
 				else
 					ret.setValue(j, i, (2 * edges * ret.getValue(i, j) - 2 * ret.getRowSum(i) * ret.getRowSum(j)));
 				// as defined by the paper referred to in the Class Description
+			
 			}
 		}
+
 		
 		ret.setEdges(edges);
 
@@ -93,7 +96,7 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 	 *            the row for which the row sum is to be calculated
 	 * @return the row sum to be calculated
 	 */
-	private long getRowSum(int i) {
+	private int getRowSum(int i) {
 		return rowSums[i];
 	}
 
@@ -113,7 +116,7 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 	 *            the row for which the value is to be calculated
 	 * @return the row sum
 	 */
-	private long calcRowSum(int i) {
+	private int calcRowSum(int i) {
 		rowSums[i] = 0;
 		for (int j = 0; j < dimension; j++) {
 			if (i < j)
@@ -124,18 +127,18 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 		return rowSums[i];
 	}
 
-	private long getValue(int i, int j) {
+	private int getValue(int i, int j) {
 		return data[i][j];
 	}
 
-	private void setValue(int index, int index2, long d) {
+	private void setValue(int index, int index2, int d) {
 		data[index][index2] = d;
 	}
 
-	private MyQEMatrixLong(int dimension) {
+	private MyQEMatrixInt(int dimension) {
 		this.dimension = dimension;
-		data = new long[dimension][dimension];
-		rowSums = new long[dimension];
+		data = new int[dimension][dimension];
+		rowSums = new int[dimension];
 		deleted = new boolean[dimension];
 	}
 
@@ -145,9 +148,9 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 		if (debug)
 			Log.debug("Merging: " + i + " " + j);
 
-		long jk = 0;
+		int jk = 0;
 		for (int k = 0; k < dimension; k++) {
-			if (k != i && k != j) {
+			if (k != i && k != j && !deleted[k]) {
 				if (j > k)
 					jk = getValue(k, j);
 				else
@@ -158,15 +161,22 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 					k = i;
 					i = temp;
 				}
+				if (debug)
+					Log.debug("Set value for (" + i + "," + k + ") to " + getValue(i, k) + " with jk = " + jk);
 
 				setValue(i, k, getValue(i, k) + jk);
 				if (debug)
-					Log.debug("Set value for (" + i + "," + k + ") to " + getValue(i, k));
+					Log.debug("Set value for (" + i + "," + k + ") to " + getValue(i, k) + " with jk = " + jk);
+				if (k > i) {
+					temp = k;
+					k = i;
+					i = temp;
+				}
 			}
 		}
 
 		// Update the diagonal element
-		long ij = 0;
+		int ij = 0;
 		if (i > j)
 			ij = getValue(j, i);
 		else
@@ -201,7 +211,7 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 	 */
 	@Override
 	public void getNextMerge(int[] erg) {
-		long aktMaxValue = -Long.MAX_VALUE;
+		int aktMaxValue = -Integer.MAX_VALUE;
 		int aktMaxI = -1;
 		int aktMaxJ = -1;
 		for (int i = 0; i < dimension; i++) {
@@ -211,7 +221,7 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 				// are checked
 				for (int j = i + 1; j < dimension; j++) {
 					if (!deleted[j]) {
-						if (getValue(j, i) > aktMaxValue && getValue(j, i) != Long.MAX_VALUE) {
+						if (getValue(j, i) > aktMaxValue && getValue(j, i) != Integer.MAX_VALUE) {
 							aktMaxValue = getValue(j, i);
 							aktMaxI = i;
 							aktMaxJ = j;
@@ -247,7 +257,7 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 		for (int k = i + 1; k < dimension; k++) {
 			if (!deleted[k]) {
 				if (getValue(i, k) == 0)
-					setValue(k, i, Long.MAX_VALUE);
+					setValue(k, i, Integer.MAX_VALUE);
 				else 
 					setValue(k, i, (2 * edges * getValue(i, k) - (2 * getRowSum(k) * getRowSum(i))));
 				
@@ -268,7 +278,7 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 		for (int k = 0; k < i; k++) {
 			if (!deleted[k])
 				if (getValue(k, i) == 0)
-					setValue(i, k, Long.MAX_VALUE);
+					setValue(i, k, Integer.MAX_VALUE);
 				else 
 					setValue(i, k, (2 * edges * getValue(k, i) - (2 * getRowSum(k) * getRowSum(i))));
 
@@ -285,25 +295,30 @@ public class MyQEMatrixLong implements IMyEMatrix, IMyQMatrix {
 	@Override
 	public String toString() {
 		StringBuilder ret = new StringBuilder();
-		ret.append("\t");
+		ret.append("\r\n\t");
 		for (int i = 0; i < dimension; i++) {
 			if (!deleted[i]) {
 				ret.append(i);
 				ret.append("\t");
 			}
 		}
-		ret.append("\n");
+		ret.append("\r\n");
 		for (int i = 0; i < dimension; i++) {
 			if (!deleted[i]) {
 				ret.append(i);
 				ret.append("\t");
 				for (int j = 0; j < dimension; j++) {
 					if (!deleted[j]) {
-						ret.append(Long.toString(getValue(i, j)).substring(0, 5));
+						if(getValue(i, j) == Integer.MAX_VALUE)
+							ret.append("x");
+						else if(Integer.toString(getValue(i, j)).length() > 6)
+							ret.append(Integer.toString(getValue(i, j)).substring(0, 5));
+						else
+							ret.append(Integer.toString(getValue(i,j)));
 						ret.append("\t");
 					}
 				}
-				ret.append("\t");
+				ret.append("\r\n");
 			}
 		}
 		return ret.toString();

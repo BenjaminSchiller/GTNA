@@ -1,4 +1,4 @@
-package gtna.transformation.communities.matrizes;
+package gtna.transformation.communities.matrices;
 
 /**
  * Interface for the matrix Q of the community detection algorithm based on

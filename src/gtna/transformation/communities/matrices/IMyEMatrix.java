@@ -1,4 +1,4 @@
-package gtna.transformation.communities.matrizes;
+package gtna.transformation.communities.matrices;
 
 /**
  * Encapsulates the Matrix E of the community detection algorithm based on

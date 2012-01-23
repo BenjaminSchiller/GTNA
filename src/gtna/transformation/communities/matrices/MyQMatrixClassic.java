@@ -1,6 +1,4 @@
-package gtna.transformation.communities.matrizes;
-
-import java.util.TreeSet;
+package gtna.transformation.communities.matrices;
 
 import gtna.io.Log;
 
@@ -18,7 +16,7 @@ import gtna.io.Log;
  * @author Philipp Neubrand
  * 
  */
-public class MyQMatrixInt implements IMyQMatrix {
+public class MyQMatrixClassic implements IMyQMatrix {
 	// The dimension of the matrix, will be equal to the number of nodes.
 	private int dimension;
 
@@ -27,14 +25,9 @@ public class MyQMatrixInt implements IMyQMatrix {
 	// be faster than resizing the array at each iteration.
 	private boolean[] deleted;
 
-	// A tree representation of all possible merges and their values. This is
-	// used to determinate the next merge in log(n) rather than in n². The tree
-	// needs to be updated whenever values are changed, to speed up that process
-	// the values for each merge are also kept in matrix form.
-	private TreeSet<MergeValueInt> data;
-
-	// A matrix representation of the merge values for all communities.
-	private int[][] data2;
+	// Holds the actual data of the matrix, stored as an array of rows,
+	// data[column, row].
+	private int[][] data;
 
 	// Stores the EMatrix of which this QMatrix was created. This matrix will
 	// then be used when calculating the update.
@@ -43,10 +36,8 @@ public class MyQMatrixInt implements IMyQMatrix {
 	// Stores the change in modularity for the last merge.
 	private double lastDelta;
 
-	// enable or disable debug
 	private boolean debug = false;
 
-	// the number of edges
 	private int edges;
 
 	/**
@@ -60,28 +51,25 @@ public class MyQMatrixInt implements IMyQMatrix {
 	 *            the EMatrix from what to create the QMatrix
 	 * @return a ready to use QMatrix, fully initialized
 	 */
-	public MyQMatrixInt(MyEMatrixInt e) {
+	public MyQMatrixClassic(MyEMatrixInt e) {
 
 		dimension = e.getDimension();
 
 		deleted = new boolean[dimension];
-		data = new TreeSet<MergeValueInt>(new MergeValueIntComparator());
-		data2 = new int[dimension][dimension];
+		data = new int[dimension][dimension];
 
 		int edges = e.numEdges();
-		int val;
 		setEdges(edges);
-		MergeValueInt temp = null;
 		for (int i = 0; i < dimension; i++) {
 			for (int j = i + 1; j < dimension; j++) {
-				if (e.getValue(i, j) != 0 || e.getValue(j, i) != 0) {
-					val = (edges * (e.getValue(j, i) + e.getValue(i, j)) - 2
-							* e.getRowSum(i) * e.getRowSum(j));
-					temp = new MergeValueInt(i, j, val);
-					data.add(temp);
-					data2[i][j] = val;
-				} else
-					data2[i][j] = Integer.MAX_VALUE;
+				if (e.getValue(i, j) == 0 && e.getValue(j, i) == 0)
+					setValue(i, j, Integer.MAX_VALUE);
+				// if there is no edge between two nodes they can not be joined
+				// and therefore the associated value in the QMatrix is set to
+				// Integer.MAX_VALUE so this join will be ignored
+				else
+					setValue(i, j, (edges * (e.getValue(j, i) + e.getValue(i, j)) - 2 * e.getRowSum(i)
+							* e.getRowSum(j)));
 
 				// as defined by the paper referred to in the Class Description
 			}
@@ -115,8 +103,7 @@ public class MyQMatrixInt implements IMyQMatrix {
 	 *            the new value
 	 */
 	private void setValue(int i, int j, int d) {
-		data.add(new MergeValueInt(i, j, d));
-		data2[i][j] = d;
+		data[i][j] = d;
 	}
 
 	/**
@@ -129,7 +116,7 @@ public class MyQMatrixInt implements IMyQMatrix {
 	 * @return the value data[i][j]
 	 */
 	private int getValue(int i, int j) {
-		return data2[i][j];
+		return data[i][j];
 	}
 
 	/*
@@ -138,24 +125,34 @@ public class MyQMatrixInt implements IMyQMatrix {
 	 * @see gtna.metrics.communities.IMyQMatrix#getNextMerge()
 	 */
 	public void getNextMerge(int[] erg) {
-		
-		if(data.size() == 0){
-			erg[0] = -1;
-			erg[1] = -1;
-			return;
+		int aktMaxValue = -Integer.MAX_VALUE;
+		int aktMaxI = -1;
+		int aktMaxJ = -1;
+		for (int i = 0; i < dimension; i++) {
+			if (!deleted[i]) {
+				// since the deltaQ matrix is an upper right triangular matrix
+				// (with even the diagonal elements being 0) only these elements
+				// are checked
+				for (int j = i + 1; j < dimension; j++) {
+					if (!deleted[j]) {
+						if (getValue(i, j) > aktMaxValue && getValue(i, j) != Integer.MAX_VALUE) {
+							aktMaxValue = getValue(i, j);
+							aktMaxI = i;
+							aktMaxJ = j;
+						}
+					}
+				}
+			}
 		}
+
+		lastDelta = aktMaxValue;
+		erg[0] = aktMaxI;
+		erg[1] = aktMaxJ;
 		
-		MergeValueInt next = data.last();
+		if(debug)
+			Log.debug("Next merge (" + aktMaxI + ", " + aktMaxJ + ") = " + aktMaxValue);
 
-		lastDelta = next.value;
-
-		erg[0] = next.i;
-		erg[1] = next.j;
 		
-
-		if (debug)
-			Log.debug("Next merge (" + erg[0] + ", " + erg[1] + ") = "
-					+ lastDelta);
 	}
 
 	/*
@@ -165,58 +162,48 @@ public class MyQMatrixInt implements IMyQMatrix {
 	 * gtna.metrics.communities.MyEMatrixInteger)
 	 */
 	public void update(int i, int j) {
-		removeValue(i, j);
-
 		// first flag j as deleted so there are no updates done to the column
 		deleted[j] = true;
+		// assume i = 3 (j is irrelevant for the iteration since it will only be
+		// flagged as deleted, no changes will be done to it
+		// - 1 2 3 4
+		// 1 .
+		// 2 ...
+		// 3 ..... x
+		// 4 .......
+		// first recalculate the row i (starting by i + 1 since merging is
+		// commutative i.e. 1+2 = 2+1)
+		for (int k = i + 1; k < dimension; k++) {
+			if (!deleted[k]) {
+				if (e.getValue(i, k) == 0 && e.getValue(k, i) == 0)
+					setValue(i, k, Integer.MAX_VALUE);
+				else
+					setValue(i, k, (edges * (e.getValue(k, i) + e.getValue(i, k)) - (2 * e.getRowSum(k) * e.getRowSum(i))));
 
-		for (int k = 0; k < dimension; k++) {
-			if (k < i) {
-				removeValue(k, i);
-				if (!deleted[k]) {
-					if (e.getValue(i, k) != 0 || e.getValue(k, i) != 0) {
-						setValue(
-								k,
-								i,
-								(edges * (e.getValue(k, i) + e.getValue(i, k)) - (2 * e
-										.getRowSum(k) * e.getRowSum(i))));
-					}
-				}
-			} else if (k > i) {
-				removeValue(i, k);
-				if (!deleted[k]) {
-					if (e.getValue(i, k) != 0 || e.getValue(k, i) != 0) {
-						setValue(
-								i,
-								k,
-								(edges * (e.getValue(i, k) + e.getValue(k, i)) - (2 * e
-										.getRowSum(k) * e.getRowSum(i))));
-					}
-				}
-
+				if (debug)
+					Log.debug("Set value for (" + i + ", " + k + ") to " + getValue(i, k));
 			}
-
-			if (k < j)
-				removeValue(k, j);
-			else if (k > j)
-				removeValue(j, k);
-
 		}
-	}
+		// second recalculate the column i starting from 0 and ending at i-1 for
+		// the same reason as above
+		// - 1 2 3 4
+		// 1 . x
+		// 2 ... x
+		// 3 .....
+		// 4 .......
+		// so in the end 1+3, 2+3 and 3+4 were updated (one of them will be
+		// flagged as deleted as it will have been merged with 3 and therefore
+		// it will have been ignored)
+		for (int k = 0; k < i; k++) {
+			if (!deleted[k])
+				if (e.getValue(k, i) == 0 && e.getValue(i, k) == 0)
+					setValue(k, i, Integer.MAX_VALUE);
+				else
+					setValue(k, i, (edges * ( e.getValue(i, k) + e.getValue(k, i)) - (2 * e.getRowSum(k) * e
+							.getRowSum(i))));
 
-	/**
-	 * Removes the value for the join between communities i and j out of the
-	 * matrix and out of the tree. To avoid unnecessary queries to the tree, the
-	 * matrix is first checked if the value is stored in the tree and it is then
-	 * only removed if it is in the tree.
-	 * 
-	 * @param j the first community of the join
-	 * @param k the second community of the join
-	 */
-	private void removeValue(int j, int k) {
-		if (data2[j][k] != Integer.MAX_VALUE) {
-			data.remove(new MergeValueInt(j, k, data2[j][k]));
-			data2[j][k] = Integer.MAX_VALUE;
+			if (debug)
+				Log.debug("Set value for (" + i + ", " + j + ") to " + getValue(i, k));
 		}
 	}
 
@@ -240,7 +227,7 @@ public class MyQMatrixInt implements IMyQMatrix {
 				ret.append("\t");
 				for (int j = 0; j < dimension; j++) {
 					if (!deleted[j]) {
-						if (getValue(i, j) == Integer.MAX_VALUE)
+						if(getValue(i, j) == Integer.MAX_VALUE)
 							ret.append("x");
 						else
 							ret.append(getValue(i, j));
@@ -257,6 +244,7 @@ public class MyQMatrixInt implements IMyQMatrix {
 	public double getLastDelta() {
 		return lastDelta;
 	}
+
 
 	@Override
 	public void setDebug(boolean debug) {
