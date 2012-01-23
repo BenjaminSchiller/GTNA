@@ -51,10 +51,10 @@ import java.util.TreeSet;
  * @author benni
  * 
  */
-public class CommunityGeneration extends TransformationImpl implements Transformation {
+public class CommunityDetectionLPA extends TransformationImpl implements Transformation {
 
-	public CommunityGeneration() {
-		super("COMMUNITY_GENERATION", new String[] {}, new String[] {});
+	public CommunityDetectionLPA() {
+		super("COMMUNITY_DETECTION_LPA", new String[] {}, new String[] {});
 	}
 	
 	@Override
@@ -87,19 +87,14 @@ public class CommunityGeneration extends TransformationImpl implements Transform
 
         while (!finished){
             Node[] X = NodeSorting.random(nodes, rand);
+            finished = true;
             for (Node x : X){
                 ArrayList<Integer> maxLabels = selectMaxLabels(x.getOutgoingEdges(), labels);
                 if (!maxLabels.isEmpty()){
                     int maxLabel = maxLabels.get(rand.nextInt(maxLabels.size()));
+                    if(!maxLabels.contains(labels[x.getIndex()]))
+                    	finished = false;
                     labels[x.getIndex()] = maxLabel;
-                }
-            }
-
-            finished = true;
-            for (Node x : X){
-                ArrayList<Integer> maxLabels = selectMaxLabels(x.getOutgoingEdges(), labels);
-                if (!maxLabels.isEmpty() && !maxLabels.contains(labels[x.getIndex()])){
-                    finished = false;
                 }
             }
         }
