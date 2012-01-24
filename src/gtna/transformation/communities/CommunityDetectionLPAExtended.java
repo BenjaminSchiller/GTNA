@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import gtna.graph.sorting.NodeSorting;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -17,12 +15,14 @@ import gtna.util.Util;
 
 public class CommunityDetectionLPAExtended extends TransformationImpl implements
 		Transformation {
-	
+
 	public static final String key = "COMMUNITY_DETECTION_LPAEXTENDED";
-	
+
 	public CommunityDetectionLPAExtended() {
-		super(key, Util.addPrefix(key, new String[] {"_W", "_F", "_D", "_M"}),
-				new String[] {Config.get(key + "_W"), Config.get(key + "_F"), Config.get(key + "_D"), Config.get(key + "_M")});
+		super(key,
+				Util.addPrefix(key, new String[] { "_W", "_F", "_D", "_M" }),
+				new String[] { Config.get(key + "_W"), Config.get(key + "_F"),
+						Config.get(key + "_D"), Config.get(key + "_M") });
 	}
 
 	public static interface EdgeWeight {
@@ -44,7 +44,7 @@ public class CommunityDetectionLPAExtended extends TransformationImpl implements
 			return node.getOutDegree();
 		}
 	}
-	
+
 	public int[] labelPropagationAlgorithmExtended(Node[] nodes) {
 		EdgeWeight w = null;
 		NodeCharacteristic f = null;
@@ -58,8 +58,8 @@ public class CommunityDetectionLPAExtended extends TransformationImpl implements
 			throw new RuntimeException("invalid config - "
 					+ e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
-		double m = Double.parseDouble(Config.get(key() + "_M"));
-		double d = Double.parseDouble(Config.get(key() + "_D"));
+		double m = Config.getDouble(key() + "_M");
+		double d = Config.getDouble(key() + "_D");
 
 		int[] labels = new int[nodes.length];
 		double[] scores = new double[nodes.length];
@@ -80,7 +80,7 @@ public class CommunityDetectionLPAExtended extends TransformationImpl implements
 				if (!maxLabels.isEmpty()) {
 					int maxLabel = maxLabels
 							.get(rand.nextInt(maxLabels.size()));
-					if(!maxLabels.contains(labels[x.getIndex()])){
+					if (!maxLabels.contains(labels[x.getIndex()])) {
 						finished = false;
 						scores[x.getIndex()] = scores[x.getIndex()] - d;
 					}
@@ -121,45 +121,27 @@ public class CommunityDetectionLPAExtended extends TransformationImpl implements
 		}
 		return ret;
 	}
-	
 
 	@Override
 	public boolean applicable(Graph g) {
 		return true;
 	}
 
-
 	@Override
 	public Graph transform(Graph g) {
 		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
 
-        int[] labels = labelPropagationAlgorithmExtended(g.getNodes());
-        HashMap<Integer, Integer> labelCommunityMapping = mapLabelsToCommunities(labels);
+		int[] labels = labelPropagationAlgorithmExtended(g.getNodes());
+		HashMap<Integer, Integer> labelCommunityMapping = Util
+				.mapLabelsToCommunities(labels);
 
 		for (Node n : g.getNodes()) {
-			map.put(n.getIndex(), labelCommunityMapping.get(labels[n.getIndex()]));
+			map.put(n.getIndex(), labelCommunityMapping
+					.get(labels[n.getIndex()]));
 		}
 
-		g.addProperty(g.getNextKey("COMMUNITIES"), new gtna.communities.Communities(map));
+		g.addProperty(g.getNextKey("COMMUNITIES"),
+				new gtna.communities.Communities(map));
 		return g;
 	}
-	
-	 /**
-     * Maps labels to communities. Labels are mapped in ascending order, communities are
-     * indexed from 0 to N, where N is the number of communities.
-     * @param labels array of labels
-     * @return mapping of labels to communities
-     */
-    private HashMap<Integer, Integer> mapLabelsToCommunities(int[] labels){
-        SortedSet<Integer> labelSet = new TreeSet<Integer>();
-        for(int label : labels){
-            labelSet.add(label);
-        }
-        HashMap<Integer, Integer> labelCommunityMapping = new HashMap<Integer, Integer>();
-        int communityIndex = 0;
-        for(int label : labelSet){
-            labelCommunityMapping.put(label, communityIndex++);
-        }
-        return labelCommunityMapping;
-    }
 }

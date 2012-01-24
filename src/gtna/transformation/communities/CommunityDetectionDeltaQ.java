@@ -2,13 +2,10 @@ package gtna.transformation.communities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.io.Log;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
 import gtna.transformation.communities.matrices.IMyEMatrix;
@@ -20,6 +17,7 @@ import gtna.transformation.communities.matrices.MyQEMatrixLong;
 import gtna.transformation.communities.matrices.MyQMatrixInt;
 import gtna.transformation.communities.matrices.MyQMatrixLong;
 import gtna.util.Config;
+import gtna.util.Util;
 
 /**
  * Encapsulates the community detection algorithm based on improving the
@@ -31,13 +29,15 @@ import gtna.util.Config;
  * @author Philipp Neubrand
  * 
  */
-public class CommunityDetectionDeltaQ extends TransformationImpl implements Transformation {
+public class CommunityDetectionDeltaQ extends TransformationImpl implements
+		Transformation {
 	// storage for the trace of the algorithm
 	// stores which communities are merged in each step
 	// two arrays are used as storage for performance purposes
 	private int[] mergesI;
 	private int[] mergesJ;
 
+	private static final String key = "COMMUNITY_DETECTION_DELTAQ";
 
 	/**
 	 * Standard Constructor. Does call super with the suffix for this metric,
@@ -45,7 +45,11 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements Tran
 	 * 
 	 */
 	public CommunityDetectionDeltaQ() {
-		super("COMMUNITY_DETECTION_DELTAQ", new String[] {}, new String[] {});
+		super(key, Util.addPrefix(key, new String[] { "_INTERNALFORMAT",
+				"_FORCESEPARATED", "_MAXITERATIONS" }), new String[] {
+				Config.get(key + "_INTERNALFORMAT"),
+				Config.get(key + "_FORCESEPARATED"),
+				Config.get(key + "_INTERNALFORMAT") });
 	}
 
 	/**
@@ -54,7 +58,7 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements Tran
 	 * 
 	 */
 	public int[] deltaQ(Graph g) {
-		
+
 		int nodes = g.getNodes().length;
 
 		boolean forceSeparated = Config.getBoolean(key() + "_FORCESEPARATED");
@@ -98,10 +102,10 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements Tran
 
 		// will hold the two communities that will be merged in the next step
 		int[] nextMerge = new int[2];
-		
-		Double bestValue = - Double.MAX_VALUE;
+
+		Double bestValue = -Double.MAX_VALUE;
 		int bestIteration = 0;
-		
+
 		// main loop for the algorithm
 		while (t <= maxT) {
 
@@ -111,11 +115,10 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements Tran
 				bestIteration = t;
 			}
 
-
 			// Find the next two communities to be merged
 			q.getNextMerge(nextMerge);
-			
-			if(nextMerge[0] == -1){
+
+			if (nextMerge[0] == -1) {
 				break;
 			}
 
@@ -132,7 +135,6 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements Tran
 			t++;
 		}
 
-
 		// After determining the best possible community distribution this
 		// distribution needs to be constructed now. To save memory, the
 		// algorithm itself only creates a trace of which communities to merge
@@ -141,20 +143,20 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements Tran
 		// algorithm since this could be done while it is trying to find the
 		// best possible community distribution. In this implementation it is
 		// done afterwards to save memory.
-		
+
 		// Go through the trace of the algorithm and merge communities as
 		// specified in the trace.
 		int[] ret = new int[g.getNodes().length];
-		for(int i = 0; i < g.getNodes().length; i++)
+		for (int i = 0; i < g.getNodes().length; i++)
 			ret[i] = i;
-		
+
 		for (int i = 0; i <= bestIteration; i++) {
-			for(int j = 0; j < g.getNodes().length; j++){
-				if(ret[j] == mergesJ[i])
-					ret[j] = mergesI[i];		
+			for (int j = 0; j < g.getNodes().length; j++) {
+				if (ret[j] == mergesJ[i])
+					ret[j] = mergesI[i];
 			}
 		}
-		
+
 		return ret;
 	}
 
@@ -173,7 +175,8 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements Tran
 		ArrayList<Edge> buffer = new ArrayList<Edge>();
 		for (Edge edge : g.getEdges().getEdges()) {
 			for (Edge aktTest : buffer) {
-				if (aktTest.getDst() == edge.getSrc() && aktTest.getSrc() == edge.getDst()) {
+				if (aktTest.getDst() == edge.getSrc()
+						&& aktTest.getSrc() == edge.getDst()) {
 					tbr = aktTest;
 				}
 			}
@@ -184,13 +187,10 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements Tran
 			}
 			tbr = null;
 		}
-		
+
 		return buffer.size() == 0;
 
 	}
-
-
-
 
 	@Override
 	public boolean applicable(Graph g) {
@@ -201,34 +201,17 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements Tran
 	public Graph transform(Graph g) {
 		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
 
-        int[] labels = deltaQ(g);
-        HashMap<Integer, Integer> labelCommunityMapping = mapLabelsToCommunities(labels);
+		int[] labels = deltaQ(g);
+		HashMap<Integer, Integer> labelCommunityMapping = Util
+				.mapLabelsToCommunities(labels);
 
 		for (Node n : g.getNodes()) {
-			map.put(n.getIndex(), labelCommunityMapping.get(labels[n.getIndex()]));
+			map.put(n.getIndex(), labelCommunityMapping
+					.get(labels[n.getIndex()]));
 		}
 
-		g.addProperty(g.getNextKey("COMMUNITIES"), new gtna.communities.Communities(map));
+		g.addProperty(g.getNextKey("COMMUNITIES"),
+				new gtna.communities.Communities(map));
 		return g;
 	}
-	
-	 /**
-     * Maps labels to communities. Labels are mapped in ascending order, communities are
-     * indexed from 0 to N, where N is the number of communities.
-     * @param labels array of labels
-     * @return mapping of labels to communities
-     */
-    private HashMap<Integer, Integer> mapLabelsToCommunities(int[] labels){
-        SortedSet<Integer> labelSet = new TreeSet<Integer>();
-        for(int label : labels){
-            labelSet.add(label);
-        }
-        HashMap<Integer, Integer> labelCommunityMapping = new HashMap<Integer, Integer>();
-        int communityIndex = 0;
-        for(int label : labelSet){
-            labelCommunityMapping.put(label, communityIndex++);
-        }
-        return labelCommunityMapping;
-    }
-
 }
