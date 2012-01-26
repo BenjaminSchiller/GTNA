@@ -20,7 +20,7 @@ public class CommunityDetectionLPAExtended extends TransformationImpl implements
 
 	public CommunityDetectionLPAExtended() {
 		super(key,
-				Util.addPrefix(key, new String[] { "_W", "_F", "_D", "_M" }),
+				new String[] { "W", "F", "D", "M" },
 				new String[] { Config.get(key + "_W"), Config.get(key + "_F"),
 						Config.get(key + "_D"), Config.get(key + "_M") });
 	}

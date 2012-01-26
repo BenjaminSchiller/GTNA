@@ -45,8 +45,8 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements
 	 * 
 	 */
 	public CommunityDetectionDeltaQ() {
-		super(key, Util.addPrefix(key, new String[] { "_INTERNALFORMAT",
-				"_FORCESEPARATED", "_MAXITERATIONS" }), new String[] {
+		super(key, new String[] { "INTERNALFORMAT",
+				"FORCESEPARATED", "MAXITERATIONS" }, new String[] {
 				Config.get(key + "_INTERNALFORMAT"),
 				Config.get(key + "_FORCESEPARATED"),
 				Config.get(key + "_INTERNALFORMAT") });

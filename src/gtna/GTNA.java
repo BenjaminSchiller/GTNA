@@ -35,6 +35,16 @@
  */
 package gtna;
 
+import gtna.data.Series;
+import gtna.graph.Graph;
+import gtna.networks.Network;
+import gtna.networks.canonical.Ring;
+import gtna.plot.Gephi;
+import gtna.routing.greedy.Greedy;
+import gtna.transformation.Transformation;
+import gtna.transformation.communities.CommunityDetectionDeltaQ;
+import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CommunityDetectionLPAExtended;
 import gtna.util.Config;
 import gtna.util.Stats;
 
@@ -44,16 +54,21 @@ public class GTNA {
 		// starts a basic statistic to keep track of the computations duration
 		// and used memory
 		Stats stats = new Stats();
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION");
+		
+		Network n = new Ring(100, new Greedy(), new Transformation[]{ new CommunityDetectionLPAExtended() });
+		Series.generate(n, 1);
 
+		
 		// overwrites the standard data output folder
-		Config.overwrite("MAIN_DATA_FOLDER", "./data/example1/");
+//		Config.overwrite("MAIN_DATA_FOLDER", "./data/example1/");
 		// overwrites the standard plot output folder
-		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/example1/");
+//		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/example1/");
 		// overwrites the set and order of metrics to compute
 		// here, only the clustering coefficient and degree didstribution
 		// metrics are computed
-		Config.overwrite("METRICS",
-				"DEGREE_DISTRIBUTION, CLUSTERING_COEFFICIENT");
+
 
 		// // CAN network with 100 nodes, d=3, and r=2
 		// // neither a transformation nor a routing algorithm are given
