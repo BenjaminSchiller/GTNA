@@ -35,10 +35,9 @@
  */
 package gtna.transformation.gd;
 
-import java.util.Random;
-
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.id.IdentifierSpace;
 import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
@@ -62,7 +61,8 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 	}
 	
 	protected void initIDSpace( Graph g ) {
-		Random rand = new Random();
+		if ( !generateIDSpace ) return;
+		
 		for (int r = 0; r < this.realities; r++) {
 			partitions = new MDPartitionSimple[g.getNodes().length];
 			this.idSpace = new MDIdentifierSpaceSimple(partitions, this.moduli, this.wrapAround);
@@ -70,7 +70,10 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 				partitions[i] = new MDPartitionSimple(MDIdentifier.rand(rand, idSpace));
 			}
 		}	
-		
+		generateBias();	
+	}
+	
+	protected void generateBias() {
 			/*
 			 * A bias is needed as the internal algorithm works on coordinates
 			 * between (-modulus/2) and (+modulus/2) for each dimension
@@ -87,6 +90,14 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
 	}
 
+	public void setIDSpace(IdentifierSpace idSpace) {
+		this.idSpace = (MDIdentifierSpaceSimple) idSpace;
+		this.partitions = (MDPartitionSimple[]) this.idSpace.getPartitions();
+		this.moduli = this.idSpace.getModuli();
+		generateBias();
+		this.generateIDSpace = false;
+	}	
+	
 	protected MDVector setNormalized(MDVector v) {
 		for ( int i = 0; i < v.getDimension(); i++ ) {
 			double coordinate = Math.min(idSpace.getModulus(i)/2, Math.max(idSpace.getModulus(i)/-2, v.getCoordinate(i)));

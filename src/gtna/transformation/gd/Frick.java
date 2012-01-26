@@ -35,18 +35,11 @@
  */
 package gtna.transformation.gd;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Random;
 
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
 import gtna.graph.Node;
-import gtna.id.md.MDIdentifier;
-import gtna.id.md.MDIdentifierSpaceSimple;
-import gtna.id.md.MDPartitionSimple;
-import gtna.plot.Gephi;
 import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
 import gtna.util.MDVector;
@@ -99,22 +92,22 @@ public class Frick extends ForceDrivenAbstract {
 	 */
 	private final double gamma = 10.0625;
 
-	private Random rand;
-
 	public Frick(int realities, double[] moduli, Boolean wrapAround, GraphPlotter plotter) {
-		super("GDA_FRICK", new String[] {}, new String[] {});
+		super("GDA_FRICK", new String[]{"REALITIES", "MODULI", "WRAPAROUND"}, new String[]{"" + realities, Arrays.toString(moduli), "" + wrapAround});
 		this.realities = realities;
 		this.moduli = moduli;
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
+	}
+	
+	public GraphDrawingAbstract clone() {
+		return new Frick(realities, moduli, wrapAround, graphPlotter);
 	}
 
 	@Override
 	public Graph transform(Graph g) {
 		System.err.println("This is not working completely yet, so don't expect good results!");
 		
-		rand = new Random();
-
 		initIDSpace(g);
 
 		double[] moduli = this.idSpace.getModuli();
@@ -134,7 +127,8 @@ public class Frick extends ForceDrivenAbstract {
 		int currIteration = 0;
 		while (tGlobal > tMin && currIteration < maxIterations) {
 			System.out.println("\n\n   >>> in iteration " + currIteration + " <<<");
-			graphPlotter.plotIteration(g, idSpace, currIteration);
+			if (graphPlotter != null)
+				graphPlotter.plotIteration(g, idSpace, currIteration);
 
 			if (currIteration % nodeList.length == 0) {
 				/*
@@ -151,7 +145,8 @@ public class Frick extends ForceDrivenAbstract {
 			currIteration++;
 		}
 		System.out.println("Stopped it - did " + currIteration + " iterations (of maximal " + maxIterations + "), and temperature is " + tGlobal + " (minimal: " + tMin + ")");
-		graphPlotter.plotFinalGraph(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotFinalGraph(g, idSpace);
 		writeIDSpace(g);
 		return g;
 	}

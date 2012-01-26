@@ -36,8 +36,10 @@
 package gtna.graph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
-public class Node {
+public class Node implements Comparable<Node> {
 	private Graph graph;
 
 	private int index;
@@ -45,6 +47,8 @@ public class Node {
 	private int[] incomingEdges;
 
 	private int[] outgoingEdges;
+
+	private Edge[] edges = null;
 
 	public Node(int index, Graph graph) {
 		this.index = index;
@@ -151,8 +155,15 @@ public class Node {
 	public void setOutgoingEdges(int[] outgoingEdges) {
 		this.outgoingEdges = outgoingEdges;
 	}
+	
+	public Edge[] getEdges() {
+		if ( this.edges == null ) {
+			this.edges = generateAllEdges();
+		}
+		return this.edges;
+	}
 
-	public Edge[] getAllEdges() {
+	public Edge[] generateAllEdges() {
 		ArrayList<Edge> edgeList = new ArrayList<Edge>();
 		for ( int dst: getOutgoingEdges() ) {
 			edgeList.add( new Edge(this.index, dst) );
@@ -166,6 +177,56 @@ public class Node {
 		}
 		return arrayEdgeList;
 	}
+	
+	public boolean isConnectedTo(Node n) {
+		for (int src: getIncomingEdges() ) {
+			if ( src == n.getIndex() ) return true;
+		}
+		for (int dst: getOutgoingEdges() ) {
+			if ( dst == n.getIndex() ) return true;
+		}		
+		return false;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer[] generateOutgoingEdgesByDegree() {
+		int[] edges = getOutgoingEdges();
+		Integer[] integerEdges = new Integer[edges.length];
+		for ( int i = 0; i < edges.length; i++) integerEdges[i] = edges[i];
+		Arrays.sort(integerEdges, new DescendingDegreeComparator(graph));
+		return integerEdges;
+	}
+	
+	public int compareTo(Node n2) {
+		if (this.getDegree() == n2.getDegree())
+			return 0;
+		else if (this.getDegree() > n2.getDegree())
+			return 1;
+		else
+			return -1;
+	}	
+	
+	private class DescendingDegreeComparator implements Comparator<Integer> {
+		private Graph g;
+
+		public DescendingDegreeComparator(Graph g) {
+			this.g = g;
+		}
+
+		public int compare(Integer n, Integer m) {
+			int nDegree = g.getNode(n).getDegree();
+			int mDegree = g.getNode(m).getDegree();
+			if (nDegree < mDegree)
+				return 1;
+			else if (nDegree == mDegree)
+				return 0;
+			else
+				return -1;
+		}
+
+	}	
 	
 	// TODO hasOut, hasIn, addIn, addOut, removeIn, removeOut
 }

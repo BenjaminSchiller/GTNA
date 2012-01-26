@@ -35,12 +35,15 @@
  */
 package gtna.transformation.gd;
 
+import java.util.Arrays;
+
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
 import gtna.util.MDVector;
+import gtna.util.Util;
 
 /**
  * @author Nico
@@ -67,21 +70,27 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 		 * the cooling factor which is applied onto the temperature
 		 * in each step
 		 */	
-	private double attractionFactor = 1.0;
-	private double coolingFactor = 0.95;
+	private final double attractionFactor = 1.0;
+	private final double coolingFactor = 0.95;
 	
 		/*
 		 * Global cooling temperature
 		 */
 	private double t;
 	
+	private Edge[] edgeList;
+	
 	public FruchtermanReingold(int realities, double[] moduli, Boolean wrapAround, int iterations, GraphPlotter plotter) {
-		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{}, new String[]{});
+		super("GDA_FRUCHTERMAN_REINGOLD", new String[]{"REALITIES", "MODULI", "WRAPAROUND", "ITERATIONS"}, new String[]{"" + realities, Arrays.toString(moduli), "" + wrapAround, "" + iterations});
 		this.realities = realities;
 		this.moduli = moduli;
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
 		this.iterations = iterations;
+	}
+	
+	public GraphDrawingAbstract clone() {
+		return new FruchtermanReingold(iterations, moduli, wrapAround, iterations, graphPlotter);
 	}
 	
 	@Override
@@ -94,14 +103,17 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 		k = Math.pow( this.space / this.partitions.length, 1.0 / moduli.length );
 //		System.out.println("Best distance: " + k);
 		
-		this.t = idSpace.getMaxModulus();		
+		this.t = idSpace.getMaxModulus();
+		edgeList = g.generateEdges();
 
 		for ( int i = 0; i < this.iterations; i++ ) {
-			System.out.println("\n\n   >>> in iteration " + i + " <<<");
-			graphPlotter.plotIteration(g, idSpace, i);
+//			System.out.println("\n\n   >>> in iteration " + i + " <<<");
+			if (graphPlotter != null)
+				graphPlotter.plotIteration(g, idSpace, i);
 			g = this.doIteration ( g );
 		}
-		graphPlotter.plotFinalGraph(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotFinalGraph(g, idSpace);
 		writeIDSpace(g);
 		return g;
 	}
@@ -130,7 +142,7 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 				delta.subtract ( getCoordinate(u) );
 				currDisp = new MDVector(delta.getDimension(), delta.getCoordinates());
 				double currDispNorm = currDisp.getNorm(); 
-				if ( Double.isNaN(currDispNorm) ) throw new RuntimeException("You broke it");
+				if ( Double.isNaN(currDispNorm) ) throw new GDTransformationException("You broke it");
 				currDisp.divideBy(currDispNorm);
 				currDisp.multiplyWith(fr ( currDispNorm ) );
 				disp[v.getIndex()].add(currDisp);
@@ -138,7 +150,7 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 		}
 
 		// Second step: attractive forces
-		for ( Edge e: g.generateEdges() ) {
+		for ( Edge e: edgeList ) {
 			if ( e == null ) continue;
 			
 			delta = getCoordinate( e.getSrc() );

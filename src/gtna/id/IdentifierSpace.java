@@ -36,14 +36,13 @@
 package gtna.id;
 
 import gtna.graph.GraphProperty;
-
 import java.util.Random;
 
 /**
  * @author benni
  * 
  */
-public interface IdentifierSpace<Type> extends GraphProperty {
+public interface IdentifierSpace<Type> extends GraphProperty, Cloneable {
 	public Partition<Type>[] getPartitions();
 
 	public void setPartitions(Partition<Type>[] partitions);
@@ -51,4 +50,6 @@ public interface IdentifierSpace<Type> extends GraphProperty {
 	public Identifier<Type> randomID(Random rand);
 
 	public Type getMaxDistance();
+
+	public IdentifierSpace<Type> clone();
 }

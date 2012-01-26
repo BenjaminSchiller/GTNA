@@ -37,6 +37,8 @@ package gtna.plot;
 
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
+import gtna.plot.GephiUtils.GephiDecorator;
+import gtna.util.Config;
 
 /**
  * @author Nico
@@ -46,21 +48,22 @@ public class GraphPlotter {
 	private Gephi gephi;
 	private String basename, extension;
 	private int iterationModulus = -1;
-	private boolean disabled = false;
+	private GephiDecorator[] decorators;
 
-	public GraphPlotter(String basename, String extension, int iterationModulus) {
+	public GraphPlotter(String basename, String extension, GephiDecorator[] decorators, int iterationModulus) {
 		this.gephi = new Gephi();
 		this.basename = basename;
 		this.extension = extension;
+		this.decorators = decorators;
 		this.iterationModulus = iterationModulus;
+	}
+
+	public GraphPlotter(String basename, String extension, int iterationModulus) {
+		this(basename, extension, null, -1);
 	}
 
 	public GraphPlotter(String basename, String extension) {
 		this(basename, extension, -1);
-	}
-
-	public GraphPlotter(boolean disabled) {
-		this.disabled = disabled;
 	}
 
 	public void setIterationModulus(int iterationModulus) {
@@ -72,26 +75,22 @@ public class GraphPlotter {
 	}
 
 	public void plot(Graph g, IdentifierSpace idSpace, String filename) {
-		if (!disabled)
-			gephi.Plot(g, idSpace, filename + "." + extension);
+		gephi.plot(g, this.decorators, idSpace, Config.get("MAIN_PLOT_FOLDER") + filename + "." + extension);
 	}
 
 	public void plotIteration(Graph g, IdentifierSpace idSpace, int iteration) {
-		if (disabled)
-			return;
-		else if (iterationModulus <= 0) {
-				/*
-				 * Assume we should not print any intermediate steps
-				 */
-		}
-		else if (iteration % iterationModulus == 0)
+		if (iterationModulus <= 0) {
+			/*
+			 * Assume we should not print any intermediate steps
+			 */
+		} else if (iteration % iterationModulus == 0)
 			plot(g, idSpace, basename + "-" + iteration);
 	}
 
 	public void plotStartGraph(Graph g, IdentifierSpace idSpace) {
 		plot(g, idSpace, basename + "-start");
-	}	
-	
+	}
+
 	public void plotFinalGraph(Graph g, IdentifierSpace idSpace) {
 		plot(g, idSpace, basename + "-final");
 	}
