@@ -35,6 +35,7 @@
  */
 package gtna.metrics;
 
+import gtna.communities.Community;
 import gtna.data.Value;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
@@ -53,6 +54,8 @@ public class Communities extends MetricImpl implements Metric {
 	private Distribution communitySize;
 
 	private Timer runtime;
+
+	private double modularity;
 
 	public Communities() {
 		super("COMMUNITIES");
@@ -81,7 +84,36 @@ public class Communities extends MetricImpl implements Metric {
 			c[c.length - i - 1] = temp;
 		}
 		this.communitySize = new Distribution(c);
+		modularity = this.calculateModularity(g, communities);
+		System.out.println(modularity);
 		this.runtime.end();
+		
+		
+	}
+	
+	private double calculateModularity(Graph g, gtna.communities.Communities communities){
+	      double E = 0;
+	        for (Community c : communities.getCommunities()){
+	            for (int aktNode : c.getNodes()){
+	                E += g.getNode(aktNode).getOutDegree();
+	            }
+	        }
+	        double Q = 0;
+	        for (Community c :  communities.getCommunities()){
+	            double IC = 0;
+	            double OC = 0;
+	            for (int src : c.getNodes()){
+	                for (int dst : g.getNode(src).getOutgoingEdges()){
+	                    if (communities.getCommunityOfNode(dst) == c){
+	                        IC++;
+	                    } else {
+	                        OC++;
+	                    }
+	                }
+	            }
+	            Q += IC / E - Math.pow((2 * IC + OC) / (2 * E), 2);
+	        }
+	        return Q;
 	}
 
 	@Override
@@ -97,7 +129,7 @@ public class Communities extends MetricImpl implements Metric {
 
 	@Override
 	public Value[] getValues() {
-		return new Value[] {};
+		return new Value[] {new Value("COMMUNITIES_MODULARITY", modularity)};
 	}
 
 }

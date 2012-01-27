@@ -37,8 +37,13 @@ package gtna;
 
 import gtna.data.Series;
 import gtna.graph.Graph;
+import gtna.io.comexport.ComExporter;
 import gtna.networks.Network;
 import gtna.networks.canonical.Ring;
+import gtna.networks.model.placementmodels.PlacementModelContainer;
+import gtna.networks.model.placementmodels.connectors.UDGConnector;
+import gtna.networks.model.placementmodels.models.GridPlacementModel;
+import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.plot.Gephi;
 import gtna.routing.greedy.Greedy;
 import gtna.transformation.Transformation;
@@ -55,10 +60,15 @@ public class GTNA {
 		// and used memory
 		Stats stats = new Stats();
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
-		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION");
+		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, COMMUNITIES");
 		
-		Network n = new Ring(100, new Greedy(), new Transformation[]{ new CommunityDetectionLPAExtended() });
+//		Network n = new Ring(100, new Greedy(), new Transformation[]{ new CommunityDetectionLPAExtended() });
+		Network n = new PlacementModelContainer(625, 25, new GridPlacementModel(1000, 1000, 5, 5), new GridPlacementModel(200, 200, 5, 5), new SimplePartitioner(), new UDGConnector(50), new Greedy(), null );
+		Graph g = n.generate();
+		Transformation t = new CommunityDetectionDeltaQ();
+		g = t.transform(g);
 		Series.generate(n, 1);
+		ComExporter.writeCommunities(g, "F:\\test");
 
 		
 		// overwrites the standard data output folder
