@@ -588,7 +588,7 @@ public class GoogleP {
 			System.out.println(out);
 			Graph graph = GraphReader.read(f.getAbsolutePath());
 			Gephi gephi = new Gephi();
-			gephi.Plot(graph, idspace, out);
+			gephi.plot(graph, idspace, out);
 			gephi = null;
 		}
 	}
