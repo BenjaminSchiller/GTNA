@@ -35,6 +35,21 @@
  */
 package gtna;
 
+import gtna.data.Series;
+import gtna.graph.Graph;
+import gtna.io.comexport.ComExporter;
+import gtna.networks.Network;
+import gtna.networks.canonical.Ring;
+import gtna.networks.model.placementmodels.PlacementModelContainer;
+import gtna.networks.model.placementmodels.connectors.UDGConnector;
+import gtna.networks.model.placementmodels.models.GridPlacementModel;
+import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
+import gtna.plot.Gephi;
+import gtna.routing.greedy.Greedy;
+import gtna.transformation.Transformation;
+import gtna.transformation.communities.CommunityDetectionDeltaQ;
+import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CommunityDetectionLPAExtended;
 import gtna.util.Config;
 import gtna.util.Stats;
 
@@ -44,16 +59,26 @@ public class GTNA {
 		// starts a basic statistic to keep track of the computations duration
 		// and used memory
 		Stats stats = new Stats();
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, COMMUNITIES");
+		
+//		Network n = new Ring(100, new Greedy(), new Transformation[]{ new CommunityDetectionLPAExtended() });
+		Network n = new PlacementModelContainer(625, 25, new GridPlacementModel(1000, 1000, 5, 5), new GridPlacementModel(200, 200, 5, 5), new SimplePartitioner(), new UDGConnector(50), new Greedy(), null );
+		Graph g = n.generate();
+		Transformation t = new CommunityDetectionDeltaQ();
+		g = t.transform(g);
+		Series.generate(n, 1);
+		ComExporter.writeCommunities(g, "F:\\test");
 
+		
 		// overwrites the standard data output folder
-		Config.overwrite("MAIN_DATA_FOLDER", "./data/example1/");
+//		Config.overwrite("MAIN_DATA_FOLDER", "./data/example1/");
 		// overwrites the standard plot output folder
-		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/example1/");
+//		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/example1/");
 		// overwrites the set and order of metrics to compute
 		// here, only the clustering coefficient and degree didstribution
 		// metrics are computed
-		Config.overwrite("METRICS",
-				"DEGREE_DISTRIBUTION, CLUSTERING_COEFFICIENT");
+
 
 		// // CAN network with 100 nodes, d=3, and r=2
 		// // neither a transformation nor a routing algorithm are given

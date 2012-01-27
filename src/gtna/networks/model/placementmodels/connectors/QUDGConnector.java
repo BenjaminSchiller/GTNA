@@ -71,7 +71,7 @@ public class QUDGConnector extends NodeConnectorImpl {
 		this.range2 = range2;
 		this.perc = perc;
 		setKey("QUDG");
-		setAdditionalConfigKeys(new String[] { "RANGE1", "RANGE2", "PERC" });
+		setAdditionalConfigKeys(new String[] { "RANGE1", "RANGE2", "PROB" });
 		setAdditionalConfigValues(new String[] { Double.toString(range1),
 				Double.toString(range2), Double.toString(perc) });
 	}
