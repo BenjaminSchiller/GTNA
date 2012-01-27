@@ -43,15 +43,15 @@ import gtna.transformation.Transformation;
 
 /**
  * @author "Benjamin Schiller"
- *
+ * 
  */
 public class DescriptionWrapper implements Network {
-	
+
 	private Network nw;
-	
+
 	private String description;
-	
-	public DescriptionWrapper(Network nw, String description){
+
+	public DescriptionWrapper(Network nw, String description) {
 		this.nw = nw;
 		this.description = description;
 	}
@@ -89,11 +89,13 @@ public class DescriptionWrapper implements Network {
 	}
 
 	public String description(Network compare) {
-		return this.nw.description(compare);
+		return this.description;
+		// return this.nw.description(compare);
 	}
 
 	public String description(Network compare1, Network compare2) {
-		return this.nw.description(compare1, compare2);
+		return this.description;
+		// return this.nw.description(compare1, compare2);
 	}
 
 	public String description(String key) {
@@ -101,11 +103,13 @@ public class DescriptionWrapper implements Network {
 	}
 
 	public String description(String key, Network compare) {
-		return this.nw.description(key, compare);
+		return this.description;
+		// return this.nw.description(key, compare);
 	}
 
 	public String description(String key, Network compare1, Network compare2) {
-		return this.nw.description(key, compare1, compare2);
+		return this.description;
+		// return this.nw.description(key, compare1, compare2);
 	}
 
 	public int edges() {
@@ -153,7 +157,7 @@ public class DescriptionWrapper implements Network {
 	}
 
 	public void setConnected(boolean connected) {
-		this.nw.setConnected(connected);		
+		this.nw.setConnected(connected);
 	}
 
 	public void setConnectivity(double connectivity) {
