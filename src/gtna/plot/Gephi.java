@@ -49,6 +49,8 @@ import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartition;
 import gtna.id.ring.RingPartitionSimple;
+import gtna.plot.GephiUtils.GephiDecorator;
+import gtna.util.Config;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,9 +62,8 @@ import org.gephi.io.exporter.api.ExportController;
 import org.gephi.layout.plugin.force.ForceVector;
 import org.gephi.preview.api.PreviewController;
 import org.gephi.preview.api.PreviewModel;
-import org.gephi.preview.api.supervisors.DirectedEdgeSupervisor;
-import org.gephi.preview.api.supervisors.NodeSupervisor;
-import org.gephi.preview.api.supervisors.UndirectedEdgeSupervisor;
+import org.gephi.preview.api.PreviewProperties;
+import org.gephi.preview.api.PreviewProperty;
 import org.gephi.project.api.ProjectController;
 import org.openide.util.Lookup;
 
@@ -75,56 +76,50 @@ public class Gephi {
 	private org.gephi.graph.api.Graph gephiGraph;
 	private org.gephi.graph.api.Node[] gephiNodes;
 	private Boolean useSpanningTreeOnNextPlot = false;
+	private GephiDecorator[] decorators;
 
-	private float ringRadius = 100;
+	private float ringRadius;
 
-	public void Plot(Graph g, IdentifierSpace idSpace, String fileName) {
-		ProjectController pc = Lookup.getDefault().lookup(
-				ProjectController.class);
+	public void plot(Graph g, IdentifierSpace idSpace, String fileName) {
+		plot(g, null, idSpace, fileName);
+	}
+
+	public void plot(Graph g, GephiDecorator[] decorators, IdentifierSpace idSpace, String fileName) {
+		ringRadius = Config.getInt("GEPHI_RING_RADIUS");
+		boolean curvedFlag = Config.getBoolean("GEPHI_DRAW_CURVED_EDGES");
+		float edgeScale = Config.getFloat("GEPHI_EDGE_SCALE");
+		float nodeBorderWidth = Config.getFloat("GEPHI_NODE_BORDER_WIDTH");
+
+		ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
 		pc.newProject();
 
-		graphModel = Lookup.getDefault().lookup(GraphController.class)
-				.getModel();
+		graphModel = Lookup.getDefault().lookup(GraphController.class).getModel();
 
 		// A generic graph might be okay, as we do not really care about
 		// directions
 		gephiGraph = graphModel.getGraph();
 
-		// Next three lines: do *never* draw curved lines!
-		PreviewModel model = Lookup.getDefault()
-				.lookup(PreviewController.class).getModel();
+		// Next lines: do *never* draw curved lines!
+		PreviewModel model = Lookup.getDefault().lookup(PreviewController.class).getModel();
+		PreviewProperties props = model.getProperties();
+		props.putValue(PreviewProperty.EDGE_CURVED, curvedFlag);
+		props.putValue(PreviewProperty.EDGE_THICKNESS, edgeScale);
+		props.putValue(PreviewProperty.ARROW_SIZE, 0);
+		props.putValue(PreviewProperty.NODE_BORDER_WIDTH, nodeBorderWidth);
+		// props.putValue(PreviewProperty.SHOW_NODE_LABELS, Boolean.TRUE);
 
-		boolean curvedFlag = false;
-		float edgeScale = (float) 0.001;
-		float nodeBorderWidth = (float) 0.1;
-
-		DirectedEdgeSupervisor m1 = model.getUniEdgeSupervisor();
-		DirectedEdgeSupervisor m2 = model.getBiEdgeSupervisor();
-		UndirectedEdgeSupervisor m3 = model.getUndirectedEdgeSupervisor();
-
-		m1.setCurvedFlag(curvedFlag);
-		m2.setCurvedFlag(curvedFlag);
-		m3.setCurvedFlag(curvedFlag);
-
-		m1.setEdgeScale(edgeScale);
-		m2.setEdgeScale(edgeScale);
-		m3.setEdgeScale(edgeScale);
-
-		m1.setShowArrowsFlag(false);
-		m2.setShowArrowsFlag(false);
-
-		NodeSupervisor ns = model.getNodeSupervisor();
-
-		ns.setNodeBorderWidth(nodeBorderWidth);
-
+		if (decorators == null) {
+			decorators = new GephiDecorator[0];
+		}
+		this.decorators = decorators;
+		for (GephiDecorator sD : decorators) {
+			sD.init(g);
+		}
 		gephiNodes = new org.gephi.graph.api.Node[g.getNodes().length];
 		this.plotGraph(g, idSpace);
 
-		ExportController ec = Lookup.getDefault()
-				.lookup(ExportController.class);
+		ExportController ec = Lookup.getDefault().lookup(ExportController.class);
 		try {
-			// ec.exportFile(new File(Config.get("MAIN_PLOT_FOLDER") +
-			// fileName));
 			ec.exportFile(new File(fileName));
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -138,6 +133,7 @@ public class Gephi {
 
 	private void plotGraph(Graph g, IdentifierSpace idSpace) {
 		Partition[] p = idSpace.getPartitions();
+		boolean showNode;
 
 		// First run: add all nodes
 		for (Node n : g.getNodes()) {
@@ -145,8 +141,20 @@ public class Gephi {
 				continue;
 			}
 			ForceVector position = getPosition(p[n.getIndex()]);
-			org.gephi.graph.api.Node temp = addNode(graphModel, gephiGraph, "N"
-					+ n.getIndex(), "Node " + n.getIndex(), position);
+			if (Double.isNaN(position.getNorm())) {
+				throw new RuntimeException("Cannot plot graph as it contains nodes with non-existing coordinates");
+			}
+			showNode = true;
+			for (GephiDecorator sD : decorators) {
+				showNode = showNode && sD.showNode(n);
+			}
+			if (!showNode)
+				continue;
+			org.gephi.graph.api.Node temp = addNode(graphModel, gephiGraph, "N" + n.getIndex(), "Node " + n.getIndex(),
+					position);
+			for (GephiDecorator sD : decorators) {
+				sD.decorateNode(temp, n);
+			}
 			gephiNodes[n.getIndex()] = temp;
 		}
 
@@ -160,26 +168,47 @@ public class Gephi {
 	}
 
 	private void addAllEdges(Graph g) {
+		Edge temp;
+		boolean showEdge;
+
 		for (Node n : g.getNodes()) {
 			if (n == null) {
 				continue;
 			}
 
 			for (int dest : n.getOutgoingEdges()) {
-				addEdge(graphModel, gephiGraph, gephiNodes[n.getIndex()],
-						gephiNodes[dest]);
+				showEdge = true;
+				for (GephiDecorator sD : decorators) {
+					showEdge = showEdge && sD.showEdge(n.getIndex(), dest);
+				}
+				if (!showEdge)
+					continue;
+				temp = addEdge(graphModel, gephiGraph, gephiNodes[n.getIndex()], gephiNodes[dest]);
+				for (GephiDecorator sD : decorators) {
+					sD.decorateEdge(temp, n.getIndex(), dest);
+				}
 			}
-			for (int dest : n.getIncomingEdges()) {
-				addEdge(graphModel, gephiGraph, gephiNodes[dest],
-						gephiNodes[n.getIndex()]);
+			for (int src : n.getIncomingEdges()) {
+				showEdge = true;
+				for (GephiDecorator sD : decorators) {
+					showEdge = showEdge && sD.showEdge(src, n.getIndex());
+				}
+				if (!showEdge)
+					continue;
+				temp = addEdge(graphModel, gephiGraph, gephiNodes[src], gephiNodes[n.getIndex()]);
+				for (GephiDecorator sD : decorators) {
+					sD.decorateEdge(temp, src, n.getIndex());
+				}
 			}
 		}
 	}
 
 	private void addSpanningTreeEdges(Graph g) {
+		Edge temp;
+		boolean showEdge;
+
 		if (!g.hasProperty("SPANNINGTREE")) {
-			throw new RuntimeException(
-					"Should plot a spanning tree, but given graph misses property");
+			throw new RuntimeException("Should plot a spanning tree, but given graph misses property");
 		}
 		SpanningTree tree = (SpanningTree) g.getProperty("SPANNINGTREE");
 		gtna.graph.Edge[] edges = tree.generateEdgesUnidirectional();
@@ -188,8 +217,16 @@ public class Gephi {
 				continue;
 			if (e.getSrc() == -1)
 				continue;
-			addEdge(graphModel, gephiGraph, gephiNodes[e.getSrc()],
-					gephiNodes[e.getDst()]);
+			showEdge = true;
+			for (GephiDecorator sD : decorators) {
+				showEdge = showEdge && sD.showEdge(e.getSrc(), e.getDst());
+			}
+			if (!showEdge)
+				continue;
+			temp = addEdge(graphModel, gephiGraph, gephiNodes[e.getSrc()], gephiNodes[e.getDst()]);
+			for (GephiDecorator sD : decorators) {
+				sD.decorateEdge(temp, e.getSrc(), e.getDst());
+			}
 		}
 	}
 
@@ -199,52 +236,40 @@ public class Gephi {
 			return new ForceVector((float) temp.getX(), (float) temp.getY());
 		} else if (p instanceof RingPartition) {
 			// get the modulus for the ring
-			RingIdentifierSpace idSpace = ((RingPartition) p).getStart()
-					.getIdSpace();
+			RingIdentifierSpace idSpace = ((RingPartition) p).getStart().getIdSpace();
 			double modulus = idSpace.getModulus();
 
-			double positionOnRing = ((RingIdentifier) ((RingPartition) p)
-					.getRepresentativeID()).getPosition();
+			double positionOnRing = ((RingIdentifier) ((RingPartition) p).getRepresentativeID()).getPosition();
 			double angle = (positionOnRing / modulus) * 360;
 
-			ForceVector pos = new ForceVector((float) Math.sin(Math
-					.toRadians(angle)) * ringRadius, (float) Math.cos(Math
-					.toRadians(angle)) * ringRadius);
-			// System.out.println("Put " + positionOnRing + " with angle " +
-			// angle + " and radius " + ringRadius + " at " + pos);
+			ForceVector pos = new ForceVector((float) Math.sin(Math.toRadians(angle)) * ringRadius,
+					(float) Math.cos(Math.toRadians(angle)) * ringRadius);
 			return pos;
 		} else if (p instanceof RingPartitionSimple) {
 			RingPartitionSimple temp = (RingPartitionSimple) p;
 
-			RingIdentifierSpaceSimple idSpace = (RingIdentifierSpaceSimple) temp
-					.getId().getIdSpace();
+			RingIdentifierSpaceSimple idSpace = (RingIdentifierSpaceSimple) temp.getId().getIdSpace();
 			double modulus = idSpace.getModulus();
 
 			double posisitonOnRing = temp.getId().getPosition();
 			double angle = (posisitonOnRing / modulus) * 360;
 
-			ForceVector pos = new ForceVector((float) Math.sin(Math
-					.toRadians(angle)) * ringRadius, (float) Math.cos(Math
-					.toRadians(angle)) * ringRadius);
+			ForceVector pos = new ForceVector((float) Math.sin(Math.toRadians(angle)) * ringRadius,
+					(float) Math.cos(Math.toRadians(angle)) * ringRadius);
 
 			return pos;
 		} else if (p instanceof MDPartitionSimple) {
 			MDIdentifier temp = (MDIdentifier) p.getRepresentativeID();
 			if (temp.getIdSpace().getDimensions() == 2) {
-				return new ForceVector((float) temp.getCoordinate(0),
-						(float) temp.getCoordinate(1));
+				return new ForceVector((float) temp.getCoordinate(0), (float) temp.getCoordinate(1));
 			} else
-				throw new RuntimeException(
-						"Cannot yet calculate a responsing coordinate for "
-								+ temp.toString());
+				throw new RuntimeException("Cannot yet calculate a responsing coordinate for " + temp.toString());
 		} else
-			throw new RuntimeException("Cannot calculate a position in "
-					+ p.getClass());
+			throw new RuntimeException("Cannot calculate a position in " + p.getClass());
 	}
 
-	private org.gephi.graph.api.Node addNode(GraphModel graphModel,
-			org.gephi.graph.api.Graph graph, String name, String label,
-			ForceVector position) {
+	private org.gephi.graph.api.Node addNode(GraphModel graphModel, org.gephi.graph.api.Graph graph, String name,
+			String label, ForceVector position) {
 		org.gephi.graph.api.Node temp = graphModel.factory().newNode(name);
 		temp.getNodeData().setLabel(label);
 		// Important: we need *both* setLayoutData and setX / setY to position a
@@ -256,9 +281,8 @@ public class Gephi {
 		return temp;
 	}
 
-	private org.gephi.graph.api.Edge addEdge(GraphModel graphModel,
-			org.gephi.graph.api.Graph graph, org.gephi.graph.api.Node start,
-			org.gephi.graph.api.Node end) {
+	private org.gephi.graph.api.Edge addEdge(GraphModel graphModel, org.gephi.graph.api.Graph graph,
+			org.gephi.graph.api.Node start, org.gephi.graph.api.Node end) {
 		Edge temp = graphModel.factory().newEdge(start, end);
 		graph.addEdge(temp);
 		return temp;

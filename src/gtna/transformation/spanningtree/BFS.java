@@ -36,7 +36,12 @@
 package gtna.transformation.spanningtree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -50,64 +55,105 @@ import gtna.transformation.TransformationImpl;
  * 
  */
 public class BFS extends TransformationImpl implements Transformation {
+	String rootSelector;
+
 	public BFS() {
-		super("SPANNINGTREE_BFS", new String[] {}, new String[] {});
+		this("zero");
 	}
-	
+
+	public BFS(String rootSelector) {
+		super("SPANNINGTREE_BFS", new String[] { "ROOT_SELECTOR" }, new String[] { rootSelector });
+		this.rootSelector = rootSelector;
+	}
+
 	@Override
 	public Graph transform(Graph graph) {
-		Node root = graph.getNode(0);
-		
+		Node root = selectRoot(graph, rootSelector);
+
 		Node tempNodeFromList;
-		int[] edges;
+		Integer[] edges;
 		Node[] nodes = graph.getNodes();
-		
-    	LinkedList<Node> todoList = new LinkedList<Node>();
-    	LinkedList<Integer> handledNodes = new LinkedList<Integer>();
-    	LinkedList<Integer> linkedNodes = new LinkedList<Integer>();
-    	
-    	ArrayList<ParentChild> parentChildList = new ArrayList<ParentChild>();
-    	
-    	todoList.add(root);
-    	linkedNodes.add(root.getIndex());
-    	while ( !todoList.isEmpty() ) {
-    		tempNodeFromList = todoList.pop();
-    		if ( handledNodes.contains(tempNodeFromList.getIndex()) ) {
-    				/*
-    				 * Although the current node was fetched from the 
-    				 * todoList, we will continue: this node was already
-    				 * processed
-    				 */
-    			continue;
-    		}
-    		
-    		edges = tempNodeFromList.getOutgoingEdges();
-    		for ( int e: edges ) {
-    			if (  !linkedNodes.contains(e) ) {
-    					/*
-    					 * Node e has not been linked yet, so
-    					 * add it to the todoList (to handle it soon)
-    					 * and add the edge from the current node to e
-    					 * to the list of edges 
-    					 */
-    				todoList.add( nodes[e] );
-    				linkedNodes.add(e);
-    				
-    				parentChildList.add( new ParentChild(tempNodeFromList.getIndex(), e));
-    			}
-    		}
-    		
-    		handledNodes.add(tempNodeFromList.getIndex());
-    	}
-		
-    	SpanningTree result = new SpanningTree(graph, parentChildList);
-    	
+		int depth;
+
+		LinkedList<Node> todoList = new LinkedList<Node>();
+
+		HashMap<Integer, ParentChild> parentChildMap = new HashMap<Integer, ParentChild>();
+
+		todoList.add(root);
+		parentChildMap.put(root.getIndex(), new ParentChild(-1, root.getIndex(), 0));
+		while (!todoList.isEmpty()) {
+			tempNodeFromList = todoList.pop();
+
+			ParentChild parent = parentChildMap.get(tempNodeFromList.getIndex());
+			if (parent == null) {
+				depth = 1;
+			} else {
+				depth = parent.getDepth() + 1;
+			}
+
+			edges = tempNodeFromList.generateOutgoingEdgesByDegree();
+			for (int e : edges) {
+				if (!parentChildMap.containsKey(e)) {
+					/*
+					 * Node e has not been linked yet, so add it to the todoList
+					 * (to handle it soon) and add the edge from the current
+					 * node to e to the list of edges
+					 */
+					todoList.add(nodes[e]);
+
+					parentChildMap.put(e, new ParentChild(tempNodeFromList.getIndex(), e, depth));
+				}
+			}
+		}
+
+		int graphNodeSize = graph.getNodes().length;
+		int spanningTreeSize = parentChildMap.size();
+		if ((spanningTreeSize + 1) < graphNodeSize) {
+			for (Node sN : nodes) {
+				if (!parentChildMap.containsKey(sN.getIndex())) {
+					System.err.print(sN + " missing, connections to ");
+					for (int e : sN.generateOutgoingEdgesByDegree()) {
+						System.err.print(e + " ");
+					}
+					System.err.println();
+				}
+			}
+			throw new RuntimeException("Error: graph contains " + graphNodeSize + ", but spanning tree only contains "
+					+ spanningTreeSize + " nodes - graph might be disconnected");
+		}
+		ArrayList<ParentChild> parentChildList = new ArrayList<ParentChild>();
+		parentChildList.addAll(parentChildMap.values());
+		SpanningTree result = new SpanningTree(graph, parentChildList);
+
 		graph.addProperty("SPANNINGTREE", result);
 		return graph;
 	}
-	
+
+	private Node selectRoot(Graph graph, String rootSelector) {
+		Random rand = new Random();
+		Node result = null;
+		Node[] nodeList = graph.getNodes();
+		if (rootSelector == "zero") {
+			return nodeList[0];
+		} else if (rootSelector == "rand") {
+			return nodeList[rand.nextInt(nodeList.length)];
+		} else if (rootSelector == "hd") {
+			/*
+			 * Here, one of the nodes with highest degree will be chosen
+			 */
+			List<Node> sortedNodeList = Arrays.asList(nodeList.clone());
+			Collections.sort(sortedNodeList);
+			List<Node> highestDegreeNodes = sortedNodeList.subList((int) (0.9 * sortedNodeList.size()),
+					sortedNodeList.size());
+			result = highestDegreeNodes.get(rand.nextInt(highestDegreeNodes.size()));
+		} else {
+			throw new RuntimeException("Unknown root selector " + rootSelector);
+		}
+		return result;
+	}
+
 	@Override
 	public boolean applicable(Graph g) {
 		return true;
-	}	
+	}
 }

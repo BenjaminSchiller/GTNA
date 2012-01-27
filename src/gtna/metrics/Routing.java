@@ -160,6 +160,10 @@ public class Routing extends MetricImpl implements Metric {
 			return valuesNew;
 		}
 	}
+	
+	public Route[] getRoutes() {
+		return this.routes;
+	}
 
 	private void initEmpty() {
 		this.hopDistribution = new Distribution(new double[] { 0 });

@@ -49,20 +49,25 @@ public class WetherellShannon extends HierarchicalAbstract {
 	private double[] nextPos;
 	
 	private double modifierSum;
-	public WetherellShannon() {
-		super("GDA_WETHERELL_SHANNON", new String[]{}, new String[]{});
-	}
 	
 	public WetherellShannon(double modulusX, double modulusY, GraphPlotter plotter) {
-		super("GDA_WETHERELL_SHANNON", new String[] {}, new String[] {});
+		super("GDA_WETHERELL_SHANNON", new String[] {"MODULUS_X", "MODULUS_Y"}, new String[] {"" + modulusX, "" + modulusY});
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;
 	}
-
+	
+	public GraphDrawingAbstract clone() {
+		return new WetherellShannon(modulusX, modulusY, graphPlotter);
+	}
+	
 	@Override
 	public Graph transform(Graph g) {
 		tree = (SpanningTree) g.getProperty("SPANNINGTREE");
+		if ( tree == null ) {
+			throw new GDTransformationException("SpanningTree property missing");
+		}		
+		
 		int source = tree.getSrc();
 		int maxHeight = g.getNodes().length; 
 		
@@ -87,14 +92,16 @@ public class WetherellShannon extends HierarchicalAbstract {
 				System.out.println("Missing node");
 				continue;
 			}
-			System.out.print("Node " + i.getIndex() + " resides at " + nodePositionsX[i.getIndex()] + "|" + nodePositionsY[i.getIndex()] + " and has edges to ");
-			for ( int j: tree.getChildren(i.getIndex()) ) System.out.print(j + " ");
-			System.out.println();
+//			System.out.print("Node " + i.getIndex() + " resides at " + nodePositionsX[i.getIndex()] + "|" + nodePositionsY[i.getIndex()] + " and has edges to ");
+//			for ( int j: tree.getChildren(i.getIndex()) ) System.out.print(j + " ");
+//			System.out.println();
 		}
 		
 		writeIDSpace(g);
-		graphPlotter.plotFinalGraph(g, idSpace);
-		graphPlotter.plotSpanningTree(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotFinalGraph(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotSpanningTree(g, idSpace);
 		
 		return g;
 	}

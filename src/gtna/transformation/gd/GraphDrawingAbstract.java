@@ -35,6 +35,8 @@
  */
 package gtna.transformation.gd;
 
+import java.util.Random;
+
 import gtna.graph.Graph;
 import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
@@ -44,11 +46,13 @@ import gtna.transformation.TransformationImpl;
  * @author Nico
  * 
  */
-public abstract class GraphDrawingAbstract extends TransformationImpl implements Transformation {
+public abstract class GraphDrawingAbstract extends TransformationImpl implements Transformation, Cloneable {
 	protected GraphPlotter graphPlotter;
+	Random rand;
 	
 	public GraphDrawingAbstract(String key, String[] configKeys, String[] configValues) {
 		super(key, configKeys, configValues);
+		rand = new Random();
 	}
 
 	protected abstract void initIDSpace(Graph g);
@@ -59,4 +63,6 @@ public abstract class GraphDrawingAbstract extends TransformationImpl implements
 	public boolean applicable(Graph g) {
 		return true;
 	}
+	
+	public abstract GraphDrawingAbstract clone();
 }

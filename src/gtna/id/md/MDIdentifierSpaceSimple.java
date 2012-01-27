@@ -195,7 +195,6 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 		// # PARTITIONS
 		int partitions = Integer.parseInt(fr.readLine());
 		this.partitions = new MDPartitionSimple[partitions];
-		System.out.println("Partitions: " + this.partitions);
 
 			// TODO: better calculation
 		this.maxDistance = Double.MAX_VALUE;
@@ -216,5 +215,4 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 	public boolean isWrapAround() {
 		return this.wrapAround;
 	}
-	
 }

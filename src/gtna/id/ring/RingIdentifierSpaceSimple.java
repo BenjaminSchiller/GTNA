@@ -37,6 +37,7 @@ package gtna.id.ring;
 
 import gtna.graph.Graph;
 import gtna.id.DIdentifierSpace;
+import gtna.id.DPartition;
 import gtna.id.Partition;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
@@ -70,7 +71,7 @@ public class RingIdentifierSpaceSimple extends RingIdentifierSpace implements
 	}
 
 	@Override
-	public Partition<Double>[] getPartitions() {
+	public DPartition[] getPartitions() {
 		return this.partitions;
 	}
 

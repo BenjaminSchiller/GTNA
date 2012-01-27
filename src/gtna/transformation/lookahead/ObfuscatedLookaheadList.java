@@ -43,6 +43,7 @@ import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
 import gtna.id.Partition;
 import gtna.id.md.MDIdentifier;
+import gtna.id.md.MDPartitionSimple;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlanePartitionSimple;
 import gtna.id.ring.RingIdentifier;
@@ -193,7 +194,7 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 					.getIdSpace(), position1), new ChordIdentifier(p.getSucc()
 					.getIdSpace(), position2));
 		} else {
-			return null;
+			throw new RuntimeException("Cannot create obfuscated partition for " + partition.getClass());
 		}
 	}
 
@@ -218,8 +219,11 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 			return new ChordPartition(new ChordIdentifier(p.getPred()
 					.getIdSpace(), p.getPred().getId()), new ChordIdentifier(p
 					.getSucc().getIdSpace(), p.getSucc().getId()));
+		} else if (partition instanceof MDPartitionSimple) {
+			MDPartitionSimple p = (MDPartitionSimple) partition;
+			return new MDPartitionSimple(new MDIdentifier(p.getId().getCoordinates(), p.getId().getIdSpace()));
 		} else {
-			return null;
+			throw new RuntimeException("Cannot copy partition for " + partition.getClass());
 		}
 	}
 
@@ -230,7 +234,7 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 			if (p instanceof DIdentifierSpace) {
 				DIdentifier id = (DIdentifier) ((DIdentifierSpace) p)
 						.randomID(rand);
-				if (!(id instanceof RingIdentifier) && !(id instanceof MDIdentifier)) {
+				if (!(id instanceof RingIdentifier) && !(id instanceof MDIdentifier) && !(id instanceof PlaneIdentifier)) {
 					return false;
 				}
 			} else if (p instanceof BIIdentifierSpace) {

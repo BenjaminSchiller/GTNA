@@ -191,4 +191,9 @@ public class ChordIdentifierSpace implements BIIdentifierSpace {
 		return this.bits + "-bit (% " + this.modulus + ")";
 	}
 
+	public ChordIdentifierSpace clone() {
+		ChordIdentifierSpace result = new ChordIdentifierSpace(this.bits);
+		result.setPartitions(this.partitions.clone());
+		return result;
+	}
 }
