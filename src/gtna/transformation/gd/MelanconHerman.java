@@ -38,7 +38,6 @@ package gtna.transformation.gd;
 import gtna.graph.Graph;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
-import gtna.transformation.Transformation;
 
 /**
  * @author Nico
@@ -50,20 +49,27 @@ public class MelanconHerman extends HierarchicalAbstract {
 	/*
 	 * leafRadius will hold the radius of a single leaf node
 	 */
-	double leafRadius = 2d;
-	double d = 20d;
-	double previous = 0;
+	private final double leafRadius = 2d;
 
 	public MelanconHerman(double modulusX, double modulusY, GraphPlotter plotter) {
-		super("GDA_MELANCONHERMAN", new String[] {}, new String[] {});
+		super("GDA_MELANCONHERMAN", new String[] { "MODULUS_X", "MODULUS_Y" }, new String[] { "" + modulusX,
+				"" + modulusY });
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;
 	}
 
+	public GraphDrawingAbstract clone() {
+		return new MelanconHerman(modulusX, modulusY, graphPlotter);
+	}
+
 	@Override
 	public Graph transform(Graph g) {
 		tree = (SpanningTree) g.getProperty("SPANNINGTREE");
+		if (tree == null) {
+			throw new GDTransformationException("SpanningTree property missing");
+		}
+
 		int source = tree.getSrc();
 		np = new NodeParameter[g.getNodes().length];
 		nodePositionsX = new double[g.getNodes().length];
@@ -74,8 +80,10 @@ public class MelanconHerman extends HierarchicalAbstract {
 		secondWalk(source, 0, 0, 1, 0);
 
 		writeIDSpace(g);
-		graphPlotter.plotFinalGraph(g, idSpace);
-		graphPlotter.plotSpanningTree(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotFinalGraph(g, idSpace);
+		if (graphPlotter != null)
+			graphPlotter.plotSpanningTree(g, idSpace);
 
 		return g;
 	}
@@ -88,7 +96,9 @@ public class MelanconHerman extends HierarchicalAbstract {
 		for (int k : sons) {
 			firstWalk(k);
 			np[node].d = Math.max(np[node].d, np[k].r);
-			np[k].alpha = Math.atan( np[k].r / ( np[node].d + np[k].r) );
+		}
+		for (int k : sons) {
+			np[k].alpha = Math.atan(np[k].r / (np[node].d + np[k].r));
 			s += np[k].alpha;
 		}
 		adjustChildren(node, s);
@@ -112,22 +122,23 @@ public class MelanconHerman extends HierarchicalAbstract {
 	private void secondWalk(int node, double x, double y, double lambda, double theta) {
 		nodePositionsX[node] = x;
 		nodePositionsY[node] = y;
-		
+
+		int[] children = tree.getChildren(node);
+
 		double dd = lambda * np[node].d;
-		double gamma = theta + Math.PI;
-		double freeSpace = np[node].f / (tree.getChildren(node).length + 1 );
+		double phi = theta + Math.PI;
+		double freeSpace = np[node].f / children.length;
 		double previous = 0;
 		double currAlpha, currRadius;
 
-		for (int singleSon : tree.getChildren(node)) {
+		for (int singleSon : children) {
 			currAlpha = np[node].c * np[singleSon].alpha;
 			currRadius = np[node].d * (Math.tan(currAlpha) / (1 - Math.tan(currAlpha)));
-			gamma = ( gamma + previous + np[singleSon].alpha + freeSpace );// % ( 2 * Math.PI );
-			double kX = (lambda * currRadius + dd) * Math.cos(gamma);
-			double kY = (lambda * currRadius + dd) * Math.sin(gamma);
+			phi = phi + previous + np[singleSon].alpha + freeSpace;
+			double kX = (lambda * currRadius + dd) * Math.cos(phi);
+			double kY = (lambda * currRadius + dd) * Math.sin(phi);
 			previous = np[singleSon].alpha;
-			secondWalk(singleSon, kX + x, kY
-					+ y, lambda * (currRadius / np[singleSon].r), gamma);
+			secondWalk(singleSon, kX + x, kY + y, lambda * (currRadius / np[singleSon].r), phi);
 		}
 	}
 

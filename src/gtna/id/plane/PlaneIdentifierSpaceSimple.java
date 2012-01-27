@@ -207,5 +207,4 @@ public class PlaneIdentifierSpaceSimple implements DIdentifierSpace {
 	public boolean isWrapAround() {
 		return this.wrapAround;
 	}
-
 }

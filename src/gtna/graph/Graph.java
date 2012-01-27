@@ -181,7 +181,7 @@ public class Graph {
 	public Node[] getNodes() {
 		return this.nodes;
 	}
-
+	
 	/**
 	 * sets the nodes and ends the timer starte during graph initialization
 	 * 
