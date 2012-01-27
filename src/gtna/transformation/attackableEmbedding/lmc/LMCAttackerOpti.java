@@ -16,8 +16,7 @@ import java.util.Random;
  */
 
 public class LMCAttackerOpti extends LMCNode {
-	public static double interval = 0.001;
-	public static boolean trapez = false;
+	public static boolean trapez = true;
 	
 	public LMCAttackerOpti(int index, Graph g, LMC lmc) {
 		 super(index, g, lmc);
@@ -56,7 +55,7 @@ public class LMCAttackerOpti extends LMCNode {
 			}
 			double minVal = 1;
 			double min = caller.ask(caller, rand);
-			int num = (int) Math.ceil(interval);
+			int num = (int) Math.ceil(this.lmc.precision);
 			double cur = (min + this.lmc.delta) % 1.0;
 			double v = min;
 			double curVal;
@@ -66,7 +65,7 @@ public class LMCAttackerOpti extends LMCNode {
 					min = cur;
 					minVal = curVal;
 				}
-				cur = (cur + interval)%1.0;
+				cur = (cur + this.lmc.precision)%1.0;
 			}
 			return min;
 		 }
@@ -166,12 +165,12 @@ public class LMCAttackerOpti extends LMCNode {
 			 * @param attack
 			 * @return
 			 */
-			public static double getIntegralDiffAttackerNum(double[] neighbors,  double attack, double victim){
+			public double getIntegralDiffAttackerNum(double[] neighbors,  double attack, double victim){
 				double sum = 0;
-				int count = (int)Math.ceil(1.0/interval);
+				int count = (int)Math.ceil(1.0/this.lmc.precision);
 				for (int j = 0; j < count-1; j++){
-					double a = j*interval;
-					double b = (j+1)*interval;
+					double a = j*this.lmc.precision;
+					double b = (j+1)*this.lmc.precision;
 					if (trapez){
 						 sum = sum + getIntegralLMCTrapez(neighbors, attack, a, b, victim);	
 					} else {

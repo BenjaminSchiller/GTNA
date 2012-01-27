@@ -36,14 +36,18 @@
 package gtna.transformation.partition;
 
 import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.graph.partition.Partition;
 import gtna.transformation.Transformation;
 import gtna.transformation.TransformationImpl;
+import gtna.transformation.failure.Deleted;
+import gtna.util.Util;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 /**
  * @author benni
@@ -58,6 +62,10 @@ public class WeakConnectivityPartition extends TransformationImpl implements
 
 	@Override
 	public Graph transform(Graph g) {
+		GraphProperty[] prop = g.getProperties("Deleted");
+		if (prop.length > 0){
+			return this.transformDelete(g);
+		}
 		ArrayList<ArrayList<Integer>> components = new ArrayList<ArrayList<Integer>>();
 		boolean[] seen = new boolean[g.getNodes().length];
 		for (int start = 0; start < seen.length; start++) {
@@ -92,6 +100,46 @@ public class WeakConnectivityPartition extends TransformationImpl implements
 		g.addProperty(g.getNextKey("PARTITION"), p);
 		return g;
 	}
+	
+	private Graph transformDelete(Graph g){
+		GraphProperty[] prop = g.getProperties("Deleted");
+		boolean[] isDeleted = ((Deleted) prop[prop.length-1]).getDeleted();
+		ArrayList<ArrayList<Integer>> components = new ArrayList<ArrayList<Integer>>();
+		boolean[] seen = new boolean[g.getNodes().length];
+		for (int start = 0; start < seen.length; start++) {
+			if (seen[start] || isDeleted[start]) {
+				continue;
+			}
+			seen[start] = true;
+			ArrayList<Integer> current = new ArrayList<Integer>();
+			Queue<Integer> queue = new LinkedList<Integer>();
+			queue.add(start);
+			seen[start] = true;
+			while (!queue.isEmpty()) {
+				Node node = g.getNode(queue.poll());
+				current.add(node.getIndex());
+				for (int out : node.getOutgoingEdges()) {
+					if (!seen[out] && !isDeleted[out]) {
+						queue.add(out);
+						seen[out] = true;
+					}
+				}
+				for (int in : node.getIncomingEdges()) {
+					if (!seen[in] && !isDeleted[in]) {
+						queue.add(in);
+						seen[in] = true;
+					}
+				}
+			}
+			components.add(current);
+		}
+		Partition p = new Partition(components);
+		g.addProperty(g.getNextKey("WEAK_CONNECTIVITY_PARTITION"), p);
+		g.addProperty(g.getNextKey("PARTITION"), p);
+		return g;
+	}
+	
+	
 
 	@Override
 	public boolean applicable(Graph g) {
