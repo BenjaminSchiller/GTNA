@@ -259,9 +259,9 @@ public abstract class NetworkImpl implements Network {
 	}
 
 	public String compareName(Network nw, String key) {
-		if (!this.getClass().equals(nw.getClass())) {
-			return Config.get("NETWORK_COMPARE_NETWORKS_NAME");
-		}
+		// if (!this.getClass().equals(nw.getClass())) {
+		// return Config.get("NETWORK_COMPARE_NETWORKS_NAME");
+		// }
 		for (int i = 0; i < this.configValues.length; i++) {
 			if (!this.configValues[i].equals(nw.configValues()[i])) {
 				return Config.get(this.key + "_" + this.configKeys[i] + "_NAME"
@@ -291,9 +291,9 @@ public abstract class NetworkImpl implements Network {
 	}
 
 	public String compareValue(Network nw) {
-		if (!this.getClass().equals(nw.getClass())) {
-			return Config.get("NETWORK_COMPARE_NETWORKS_VALUE");
-		}
+		// if (!this.getClass().equals(nw.getClass())) {
+		// return Config.get("NETWORK_COMPARE_NETWORKS_VALUE");
+		// }
 		for (int i = 0; i < this.configValues.length; i++) {
 			if (!this.configValues[i].equals(nw.configValues()[i])) {
 				return this.configValues[i];
