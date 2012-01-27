@@ -226,7 +226,7 @@ public class PlacementModelContainer extends NetworkImpl {
 
 		idSpace.setPartitions(coords);
 
-		g.addProperty("id_space_0", idSpace);
+		g.addProperty("ID_SPACE_0", idSpace);
 
 		Node[] nodes = Node.init(this.nodes(), g);
 		connector.connect(nodes, idSpace);

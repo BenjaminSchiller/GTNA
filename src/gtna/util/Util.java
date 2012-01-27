@@ -45,9 +45,12 @@ import gtna.plot.PlotData;
 import gtna.routing.RoutingAlgorithm;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.commons.math.MathException;
@@ -725,6 +728,28 @@ public class Util {
 		}
 
 		return arr;
+	}
+
+	/**
+	 * Maps labels to communities. Labels are mapped in ascending order,
+	 * communities are indexed from 0 to N, where N is the number of
+	 * communities.
+	 * 
+	 * @param labels
+	 *            array of labels
+	 * @return mapping of labels to communities
+	 */
+	public static HashMap<Integer, Integer> mapLabelsToCommunities(int[] labels) {
+		SortedSet<Integer> labelSet = new TreeSet<Integer>();
+		for (int label : labels) {
+			labelSet.add(label);
+		}
+		HashMap<Integer, Integer> labelCommunityMapping = new HashMap<Integer, Integer>();
+		int communityIndex = 0;
+		for (int label : labelSet) {
+			labelCommunityMapping.put(label, communityIndex++);
+		}
+		return labelCommunityMapping;
 	}
 
 	// ///////////////////////
