@@ -177,8 +177,4 @@ public class RingIdentifierSpace implements DIdentifierSpace {
 	public boolean isWrapAround() {
 		return this.wrapAround;
 	}
-
-	public RingIdentifierSpace clone() {
-		return new RingIdentifierSpace(this.partitions.clone(), this.modulus, this.wrapAround);
-	}
 }

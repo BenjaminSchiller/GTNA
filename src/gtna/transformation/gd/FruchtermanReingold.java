@@ -41,9 +41,7 @@ import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.plot.GraphPlotter;
-import gtna.transformation.Transformation;
 import gtna.util.MDVector;
-import gtna.util.Util;
 
 /**
  * @author Nico

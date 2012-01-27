@@ -50,6 +50,4 @@ public interface IdentifierSpace<Type> extends GraphProperty, Cloneable {
 	public Identifier<Type> randomID(Random rand);
 
 	public Type getMaxDistance();
-
-	public IdentifierSpace<Type> clone();
 }

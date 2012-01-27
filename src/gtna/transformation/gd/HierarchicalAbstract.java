@@ -37,7 +37,6 @@ package gtna.transformation.gd;
 
 import gtna.graph.Graph;
 import gtna.graph.spanningTree.SpanningTree;
-import gtna.id.IdentifierSpace;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
@@ -95,14 +94,6 @@ public abstract class HierarchicalAbstract extends GraphDrawingAbstract {
 		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
 	}
 
-	public void setIDSpace(IdentifierSpace idSpace) {
-			/*
-			 * As the hierarchical algorithms work deterministic,
-			 * there is no need to use a predetermined id space
-			 */
-		System.err.println("setIDSpace is not implemented on hierarchical algorithms");
-	}	
-	
 	@Override
 	public boolean applicable(Graph g) {
 		return g.hasProperty("SPANNINGTREE");

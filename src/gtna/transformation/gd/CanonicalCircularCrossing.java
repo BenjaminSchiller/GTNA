@@ -37,7 +37,6 @@ package gtna.transformation.gd;
 
 import gtna.graph.Graph;
 import gtna.plot.GraphPlotter;
-import gtna.transformation.Transformation;
 
 /**
  * @author Nico

@@ -35,14 +35,13 @@
  */
 package gtna.transformation.gd;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.plot.GraphPlotter;
-import gtna.transformation.Transformation;
 import gtna.util.MDVector;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author Nico

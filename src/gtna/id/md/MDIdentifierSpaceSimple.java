@@ -215,8 +215,4 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 	public boolean isWrapAround() {
 		return this.wrapAround;
 	}
-	
-	public MDIdentifierSpaceSimple clone() {
-		return new MDIdentifierSpaceSimple(this.partitions.clone(), this.modulus, this.wrapAround);
-	}
 }

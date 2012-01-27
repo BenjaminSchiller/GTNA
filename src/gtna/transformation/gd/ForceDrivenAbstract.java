@@ -37,7 +37,6 @@ package gtna.transformation.gd;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.IdentifierSpace;
 import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
@@ -61,8 +60,6 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 	}
 	
 	protected void initIDSpace( Graph g ) {
-		if ( !generateIDSpace ) return;
-		
 		for (int r = 0; r < this.realities; r++) {
 			partitions = new MDPartitionSimple[g.getNodes().length];
 			this.idSpace = new MDIdentifierSpaceSimple(partitions, this.moduli, this.wrapAround);
@@ -89,14 +86,6 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 	protected void writeIDSpace ( Graph g ) {
 		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
 	}
-
-	public void setIDSpace(IdentifierSpace idSpace) {
-		this.idSpace = (MDIdentifierSpaceSimple) idSpace;
-		this.partitions = (MDPartitionSimple[]) this.idSpace.getPartitions();
-		this.moduli = this.idSpace.getModuli();
-		generateBias();
-		this.generateIDSpace = false;
-	}	
 	
 	protected MDVector setNormalized(MDVector v) {
 		for ( int i = 0; i < v.getDimension(); i++ ) {

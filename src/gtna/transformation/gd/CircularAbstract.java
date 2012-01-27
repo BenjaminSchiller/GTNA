@@ -42,7 +42,6 @@ import java.util.LinkedList;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.IdentifierSpace;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
@@ -68,9 +67,6 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 	}
 
 	protected void initIDSpace(Graph g) {
-		if (!generateIDSpace)
-			return;
-
 		for (int r = 0; r < this.realities; r++) {
 			partitions = new RingPartition[g.getNodes().length];
 			idSpace = new RingIdentifierSpace(partitions, this.modulus, this.wrapAround);
@@ -91,13 +87,6 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
 	}
 
-	public void setIDSpace(IdentifierSpace idSpace) {
-		this.idSpace = (RingIdentifierSpace) idSpace.clone();
-		this.partitions = (RingPartition[]) this.idSpace.getPartitions();
-		this.modulus = this.idSpace.getModulus();
-		this.generateIDSpace = false;
-	}
-
 	protected void reduceCrossingsBySwapping(Graph g) {
 		Node currentNode, predecessor;
 		int currentCrossings, swappedCrossings;
@@ -111,7 +100,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 
 		int countLoop = 0;
 		while ((currentNode = todolist.poll()) != null) {
-			countLoop++;			
+			countLoop++;
 			
 			/*
 			 * Special case handling: current node has a degree of zero
@@ -163,7 +152,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		}
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
-//		System.out.println("Did " + countLoop + " loops in " + totalTime + " msec");
+// 		System.out.println("Did " + countLoop + " loops in " + totalTime + " msec");
 	}
 
 	protected int getPredecessor(int i) {
