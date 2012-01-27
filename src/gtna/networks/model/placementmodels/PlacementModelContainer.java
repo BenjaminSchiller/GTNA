@@ -152,12 +152,11 @@ public class PlacementModelContainer extends NetworkImpl {
 			PlacementModel nodePlacer, NodeConnector connector,
 			Partitioner partitioner) {
 		return Util.mergeArrays(
-				new String[] { getKey(hotspotPlacer, nodePlacer) }, Util
-						.mergeArrays(partitioner.getConfigValues(), Util
-								.mergeArrays(connector.getConfigValues(), Util
-										.mergeArrays(hotspotPlacer
-												.getConfigValues(), nodePlacer
-												.getConfigValues()))));
+				new String[] { getKey(hotspotPlacer, nodePlacer) },
+				Util.mergeArrays(partitioner.getConfigValues(), Util
+						.mergeArrays(connector.getConfigValues(), Util
+								.mergeArrays(hotspotPlacer.getConfigValues(),
+										nodePlacer.getConfigValues()))));
 	}
 
 	/**
@@ -184,12 +183,15 @@ public class PlacementModelContainer extends NetworkImpl {
 	private static String[] getConfigKeys(PlacementModel hotspotPlacer,
 			PlacementModel nodePlacer, NodeConnector connector,
 			Partitioner partitioner) {
-		return Util.mergeArrays(new String[] { "KEY" }, Util.mergeArrays(Util
-				.addPrefix("PART_", partitioner.getConfigKeys()), Util
-				.mergeArrays(Util.addPrefix("CON_", connector.getConfigKeys()),
-						Util.mergeArrays(Util.addPrefix("HP_", hotspotPlacer
-								.getConfigKeys()), Util.addPrefix("NP_",
-								nodePlacer.getConfigKeys())))));
+		return Util.mergeArrays(new String[] { "KEY" }, Util.mergeArrays(
+				Util.addPrefix("PART_", partitioner.getConfigKeys()),
+				Util.mergeArrays(
+						Util.addPrefix("CON_", connector.getConfigKeys()),
+						Util.mergeArrays(
+								Util.addPrefix("HP_",
+										hotspotPlacer.getConfigKeys()),
+								Util.addPrefix("NP_",
+										nodePlacer.getConfigKeys())))));
 	}
 
 	/**
@@ -226,7 +228,7 @@ public class PlacementModelContainer extends NetworkImpl {
 
 		idSpace.setPartitions(coords);
 
-		g.addProperty("ID_SPACE_0", idSpace);
+		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
 
 		Node[] nodes = Node.init(this.nodes(), g);
 		connector.connect(nodes, idSpace);
