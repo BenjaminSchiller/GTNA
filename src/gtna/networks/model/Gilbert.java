@@ -65,35 +65,43 @@ import java.util.Random;
  * 
  */
 public class Gilbert extends NetworkImpl implements Network {
-	private double EDGES;
+	private double p;
 
-	private boolean BIDIRECTIONAL;
+	private boolean bidirectional;
 
-	public Gilbert(int nodes, double EDGES, boolean BIDIRECTIONAL,
+	public Gilbert(int nodes, double p, boolean bidirectional,
 			RoutingAlgorithm ra, Transformation[] t) {
-		super("GILBERT", nodes, new String[] { "EDGES", "BIDIRECTIONAL" },
-				new String[] { "" + EDGES, "" + BIDIRECTIONAL }, ra, t);
-		this.EDGES = EDGES;
-		this.BIDIRECTIONAL = BIDIRECTIONAL;
+		super("GILBERT", nodes, new String[] { "C", "BIDIRECTIONAL" },
+				new String[] { "" + (p * nodes), "" + bidirectional }, ra, t);
+		this.p = p;
+		this.bidirectional = bidirectional;
+	}
+
+	public static Gilbert[] get(int nodes, double[] p, boolean bidirectional,
+			RoutingAlgorithm ra, Transformation[] t) {
+		Gilbert[] nw = new Gilbert[p.length];
+		for (int i = 0; i < p.length; i++) {
+			nw[i] = new Gilbert(nodes, p[i], bidirectional, ra, t);
+		}
+		return nw;
 	}
 
 	public Graph generate() {
 		Graph graph = new Graph(this.description());
 		Random rand = new Random(System.currentTimeMillis());
 		Node[] nodes = Node.init(this.nodes(), graph);
-		double p = (double) this.EDGES / (double) (this.nodes() * this.nodes());
-		if (this.BIDIRECTIONAL) {
-			p /= 2;
-		}
-		Edges edges = new Edges(nodes, (int) (this.EDGES * 1.05));
+		Edges edges = new Edges(nodes,
+				(int) (this.p * this.nodes() * this.nodes()));
+		// double P = this.bidirectional ? this.p / 2 : this.p;
+		double P = this.p;
 		for (int i = 0; i < nodes.length; i++) {
 			for (int j = 0; j < nodes.length; j++) {
 				if (i == j) {
 					continue;
 				}
-				if (rand.nextDouble() < p) {
+				if (rand.nextDouble() <= P) {
 					edges.add(i, j);
-					if (this.BIDIRECTIONAL) {
+					if (this.bidirectional) {
 						edges.add(j, i);
 					}
 				}
