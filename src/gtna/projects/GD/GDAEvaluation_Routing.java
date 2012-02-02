@@ -35,20 +35,26 @@
  */
 package gtna.projects.GD;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import gtna.data.Series;
 import gtna.networks.Network;
-import gtna.networks.util.ReadableFolder;
+import gtna.networks.model.BarabasiAlbert;
+import gtna.networks.model.ErdosRenyi;
+import gtna.networks.util.ReadableFile;
 import gtna.networks.util.ReadableList;
-import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.Greedy;
 import gtna.routing.greedy.GreedyBacktracking;
-import gtna.routing.lookahead.Lookahead;
-import gtna.routing.lookahead.LookaheadSequential;
+import gtna.routing.lookahead.LookaheadSimple;
 import gtna.transformation.Transformation;
-import gtna.transformation.lookahead.NeighborsFirstLookaheadList;
+import gtna.transformation.edges.Bidirectional;
+import gtna.transformation.id.RandomMDIDSpaceSimple;
+import gtna.transformation.id.RandomPlaneIDSpaceSimple;
+import gtna.transformation.id.RandomRingIDSpace;
+import gtna.transformation.partition.GiantConnectedComponent;
+import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.util.Config;
 
 /**
@@ -58,72 +64,104 @@ import gtna.util.Config;
 public class GDAEvaluation_Routing {
 	public static void main(String[] args) {
 		int lengthOfSeries = 60;
-		RoutingAlgorithm[] ra = new RoutingAlgorithm[] { new GreedyBacktracking(10), new Greedy(10), new LookaheadSequential(25) };
+		RoutingAlgorithm[] ra = new RoutingAlgorithm[] {
+				new Greedy(100), new GreedyBacktracking(100),
+				new LookaheadSimple(50),
+		// new DepthFirstEdgeGreedy(100),
+		};
 		String folderName;
 		String rootFolder = "./resources/evaluation/";
 		ArrayList<Network> networks = new ArrayList<Network>();
 
-		String[] base = new String[] { "1000/barabasiAlbert-10-b-wcp-gcc-", "1000/erdosRenyi-10.0-true-b-wcp-gcc-",
-		// "5000/barabasiAlbert-10-b-wcp-gcc-",
-		// "5000/erdosRenyi-10.0-true-b-wcp-gcc-",
-		// "10000/barabasiAlbert-10-b-wcp-gcc-",
-		// "10000/erdosRenyi-10.0-true-b-wcp-gcc-",
-		// "11407/SPI-b-wcp-gcc-",
-		// "20057/CAIDA-b-wcp-gcc-",
-		// "25487/WOT-b-wcp-gcc-"
+		String[] base = new String[] {
+			"1000/barabasiAlbert-10-b-wcp-gcc-", "1000/erdosRenyi-10.0-true-b-wcp-gcc-",
+			"5000/barabasiAlbert-10-b-wcp-gcc-", "5000/erdosRenyi-10.0-true-b-wcp-gcc-",
+				"10000/erdosRenyi-10.0-true-b-wcp-gcc-",
+				"10000/barabasiAlbert-10-b-wcp-gcc-",
+				"11407/SPI-b-wcp-gcc-",
+				"20057/CAIDA-b-wcp-gcc-", "25487/WOT-b-wcp-gcc-"
+				};
+		String[] gdaFolders = new String[] {
+				"fr-100-[100.0, 100.0]-false-100/",
+				
+				"CCC-1-100.0-true/",				
+				"st-1-100.0-true/",
+				
+				"stBFS-hd-bt-100.0-100.0/", "stBFS-hd-kBST-100.0-100.0/",
+				"stBFS-hd-mh-100.0-100.0/", "stBFS-hd-ws-100.0-100.0/"
+				
 		};
-		String[] gdaFolders = new String[] { "CCC-1-100.0-true/", "fr-100-[100.0, 100.0]-false-100/",
-				"st-1-100.0-true/", "stBFS-hd-bt-100.0-100.0/", "stBFS-hd-kBST-100.0-100.0/",
-				"stBFS-hd-mh-100.0-100.0/", "stBFS-hd-ws-100.0-100.0/", "stBFS-rand-bt-100.0-100.0/",
-				"stBFS-rand-kBST-100.0-100.0/", "stBFS-rand-mh-100.0-100.0/", "stBFS-rand-ws-100.0-100.0/", };
 
+		int missingFiles;
 		String[] tempSplit;
 		String[] files;
+		File tempFile;
 		Network temp;
 		String outputFolder;
-		Transformation[] nll = new Transformation[] { new NeighborsFirstLookaheadList(true) };
+		Transformation[] stArray;
+		Transformation[] randomIDSpace = new Transformation[] {
+				new RandomMDIDSpaceSimple(1, new double[] { 100, 100 }, false),
+				new RandomPlaneIDSpaceSimple(1, 100, 100, false),
+				new RandomRingIDSpace(1, 100, false),
+				};
 
 		for (RoutingAlgorithm singleRA : ra) {
+			for (Transformation sT : randomIDSpace) {
+				stArray = new Transformation[] { new Bidirectional(), new WeakConnectivityPartition(),
+						new GiantConnectedComponent(), sT };
+				networks.add(new ReadableFile("caida", "CAIDA", "./data/cycle-aslinks.l7.t1.c001749.20111206.txt.gtna",
+						singleRA, stArray));
+				networks.add(new ReadableFile("wot", "WOT", "./data/graph-wot.txt", singleRA, stArray));
+				networks.add(new ReadableFile("spi", "SPI", "./data/graph-spi.txt", singleRA, stArray));
+				networks.add(new BarabasiAlbert(1000, 10, singleRA, stArray));
+				networks.add(new BarabasiAlbert(5000, 10, singleRA, stArray));
+				networks.add(new BarabasiAlbert(10000, 10, singleRA, stArray));
+				networks.add(new ErdosRenyi(1000, 10, true, singleRA, stArray));
+				networks.add(new ErdosRenyi(5000, 10, true, singleRA, stArray));
+				networks.add(new ErdosRenyi(10000, 10, true, singleRA, stArray));
+			}
+
 			for (String singleBase : base) {
 				for (String singleGDA : gdaFolders) {
 					files = new String[lengthOfSeries];
 					folderName = rootFolder + singleBase + singleGDA;
+					missingFiles = 0;
+					for (int i = 0; i < lengthOfSeries; i++) {
+						tempFile = new File(folderName + "/" + i + ".txt_ID_SPACE_0");
+						if (!tempFile.exists()) {
+							missingFiles++;
+						}
+					}
+					if (missingFiles > 0) {
+						System.out.println("Skipping non-complete " + folderName + " (" + missingFiles
+								+ " simulations missing)");
+						continue;
+					}
+
 					tempSplit = folderName.split("/");
 					outputFolder = tempSplit[tempSplit.length - 1];
 
 					for (int i = 0; i < lengthOfSeries; i++) {
 						files[i] = folderName + i + ".txt";
 					}
-					if (singleRA instanceof Lookahead) {
-						temp = new ReadableList("", outputFolder, files, singleRA, nll);
-					} else {
-						temp = new ReadableList("", outputFolder, files, singleRA, null);
-					}
+					temp = new ReadableList("", outputFolder, files, singleRA, null);
 					networks.add(temp);
 				}
 			}
 		}
+		
 		Network[] nwArray = new Network[networks.size()];
 		networks.toArray(nwArray);
 		System.out.println("Generating plots for " + nwArray.length + " networks");
-
-		// folderName =
-		// "./resources/evaluation/5000/erdosRenyi-10.0-true-b-wcp-gcc-CCC-1-100.0-true/";
-		// String[] files3 = new String[lengthOfSeries];
-		// for (int i = 0; i < lengthOfSeries; i++) {
-		// files2[i] = folderName + i + ".txt";
-		// }
-		// Network nw3 = new ReadableList("ER-5000-CCC", "evaluation", files2,
-		// ra, null);
 
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/GDAevaluation/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testsNico/");
 		// Config.overwrite("GNUPLOT_PATH", "C:\\Cygwin\\bin\\gnuplot.exe");
 		Config.overwrite("METRICS", "ROUTING");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + true);
-		Config.overwrite("PARALLEL_ROUTINGS", "" + 4);
+		Config.overwrite("PARALLEL_ROUTINGS", "" + 3);
 
 		Series[] s = Series.generate(nwArray, lengthOfSeries);
-		Plot.allSingle(s, "GDAEva/");
+//		Plot.allSingle(s, "GDAEva/");
 	}
 }
