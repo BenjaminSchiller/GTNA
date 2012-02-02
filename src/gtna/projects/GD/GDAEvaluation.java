@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna;
+package gtna.projects.GD;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Random;
 
 import gtna.graph.Graph;
 import gtna.io.Filewriter;
@@ -50,10 +49,6 @@ import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.util.ReadableFile;
-import gtna.routing.RoutingAlgorithm;
-import gtna.routing.greedy.Greedy;
-import gtna.routing.greedy.GreedyBacktracking;
-import gtna.routing.lookahead.LookaheadSequential;
 import gtna.transformation.Transformation;
 import gtna.transformation.edges.Bidirectional;
 import gtna.transformation.gd.*;
@@ -70,8 +65,8 @@ import gtna.util.Stats;
 public class GDAEvaluation {
 	public static void main(String[] args) {
 
-		int times = 60;
-		int threads = 10;
+		int times = 15;
+		int threads = 14;
 		int sizeFactor = 1000;
 		int degree = 10;
 
@@ -95,12 +90,12 @@ public class GDAEvaluation {
 		HashMap<String, Integer> lastCounter = new HashMap<String, Integer>();
 
 		ArrayList<NetworkTask> todoList = new ArrayList<NetworkTask>();
-		RoutingAlgorithm[] rA = new RoutingAlgorithm[] { new Greedy(25), new GreedyBacktracking(25),
-				new LookaheadSequential(25) };
 		GraphDrawingAbstract[] t = new GraphDrawingAbstract[] { new CanonicalCircularCrossing(1, 100, true, null),
 				new SixTollis(1, 100, true, null), new WetherellShannon(100, 100, null), new Knuth(100, 100, null),
-				new MelanconHerman(100, 100, null), new BubbleTree(100, 100, null),
-				new FruchtermanReingold(1, new double[] { 100, 100 }, false, 100, null) };
+		 new MelanconHerman(100, 100, null), new BubbleTree(100, 100, null),
+		 new FruchtermanReingold(1, new double[] { 100, 100 }, false, 100,
+		 null)
+		};
 		for (GraphDrawingAbstract originalT : t) {
 			if (originalT instanceof HierarchicalAbstract) {
 				times = times * 2;
@@ -124,10 +119,11 @@ public class GDAEvaluation {
 				Network spi = new ReadableFile("spi", "SPI", "./data/graph-spi.txt", null, sTArray);
 				checkAndAdd(spi, lastCounter, todoList);
 
-				for (int i : new int[] { 1, 5, 10 }) {
+				int[] sizes = new int[] { 1, 5, 10 };
+				for (int i : sizes) {
 					sTArray = getTransformations(originalT, bfsRoot);
 					nw = new ErdosRenyi(i * sizeFactor, degree, true, null, sTArray);
-					checkAndAdd(nw, lastCounter, todoList);
+					 checkAndAdd(nw, lastCounter, todoList);
 
 					sTArray = getTransformations(originalT, bfsRoot);
 					nw = new BarabasiAlbert(i * sizeFactor, degree, null, sTArray);
@@ -148,17 +144,27 @@ public class GDAEvaluation {
 
 		int counter = 0;
 		for (NetworkTask n : todoList) {
-			// System.out.println(n.nodes() + "/" + n.folder());
-			nwThreads[counter].add(n);
-			counter = (counter + 1) % threads;
+			// System.out.println("Add " + n.nw.nodes() + "/" +
+			// n.nw.folder() +
+			// " to thread " + counter);
+			nwThreads[counter % threads].add(n);
+			counter++;
 		}
 
-		pm.output("Starting to generate " + todoList.size() + " networks");
-		pm.setMaxNetworks(todoList.size());
+		pm.output("Starting to generate " + counter + " networks");
+		pm.setMaxNetworks(counter);
 
+		DateLoggerThread dlt = new DateLoggerThread(5*60);
+		dlt.start();
 		for (int i = 0; i < threads; i++) {
 			nwThreads[i].start();
+			try {
+				Thread.sleep(25);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
+
 		for (int i = 0; i < threads; i++) {
 			try {
 				nwThreads[i].join();
@@ -166,6 +172,7 @@ public class GDAEvaluation {
 				e.printStackTrace();
 			}
 		}
+		dlt.stop();
 
 		stats.end();
 	}
@@ -198,10 +205,6 @@ public class GDAEvaluation {
 	public boolean isCompleteDataset(Network nw, int counter) {
 		String prefix = "./resources/evaluation/" + nw.nodes() + "/" + nw.folder() + counter + ".txt";
 		File temp;
-		temp = new File(prefix + "_LOOKAHEAD_LIST_0");
-		if (!temp.exists()) {
-			// return false;
-		}
 		temp = new File(prefix + ".RUNTIME");
 		if (!temp.exists()) {
 			return false;
@@ -217,12 +220,10 @@ public class GDAEvaluation {
 		private Date start;
 		private int generatedNetworks = 0;
 		private int maxNetworks;
-		Random rand;
 
 		public ProgressMonitor() {
 			start = new Date();
 			output("Started ProgressMonitor");
-			rand = new Random();
 		}
 
 		public void setMaxNetworks(int mNW) {
@@ -234,9 +235,6 @@ public class GDAEvaluation {
 			double runtime = new Date().getTime() - start.getTime();
 			output("Generated network " + generatedNetworks + " of " + maxNetworks + " after running for "
 					+ (runtime / 1000) + " seconds");
-			if (rand.nextBoolean() && rand.nextBoolean()) {
-				System.gc();
-			}
 		}
 
 		public void output(String text) {
@@ -245,7 +243,7 @@ public class GDAEvaluation {
 		}
 	}
 
-	private class NetworkTask {
+	private class NetworkTask implements Comparable<NetworkTask> {
 		public Network nw;
 		public int id;
 
@@ -254,6 +252,41 @@ public class GDAEvaluation {
 			this.id = id;
 		}
 
+		@Override
+		public int compareTo(NetworkTask o) {
+			if (o.id > this.id)
+				return -1;
+			else if (o.id < this.id)
+				return 1;
+			else
+				return 0;
+		}
+
+	}
+
+	private class DateLoggerThread extends Thread {
+		private long runtime;
+		private int interval;
+
+		public DateLoggerThread( int interval ) {
+			this.runtime = System.currentTimeMillis();
+			this.interval = interval;
+		}
+
+		public void run() {
+			while (true) {
+				if (System.currentTimeMillis() > (runtime + interval*1000)) {
+					SimpleDateFormat ts = new SimpleDateFormat("MMM d HH:mm:ss");
+					System.out.println(ts.format(new Date()));
+					runtime = System.currentTimeMillis();
+					try {
+						this.sleep(interval*995);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
 	}
 
 	private class NetworkThread extends Thread {
@@ -271,42 +304,58 @@ public class GDAEvaluation {
 			this.nws.add(nw);
 		}
 
-		public void run() {
-			for (NetworkTask nwTask : nws) {
-				Network nw = nwTask.nw;
-				Integer i = nwTask.id;
+		public boolean abortSignal() {
+			File abortFile = new File("./abort");
+			return abortFile.exists();
+		}
 
-				Graph g = nw.generate();
-				int graphSize = g.getNodes().length;
+		public void runJob(NetworkTask nwTask) {
+			Network nw = nwTask.nw;
+			Integer i = nwTask.id;
 
-				String folderName = "./resources/evaluation/" + graphSize + "/" + nw.folder();
-				String fileName = folderName + i + ".txt";
-				pm.output("Thread " + id + " starts generation of " + fileName);
+			Graph g = nw.generate();
+			int graphSize = g.getNodes().length;
 
-				double startTime = System.currentTimeMillis();
-				double completeTransformationTime = System.currentTimeMillis();
-				Filewriter runtimeLogger = new Filewriter(fileName + ".RUNTIME");
-				for (Transformation t : nw.transformations()) {
-					try {
-						g = t.transform(g);
-					} catch (GDTransformationException e) {
-						/*
-						 * Accept an exception *once*, but not twice for the
-						 * same transformation
-						 */
-						pm.output("Thread " + id + " restarts generation of " + fileName
-								+ " after an exception was caught");
-						g = t.transform(g);
-					}
-					runtimeLogger.writeln(t.key() + ":" + (System.currentTimeMillis() - startTime));
-					startTime = System.currentTimeMillis();
+			String folderName = "./resources/evaluation/" + graphSize + "/" + nw.folder();
+			String fileName = folderName + i + ".txt";
+			pm.output("Thread " + id + " starts generation of " + fileName);
+
+			double startTime = System.currentTimeMillis();
+			double completeTransformationTime = System.currentTimeMillis();
+			Filewriter runtimeLogger = new Filewriter(fileName + ".RUNTIME");
+			for (Transformation t : nw.transformations()) {
+				try {
+					// pm.output("Thread " + id + " transforms graph using "
+					// + t.nameLong() + " now");
+					g = t.transform(g);
+				} catch (GDTransformationException e) {
+					/*
+					 * Accept an exception *once*, but not twice for the same
+					 * transformation
+					 */
+					pm.output("Thread " + id + " restarts generation of " + fileName + " after an exception was caught");
+					g = t.transform(g);
 				}
-				runtimeLogger.close();
+				runtimeLogger.writeln(t.key() + ":" + (System.currentTimeMillis() - startTime));
+				startTime = System.currentTimeMillis();
+			}
+			runtimeLogger.close();
 
-				GraphWriter.writeWithProperties(g, fileName);
-				pm.output("Thread " + id + " wrote " + fileName + " after "
-						+ (System.currentTimeMillis() - completeTransformationTime) / 1000 + " seconds");
-				pm.tickNW();
+			GraphWriter.writeWithProperties(g, fileName);
+			pm.output("Thread " + id + " wrote " + fileName + " after "
+					+ (System.currentTimeMillis() - completeTransformationTime) / 1000 + " seconds");
+			pm.tickNW();
+		}
+
+		public void run() {
+			Collections.sort(nws);
+
+			for (NetworkTask nwTask : nws) {
+				if (abortSignal()) {
+					pm.output("Stopping thread " + id);
+					return;
+				}				
+				runJob(nwTask);
 			}
 		}
 	}

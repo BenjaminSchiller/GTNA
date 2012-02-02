@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna;
+package gtna.projects.GD;
 
 import java.util.ArrayList;
 
@@ -51,13 +51,20 @@ import gtna.metrics.EdgeCrossings;
 import gtna.networks.*;
 import gtna.networks.model.*;
 import gtna.plot.*;
+import gtna.plot.GephiUtils.DegreeColorizer;
+import gtna.plot.GephiUtils.GephiDecorator;
+import gtna.plot.GephiUtils.HideSmallDegree;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.*;
+import gtna.routing.greedyVariations.DepthFirstEdgeGreedy;
 import gtna.routing.lookahead.*;
 import gtna.transformation.*;
+import gtna.transformation.edges.Bidirectional;
 import gtna.transformation.gd.*;
 import gtna.transformation.id.*;
 import gtna.transformation.lookahead.*;
+import gtna.transformation.partition.GiantConnectedComponent;
+import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.transformation.spanningtree.BFS;
 import gtna.util.*;
 
@@ -80,18 +87,17 @@ public class GDATest {
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testsNico/");
 		Config.overwrite("GNUPLOT_PATH", "C:\\Cygwin\\bin\\gnuplot.exe");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + skipExistingFolders);
-
+		
 		// Lookahead.testLookahead(generate, times);
 		// GDATest.testRandomize();
 		// GDATest.testMD();
-//		 GDATest.randomFRTest();
+		 GDATest.randomFRTest();
 		// GDATest.randomFRTest_multidimensional();
 		// GDATest.randomFRTestWithSeperateIDSpaceTransformation();
 		// GDATest.randomFrickTest();
 //		 GDATest.testWS();
-		// GDATest.testMH();
-		// GDATest.canonicalCircularCrossingWithSeperateIDSpace();
-		// GDATest.testMHRandom();
+//		 GDATest.testMH();
+//		 GDATest.testMHRandom();
 		// GDATest.canonicalCircularCrossing();
 		// GDATest.testSpanningTree();
 		// GDATest.testSpanningTree_Benni();
@@ -100,14 +106,35 @@ public class GDATest {
 //		 GDATest.testKnuth();
 //		 GDATest.routingKnuthAgainstWS();
 		// GDATest.routingWS_BFSChange();
-		 GDATest.testBT();
+//		 GDATest.testBT();
 		// GDATest.routingBT_BFSChange();
 		// GDATest.routingTestCCCAgainstRandom();
 //		GDATest.randomSTTest();
 //		GDATest.timeMeasurements();
 //		 GDATest.compareKnuthWS();
+//		 GDATest.barabasi();
+//		GDATest.gdfRouting();
 
 		stats.end();
+	}
+
+	private static void gdfRouting() {
+		Network ba = new BarabasiAlbert(1000, 10, new DepthFirstEdgeGreedy(100), new Transformation[]{new Bidirectional(), new RandomPlaneIDSpaceSimple(1, 100, 100, false)});
+		Config.overwrite("METRICS", "ROUTING");
+		Config.overwrite("PARALLEL_ROUTINGS", "" + 6);
+		Series[] s = Series.generate(new Network[] { ba }, 5);
+	}
+
+	private static void barabasi() {
+		Network ba = new BarabasiAlbert(30, 7, null, null);
+		Graph g = ba.generate();
+		int sumDegree = 0;
+		for ( Node n: g.getNodes() ) {
+			sumDegree += n.getDegree();
+			System.out.println("Node " + n.getIndex() + " has a degree of " + n.getDegree());
+		}
+		System.out.println("Sum of degree: " + sumDegree + " at " + ba.nodes() + " nodes");
+		System.out.println("avg Degree: " + ((double)sumDegree/ba.nodes()));
 	}
 
 	public static void routingTest() {
@@ -146,7 +173,7 @@ public class GDATest {
 	}
 
 	public static void routingKnuthAgainstWS() {
-		Config.overwrite("METRICS", "SP, R");
+		Config.overwrite("METRICS", "ROUTING");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + true);
 
 		RoutingAlgorithm r1 = new GreedyBacktracking(24);
@@ -154,7 +181,7 @@ public class GDATest {
 		Transformation[] t2 = new Transformation[] { new BFS("hd"), new WetherellShannon(500, 500, null) };
 		Network nw1 = new ErdosRenyi(5000, 20, true, r1, t1);
 		Network nw2 = new ErdosRenyi(5000, 20, true, r1, t2);
-		Series[] s = Series.generate(new Network[] { nw1, nw2 }, 50);
+		Series[] s = Series.generate(new Network[] { nw1, nw2 }, 5);
 		// Series s = Series.generate(nw1, 3);
 		// Series s = Series.get(nw);
 
@@ -163,7 +190,7 @@ public class GDATest {
 	}
 
 	public static void routingWS_BFSChange() {
-		Config.overwrite("METRICS", "SP, R, EC");
+		Config.overwrite("METRICS", "ROUTING");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + true);
 
 		Transformation[] t1 = new Transformation[] { new BFS("hd"), new WetherellShannon(500, 500, null) };
@@ -228,32 +255,20 @@ public class GDATest {
 		// GraphWriter.writeWithProperties(g, "./data/testsNico/testCCC.txt");
 	}
 
-	private static void canonicalCircularCrossingWithSeperateIDSpace() {
-		Network nw1 = new ErdosRenyi(100, 15, true, new Greedy(), null);
-		Graph g = nw1.generate();
-		Transformation ringIDSpace = new RandomRingIDSpace(1, 250, false);
-		g = ringIDSpace.transform(g);
-		RingIdentifierSpace idSpace = (RingIdentifierSpace) g.getProperty("ID_SPACE_0");
-
-		// g = GraphReader.readWithProperties("./data/testsNico/testCCC.txt");
-
-		CanonicalCircularCrossing ccc = new CanonicalCircularCrossing(1, 250, false, new GraphPlotter("testCCC", "svg"));
-		ccc.setIDSpace(idSpace);
-
-		if (!ccc.applicable(g))
-			throw new RuntimeException("Oh no, can not use CCC on g");
-		g = ccc.transform(g);
-		GraphWriter.writeWithProperties(g, "./data/testsNico/testCCC_seperateIDSpace.txt");
-	}
-
 	public static void testMH() {
-		Network nw1 = new ErdosRenyi(10, 7, true, new Greedy(), null);
+		Network nw1 = new ErdosRenyi(30, 15, true, new Greedy(), null);
 		Graph g = nw1.generate();
-		g = GraphReader.readWithProperties("./data/testsNico/testMH.txt");
 
+		Transformation wcp = new WeakConnectivityPartition();
+		Transformation gcc = new GiantConnectedComponent();
+		g = wcp.transform(g);
+		g = gcc.transform(g);
+		
 		Transformation bfs = new BFS("hd");
 		g = bfs.transform(g);
-		Transformation ws = new MelanconHerman(122, 122, new GraphPlotter("testMH", "svg"));
+
+		g = GraphReader.readWithProperties("./data/testsNico/testMH.txt");
+		Transformation ws = new MelanconHerman(50, 50, new GraphPlotter("testMH", "pdf"));
 		if (!ws.applicable(g))
 			throw new RuntimeException("Oh no, can not use MH on g");
 		g = ws.transform(g);
@@ -263,24 +278,38 @@ public class GDATest {
 	public static void testBT() {
 		Network nw1 = new ErdosRenyi(20, 7, true, new Greedy(), null);
 		Graph g = nw1.generate();
+		
+		GraphPlotter gp = new GraphPlotter("testBT", "svg", new GephiDecorator[]{new DegreeColorizer()}, -1);
 
 		Transformation bfs = new BFS("hd");
 		g = bfs.transform(g);
-		Transformation ws = new BubbleTree(122, 122, new GraphPlotter("testBT", "svg"));
+		Transformation ws = new BubbleTree(122, 122, gp);
 		if (!ws.applicable(g))
 			throw new RuntimeException("Oh no, can not use BT on g");
 		g = ws.transform(g);
 	}
 
 	public static void testMHRandom() {
-		Network nw1 = new ErdosRenyi(120, 22, true, new Greedy(), null);
+		Network nw1 = new ErdosRenyi(60, 9, true, new Greedy(), null);
 		Graph g = nw1.generate();
+		
+		Transformation wcp = new WeakConnectivityPartition();
+		Transformation gcc = new GiantConnectedComponent();
+		g = wcp.transform(g);
+		g = gcc.transform(g);		
+		
 		Transformation bfs = new BFS("hd");
 		g = bfs.transform(g);
-		Transformation ws = new MelanconHerman(122, 122, new GraphPlotter("testMH-random", "svg"));
-		if (!ws.applicable(g))
+		Config.overwrite("GEPHI_EDGE_SCALE","0.8");
+		Config.overwrite("GEPHI_NODE_BORDER_WIDTH","0.1");
+		Transformation mh = new MelanconHerman(70, 70, new GraphPlotter("compareMHBT-MH", "pdf"));
+		if (!mh.applicable(g))
 			throw new RuntimeException("Oh no, can not use WS on g");
-		g = ws.transform(g);
+		g = mh.transform(g);
+		
+		Transformation bt = new BubbleTree(70, 70, new GraphPlotter("compareMHBT-BT", "pdf"));
+		g = bt.transform(g);
+		
 		GraphWriter.writeWithProperties(g, "./data/testsNico/testMH.txt");
 	}
 
@@ -347,14 +376,17 @@ public class GDATest {
 	}
 
 	public static void randomFRTest() {
-		GraphPlotter plotter = new GraphPlotter("randomFR", "svg", 500);
-		plotter = null;
+		GraphPlotter plotter = new GraphPlotter("randomFR", "pdf", 500);
+		Config.overwrite("GEPHI_EDGE_SCALE", "0.35");
+		Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.15");
 
-		Network nw1 = new ErdosRenyi(20, 7, true, new Greedy(), new Transformation[] { new FruchtermanReingold(1,
-				new double[] { 100, 100 }, false, 10, plotter) });
+		Transformation[] t = new Transformation[] { new WeakConnectivityPartition(), new GiantConnectedComponent(),
+				new FruchtermanReingold(1, new double[] { 100, 100 }, false, 350, plotter) };
+		Network nw1 = new ErdosRenyi(25, 7, true, new Greedy(), t);
+//		nw1 = new BarabasiAlbert(25, 5, null, t);
 
 		Graph g = nw1.generate();
-		Transformation[] t = nw1.transformations();
+		t = nw1.transformations();
 		for (int j = 0; j < t.length; j++) {
 			if (t[j].applicable(g)) {
 				System.out.println("Apply >>" + t[j].getClass() + "<<");
@@ -362,10 +394,10 @@ public class GDATest {
 			} else
 				System.out.println("Cannot apply " + t[j].getClass());
 		}
-		EdgeCrossings ec = new EdgeCrossings();
-		ec.computeData(g, nw1, null);
-		ec.writeData("./data/testsNico/testFRTest-ecDist/");
-		GraphWriter.writeWithProperties(g, "./data/testsNico/testFRTest.txt");
+//		EdgeCrossings ec = new EdgeCrossings();
+//		ec.computeData(g, nw1, null);
+//		ec.writeData("./data/testsNico/testFRTest-ecDist/");
+//		GraphWriter.writeWithProperties(g, "./data/testsNico/testFRTest.txt");
 	}
 
 	private static void printGraph(Graph g) {
@@ -431,8 +463,8 @@ public class GDATest {
 //				new MelanconHerman(100, 100, null),
 //				new BubbleTree(100, 100, null),
 //				new CanonicalCircularCrossing(1, 500, true, null),
-//				new SixTollis(1, 500, true, null),
-				new FruchtermanReingold(1, new double[]{100,100}, false, 100, null)
+				new SixTollis(1, 500, true, null),
+//				new FruchtermanReingold(1, new double[]{100,100}, false, 100, null)
 		};
 		Network nw;
 		Graph g;
@@ -441,7 +473,7 @@ public class GDATest {
 		for (Transformation sT : t) {
 			System.out.println("Starting " + sT.name());
 			double runtimeComplete = 0;
-			int iterations = 10;
+			int iterations = 20;
 			for (int i = 0; i < iterations; i++) {
 				double thisIterationStart = System.currentTimeMillis();
 				nw = new ErdosRenyi(2000, 17, true, null, null);
@@ -460,13 +492,22 @@ public class GDATest {
 	}
 
 	public static void randomSTTest() {
-		Config.overwrite("GEPHI_RING_RADIUS", "100");
+		Config.overwrite("GEPHI_RING_RADIUS", "40");
 		Config.overwrite("GEPHI_EDGE_SCALE", "0.4");
-		GraphPlotter plotter = new GraphPlotter("randomST", "pdf");
-//		plotter = null;
-		Network nw1 = new ErdosRenyi(20, 5, true, null, null);
+		GraphPlotter plotter = new GraphPlotter("randomST", "pdf", new GephiDecorator[]{ new HideSmallDegree(5)}, 0);
+		plotter = null;
+		Network nw1 = new BarabasiAlbert(5000, 10, null, null);
+//		nw1 = new ErdosRenyi(1000, 10, true, null, null);
 
 		Graph g = nw1.generate();
+		Node hdN = g.getNode(0);
+		for ( Node n: g.getNodes()) {
+			if (n.getOutDegree()>hdN.getOutDegree()) {
+				hdN = n;
+			}
+		}
+		System.out.println("Highest degree: " +  hdN.getOutDegree());
+		
 		// System.out.println("# Edges: " + g.generateEdges().length);
 		//
 		// for ( Node n: g.getNodes() ) {
