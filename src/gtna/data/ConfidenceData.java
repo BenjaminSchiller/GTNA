@@ -32,7 +32,7 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.data;
 
 import gtna.io.DataReader;
@@ -42,8 +42,62 @@ import gtna.util.Util;
 
 import java.util.ArrayList;
 
-public class ConfidenceData {
+public class ConfidenceData extends Data {
 	public static void generate(String destFolder, String[] folders) {
+		// ConfidenceData.generateOld(destFolder, folders);
+		String[] data = Config.getData();
+		for (String d : data) {
+			boolean cdf = Config.getBoolean(d + "_DATA_IS_CDF");
+			ConfidenceData.generate(destFolder, folders, d, cdf);
+		}
+	}
+
+	private static void generate(String destFolder, String[] folders,
+			String data, boolean cdf) {
+		double[][][] v1 = AverageData.readValues(data, folders);
+		int maxLength = AverageData.maxLength(v1);
+		double[][] max = AverageData.max(v1);
+		double[][][] values = new double[v1.length][maxLength][2];
+		for (int i = 0; i < v1.length; i++) {
+			ConfidenceData.fill(values[i], max, v1[i], cdf);
+		}
+		double[][] avg = ConfidenceData.computeConf(values);
+		DataWriter.writeWithoutIndex(avg, data, destFolder);
+	}
+
+	private static double[][] computeConf(double[][][] values) {
+		double[][] conf = new double[values[0].length][6];
+		for (int i = 0; i < values[0].length; i++) {
+			double[] y = ConfidenceData.getY(values, i);
+
+			double x = values[0][i][0];
+			double min = Util.min(y);
+			double avg = Util.avg(y);
+			double max = Util.max(y);
+
+			double alpha = 1 - Config.getDouble("CONFIDENCE_INTERVAL");
+			double sd = Util.getStandardDeviation(y);
+			double[] ci = Util.getConfidenceInterval(avg, sd, y.length, alpha);
+
+			conf[i][0] = x;
+			conf[i][1] = min;
+			conf[i][2] = ci[0];
+			conf[i][3] = avg;
+			conf[i][4] = ci[1];
+			conf[i][5] = max;
+		}
+		return conf;
+	}
+
+	private static double[] getY(double[][][] values, int index) {
+		double[] y = new double[values.length];
+		for (int i = 0; i < values.length; i++) {
+			y[i] = values[i][index][1];
+		}
+		return y;
+	}
+
+	private static void generateOld(String destFolder, String[] folders) {
 		double alpha = 1 - Config.getDouble("CONFIDENCE_INTERVAL");
 		String[] DATA = Config.getData();
 		for (int i = 0; i < DATA.length; i++) {

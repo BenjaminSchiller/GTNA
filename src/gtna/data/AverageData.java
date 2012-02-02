@@ -32,66 +32,45 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
-*/
+ */
 package gtna.data;
 
-import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.util.Config;
 
-import java.util.ArrayList;
-
-public class AverageData {
+public class AverageData extends Data {
 	public static void generate(String destFolder, String[] folders) {
 		String[] data = Config.getData();
-		for (int i = 0; i < data.length; i++) {
-			ArrayList<double[][]> values = new ArrayList<double[][]>();
-			for (int j = 0; j < folders.length; j++) {
-				String filename = folders[j]
-						+ Config.get(data[i] + "_DATA_FILENAME")
-						+ Config.get("DATA_EXTENSION");
-				double[][] currentValues = DataReader.readDouble2D(filename);
-				for (int k = 0; k < currentValues.length; k++) {
-					double x = currentValues[k][0];
-					double value = currentValues[k][1];
-					if (k >= values.size()) {
-						values.add(init(folders.length));
-					}
-					values.get(k)[j][0] = x;
-					values.get(k)[j][1] = value;
-				}
-			}
-			double[][] avg = new double[values.size()][2];
-			for (int j = 0; j < values.size(); j++) {
-				double[][] currentValues = values.get(j);
-				int counter = 0;
-				double sum = 0;
-				double x = 0;
-				for (int k = 0; k < currentValues.length; k++) {
-					if (!Double.isNaN(currentValues[k][1])) {
-						x += currentValues[k][0];
-						sum += currentValues[k][1];
-						counter++;
-					}
-				}
-				if (counter > 0) {
-					avg[j][0] = (double) x / (double) counter;
-					avg[j][1] = (double) sum / (double) counter;
-				} else {
-					avg[j][0] = Double.NaN;
-					avg[j][1] = Double.NaN;
-				}
-			}
-			DataWriter.writeWithoutIndex(avg, data[i], destFolder);
+		for (String d : data) {
+			boolean cdf = Config.getBoolean(d + "_DATA_IS_CDF");
+			AverageData.generate(destFolder, folders, d, cdf);
 		}
 	}
 
-	private static double[][] init(int length) {
-		double[][] array = new double[length][2];
-		for (int i = 0; i < length; i++) {
-			array[i][0] = Double.NaN;
-			array[i][1] = Double.NaN;
+	private static void generate(String destFolder, String[] folders,
+			String data, boolean cdf) {
+		double[][][] v1 = AverageData.readValues(data, folders);
+		int maxLength = AverageData.maxLength(v1);
+		double[][] max = AverageData.max(v1);
+		double[][][] values = new double[v1.length][maxLength][2];
+		for (int i = 0; i < v1.length; i++) {
+			AverageData.fill(values[i], max, v1[i], cdf);
 		}
-		return array;
+		double[][] avg = AverageData.computeAverage(values);
+		DataWriter.writeWithoutIndex(avg, data, destFolder);
+	}
+
+	private static double[][] computeAverage(double[][][] values) {
+		double[][] avg = new double[values[0].length][2];
+		for (int i = 0; i < values[0].length; i++) {
+			double y = 0;
+			for (int j = 0; j < values.length; j++) {
+				y += values[j][i][1];
+			}
+			y /= (double) values.length;
+			avg[i][0] = values[0][i][0];
+			avg[i][1] = y;
+		}
+		return avg;
 	}
 }
