@@ -51,79 +51,12 @@ public class Routing_HopDegreeDistribution extends MetricImpl implements Metric 
 
 	public Routing_HopDegreeDistribution() {
 		super("ROUTING_HOPDEGREEDISTRIBUTION");
+		initConfig();
 	}
 
 	@Override
 	public void computeData(Graph graph, Network network, HashMap<String, Metric> metrics) {
-		hopSteps = Config.getInt("ROUTING_HOPDEGREEDISTRIBUTION_HOPS");
-		String formerDataKeys = Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DATA_KEYS");
-		String formerDataPlots = Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DATA_PLOTS");
-		if (!formerDataKeys.contains("_HOP_" + hopSteps)) {
-			String newDataKeys = "";
-			String newDataPlots = "";
-			for (int i = 0; i <= hopSteps; i++) {
-				if (formerDataKeys.contains("_HOP_" + i)) {
-					throw new RuntimeException("Caught doubled initialization of RHDD");
-				}
-				if (i > 0) {
-					newDataKeys += ", ";
-					newDataPlots += ", ";
-				}
-				newDataKeys += formerDataKeys.replace("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION",
-						"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i);
-				newDataPlots += formerDataPlots.replace("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION",
-						"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i);
-
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_DATA_NAME",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_DATA_NAME"));
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_DATA_FILENAME",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_DATA_FILENAME") + "-" + i);
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_DATA_NAME",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_DATA_NAME"));
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_DATA_FILENAME",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_DATA_FILENAME") + "-" + i);
-
-				Config.overwrite(
-						"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_DATA",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_DATA").replace(
-								"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION",
-								"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i));
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_FILENAME",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_FILENAME") + "-" + i);
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_TITLE",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_TITLE") + " after " + i + " hops");
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_X",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_X"));
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_Y",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_Y"));
-
-				Config.overwrite(
-						"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_DATA",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_DATA").replace(
-								"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION",
-								"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i));
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_FILENAME",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_FILENAME") + "-" + i);
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_TITLE",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_TITLE") + " after " + i
-								+ " hops");
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_X",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_X"));
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_Y",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_Y"));
-
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_AVG_SINGLE_NAME",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_AVG_SINGLE_NAME") + "-" + i);
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_MED_SINGLE_NAME",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_MED_SINGLE_NAME") + "-" + i);
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_MAX_SINGLE_NAME",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_MAX_SINGLE_NAME") + "-" + i);
-				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_MIN_SINGLE_NAME",
-						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_MIN_SINGLE_NAME") + "-" + i);
-			}
-			Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DATA_KEYS", newDataKeys);
-			Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DATA_PLOTS", newDataPlots);
-		}
+		initConfig();
 
 		/*
 		 * First: check whether routing was already applied
@@ -158,7 +91,7 @@ public class Routing_HopDegreeDistribution extends MetricImpl implements Metric 
 				if (i > (hops.length - 1)) {
 					continue;
 				}
-				tempDegree = graph.getNode(hops[i]).getDegree();
+				tempDegree = graph.getNode(hops[i]).getOutDegree();
 				degrees[i] = inc(degrees[i], tempDegree);
 				counter[i]++;
 			}
@@ -168,6 +101,87 @@ public class Routing_HopDegreeDistribution extends MetricImpl implements Metric 
 		for (int i = 0; i <= hopSteps; i++) {
 			this.hopDegree[i] = new Distribution(degrees[i], counter[i]);
 		}
+	}
+
+	private void initConfig() {
+		hopSteps = Config.getInt("ROUTING_HOPDEGREEDISTRIBUTION_HOPS");
+		String formerDataKeys = Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DATA_KEYS");
+		String formerDataPlots = Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DATA_PLOTS");
+		if (!formerDataKeys.contains("_HOP_" + hopSteps)) {
+			String newDataKeys = "";
+			String newDataPlots = "";
+			for (int i = 0; i <= hopSteps; i++) {
+				if (formerDataKeys.contains("_HOP_" + i)) {
+					throw new RuntimeException("Caught doubled initialization of RHDD");
+				}
+				if (i > 0) {
+					newDataKeys += ", ";
+					newDataPlots += ", ";
+				}
+				newDataKeys += formerDataKeys.replace("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION",
+						"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i);
+				newDataPlots += formerDataPlots.replace("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION",
+						"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i);
+	
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_DATA_NAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_DATA_NAME"));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_DATA_FILENAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_DATA_FILENAME") + "-" + i);
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_DATA_NAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_DATA_NAME"));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_DATA_FILENAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_DATA_FILENAME") + "-" + i);
+		
+				Config.overwrite(
+						"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_DATA",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_DATA").replace(
+								"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION",
+								"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_FILENAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_FILENAME") + "-" + i);
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_TITLE",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_TITLE") + " after " + i + " hops");
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_X",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_X"));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_Y",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_Y"));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_LOGSCALE_X",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_LOGSCALE_X"));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_LOGSCALE_Y",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_PLOT_LOGSCALE_Y"));				
+	
+				Config.overwrite(
+						"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_DATA",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_DATA").replace(
+								"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION",
+								"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_FILENAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_FILENAME") + "-" + i);
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_TITLE",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_TITLE") + " after " + i
+								+ " hops");
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_X",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_X"));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_Y",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_Y"));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_LOGSCALE_X",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_LOGSCALE_X"));
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_PLOT_LOGSCALE_Y",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_PLOT_LOGSCALE_Y"));				
+	
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_AVG_SINGLE_NAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_AVG_SINGLE_NAME") + "-" + i);
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_MED_SINGLE_NAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_MED_SINGLE_NAME") + "-" + i);
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_MAX_SINGLE_NAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_MAX_SINGLE_NAME") + "-" + i);
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_" + i + "_MIN_SINGLE_NAME",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_MIN_SINGLE_NAME") + "-" + i);
+			}
+			Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DATA_KEYS", newDataKeys);
+			Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DATA_PLOTS", newDataPlots);
+		}
+	
 	}
 
 	private void initEmpty() {
