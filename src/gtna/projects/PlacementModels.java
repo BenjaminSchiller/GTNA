@@ -403,7 +403,7 @@ public class PlacementModels {
 		}
 		System.out.println(nw.folder());
 		System.out.println("=> " + filename1);
-		ge.Plot(g, idSpace, filename1);
+		ge.plot(g, idSpace, filename1);
 		System.out.println("=> " + filename2);
 		PlacementModels.exec("/usr/local/bin/convert " + filename1 + " "
 				+ filename2);
