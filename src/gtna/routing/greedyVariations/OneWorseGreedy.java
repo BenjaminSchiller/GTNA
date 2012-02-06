@@ -66,6 +66,7 @@ public class OneWorseGreedy extends GreedyTemplate{
 	@Override
 	public int getNextD(int current, DIdentifier target, Random rand,
 			Node[] nodes) {
+		//System.out.println(current);
 		double currentDist = this.idSpaceD.getPartitions()[current]
 				.distance(target);
 		double minDist = this.idSpaceD.getMaxDistance();
@@ -78,6 +79,7 @@ public class OneWorseGreedy extends GreedyTemplate{
 			}
 		}
 		if (minNode == -1 && from.containsKey(current)) {
+			done[current] = true;
 	       return from.get(current);
 		}
 		if (minNode == -1){

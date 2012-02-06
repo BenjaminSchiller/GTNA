@@ -39,6 +39,7 @@ import gtna.data.Series;
 import gtna.networks.Network;
 import gtna.networks.canonical.Ring;
 import gtna.networks.model.BarabasiAlbert;
+import gtna.networks.model.randomGraphs.ScaleFreeRandomGraph;
 import gtna.networks.model.smallWorld.Kleinberg;
 import gtna.networks.model.smallWorld.Kleinberg1D;
 import gtna.networks.model.smallWorld.Kleinberg1DC;
@@ -58,6 +59,8 @@ import gtna.routing.greedyVariations.PureGreedy;
 import gtna.transformation.Transformation;
 import gtna.transformation.attackableEmbedding.lmc.LMC;
 import gtna.transformation.attackableEmbedding.swapping.Swapping;
+import gtna.transformation.failure.node.LargestFailure;
+import gtna.transformation.failure.node.RandomFailure;
 import gtna.util.Config;
 
 /**
@@ -67,21 +70,25 @@ import gtna.util.Config;
 public class Test {
 	
 	public static void main(String[] args){
-//		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, CLUSTERING_COEFFICIENT, SHORTEST_PATHS ");
-////		int[] sizes = {1000,10000,100000};
-////		int[] C = {1,5,10};
-//		int[] sizes = {20000,30000, 400000, 50000, 60000, 70000, 80000, 90000};
-//		int[] C = {5};
+	Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, CLUSTERING_COEFFICIENT, RESILIENCE_LARGEST_FAILURE_STRONG, RESILIENCE_RANDOM_FAILURE_STRONG");
+	//Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, CLUSTERING_COEFFICIENT");	
+	//testRandomDeg();
+	for (int i=1; i < 6; i++){
+		testFailures(i*20000,30,2);
+	}
+//	int size = Integer.parseInt(args[0]);
+//	int C = Integer.parseInt(args[1]);
+//	int iter = Integer.parseInt(args[2]);
+//	testKleinberg1CRouting(size, C,iter);
+//		int[] sizes = {100000};
+//		int[] C = {10};
 //		for (int i = 0; i < sizes.length; i++){
 //			for (int j = 0; j < C.length; j++){
-//				testKleinberg1C(sizes[i], C[j]);
+//				testKleinberg1C(sizes[i], C[j],1);
 //			}
 //		}
-		Config.overwrite("METRICS", "ROUTING");
-		int size = Integer.parseInt(args[0]);
-		int C = Integer.parseInt(args[1]);
-		int iter = Integer.parseInt(args[2]);
-		testKWorse(size, C, iter);
+	
+		
 	}
 	
 	private static void testEmbedding(){
@@ -120,10 +127,21 @@ public class Test {
 		Series.generate(scalefree, 1);
 	}
 	
-	private static void testKleinberg1C(int size, int C){
-		
-		Network kleinbergC = new Kleinberg1DC(size,1,1,1,true,true,C,null,null);
+	private static void testKleinberg1C(int size, int C, int k){
+		//RoutingAlgorithm ra = new DepthFirstGreedy(500*size);
+		Network kleinbergC = new Kleinberg1DC(size,1,1,1,false,false,C,null,null);
 		Series.generate(kleinbergC, 5);
+		
+	}
+	
+	private static void testKleinberg1CRouting(int size, int C, int iter){
+//		RoutingAlgorithm ra = new OneWorseGreedy((int)Math.ceil(2*Math.log(size)*Math.log(size)));
+//		Network kleinbergC = new Kleinberg1DC(size,1,1,1,false,false,C,ra,null);
+//		Series.generate(kleinbergC, iter);
+		
+		RoutingAlgorithm ra = new DepthFirstGreedy((int)Math.ceil(2*Math.log(size)*Math.log(size)));
+		Network kleinbergC = new Kleinberg1DC(size,1,1,1,false,false,C,ra,null);
+		Series.generate(kleinbergC, iter);
 		
 	}
 	
@@ -132,10 +150,16 @@ public class Test {
 		Series.generate(network, 1);
 	}
 	
-	private static void testFailures(){
-		//Transformation[] t = {new LargestFailure(5), new RandomFailure(5)};
-		Network net = new BarabasiAlbert(300,2,null,null);
-		Series.generate(net, 1);
+	private static void testFailures(int nr, int iter, int av){
+		Transformation[] t = {new LargestFailure(5), new RandomFailure(5)};
+		Network net = new BarabasiAlbert(nr,av,null,t);
+		Series.generate(net, iter);
+	}
+	
+	private static void testRandomDeg(){
+		//double[] cdf = {0.0, 0.5, 1};
+		ScaleFreeRandomGraph seq = new ScaleFreeRandomGraph(100,2.5,1,16,null,null);
+		Series.generate(seq,1);
 	}
 
 }

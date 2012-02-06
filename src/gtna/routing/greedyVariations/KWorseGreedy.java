@@ -82,7 +82,7 @@ public class KWorseGreedy extends GreedyTemplate{
 		}
 		for (int out : nodes[current].getOutgoingEdges()) {
 			double dist = this.pD[out].distance(target);
-			if (dist < minDist &&  !done[out]) {
+			if (dist < minDist &&  !done[out] && !succ.contains(out)) {
 				minDist = dist;
 				minNode = out;
 			}
@@ -91,6 +91,7 @@ public class KWorseGreedy extends GreedyTemplate{
 			minNode = -1;
 		}
 		if (minNode == -1 && from.containsKey(current)) {
+			done[current] = true;
 	       return from.get(current);
 		}
 		if (minNode == -1){
@@ -134,6 +135,7 @@ public class KWorseGreedy extends GreedyTemplate{
 			minNode = -1;
 		}
 		if (minNode == -1 && from.containsKey(current)) {
+			done[current] = true;
 	       return from.get(current);
 		}
 		if (minNode == -1){
