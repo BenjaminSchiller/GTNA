@@ -67,6 +67,15 @@ public class ArbitraryDegreeSequence extends NetworkImpl {
 		
 	}
 	
+	public ArbitraryDegreeSequence(String name, Graph g,  RoutingAlgorithm ra, Transformation[] t) {
+		super("ARBITRARY_DEGREE_SEQUENCE", g.getNodes().length, new String[]{"NAME"}, new String[] {"" + name}, ra, t);
+		this.sequence = new int[g.getNodes().length];
+		Node[] nodes = g.getNodes();
+		for (int i = 0; i < nodes.length; i++){
+			sequence[i] = nodes[i].getInDegree();
+		}
+	}
+	
 	/**
 	 * @param key
 	 * @param nodes
