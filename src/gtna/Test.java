@@ -70,12 +70,14 @@ import gtna.util.Config;
 public class Test {
 	
 	public static void main(String[] args){
-	Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, CLUSTERING_COEFFICIENT, RESILIENCE_LARGEST_FAILURE_STRONG, RESILIENCE_RANDOM_FAILURE_STRONG");
+	Config.overwrite("METRICS", "DEGREE_DISTRIBUTION,  RESILIENCE_LARGEST_FAILURE_STRONG, RESILIENCE_RANDOM_FAILURE_STRONG");
 	//Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, CLUSTERING_COEFFICIENT");	
 	//testRandomDeg();
-	for (int i=1; i < 6; i++){
-		testFailures(i*20000,30,2);
-	}
+//	for (int i=4; i < 6; i++){
+//		testFailures(i*20000,30,2);
+//	}
+	ScaleFreeRandomGraph net = new ScaleFreeRandomGraph(10000,2.5,1,100, null,null);
+	Series.generate(net, 5);
 //	int size = Integer.parseInt(args[0]);
 //	int C = Integer.parseInt(args[1]);
 //	int iter = Integer.parseInt(args[2]);
@@ -151,7 +153,7 @@ public class Test {
 	}
 	
 	private static void testFailures(int nr, int iter, int av){
-		Transformation[] t = {new LargestFailure(5), new RandomFailure(5)};
+		Transformation[] t = {new LargestFailure(5), new RandomFailure(100)};
 		Network net = new BarabasiAlbert(nr,av,null,t);
 		Series.generate(net, iter);
 	}
