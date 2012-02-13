@@ -36,6 +36,7 @@
 package gtna.networks.model.placementmodels;
 
 import gtna.graph.Edges;
+import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 
@@ -56,9 +57,10 @@ public interface NodeConnector {
 	 *            An array of nodes in the graph.
 	 * @param coordinates
 	 *            The coordinates of the nodes in the graph.
+	 * @param g 
 	 * @return An Edges object containing the connections between the nodes.
 	 */
-	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple coordinates);
+	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple coordinates, Graph g);
 
 	/**
 	 * The Getter for the configuration keys for the particular

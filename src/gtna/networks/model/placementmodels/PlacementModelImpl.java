@@ -46,56 +46,18 @@ import gtna.util.Util;
  * <code>setKey(...)</code>. If additional configuration keys and values are
  * needed, they can be set by calling <code>setAdditionalConfigKeys(...)</code>
  * (...values(...)). These will be returned by <code>getConfigKeys()</code> in
- * addition to the key of the <code>PlacementModel</code> and the width and the
- * height of the field.
+ * addition to the key of the <code>PlacementModel</code> and the value of
+ * inCenter.
  * 
  * @author Philipp Neubrand
  * 
  */
 public abstract class PlacementModelImpl implements PlacementModel {
-	private double width;
-	private double height;
 	private String key;
 	private String[] additionalConfigKeys;
 	private String[] additionalConfigValues;
-
-	/**
-	 * Getter for the height of the field.
-	 * 
-	 * @return The height of field.
-	 */
-	public double getHeight() {
-		return height;
-	}
-
-	/**
-	 * Getter for the width of the field.
-	 * 
-	 * @return The width of the field.
-	 */
-	public double getWidth() {
-		return width;
-	}
-
-	/**
-	 * Setter for the height of the field.
-	 * 
-	 * @param height
-	 *            The new height of the field.
-	 */
-	public void setHeight(double height) {
-		this.height = height;
-	}
-
-	/**
-	 * Setter for the width of the field.
-	 * 
-	 * @param width
-	 *            The new width of the field.
-	 */
-	public void setWidth(double width) {
-		this.width = width;
-	}
+	protected final int maxTries = 100;
+	private boolean inCenter;
 
 	/**
 	 * Getter for the key of the particular <code>PlacementModel</code>.
@@ -117,20 +79,20 @@ public abstract class PlacementModelImpl implements PlacementModel {
 	}
 
 	/**
-	 * Getter for the configuration keys. Returns "KEY", "WIDTH", "HEIGHT" as
-	 * well as any additional configuration keys set by
+	 * Getter for the configuration keys. Returns "KEY", "IN_CENTER" as well as
+	 * any additional configuration keys set by
 	 * <code>setAdditionalConfigKeys()</code>.
 	 * 
 	 * @return A string array containing all the configuration keys.
 	 */
 	public String[] getConfigKeys() {
-		return Util.mergeArrays(new String[] { "KEY", "WIDTH", "HEIGHT" },
+		return Util.mergeArrays(new String[] { "KEY", "IN_CENTER" },
 				additionalConfigKeys);
 	}
 
 	/**
 	 * Setter for the additional configuration keys. Those will be returned in
-	 * addition to "KEY", "WIDTH", "HEIGHT" by <code>getConfigKeys()</code>.
+	 * addition to "KEY", "IN_CENTER" by <code>getConfigKeys()</code>.
 	 * 
 	 * @param arr
 	 *            The new additional configuration keys.
@@ -152,16 +114,34 @@ public abstract class PlacementModelImpl implements PlacementModel {
 	}
 
 	/**
-	 * Getter for the configuration values. Returns key, width and height as
-	 * well as any additional configuration keys set by
+	 * Getter for the configuration values. Returns key and inCenter as well as
+	 * any additional configuration keys set by
 	 * <code>setAdditionalConfigValues()</code>.
 	 * 
 	 * @return A string array containing all the configuration values.
 	 */
 	public String[] getConfigValues() {
 		return Util.mergeArrays(new String[] { getKey(),
-				Double.toString(getWidth()), Double.toString(getHeight()) },
-				additionalConfigValues);
+				Boolean.toString(getInCenter()) }, additionalConfigValues);
+	}
+
+	/**
+	 * Setter for inCenter.
+	 * 
+	 * @param inCenter
+	 *            The new value for inCenter.
+	 */
+	public void setInCenter(boolean inCenter) {
+		this.inCenter = inCenter;
+	}
+
+	/**
+	 * Getter for inCenter.
+	 * 
+	 * @return The value of inCenter.
+	 */
+	public boolean getInCenter() {
+		return inCenter;
 	}
 
 }

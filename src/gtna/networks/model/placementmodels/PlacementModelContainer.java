@@ -67,6 +67,8 @@ public class PlacementModelContainer extends NetworkImpl {
 	private PlacementModel nodePlacer;
 	private NodeConnector connector;
 	private PlaneIdentifierSpaceSimple idSpace;
+	private double height;
+	private double width;
 
 	/**
 	 * Standard and only constructor for this class, gets all needed classes and
@@ -76,6 +78,10 @@ public class PlacementModelContainer extends NetworkImpl {
 	 *            The number of nodes in the network.
 	 * @param hotspots
 	 *            The number of hotspots in the network.
+	 * @param width
+	 *            The width of the field.
+	 * @param height
+	 *            The height of the field.
 	 * @param hotspotPlacer
 	 *            The <code>PlacementModel</code> used to place the hotspots.
 	 * @param nodePlacer
@@ -93,10 +99,10 @@ public class PlacementModelContainer extends NetworkImpl {
 	 *            The transformations that should be applied to the graph of the
 	 *            network.
 	 */
-	public PlacementModelContainer(int nodes, int hotspots,
-			PlacementModel hotspotPlacer, PlacementModel nodePlacer,
-			Partitioner partitioner, NodeConnector nodeConnector,
-			RoutingAlgorithm r, Transformation[] t) {
+	public PlacementModelContainer(int nodes, int hotspots, double width,
+			double height, PlacementModel hotspotPlacer,
+			PlacementModel nodePlacer, Partitioner partitioner,
+			NodeConnector nodeConnector, RoutingAlgorithm r, Transformation[] t) {
 		super("HSM", nodes, getConfigKeys(hotspotPlacer, nodePlacer,
 				nodeConnector, partitioner), getConfigValues(hotspotPlacer,
 				nodePlacer, nodeConnector, partitioner), r, t);
@@ -106,9 +112,11 @@ public class PlacementModelContainer extends NetworkImpl {
 		this.nodePlacer = nodePlacer;
 		this.partitioner = partitioner;
 		this.connector = nodeConnector;
+		this.width = width;
+		this.height = height;
 
-		idSpace = new PlaneIdentifierSpaceSimple(null,
-				hotspotPlacer.getWidth(), hotspotPlacer.getHeight(), false);
+		idSpace = new PlaneIdentifierSpaceSimple(null, getWidth(), getHeight(),
+				false);
 	}
 
 	/**
@@ -195,14 +203,15 @@ public class PlacementModelContainer extends NetworkImpl {
 	/**
 	 * Creates the graph for this network by first placing the hotspots, then
 	 * placing the nodes within those hotspots. The coordinates of the nodes are
-	 * stored in an <code>IdentifierSpace</code>, which is added as "id_space_0"
+	 * stored in an <code>IdentifierSpace</code>, which is added as "ID_SPACE_0"
 	 * to the attributes of the graph. In the end, the nodes are connected based
 	 * on that id-space.
 	 */
 	@Override
 	public Graph generate() {
 		// get hotspot coordinates
-		Point[] hotspotCoords = hotspotPlacer.place(hotspots);
+		Point[] hotspotCoords = hotspotPlacer.place(hotspots, new Point(
+				getWidth() / 2, getHeight() / 2), getWidth(), getHeight());
 
 		// Prepare ID space
 		PlanePartitionSimple[] coords = new PlanePartitionSimple[nodes];
@@ -216,8 +225,8 @@ public class PlacementModelContainer extends NetworkImpl {
 		int curNodes;
 		for (int i = 0; i < hotspots; i++) {
 			curNodes = nodesPerSpot[i];
-			addNodeCoords(coords, nodePlacer.place(curNodes), hotspotCoords[i],
-					temp);
+			addNodeCoords(coords, nodePlacer.place(curNodes, hotspotCoords[i],
+					getWidth(), getHeight()), temp);
 			temp += curNodes;
 		}
 
@@ -229,11 +238,29 @@ public class PlacementModelContainer extends NetworkImpl {
 		g.addProperty("ID_SPACE_0", idSpace);
 
 		Node[] nodes = Node.init(this.nodes(), g);
-		connector.connect(nodes, idSpace);
+		connector.connect(nodes, idSpace, g);
 
 		g.setNodes(nodes);
 
 		return g;
+	}
+
+	/**
+	 * Getter for the width.
+	 * 
+	 * @return The width.
+	 */
+	private double getWidth() {
+		return width;
+	}
+
+	/**
+	 * Getter for the height.
+	 * 
+	 * @return The height.
+	 */
+	private double getHeight() {
+		return height;
 	}
 
 	/**
@@ -251,18 +278,15 @@ public class PlacementModelContainer extends NetworkImpl {
 	 *            at <code>arrayOffset</code>.
 	 * @param nodeCoords
 	 *            The coordinates at which nodes are to be placed.
-	 * @param coordOffset
-	 *            The offset for the coordinates.
 	 * @param arrayOffset
 	 *            The offset for the array, pointing to the first EMPTY element.
 	 */
 	private void addNodeCoords(PlanePartitionSimple[] pps, Point[] nodeCoords,
-			Point coordOffset, int arrayOffset) {
+			int arrayOffset) {
 		for (int i = 0; i < nodeCoords.length; i++) {
 			pps[i + arrayOffset] = new PlanePartitionSimple(
-					new PlaneIdentifier(nodeCoords[i].getX()
-							+ coordOffset.getX(), nodeCoords[i].getY()
-							+ coordOffset.getY(), idSpace));
+					new PlaneIdentifier(nodeCoords[i].getX(), nodeCoords[i]
+							.getY(), idSpace));
 		}
 	}
 }

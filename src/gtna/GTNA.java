@@ -37,14 +37,20 @@ package gtna;
 
 import gtna.data.Series;
 import gtna.graph.Graph;
+import gtna.id.IdentifierSpace;
 import gtna.io.comexport.ComExporter;
 import gtna.networks.Network;
 import gtna.networks.canonical.Ring;
+import gtna.networks.model.placementmodels.NodeConnector;
+import gtna.networks.model.placementmodels.Partitioner;
+import gtna.networks.model.placementmodels.PlacementModel;
 import gtna.networks.model.placementmodels.PlacementModelContainer;
 import gtna.networks.model.placementmodels.connectors.UDGConnector;
+import gtna.networks.model.placementmodels.models.CirclePlacementModel;
 import gtna.networks.model.placementmodels.models.GridPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.plot.Gephi;
+import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedy.Greedy;
 import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityDetectionDeltaQ;
@@ -60,15 +66,21 @@ public class GTNA {
 		// and used memory
 		Stats stats = new Stats();
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
-		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, COMMUNITIES");
+		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION");
 		
 //		Network n = new Ring(100, new Greedy(), new Transformation[]{ new CommunityDetectionLPAExtended() });
-		Network n = new PlacementModelContainer(625, 25, new GridPlacementModel(1000, 1000, 5, 5), new GridPlacementModel(200, 200, 5, 5), new SimplePartitioner(), new UDGConnector(50), new Greedy(), null );
+//		public PlacementModelContainer(int nodes, int hotspots, double width,
+//				double height, PlacementModel hotspotPlacer,
+//				PlacementModel nodePlacer, Partitioner partitioner,
+//				NodeConnector nodeConnector, RoutingAlgorithm r, Transformation[] t) {
+		Network n = new PlacementModelContainer(625, 25, 1250, 1250, new GridPlacementModel(1000, 1000, 5, 5, false), new GridPlacementModel(50, 50, 5, 5, false), new SimplePartitioner(), new UDGConnector(10), new Greedy(), new Transformation[]{new CommunityDetectionDeltaQ()} );
 		Graph g = n.generate();
 		Transformation t = new CommunityDetectionDeltaQ();
 		g = t.transform(g);
 		Series.generate(n, 1);
-		ComExporter.writeCommunities(g, "F:\\test");
+		Gephi g2 = new Gephi();
+		System.out.println(g.getProperty("COMMUNITIES_0"));
+		g2.Plot(g, (IdentifierSpace) g.getProperty("ID_SPACE_0"), "test.pdf");
 
 		
 		// overwrites the standard data output folder

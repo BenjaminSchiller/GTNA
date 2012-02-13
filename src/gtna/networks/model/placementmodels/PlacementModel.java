@@ -38,8 +38,9 @@ package gtna.networks.model.placementmodels;
 /**
  * A <code>PlacementModel</code> is a way to determine a number of positions in
  * a two-dimensional coordinate system. These positions can then be used to
- * construct a graph. All positions are to be within the field defined by
- * <code>getWidth()</code> and <code>getHeight()</code>.
+ * construct a graph. All positions are to be within the field defined by the
+ * parameters <code>maxX</code> and <code>maxY</code> of the
+ * <code>place(...)</code> method.
  * 
  * @author Philipp Neubrand
  * 
@@ -47,36 +48,11 @@ package gtna.networks.model.placementmodels;
 public interface PlacementModel {
 
 	/**
-	 * Finds and returns <code>number</code> positions.
-	 * 
-	 * @param number
-	 *            The number of positions to be returned.
-	 * @return An array of positions.
-	 */
-	public Point[] place(int number);
-
-	/**
 	 * Getter for the key of the particular placement model.
 	 * 
 	 * @return The key of the placement model.
 	 */
 	public String getKey();
-
-	/**
-	 * Getter for the width of the field in which the positions are to be
-	 * determined.
-	 * 
-	 * @return The width of the field.
-	 */
-	public double getWidth();
-
-	/**
-	 * Getter for the height of the field in which the positions are to be
-	 * determined.
-	 * 
-	 * @return The height of the field.
-	 */
-	public double getHeight();
 
 	/**
 	 * Getter for all the configuration values.
@@ -91,5 +67,21 @@ public interface PlacementModel {
 	 * @return A string array containing all the configuration values.
 	 */
 	public String[] getConfigKeys();
+
+	/**
+	 * 
+	 * Finds and returns <code>number</code> positions.
+	 * 
+	 * @param count
+	 *            The number of positions to find.
+	 * @param center
+	 *            The center relative to which every node should be placed.
+	 * @param maxX
+	 *            The maximum X value
+	 * @param maxY
+	 *            The maximum Y value
+	 * @return An array with size <code>count</code> containing the positions.
+	 */
+	Point[] place(int count, Point center, double maxX, double maxY);
 
 }

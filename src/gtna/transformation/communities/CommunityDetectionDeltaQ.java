@@ -107,7 +107,7 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements
 		int bestIteration = 0;
 
 		// main loop for the algorithm
-		while (t <= maxT) {
+		while (t < maxT) {
 
 			if (mod > bestValue) {
 				// found a better distribution

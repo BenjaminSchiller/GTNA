@@ -49,10 +49,9 @@ import java.util.Random;
  * 
  */
 public class CommunityPlacementModel extends PlacementModelImpl {
-
-	private boolean inCenter;
 	private double sigma;
-	private final int maxTries = 100;
+	private double height;
+	private double width;
 
 	/**
 	 * 
@@ -73,15 +72,14 @@ public class CommunityPlacementModel extends PlacementModelImpl {
 	 */
 	public CommunityPlacementModel(double width, double height, double sigma,
 			boolean inCenter) {
-		setWidth(width);
-		setHeight(height);
 		this.sigma = sigma;
-		this.inCenter = inCenter;
+		setInCenter(inCenter);
+		this.width = width;
+		this.height = height;
 		setKey("COMMUNITY");
 
-		setAdditionalConfigKeys(new String[] { "SIGMA", "IN_CENTER" });
-		setAdditionalConfigValues(new String[] { Double.toString(sigma),
-				Boolean.toString(inCenter) });
+		setAdditionalConfigKeys(new String[] { "SIGMA", "WIDTH", "HEIGHT" });
+		setAdditionalConfigValues(new String[] { Double.toString(sigma), Double.toString(width), Double.toString(height) });
 	}
 
 	/**
@@ -89,7 +87,7 @@ public class CommunityPlacementModel extends PlacementModelImpl {
 	 * <code>PlacementModel</code> with variance <code>sigma</code>.
 	 */
 	@Override
-	public Point[] place(int count) {
+	public Point[] place(int count, Point center, double maxX, double maxY) {
 		Random rnd = new Random();
 
 		Point[] ret = new Point[count];
@@ -98,11 +96,9 @@ public class CommunityPlacementModel extends PlacementModelImpl {
 		double dx = 0;
 		double dy = 0;
 		int tries;
-		double centerx = getWidth() / 2;
-		double centery = getHeight() / 2;
 
-		if (inCenter) {
-			ret[0] = new Point(centerx, centery);
+		if (getInCenter()) {
+			ret[0] = new Point(center.getX(), center.getY());
 			i++;
 		}
 
@@ -110,16 +106,16 @@ public class CommunityPlacementModel extends PlacementModelImpl {
 
 			tries = 0;
 			do {
-				dx = centerx + rnd.nextGaussian() * sigma * centerx;
-				dy = centery + rnd.nextGaussian() * sigma * centery;
+				dx = center.getX() + rnd.nextGaussian() * sigma * width;
+				dy = center.getY() + rnd.nextGaussian() * sigma * height;
 				tries++;
-			} while ((dx < 0 || dx > getWidth() || dy < 0 || dy > getHeight())
+			} while ((dx < 0 || dx > maxX || dy < 0 || dy > maxY)
 					&& tries <= maxTries);
 			if (tries > maxTries)
 				throw new PlacementNotPossibleException("Could not place node "
-						+ i + " for settings: F=(" + getWidth() + ", "
-						+ getHeight() + "), count=" + count + ", sigma="
-						+ sigma + ", inCenter=" + inCenter);
+						+ i + " for settings: F=(" + width + ", "
+						+ height + "), count=" + count + ", sigma="
+						+ sigma + ", inCenter=" + getInCenter());
 
 			ret[i] = new Point(dx, dy);
 
