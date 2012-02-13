@@ -56,13 +56,13 @@ import gtna.util.Util;
 public class GTNA {
 	public static void main(String[] args) {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDER", "false");
-//		GTNA.example1();
-//		 GTNA.example2();
-//		 GTNA.example3();
-//		 GTNA.example4();
-//		 GTNA.example5();
-//		 GTNA.example6();
-		 GTNA.example7();
+		// GTNA.example1();
+		// GTNA.example2();
+		// GTNA.example3();
+		// GTNA.example4();
+		// GTNA.example5();
+		// GTNA.example6();
+		GTNA.example7();
 	}
 
 	private static void example1() {
@@ -163,7 +163,6 @@ public class GTNA {
 		Config.overwrite("METRICS", "SHORTEST_PATHS");
 
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
-
 		Network nw1 = new ErdosRenyi(100, 5, false, null, null);
 		Series s1 = Series.generate(nw1, 5);
 		Series s2 = Series.generate(nw1, 10);

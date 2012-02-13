@@ -36,6 +36,7 @@ package gtna.networks.model.placementmodels.connectors;
 import java.util.Random;
 
 import gtna.graph.Edges;
+import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.networks.model.placementmodels.NodeConnectorImpl;
@@ -96,7 +97,7 @@ public class LogDistanceConnector extends NodeConnectorImpl {
 	 * 
 	 */
 	@Override
-	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids) {
+	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids, Graph g) {
 		Random rnd = new Random();
 		Edges edges = new Edges(nodes, nodes.length * (nodes.length - 1));
 		double dist;

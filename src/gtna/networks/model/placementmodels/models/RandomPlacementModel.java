@@ -36,6 +36,7 @@
 package gtna.networks.model.placementmodels.models;
 
 import gtna.networks.model.placementmodels.PlacementModelImpl;
+import gtna.networks.model.placementmodels.PlacementNotPossibleException;
 import gtna.networks.model.placementmodels.Point;
 
 import java.util.Random;
@@ -47,8 +48,8 @@ import java.util.Random;
  * 
  */
 public class RandomPlacementModel extends PlacementModelImpl {
-
-	private boolean inCenter;
+	private double width;
+	private double height;
 
 	/**
 	 * 
@@ -62,19 +63,20 @@ public class RandomPlacementModel extends PlacementModelImpl {
 	 *            If a node should be placed in the center of the model.
 	 */
 	public RandomPlacementModel(double width, double height, boolean inCenter) {
-		setWidth(width);
-		setHeight(height);
-		this.inCenter = inCenter;
+		this.width = width;
+		this.height = height;
+		setInCenter(inCenter);
 		setKey("RANDOM");
-		setAdditionalConfigKeys(new String[] { "IN_CENTER" });
-		setAdditionalConfigValues(new String[] { Boolean.toString(inCenter) });
+		setAdditionalConfigKeys(new String[] { "WIDTH", "HEIGHT" });
+		setAdditionalConfigValues(new String[] { Double.toString(width),
+				Double.toString(height) });
 	}
 
 	/**
 	 * Places the nodes uniformly in the field.
 	 */
 	@Override
-	public Point[] place(int count) {
+	public Point[] place(int count, Point center, double maxX, double maxY) {
 		Random rnd = new Random();
 
 		double dx = 0;
@@ -83,14 +85,25 @@ public class RandomPlacementModel extends PlacementModelImpl {
 
 		Point[] ret = new Point[count];
 
-		if (inCenter) {
-			ret[0] = new Point(getWidth() / 2, getHeight() / 2);
+		if (getInCenter()) {
+			ret[0] = new Point(center.getX(), center.getY());
 			i++;
 		}
+		int tries;
 
 		while (i < count) {
-			dx = getWidth() * (rnd.nextDouble());
-			dy = getHeight() * (rnd.nextDouble());
+			tries = 0;
+			do {
+				dx = center.getX() + width * (rnd.nextDouble());
+				dy = center.getY() + height * (rnd.nextDouble());
+				tries++;
+			} while ((dx < 0 || dx > maxX || dy < 0 || dy > maxY)
+					&& tries <= maxTries);
+
+			if ((dx < 0 || dx > maxX || dy < 0 || dy > maxY))
+				throw new PlacementNotPossibleException("Could not place node "
+						+ i + " for settings: F=(" + width + ", " + height
+						+ "), count=" + count + ", inCenter=" + getInCenter());
 
 			ret[i] = new Point(dx, dy);
 
