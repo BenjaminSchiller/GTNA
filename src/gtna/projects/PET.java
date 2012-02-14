@@ -37,14 +37,18 @@ package gtna.projects;
 
 import gtna.data.Series;
 import gtna.graph.Graph;
+import gtna.io.GraphReader;
 import gtna.io.GraphWriter;
 import gtna.networks.Network;
 import gtna.networks.model.smallWorld.ScaleFreeUndirected;
+import gtna.networks.model.smallWorld.ScaleFreeUndirectedLD;
+import gtna.networks.model.smallWorld.ScaleFreeUndirectedSD;
 import gtna.networks.util.ReadableFolder;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedyVariations.DepthFirstGreedy;
 import gtna.routing.greedyVariations.OneWorseGreedy;
+import gtna.transformation.Transformation;
 import gtna.util.Config;
 import gtna.util.Stats;
 
@@ -66,9 +70,12 @@ public class PET {
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/PET/");
 		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, ROUTING");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
+		Config.overwrite("ROUTING_SINGLES_PLOTS",
+				"ROUTING_HOPS_AVG, ROUTING_HOPS_MED, "
+						+ "ROUTING_HOPS_MAX, ROUTING_RUNTIME");
 
 		int[] Nodes = new int[] { 1000, 5000, 10000, 50000, 100000 };
-		Nodes = new int[] { 1000, 5000, 10000, 50000 };
+		Nodes = new int[] { 100000 };
 		double[] Alpha = new double[] { 2.0, 2.2, 2.4, 2.6, 2.8, 3.0 };
 		int[] C = new int[] { 1, 2, 5, 10, 20, 50 };
 		HashMap<Integer, Integer> times = new HashMap<Integer, Integer>();
@@ -85,12 +92,14 @@ public class PET {
 			int threads = Integer.parseInt(args[0]);
 			int offset = Integer.parseInt(args[1]);
 			Stats stats = new Stats();
-			PET.generateGraphs(times, Nodes, Alpha, C, threads, offset);
-			// PET.generateData(times, Nodes, Alpha, C, threads, offset);
+			// PET.generateGraphs(times, Nodes, Alpha, C, threads, offset);
+			PET.generateData(times, Nodes, Alpha, C, threads, offset);
 			stats.end();
 		} else {
+			Stats stats = new Stats();
 			// PET.generatePlotsMulti(Nodes, Alpha, C, R);
-			// PET.generatePlotsSingle(Nodes, Alpha, C, R);
+			PET.generatePlotsSingle(Nodes, Alpha, C, R);
+			stats.end();
 		}
 	}
 
@@ -134,7 +143,9 @@ public class PET {
 				String folder2 = nodes + "/_c-alpha-" + r.folder() + "/";
 				Series[][] s1 = Series.get(nw1);
 				Series[][] s2 = Series.get(nw2);
+				System.out.println("plotting " + folder1);
 				Plot.singlesAvg(s1, folder1);
+				System.out.println("plotting " + folder2);
 				Plot.singlesAvg(s2, folder2);
 			}
 		}
@@ -142,8 +153,8 @@ public class PET {
 
 	private static void generateData(HashMap<Integer, Integer> times,
 			int[] Nodes, double[] Alpha, int[] C, int threads, int offset) {
+		ArrayList<Network> nw = new ArrayList<Network>();
 		for (int nodes : Nodes) {
-			ArrayList<Network> nw = new ArrayList<Network>();
 			for (double alpha : Alpha) {
 				for (int c : C) {
 					RoutingAlgorithm owg = new OneWorseGreedy();
@@ -155,26 +166,27 @@ public class PET {
 								cut, null, null);
 						Network readable = new ReadableFolder(NW.description(),
 								NW.folder().replace("/", ""),
-								PET.graphFolder(NW), ".txt", r,
+								PET.graphFolder(NW), ".txt",
+								new String[] { PET.idSpaceFilename(NW) }, r,
 								NW.transformations());
 						nw.add(readable);
 					}
 				}
 			}
-			DataGenerator g = new DataGenerator(nw, threads, offset, times);
-			g.start();
-			try {
-				g.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		}
+		DataGenerator g = new DataGenerator(nw, threads, offset, times);
+		g.start();
+		try {
+			g.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 
 	private static void generateGraphs(HashMap<Integer, Integer> times,
 			int[] Nodes, double[] Alpha, int[] C, int threads, int offset) {
+		ArrayList<Network> nw = new ArrayList<Network>();
 		for (int nodes : Nodes) {
-			ArrayList<Network> nw = new ArrayList<Network>();
 			for (double alpha : Alpha) {
 				for (int c : C) {
 					int cut = nodes;
@@ -182,13 +194,13 @@ public class PET {
 							null));
 				}
 			}
-			GraphGenerator g = new GraphGenerator(nw, threads, offset, times);
-			g.start();
-			try {
-				g.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		}
+		GraphGenerator g = new GraphGenerator(nw, threads, offset, times);
+		g.start();
+		try {
+			g.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -198,6 +210,35 @@ public class PET {
 
 	public static String graphFilename(Network nw, int i) {
 		return PET.graphFolder(nw) + i + ".txt";
+	}
+
+	public static String idSpaceFilename(Network nw) {
+		return "./data/graphs/" + nw.nodes() + "/ID_SPACE_0";
+	}
+
+	public static String graphLDFolder(Network nw) {
+		Network nwLD = PET.toLD(nw);
+		return "./data/graphs_ld/" + nw.nodes() + "/" + nwLD.folder();
+	}
+
+	public static String graphLDFilename(Network nw, int i) {
+		return PET.graphLDFolder(nw) + i + ".txt";
+	}
+
+	public static String idSpaceLDFilename(Network nw) {
+		return "./data/graphs_ld/" + nw.nodes() + "/ID_SPACE_0";
+	}
+
+	private static Network toLD(Network nw) {
+		ScaleFreeUndirected nwLD = (ScaleFreeUndirected) nw;
+		return new ScaleFreeUndirectedLD(nw.nodes(), nwLD.getAlpha(),
+				nwLD.getCutoff(), nwLD.routingAlgorithm(),
+				nwLD.transformations());
+	}
+
+	private static Transformation toSD(Network nw) {
+		ScaleFreeUndirected nw_ = (ScaleFreeUndirected) nw;
+		return new ScaleFreeUndirectedSD(nw_.getC());
 	}
 
 	private static abstract class Generator extends Thread {
@@ -239,18 +280,57 @@ public class PET {
 		@Override
 		protected void process(Network nw) {
 			for (int i = 0; i < this.times.get(nw.nodes()); i++) {
+				String folderLD = PET.graphLDFolder(nw);
+				String filenameLD = PET.graphLDFilename(nw, i);
+				String idSpaceFilenameLD = PET.idSpaceLDFilename(nw);
+				File fLD = new File(folderLD);
 				String folder = PET.graphFolder(nw);
 				String filename = PET.graphFilename(nw, i);
+				String idSpaceFilename = PET.idSpaceFilename(nw);
 				File f = new File(folder);
 				if ((new File(filename)).exists()) {
 					System.out.println(this.offset + ":  skipping" + filename);
+					continue;
+				}
+				Graph gLD = null;
+				if (!(new File(filenameLD)).exists()) {
+					fLD.mkdirs();
+					Network nwLD = PET.toLD(nw);
+					gLD = nwLD.generate();
+					GraphWriter.write(gLD, filenameLD);
+					System.out.println(this.offset + ": generated "
+							+ filenameLD);
+					if (!(new File(idSpaceFilenameLD)).exists()) {
+						gLD.getProperty("ID_SPACE_0").write(idSpaceFilenameLD,
+								"ID_SPACE_0");
+					}
 				} else {
-					f.mkdirs();
-					Graph g = nw.generate();
-					GraphWriter.writeWithProperties(g, filename);
-					System.out.println(this.offset + ":  " + filename);
+					String[] p = new String[] { idSpaceFilenameLD };
+					gLD = GraphReader.readWithProperties(filenameLD, p);
+				}
+				Transformation t = PET.toSD(nw);
+				Graph g = t.transform(gLD);
+				f.mkdirs();
+				GraphWriter.write(g, filename);
+				System.out.println(this.offset + ":  ===> " + filename);
+				if (!(new File(idSpaceFilename)).exists()) {
+					g.getProperty("ID_SPACE_0").write(idSpaceFilename,
+							"ID_SPACE_0");
 				}
 			}
+			// for (int i = 0; i < this.times.get(nw.nodes()); i++) {
+			// String folder = PET.graphFolder(nw);
+			// String filename = PET.graphFilename(nw, i);
+			// File f = new File(folder);
+			// if ((new File(filename)).exists()) {
+			// System.out.println(this.offset + ":  skipping" + filename);
+			// } else {
+			// f.mkdirs();
+			// Graph g = nw.generate();
+			// GraphWriter.writeWithProperties(g, filename);
+			// System.out.println(this.offset + ":  " + filename);
+			// }
+			// }
 		}
 	}
 

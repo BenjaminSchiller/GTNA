@@ -55,8 +55,16 @@ public class ReadableFolder extends NetworkImpl implements Network {
 
 	private int index;
 
+	private String[] properties;
+
 	public ReadableFolder(String name, String folder, String srcFolder,
 			String extension, RoutingAlgorithm ra, Transformation[] t) {
+		this(name, folder, srcFolder, extension, null, ra, t);
+	}
+
+	public ReadableFolder(String name, String folder, String srcFolder,
+			String extension, String[] properties, RoutingAlgorithm ra,
+			Transformation[] t) {
 		super(ReadableFolder.key(name, folder), Integer.MIN_VALUE,
 				new String[] {}, new String[] {}, ra, t);
 		File d = new File(srcFolder);
@@ -77,6 +85,7 @@ public class ReadableFolder extends NetworkImpl implements Network {
 		} else {
 			super.setNodes(GraphReader.nodes(this.files.get(0)));
 		}
+		this.properties = properties;
 	}
 
 	public static String key(String name, String folder) {
@@ -90,8 +99,13 @@ public class ReadableFolder extends NetworkImpl implements Network {
 			return null;
 		}
 		this.index = (this.index + 1) % this.files.size();
-		Graph graph = GraphReader
-				.readWithProperties(this.files.get(this.index));
+		Graph graph = null;
+		if (this.properties == null) {
+			graph = GraphReader.readWithProperties(this.files.get(this.index));
+		} else {
+			graph = GraphReader.readWithProperties(this.files.get(this.index),
+					properties);
+		}
 		graph.setName(this.description());
 		return graph;
 	}
