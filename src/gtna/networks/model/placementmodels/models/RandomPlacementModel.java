@@ -94,8 +94,14 @@ public class RandomPlacementModel extends PlacementModelImpl {
 		while (i < count) {
 			tries = 0;
 			do {
-				dx = center.getX() + width * (rnd.nextDouble());
-				dy = center.getY() + height * (rnd.nextDouble());
+				double x = (this.width / 2.0)
+						* (rnd.nextBoolean() ? 1.0 : -1.0);
+				double y = (this.width / 2.0)
+						* (rnd.nextBoolean() ? 1.0 : -1.0);
+				dx = center.getX() + x * (rnd.nextDouble());
+				dy = center.getY() + y * (rnd.nextDouble());
+				// dx = center.getX() + width * (rnd.nextDouble());
+				// dy = center.getY() + height * (rnd.nextDouble());
 				tries++;
 			} while ((dx < 0 || dx > maxX || dy < 0 || dy > maxY)
 					&& tries <= maxTries);
