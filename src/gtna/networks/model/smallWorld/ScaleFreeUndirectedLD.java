@@ -21,12 +21,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * ScaleFreeUndirected.java
+ * ScaleFreeUndirectedLD.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: stefanie;
+ * Original Author: benni;
  * Contributors:    -;
  *
  * Changes since 2011-05-17
@@ -35,99 +35,39 @@
  */
 package gtna.networks.model.smallWorld;
 
+import java.util.Arrays;
+import java.util.Random;
+import java.util.Vector;
+
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartitionSimple;
+import gtna.networks.Network;
 import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 
-import java.util.Arrays;
-import java.util.Random;
-import java.util.Vector;
-
 /**
- * creating a graph with IDs on a ring and - a scale-free degree distribution -
- * undirected - local links to neighbors within distance C for some constant C -
- * long-distance links with P(l = d) ~ 1/d, where l is the distance of connected
- * nodes
- * 
- * @author stefanie
+ * @author benni
  * 
  */
-public class ScaleFreeUndirected extends NetworkImpl {
+public class ScaleFreeUndirectedLD extends NetworkImpl implements Network {
 	private double interval;
-	private int C;
 	private double alpha;
 	private int cutoff;
 
-	public ScaleFreeUndirected(int nodes, double alpha, int C, int cutoff,
+	public ScaleFreeUndirectedLD(int nodes, double alpha, int cutoff,
 			RoutingAlgorithm ra, Transformation[] t) {
-		super("SCALE_FREE_UNDIRECTED", nodes, new String[] { "C", "ALPHA",
-				"CUTOFF" }, new String[] { "" + C, "" + alpha, "" + cutoff },
-				ra, t);
+		super("SCALE_FREE_UNDIRECTED_LD", nodes, new String[] { "ALPHA",
+				"CUTOFF" }, new String[] { "" + alpha, "" + cutoff }, ra, t);
 		this.interval = (double) 1 / nodes;
-		this.C = C;
 		this.alpha = alpha;
 		this.cutoff = cutoff;
 	}
-	
-	public int getC(){
-		return this.C;
-	}
-	
-	public double getAlpha(){
-		return this.alpha;
-	}
-	
-	public int getCutoff(){
-		return this.cutoff;
-	}
 
-	public static ScaleFreeUndirected[] get(int[] nodes, double alpha, int C,
-			int cutoff, RoutingAlgorithm ra, Transformation[] t) {
-		ScaleFreeUndirected[] nw = new ScaleFreeUndirected[nodes.length];
-		for (int i = 0; i < nodes.length; i++) {
-			nw[i] = new ScaleFreeUndirected(nodes[i], alpha, C, cutoff, ra, t);
-		}
-		return nw;
-	}
-
-	public static ScaleFreeUndirected[] get(int nodes, double[] alpha, int C,
-			int cutoff, RoutingAlgorithm ra, Transformation[] t) {
-		ScaleFreeUndirected[] nw = new ScaleFreeUndirected[alpha.length];
-		for (int i = 0; i < alpha.length; i++) {
-			nw[i] = new ScaleFreeUndirected(nodes, alpha[i], C, cutoff, ra, t);
-		}
-		return nw;
-	}
-
-	public static ScaleFreeUndirected[] get(int nodes, double alpha, int[] C,
-			int cutoff, RoutingAlgorithm ra, Transformation[] t) {
-		ScaleFreeUndirected[] nw = new ScaleFreeUndirected[C.length];
-		for (int i = 0; i < C.length; i++) {
-			nw[i] = new ScaleFreeUndirected(nodes, alpha, C[i], cutoff, ra, t);
-		}
-		return nw;
-	}
-
-	public static ScaleFreeUndirected[] get(int nodes, double alpha, int C,
-			int[] cutoff, RoutingAlgorithm ra, Transformation[] t) {
-		ScaleFreeUndirected[] nw = new ScaleFreeUndirected[cutoff.length];
-		for (int i = 0; i < cutoff.length; i++) {
-			nw[i] = new ScaleFreeUndirected(nodes, alpha, C, cutoff[i], ra, t);
-		}
-		return nw;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.networks.Network#generate()
-	 */
 	@Override
 	public Graph generate() {
 		Node[] nodes = new Node[this.nodes()];
@@ -176,16 +116,6 @@ public class ScaleFreeUndirected extends NetworkImpl {
 
 		Edges edges = new Edges(nodes, (int) Math.round(sum * this.nodes()));
 
-		// create local edges: randomly choose node within distance C
-		for (int i = 0; i < nodes.length; i++) {
-			int n1 = (i + rand.nextInt(this.C) + 1) % nodes.length;
-			edges.add(i, n1);
-			edges.add(n1, i);
-			int n2 = (i - rand.nextInt(this.C) - 1 + nodes.length)
-					% nodes.length;
-			edges.add(i, n2);
-			edges.add(n2, i);
-		}
 		// create long-range edges: use labels and distance for each pair of
 		// nodes
 		double norm = 0;
