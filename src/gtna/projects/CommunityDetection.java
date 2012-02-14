@@ -36,7 +36,6 @@
 package gtna.projects;
 
 import gtna.communities.Communities;
-import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.GraphReader;
@@ -47,16 +46,12 @@ import gtna.networks.model.placementmodels.Partitioner;
 import gtna.networks.model.placementmodels.PlacementModel;
 import gtna.networks.model.placementmodels.PlacementModelContainer;
 import gtna.networks.model.placementmodels.connectors.UDGConnector;
-import gtna.networks.model.placementmodels.models.CirclePlacementModel;
 import gtna.networks.model.placementmodels.models.CommunityPlacementModel;
 import gtna.networks.model.placementmodels.models.RandomPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
-import gtna.networks.util.DescriptionWrapper;
 import gtna.plot.Gephi;
-import gtna.plot.Plot;
-import gtna.routing.RoutingAlgorithm;
-import gtna.routing.greedy.Greedy;
 import gtna.transformation.Transformation;
+import gtna.transformation.communities.CommunityColors;
 import gtna.transformation.communities.CommunityDetectionDeltaQ;
 import gtna.transformation.communities.CommunityDetectionLPA;
 import gtna.util.Config;
@@ -69,108 +64,101 @@ import gtna.util.Stats;
 public class CommunityDetection {
 	public static void main(String[] args) {
 		Stats stats = new Stats();
-		// CommunityDetection.plot(3);
-		// CommunityDetection.metrics(10);
+
+		boolean deltaQ = true;
+		boolean lpa = true;
+		boolean random = true;
+		boolean community = true;
+		int[] Nodes = new int[] { 3000 };
+		int times = 10;
+		for (int nodes : Nodes) {
+			if (random) {
+				Network nw = CommunityDetection.random(nodes);
+				CommunityDetection.plot(nw, "./plots/LPA/random-" + nodes,
+						times, false, lpa);
+				CommunityDetection.plot(nw, "./plots/DELTA_Q/random-" + nodes,
+						times, deltaQ, false);
+			}
+			if (community) {
+				Network nw = CommunityDetection.community(nodes);
+				CommunityDetection.plot(nw, "./plots/LPA/community-" + nodes,
+						times, false, lpa);
+				CommunityDetection.plot(nw, "./plots/DELTA_Q/community-"
+						+ nodes, times, deltaQ, false);
+			}
+		}
+
 		stats.end();
 	}
 
-	private static void metrics(int times) {
-		int hs = 1;
-		PlacementModel p1 = new CirclePlacementModel(1500, 1500, 300,
-				CirclePlacementModel.DistributionType.FIXED,
-				CirclePlacementModel.DistributionType.FIXED);
-		PlacementModel p2 = new CirclePlacementModel(200, 200, 80,
-				CirclePlacementModel.DistributionType.FIXED,
-				CirclePlacementModel.DistributionType.FIXED);
-		p2 = new RandomPlacementModel(250, 250, true);
-		p2 = new CommunityPlacementModel(250, 250, 0.4, false);
-		p1 = new RandomPlacementModel(1000, 1000, false);
-		p2 = new RandomPlacementModel(1000, 1000, false);
-		Partitioner p = new SimplePartitioner();
-		NodeConnector c = new UDGConnector(100);
-		RoutingAlgorithm r = new Greedy();
+	private static double width = 40000;
 
-		hs = 1;
-		p1 = new RandomPlacementModel(40000, 40000, false);
-		p2 = new RandomPlacementModel(40000, 40000, false);
-		c = new UDGConnector(1983);
+	private static double height = 40000;
 
-		Transformation t1 = new CommunityDetectionLPA();
-		Transformation t2 = new CommunityDetectionDeltaQ();
-		Transformation[] t_lpa = new Transformation[] { t1 };
-		Transformation[] t_dq = new Transformation[] { t2 };
-		Network[][] nw = new Network[2][10];
-		for (int i = 0; i < nw[0].length; i++) {
-			int n = (i + 1) * 1000;
-			nw[0][i] = new DescriptionWrapper(new PlacementModelContainer(n,
-					hs, p1, p2, p, c, r, t_lpa), "Random LPA");
-			nw[1][i] = new DescriptionWrapper(new PlacementModelContainer(n,
-					hs, p1, p2, p, c, r, t_dq), "Random DeltaQ");
-		}
+	private static Partitioner partitioner = new SimplePartitioner();
 
-		Config.overwrite("METRICS", "COMMUNITIES");
-		Config.overwrite("MAIN_DATA_FOLDER", "./data/CD2/");
-		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/CD2/");
+	private static NodeConnector connector = new UDGConnector(1983);
 
-		Series[][] s = Series.get(nw);
-		// Plot.multiConf(s, "multi/");
-		Plot.singlesConf(s, "singles/");
+	private static Network random(int nodes) {
+		PlacementModel p1 = new RandomPlacementModel(width, height, false);
+		PlacementModel p2 = new RandomPlacementModel(1, 1, true);
+		return new PlacementModelContainer(nodes, nodes, width, height, p1, p2,
+				partitioner, connector, null, null);
 	}
 
-	// private static void plot(int times) {
-	// int n = 500;
-	// int hs = 10;
-	// PlacementModel p1 = new RandomPlacementModel(40000, 40000, false);
-	// PlacementModel p2 = new RandomPlacementModel(40000, 40000, false);
-	//
-	// // p1 = new CommunityPlacementModel(40000, 40000, 0.8, false);
-	// // p2 = new CommunityPlacementModel(40000, 40000, 0.1, false);
-	// // p1 = new RandomPlacementModel(10000, 10000, true);
-	// // p2 = new RandomPlacementModel(1, 1, true);
-	// p1 = new CirclePlacementModel(10000, 10000, 4000,
-	// CirclePlacementModel.DistributionType.FIXED,
-	// CirclePlacementModel.DistributionType.FIXED);
-	// p2 = new CirclePlacementModel(2000, 2000, 800,
-	// CirclePlacementModel.DistributionType.FIXED,
-	// CirclePlacementModel.DistributionType.FIXED);
-	// Partitioner p = new SimplePartitioner();
-	// NodeConnector c = new UDGConnector(1500);
-	// RoutingAlgorithm r = null;
-	// Network nw = new PlacementModelContainer(n, hs, p1, p2, p, c, null,
-	// null);
-	// Transformation t1_dq = new CommunityDetectionDeltaQ();
-	// Transformation t1_lpa = new CommunityDetectionLPA();
-	// Transformation t2 = new CommunityColors();
-	// Transformation[] tt1 = new Transformation[] { t1_dq, t2 };
-	// Transformation[] tt2 = new Transformation[] { t1_lpa, t2 };
-	// for (int i = 0; i < times; i++) {
-	// Gephi gephi = new Gephi();
-	// Config.overwrite("GEPHI_RING_RADIUS", "100");
-	// Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "1");
-	// Config.overwrite("GEPHI_EDGE_SCALE", "0.1");
-	// Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
-	// Config.overwrite("GEPHI_NODE_SIZE", "50");
-	//
-	// Graph g1 = nw.generate();
-	// GraphWriter.writeWithProperties(g1, "./plots/CD/graphs/test.txt");
-	// for (Transformation tt : tt1) {
-	// g1 = tt.transform(g1);
-	// }
-	// Graph g2 = GraphReader
-	// .readWithProperties("./plots/CD/graphs/test.txt");
-	// for (Transformation tt : tt2) {
-	// g2 = tt.transform(g2);
-	// }
-	//
-	// Communities C1 = (Communities) g1.getProperty("COMMUNITIES_0");
-	// Communities C2 = (Communities) g2.getProperty("COMMUNITIES_0");
-	// System.out.println(C1.getCommunities().length + " / "
-	// + C2.getCommunities().length);
-	// gephi.plot(g1, (IdentifierSpace) g1.getProperty("ID_SPACE_0"),
-	// "./plots/CD/graphs/test-" + i + "-dq.pdf");
-	// gephi.plot(g2, (IdentifierSpace) g2.getProperty("ID_SPACE_0"),
-	// "./plots/CD/graphs/test-" + i + "-lpa.pdf");
-	// GraphWriter.writeWithProperties(g1, "./data/CD/graphs/test.txt");
-	// }
-	// }
+	private static Network community(int nodes) {
+		PlacementModel p1 = new CommunityPlacementModel(width, height, 0.25,
+				false);
+		PlacementModel p2 = new CommunityPlacementModel(width, height, 0.2,
+				false);
+		return new PlacementModelContainer(nodes, nodes / 100, width, height,
+				p1, p2, partitioner, connector, null, null);
+	}
+
+	private static void plot(Network nw, String filename, int times,
+			boolean deltaQ, boolean lpa) {
+		if (!deltaQ && !lpa) {
+			return;
+		}
+		Transformation t_dq = new CommunityDetectionDeltaQ();
+		Transformation t_lpa = new CommunityDetectionLPA();
+		Transformation t_cc = new CommunityColors();
+		for (int i = 0; i < times; i++) {
+			Gephi gephi = new Gephi();
+			Config.overwrite("GEPHI_RING_RADIUS", "1");
+			Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "1");
+			Config.overwrite("GEPHI_EDGE_SCALE", "20.0");
+			Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
+			Config.overwrite("GEPHI_NODE_SIZE", "200");
+
+			String graphFilename = "/tmp/graph.txt";
+			String plotFilenameDQ = filename + "_DQ_" + i + ".pdf";
+			String plotFilenameLPA = filename + "_LPA_" + i + ".pdf";
+
+			Graph g = nw.generate();
+			GraphWriter.writeWithProperties(g, graphFilename);
+
+			System.out.println(filename);
+			if (deltaQ) {
+				g = GraphReader.readWithProperties(graphFilename);
+				g = t_dq.transform(g);
+				g = t_cc.transform(g);
+				Communities c = (Communities) g.getProperty("COMMUNITIES_0");
+				IdentifierSpace ids = (IdentifierSpace) g
+						.getProperty("ID_SPACE_0");
+				System.out.println("deltaQ: " + c.getCommunities().length);
+				gephi.plot(g, ids, plotFilenameDQ);
+			}
+			if (lpa) {
+				g = GraphReader.readWithProperties(graphFilename);
+				g = t_lpa.transform(g);
+				g = t_cc.transform(g);
+				Communities c = (Communities) g.getProperty("COMMUNITIES_0");
+				IdentifierSpace ids = (IdentifierSpace) g
+						.getProperty("ID_SPACE_0");
+				System.out.println("LPA: " + c.getCommunities().length);
+				gephi.plot(g, ids, plotFilenameLPA);
+			}
+		}
+	}
 }

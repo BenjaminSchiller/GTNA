@@ -91,35 +91,6 @@ public class PlacementModels {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, WEAK_CONNECTIVITY");
 
-		Config.overwrite("SINGLES_PLOT_POINT_WIDTH", "3");
-		Config.overwrite("SINGLES_PLOT_LINE_WIDTH", "3");
-
-		boolean GET = false;
-		int times = 10;
-		boolean bidirectional = true;
-		int[] N = new int[] { 1000, 5000, 10000 };
-		Network[][] nw = new Network[N.length][];
-		Series[][] s = new Series[N.length][];
-
-		for (int i = 0; i < N.length; i++) {
-			int n = N[i];
-			double[] p = new double[] { 0.5 / n, 0.6 / n, 0.7 / n, 0.8 / n,
-					0.9 / n, 1.0 / n, 1.1 / n, 1.2 / n, 1.3 / n, 1.4 / n,
-					1.5 / n };
-			nw[i] = Gilbert.get(n, p, bidirectional, null, null);
-			s[i] = GET ? Series.get(nw[i]) : Series
-					.generate(nw[i], times);
-			Plot.multiAvg(s[i], n + "-gilbert-multi-" + bidirectional + "/");
-			Plot.singlesAvg(s[i], n + "-gilbert-singles-" + bidirectional + "/");
-		}
-		Plot.singlesAvg(s, "gilbert-singles-" + bidirectional + "/");
-
-		// Network nw = new ReadableFile("INET", "INET",
-		// "./resources/cycle-aslinks.l7.t1.c001749.20111206.txt.gtna", null,
-		// null);
-		// Series s = Series.generate(nw, 1);
-		// Plot.multiAvg(s, "multi/");
-
 		stats.end();
 	}
 
@@ -166,14 +137,14 @@ public class PlacementModels {
 				int n = nw[0][i].nodes();
 				double w = 1000;
 				double h = 1000;
-				PlacementModel p1 = new GridPlacementModel(w, h, 1, 1);
+				PlacementModel p1 = new GridPlacementModel(w, h, 1, 1, false);
 				Partitioner p = new SimplePartitioner();
 				NodeConnector c = new UDGConnector(R[i]);
 
 				PlacementModel p2_random = new RandomPlacementModel(1000, 1000,
 						false);
-				Network pmc_random = new PlacementModelContainer(n, 1, p1,
-						p2_random, p, c, null, null);
+				Network pmc_random = new PlacementModelContainer(n, 1, w, h,
+						p1, p2_random, p, c, null, null);
 				nw[1][i] = new DescriptionWrapper(pmc_random, "Random " + n);
 			}
 			Series[][] s = GET ? Series.get(nw) : Series.generate(nw, times);
@@ -200,7 +171,7 @@ public class PlacementModels {
 		Rmap.put(5000, new double[] { 15, 16, 17, 18, 19, 20 });
 		Rmap.put(10000, new double[] { 10, 11, 12, 13, 14, 15 });
 		for (int n : N) {
-			PlacementModel p1 = new GridPlacementModel(w, h, 1, 1);
+			PlacementModel p1 = new GridPlacementModel(w, h, 1, 1, false);
 			Partitioner p = new SimplePartitioner();
 			double[] R = Rmap.get(n);
 			Network[][] nw1 = PlacementModels
@@ -250,8 +221,8 @@ public class PlacementModels {
 		for (int i = 0; i < R.length; i++) {
 			NodeConnector c = new UDGConnector(R[i]);
 			PlacementModel p2 = new RandomPlacementModel(w, h, false);
-			Network pmc = new PlacementModelContainer(n, 1, p1, p2, p, c, null,
-					null);
+			Network pmc = new PlacementModelContainer(n, 1, w, h, p1, p2, p, c,
+					null, null);
 			nw[0][i] = new DescriptionWrapper(pmc, "Random " + n);
 			System.out.println(pmc.description());
 			System.out.println(nw[0][i].description());
@@ -272,10 +243,10 @@ public class PlacementModels {
 		for (int j = 0; j < dt.length; j++) {
 			for (int i = 0; i < R.length; i++) {
 				NodeConnector c = new UDGConnector(R[i]);
-				PlacementModel p2 = new CirclePlacementModel(w, h, Math.min(w,
-						h) / 2.0, dt[j][0], dt[j][1]);
-				Network pmc = new PlacementModelContainer(n, 1, p1, p2, p, c,
-						null, null);
+				PlacementModel p2 = new CirclePlacementModel(
+						Math.min(w, h) / 2.0, dt[j][0], dt[j][1], false);
+				Network pmc = new PlacementModelContainer(n, 1, w, h, p1, p2,
+						p, c, null, null);
 				nw[j][i] = new DescriptionWrapper(pmc, "Circle " + n + " ("
 						+ dt[j][0] + " / " + dt[j][1] + ")");
 				System.out.println(pmc.description());
@@ -292,9 +263,9 @@ public class PlacementModels {
 			NodeConnector c = new UDGConnector(R[i]);
 			int cols = (int) Math.ceil(Math.sqrt(n));
 			int rows = cols;
-			PlacementModel p2 = new GridPlacementModel(w, h, cols, rows);
-			Network pmc = new PlacementModelContainer(n, 1, p1, p2, p, c, null,
-					null);
+			PlacementModel p2 = new GridPlacementModel(w, h, cols, rows, false);
+			Network pmc = new PlacementModelContainer(n, 1, w, h, p1, p2, p, c,
+					null, null);
 			nw[0][i] = new DescriptionWrapper(pmc, "Grid " + n + " (" + cols
 					+ " x " + rows + ")");
 			System.out.println(pmc.description());
@@ -312,8 +283,8 @@ public class PlacementModels {
 				NodeConnector c = new UDGConnector(R[i]);
 				PlacementModel p2 = new CommunityPlacementModel(w, h, sigma[j],
 						false);
-				Network pmc = new PlacementModelContainer(n, 1, p1, p2, p, c,
-						null, null);
+				Network pmc = new PlacementModelContainer(n, 1, w, h, p1, p2,
+						p, c, null, null);
 				nw[j][i] = new DescriptionWrapper(pmc, "Community " + n + " ("
 						+ sigma[j] + ")");
 				System.out.println(pmc.description());
@@ -323,19 +294,20 @@ public class PlacementModels {
 		return nw;
 	}
 
-	private static void singles(double s, double r, int times) {
+	private static void singles(double s, double r, int times, double w,
+			double h) {
 		int nodes = 100;
 		int cols1 = (int) Math.ceil(Math.sqrt(nodes));
 		int rows1 = cols1;
 
 		NodeConnector c = new UDGConnector(r);
-		PlacementModel p1 = new GridPlacementModel(s, s, 1, 1);
+		PlacementModel p1 = new GridPlacementModel(s, s, 1, 1, false);
 		PlacementModel[] placements2 = PlacementModels.getModels(s, s, s / 2.0,
 				0.25, false, cols1, rows1);
 		for (PlacementModel p2 : placements2) {
 			for (int i = 0; i < times; i++) {
 				PlacementModelContainer nw = new PlacementModelContainer(nodes,
-						1, p1, p2, new SimplePartitioner(), c, null, null);
+						1, w, h, p1, p2, new SimplePartitioner(), c, null, null);
 				String name = "./plots/singles/" + p2.getKey() + "-" + r + "-"
 						+ i;
 				PlacementModels.plot(nw, name);
@@ -380,7 +352,7 @@ public class PlacementModels {
 				for (NodeConnector c : connectors) {
 					for (int i = 0; i < times; i++) {
 						PlacementModelContainer nw = new PlacementModelContainer(
-								nodes, hotSpots, p1, p2,
+								nodes, hotSpots, w1, h1, p1, p2,
 								new SimplePartitioner(), c, null, null);
 						String name = "./plots/combinations/" + p1.getKey()
 								+ "-" + p2.getKey() + "-"
@@ -426,10 +398,10 @@ public class PlacementModels {
 
 	private static PlacementModel[] getModels(double w, double h, double r,
 			double sigma, boolean inCenter, int cols, int rows) {
-		PlacementModel p1 = new CirclePlacementModel(w, h, r,
-				DistributionType.FIXED, DistributionType.FIXED);
+		PlacementModel p1 = new CirclePlacementModel(r, DistributionType.FIXED,
+				DistributionType.FIXED, false);
 		PlacementModel p2 = new CommunityPlacementModel(w, h, sigma, inCenter);
-		PlacementModel p3 = new GridPlacementModel(w, h, cols, rows);
+		PlacementModel p3 = new GridPlacementModel(w, h, cols, rows, false);
 		PlacementModel p4 = new RandomPlacementModel(w, h, inCenter);
 		return new PlacementModel[] { p3, p1, p2, p4 };
 	}
