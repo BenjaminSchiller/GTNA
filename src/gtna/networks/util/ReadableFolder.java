@@ -90,7 +90,8 @@ public class ReadableFolder extends NetworkImpl implements Network {
 			return null;
 		}
 		this.index = (this.index + 1) % this.files.size();
-		Graph graph = GraphReader.read(this.files.get(this.index));
+		Graph graph = GraphReader
+				.readWithProperties(this.files.get(this.index));
 		graph.setName(this.description());
 		return graph;
 	}
