@@ -96,7 +96,7 @@ public class RandomPlacementModel extends PlacementModelImpl {
 			do {
 				double x = (this.width / 2.0)
 						* (rnd.nextBoolean() ? 1.0 : -1.0);
-				double y = (this.width / 2.0)
+				double y = (this.height / 2.0)
 						* (rnd.nextBoolean() ? 1.0 : -1.0);
 				dx = center.getX() + x * (rnd.nextDouble());
 				dy = center.getY() + y * (rnd.nextDouble());

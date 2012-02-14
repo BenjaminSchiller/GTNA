@@ -68,9 +68,10 @@ public class CommunityDetection {
 		boolean deltaQ = true;
 		boolean lpa = true;
 		boolean random = true;
-		boolean community = true;
-		int[] Nodes = new int[] { 3000 };
-		int times = 10;
+		boolean community = false;
+		boolean communityNew = false;
+		int[] Nodes = new int[] { 2000 };
+		int times = 5;
 		for (int nodes : Nodes) {
 			if (random) {
 				Network nw = CommunityDetection.random(nodes);
@@ -86,12 +87,19 @@ public class CommunityDetection {
 				CommunityDetection.plot(nw, "./plots/DELTA_Q/community-"
 						+ nodes, times, deltaQ, false);
 			}
+			if (communityNew) {
+				Network nw = CommunityDetection.communityNew(nodes);
+				CommunityDetection.plot(nw, "./plots/LPA/communityNew-" + nodes,
+						times, false, lpa);
+				CommunityDetection.plot(nw, "./plots/DELTA_Q/communityNew-"
+						+ nodes, times, deltaQ, false);
+			}
 		}
 
 		stats.end();
 	}
 
-	private static double width = 40000;
+	private static double width = 20000;
 
 	private static double height = 40000;
 
@@ -112,6 +120,15 @@ public class CommunityDetection {
 		PlacementModel p2 = new CommunityPlacementModel(width, height, 0.2,
 				false);
 		return new PlacementModelContainer(nodes, nodes / 100, width, height,
+				p1, p2, partitioner, connector, null, null);
+	}
+
+	private static Network communityNew(int nodes) {
+		PlacementModel p1 = new CommunityPlacementModel(width, height, 0.25,
+				false);
+		PlacementModel p2 = new CommunityPlacementModel(width, height, 0.2,
+				false);
+		return new PlacementModelContainer(nodes, nodes / 100, 2 * width, 2 * height,
 				p1, p2, partitioner, connector, null, null);
 	}
 
