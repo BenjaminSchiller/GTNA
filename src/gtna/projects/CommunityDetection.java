@@ -67,11 +67,11 @@ public class CommunityDetection {
 
 		boolean deltaQ = true;
 		boolean lpa = true;
-		boolean random = true;
+		boolean random = false;
 		boolean community = false;
-		boolean communityNew = false;
+		boolean communityNew = true;
 		int[] Nodes = new int[] { 2000 };
-		int times = 5;
+		int times = 1;
 		for (int nodes : Nodes) {
 			if (random) {
 				Network nw = CommunityDetection.random(nodes);
@@ -89,8 +89,8 @@ public class CommunityDetection {
 			}
 			if (communityNew) {
 				Network nw = CommunityDetection.communityNew(nodes);
-				CommunityDetection.plot(nw, "./plots/LPA/communityNew-" + nodes,
-						times, false, lpa);
+				CommunityDetection.plot(nw,
+						"./plots/LPA/communityNew-" + nodes, times, false, lpa);
 				CommunityDetection.plot(nw, "./plots/DELTA_Q/communityNew-"
 						+ nodes, times, deltaQ, false);
 			}
@@ -99,7 +99,7 @@ public class CommunityDetection {
 		stats.end();
 	}
 
-	private static double width = 20000;
+	private static double width = 40000;
 
 	private static double height = 40000;
 
@@ -115,7 +115,7 @@ public class CommunityDetection {
 	}
 
 	private static Network community(int nodes) {
-		PlacementModel p1 = new CommunityPlacementModel(width, height, 0.25,
+		PlacementModel p1 = new CommunityPlacementModel(width, height, 0.5,
 				false);
 		PlacementModel p2 = new CommunityPlacementModel(width, height, 0.2,
 				false);
@@ -124,12 +124,12 @@ public class CommunityDetection {
 	}
 
 	private static Network communityNew(int nodes) {
-		PlacementModel p1 = new CommunityPlacementModel(width, height, 0.25,
+		PlacementModel p1 = new CommunityPlacementModel(width, height, 0.5,
 				false);
 		PlacementModel p2 = new CommunityPlacementModel(width, height, 0.2,
 				false);
-		return new PlacementModelContainer(nodes, nodes / 100, 2 * width, 2 * height,
-				p1, p2, partitioner, connector, null, null);
+		return new PlacementModelContainer(nodes, nodes / 100, 2 * width,
+				2 * height, p1, p2, partitioner, connector, null, null);
 	}
 
 	private static void plot(Network nw, String filename, int times,
