@@ -62,6 +62,10 @@ import java.util.HashMap;
  */
 public class PET {
 
+	private static enum cutoffType {
+		N, LOG_SQ_N, SQRT_N
+	};
+
 	/**
 	 * @param args
 	 */
@@ -75,40 +79,41 @@ public class PET {
 						+ "ROUTING_HOPS_MAX, ROUTING_RUNTIME");
 
 		int[] Nodes = new int[] { 1000, 5000, 10000, 50000, 100000 };
-		Nodes = new int[] { 100000 };
+		Nodes = new int[] { 1000, 5000, 10000, 500000 };
 		double[] Alpha = new double[] { 2.0, 2.2, 2.4, 2.6, 2.8, 3.0 };
 		int[] C = new int[] { 1, 2, 5, 10, 20, 50 };
 		HashMap<Integer, Integer> times = new HashMap<Integer, Integer>();
-		times.put(1000, 100);
-		times.put(5000, 100);
-		times.put(10000, 100);
-		times.put(50000, 50);
-		times.put(100000, 50);
+		times.put(1000, 10);
+		times.put(5000, 10);
+		times.put(10000, 10);
+		times.put(50000, 5);
+		times.put(100000, 5);
 		RoutingAlgorithm owg = new OneWorseGreedy();
 		RoutingAlgorithm dfg = new DepthFirstGreedy();
 		RoutingAlgorithm[] R = new RoutingAlgorithm[] { owg, dfg };
+		cutoffType type = cutoffType.LOG_SQ_N;
 
 		if (args.length == 2) {
 			int threads = Integer.parseInt(args[0]);
 			int offset = Integer.parseInt(args[1]);
 			Stats stats = new Stats();
-			// PET.generateGraphs(times, Nodes, Alpha, C, threads, offset);
-			PET.generateData(times, Nodes, Alpha, C, threads, offset);
+			PET.generateGraphs(times, Nodes, Alpha, C, type, threads, offset);
+			// PET.generateData(times, Nodes, Alpha, C, type, threads, offset);
 			stats.end();
 		} else {
 			Stats stats = new Stats();
-			// PET.generatePlotsMulti(Nodes, Alpha, C, R);
-			PET.generatePlotsSingle(Nodes, Alpha, C, R);
+			// PET.generatePlotsMulti(Nodes, Alpha, C, R, type);
+			PET.generatePlotsSingle(Nodes, Alpha, C, R, type);
 			stats.end();
 		}
 	}
 
 	private static void generatePlotsMulti(int[] Nodes, double[] Alpha,
-			int[] C, RoutingAlgorithm[] R) {
+			int[] C, RoutingAlgorithm[] R, cutoffType type) {
 		for (int nodes : Nodes) {
 			for (double alpha : Alpha) {
 				for (int c : C) {
-					int cut = nodes;
+					int cut = PET.cutoff(nodes, type);
 					Network[] nw = new Network[R.length];
 					for (int i = 0; i < R.length; i++) {
 						nw[i] = new ScaleFreeUndirected(nodes, alpha, c, cut,
@@ -126,14 +131,14 @@ public class PET {
 	}
 
 	private static void generatePlotsSingle(int[] Nodes, double[] Alpha,
-			int[] C, RoutingAlgorithm[] R) {
+			int[] C, RoutingAlgorithm[] R, cutoffType type) {
 		for (int nodes : Nodes) {
 			for (RoutingAlgorithm r : R) {
 				Network[][] nw1 = new Network[Alpha.length][C.length];
 				Network[][] nw2 = new Network[C.length][Alpha.length];
 				for (int i = 0; i < Alpha.length; i++) {
 					for (int j = 0; j < C.length; j++) {
-						int cut = nodes;
+						int cut = PET.cutoff(nodes, type);
 						nw1[i][j] = new ScaleFreeUndirected(nodes, Alpha[i],
 								C[j], cut, r, null);
 						nw2[j][i] = nw1[i][j];
@@ -152,7 +157,8 @@ public class PET {
 	}
 
 	private static void generateData(HashMap<Integer, Integer> times,
-			int[] Nodes, double[] Alpha, int[] C, int threads, int offset) {
+			int[] Nodes, double[] Alpha, int[] C, cutoffType type, int threads,
+			int offset) {
 		ArrayList<Network> nw = new ArrayList<Network>();
 		for (int nodes : Nodes) {
 			for (double alpha : Alpha) {
@@ -161,7 +167,7 @@ public class PET {
 					RoutingAlgorithm dfg = new DepthFirstGreedy();
 					RoutingAlgorithm[] R = new RoutingAlgorithm[] { owg, dfg };
 					for (RoutingAlgorithm r : R) {
-						int cut = nodes;
+						int cut = PET.cutoff(nodes, type);
 						Network NW = new ScaleFreeUndirected(nodes, alpha, c,
 								cut, null, null);
 						Network readable = new ReadableFolder(NW.description(),
@@ -184,12 +190,13 @@ public class PET {
 	}
 
 	private static void generateGraphs(HashMap<Integer, Integer> times,
-			int[] Nodes, double[] Alpha, int[] C, int threads, int offset) {
+			int[] Nodes, double[] Alpha, int[] C, cutoffType type, int threads,
+			int offset) {
 		ArrayList<Network> nw = new ArrayList<Network>();
 		for (int nodes : Nodes) {
 			for (double alpha : Alpha) {
 				for (int c : C) {
-					int cut = nodes;
+					int cut = PET.cutoff(nodes, type);
 					nw.add(new ScaleFreeUndirected(nodes, alpha, c, cut, null,
 							null));
 				}
@@ -227,6 +234,18 @@ public class PET {
 
 	public static String idSpaceLDFilename(Network nw) {
 		return "./data/graphs_ld/" + nw.nodes() + "/ID_SPACE_0";
+	}
+
+	public static int cutoff(int N, cutoffType type) {
+		if (type == cutoffType.N) {
+			return N;
+		} else if (type == cutoffType.LOG_SQ_N) {
+			return (int) Math.ceil(Math.log(N) / Math.log(2.0));
+		} else if (type == cutoffType.SQRT_N) {
+			return (int) Math.ceil(Math.sqrt(N));
+		} else {
+			return -1;
+		}
 	}
 
 	private static Network toLD(Network nw) {
