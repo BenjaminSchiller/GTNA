@@ -262,6 +262,9 @@ public abstract class NetworkImpl implements Network {
 		// if (!this.getClass().equals(nw.getClass())) {
 		// return Config.get("NETWORK_COMPARE_NETWORKS_NAME");
 		// }
+		if(this.configValues.length != nw.configValues().length){
+			return "not comparable...";
+		}
 		for (int i = 0; i < this.configValues.length; i++) {
 			if (!this.configValues[i].equals(nw.configValues()[i])) {
 				return Config.get(this.key + "_" + this.configKeys[i] + "_NAME"
@@ -294,6 +297,9 @@ public abstract class NetworkImpl implements Network {
 		// if (!this.getClass().equals(nw.getClass())) {
 		// return Config.get("NETWORK_COMPARE_NETWORKS_VALUE");
 		// }
+		if(this.configValues.length != nw.configValues().length){
+			return "not comparable...";
+		}
 		for (int i = 0; i < this.configValues.length; i++) {
 			if (!this.configValues[i].equals(nw.configValues()[i])) {
 				return this.configValues[i];
