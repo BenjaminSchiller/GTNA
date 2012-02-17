@@ -49,28 +49,36 @@ public class GraphReader {
 		String sep1 = Config.get("GRAPH_WRITER_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_WRITER_SEPARATOR_2");
 		Filereader fr = new Filereader(filename);
-		String line = null;
-		String name = fr.readLine();
-		int V = Integer.parseInt(fr.readLine());
-		int E = Integer.parseInt(fr.readLine());
-		Graph graph = new Graph(name);
-		Node[] nodes = Node.init(V, graph);
-		Edges edges = new Edges(nodes, E);
-		while ((line = fr.readLine()) != null) {
-			String[] temp = line.split(sep1);
-			if (temp.length < 2 || temp[1].length() == 0) {
-				continue;
+		try {
+			String line = null;
+			String name = fr.readLine();
+			int V = Integer.parseInt(fr.readLine());
+			int E = Integer.parseInt(fr.readLine());
+			Graph graph = new Graph(name);
+			Node[] nodes = Node.init(V, graph);
+			Edges edges = new Edges(nodes, E);
+			while ((line = fr.readLine()) != null) {
+				String[] temp = line.split(sep1);
+				if (temp.length < 2 || temp[1].length() == 0) {
+					continue;
+				}
+				int src = Integer.parseInt(temp[0]);
+				String[] temp2 = temp[1].split(sep2);
+				for (String dst : temp2) {
+					edges.add(src, Integer.parseInt(dst));
+				}
 			}
-			int src = Integer.parseInt(temp[0]);
-			String[] temp2 = temp[1].split(sep2);
-			for (String dst : temp2) {
-				edges.add(src, Integer.parseInt(dst));
-			}
+			edges.fill();
+			graph.setNodes(nodes);
+			return graph;
+		} catch (NumberFormatException nf) {
+			return null;
+		} catch (Exception e) {
+			// e.printStackTrace();
+			return null;
+		} finally {
+			fr.close();
 		}
-		edges.fill();
-		graph.setNodes(nodes);
-		fr.close();
-		return graph;
 	}
 
 	public static Graph readWithProperties(String filename) {
