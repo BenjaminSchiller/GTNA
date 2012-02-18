@@ -30,6 +30,10 @@ public class KleinbergPowerLaw extends NetworkImpl {
 	private boolean RANDOM;
 	private int CUTOFF;
 
+	public double getAlpha() {
+		return this.EXPONENT;
+	}
+
 	/**
 	 * 
 	 * @param nodes
@@ -50,10 +54,11 @@ public class KleinbergPowerLaw extends NetworkImpl {
 	public KleinbergPowerLaw(int nodes, int SHORT_RANGE_CONTACTS,
 			double EXPONENT, int CUTOFF, boolean BIDIRECTIONAL, boolean RANDOM,
 			RoutingAlgorithm ra, Transformation[] t) {
-		super("POWER_LAW", nodes, new String[] { "SHORT_RANGE_CONTACTS",
-				"EXPONENT", "CUTOFF", "BIDIRECTIONAL", "RANDOM" },
-				new String[] { "" + SHORT_RANGE_CONTACTS, "" + EXPONENT,
-						"" + BIDIRECTIONAL, "" + RANDOM }, ra, t);
+		super("KLEINBERG_POWER_LAW", nodes, new String[] {
+				"SHORT_RANGE_CONTACTS", "EXPONENT", "CUTOFF", "BIDIRECTIONAL",
+				"RANDOM" }, new String[] { "" + SHORT_RANGE_CONTACTS,
+				"" + EXPONENT, "" + CUTOFF, "" + BIDIRECTIONAL, "" + RANDOM },
+				ra, t);
 		this.SHORT_RANGE_CONTACTS = SHORT_RANGE_CONTACTS;
 
 		this.EXPONENT = EXPONENT;
