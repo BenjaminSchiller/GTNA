@@ -110,21 +110,29 @@ public class GraphReader {
 
 	public static Graph readWithProperties(String filename, String[] properties) {
 		Graph graph = GraphReader.read(filename);
+		if (graph == null) {
+			return null;
+		}
 		for (String prop : properties) {
-			Filereader fr = new Filereader(prop);
-			String className = fr.readLine();
-			fr.close();
+			Filereader fr = null;
 			try {
+				fr = new Filereader(prop);
+				String className = fr.readLine();
 				GraphProperty property = (GraphProperty) ClassLoader
 						.getSystemClassLoader().loadClass(className)
 						.newInstance();
 				property.read(prop, graph);
 			} catch (InstantiationException e) {
-				e.printStackTrace();
+				// e.printStackTrace();
+				return null;
 			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				// e.printStackTrace();
+				return null;
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				// e.printStackTrace();
+				return null;
+			} finally {
+				fr.close();
 			}
 		}
 		return graph;
