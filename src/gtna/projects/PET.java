@@ -37,14 +37,10 @@ package gtna.projects;
 
 import gtna.networks.Network;
 import gtna.networks.model.smallWorld.KleinbergPowerLaw;
-import gtna.networks.model.smallWorld.ScaleFreeUndirected;
-import gtna.networks.model.smallWorld.ScaleFreeUndirectedLD;
-import gtna.networks.model.smallWorld.ScaleFreeUndirectedMinLD;
 import gtna.networks.model.smallWorld.ScaleFreeUndirectedSD;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedyVariations.DepthFirstGreedy;
 import gtna.routing.greedyVariations.OneWorseGreedy;
-import gtna.routing.greedyVariations.RestrictedDFE;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
 import gtna.util.Stats;
@@ -62,83 +58,69 @@ public class PET {
 		N, LOG_SQ_N, SQRT_N
 	};
 
-	public static long waitTime = 60000;
+	public static long waitTime = 1000;
 
-	public static String graphs = "./data/graphs3/";
-	public static String graphsLD = "./data/graphs3_ld/";
-	public static String data = "./data/PET3/";
-	public static String plots = "./plots/PET3/";
+	private static String graphs = "./data/graphs/";
+	private static String graphsLD = "./data/graphs_ld/";
+	private static String data = "./data/";
+	private static String plots = "./plots/";
 
-	public static boolean minLD = false;
-	public static boolean newModel = true;
+	private static final String metrics = "ROUTING";
 
 	public static boolean whatToDo = false;
 	public static boolean checkGraphs = false;
 
 	public static boolean generateGraphs = false;
-	public static boolean generateData = false;
+	public static boolean generateData = true;
 	public static boolean plotMulti = false;
 	public static boolean plotSingle = false;
-	public static boolean plotSingleCombined = true;
+	public static boolean plotSingleCombined = false;
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Config.overwrite("MAIN_DATA_FOLDER", PET.data);
-		Config.overwrite("MAIN_PLOT_FOLDER", PET.plots);
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
+		PET.config();
 
-		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, ROUTING");
-		Config.overwrite("METRICS", "ROUTING");
-		Config.overwrite("ROUTING_SINGLES_PLOTS",
-				"ROUTING_HOPS_AVG, ROUTING_HOPS_MED, "
-						+ "ROUTING_HOPS_MAX, ROUTING_RUNTIME");
-
-		Config.overwrite("ROUTING_HOP_DISTRIBUTION_PLOT_LOGSCALE_X", "true");
-		Config.overwrite("ROUTING_HOP_DISTRIBUTION_CDF_PLOT_LOGSCALE_X", "true");
-		Config.overwrite("ROUTING_HOP_DISTRIBUTION_ABSOLUTE_PLOT_LOGSCALE_X",
-				"true");
-		Config.overwrite(
-				"ROUTING_HOP_DISTRIBUTION_ABSOLUTE_CDF_PLOT_LOGSCALE_X", "true");
-		Config.overwrite("ROUTING_BETWEENNESS_CENTRALITY_PLOT_LOGSCALE_X",
-				"true");
-
-		int[] Nodes = new int[] { 1000, 5000, 10000, 50000, 100000 };
-		double[] Alpha = new double[] { 2.0, 2.2, 2.4, 2.6, 2.8, 3.0 };
+		int[] Nodes = new int[] { 1, 5, 10, 50, 100, 200, 300, 400, 500 };
+		double[] Alpha = new double[] { 2.2, 2.3, 2.4 };
 		int[] C = new int[] { 1, 2, 5, 10, 20, 50 };
+		RoutingAlgorithm[] R = PET.getRA();
+		cutoffType type = cutoffType.SQRT_N;
 
-		Nodes = new int[] { 1000, 5000, 10000, 50000 };
-		Alpha = new double[] { 2.0, 2.2, 2.4, 2.6, 2.8, 3.0 };
-		C = new int[] { 1, 2, 5, 10, 20, 50 };
-
-		Nodes = new int[] { 1000, 5000, 10000, 50000 };
-		Alpha = new double[] { 2.0, 2.2, 2.4, 2.6, 2.8, 3.0 };
-		C = new int[] { 1, 2, 5, 20, 50 };
-
-		// Nodes = new int[] { 300000 };
-		// Alpha = new double[] { 3.0 };
-		// C = new int[] { 1, 2, 5, 10, 20, 50 };
+		Nodes = new int[] { 50 };
 
 		HashMap<Integer, Integer> Times = new HashMap<Integer, Integer>();
-		Times.put(1000, 10);
-		Times.put(5000, 10);
-		Times.put(10000, 10);
-		Times.put(50000, 10);
+		int k = 1000;
+		Times.put(1 * k, 100);
+		Times.put(5 * k, 100);
+		Times.put(10 * k, 100);
+		Times.put(50 * k, 20);
+		Times.put(100 * k, 0);
+		Times.put(200 * k, 6);
+		Times.put(300 * k, 6);
+		Times.put(400 * k, 6);
+		Times.put(500 * k, 6);
 
-		RoutingAlgorithm[] R = PET.getRoutingAlgorithms();
-		cutoffType type = cutoffType.SQRT_N;
+		for (int i = 0; i < Nodes.length; i++) {
+			Nodes[i] *= 1000;
+		}
+
+		System.out.println("STARTED - " + new Date(System.currentTimeMillis())
+				+ "\n");
+		Stats stats = new Stats();
 
 		if (PET.whatToDo) {
 			PETTest.whatToDo(Nodes, Alpha, C, R, type, Times);
 		} else if (PET.checkGraphs) {
 			PETTest.checkGraphs(Nodes, Alpha, C, type, Times);
-		} else if (args.length == 2) {
-			int threads = Integer.parseInt(args[0]);
-			int offset = Integer.parseInt(args[1]);
-			System.out.println("STARTED " + offset + "/" + threads + " - "
-					+ new Date(System.currentTimeMillis()));
-			Stats stats = new Stats();
+		} else {
+			int threads = 1;
+			int offset = 0;
+			if (args.length > 1) {
+				threads = Integer.parseInt(args[0]);
+				offset = Integer.parseInt(args[1]);
+			}
 			if (PET.generateGraphs) {
 				PETGraphs.generateGraphs(Times, Nodes, Alpha, C, type, threads,
 						offset);
@@ -156,31 +138,29 @@ public class PET {
 			if (PET.plotSingleCombined) {
 				PETPlot.generatePlotsSingleCombined(Nodes, Alpha, C, R, type);
 			}
-			stats.end();
-		} else {
-			System.out.println("STARTED - "
-					+ new Date(System.currentTimeMillis()));
-			Stats stats = new Stats();
-			if (PET.plotMulti) {
-				PETPlot.generatePlotsMulti(Nodes, Alpha, C, R, type);
-			}
-			if (PET.plotSingle) {
-				PETPlot.generatePlotsSingle(Nodes, Alpha, C, R, type);
-			}
-			if (PET.plotSingleCombined) {
-				PETPlot.generatePlotsSingleCombined(Nodes, Alpha, C, R, type);
-			}
-			stats.end();
 		}
+		stats.end();
 	}
 
-	public static RoutingAlgorithm[] getRoutingAlgorithms() {
+	public static RoutingAlgorithm[] getRA() {
 		RoutingAlgorithm owg = new OneWorseGreedy();
 		RoutingAlgorithm dfg = new DepthFirstGreedy();
-		RoutingAlgorithm rdfe = new RestrictedDFE();
-		// return new RoutingAlgorithm[] { owg, dfg, rdfe };
 		return new RoutingAlgorithm[] { owg, dfg };
-		// return new RoutingAlgorithm[] { rdfe };
+	}
+
+	public static Network getLD(int n, double alpha, cutoffType type) {
+		return new KleinbergPowerLaw(n, 0, alpha, PET.cutoff(n, type), true,
+				false, null, null);
+	}
+
+	public static Network getSD(int n, double alpha, cutoffType type, int c) {
+		return PET.getSDR(n, alpha, type, c, null);
+	}
+
+	public static Network getSDR(int n, double alpha, cutoffType type, int c,
+			RoutingAlgorithm r) {
+		return new KleinbergPowerLaw(n, 0, alpha, PET.cutoff(n, type), true,
+				false, r, new Transformation[] { new ScaleFreeUndirectedSD(c) });
 	}
 
 	public static String graphFolder(Network nw) {
@@ -196,8 +176,7 @@ public class PET {
 	}
 
 	public static String graphLDFolder(Network nw) {
-		Network nwLD = PET.toLD(nw);
-		return PET.graphsLD + nw.nodes() + "/" + nwLD.folder();
+		return PET.graphsLD + nw.nodes() + "/" + nw.folder();
 	}
 
 	public static String graphLDFilename(Network nw, int i) {
@@ -221,26 +200,24 @@ public class PET {
 		}
 	}
 
-	public static Network toLD(Network nw) {
-		ScaleFreeUndirected nwLD = (ScaleFreeUndirected) nw;
-		if (PET.newModel) {
-			return new KleinbergPowerLaw(nw.nodes(), 0, nwLD.getAlpha(),
-					nwLD.getCutoff(), true, false, nwLD.routingAlgorithm(),
-					nwLD.transformations());
-		} else if (PET.minLD) {
-			return new ScaleFreeUndirectedMinLD(nw.nodes(), nwLD.getAlpha(),
-					nwLD.getCutoff(), 1, nwLD.routingAlgorithm(),
-					nwLD.transformations());
-		} else {
-			return new ScaleFreeUndirectedLD(nw.nodes(), nwLD.getAlpha(),
-					nwLD.getCutoff(), nwLD.routingAlgorithm(),
-					nwLD.transformations());
-		}
-	}
+	private static void config() {
+		Config.overwrite("MAIN_DATA_FOLDER", PET.data);
+		Config.overwrite("MAIN_PLOT_FOLDER", PET.plots);
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
+		Config.overwrite("METRICS", PET.metrics);
 
-	public static Transformation toSD(Network nw) {
-		ScaleFreeUndirected nw_ = (ScaleFreeUndirected) nw;
-		return new ScaleFreeUndirectedSD(nw_.getC());
+		Config.overwrite("ROUTING_SINGLES_PLOTS",
+				"ROUTING_HOPS_AVG, ROUTING_HOPS_MED, "
+						+ "ROUTING_HOPS_MAX, ROUTING_RUNTIME");
+
+		Config.overwrite("ROUTING_HOP_DISTRIBUTION_PLOT_LOGSCALE_X", "true");
+		Config.overwrite("ROUTING_HOP_DISTRIBUTION_CDF_PLOT_LOGSCALE_X", "true");
+		Config.overwrite("ROUTING_HOP_DISTRIBUTION_ABSOLUTE_PLOT_LOGSCALE_X",
+				"true");
+		Config.overwrite(
+				"ROUTING_HOP_DISTRIBUTION_ABSOLUTE_CDF_PLOT_LOGSCALE_X", "true");
+		Config.overwrite("ROUTING_BETWEENNESS_CENTRALITY_PLOT_LOGSCALE_X",
+				"true");
 	}
 
 }

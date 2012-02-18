@@ -40,7 +40,7 @@ import gtna.io.Filewriter;
 import gtna.io.GraphReader;
 import gtna.io.GraphWriter;
 import gtna.networks.Network;
-import gtna.networks.model.smallWorld.ScaleFreeUndirected;
+import gtna.networks.model.smallWorld.KleinbergPowerLaw;
 import gtna.projects.PET.cutoffType;
 import gtna.transformation.Transformation;
 import gtna.util.Timer;
@@ -61,52 +61,40 @@ public class PETGraphs {
 		for (int nodes : Nodes) {
 			for (double alpha : Alpha) {
 				for (int c : C) {
-					int cut = PET.cutoff(nodes, type);
-					nw.add(new ScaleFreeUndirected(nodes, alpha, c, cut, null,
-							null));
+					nw.add(PET.getSD(nodes, alpha, type, c));
 				}
 			}
 		}
-		GraphGenerator g = new GraphGenerator(nw, threads, offset, times);
-		g.start();
-		try {
-			g.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		GraphGenerator g = new GraphGenerator(nw, threads, offset, times, type);
+		g.run();
 	}
 
 	private static class GraphGenerator extends PETGenerator {
+		private cutoffType type;
 
 		public GraphGenerator(ArrayList<Network> nw, int threads, int offset,
-				HashMap<Integer, Integer> times) {
+				HashMap<Integer, Integer> times, cutoffType type) {
 			super(nw, threads, offset, times);
+			this.type = type;
 		}
 
 		@Override
 		protected boolean process(Network nw) {
 			boolean success = true;
-			for (int i = 0; i < this.times.get(nw.nodes()); i++) {
-				String folderLD = PET.graphLDFolder(nw);
-				String filenameLD = PET.graphLDFilename(nw, i);
-				String idSpaceFilenameLD = PET.idSpaceLDFilename(nw);
+			KleinbergPowerLaw nwSD = (KleinbergPowerLaw) nw;
+			for (int i = 0; i < this.times.get(nwSD.nodes()); i++) {
+				Network nwLD = PET.getLD(nwSD.nodes(), nwSD.getAlpha(),
+						this.type);
+				String folderLD = PET.graphLDFolder(nwLD);
+				String filenameLD = PET.graphLDFilename(nwLD, i);
+				String idSpaceFilenameLD = PET.idSpaceLDFilename(nwLD);
 				File fLD = new File(folderLD);
-				String folder = PET.graphFolder(nw);
-				String filename = PET.graphFilename(nw, i);
-				String idSpaceFilename = PET.idSpaceFilename(nw);
-				File f = new File(folder);
-				if ((new File(filename)).exists()) {
-					System.out.println(this.offset + ":     skipping"
-							+ filename);
-					continue;
-				}
 				Graph gLD = null;
 				if (!(new File(filenameLD)).exists()) {
 					fLD.mkdirs();
 					Filewriter fw = new Filewriter(filenameLD);
 					fw.writeln("LOCK");
 					fw.close();
-					Network nwLD = PET.toLD(nw);
 					Timer timer = new Timer(this.offset + ": generateLD "
 							+ filenameLD);
 					gLD = nwLD.generate();
@@ -121,17 +109,30 @@ public class PETGraphs {
 					try {
 						gLD = GraphReader.readWithProperties(filenameLD, p);
 					} catch (Exception e) {
-						success = false;
 						gLD = null;
+					}
+					if(gLD == null){
 						System.out.println(this.offset + ": can't read "
 								+ filenameLD);
+						success = false;
 					}
 				}
 				if (gLD == null) {
+					success = false;
 					continue;
 				}
-				Transformation t = PET.toSD(nw);
-				Timer timer = new Timer(this.offset + ": generateSD " + filename);
+				String folder = PET.graphFolder(nwSD);
+				String filename = PET.graphFilename(nwSD, i);
+				String idSpaceFilename = PET.idSpaceFilename(nwSD);
+				File f = new File(folder);
+				if ((new File(filename)).exists()) {
+					System.out.println(this.offset + ":     skipping"
+							+ filename);
+					continue;
+				}
+				Transformation t = nwSD.transformations()[0];
+				Timer timer = new Timer(this.offset + ": generateSD "
+						+ filename);
 				Graph g = t.transform(gLD);
 				timer.end();
 				f.mkdirs();

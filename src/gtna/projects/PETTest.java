@@ -54,9 +54,11 @@ public class PETTest {
 	public static void whatToDo(int[] Nodes, double[] Alpha, int[] C,
 			RoutingAlgorithm[] R, cutoffType type,
 			HashMap<Integer, Integer> times) {
-		System.out.println(Config.get("METRICS"));
-		System.out.println(PET.minLD ? "* minLD" : "* regularLD");
-		if(PET.checkGraphs){
+		int c1 = Nodes.length * Alpha.length * C.length;
+		int c2 = c1 * R.length;
+		System.out.println(Config.get("METRICS") + " for " + c1 + "/" + c2
+				+ " combinations");
+		if (PET.checkGraphs) {
 			System.out.println("- checkGraphs");
 			return;
 		}
@@ -75,31 +77,36 @@ public class PETTest {
 		if (PET.plotSingleCombined) {
 			System.out.println("- plotSingleCombined");
 		}
-		System.out.println("\n\n");
+		if (!PET.generateData && !PET.generateGraphs) {
+			return;
+		}
+		System.out.println();
 		for (int nodes : Nodes) {
 			for (double alpha : Alpha) {
-				int cut = PET.cutoff(nodes, type);
-				Network nwLD = new ScaleFreeUndirected(nodes, alpha, -1, cut,
-						null, null);
-				System.out.println(times.get(nodes) + " x graphLD: "
-						+ PET.graphLDFilename(nwLD, 0));
+				Network nwLD = PET.getLD(nodes, alpha, type);
+				System.out.println(times.get(nodes) + " x "
+						+ nwLD.description());
+				if (PET.generateGraphs) {
+					System.out.println("      graphLD: "
+							+ PET.graphLDFilename(nwLD, 0));
+				}
 				for (int c : C) {
-					Network nw = new ScaleFreeUndirected(nodes, alpha, c, cut,
-							null, null);
-					System.out.println();
-					System.out.println(times.get(nodes) + " x "
-							+ nw.description());
-					System.out.println("    graph:   "
-							+ PET.graphFilename(nw, 0));
-					for (RoutingAlgorithm r : R) {
-						Network nwr = new ScaleFreeUndirected(nodes, alpha, c,
-								cut, r, null);
-						System.out.println("    data:    "
-								+ Config.get("MAIN_DATA_FOLDER") + nwr.nodes()
-								+ "/" + nwr.folder());
+					Network nwSD = PET.getSD(nodes, alpha, type, c);
+					if (PET.generateGraphs) {
+						System.out.println("      graphSD:    "
+								+ PET.graphFilename(nwSD, 0));
+					}
+					if (PET.generateData) {
+						for (RoutingAlgorithm r : R) {
+							Network nwSDR = PET
+									.getSDR(nodes, alpha, type, c, r);
+							System.out.println("      data:              "
+									+ Config.get("MAIN_DATA_FOLDER")
+									+ nwSDR.nodes() + "/" + nwSDR.folder());
+						}
 					}
 				}
-				System.out.println("\n\n");
+				System.out.println();
 			}
 		}
 	}
@@ -115,14 +122,14 @@ public class PETTest {
 							cut, null, null);
 					String filenameLD = PET.graphLDFilename(nwLD, i);
 					if (!(new File(filenameLD)).exists()) {
-						System.out
-								.println("ERROR LD - does not exist: " + filenameLD);
+						System.out.println("ERROR LD - does not exist: "
+								+ filenameLD);
 						continue;
 					}
 					Graph g = GraphReader.read(filenameLD);
 					if (g == null) {
-						System.out
-								.println("ERROR LD - could not read: " + filenameLD);
+						System.out.println("ERROR LD - could not read: "
+								+ filenameLD);
 					} else {
 						System.out.println("LD - read: " + filenameLD);
 					}
@@ -134,12 +141,14 @@ public class PETTest {
 								cut, null, null);
 						String filename = PET.graphFilename(nw, i);
 						if (!(new File(filename)).exists()) {
-							System.out.println("ERROR: does not exist: " + filename);
+							System.out.println("ERROR: does not exist: "
+									+ filename);
 							continue;
 						}
 						Graph g = GraphReader.read(filename);
 						if (g == null) {
-							System.out.println("ERROR: could not read: " + filename);
+							System.out.println("ERROR: could not read: "
+									+ filename);
 						} else {
 							System.out.println("read: " + filename);
 						}

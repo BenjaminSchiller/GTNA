@@ -37,7 +37,6 @@ package gtna.projects;
 
 import gtna.data.Series;
 import gtna.networks.Network;
-import gtna.networks.model.smallWorld.ScaleFreeUndirected;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 
@@ -51,16 +50,12 @@ public class PETPlot {
 		for (int nodes : Nodes) {
 			for (double alpha : Alpha) {
 				for (int c : C) {
-					int cut = PET.cutoff(nodes, type);
 					Network[] nw = new Network[R.length];
 					for (int i = 0; i < R.length; i++) {
-						nw[i] = new ScaleFreeUndirected(nodes, alpha, c, cut,
-								R[i], null);
+						nw[i] = PET.getSDR(nodes, alpha, type, c, R[i]);
 					}
-					String folder = nodes
-							+ "/"
-							+ (new ScaleFreeUndirected(nodes, alpha, c, cut,
-									null, null)).folder();
+					String folder = nodes + "/"
+							+ (PET.getSD(nodes, alpha, type, c)).folder();
 					Series[] s = Series.get(nw);
 					Plot.multiAvg(s, folder);
 				}
@@ -76,9 +71,7 @@ public class PETPlot {
 				Network[][] nw2 = new Network[C.length][Alpha.length];
 				for (int i = 0; i < Alpha.length; i++) {
 					for (int j = 0; j < C.length; j++) {
-						int cut = PET.cutoff(nodes, type);
-						nw1[i][j] = new ScaleFreeUndirected(nodes, Alpha[i],
-								C[j], cut, r, null);
+						nw1[i][j] = PET.getSDR(nodes, Alpha[i], type, C[j], r);
 						nw2[j][i] = nw1[i][j];
 					}
 				}
@@ -99,9 +92,7 @@ public class PETPlot {
 				Network[][] nw1 = new Network[R.length][Alpha.length];
 				for (int i = 0; i < R.length; i++) {
 					for (int j = 0; j < Alpha.length; j++) {
-						int cut = PET.cutoff(nodes, type);
-						nw1[i][j] = new ScaleFreeUndirected(nodes, Alpha[j], c,
-								cut, R[i], null);
+						nw1[i][j] = PET.getSDR(nodes, Alpha[j], type, c, R[i]);
 					}
 				}
 				String folder1 = nodes + "/_alpha-routing-" + c + "-";

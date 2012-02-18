@@ -37,7 +37,6 @@ package gtna.projects;
 
 import gtna.data.Series;
 import gtna.networks.Network;
-import gtna.networks.model.smallWorld.ScaleFreeUndirected;
 import gtna.networks.util.ReadableFolder;
 import gtna.projects.PET.cutoffType;
 import gtna.routing.RoutingAlgorithm;
@@ -47,7 +46,7 @@ import java.util.HashMap;
 
 /**
  * @author benni
- *
+ * 
  */
 public class PETData {
 	public static void generateData(HashMap<Integer, Integer> times,
@@ -57,28 +56,22 @@ public class PETData {
 		for (int nodes : Nodes) {
 			for (double alpha : Alpha) {
 				for (int c : C) {
-					RoutingAlgorithm[] R = PET.getRoutingAlgorithms();
+					RoutingAlgorithm[] R = PET.getRA();
 					for (RoutingAlgorithm r : R) {
-						int cut = PET.cutoff(nodes, type);
-						Network NW = new ScaleFreeUndirected(nodes, alpha, c,
-								cut, null, null);
-						Network readable = new ReadableFolder(NW.description(),
-								NW.folder().replace("/", ""),
-								PET.graphFolder(NW), ".txt",
-								new String[] { PET.idSpaceFilename(NW) }, r,
-								NW.transformations());
+						Network nwSD = PET.getSD(nodes, alpha, type, c);
+						Network nwLD = PET.getLD(nodes, alpha, type);
+						Network readable = new ReadableFolder(
+								nwSD.description(), nwLD.folder().replace("/",
+										""), PET.graphFolder(nwSD), ".txt",
+								new String[] { PET.idSpaceFilename(nwSD) }, r,
+								nwSD.transformations());
 						nw.add(readable);
 					}
 				}
 			}
 		}
 		DataGenerator g = new DataGenerator(nw, threads, offset, times);
-		g.start();
-		try {
-			g.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		g.run();
 	}
 
 	private static class DataGenerator extends PETGenerator {

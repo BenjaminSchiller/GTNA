@@ -78,14 +78,11 @@ public abstract class PETGenerator extends Thread {
 			if (!success) {
 				queue.addLast(nw);
 				try {
-					System.out.println(this.offset + ": waiting "
-							+ PET.waitTime + " msec");
-					Thread.sleep(PET.waitTime);
 					timesWaited++;
-					if ((timesWaited % 100) == 0) {
-						System.out.println(this.offset + ": now waited "
-								+ timesWaited + " times");
-					}
+					long waitTime = timesWaited * PET.waitTime;
+					System.out.println(this.offset + ": waiting " + waitTime
+							+ " msec (" + timesWaited + ")");
+					Thread.sleep(waitTime);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
