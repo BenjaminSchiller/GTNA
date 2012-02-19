@@ -67,6 +67,10 @@ public class ScaleFreeUndirectedLD extends NetworkImpl implements Network {
 		this.alpha = alpha;
 		this.cutoff = cutoff;
 	}
+	
+	public double getAlpha(){
+		return this.alpha;
+	}
 
 	@Override
 	public Graph generate() {
