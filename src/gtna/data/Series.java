@@ -294,10 +294,12 @@ public class Series {
 			Timer networkTimer = new Timer(networkOutput
 					+ fill(maxLength - networkOutput.length()));
 			Graph g = n.generate();
-			Transformation[] t = n.transformations();
-			for (int j = 0; j < t.length; j++) {
-				if (t[j].applicable(g)) {
-					g = t[j].transform(g);
+			if (Config.getBoolean("EXECUTE_TRANSFORMATIONS")) {
+				Transformation[] t = n.transformations();
+				for (int j = 0; j < t.length; j++) {
+					if (t[j].applicable(g)) {
+						g = t[j].transform(g);
+					}
 				}
 			}
 			networkTimer.end();
@@ -318,8 +320,8 @@ public class Series {
 			Singles singles = new Singles(n.description(), metrics);
 			singles.write(singlesFilename);
 			swTimer.end();
-			
-//			GraphWriter.writeWithProperties(g, graphFilename);
+
+			// GraphWriter.writeWithProperties(g, graphFilename);
 			// TODO write graph depending on configuration
 			// TODO write properties in separate file
 			// Timer gTimer = new Timer(graphOutput
