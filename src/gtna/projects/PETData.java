@@ -65,6 +65,22 @@ public class PETData {
 										""), PET.graphFolder(nwSD), ".txt",
 								new String[] { PET.idSpaceFilename(nwSD) }, r,
 								nwSD.transformations());
+						// Network nwSDR = PET.getSDR(nodes, alpha, type, c, r);
+						// String folder = "kpl-0-" + alpha + "-"
+						// + PET.cutoff(nodes, type) + "-true-false-"
+						// + r.folder() + "-"
+						// + nwSD.transformations()[0].folder();
+						// Network readable2 = new ReadableFolder(
+						// nwSD.description(), folder,
+						// PET.graphFolder(nwSD), ".txt",
+						// new String[] { PET.idSpaceFilename(nwSD) }, r,
+						// null);
+						// System.out.println();
+						// System.out.println("LD:  " + nwLD.folder());
+						// System.out.println("SD:  " + nwSD.folder());
+						// System.out.println("SDR: " + nwSDR.folder());
+						// System.out.println("R:   " + readable.folder());
+						// System.out.println("R2:  " + readable2.folder());
 						nw.add(readable);
 					}
 				}

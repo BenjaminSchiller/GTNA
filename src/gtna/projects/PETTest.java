@@ -74,9 +74,6 @@ public class PETTest {
 		if (PET.plotSingle) {
 			System.out.println("- plotSingle");
 		}
-		if (PET.plotSingleCombined) {
-			System.out.println("- plotSingleCombined");
-		}
 		if (!PET.generateData && !PET.generateGraphs) {
 			return;
 		}

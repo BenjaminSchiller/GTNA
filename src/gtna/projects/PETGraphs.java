@@ -40,7 +40,6 @@ import gtna.io.Filewriter;
 import gtna.io.GraphReader;
 import gtna.io.GraphWriter;
 import gtna.networks.Network;
-import gtna.networks.model.smallWorld.KleinbergPowerLaw;
 import gtna.projects.PET.cutoffType;
 import gtna.transformation.Transformation;
 import gtna.util.Timer;
@@ -81,9 +80,9 @@ public class PETGraphs {
 		@Override
 		protected boolean process(Network nw) {
 			boolean success = true;
-			KleinbergPowerLaw nwSD = (KleinbergPowerLaw) nw;
-			for (int i = 0; i < this.times.get(nwSD.nodes()); i++) {
-				Network nwLD = PET.getLD(nwSD.nodes(), nwSD.getAlpha(),
+			double alpha = PET.getAlpha(nw);
+			for (int i = 0; i < this.times.get(nw.nodes()); i++) {
+				Network nwLD = PET.getLD(nw.nodes(), alpha,
 						this.type);
 				String folderLD = PET.graphLDFolder(nwLD);
 				String filenameLD = PET.graphLDFilename(nwLD, i);
@@ -111,7 +110,7 @@ public class PETGraphs {
 					} catch (Exception e) {
 						gLD = null;
 					}
-					if(gLD == null){
+					if (gLD == null) {
 						System.out.println(this.offset + ": can't read "
 								+ filenameLD);
 						success = false;
@@ -121,16 +120,16 @@ public class PETGraphs {
 					success = false;
 					continue;
 				}
-				String folder = PET.graphFolder(nwSD);
-				String filename = PET.graphFilename(nwSD, i);
-				String idSpaceFilename = PET.idSpaceFilename(nwSD);
+				String folder = PET.graphFolder(nw);
+				String filename = PET.graphFilename(nw, i);
+				String idSpaceFilename = PET.idSpaceFilename(nw);
 				File f = new File(folder);
 				if ((new File(filename)).exists()) {
 					System.out.println(this.offset + ":     skipping"
 							+ filename);
 					continue;
 				}
-				Transformation t = nwSD.transformations()[0];
+				Transformation t = nw.transformations()[0];
 				Timer timer = new Timer(this.offset + ": generateSD "
 						+ filename);
 				Graph g = t.transform(gLD);

@@ -36,7 +36,9 @@
 package gtna.projects;
 
 import gtna.networks.Network;
+import gtna.networks.model.smallWorld.Kleinberg1D;
 import gtna.networks.model.smallWorld.KleinbergPowerLaw;
+import gtna.networks.model.smallWorld.ScaleFreeDirectedSD;
 import gtna.networks.model.smallWorld.ScaleFreeUndirectedSD;
 import gtna.routing.RoutingAlgorithm;
 import gtna.routing.greedyVariations.DepthFirstGreedy;
@@ -60,21 +62,30 @@ public class PET {
 
 	public static long waitTime = 1000;
 
-	private static String graphs = "./data/graphs/";
-	private static String graphsLD = "./data/graphs_ld/";
-	private static String data = "./data/";
-	private static String plots = "./plots/";
+	private static final boolean scaleFree = false;
+	private static final boolean bidirectional = true;
 
-	private static final String metrics = "ROUTING";
+	private static final String name = (PET.scaleFree ? "kleinberg-"
+			: "kleinberg1-")
+			+ (PET.bidirectional ? "bidirectional" : "unidirectional");
+
+	private static final String data = "./data/" + PET.name + "/";
+	private static final String graphs = PET.data + "graphs/";
+	private static final String graphsLD = PET.data + "graphs_ld/";
+	private static final String plots = "./plots/" + PET.name + "/";
+
+	private static final String metrics = "DEGREE_DISTRIBUTION, ROUTING";
 
 	public static boolean whatToDo = false;
 	public static boolean checkGraphs = false;
 
 	public static boolean generateGraphs = false;
-	public static boolean generateData = true;
+	public static boolean generateData = false;
+
 	public static boolean plotMulti = false;
 	public static boolean plotSingle = false;
-	public static boolean plotSingleCombined = false;
+
+	public static boolean diff = true;
 
 	/**
 	 * @param args
@@ -88,19 +99,21 @@ public class PET {
 		RoutingAlgorithm[] R = PET.getRA();
 		cutoffType type = cutoffType.SQRT_N;
 
-		Nodes = new int[] { 50 };
+		Nodes = new int[] { 200, 300, 400, 500 };
+		Nodes = new int[] { 1, 5, 10 };
+		Alpha = new double[] { 0.0 };
 
 		HashMap<Integer, Integer> Times = new HashMap<Integer, Integer>();
 		int k = 1000;
-		Times.put(1 * k, 100);
-		Times.put(5 * k, 100);
-		Times.put(10 * k, 100);
-		Times.put(50 * k, 20);
+		Times.put(1 * k, 5);
+		Times.put(5 * k, 5);
+		Times.put(10 * k, 5);
+		Times.put(50 * k, 0);
 		Times.put(100 * k, 0);
-		Times.put(200 * k, 6);
-		Times.put(300 * k, 6);
-		Times.put(400 * k, 6);
-		Times.put(500 * k, 6);
+		Times.put(200 * k, 0);
+		Times.put(300 * k, 0);
+		Times.put(400 * k, 0);
+		Times.put(500 * k, 0);
 
 		for (int i = 0; i < Nodes.length; i++) {
 			Nodes[i] *= 1000;
@@ -130,13 +143,22 @@ public class PET {
 						offset);
 			}
 			if (PET.plotMulti) {
-				PETPlot.generatePlotsMulti(Nodes, Alpha, C, R, type);
+				// PETPlot.generatePlotsMulti(Nodes, Alpha, C, R, type);
+				PETPlot.multiAlpha(Nodes, Alpha, C, R, type);
+				PETPlot.multiC(Nodes, Alpha, C, R, type);
 			}
 			if (PET.plotSingle) {
-				PETPlot.generatePlotsSingle(Nodes, Alpha, C, R, type);
+				PETPlot.single_alpha_c(Nodes, Alpha, C, R, type);
+				PETPlot.single_c_alpha(Nodes, Alpha, C, R, type);
+				PETPlot.single_nodes_alpha(Nodes, Alpha, C, R, type);
+				PETPlot.single_nodes_c(Nodes, Alpha, C, R, type);
 			}
-			if (PET.plotSingleCombined) {
-				PETPlot.generatePlotsSingleCombined(Nodes, Alpha, C, R, type);
+			if (PET.diff) {
+				String[] singleKeys = new String[] { "ROUTING_HOPS_AVG",
+						"ROUTING_HOPS_MED", "ROUTING_HOPS_MAX" };
+				for (String singleKey : singleKeys) {
+					PETComputation.diff(Nodes, Alpha, C, R, type, singleKey);
+				}
 			}
 		}
 		stats.end();
@@ -149,8 +171,13 @@ public class PET {
 	}
 
 	public static Network getLD(int n, double alpha, cutoffType type) {
-		return new KleinbergPowerLaw(n, 0, alpha, PET.cutoff(n, type), true,
-				false, null, null);
+		if (PET.scaleFree) {
+			return new KleinbergPowerLaw(n, 0, alpha, PET.cutoff(n, type),
+					PET.bidirectional, false, null, null);
+		} else {
+			return new Kleinberg1D(n, 0, 1, 1, PET.bidirectional, false, null,
+					null);
+		}
 	}
 
 	public static Network getSD(int n, double alpha, cutoffType type, int c) {
@@ -159,8 +186,29 @@ public class PET {
 
 	public static Network getSDR(int n, double alpha, cutoffType type, int c,
 			RoutingAlgorithm r) {
-		return new KleinbergPowerLaw(n, 0, alpha, PET.cutoff(n, type), true,
-				false, r, new Transformation[] { new ScaleFreeUndirectedSD(c) });
+		Transformation[] t = new Transformation[] { PET.getSDTransformation(c) };
+		if (PET.scaleFree) {
+			return new KleinbergPowerLaw(n, 0, alpha, PET.cutoff(n, type),
+					PET.bidirectional, false, r, t);
+		} else {
+			return new Kleinberg1D(n, 0, 1, 1, PET.bidirectional, false, r, t);
+		}
+	}
+
+	private static Transformation getSDTransformation(int c) {
+		if (PET.bidirectional) {
+			return new ScaleFreeUndirectedSD(c);
+		} else {
+			return new ScaleFreeDirectedSD(c);
+		}
+	}
+
+	public static double getAlpha(Network nw) {
+		if (PET.scaleFree) {
+			return ((KleinbergPowerLaw) nw).getAlpha();
+		} else {
+			return 0;
+		}
 	}
 
 	public static String graphFolder(Network nw) {
@@ -218,6 +266,8 @@ public class PET {
 				"ROUTING_HOP_DISTRIBUTION_ABSOLUTE_CDF_PLOT_LOGSCALE_X", "true");
 		Config.overwrite("ROUTING_BETWEENNESS_CENTRALITY_PLOT_LOGSCALE_X",
 				"true");
+
+		Config.overwrite("EXECUTE_TRANSFORMATIONS", "false");
 	}
 
 }

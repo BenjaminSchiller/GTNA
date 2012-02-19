@@ -37,6 +37,7 @@ package gtna.projects;
 
 import gtna.data.Series;
 import gtna.networks.Network;
+import gtna.networks.util.DescriptionWrapper;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
 
@@ -45,60 +46,127 @@ import gtna.routing.RoutingAlgorithm;
  * 
  */
 public class PETPlot {
-	public static void generatePlotsMulti(int[] Nodes, double[] Alpha, int[] C,
+	public static void multiAlpha(int[] Nodes, double[] Alpha, int[] C,
 			RoutingAlgorithm[] R, PET.cutoffType type) {
 		for (int nodes : Nodes) {
 			for (double alpha : Alpha) {
-				for (int c : C) {
-					Network[] nw = new Network[R.length];
-					for (int i = 0; i < R.length; i++) {
-						nw[i] = PET.getSDR(nodes, alpha, type, c, R[i]);
+				Network[] nw = new Network[R.length * C.length];
+				int index = 0;
+				for (RoutingAlgorithm r : R) {
+					for (int c : C) {
+						nw[index++] = PET.getSDR(nodes, alpha, type, c, r);
 					}
-					String folder = nodes + "/"
-							+ (PET.getSD(nodes, alpha, type, c)).folder();
-					Series[] s = Series.get(nw);
-					Plot.multiAvg(s, folder);
 				}
+				String folder = "multi-alpha/" + nodes + "-" + alpha + "/";
+				Series[] s = Series.get(nw);
+				Plot.multiAvg(s, folder);
 			}
 		}
 	}
 
-	public static void generatePlotsSingle(int[] Nodes, double[] Alpha,
-			int[] C, RoutingAlgorithm[] R, PET.cutoffType type) {
-		for (int nodes : Nodes) {
-			for (RoutingAlgorithm r : R) {
-				Network[][] nw1 = new Network[Alpha.length][C.length];
-				Network[][] nw2 = new Network[C.length][Alpha.length];
-				for (int i = 0; i < Alpha.length; i++) {
-					for (int j = 0; j < C.length; j++) {
-						nw1[i][j] = PET.getSDR(nodes, Alpha[i], type, C[j], r);
-						nw2[j][i] = nw1[i][j];
-					}
-				}
-				String folder1 = nodes + "/_alpha-c-" + r.folder() + "/";
-				String folder2 = nodes + "/_c-alpha-" + r.folder() + "/";
-				Series[][] s1 = Series.get(nw1);
-				Series[][] s2 = Series.get(nw2);
-				Plot.singlesAvg(s1, folder1);
-				Plot.singlesAvg(s2, folder2);
-			}
-		}
-	}
-
-	public static void generatePlotsSingleCombined(int[] Nodes, double[] Alpha,
-			int[] C, RoutingAlgorithm[] R, PET.cutoffType type) {
+	public static void multiC(int[] Nodes, double[] Alpha, int[] C,
+			RoutingAlgorithm[] R, PET.cutoffType type) {
 		for (int nodes : Nodes) {
 			for (int c : C) {
-				Network[][] nw1 = new Network[R.length][Alpha.length];
-				for (int i = 0; i < R.length; i++) {
-					for (int j = 0; j < Alpha.length; j++) {
-						nw1[i][j] = PET.getSDR(nodes, Alpha[j], type, c, R[i]);
+				Network[] nw = new Network[R.length * Alpha.length];
+				int index = 0;
+				for (RoutingAlgorithm r : R) {
+					for (double alpha : Alpha) {
+						nw[index++] = PET.getSDR(nodes, alpha, type, c, r);
 					}
 				}
-				String folder1 = nodes + "/_alpha-routing-" + c + "-";
-				Series[][] s1 = Series.get(nw1);
-				Plot.singlesAvg(s1, folder1);
+				String folder = "multi-c/" + nodes + "-" + c + "/";
+				Series[] s = Series.get(nw);
+				Plot.multiAvg(s, folder);
 			}
+		}
+	}
+
+	public static void single_c_alpha(int[] Nodes, double[] Alpha, int[] C,
+			RoutingAlgorithm[] R, PET.cutoffType type) {
+		for (int nodes : Nodes) {
+			Network[][] nw = new Network[Alpha.length * R.length][C.length];
+			int index = 0;
+			for (RoutingAlgorithm r : R) {
+				for (double alpha : Alpha) {
+					for (int i = 0; i < C.length; i++) {
+						Network nw_ = PET.getSDR(nodes, alpha, type, C[i], r);
+						String name = nodes + " - " + alpha + " ("
+								+ r.nameShort() + ")";
+						nw[index][i] = new DescriptionWrapper(nw_, name);
+					}
+					index++;
+				}
+			}
+			String folder = "single-c-alpha/" + nodes + "/";
+			Series[][] s = Series.get(nw);
+			Plot.singlesAvg(s, folder);
+		}
+	}
+
+	public static void single_alpha_c(int[] Nodes, double[] Alpha, int[] C,
+			RoutingAlgorithm[] R, PET.cutoffType type) {
+		for (int nodes : Nodes) {
+			Network[][] nw = new Network[C.length * R.length][Alpha.length];
+			int index = 0;
+			for (RoutingAlgorithm r : R) {
+				for (int c : C) {
+					for (int i = 0; i < Alpha.length; i++) {
+						Network nw_ = PET.getSDR(nodes, Alpha[i], type, c, r);
+						String name = nodes + " - " + c + " (" + r.nameShort()
+								+ ")";
+						nw[index][i] = new DescriptionWrapper(nw_, name);
+					}
+					index++;
+				}
+			}
+			String folder = "single-alpha-c/" + nodes + "/";
+			Series[][] s = Series.get(nw);
+			Plot.singlesAvg(s, folder);
+		}
+	}
+
+	public static void single_nodes_alpha(int[] Nodes, double[] Alpha, int[] C,
+			RoutingAlgorithm[] R, PET.cutoffType type) {
+		for (int c : C) {
+			Network[][] nw = new Network[Alpha.length * R.length][Nodes.length];
+			int index = 0;
+			for (RoutingAlgorithm r : R) {
+				for (double alpha : Alpha) {
+					for (int i = 0; i < Nodes.length; i++) {
+						Network nw_ = PET.getSDR(Nodes[i], alpha, type, c, r);
+						String name = c + " - " + alpha + " (" + r.nameShort()
+								+ ")";
+						nw[index][i] = new DescriptionWrapper(nw_, name);
+					}
+					index++;
+				}
+			}
+			String folder = "single-nodes-alpha/" + c + "/";
+			Series[][] s = Series.get(nw);
+			Plot.singlesAvg(s, folder);
+		}
+	}
+
+	public static void single_nodes_c(int[] Nodes, double[] Alpha, int[] C,
+			RoutingAlgorithm[] R, PET.cutoffType type) {
+		for (double alpha : Alpha) {
+			Network[][] nw = new Network[C.length * R.length][Nodes.length];
+			int index = 0;
+			for (RoutingAlgorithm r : R) {
+				for (int c : C) {
+					for (int i = 0; i < Nodes.length; i++) {
+						Network nw_ = PET.getSDR(Nodes[i], alpha, type, c, r);
+						String name = c + " - " + alpha + " (" + r.nameShort()
+								+ ")";
+						nw[index][i] = new DescriptionWrapper(nw_, name);
+					}
+					index++;
+				}
+			}
+			String folder = "single-nodes-c/" + alpha + "/";
+			Series[][] s = Series.get(nw);
+			Plot.singlesAvg(s, folder);
 		}
 	}
 }
