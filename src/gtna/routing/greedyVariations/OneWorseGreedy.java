@@ -67,6 +67,9 @@ public class OneWorseGreedy extends GreedyTemplate{
 	public int getNextD(int current, DIdentifier target, Random rand,
 			Node[] nodes) {
 		//System.out.println(current);
+		if (!from.containsKey(current)){
+			 from.put(current, -1);
+		}
 		double currentDist = this.idSpaceD.getPartitions()[current]
 				.distance(target);
 		double minDist = this.idSpaceD.getMaxDistance();
