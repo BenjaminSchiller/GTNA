@@ -40,6 +40,7 @@ import gtna.networks.Network;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.plot.Plot;
 import gtna.routing.RoutingAlgorithm;
+import gtna.util.Config;
 
 /**
  * @author benni
@@ -59,7 +60,12 @@ public class PETPlot {
 				}
 				String folder = "multi-alpha/" + nodes + "-" + alpha + "/";
 				Series[] s = Series.get(nw);
-				Plot.multiAvg(s, folder);
+				// Plot.multiAvg(s, folder);
+				Config.overwrite("TEMP_FOLDER", Config.get("MAIN_PLOT_FOLDER")
+						+ folder);
+				Config.overwrite("GNUPLOT_TEMP_FILE",
+						Config.get("MAIN_PLOT_FOLDER") + folder + "gnuplot.txt");
+				Plot.allMulti(s, folder);
 			}
 		}
 	}
@@ -77,7 +83,12 @@ public class PETPlot {
 				}
 				String folder = "multi-c/" + nodes + "-" + c + "/";
 				Series[] s = Series.get(nw);
-				Plot.multiAvg(s, folder);
+				// Plot.multiAvg(s, folder);
+				Config.overwrite("TEMP_FOLDER", Config.get("MAIN_PLOT_FOLDER")
+						+ folder);
+				Config.overwrite("GNUPLOT_TEMP_FILE",
+						Config.get("MAIN_PLOT_FOLDER") + folder + "gnuplot.txt");
+				Plot.allMulti(s, folder);
 			}
 		}
 	}
@@ -100,7 +111,12 @@ public class PETPlot {
 			}
 			String folder = "single-c-alpha/" + nodes + "/";
 			Series[][] s = Series.get(nw);
-			Plot.singlesAvg(s, folder);
+			// Plot.singlesAvg(s, folder);
+			Config.overwrite("TEMP_FOLDER", Config.get("MAIN_PLOT_FOLDER")
+					+ folder);
+			Config.overwrite("GNUPLOT_TEMP_FILE",
+					Config.get("MAIN_PLOT_FOLDER") + folder + "gnuplot.txt");
+			Plot.allSingle(s, folder);
 		}
 	}
 
@@ -122,7 +138,12 @@ public class PETPlot {
 			}
 			String folder = "single-alpha-c/" + nodes + "/";
 			Series[][] s = Series.get(nw);
-			Plot.singlesAvg(s, folder);
+			// Plot.singlesAvg(s, folder);
+			Config.overwrite("TEMP_FOLDER", Config.get("MAIN_PLOT_FOLDER")
+					+ folder);
+			Config.overwrite("GNUPLOT_TEMP_FILE",
+					Config.get("MAIN_PLOT_FOLDER") + folder + "gnuplot.txt");
+			Plot.allSingle(s, folder);
 		}
 	}
 
@@ -144,7 +165,12 @@ public class PETPlot {
 			}
 			String folder = "single-nodes-alpha/" + c + "/";
 			Series[][] s = Series.get(nw);
-			Plot.singlesAvg(s, folder);
+			// Plot.singlesAvg(s, folder);
+			Config.overwrite("TEMP_FOLDER", Config.get("MAIN_PLOT_FOLDER")
+					+ folder);
+			Config.overwrite("GNUPLOT_TEMP_FILE",
+					Config.get("MAIN_PLOT_FOLDER") + folder + "gnuplot.txt");
+			Plot.allSingle(s, folder);
 		}
 	}
 
@@ -166,7 +192,12 @@ public class PETPlot {
 			}
 			String folder = "single-nodes-c/" + alpha + "/";
 			Series[][] s = Series.get(nw);
-			Plot.singlesAvg(s, folder);
+			// Plot.singlesAvg(s, folder);
+			Config.overwrite("TEMP_FOLDER", Config.get("MAIN_PLOT_FOLDER")
+					+ folder);
+			Config.overwrite("GNUPLOT_TEMP_FILE",
+					Config.get("MAIN_PLOT_FOLDER") + folder + "gnuplot.txt");
+			Plot.allSingle(s, folder);
 		}
 	}
 }

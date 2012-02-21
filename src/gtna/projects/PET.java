@@ -62,8 +62,8 @@ public class PET {
 
 	public static long waitTime = 1000;
 
-	private static final boolean scaleFree = false;
-	private static final boolean bidirectional = true;
+	private static final boolean scaleFree = true;
+	private static final boolean bidirectional = false;
 
 	private static final String name = (PET.scaleFree ? "kleinberg-"
 			: "kleinberg1-")
@@ -83,9 +83,9 @@ public class PET {
 	public static boolean generateData = false;
 
 	public static boolean plotMulti = false;
-	public static boolean plotSingle = false;
+	public static boolean plotSingle = true;
 
-	public static boolean diff = true;
+	public static boolean diff = false;
 
 	/**
 	 * @param args
@@ -99,22 +99,24 @@ public class PET {
 		RoutingAlgorithm[] R = PET.getRA();
 		cutoffType type = cutoffType.SQRT_N;
 
-		Nodes = new int[] { 200, 300, 400, 500 };
-		Nodes = new int[] { 1, 5, 10 };
-		Alpha = new double[] { 0.0 };
+		Nodes = new int[] { 1, 5, 10, 50, 100, 200, 300, 400, 500 };
+		Nodes = new int[] { 100 };
 
 		HashMap<Integer, Integer> Times = new HashMap<Integer, Integer>();
 		int k = 1000;
-		Times.put(1 * k, 5);
-		Times.put(5 * k, 5);
-		Times.put(10 * k, 5);
-		Times.put(50 * k, 0);
-		Times.put(100 * k, 0);
-		Times.put(200 * k, 0);
-		Times.put(300 * k, 0);
-		Times.put(400 * k, 0);
-		Times.put(500 * k, 0);
+		Times.put(1 * k, 100);
+		Times.put(5 * k, 100);
+		Times.put(10 * k, 100);
+		Times.put(50 * k, 100);
+		Times.put(100 * k, 100);
+		Times.put(200 * k, 12);
+		Times.put(300 * k, 12);
+		Times.put(400 * k, 12);
+		Times.put(500 * k, 12);
 
+		if (!PET.scaleFree) {
+			Alpha = new double[] { 0.0 };
+		}
 		for (int i = 0; i < Nodes.length; i++) {
 			Nodes[i] *= 1000;
 		}
@@ -153,7 +155,7 @@ public class PET {
 				PETPlot.single_nodes_alpha(Nodes, Alpha, C, R, type);
 				PETPlot.single_nodes_c(Nodes, Alpha, C, R, type);
 			}
-			if (PET.diff) {
+			if (PET.diff || PET.plotMulti || PET.plotSingle) {
 				String[] singleKeys = new String[] { "ROUTING_HOPS_AVG",
 						"ROUTING_HOPS_MED", "ROUTING_HOPS_MAX" };
 				for (String singleKey : singleKeys) {
