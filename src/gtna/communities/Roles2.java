@@ -45,63 +45,88 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Roles2 implements GraphProperty {
-	private Role2[] roles;
+	public static enum Role2 {
+		COMMON, BRIDGE, STAR, HUB_COMMON, HUB_BRIDGE, HUB_STAR
+	};
 
-	private byte[] roleOfNode;
+	private HashMap<Role2, ArrayList<Integer>> roles;
+	private Role2[] roleOfNode;
 
 	public Roles2() {
-		this.roles = new Role2[] {};
-		this.roleOfNode = new byte[] {};
+		this.roles = new HashMap<Role2, ArrayList<Integer>>();
+		this.roleOfNode = new Role2[0];
 	}
 
-	public Roles2(HashMap<Integer, Byte> map) {
-		HashMap<Byte, ArrayList<Integer>> r = new HashMap<Byte, ArrayList<Integer>>();
-		for (byte b = 1; b <= 6; b++) {
-			r.put(b, new ArrayList<Integer>());
+	public Roles2(Role2[] roleOfNode) {
+		this.roles = new HashMap<Role2, ArrayList<Integer>>();
+		for (Role2 r : Role2.values()) {
+			this.roles.put(r, new ArrayList<Integer>());
 		}
-		for (int index : map.keySet()) {
-			byte role = map.get(index);
-			r.get(role).add(index);
+		for (int i = 0; i < roleOfNode.length; i++) {
+			this.roles.get(roleOfNode[i]).add(i);
 		}
-		this.initRoles();
-		for (byte b = 1; b <= 6; b++) {
-			this.roles[b - 1] = new Role2(b, r.get(b));
+		this.roleOfNode = roleOfNode;
+	}
+
+	public ArrayList<Integer> getNodesOfRole(Role2 r) {
+		return this.roles.get(r);
+	}
+
+	public Role2 getRoleOfNode(int index) {
+		return this.roleOfNode[index];
+	}
+
+	public static int toIndex(Role2 r) {
+		if (r == Role2.COMMON) {
+			return 1;
+		} else if (r == Role2.BRIDGE) {
+			return 2;
+		} else if (r == Role2.STAR) {
+			return 3;
+		} else if (r == Role2.HUB_COMMON) {
+			return 4;
+		} else if (r == Role2.HUB_BRIDGE) {
+			return 5;
+		} else if (r == Role2.HUB_STAR) {
+			return 6;
+		} else {
+			return -1;
 		}
 	}
 
-	public Roles2(ArrayList<Role2> roles) {
-		this.initRoles();
-		for (Role2 role : roles) {
-			this.roles[role.getType() - 1] = role;
-		}
-		this.computeRoleOfNodes();
-	}
-
-	public Roles2(Role2[] roles) {
-		this.initRoles();
-		for (Role2 role : roles) {
-			this.roles[role.getType() - 1] = role;
-		}
-		this.computeRoleOfNodes();
-	}
-
-	private void initRoles() {
-		this.roles = new Role2[6];
-		for (int i = 0; i < this.roles.length; i++) {
-			this.roles[i] = new Role2((byte) (i + 1));
+	public static String toString(Role2 r) {
+		if (r == Role2.COMMON) {
+			return "C";
+		} else if (r == Role2.BRIDGE) {
+			return "B";
+		} else if (r == Role2.STAR) {
+			return "S";
+		} else if (r == Role2.HUB_COMMON) {
+			return "HC";
+		} else if (r == Role2.HUB_BRIDGE) {
+			return "HB";
+		} else if (r == Role2.HUB_STAR) {
+			return "HS";
+		} else {
+			return null;
 		}
 	}
 
-	private void computeRoleOfNodes() {
-		int sum = 0;
-		for (Role2 r : this.roles) {
-			sum += r.getNodes().length;
-		}
-		this.roleOfNode = new byte[sum];
-		for (Role2 r : this.roles) {
-			for (int n : r.getNodes()) {
-				this.roleOfNode[n] = r.getType();
-			}
+	public static Role2 toRole(int index) {
+		if (index == 1) {
+			return Role2.COMMON;
+		} else if (index == 2) {
+			return Role2.BRIDGE;
+		} else if (index == 3) {
+			return Role2.STAR;
+		} else if (index == 4) {
+			return Role2.HUB_COMMON;
+		} else if (index == 5) {
+			return Role2.HUB_BRIDGE;
+		} else if (index == 6) {
+			return Role2.HUB_STAR;
+		} else {
+			return null;
 		}
 	}
 
@@ -117,11 +142,24 @@ public class Roles2 implements GraphProperty {
 		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
 		fw.writeln(key);
 
+		// NODES
+		fw.writeComment("Nodes");
+		fw.writeln(this.roleOfNode.length);
+
 		fw.writeln();
 
 		// LIST OF ROLES
-		for (Role2 role : this.roles) {
-			fw.writeln(role.toString());
+		for (Role2 r : Role2.values()) {
+			StringBuffer buff = new StringBuffer();
+			ArrayList<Integer> list = this.roles.get(r);
+			for (int index : list) {
+				if (buff.length() == 0) {
+					buff.append(index);
+				} else {
+					buff.append(";" + index);
+				}
+			}
+			fw.writeln(r + ":" + buff.toString());
 		}
 
 		return fw.close();
@@ -137,58 +175,34 @@ public class Roles2 implements GraphProperty {
 		// KEYS
 		String key = fr.readLine();
 
+		// NODES
+		int nodes = Integer.parseInt(fr.readLine());
+
 		// ROLES
-		this.roles = new Role2[6];
+		this.roles = new HashMap<Role2, ArrayList<Integer>>();
+		this.roleOfNode = new Role2[nodes];
+		for (Role2 r : Role2.values()) {
+			this.roles.put(r, new ArrayList<Integer>());
+		}
+
 		String line = null;
 		while ((line = fr.readLine()) != null) {
-			Role2 r = new Role2(line);
-			this.roles[r.getType() - 1] = r;
-		}
-		for (int i = 0; i < this.roles.length; i++) {
-			if (this.roles[i] == null) {
-				this.roles[i] = new Role2((byte) (i + 1));
+			String[] temp1 = line.split(":");
+			if (temp1.length == 1 || temp1[1].length() == 0) {
+				continue;
+			}
+			Role2 r = Role2.valueOf(temp1[0]);
+			String[] temp2 = temp1[1].split(";");
+			ArrayList<Integer> list = this.roles.get(r);
+			for (String node : temp2) {
+				int index = Integer.parseInt(node);
+				list.add(index);
+				this.roleOfNode[index] = r;
 			}
 		}
 
 		fr.close();
-
-		this.computeRoleOfNodes();
-
 		graph.addProperty(key, this);
-	}
-
-	public Role2 getRole(byte type) {
-		return this.roles[type - 1];
-	}
-
-	/**
-	 * @return the roles
-	 */
-	public Role2[] getRoles() {
-		return this.roles;
-	}
-
-	/**
-	 * @param roles
-	 *            the roles to set
-	 */
-	public void setRoles(Role2[] roles) {
-		this.roles = roles;
-	}
-
-	/**
-	 * @return the roleOfNode
-	 */
-	public byte[] getRoleOfNode() {
-		return this.roleOfNode;
-	}
-
-	/**
-	 * @param roleOfNode
-	 *            the roleOfNode to set
-	 */
-	public void setRoleOfNode(byte[] roleOfNode) {
-		this.roleOfNode = roleOfNode;
 	}
 
 }

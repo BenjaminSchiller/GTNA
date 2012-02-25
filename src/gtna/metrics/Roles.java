@@ -35,6 +35,7 @@
  */
 package gtna.metrics;
 
+import gtna.communities.Roles.Role;
 import gtna.data.Value;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
@@ -68,10 +69,10 @@ public class Roles extends MetricImpl implements Metric {
 		this.runtime = new Timer();
 		gtna.communities.Roles roles = (gtna.communities.Roles) g
 				.getProperty("ROLES_0");
-		double[] r = new double[roles.getRoles().length];
-		for (int i = 0; i < r.length; i++) {
-			r[i] = (double) roles.getRoles()[i].getNodes().length
-					/ (double) g.getNodes().length;
+		double[] r = new double[Role.values().length];
+		for (Role role : Role.values()) {
+			r[gtna.communities.Roles.toIndex(role) - 1] = (double) roles
+					.getNodesOfRole(role).size() / (double) g.getNodes().length;
 		}
 		this.distribution = new Distribution(r);
 		this.runtime.end();
