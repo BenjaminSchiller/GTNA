@@ -60,20 +60,7 @@ public class DegreeNodeSorter extends NodeSorter {
 	public Node[] sort(Graph g, Random rand) {
 		Node[] sorted = this.clone(g.getNodes());
 		Arrays.sort(sorted, new DegreeAsc());
-		int value = -1;
-		int start = -1;
-		for (int i = 0; i < sorted.length; i++) {
-			if (sorted[i].getDegree() > value) {
-				if (start < i - 1) {
-					this.randomize(sorted, rand, start, i - 1);
-				}
-				value = sorted[i].getDegree();
-				start = i;
-			}
-		}
-		if (start < sorted.length - 1) {
-			this.randomize(sorted, rand, start, sorted.length - 1);
-		}
+		this.randomize(sorted, rand);
 		if (this.mode == NodeSorterMode.DESC) {
 			sorted = this.reverse(sorted);
 		}
@@ -84,6 +71,11 @@ public class DegreeNodeSorter extends NodeSorter {
 		public int compare(Node n1, Node n2) {
 			return n1.getDegree() - n2.getDegree();
 		}
+	}
+
+	@Override
+	protected boolean isPropertyEqual(Node n1, Node n2) {
+		return n1.getDegree() == n2.getDegree();
 	}
 
 }

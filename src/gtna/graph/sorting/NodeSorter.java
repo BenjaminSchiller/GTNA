@@ -67,6 +67,8 @@ public abstract class NodeSorter {
 
 	public abstract boolean applicable(Graph g);
 
+	protected abstract boolean isPropertyEqual(Node n1, Node n2);
+
 	public String getKey() {
 		return this.mode == null ? this.key : this.key + "_" + this.mode;
 	}
@@ -77,6 +79,23 @@ public abstract class NodeSorter {
 			clone[i] = nodes[i];
 		}
 		return clone;
+	}
+
+	protected Node[] randomize(Node[] nodes, Random rand) {
+		int from = 0;
+		for (int i = 1; i < nodes.length; i++) {
+			if (!this.isPropertyEqual(nodes[from], nodes[i])) {
+				int to = i - 1;
+				if (from != to) {
+					this.randomize(nodes, rand, from, to);
+				}
+				from = i;
+			}
+		}
+		if (from < nodes.length - 1) {
+			this.randomize(nodes, rand, from, nodes.length - 1);
+		}
+		return nodes;
 	}
 
 	protected Node[] randomize(Node[] nodes, Random rand, int from, int to) {

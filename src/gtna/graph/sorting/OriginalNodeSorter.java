@@ -60,4 +60,9 @@ public class OriginalNodeSorter extends NodeSorter {
 		return this.clone(g.getNodes());
 	}
 
+	@Override
+	protected boolean isPropertyEqual(Node n1, Node n2) {
+		return false;
+	}
+
 }

@@ -62,4 +62,9 @@ public class RandomNodeSorter extends NodeSorter {
 		return sorted;
 	}
 
+	@Override
+	protected boolean isPropertyEqual(Node n1, Node n2) {
+		return false;
+	}
+
 }

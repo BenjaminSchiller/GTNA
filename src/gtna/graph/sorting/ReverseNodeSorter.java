@@ -60,4 +60,9 @@ public class ReverseNodeSorter extends NodeSorter {
 		return true;
 	}
 
+	@Override
+	protected boolean isPropertyEqual(Node n1, Node n2) {
+		return false;
+	}
+
 }
