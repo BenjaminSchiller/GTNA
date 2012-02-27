@@ -77,8 +77,7 @@ public class Resilience {
 		Transformation t_r = new RolesGeneration();
 		Transformation t_r2 = new Roles2Generation(true);
 
-		int[] nodes = new int[] { 1000, 2000, 3000, 4000, 5000, 6000, 7000,
-				8000, 9000, 10000 };
+		int[] nodes = new int[] { 1000, 2000, 3000, 4000, 5000, 6000, 7000 };
 
 		Transformation[] t1 = new Transformation[] { t_lpa, t_r, t_r2 };
 		Transformation[] t2 = new Transformation[] { t_dq, t_r, t_r2 };
@@ -104,10 +103,11 @@ public class Resilience {
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/roles/");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 
-		Series[] s_lpa = Series.generate(nw_lpa, 20);
-		Series[] s_dq = Series.generate(nw_dq, 20);
+		Series[] s_lpa = Series.generate(nw_lpa, 1);
+		Series[] s_dq = Series.generate(nw_dq, 1);
 
 		Plot.multiAvg(s_lpa, "lpa/");
+		Plot.singlesAvg(s_lpa, "lpa-singles/");
 		Plot.multiAvg(s_dq, "deltaQ/");
 		Plot.singlesAvg(new Series[][] { s_lpa, s_dq }, "singles/");
 	}

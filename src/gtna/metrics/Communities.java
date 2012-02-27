@@ -91,26 +91,28 @@ public class Communities extends MetricImpl implements Metric {
 
 	private double calculateModularity(Graph g,
 			gtna.communities.Communities communities) {
-		double E = 0;
-		for (Community c : communities.getCommunities()) {
-			for (int aktNode : c.getNodes()) {
-				E += g.getNode(aktNode).getOutDegree();
-			}
-		}
+		double E = g.getEdges().size();
 		double Q = 0;
 		for (Community c : communities.getCommunities()) {
 			double IC = 0;
 			double OC = 0;
-			for (int src : c.getNodes()) {
-				for (int dst : g.getNode(src).getOutgoingEdges()) {
-					if (communities.getCommunityOfNode(dst) == c) {
+			for (int node : c.getNodes()) {
+				for (int out : g.getNode(node).getOutgoingEdges()) {
+					if (communities.getCommunityOfNode(out).getIndex() == c
+							.getIndex()) {
 						IC++;
 					} else {
 						OC++;
 					}
 				}
+				for (int in : g.getNode(node).getIncomingEdges()) {
+					if (communities.getCommunityOfNode(in).getIndex() != c
+							.getIndex()) {
+						OC++;
+					}
+				}
 			}
-			Q += IC / E - Math.pow((2 * IC + OC) / (2 * E), 2);
+			Q += IC / E - Math.pow((IC + OC) / E, 2);
 		}
 		return Q;
 	}
@@ -140,7 +142,8 @@ public class Communities extends MetricImpl implements Metric {
 		Value size_max = new Value("COMMUNITIES_COMMUNITY_SIZE_MAX",
 				this.communitySize.getMax());
 		Value rt = new Value("COMMUNITIES_RUNTIME", this.runtime.getRuntime());
-		return new Value[] { mod, com, size_min, size_med, size_avg, size_max, rt };
+		return new Value[] { mod, com, size_min, size_med, size_avg, size_max,
+				rt };
 	}
 
 }
