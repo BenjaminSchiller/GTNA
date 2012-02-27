@@ -36,6 +36,7 @@
 package gtna.projects;
 
 import gtna.communities.Roles;
+import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.DegreeNodeSorter;
@@ -51,11 +52,15 @@ import gtna.networks.model.placementmodels.PlacementModelContainer;
 import gtna.networks.model.placementmodels.connectors.UDGConnector;
 import gtna.networks.model.placementmodels.models.CommunityPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
+import gtna.networks.util.DescriptionWrapper;
+import gtna.plot.Plot;
 import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityColors;
+import gtna.transformation.communities.CommunityDetectionDeltaQ;
 import gtna.transformation.communities.CommunityDetectionLPA;
 import gtna.transformation.communities.Roles2Generation;
 import gtna.transformation.communities.RolesGeneration;
+import gtna.util.Config;
 
 import java.util.Random;
 
@@ -66,6 +71,48 @@ import java.util.Random;
 public class Resilience {
 
 	public static void main(String[] args) {
+		Transformation t_lpa = new CommunityDetectionLPA();
+		Transformation t_dq = new CommunityDetectionDeltaQ();
+		Transformation t_cc = new CommunityColors();
+		Transformation t_r = new RolesGeneration();
+		Transformation t_r2 = new Roles2Generation(true);
+
+		int[] nodes = new int[] { 1000, 2000, 3000, 4000, 5000, 6000, 7000,
+				8000, 9000, 10000 };
+
+		Transformation[] t1 = new Transformation[] { t_lpa, t_r, t_r2 };
+		Transformation[] t2 = new Transformation[] { t_dq, t_r, t_r2 };
+		Network nw1 = new DescriptionWrapper(Resilience.communityNew(2000, t1),
+				"LPA - 2000");
+		Network nw2 = new DescriptionWrapper(Resilience.communityNew(2000, t2),
+				"DeltaQ - 2000");
+		Network[] nw = new Network[] { nw1, nw2 };
+
+		Network[] nw_lpa = new Network[nodes.length];
+		for (int i = 0; i < nodes.length; i++) {
+			nw_lpa[i] = new DescriptionWrapper(Resilience.communityNew(
+					nodes[i], t1), "LPA - " + nodes[i]);
+		}
+		Network[] nw_dq = new Network[nodes.length];
+		for (int i = 0; i < nodes.length; i++) {
+			nw_dq[i] = new DescriptionWrapper(Resilience.communityNew(nodes[i],
+					t2), "DeltaQ - " + nodes[i]);
+		}
+
+		Config.overwrite("METRICS", "ROLES, ROLES2, COMMUNITIES");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/roles/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/roles/");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+
+		Series[] s_lpa = Series.generate(nw_lpa, 20);
+		Series[] s_dq = Series.generate(nw_dq, 20);
+
+		Plot.multiAvg(s_lpa, "lpa/");
+		Plot.multiAvg(s_dq, "deltaQ/");
+		Plot.singlesAvg(new Series[][] { s_lpa, s_dq }, "singles/");
+	}
+
+	private static void sorting() {
 		if (false) {
 			Network nw = new ErdosRenyi(20, 5, false, null, null);
 			Graph g = nw.generate();
@@ -81,7 +128,7 @@ public class Resilience {
 			return;
 		}
 
-		Network nw = Resilience.communityNew(2000);
+		Network nw = Resilience.communityNew(2000, null);
 		Transformation t_lpa = new CommunityDetectionLPA();
 		Transformation t_cc = new CommunityColors();
 		Transformation t_r = new RolesGeneration();
@@ -105,13 +152,13 @@ public class Resilience {
 		// }
 	}
 
-	private static Network communityNew(int nodes) {
+	private static Network communityNew(int nodes, Transformation[] t) {
 		PlacementModel p1 = new CommunityPlacementModel(20, 20, 0.5, false);
 		PlacementModel p2 = new CommunityPlacementModel(20, 20, 0.2, false);
 		Partitioner partitioner = new SimplePartitioner();
 		NodeConnector connector = new UDGConnector(1);
 		return new PlacementModelContainer(nodes, nodes / 100, 40, 40, p1, p2,
-				partitioner, connector, null, null);
+				partitioner, connector, null, t);
 	}
 
 	private static void print(Node[] nodes, Graph g) {
