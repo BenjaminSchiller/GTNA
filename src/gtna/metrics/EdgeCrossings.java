@@ -122,6 +122,7 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 				maxCrossingNumber = Math.max(innerResult, maxCrossingNumber);
 				result += innerResult;
 			}
+			handledEdges = null;
 		}
 		this.runtime.end();
 		// System.out.println("Computed " + result + " crossings with " +
@@ -203,13 +204,14 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		int numCross = 0;
 		Edge[] nodeEdges = n.generateAllEdges();
 		Edge[] graphEdges = g.generateEdges();
-		handledEdges = new HashSet<String>(nodeEdges.length * graphEdges.length);
+		handledEdges = new HashSet<String>(nodeEdges.length * graphEdges.length, 0.95f );
 		for (Edge x : nodeEdges) {
 			for (Edge y : graphEdges) {
 				if (hasCrossing(x, y, idSpace, true))
 					numCross++;
 			}
 		}
+		handledEdges = null;
 		return numCross;
 	}
 
@@ -217,7 +219,7 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		int numCross = 0;
 		Edge[] nEdges = n.getEdges();
 		Edge[] mEdges = m.getEdges();
-		handledEdges = new HashSet<String>( nEdges.length * mEdges.length );
+		handledEdges = new HashSet<String>( nEdges.length * mEdges.length, 0.95f );
 		partitions = idSpace.getPartitions();
 		for (Edge nEdge : nEdges) {
 			for (Edge mEdge : mEdges) {
@@ -225,6 +227,7 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 					numCross++;
 			}
 		}
+		handledEdges = null;
 		return numCross;
 	}
 

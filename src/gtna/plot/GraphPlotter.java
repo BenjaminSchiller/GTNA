@@ -59,7 +59,7 @@ public class GraphPlotter {
 	}
 
 	public GraphPlotter(String basename, String extension, int iterationModulus) {
-		this(basename, extension, null, -1);
+		this(basename, extension, null, iterationModulus);
 	}
 
 	public GraphPlotter(String basename, String extension) {
