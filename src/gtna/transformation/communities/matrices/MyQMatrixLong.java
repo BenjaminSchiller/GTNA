@@ -27,11 +27,10 @@ public class MyQMatrixLong implements IMyQMatrix {
 	// be faster than resizing the array at each iteration.
 	private boolean[] deleted;
 
-
 	private TreeSet<MergeValueLong> data;
-	
+
 	private long[][] data2;
-	
+
 	// Stores the EMatrix of which this QMatrix was created. This matrix will
 	// then be used when calculating the update.
 	private MyEMatrixLong e;
@@ -68,14 +67,13 @@ public class MyQMatrixLong implements IMyQMatrix {
 		MergeValueLong temp = null;
 		for (int i = 0; i < dimension; i++) {
 			for (int j = i + 1; j < dimension; j++) {
-				if (e.getValue(i, j) != 0 || e.getValue(j, i) != 0){
-					val = (edges * (e.getValue(j, i) + e.getValue(i, j)) - 2 * e.getRowSum(i)
-							* e.getRowSum(j));
+				if (e.getValue(i, j) != 0 || e.getValue(j, i) != 0) {
+					val = (edges * (e.getValue(j, i) + e.getValue(i, j)) - 2
+							* e.getRowSum(i) * e.getRowSum(j));
 					temp = new MergeValueLong(i, j, val);
 					data.add(temp);
 					data2[i][j] = val;
-				}
-				else
+				} else
 					data2[i][j] = Integer.MAX_VALUE;
 
 				// as defined by the paper referred to in the Class Description
@@ -133,15 +131,22 @@ public class MyQMatrixLong implements IMyQMatrix {
 	 * @see gtna.metrics.communities.IMyQMatrix#getNextMerge()
 	 */
 	public void getNextMerge(int[] erg) {
+		if (data.size() == 0) {
+			erg[0] = -1;
+			erg[1] = -1;
+			return;
+		}
+
 		MergeValueLong next = data.last();
 
 		lastDelta = next.value;
 
 		erg[0] = next.i;
 		erg[1] = next.j;
-		
-		if(debug)
-			Log.debug("Next merge (" + erg[0] + ", " + erg[1] + ") = " + lastDelta);
+
+		if (debug)
+			Log.debug("Next merge (" + erg[0] + ", " + erg[1] + ") = "
+					+ lastDelta);
 	}
 
 	/*
@@ -152,42 +157,49 @@ public class MyQMatrixLong implements IMyQMatrix {
 	 */
 	public void update(int i, int j) {
 		removeValue(i, j);
-		
+
 		// first flag j as deleted so there are no updates done to the column
 		deleted[j] = true;
 
 		for (int k = 0; k < dimension; k++) {
-			if(k < i){
+			if (k < i) {
 				removeValue(k, i);
 				if (!deleted[k]) {
-					if (e.getValue(i, k) != 0 || e.getValue(k, i) != 0){
-						setValue(k, i, (edges * (e.getValue(k, i) + e.getValue(i, k)) - (2 * e.getRowSum(k) * e.getRowSum(i))));			
+					if (e.getValue(i, k) != 0 || e.getValue(k, i) != 0) {
+						setValue(
+								k,
+								i,
+								(edges * (e.getValue(k, i) + e.getValue(i, k)) - (2 * e
+										.getRowSum(k) * e.getRowSum(i))));
 					}
 				}
-			}
-			else if(k > i){
+			} else if (k > i) {
 				removeValue(i, k);
 				if (!deleted[k]) {
-					if (e.getValue(i, k) != 0 || e.getValue(k, i) != 0){
-						setValue(i, k, (edges * (e.getValue(i, k) + e.getValue(k, i)) - (2 * e.getRowSum(k) * e.getRowSum(i))));			
+					if (e.getValue(i, k) != 0 || e.getValue(k, i) != 0) {
+						setValue(
+								i,
+								k,
+								(edges * (e.getValue(i, k) + e.getValue(k, i)) - (2 * e
+										.getRowSum(k) * e.getRowSum(i))));
 					}
-				}				
-				
+				}
+
 			}
-			
-			if(k < j)
+
+			if (k < j)
 				removeValue(k, j);
-			else if(k > j)
+			else if (k > j)
 				removeValue(j, k);
 
 		}
 	}
 
 	private void removeValue(int j, int k) {
-		if(data2[j][k] != Integer.MAX_VALUE){
+		if (data2[j][k] != Integer.MAX_VALUE) {
 			data.remove(new MergeValueLong(j, k, data2[j][k]));
 			data2[j][k] = Integer.MAX_VALUE;
-		}		
+		}
 	}
 
 	/**
@@ -210,7 +222,7 @@ public class MyQMatrixLong implements IMyQMatrix {
 				ret.append("\t");
 				for (int j = 0; j < dimension; j++) {
 					if (!deleted[j]) {
-						if(getValue(i, j) == Integer.MAX_VALUE)
+						if (getValue(i, j) == Integer.MAX_VALUE)
 							ret.append("x");
 						else
 							ret.append(getValue(i, j));
@@ -227,7 +239,6 @@ public class MyQMatrixLong implements IMyQMatrix {
 	public double getLastDelta() {
 		return lastDelta;
 	}
-
 
 	@Override
 	public void setDebug(boolean debug) {
