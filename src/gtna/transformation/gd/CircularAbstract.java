@@ -89,19 +89,29 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 
 	protected void reduceCrossingsBySwapping(Graph g) {
 		Node currentNode, predecessor;
+		Integer currentNodeID, predecessorID;
 		int currentCrossings, swappedCrossings;
 		long startTime = System.currentTimeMillis();
 
 		/*
 		 * Add all nodes to the todolist
 		 */
-		LinkedList<Node> todolist = new LinkedList<Node>();
-		todolist.addAll(Arrays.asList(g.getNodes()));
+		LinkedList<Integer> todolist = new LinkedList<Integer>();
+		for ( Node n: g.getNodes() ) {
+			todolist.add(n.getIndex());
+		}
 
 		int countLoop = 0;
-		while ((currentNode = todolist.poll()) != null) {
+		int lastCounter = todolist.size();
+		while ((currentNodeID = todolist.poll()) != null) {
 			countLoop++;
-			
+			if (countLoop % 2000 == 0) {
+//				System.out.println("In iteration " + countLoop + "; todoList still holds " + todolist.size()
+//						+ " elements (prior: " + lastCounter + ", for " + g.getNodes().length + " nodes)");
+//				lastCounter = todolist.size();
+			}
+			currentNode = g.getNode(currentNodeID);
+
 			/*
 			 * Special case handling: current node has a degree of zero
 			 */
@@ -120,7 +130,8 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 				continue;
 			}
 
-			predecessor = g.getNode(getPredecessor(currentNode.getIndex()));
+			predecessorID = getPredecessor(currentNode.getIndex());
+			predecessor = g.getNode(predecessorID);
 			currentCrossings = edgeCrossings.calculateCrossings(currentNode, predecessor, idSpace);
 
 			if (currentCrossings == 0) {
@@ -130,7 +141,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 				 */
 				continue;
 			}
-			swapPositions(currentNode.getIndex(), predecessor.getIndex());
+			swapPositions(currentNodeID, predecessorID);
 			swappedCrossings = edgeCrossings.calculateCrossings(currentNode, predecessor, idSpace);
 			if (swappedCrossings < currentCrossings) {
 				/*
@@ -144,15 +155,17 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 				 * - because the predecessor might also have a predecessor
 				 * sharing a lot of edge crossings...
 				 */
-				todolist.add(currentNode);
-				todolist.add(predecessor);
+				if ( !todolist.contains(currentNodeID))
+					todolist.add(currentNodeID);
+				if ( !todolist.contains(predecessorID))
+					todolist.add(predecessorID);
 			} else {
-				swapPositions(currentNode.getIndex(), predecessor.getIndex());
+				swapPositions(currentNodeID, predecessorID);
 			}
 		}
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
-// 		System.out.println("Did " + countLoop + " loops in " + totalTime + " msec");
+		System.out.println("Did " + countLoop + " loops in " + totalTime + " msec");
 	}
 
 	protected int getPredecessor(int i) {
