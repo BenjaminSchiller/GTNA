@@ -42,6 +42,7 @@ import gtna.data.Singles;
 import gtna.io.DataWriter;
 import gtna.io.Filewriter;
 import gtna.io.LaTex;
+import gtna.metrics.Metric;
 import gtna.util.Config;
 import gtna.util.Timer;
 
@@ -51,134 +52,158 @@ import gtna.util.Timer;
  * 
  */
 public class Plot {
-	public static void singlesAvg(Series[][] series, String folder) {
-		singles(series, folder, false, false, true);
+	public static void singlesAvg(Series[][] series, String folder,
+			Metric[] metrics) {
+		singles(series, folder, false, false, true, metrics);
 	}
 
-	public static void singlesAvg(Series[] series, String folder) {
-		singlesAvg(new Series[][] { series }, folder);
+	public static void singlesAvg(Series[] series, String folder,
+			Metric[] metrics) {
+		singlesAvg(new Series[][] { series }, folder, metrics);
 	}
 
-	public static void singlesAvg(Series series, String folder) {
-		singlesAvg(new Series[][] { new Series[] { series } }, folder);
+	public static void singlesAvg(Series series, String folder, Metric[] metrics) {
+		singlesAvg(new Series[][] { new Series[] { series } }, folder, metrics);
 	}
 
-	public static void singlesConf(Series[][] series, String folder) {
-		singles(series, folder, false, true, true);
+	public static void singlesConf(Series[][] series, String folder,
+			Metric[] metrics) {
+		singles(series, folder, false, true, true, metrics);
 	}
 
-	public static void singlesConf(Series[] series, String folder) {
-		singlesAvg(new Series[][] { series }, folder);
+	public static void singlesConf(Series[] series, String folder,
+			Metric[] metrics) {
+		singlesAvg(new Series[][] { series }, folder, metrics);
 	}
 
-	public static void singlesConf(Series series, String folder) {
-		singlesAvg(new Series[][] { new Series[] { series } }, folder);
+	public static void singlesConf(Series series, String folder,
+			Metric[] metrics) {
+		singlesAvg(new Series[][] { new Series[] { series } }, folder, metrics);
 	}
 
-	public static void singlesAvgByEdges(Series[][] series, String folder) {
-		singles(series, folder, true, false, true);
+	public static void singlesAvgByEdges(Series[][] series, String folder,
+			Metric[] metrics) {
+		singles(series, folder, true, false, true, metrics);
 	}
 
-	public static void singlesAvgByEdges(Series[] series, String folder) {
-		singlesAvgByEdges(new Series[][] { series }, folder);
+	public static void singlesAvgByEdges(Series[] series, String folder,
+			Metric[] metrics) {
+		singlesAvgByEdges(new Series[][] { series }, folder, metrics);
 	}
 
-	public static void singlesConfByEdges(Series[][] series, String folder) {
-		singles(series, folder, true, true, true);
+	public static void singlesConfByEdges(Series[][] series, String folder,
+			Metric[] metrics) {
+		singles(series, folder, true, true, true, metrics);
 	}
 
-	public static void singlesConfByEdges(Series[] series, String folder) {
-		singlesConfByEdges(new Series[][] { series }, folder);
+	public static void singlesConfByEdges(Series[] series, String folder,
+			Metric[] metrics) {
+		singlesConfByEdges(new Series[][] { series }, folder, metrics);
 	}
 
-	public static void singlesAvgByEdgesNoLine(Series[][] series, String folder) {
-		singles(series, folder, true, false, false);
+	public static void singlesAvgByEdgesNoLine(Series[][] series,
+			String folder, Metric[] metrics) {
+		singles(series, folder, true, false, false, metrics);
 	}
 
-	public static void singlesAvgByEdgesNoLine(Series[] series, String folder) {
-		singlesAvgByEdgesNoLine(new Series[][] { series }, folder);
+	public static void singlesAvgByEdgesNoLine(Series[] series, String folder,
+			Metric[] metrics) {
+		singlesAvgByEdgesNoLine(new Series[][] { series }, folder, metrics);
 	}
 
-	public static void singlesConfByEdgesNoLine(Series[][] series, String folder) {
-		singles(series, folder, true, true, false);
+	public static void singlesConfByEdgesNoLine(Series[][] series,
+			String folder, Metric[] metrics) {
+		singles(series, folder, true, true, false, metrics);
 	}
 
-	public static void singlesConfByEdgesNoLine(Series[] series, String folder) {
-		singlesConfByEdgesNoLine(new Series[][] { series }, folder);
+	public static void singlesConfByEdgesNoLine(Series[] series, String folder,
+			Metric[] metrics) {
+		singlesConfByEdgesNoLine(new Series[][] { series }, folder, metrics);
 	}
 
-	public static void allSingleByEdges(Series[] series, String folder) {
-		allSingleByEdges(new Series[][] { series }, folder);
+	public static void allSingleByEdges(Series[] series, String folder,
+			Metric[] metrics) {
+		allSingleByEdges(new Series[][] { series }, folder, metrics);
 	}
 
-	public static void allSingle(Series[] series, String folder) {
-		allSingle(new Series[][] { series }, folder);
+	public static void allSingle(Series[] series, String folder,
+			Metric[] metrics) {
+		allSingle(new Series[][] { series }, folder, metrics);
 	}
 
-	public static void allSingle(Series[][] series, String folder) {
-		singlesAvg(series, folder + Config.get("PLOT_ALL_SINGLES_AVG_FOLDER"));
-		singlesConf(series, folder + Config.get("PLOT_ALL_SINGLES_CONF_FOLDER"));
+	public static void allSingle(Series[][] series, String folder,
+			Metric[] metrics) {
+		singlesAvg(series, folder + Config.get("PLOT_ALL_SINGLES_AVG_FOLDER"),
+				metrics);
+		singlesConf(series,
+				folder + Config.get("PLOT_ALL_SINGLES_CONF_FOLDER"), metrics);
 		if (Config.getBoolean("PLOT_ALL_SINGLES_TABLE_WRITE")) {
 			String fn = Config.get("MAIN_PLOT_FOLDER") + folder
 					+ Config.get("PLOT_ALL_SINGLES_TABLE_FILENAME");
 			String f = Config.get("MAIN_PLOT_FOLDER") + folder
 					+ Config.get("PLOT_ALL_SINGLES_TABLE_FOLDER");
-			LaTex.writeSingleTables(series, fn, f);
+			LaTex.writeSingleTables(series, fn, f, metrics);
 		}
 	}
 
-	public static void allSingleByEdges(Series[][] series, String folder) {
+	public static void allSingleByEdges(Series[][] series, String folder,
+			Metric[] metrics) {
 		singlesAvgByEdges(series,
-				folder + Config.get("PLOT_ALL_SINGLES_AVG_FOLDER"));
+				folder + Config.get("PLOT_ALL_SINGLES_AVG_FOLDER"), metrics);
 		singlesConfByEdges(series,
-				folder + Config.get("PLOT_ALL_SINGLES_CONF_FOLDER"));
+				folder + Config.get("PLOT_ALL_SINGLES_CONF_FOLDER"), metrics);
 	}
 
-	public static void allSingleByEdgesNoLine(Series[][] series, String folder) {
+	public static void allSingleByEdgesNoLine(Series[][] series, String folder,
+			Metric[] metrics) {
 		singlesAvgByEdgesNoLine(series,
-				folder + Config.get("PLOT_ALL_SINGLES_AVG_FOLDER"));
+				folder + Config.get("PLOT_ALL_SINGLES_AVG_FOLDER"), metrics);
 		singlesConfByEdgesNoLine(series,
-				folder + Config.get("PLOT_ALL_SINGLES_CONF_FOLDER"));
+				folder + Config.get("PLOT_ALL_SINGLES_CONF_FOLDER"), metrics);
 	}
 
-	public static void multiAvg(Series[] series, String folder) {
-		multi(series, folder, "AVG");
+	public static void multiAvg(Series[] series, String folder, Metric[] metrics) {
+		multi(series, folder, "AVG", metrics);
 	}
 
-	public static void multiAvg(Series series, String folder) {
-		multiAvg(new Series[] { series }, folder);
+	public static void multiAvg(Series series, String folder, Metric[] metrics) {
+		multiAvg(new Series[] { series }, folder, metrics);
 	}
 
-	public static void multiConf(Series[] series, String folder) {
-		multi(series, folder, "CONF");
+	public static void multiConf(Series[] series, String folder,
+			Metric[] metrics) {
+		multi(series, folder, "CONF", metrics);
 	}
 
-	public static void multiConf(Series series, String folder) {
-		multiConf(new Series[] { series }, folder);
+	public static void multiConf(Series series, String folder, Metric[] metrics) {
+		multiConf(new Series[] { series }, folder, metrics);
 	}
 
-	public static void multiVar(Series[] series, String folder) {
-		multi(series, folder, "VAR");
+	public static void multiVar(Series[] series, String folder, Metric[] metrics) {
+		multi(series, folder, "VAR", metrics);
 	}
 
-	public static void multiVar(Series series, String folder) {
-		multiVar(new Series[] { series }, folder);
+	public static void multiVar(Series series, String folder, Metric[] metrics) {
+		multiVar(new Series[] { series }, folder, metrics);
 	}
 
-	public static void allMulti(Series series, String folder) {
-		allMulti(new Series[] { series }, folder);
+	public static void allMulti(Series series, String folder, Metric[] metrics) {
+		allMulti(new Series[] { series }, folder, metrics);
 	}
 
-	public static void allMulti(Series[] series, String folder) {
-		multiAvg(series, folder + Config.get("PLOT_ALL_MULTI_AVG_FOLDER"));
-		multiConf(series, folder + Config.get("PLOT_ALL_MULTI_CONF_FOLDER"));
-		multiVar(series, folder + Config.get("PLOT_ALL_MULTI_VAR_FOLDER"));
+	public static void allMulti(Series[] series, String folder, Metric[] metrics) {
+		multiAvg(series, folder + Config.get("PLOT_ALL_MULTI_AVG_FOLDER"),
+				metrics);
+		multiConf(series, folder + Config.get("PLOT_ALL_MULTI_CONF_FOLDER"),
+				metrics);
+		multiVar(series, folder + Config.get("PLOT_ALL_MULTI_VAR_FOLDER"),
+				metrics);
 		if (Config.getBoolean("PLOT_ALL_MULTI_TABLE_WRITE")) {
 			String fn = Config.get("MAIN_PLOT_FOLDER") + folder
 					+ Config.get("PLOT_ALL_MULTI_TABLE_FILENAME");
 			String f = Config.get("MAIN_PLOT_FOLDER") + folder
 					+ Config.get("PLOT_ALL_MULTI_TABLE_FOLDER");
-			LaTex.writeSingleTables(series, fn, f);
+			LaTex.writeSingleTables(series, fn, f, metrics);
 		}
 	}
 
@@ -189,7 +214,7 @@ public class Plot {
 	// TODO add plot modes for sinlges as well
 
 	private static void singles(Series[][] series, String folder,
-			boolean byEdges, boolean conf, boolean line) {
+			boolean byEdges, boolean conf, boolean line, Metric[] metrics) {
 		String name = "";
 		if (byEdges) {
 			if (conf) {
@@ -208,7 +233,7 @@ public class Plot {
 				.replace("%SERIES", "" + series.length)
 				.replace("%DEST", folder));
 		Filewriter.generateFolders(Config.get("MAIN_PLOT_FOLDER") + folder);
-		String[][] keys = Config.allKeys("_SINGLES_PLOTS");
+		String[][] keys = Config.allKeys("_SINGLES_PLOTS", metrics);
 		for (int i = 0; i < keys.length; i++) {
 			for (int j = 0; j < keys[i].length; j++) {
 				plotSingles(series, folder, byEdges, conf, line, keys[i][j]);
@@ -216,7 +241,8 @@ public class Plot {
 		}
 		if (Config.getBoolean("PLOT_SINGLES_LATEX_WRITE")) {
 			LaTex.writeSinglePlots(Config.get("MAIN_PLOT_FOLDER") + folder
-					+ Config.get("PLOT_SINGLES_LATEX_FILENAME"), folder, series);
+					+ Config.get("PLOT_SINGLES_LATEX_FILENAME"), folder,
+					series, metrics);
 		}
 		timer.end();
 	}
@@ -450,7 +476,8 @@ public class Plot {
 	 * MULTI
 	 */
 
-	private static void multi(Series[] series, String folder, String type) {
+	private static void multi(Series[] series, String folder, String type,
+			Metric[] metrics) {
 		String name = "";
 		if (type.equals("CONF")) {
 			name = "PLOT_MULTI_CONF";
@@ -464,28 +491,40 @@ public class Plot {
 				.replace("%DEST", folder));
 		Filewriter.generateFolders(Config.get("MAIN_PLOT_FOLDER") + folder);
 
-		String[][] keys = Config.allKeys("_DATA_PLOTS");
-		for (int i = 0; i < keys.length; i++) {
-			for (int j = 0; j < keys[i].length; j++) {
+		for (Metric m : metrics) {
+			String[] keys = Config.keys(m.key() + "_DATA_PLOTS");
+			for (String k : keys) {
 				if (type.equals("CONF")) {
-					multiConf(series, folder, keys[i][j]);
+					multiConf(series, folder, k, m);
 				} else if (type.equals("AVG")) {
-					multiAvg(series, folder, keys[i][j]);
+					multiAvg(series, folder, k, m);
 				} else if (type.equals("VAR")) {
-					multiVar(series, folder, keys[i][j]);
+					multiVar(series, folder, k);
 				}
 			}
 		}
+		// String[][] keys = Config.allKeys("_DATA_PLOTS", metrics);
+		// for (int i = 0; i < keys.length; i++) {
+		// for (int j = 0; j < keys[i].length; j++) {
+		// if (type.equals("CONF")) {
+		// multiConf(series, folder, keys[i][j]);
+		// } else if (type.equals("AVG")) {
+		// multiAvg(series, folder, keys[i][j]);
+		// } else if (type.equals("VAR")) {
+		// multiVar(series, folder, keys[i][j]);
+		// }
+		// }
+		// }
 		if (Config.getBoolean("PLOT_MULTI_LATEX_WRITE")) {
 			LaTex.writeDataPlots(Config.get("MAIN_PLOT_FOLDER") + folder
 					+ Config.get("PLOT_MULTI_LATEX_FILENAME"),
-					Config.get("MAIN_PLOT_FOLDER") + folder, series);
+					Config.get("MAIN_PLOT_FOLDER") + folder, series, metrics);
 		}
 		if (Config.getBoolean("PLOT_ALL_SINGLES_TABLE_WRITE")) {
 			String fn = Config.get("MAIN_PLOT_FOLDER") + folder
 					+ Config.get("PLOT_ALL_SINGLES_TABLE_FILENAME");
 			String f = Config.get("MAIN_PLOT_FOLDER") + folder;
-			LaTex.writeSingleTables(series, fn, f);
+			LaTex.writeSingleTables(series, fn, f, metrics);
 		}
 		timer.end();
 	}
@@ -494,16 +533,16 @@ public class Plot {
 	 * MULTI CONF
 	 */
 
-	private static void multiConf(Series[] series, String folder, String plotKey) {
+	private static void multiConf(Series[] series, String folder, String plotKey, Metric metric) {
 		String[] data = Config.keys(plotKey + "_PLOT_DATA");
-		for (int i = 0; i < data.length; i++) {
-			if (!Config.containsData(data[i])) {
-				return;
-			}
-		}
-		String filename = Config.get(plotKey + "_PLOT_FILENAME");
+		// for (int i = 0; i < data.length; i++) {
+		// if (!Config.containsData(data[i])) {
+		// return;
+		// }
+		// }
+		String filename = metric.folder() + "__" + Config.get(plotKey + "_PLOT_FILENAME");
 		String ext = Config.get("PLOT_EXTENSION");
-		String title = Config.get(plotKey + "_PLOT_TITLE");
+		String title = Config.get(plotKey + "_PLOT_TITLE") + "  -  " + metric.folder();
 		String xLabel = Config.get(plotKey + "_PLOT_X");
 		String yLabel = Config.get(plotKey + "_PLOT_Y");
 		String key = Config.get(plotKey + "_PLOT_KEY");
@@ -528,9 +567,11 @@ public class Plot {
 		for (int d = 0; d < data.length; d++) {
 			for (int i = 0; i < series.length; i++) {
 				String filenameConf = series[i].confDataFolder()
+						+ metric.folder() + "/"
 						+ Config.get(data[d] + "_DATA_FILENAME")
 						+ Config.get("DATA_EXTENSION");
 				String filenameAvg = series[i].avgDataFolder()
+						+ metric.folder() + "/"
 						+ Config.get(data[d] + "_DATA_FILENAME")
 						+ Config.get("DATA_EXTENSION");
 				String name = series[i].network().description();
@@ -572,16 +613,16 @@ public class Plot {
 	 * MULTI AVG
 	 */
 
-	private static void multiAvg(Series[] series, String folder, String plotKey) {
+	private static void multiAvg(Series[] series, String folder, String plotKey, Metric metric) {
 		String[] data = Config.keys(plotKey + "_PLOT_DATA");
-		for (int i = 0; i < data.length; i++) {
-			if (!Config.containsData(data[i])) {
-				return;
-			}
-		}
-		String filename = Config.get(plotKey + "_PLOT_FILENAME");
+		// for (int i = 0; i < data.length; i++) {
+		// if (!Config.containsData(data[i])) {
+		// return;
+		// }
+		// }
+		String filename = metric.folder() + "__" + Config.get(plotKey + "_PLOT_FILENAME");
 		String ext = Config.get("PLOT_EXTENSION");
-		String title = Config.get(plotKey + "_PLOT_TITLE");
+		String title = Config.get(plotKey + "_PLOT_TITLE") + "  -  " + metric.folder();
 		String xLabel = Config.get(plotKey + "_PLOT_X");
 		String yLabel = Config.get(plotKey + "_PLOT_Y");
 		String key = Config.get(plotKey + "_PLOT_KEY");
@@ -617,6 +658,7 @@ public class Plot {
 		for (int d = 0; d < data.length; d++) {
 			for (int i = 0; i < series.length; i++) {
 				String file = series[i].avgDataFolder()
+						+ metric.folder() + "/"
 						+ Config.get(data[d] + "_DATA_FILENAME")
 						+ Config.get("DATA_EXTENSION");
 				String name = series[i].network().description();
@@ -669,11 +711,11 @@ public class Plot {
 
 	private static void multiVar(Series[] series, String folder, String plotKey) {
 		String[] data = Config.keys(plotKey + "_PLOT_DATA");
-		for (int i = 0; i < data.length; i++) {
-			if (!Config.containsData(data[i])) {
-				return;
-			}
-		}
+		// for (int i = 0; i < data.length; i++) {
+		// if (!Config.containsData(data[i])) {
+		// return;
+		// }
+		// }
 		String filename = Config.get(plotKey + "_PLOT_FILENAME");
 		String ext = Config.get("PLOT_EXTENSION");
 		String title = Config.get(plotKey + "_PLOT_TITLE");

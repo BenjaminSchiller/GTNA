@@ -58,8 +58,20 @@ public class WeakConnectivityPartition extends TransformationImpl implements
 
 	@Override
 	public Graph transform(Graph g) {
-		ArrayList<ArrayList<Integer>> components = new ArrayList<ArrayList<Integer>>();
 		boolean[] seen = new boolean[g.getNodes().length];
+		Partition p = WeakConnectivityPartition.getWeakPartition(g, seen);
+		g.addProperty(g.getNextKey("WEAK_CONNECTIVITY_PARTITION"), p);
+		g.addProperty(g.getNextKey("PARTITION"), p);
+		return g;
+	}
+
+	@Override
+	public boolean applicable(Graph g) {
+		return true;
+	}
+
+	public static Partition getWeakPartition(Graph g, boolean[] seen) {
+		ArrayList<ArrayList<Integer>> components = new ArrayList<ArrayList<Integer>>();
 		for (int start = 0; start < seen.length; start++) {
 			if (seen[start]) {
 				continue;
@@ -87,15 +99,7 @@ public class WeakConnectivityPartition extends TransformationImpl implements
 			}
 			components.add(current);
 		}
-		Partition p = new Partition(components);
-		g.addProperty(g.getNextKey("WEAK_CONNECTIVITY_PARTITION"), p);
-		g.addProperty(g.getNextKey("PARTITION"), p);
-		return g;
-	}
-
-	@Override
-	public boolean applicable(Graph g) {
-		return true;
+		return new Partition(components);
 	}
 
 }

@@ -38,6 +38,9 @@ package gtna;
 import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.io.GraphWriter;
+import gtna.metrics.DegreeDistribution;
+import gtna.metrics.Metric;
+import gtna.metrics.ShortestPaths;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.plot.Plot;
@@ -74,64 +77,69 @@ public class GTNA {
 	private static void example2() {
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/example2/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/example2/");
-		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION");
+		// Config.overwrite("METRICS", "DEGREE_DISTRIBUTION");
+		Metric[] metrics = new Metric[] { new DegreeDistribution() };
 
 		Network nw1 = new ErdosRenyi(100, 5, false, null, null);
-		Series s1 = Series.generate(nw1, 5);
-		Plot.multiAvg(s1, "er-unidirectional/");
+		Series s1 = Series.generate(nw1, metrics, 5);
+		Plot.multiAvg(s1, "er-unidirectional/", metrics);
 
 		Network nw2 = new ErdosRenyi(100, 5, true, null, null);
-		Series s2 = Series.generate(nw2, 10);
-		Plot.multiAvg(s2, "er-bidirectional/");
+		Series s2 = Series.generate(nw2, metrics, 10);
+		Plot.multiAvg(s2, "er-bidirectional/", metrics);
 
 		Series[] s = new Series[] { s1, s2 };
-		Plot.multiAvg(s, "er-both/");
+		Plot.multiAvg(s, "er-both/", metrics);
 	}
 
 	private static void example3() {
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/example2/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/example3/");
-		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION");
+		// Config.overwrite("METRICS", "DEGREE_DISTRIBUTION");
+		Metric[] metrics = new Metric[] { new DegreeDistribution() };
 
 		Network nw1 = new ErdosRenyi(100, 5, false, null, null);
 		Network nw2 = new ErdosRenyi(100, 5, true, null, null);
 		Network[] nw = new Network[] { nw1, nw2 };
 		Series[] s = Series.get(nw);
-		Plot.multiConf(s, "er-get/");
+		Plot.multiConf(s, "er-get/", metrics);
 	}
 
 	private static void example4() {
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/example4/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/example4/");
-		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION");
+		// Config.overwrite("METRICS", "DEGREE_DISTRIBUTION");
+		Metric[] metrics = new Metric[] { new DegreeDistribution() };
 
 		Transformation t1 = new Bidirectional();
 		Transformation[] t = new Transformation[] { t1 };
 		Network nw1 = new ErdosRenyi(100, 5, false, null, null);
 		Network nw2 = new ErdosRenyi(100, 5, false, null, t);
 		Network[] nw = new Network[] { nw1, nw2 };
-		Series[] s = Series.generate(nw, 10);
-		Plot.multiAvg(s, "er-transformed/");
+		Series[] s = Series.generate(nw, metrics, 10);
+		Plot.multiAvg(s, "er-transformed/", metrics);
 	}
 
 	private static void example5() {
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/example5/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/example5/");
-		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION");
+		// Config.overwrite("METRICS", "DEGREE_DISTRIBUTION");
+		Metric[] metrics = new Metric[] { new DegreeDistribution() };
 
 		Network[] nw = ErdosRenyi.get(100, new double[] { 5, 6, 7, 8, 9, 10 },
 				false, null, null);
-		Series[] s = Series.generate(nw, 7);
-		Plot.singlesAvg(s, "er-singles/");
+		Series[] s = Series.generate(nw, metrics, 7);
+		Plot.singlesAvg(s, "er-singles/", metrics);
 	}
 
 	private static void example6() {
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/example6/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/example6/");
-		Config.overwrite("METRICS", "CLUSTERING_COEFFICIENT, "
-				+ "DEGREE_DISTRIBUTION, " + "RICH_CLUB_CONNECTIVITY, "
-				+ "ROUTING, " + "SHORTEST_PATHS, " + "STRONG_CONNECTIVITY, "
-				+ "WEAK_CONNECTIVITY");
+		// Config.overwrite("METRICS", "CLUSTERING_COEFFICIENT, "
+		// + "DEGREE_DISTRIBUTION, " + "RICH_CLUB_CONNECTIVITY, "
+		// + "ROUTING, " + "SHORTEST_PATHS, " + "STRONG_CONNECTIVITY, "
+		// + "WEAK_CONNECTIVITY");
+		Metric[] metrics = new Metric[] { new DegreeDistribution() };
 
 		Transformation t1 = new RandomRingIDSpace();
 		Transformation t2 = new Bidirectional();
@@ -146,25 +154,26 @@ public class GTNA {
 		Network[] nw3 = ErdosRenyi.get(300, new double[] { 5, 6, 7, 8, 9, 10 },
 				false, ra, t);
 		Network[][] nw = new Network[][] { nw1, nw2, nw3 };
-		Series[][] s = Series.generate(nw, 3);
+		Series[][] s = Series.generate(nw, metrics, 3);
 		Series[] s1 = Series.get(nw1);
 		Series[] s2 = Series.get(nw2);
 		Series[] s3 = Series.get(nw3);
-		Plot.singlesConf(s, "er-more-singles/");
-		Plot.multiConf(s1, "er-more-multi-1/");
-		Plot.multiConf(s2, "er-more-multi-2/");
-		Plot.multiConf(s3, "er-more-multi-3/");
-		Plot.multiConf(Util.combine(s), "er-more-multi/");
+		Plot.singlesConf(s, "er-more-singles/", metrics);
+		Plot.multiConf(s1, "er-more-multi-1/", metrics);
+		Plot.multiConf(s2, "er-more-multi-2/", metrics);
+		Plot.multiConf(s3, "er-more-multi-3/", metrics);
+		Plot.multiConf(Util.combine(s), "er-more-multi/", metrics);
 	}
 
 	private static void example7() {
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/example7/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/example7/");
-		Config.overwrite("METRICS", "SHORTEST_PATHS");
+		// Config.overwrite("METRICS", "SHORTEST_PATHS");
+		Metric[] metrics = new Metric[] { new ShortestPaths() };
 
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 		Network nw1 = new ErdosRenyi(100, 5, false, null, null);
-		Series s1 = Series.generate(nw1, 5);
-		Series s2 = Series.generate(nw1, 10);
+		Series s1 = Series.generate(nw1, metrics, 5);
+		Series s2 = Series.generate(nw1, metrics, 10);
 	}
 }

@@ -46,26 +46,26 @@ public class LaTex {
 	 * PLOTS
 	 */
 
-	public static void writeDataPlots(String filename, String folder, Series[] s) {
+	public static void writeDataPlots(String filename, String folder,
+			Series[] s, Metric[] metrics) {
 		String nwDescription = s[0].network().description(
 				Config.get("LATEX_PLOTS_DESCRIPTION_TYPE"),
 				s[1 % s.length].network());
-		writePlot(filename, folder, nwDescription, Config
-				.allKeys("_DATA_PLOTS"));
+		writePlot(filename, folder, nwDescription,
+				Config.allKeys("_DATA_PLOTS", metrics), metrics);
 	}
 
 	public static void writeSinglePlots(String filename, String folder,
-			Series[][] s) {
+			Series[][] s, Metric[] metrics) {
 		String nwDescription = s[0][0].network().description(
 				Config.get("LATEX_PLOTS_DESCRIPTION_TYPE"),
 				s[0][1 % s[0].length].network(), s[1 % s.length][0].network());
-		writePlot(filename, folder, nwDescription, Config
-				.allKeys("_SINGLES_PLOTS"));
+		writePlot(filename, folder, nwDescription,
+				Config.allKeys("_SINGLES_PLOTS", metrics), metrics);
 	}
 
 	private static void writePlot(String filename, String folder,
-			String nwDescription, String[][] keys) {
-		Metric[] metrics = Config.getMetrics();
+			String nwDescription, String[][] keys, Metric[] metrics) {
 		Filewriter fw = new Filewriter(filename);
 		fw.writeln("\\subsection{" + nwDescription
 				+ Config.get("LATEX_PLOTS_APPENDIX") + "}");
@@ -108,10 +108,9 @@ public class LaTex {
 	 */
 
 	public static void writeSingleTables(Series[] s, String filename,
-			String folder) {
+			String folder, Metric[] metrics) {
 		int decimals = Config.getInt("LATEX_TABLE_DECIMALS");
-		String[][] keys = Config.allKeys("_TABLE_KEYS");
-		Metric[] metrics = Config.getMetrics();
+		String[][] keys = Config.allKeys("_TABLE_KEYS", metrics);
 		Filewriter fw = new Filewriter(filename);
 		String name = s[0].network().description(
 				Config.get("LATEX_TABLE_DESCRIPTION_TYPE"),
@@ -164,14 +163,14 @@ public class LaTex {
 	 */
 
 	public static void writeSingleTables(Series[][] s, String filename,
-			String folder) {
+			String folder, Metric[] metrics) {
 		for (int i = 1; i < s.length; i++) {
 			if (s[i].length != s[0].length) {
 				return;
 			}
 		}
 		int decimals = Config.getInt("LATEX_TABLE_DECIMALS");
-		String[][] keys = Config.allKeys("_TABLE_KEYS");
+		String[][] keys = Config.allKeys("_TABLE_KEYS", metrics);
 		Filewriter fw = new Filewriter(filename);
 		String x = s[0][0].network().compareNameShort(
 				s[0][1 % s[0].length].network());
