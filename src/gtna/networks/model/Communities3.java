@@ -95,7 +95,7 @@ public class Communities3 extends NetworkImpl implements Network {
 
 	public Communities3(int[] sizes, double[][] p, int order,
 			boolean bidirectional, RoutingAlgorithm r, Transformation[] t) {
-		super("COMMUNITIES3", Util.sum(sizes), new String[] {
+		super("COMMUNITIES_NETWORK_3", Util.sum(sizes), new String[] {
 				"COMMUNITY_SIZES", "INTER_COMMUNITY_LINKS", "ORDER",
 				"BIDIRECTIONAL" }, new String[] { Util.toFolderString(sizes),
 				Util.toFolderString(p), "" + order, "" + bidirectional }, r, t);

@@ -59,7 +59,7 @@ public class Communities2 extends NetworkImpl implements Network {
 	public Communities2(int[] sizes, double[] avgInLinks,
 			int[][] interCommunityLinks, boolean bidirectional,
 			RoutingAlgorithm r, Transformation[] t) {
-		super("COMMUNITIES2", Util.sum(sizes), new String[] {
+		super("COMMUNITIES_NETWORK_2", Util.sum(sizes), new String[] {
 				"COMMUNITY_SIZES", "AVG_IN_LINKS", "INTER_COMMUNITY_LINKS" },
 				new String[] { Util.toFolderString(sizes),
 						Util.toFolderString(avgInLinks),

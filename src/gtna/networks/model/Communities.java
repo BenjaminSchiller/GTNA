@@ -59,7 +59,7 @@ public class Communities extends NetworkImpl implements Network {
 	public Communities(int n, double avgCommunitySize, double avgInLinks,
 			double avgOutLinks, boolean bidirectional, RoutingAlgorithm r,
 			Transformation[] t) {
-		super("COMMUNITIES", n, new String[] { "AVG_COMMUNITY_SIZE",
+		super("COMMUNITIES_NETWORK", n, new String[] { "AVG_COMMUNITY_SIZE",
 				"AVG_IN_LINKS", "AVG_OUT_LINKS" }, new String[] {
 				"" + avgCommunitySize, "" + avgInLinks, "" + avgOutLinks }, r,
 				t);
