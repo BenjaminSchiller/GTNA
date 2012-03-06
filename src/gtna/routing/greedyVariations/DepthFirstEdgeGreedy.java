@@ -51,11 +51,11 @@ import java.util.Vector;
 public class DepthFirstEdgeGreedy extends EdgeGreedy {
 	
 	public DepthFirstEdgeGreedy(){
-		super("DEPTHFIRST_EDGE_GREEDY");
+		super("DEPTH_FIRST_EDGE_GREEDY");
 	}
 	
 	public DepthFirstEdgeGreedy(int ttl){
-		super(ttl,"DEPTHFIRST_EDGE_GREEDY");
+		super(ttl,"DEPTH_FIRST_EDGE_GREEDY");
 	}
 
 	/* (non-Javadoc)

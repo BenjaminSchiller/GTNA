@@ -51,11 +51,11 @@ import java.util.Random;
 public class DepthFirstGreedy extends NodeGreedy {
 	
 	public DepthFirstGreedy(){
-		super("DEPTHFIRST_GREEDY");
+		super("DEPTH_FIRST_GREEDY");
 	}
 	
 	public DepthFirstGreedy(int ttl){
-		super(ttl,"DEPTHFIRST_GREEDY");
+		super(ttl,"DEPTH_FIRST_GREEDY");
 	}
 
 	/* (non-Javadoc)

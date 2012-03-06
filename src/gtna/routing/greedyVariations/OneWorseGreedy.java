@@ -53,11 +53,11 @@ public class OneWorseGreedy extends GreedyTemplate{
 	boolean[] done;
 	
 	public OneWorseGreedy(){
-		super("ONEWORSE_GREEDY");
+		super("ONE_WORSE_GREEDY");
 	}
 	
 	public OneWorseGreedy(int ttl){
-		super(ttl, "ONEWORSE_GREEDY");
+		super(ttl, "ONE_WORSE_GREEDY");
 	}
 
 	/* (non-Javadoc)
