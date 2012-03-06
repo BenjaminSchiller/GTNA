@@ -76,7 +76,7 @@ public class EdgeCrossings extends Metric {
 	private Partition[] partitions;
 
 	public EdgeCrossings() {
-		super("EC");
+		super("EDGE_CROSSINGS");
 	}
 
 	public void computeData(Graph graph, Network nw, HashMap<String, Metric> m) {
@@ -415,22 +415,22 @@ public class EdgeCrossings extends Metric {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(
 				this.completeCrossingDistribution.getDistribution(),
-				"EC_COMPLETE_DISTRIBUTION", folder);
+				"EDGE_CROSSINGS_COMPLETE_DISTRIBUTION", folder);
 		success &= DataWriter.writeWithIndex(
 				this.completeCrossingDistribution.getCdf(),
-				"EC_COMPLETE_DISTRIBUTION_CDF", folder);
+				"EDGE_CROSSINGS_COMPLETE_DISTRIBUTION_CDF", folder);
 		success &= DataWriter.writeWithIndex(
 				this.crossingsOnlyDistribution.getDistribution(),
-				"EC_CROSSINGSONLY_DISTRIBUTION", folder);
+				"EDGE_CROSSINGS_CROSSINGSONLY_DISTRIBUTION", folder);
 		success &= DataWriter.writeWithIndex(
 				this.crossingsOnlyDistribution.getCdf(),
-				"EC_CROSSINGSONLY_DISTRIBUTION_CDF", folder);
+				"EDGE_CROSSINGS_CROSSINGSONLY_DISTRIBUTION_CDF", folder);
 		return success;
 	}
 
 	@Override
 	public Value[] getValues() {
-		Value ecAVG = new Value("EC_AVG",
+		Value ecAVG = new Value("EDGE_CROSSINGS_AVG",
 				this.completeCrossingDistribution.getAverage());
 		return new Value[] { ecAVG };
 	}
