@@ -79,10 +79,10 @@ public class Config {
 	public static double getDouble(String key) {
 		return Double.parseDouble(get(key));
 	}
-	
+
 	public static float getFloat(String key) {
 		return Float.parseFloat(get(key));
-	}	
+	}
 
 	public static void overwrite(String key, String value) {
 		try {
@@ -172,53 +172,52 @@ public class Config {
 		initWithFolders(Util.toStringArray(v));
 	}
 
-	public static boolean containsMetric(String key) {
-		String[] names = Config.get("METRICS").split(
-				Config.get("CONFIG_LIST_SEPARATOR"));
-		for (int i = 0; i < names.length; i++) {
-			if (key.equals(names[i].trim())) {
-				return true;
-			}
-		}
-		return false;
-	}
+	// public static boolean containsMetric(String key) {
+	// String[] names = Config.get("METRICS").split(
+	// Config.get("CONFIG_LIST_SEPARATOR"));
+	// for (int i = 0; i < names.length; i++) {
+	// if (key.equals(names[i].trim())) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
 
-	public static Metric[] getMetrics() {
-		String[] names = Config.get("METRICS").split(
-				Config.get("CONFIG_LIST_SEPARATOR"));
-		Metric[] metrics = new Metric[names.length];
-		for (int i = 0; i < names.length; i++) {
-			try {
-				metrics[i] = (Metric) ClassLoader.getSystemClassLoader()
-						.loadClass(Config.get(names[i].trim() + "_CLASS"))
-						.newInstance();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		return metrics;
-	}
+	// public static Metric[] getMetrics() {
+	// String[] names = Config.get("METRICS").split(
+	// Config.get("CONFIG_LIST_SEPARATOR"));
+	// Metric[] metrics = new Metric[names.length];
+	// for (int i = 0; i < names.length; i++) {
+	// try {
+	// metrics[i] = (Metric) ClassLoader.getSystemClassLoader()
+	// .loadClass(Config.get(names[i].trim() + "_CLASS"))
+	// .newInstance();
+	// } catch (InstantiationException e) {
+	// e.printStackTrace();
+	// } catch (IllegalAccessException e) {
+	// e.printStackTrace();
+	// } catch (ClassNotFoundException e) {
+	// e.printStackTrace();
+	// }
+	// }
+	// return metrics;
+	// }
 
-	public static boolean containsData(String key) {
-		String[] data = getData();
-		for (int i = 0; i < data.length; i++) {
-			if (key.equals(data[i])) {
-				return true;
-			}
-		}
-		return false;
-	}
+	// public static boolean containsData(String key) {
+	// String[] data = getData();
+	// for (int i = 0; i < data.length; i++) {
+	// if (key.equals(data[i])) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
 
 	public static boolean containsKey(String key) {
 		return properties.containsKey(key);
 	}
 
-	public static String[] getData() {
-		Metric[] metrics = getMetrics();
+	public static String[] getData(Metric[] metrics) {
 		int counter = 0;
 		for (int i = 0; i < metrics.length; i++) {
 			counter += metrics[i].dataKeys().length;
@@ -234,8 +233,8 @@ public class Config {
 		return data;
 	}
 
-	public static String[][] allKeys(String from) {
-		Metric[] metrics = Config.getMetrics();
+	public static String[][] allKeys(String from, Metric[] metrics) {
+		// Metric[] metrics = Config.getMetrics();
 		String[][] keys = new String[metrics.length][];
 		for (int i = 0; i < metrics.length; i++) {
 			keys[i] = Config.keys(metrics[i].key() + from);
