@@ -36,15 +36,28 @@
 package gtna.data;
 
 import gtna.io.DataWriter;
+import gtna.metrics.Metric;
 import gtna.util.Config;
 
 public class AverageData extends Data {
-	public static void generate(String destFolder, String[] folders) {
-		String[] data = Config.getData();
-		for (String d : data) {
-			boolean cdf = Config.getBoolean(d + "_DATA_IS_CDF");
-			AverageData.generate(destFolder, folders, d, cdf);
+	public static void generate(String destFolder, String[] folders,
+			Metric[] metrics) {
+		for (Metric m : metrics) {
+			String temp2 = destFolder + m.folder() + "/";
+			String[] temp1 = new String[folders.length];
+			for (int i = 0; i < folders.length; i++) {
+				temp1[i] = folders[i] + m.folder() + "/";
+			}
+			for (String d : m.dataKeys()) {
+				boolean cdf = Config.getBoolean(d + "_DATA_IS_CDF");
+				AverageData.generate(temp2, temp1, d, cdf);
+			}
 		}
+		// String[] data = Config.getData(metrics);
+		// for (String d : data) {
+		// boolean cdf = Config.getBoolean(d + "_DATA_IS_CDF");
+		// AverageData.generate(destFolder, folders, d, cdf);
+		// }
 	}
 
 	private static void generate(String destFolder, String[] folders,

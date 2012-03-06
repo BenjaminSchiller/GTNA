@@ -36,7 +36,6 @@
 package gtna.data;
 
 import gtna.graph.Graph;
-import gtna.io.GraphWriter;
 import gtna.io.Output;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -148,23 +147,29 @@ public class Series {
 		return s;
 	}
 
-	public static Series[][] generate(Network[][] networks, int times) {
+	public static Series[][] generate(Network[][] networks, Metric[] metrics,
+			int times) {
 		Series[][] s = new Series[networks.length][];
 		for (int i = 0; i < networks.length; i++) {
-			s[i] = generate(networks[i], times);
+			s[i] = generate(networks[i], metrics, times);
 		}
 		return s;
 	}
 
-	public static Series[] generate(Network[] networks, int times) {
+	public static Series[] generate(Network[] networks, Metric[] metrics,
+			int times) {
 		Series[] s = new Series[networks.length];
 		for (int i = 0; i < networks.length; i++) {
-			s[i] = generate(networks[i], times);
+			s[i] = generate(networks[i], metrics, times);
 		}
 		return s;
 	}
 
-	public static Series generate(Network n, int times) {
+	public static Series generate(Network n, int times, Metric[] metrics) {
+		return Series.generate(n, metrics, times);
+	}
+
+	public static Series generate(Network n, Metric[] metrics, int times) {
 		Series s = new Series(n);
 		s.dataFolders = new String[times];
 		s.graphFolders = new String[times];
@@ -192,7 +197,7 @@ public class Series {
 		String summaryOutput = Config.get("SINGLES_WRITER_OUTPUT").replace(
 				"%FILENAME", s.singlesFilename);
 
-		Metric[] metrics = Config.getMetrics();
+		// Metric[] metrics = Config.getMetrics();
 		boolean error = false;
 		for (int i = 0; i < metrics.length; i++) {
 			String req = Config.get(metrics[i].key() + "_DEPENDENCY");
@@ -310,7 +315,10 @@ public class Series {
 				Timer timer = new Timer("  - " + metrics[j].name()
 						+ fill(maxLength - 4 - metrics[j].name().length()));
 				metrics[j].computeData(g, n, computedMetrics);
-				metrics[j].writeData(s.dataFolders[i]);
+				String folder = s.dataFolders[i] + metrics[j].folder() + "/";
+				(new File(folder)).mkdirs();
+				metrics[j].writeData(folder);
+				// metrics[j].writeData(s.dataFolders[i]);
 				timer.end();
 				computedMetrics.put(metrics[j].key(), metrics[j]);
 			}
@@ -341,20 +349,20 @@ public class Series {
 
 		Output.writeIndent();
 		Timer avgTimer = new Timer(averageOutput);
-		AverageData.generate(s.averageDataFolder, s.dataFolders);
+		AverageData.generate(s.averageDataFolder, s.dataFolders, metrics);
 		avgTimer.end();
 
 		Output.writeIndent();
 		Timer confTimer = new Timer(confidenceOutput
 				+ fill(maxLength - confidenceOutput.length()));
-		ConfidenceData.generate(s.confidenceDataFolder, s.dataFolders);
+		ConfidenceData.generate(s.confidenceDataFolder, s.dataFolders, metrics);
 		confTimer.end();
 
-		Output.writeIndent();
-		Timer varianceTimer = new Timer(varianceOutput
-				+ fill(maxLength - varianceOutput.length()));
-		VarianceData.generate(s.varianceDataFolder, s.dataFolders);
-		varianceTimer.end();
+		// Output.writeIndent();
+		// Timer varianceTimer = new Timer(varianceOutput
+		// + fill(maxLength - varianceOutput.length()));
+		// VarianceData.generate(s.varianceDataFolder, s.dataFolders);
+		// varianceTimer.end();
 
 		Singles[][] summaries = new Singles[1][times];
 		for (int i = 0; i < times; i++) {

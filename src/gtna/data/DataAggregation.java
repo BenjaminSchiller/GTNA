@@ -36,6 +36,7 @@
  */
 package gtna.data;
 
+import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Config;
 
@@ -43,22 +44,26 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class DataAggregation {
-	public static void aggregate(Network nw, String dst, String[] src) {
-		aggregateMultiScalar(nw, dst, src);
+	public static void aggregate(Network nw, String dst, String[] src,
+			Metric[] metrics) {
+		aggregateMultiScalar(nw, dst, src, metrics);
 		aggregateSingleScalar(nw, dst, src);
 	}
 
-	public static void aggregate(Network nw, String dst, String src, int times) {
-		aggregateMultiScalar(nw, dst, src, times);
+	public static void aggregate(Network nw, String dst, String src, int times,
+			Metric[] metrics) {
+		aggregateMultiScalar(nw, dst, src, times, metrics);
 		aggregateSingleScalar(nw, dst, src, times);
 	}
 
-	public static void aggregate(Network nw, String dst, int times) {
-		aggregateMultiScalar(nw, dst, times);
+	public static void aggregate(Network nw, String dst, int times,
+			Metric[] metrics) {
+		aggregateMultiScalar(nw, dst, times, metrics);
 		aggregateSingleScalar(nw, dst, times);
 	}
 
-	public static void aggregateMultiScalar(Network nw, String dst, String[] src) {
+	public static void aggregateMultiScalar(Network nw, String dst,
+			String[] src, Metric[] metrics) {
 		System.out.println("MULTI(" + src.length + " @ " + dst);
 		String dstAvg = dst + Config.get("SERIES_AVERAGE_DATA_FOLDER");
 		String dstConf = dst + Config.get("SERIES_CONFIDENCE_DATA_FOLDER");
@@ -67,18 +72,19 @@ public class DataAggregation {
 		for (int i = 0; i < s.length; i++) {
 			s[i] = src[i] + Config.get("GRAPH_DATA_FOLDER");
 		}
-		AverageData.generate(dstAvg, s);
-		ConfidenceData.generate(dstConf, s);
-		VarianceData.generate(dstVar, s);
+		AverageData.generate(dstAvg, s, metrics);
+		ConfidenceData.generate(dstConf, s, metrics);
+		// VarianceData.generate(dstVar, s);
 	}
 
 	public static void aggregateMultiScalar(Network nw, String dst, String src,
-			int times) {
-		aggregateMultiScalar(nw, dst, src(src, times));
+			int times, Metric[] metrics) {
+		aggregateMultiScalar(nw, dst, src(src, times), metrics);
 	}
 
-	public static void aggregateMultiScalar(Network nw, String dst, int times) {
-		aggregateMultiScalar(nw, dst, dst, times);
+	public static void aggregateMultiScalar(Network nw, String dst, int times,
+			Metric[] metrics) {
+		aggregateMultiScalar(nw, dst, dst, times, metrics);
 	}
 
 	public static void aggregateSingleScalar(Network nw, String dst,
