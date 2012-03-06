@@ -87,10 +87,7 @@ public class Routing_HopDegreeDistribution extends MetricImpl implements Metric 
 
 		for (Route singleRoute : routes) {
 			hops = singleRoute.getRoute();
-			for (int i = 0; i <= hopSteps; i++) {
-				if (i > (hops.length - 1)) {
-					continue;
-				}
+			for (int i = 0; (i <= hopSteps && i < hops.length); i++) {
 				tempDegree = graph.getNode(hops[i]).getOutDegree();
 				degrees[i] = inc(degrees[i], tempDegree);
 				counter[i]++;
@@ -131,6 +128,8 @@ public class Routing_HopDegreeDistribution extends MetricImpl implements Metric 
 						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_DATA_NAME"));
 				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_DATA_FILENAME",
 						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_DATA_FILENAME") + "-" + i);
+				Config.overwrite("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_CDF_DATA_IS_CDF",
+						Config.get("ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_CDF_DATA_IS_CDF"));
 		
 				Config.overwrite(
 						"ROUTING_HOPDEGREEDISTRIBUTION_DISTRIBUTION_HOP_" + i + "_PLOT_DATA",
