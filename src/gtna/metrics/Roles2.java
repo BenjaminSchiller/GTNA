@@ -49,7 +49,7 @@ import java.util.HashMap;
  * @author benni
  * 
  */
-public class Roles2 extends MetricImpl implements Metric {
+public class Roles2 extends Metric {
 	private Distribution distribution;
 
 	private Timer runtime;

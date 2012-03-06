@@ -48,7 +48,7 @@ import java.util.HashMap;
  * @author benni
  * 
  */
-public abstract class Partitioning extends MetricImpl implements Metric {
+public abstract class Partitioning extends Metric {
 	private double largestComponent;
 
 	private double largestComponentFraction;
@@ -58,7 +58,7 @@ public abstract class Partitioning extends MetricImpl implements Metric {
 	private double[] componentsFraction;
 
 	private String property;
-	
+
 	private Timer runtime;
 
 	public Partitioning(String key, String property) {
@@ -100,12 +100,14 @@ public abstract class Partitioning extends MetricImpl implements Metric {
 	public Value[] getValues() {
 		Value largestComponent = new Value(this.key() + "_LARGEST_COMPONENT",
 				this.largestComponent);
-		Value largestComponentFraction = new Value(this.key() + "_LARGEST_COMPONENT_FRACTION",
-				this.largestComponentFraction);
-		Value runtime = new Value(this.key() + "_RUNTIME", this.runtime.getRuntime());
-		return new Value[] { largestComponent, largestComponentFraction, runtime };
+		Value largestComponentFraction = new Value(this.key()
+				+ "_LARGEST_COMPONENT_FRACTION", this.largestComponentFraction);
+		Value runtime = new Value(this.key() + "_RUNTIME",
+				this.runtime.getRuntime());
+		return new Value[] { largestComponent, largestComponentFraction,
+				runtime };
 	}
-	
+
 	protected abstract Graph addProperty(Graph g);
 
 }

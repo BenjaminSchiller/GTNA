@@ -45,7 +45,7 @@ import gtna.util.Timer;
 
 import java.util.HashMap;
 
-public class DegreeDistribution extends MetricImpl implements Metric {
+public class DegreeDistribution extends Metric {
 	private Distribution degreeDistribution;
 
 	private Distribution inDegreeDistribution;

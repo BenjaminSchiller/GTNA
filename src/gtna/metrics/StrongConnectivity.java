@@ -39,12 +39,11 @@ import gtna.graph.Graph;
 import gtna.transformation.Transformation;
 import gtna.transformation.partition.StrongConnectivityPartition;
 
-
 /**
  * @author benni
  * 
  */
-public class StrongConnectivity extends Partitioning implements Metric {
+public class StrongConnectivity extends Partitioning {
 
 	public StrongConnectivity() {
 		super("STRONG_CONNECTIVITY", "STRONG_CONNECTIVITY_PARTITION");

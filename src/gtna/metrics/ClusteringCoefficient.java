@@ -50,7 +50,7 @@ import gtna.util.Util;
 
 import java.util.HashMap;
 
-public class ClusteringCoefficient extends MetricImpl implements Metric {
+public class ClusteringCoefficient extends Metric {
 	// TODO add LCC => binning?!?
 	// TODO add distribution of LCC?!?
 
@@ -113,9 +113,11 @@ public class ClusteringCoefficient extends MetricImpl implements Metric {
 
 	@Override
 	public Value[] getValues() {
-		Value clusteringCoefficient = new Value("CLUSTERING_COEFFICIENT_CLUSTERING_COEFFICIENT",
+		Value clusteringCoefficient = new Value(
+				"CLUSTERING_COEFFICIENT_CLUSTERING_COEFFICIENT",
 				this.clusteringCoefficient);
-		Value runtime = new Value("CLUSTERING_COEFFICIENT_RUNTIME", this.runtime.getRuntime());
+		Value runtime = new Value("CLUSTERING_COEFFICIENT_RUNTIME",
+				this.runtime.getRuntime());
 		return new Value[] { clusteringCoefficient, runtime };
 	}
 }

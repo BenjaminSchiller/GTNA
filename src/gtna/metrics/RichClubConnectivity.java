@@ -46,7 +46,7 @@ import gtna.util.Timer;
 import java.util.HashMap;
 import java.util.Random;
 
-public class RichClubConnectivity extends MetricImpl implements Metric {
+public class RichClubConnectivity extends Metric {
 	private double[] rcc;
 
 	private Timer timer;

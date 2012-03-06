@@ -56,15 +56,21 @@ public class EdgeComparator implements Comparator<Edge> {
 
 	@Override
 	public int compare(Edge x, Edge y) {
-		double xStart = Math.min(getPositionRing(x.getSrc()), getPositionRing(x.getDst()));
-		double xEnd = Math.max(getPositionRing(x.getSrc()), getPositionRing(x.getDst()));
-		double yStart = Math.min(getPositionRing(y.getSrc()), getPositionRing(y.getDst()));
-		double yEnd = Math.max(getPositionRing(y.getSrc()), getPositionRing(y.getDst()));
+		double xStart = Math.min(getPositionRing(x.getSrc()),
+				getPositionRing(x.getDst()));
+		double xEnd = Math.max(getPositionRing(x.getSrc()),
+				getPositionRing(x.getDst()));
+		double yStart = Math.min(getPositionRing(y.getSrc()),
+				getPositionRing(y.getDst()));
+		double yEnd = Math.max(getPositionRing(y.getSrc()),
+				getPositionRing(y.getDst()));
 		if (xStart > yStart) {
 			return 1;
 		}
-		if ( xStart == yStart ) {
-			if ( xEnd > yEnd ){ return 1;}
+		if (xStart == yStart) {
+			if (xEnd > yEnd) {
+				return 1;
+			}
 		}
 		return -1;
 	}

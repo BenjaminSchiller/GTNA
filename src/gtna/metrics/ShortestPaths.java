@@ -49,7 +49,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 // TODO problem with averages for big networks (> 40.000)
-public class ShortestPaths extends MetricImpl implements Metric {
+public class ShortestPaths extends Metric {
 	// TODO add LCPL => binning?!?
 	// TODO add distribution of LCPL?!?
 	// TODO remove computation of distribution
@@ -160,10 +160,13 @@ public class ShortestPaths extends MetricImpl implements Metric {
 				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_CDF", folder);
 		success &= DataWriter.writeWithIndex(
 				this.shortestPathLengthDistributionAbsolute.getDistribution(),
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE", folder);
-		success &= DataWriter.writeWithIndex(
-				this.shortestPathLengthDistributionAbsolute.getCdf(),
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE_CDF", folder);
+				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE",
+				folder);
+		success &= DataWriter
+				.writeWithIndex(
+						this.shortestPathLengthDistributionAbsolute.getCdf(),
+						"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE_CDF",
+						folder);
 		return success;
 	}
 
@@ -178,8 +181,10 @@ public class ShortestPaths extends MetricImpl implements Metric {
 		Value maximumShortestPathLength = new Value(
 				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_MAX",
 				this.shortestPathLengthDistribution.getMax());
-		Value connectivity = new Value("SHORTEST_PATHS_CONNECTIVITY", this.connectivity);
-		Value runtime = new Value("SHORTEST_PATHS_RUNTIME", this.runtime.getRuntime());
+		Value connectivity = new Value("SHORTEST_PATHS_CONNECTIVITY",
+				this.connectivity);
+		Value runtime = new Value("SHORTEST_PATHS_RUNTIME",
+				this.runtime.getRuntime());
 		return new Value[] { averageShortestPathLength,
 				medianShortestPathLength, maximumShortestPathLength,
 				connectivity, runtime };

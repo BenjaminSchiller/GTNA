@@ -66,12 +66,13 @@ import java.util.TreeSet;
  * @author Nico
  * 
  */
-public class EdgeCrossings extends MetricImpl implements Metric {
+public class EdgeCrossings extends Metric {
 	private Timer runtime;
 	private double[] cd;
 	private int maxCrossingNumber;
 	private HashSet<String> handledEdges;
-	private Distribution completeCrossingDistribution, crossingsOnlyDistribution;
+	private Distribution completeCrossingDistribution,
+			crossingsOnlyDistribution;
 	private Partition[] partitions;
 
 	public EdgeCrossings() {
@@ -83,7 +84,8 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 
 		Edge[] edges = graph.generateEdges();
 
-		DIdentifierSpace idSpace = (DIdentifierSpace) graph.getProperty("ID_SPACE_0");
+		DIdentifierSpace idSpace = (DIdentifierSpace) graph
+				.getProperty("ID_SPACE_0");
 		int result = calculateCrossings(edges, idSpace, false);
 
 		double[] finalCD = new double[maxCrossingNumber + 1];
@@ -91,18 +93,20 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 			finalCD[i] = cd[i] / edges.length;
 		}
 		this.completeCrossingDistribution = new Distribution(finalCD);
-		this.crossingsOnlyDistribution = new Distribution(Arrays.copyOfRange(finalCD, 1, finalCD.length));
+		this.crossingsOnlyDistribution = new Distribution(Arrays.copyOfRange(
+				finalCD, 1, finalCD.length));
 
 		this.runtime.end();
 	}
 
-	public int calculateCrossings(Edge[] edges, IdentifierSpace idSpace, boolean useShortcuts) {
+	public int calculateCrossings(Edge[] edges, IdentifierSpace idSpace,
+			boolean useShortcuts) {
 		int result = 0;
 		cd = new double[edges.length];
 		maxCrossingNumber = 0;
 		this.runtime = new Timer();
 		partitions = idSpace.getPartitions();
-		
+
 		if (useShortcuts && idSpace instanceof RingIdentifierSpace) {
 			result = calculateRingCrossings(edges, idSpace);
 		} else {
@@ -114,7 +118,8 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 					innerStart = 0;
 				}
 				for (int innerCounter = innerStart; innerCounter < edges.length; innerCounter++) {
-					if (hasCrossing(edges[innerCounter], edges[outerCounter], idSpace, useShortcuts)) {
+					if (hasCrossing(edges[innerCounter], edges[outerCounter],
+							idSpace, useShortcuts)) {
 						innerResult++;
 					}
 				}
@@ -152,9 +157,12 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		RingEdge tempRingEdge, lastEdge;
 		lastEdge = null;
 		for (Edge sE : edges) {
-			double srcPos = Math.min(getPositionRing(sE.getSrc()), getPositionRing(sE.getDst()));
-			double dstPos = Math.max(getPositionRing(sE.getSrc()), getPositionRing(sE.getDst()));
-			tempRingEdge = new RingEdge(srcPos, dstPos, sE.getSrc(), sE.getDst());
+			double srcPos = Math.min(getPositionRing(sE.getSrc()),
+					getPositionRing(sE.getDst()));
+			double dstPos = Math.max(getPositionRing(sE.getSrc()),
+					getPositionRing(sE.getDst()));
+			tempRingEdge = new RingEdge(srcPos, dstPos, sE.getSrc(),
+					sE.getDst());
 			if (!tempRingEdge.equals(lastEdge)) {
 				ringEdges.add(tempRingEdge);
 			}
@@ -204,7 +212,8 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		int numCross = 0;
 		Edge[] nodeEdges = n.generateAllEdges();
 		Edge[] graphEdges = g.generateEdges();
-		handledEdges = new HashSet<String>(nodeEdges.length * graphEdges.length, 0.95f );
+		handledEdges = new HashSet<String>(
+				nodeEdges.length * graphEdges.length, 0.95f);
 		for (Edge x : nodeEdges) {
 			for (Edge y : graphEdges) {
 				if (hasCrossing(x, y, idSpace, true))
@@ -219,7 +228,7 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		int numCross = 0;
 		Edge[] nEdges = n.getEdges();
 		Edge[] mEdges = m.getEdges();
-		handledEdges = new HashSet<String>( nEdges.length * mEdges.length, 0.95f );
+		handledEdges = new HashSet<String>(nEdges.length * mEdges.length, 0.95f);
 		partitions = idSpace.getPartitions();
 		for (Edge nEdge : nEdges) {
 			for (Edge mEdge : mEdges) {
@@ -231,14 +240,15 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		return numCross;
 	}
 
-	private boolean hasCrossing(Edge x, Edge y, IdentifierSpace idSpace, Boolean useShortcut) {
+	private boolean hasCrossing(Edge x, Edge y, IdentifierSpace idSpace,
+			Boolean useShortcut) {
 		/*
 		 * There cannot be a crossing between only one edge
 		 */
 		if (x.equals(y))
 			return false;
-		if ((x.getSrc() == y.getSrc()) || (x.getSrc() == y.getDst()) || (x.getDst() == y.getSrc())
-				|| (x.getDst() == y.getDst()))
+		if ((x.getSrc() == y.getSrc()) || (x.getSrc() == y.getDst())
+				|| (x.getDst() == y.getSrc()) || (x.getDst() == y.getDst()))
 			return false;
 		if (idSpace instanceof PlaneIdentifierSpaceSimple) {
 			return hasCrossingPlane(x, y, useShortcut);
@@ -249,41 +259,46 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 			if (dim == 2) {
 				return hasCrossingMD(x, y, useShortcut);
 			} else {
-				throw new RuntimeException("Cannot calculate crossings in " + idSpace.getClass() + " with " + dim
-						+ " dimensions");
+				throw new RuntimeException("Cannot calculate crossings in "
+						+ idSpace.getClass() + " with " + dim + " dimensions");
 			}
 		} else {
-			throw new RuntimeException("Cannot calculate crossings in " + idSpace.getClass());
+			throw new RuntimeException("Cannot calculate crossings in "
+					+ idSpace.getClass());
 		}
 	}
 
 	private PlaneEdge getPlaneEdgeFromPI(Edge x) {
-		PlaneIdentifier startID = (PlaneIdentifier) ((PlanePartitionSimple) partitions[x.getSrc()])
-				.getRepresentativeID();
+		PlaneIdentifier startID = (PlaneIdentifier) ((PlanePartitionSimple) partitions[x
+				.getSrc()]).getRepresentativeID();
 		double startX = startID.getX();
 		double startY = startID.getY();
-		PlaneIdentifier endID = (PlaneIdentifier) ((PlanePartitionSimple) partitions[x.getDst()]).getRepresentativeID();
+		PlaneIdentifier endID = (PlaneIdentifier) ((PlanePartitionSimple) partitions[x
+				.getDst()]).getRepresentativeID();
 		double endX = endID.getX();
 		double endY = endID.getY();
 		return new PlaneEdge(startX, startY, endX, endY);
 	}
 
 	private boolean hasCrossingPlane(Edge x, Edge y, Boolean useShortcut) {
-		return hasCrossing(getPlaneEdgeFromPI(x), getPlaneEdgeFromPI(y), useShortcut);
+		return hasCrossing(getPlaneEdgeFromPI(x), getPlaneEdgeFromPI(y),
+				useShortcut);
 	}
 
 	private PlaneEdge getPlaneEdgeFromMD(Edge x) {
-		MDIdentifier startID = (MDIdentifier) ((MDPartitionSimple) partitions[x.getSrc()]).getRepresentativeID();
+		MDIdentifier startID = (MDIdentifier) ((MDPartitionSimple) partitions[x
+				.getSrc()]).getRepresentativeID();
 		if (startID.getCoordinates().length > 2) {
-			throw new RuntimeException("Cannot calculate crossings  with " + startID.getCoordinates().length
-					+ " dimensions");
+			throw new RuntimeException("Cannot calculate crossings  with "
+					+ startID.getCoordinates().length + " dimensions");
 		}
 		double startX = startID.getCoordinate(0);
 		double startY = startID.getCoordinate(1);
-		MDIdentifier endID = (MDIdentifier) ((MDPartitionSimple) partitions[x.getDst()]).getRepresentativeID();
+		MDIdentifier endID = (MDIdentifier) ((MDPartitionSimple) partitions[x
+				.getDst()]).getRepresentativeID();
 		if (endID.getCoordinates().length > 2) {
-			throw new RuntimeException("Cannot calculate crossings with " + endID.getCoordinates().length
-					+ " dimensions");
+			throw new RuntimeException("Cannot calculate crossings with "
+					+ endID.getCoordinates().length + " dimensions");
 		}
 		double endX = endID.getCoordinate(0);
 		double endY = endID.getCoordinate(1);
@@ -291,7 +306,8 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 	}
 
 	private boolean hasCrossingMD(Edge x, Edge y, Boolean useShortcut) {
-		return hasCrossing(getPlaneEdgeFromMD(x), getPlaneEdgeFromMD(y), useShortcut);
+		return hasCrossing(getPlaneEdgeFromMD(x), getPlaneEdgeFromMD(y),
+				useShortcut);
 	}
 
 	private boolean hasCrossing(PlaneEdge x, PlaneEdge y, Boolean useShortcut) {
@@ -314,22 +330,26 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		 * http://www.ahristov.com/tutorial/geometry-games
 		 * /intersection-lines.html
 		 */
-		double d = (x.startX - x.endX) * (y.startY - y.endY) - (x.startY - x.endY) * (y.startX - y.endX);
+		double d = (x.startX - x.endX) * (y.startY - y.endY)
+				- (x.startY - x.endY) * (y.startX - y.endX);
 		if (d == 0) {
 			return false;
 		}
 
-		double xi = ((y.startX - y.endX) * (x.startX * x.endY - x.startY * x.endX) - (x.startX - x.endX)
+		double xi = ((y.startX - y.endX)
+				* (x.startX * x.endY - x.startY * x.endX) - (x.startX - x.endX)
 				* (y.startX * y.endY - y.startY * y.endX))
 				/ d;
-		double yi = ((y.startY - y.endY) * (x.startX * x.endY - x.startY * x.endX) - (x.startY - x.endY)
+		double yi = ((y.startY - y.endY)
+				* (x.startX * x.endY - x.startY * x.endX) - (x.startY - x.endY)
 				* (y.startX * y.endY - y.startY * y.endX))
 				/ d;
 		/*
 		 * xi/yi is a possible intersection point - check whether it lies on one
 		 * of the edges
 		 */
-		if (isBetween(x.startX, x.endX, xi) && isBetween(x.startY, x.endY, yi) && isBetween(y.startX, y.endX, xi)
+		if (isBetween(x.startX, x.endX, xi) && isBetween(x.startY, x.endY, yi)
+				&& isBetween(y.startX, y.endX, xi)
 				&& isBetween(y.startY, y.endY, yi)) {
 			return true;
 		}
@@ -345,10 +365,14 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 	}
 
 	private boolean hasCrossingRing(Edge x, Edge y) {
-		double xStart = Math.min(getPositionRing(x.getSrc()), getPositionRing(x.getDst()));
-		double xEnd = Math.max(getPositionRing(x.getSrc()), getPositionRing(x.getDst()));
-		double yStart = Math.min(getPositionRing(y.getSrc()), getPositionRing(y.getDst()));
-		double yEnd = Math.max(getPositionRing(y.getSrc()), getPositionRing(y.getDst()));
+		double xStart = Math.min(getPositionRing(x.getSrc()),
+				getPositionRing(x.getDst()));
+		double xEnd = Math.max(getPositionRing(x.getSrc()),
+				getPositionRing(x.getDst()));
+		double yStart = Math.min(getPositionRing(y.getSrc()),
+				getPositionRing(y.getDst()));
+		double yEnd = Math.max(getPositionRing(y.getSrc()),
+				getPositionRing(y.getDst()));
 
 		String xString = xStart + "-" + xEnd;
 		String yString = yStart + "-" + yEnd;
@@ -366,11 +390,14 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		}
 		handledEdges.add(edgeString);
 
-		if ((xStart < yStart && xEnd > yEnd) || (yStart < xStart && yEnd > xEnd) || (yStart > xEnd || xStart > yEnd)) {
+		if ((xStart < yStart && xEnd > yEnd)
+				|| (yStart < xStart && yEnd > xEnd)
+				|| (yStart > xEnd || xStart > yEnd)) {
 			// System.out.println( "No crossing between " + edgeString );
 			return false;
 		}
-		if ((xStart < yStart && xEnd < yEnd) || (xStart > yStart && xEnd > yEnd)) {
+		if ((xStart < yStart && xEnd < yEnd)
+				|| (xStart > yStart && xEnd > yEnd)) {
 			// System.out.println("Got a crossing between " + edgeString);
 			return true;
 		}
@@ -386,18 +413,25 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(this.completeCrossingDistribution.getDistribution(), "EC_COMPLETE_DISTRIBUTION",
-				folder);
-		success &= DataWriter.writeWithIndex(this.completeCrossingDistribution.getCdf(), "EC_COMPLETE_DISTRIBUTION_CDF", folder);
-		success &= DataWriter.writeWithIndex(this.crossingsOnlyDistribution.getDistribution(), "EC_CROSSINGSONLY_DISTRIBUTION",
-				folder);
-		success &= DataWriter.writeWithIndex(this.crossingsOnlyDistribution.getCdf(), "EC_CROSSINGSONLY_DISTRIBUTION_CDF", folder);		
+		success &= DataWriter.writeWithIndex(
+				this.completeCrossingDistribution.getDistribution(),
+				"EC_COMPLETE_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(
+				this.completeCrossingDistribution.getCdf(),
+				"EC_COMPLETE_DISTRIBUTION_CDF", folder);
+		success &= DataWriter.writeWithIndex(
+				this.crossingsOnlyDistribution.getDistribution(),
+				"EC_CROSSINGSONLY_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(
+				this.crossingsOnlyDistribution.getCdf(),
+				"EC_CROSSINGSONLY_DISTRIBUTION_CDF", folder);
 		return success;
 	}
 
 	@Override
 	public Value[] getValues() {
-		Value ecAVG = new Value("EC_AVG", this.completeCrossingDistribution.getAverage());
+		Value ecAVG = new Value("EC_AVG",
+				this.completeCrossingDistribution.getAverage());
 		return new Value[] { ecAVG };
 	}
 
@@ -419,7 +453,8 @@ public class EdgeCrossings extends MetricImpl implements Metric {
 		}
 
 		public String toString() {
-			return "(" + startX + "|" + startY + ")->(" + endX + "|" + endY + ")";
+			return "(" + startX + "|" + startY + ")->(" + endX + "|" + endY
+					+ ")";
 		}
 	}
 

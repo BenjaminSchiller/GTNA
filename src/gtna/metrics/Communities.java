@@ -50,12 +50,14 @@ import java.util.HashMap;
  * @author benni
  * 
  */
-public class Communities extends MetricImpl implements Metric {
+public class Communities extends Metric {
 	private Distribution communitySize;
 
 	private Timer runtime;
 
 	private double modularity;
+
+	private double communities;
 
 	public Communities() {
 		super("COMMUNITIES");
@@ -84,7 +86,12 @@ public class Communities extends MetricImpl implements Metric {
 			c[c.length - i - 1] = temp;
 		}
 		this.communitySize = new Distribution(c);
-		modularity = this.calculateModularity(g, communities);
+		this.modularity = this.calculateModularity(g, communities);
+		this.communities = communities.getCommunities().length;
+		System.out.println("\ncommunities: " + this.communities);
+		for(Community cc : communities.getCommunities()){
+			System.out.println(cc.getNodes().length);
+		}
 		this.runtime.end();
 
 	}
@@ -131,8 +138,7 @@ public class Communities extends MetricImpl implements Metric {
 	@Override
 	public Value[] getValues() {
 		Value mod = new Value("COMMUNITIES_MODULARITY", modularity);
-		Value com = new Value("COMMUNITIES_COMMUNITIES",
-				this.communitySize.getDistribution().length);
+		Value com = new Value("COMMUNITIES_COMMUNITIES", this.communities);
 		Value size_min = new Value("COMMUNITIES_COMMUNITY_SIZE_MIN",
 				this.communitySize.getMin());
 		Value size_med = new Value("COMMUNITIES_COMMUNITY_SIZE_MED",

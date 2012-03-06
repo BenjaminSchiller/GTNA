@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * WeakConnectivity.java
+ * FragmentationStrongConnectivity.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,26 +33,27 @@
  * ---------------------------------------
  *
  */
-package gtna.metrics;
+package gtna.metrics.fragmentation;
 
 import gtna.graph.Graph;
-import gtna.transformation.Transformation;
-import gtna.transformation.partition.WeakConnectivityPartition;
+import gtna.graph.Node;
+import gtna.graph.partition.Partition;
+import gtna.graph.sorting.NodeSorter;
 
 /**
  * @author benni
  * 
  */
-public class WeakConnectivity extends Partitioning {
+public class StrongFragmentation extends Fragmentation {
 
-	public WeakConnectivity() {
-		super("WEAK_CONNECTIVITY", "WEAK_CONNECTIVITY_PARTITION");
+	public StrongFragmentation(NodeSorter sorter, Resolution resolution) {
+		super(Fragmentation.Type.STRONG, sorter, resolution);
 	}
 
 	@Override
-	protected Graph addProperty(Graph g) {
-		Transformation t = new WeakConnectivityPartition();
-		return t.transform(g);
+	protected Partition partition(Graph g, Node[] sorted, boolean[] exclude) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -36,14 +36,9 @@
 package gtna.metrics.motifs;
 
 import gtna.data.Value;
-import gtna.graph.Graph;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
-import gtna.metrics.MetricImpl;
-import gtna.networks.Network;
 import gtna.util.Timer;
-
-import java.util.HashMap;
 
 
 
@@ -52,7 +47,7 @@ import java.util.HashMap;
  * @author stef
  *
  */
-public abstract class MotifCounter extends MetricImpl {
+public abstract class MotifCounter extends Metric {
 	protected double[] counts;
 	protected Timer runtime;
 	/**

@@ -38,17 +38,95 @@ package gtna.metrics;
 import gtna.data.Value;
 import gtna.graph.Graph;
 import gtna.networks.Network;
+import gtna.util.Config;
+import gtna.util.Parameter;
 
 import java.util.HashMap;
 
-public interface Metric {
+public abstract class Metric {
+	private String key;
+
+	private Parameter[] parameters;
+
+	public Metric(String key) {
+		this(key, new Parameter[0]);
+	}
+
+	public Metric(String key, Parameter[] parameters) {
+		this.key = key;
+		this.parameters = parameters;
+	}
+
+	/**
+	 * keys of all multi-scalar plots
+	 * 
+	 * @return keys of all multi-scalar plots
+	 */
+	public String[] dataPlots() {
+		return Config.keys(this.key + "_DATA_PLOTS");
+	}
+
+	/**
+	 * keys of all single-scalar plots
+	 * 
+	 * @return keys of all single-scalar plots
+	 */
+	public String[] singlesPlots() {
+		return Config.keys(this.key + "_SINGLES_PLOTS");
+	}
+
+	/**
+	 * data keys of this metric
+	 * 
+	 * @return data keys of this metric
+	 */
+	public String[] dataKeys() {
+		return Config.keys(this.key + "_DATA_KEYS");
+	}
+
+	/**
+	 * single-scalar value keys
+	 * 
+	 * @return single-scalar valcue keys
+	 */
+	public String[] singlesKeys() {
+		return Config.keys(this.key + "_SINGLES_KEYS");
+	}
+
+	/**
+	 * name of the metric
+	 * 
+	 * @return name of the metric
+	 */
+	public String name() {
+		return Config.get(key + "_NAME");
+	}
+
+	public String folder() {
+		StringBuffer buff = new StringBuffer(this.key);
+		for (Parameter p : this.parameters) {
+			buff.append("-" + p.getValue());
+		}
+		return buff.toString();
+	}
+
+	/**
+	 * key of the metric (mkey)
+	 * 
+	 * @return key of the metric (mkey)
+	 */
+	public String key() {
+		return this.key;
+	}
+
 	/**
 	 * computes all metric-specific data<br>
 	 * has to be called before any other method
 	 * 
 	 * @param g
 	 */
-	public void computeData(Graph g, Network n, HashMap<String, Metric> m);
+	public abstract void computeData(Graph g, Network n,
+			HashMap<String, Metric> m);
 
 	/**
 	 * writes all generated data to the specified folder
@@ -56,7 +134,7 @@ public interface Metric {
 	 * @param folder
 	 * @return true if operation is successful
 	 */
-	public boolean writeData(String folder);
+	public abstract boolean writeData(String folder);
 
 	/**
 	 * all single-scalar values generated / computed by this metric
@@ -64,47 +142,5 @@ public interface Metric {
 	 * @param values
 	 * @return single scalar values
 	 */
-	public Value[] getValues();
-
-	/**
-	 * name of the metric
-	 * 
-	 * @return name of the metric
-	 */
-	public String name();
-
-	/**
-	 * key of the metric (mkey)
-	 * 
-	 * @return key of the metric (mkey)
-	 */
-	public String key();
-
-	/**
-	 * data keys of this metric
-	 * 
-	 * @return data keys of this metric
-	 */
-	public String[] dataKeys();
-
-	/**
-	 * single-scalar value keys
-	 * 
-	 * @return single-scalar valcue keys
-	 */
-	public String[] singlesKeys();
-
-	/**
-	 * keys of all multi-scalar plots
-	 * 
-	 * @return keys of all multi-scalar plots
-	 */
-	public String[] dataPlots();
-
-	/**
-	 * keys of all single-scalar plots
-	 * 
-	 * @return keys of all single-scalar plots
-	 */
-	public String[] singlesPlots();
+	public abstract Value[] getValues();
 }

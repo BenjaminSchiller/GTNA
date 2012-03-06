@@ -48,9 +48,9 @@ import java.util.HashMap;
 
 /**
  * @author Philipp Neubrand
- *
+ * 
  */
-public class Coverage extends MetricImpl implements Metric {
+public class Coverage extends Metric {
 
 	private double percentage;
 
@@ -60,28 +60,30 @@ public class Coverage extends MetricImpl implements Metric {
 
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		if(!g.hasProperty("RANGE_0") || !g.hasProperty("ID_SPACE_0"))
+		if (!g.hasProperty("RANGE_0") || !g.hasProperty("ID_SPACE_0"))
 			return;
-		
+
 		RangeProperty range = (RangeProperty) g.getProperty("RANGE_0");
-		PlaneIdentifierSpaceSimple idspace = (PlaneIdentifierSpaceSimple) g.getProperty("ID_SPACE_0");
-		
+		PlaneIdentifierSpaceSimple idspace = (PlaneIdentifierSpaceSimple) g
+				.getProperty("ID_SPACE_0");
+
 		long in = 0;
-		
+
 		double width = idspace.getModulusX();
 		double height = idspace.getModulusY();
-		
+
 		int cols = Config.getInt("COVERAGE_COLS");
 		int rows = Config.getInt("COVERAGE_ROWS");
-		
-		for(int i = 0; i < cols; i++){
-			for(int j = 0; j < rows; j++){
-				if(inside(i*(width/cols), j*(height/rows), idspace, range))
-						in++;
+
+		for (int i = 0; i < cols; i++) {
+			for (int j = 0; j < rows; j++) {
+				if (inside(i * (width / cols), j * (height / rows), idspace,
+						range))
+					in++;
 			}
 		}
-		
-		percentage = (((double) in) / (cols*rows));
+
+		percentage = (((double) in) / (cols * rows));
 	}
 
 	/**
@@ -95,26 +97,37 @@ public class Coverage extends MetricImpl implements Metric {
 			PlaneIdentifierSpaceSimple idspace, RangeProperty range) {
 		double dist = 0;
 		boolean ret = false;
-		for(DPartition akt : idspace.getPartitions()){
-			dist = Math.sqrt(Math.pow(((PlaneIdentifier) akt.getRepresentativeID()).getX() - x, 2) + Math.pow(((PlaneIdentifier) akt.getRepresentativeID()).getY() - y, 2));
-			if(dist < range.getRange()){
-					ret = true;
-					break;
+		for (DPartition akt : idspace.getPartitions()) {
+			dist = Math
+					.sqrt(Math.pow(
+							((PlaneIdentifier) akt.getRepresentativeID())
+									.getX() - x, 2)
+							+ Math.pow(
+									((PlaneIdentifier) akt
+											.getRepresentativeID()).getY() - y,
+									2));
+			if (dist < range.getRange()) {
+				ret = true;
+				break;
 			}
 		}
-		
+
 		return ret;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.metrics.Metric#getValues()
 	 */
 	@Override
 	public Value[] getValues() {
-		return new Value[]{new Value("COVERAGE_PERCENTAGE", percentage)};
+		return new Value[] { new Value("COVERAGE_PERCENTAGE", percentage) };
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.metrics.Metric#writeData(java.lang.String)
 	 */
 	@Override

@@ -37,7 +37,6 @@ package gtna.metrics;
 
 import gtna.data.Value;
 import gtna.graph.Graph;
-import gtna.graph.Node;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
 import gtna.routing.Route;
@@ -51,7 +50,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 // TODO reimplement Routing
-public class Routing extends MetricImpl implements Metric {
+public class Routing extends Metric {
 	private Distribution hopDistribution;
 
 	private Distribution hopDistributionAbsolute;
@@ -160,7 +159,7 @@ public class Routing extends MetricImpl implements Metric {
 			return valuesNew;
 		}
 	}
-	
+
 	public Route[] getRoutes() {
 		return this.routes;
 	}
