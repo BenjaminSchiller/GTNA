@@ -43,7 +43,6 @@ import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
 
 import java.util.HashMap;
 
@@ -51,11 +50,10 @@ import java.util.HashMap;
  * @author benni
  * 
  */
-public class RolesGeneration extends TransformationImpl implements
-		Transformation {
+public class RolesGeneration extends Transformation {
 
 	public RolesGeneration() {
-		super("ROLES_GENERATION", new String[] {}, new String[] {});
+		super("ROLES_GENERATION");
 	}
 
 	@Override

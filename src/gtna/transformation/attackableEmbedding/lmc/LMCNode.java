@@ -37,86 +37,86 @@
 package gtna.transformation.attackableEmbedding.lmc;
 
 import gtna.graph.Graph;
-import gtna.graph.Node;
-import gtna.id.DPartition;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
 
 import java.util.Random;
 
-
 /**
  * regular node behaviors in LMC
+ * 
  * @author stefanieroos
- *
+ * 
  */
 
-public class LMCNode extends AttackableEmbeddingNode{
-	
-	
-	 protected LMC lmc;
-	
-	 public LMCNode(int index, Graph g, LMC lmc) {
-	 super(index, g);
-	 this.lmc = lmc;
-	 }
-	
-	 public void updateNeighbors(Random rand) {
-	 int[] out = this.getOutgoingEdges();
-	 for (int i = 0; i < out.length; i++) {
-	    this.knownIDs[i] = ((LMCNode) this.getGraph().getNode(out[i])).ask(this, rand);
-	 }
-	 }
-	
-	 /**
+public class LMCNode extends AttackableEmbeddingNode {
+
+	protected LMC lmc;
+
+	public LMCNode(int index, Graph g, LMC lmc) {
+		super(index, g);
+		this.lmc = lmc;
+	}
+
+	public void updateNeighbors(Random rand) {
+		int[] out = this.getOutgoingEdges();
+		for (int i = 0; i < out.length; i++) {
+			this.knownIDs[i] = ((LMCNode) this.getGraph().getNode(out[i])).ask(
+					this, rand);
+		}
+	}
+
+	/**
 	 * regular LMC: turn; two steps: 1) propose new ID 2) check if new ID is
 	 * accepted
 	 */
-	 public void turn(Random rand) {
-	 // double loc;
-	 // if (rand.nextDouble() < lmc.P) {
-	 // if (rand.nextBoolean()) {
-	 // loc = this.knownIDs[rand.nextInt(knownIDs.length)] + lmc.delta
-	 // + rand.nextDouble() * lmc.C * lmc.delta;
-	 // while (loc > 1) {
-	 // loc--;
-	 // }
-	 // } else {
-	 // loc = this.knownIDs[rand.nextInt(knownIDs.length)] - lmc.delta
-	 // - rand.nextDouble() * lmc.C * lmc.delta;
-	 // while (loc < 0) {
-	 // loc++;
-	 // }
-	 // }
-	 // } else {
-	 // loc = rand.nextDouble();
-	 // }
-	
-	
-	 double before = 1;
-	 double after = 1;
-	 RingIdentifier[] ids = this.lmc.getIds();
-	 RingIdentifier newID = RingIdentifier.rand(rand, (RingIdentifierSpace)this.lmc.getIdspace());
-	 RingIdentifier neighborID  = RingIdentifier.rand(rand, (RingIdentifierSpace)this.lmc.getIdspace());;
-	 RingIdentifier id = ids[this.getIndex()];
-	 for (int i = 0; i < knownIDs.length; i++) {
-		 neighborID.setPosition(this.knownIDs[i]);
-	 double dist = id.distance(neighborID);
-	 before = before * dist;
-	 dist = newID.distance(neighborID);
-	 if (lmc.mode.equals(LMC.MODE_RESTRICTED) && dist < lmc.delta) {
-	 return;
-	 }
-	 after = after * dist;
-	 }
-	 if (rand.nextDouble() < before / after) {
-	      ids[this.getIndex()].setPosition(newID.getPosition());
-	 }
-	 }
-	
-	 protected double ask(LMCNode caller, Random rand) {
- 
-	        return this.lmc.getIds()[this.getIndex()].getPosition();
-	 }
+	public void turn(Random rand) {
+		// double loc;
+		// if (rand.nextDouble() < lmc.P) {
+		// if (rand.nextBoolean()) {
+		// loc = this.knownIDs[rand.nextInt(knownIDs.length)] + lmc.delta
+		// + rand.nextDouble() * lmc.C * lmc.delta;
+		// while (loc > 1) {
+		// loc--;
+		// }
+		// } else {
+		// loc = this.knownIDs[rand.nextInt(knownIDs.length)] - lmc.delta
+		// - rand.nextDouble() * lmc.C * lmc.delta;
+		// while (loc < 0) {
+		// loc++;
+		// }
+		// }
+		// } else {
+		// loc = rand.nextDouble();
+		// }
+
+		double before = 1;
+		double after = 1;
+		RingIdentifier[] ids = this.lmc.getIds();
+		RingIdentifier newID = RingIdentifier.rand(rand,
+				(RingIdentifierSpace) this.lmc.getIdspace());
+		RingIdentifier neighborID = RingIdentifier.rand(rand,
+				(RingIdentifierSpace) this.lmc.getIdspace());
+		;
+		RingIdentifier id = ids[this.getIndex()];
+		for (int i = 0; i < knownIDs.length; i++) {
+			neighborID.setPosition(this.knownIDs[i]);
+			double dist = id.distance(neighborID);
+			before = before * dist;
+			dist = newID.distance(neighborID);
+			if (lmc.mode.equals(LMC.MODE_RESTRICTED) && dist < lmc.delta) {
+				return;
+			}
+			after = after * dist;
+		}
+		if (rand.nextDouble() < before / after) {
+			ids[this.getIndex()].setPosition(newID.getPosition());
+		}
+	}
+
+	protected double ask(LMCNode caller, Random rand) {
+
+		return this.lmc.getIds()[this.getIndex()].getPosition();
+	}
 }

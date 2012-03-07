@@ -51,7 +51,9 @@ import gtna.id.ring.RingPartition;
 import gtna.id.ring.RingPartitionSimple;
 import gtna.networks.p2p.chord.ChordIdentifier;
 import gtna.networks.p2p.chord.ChordPartition;
-import gtna.transformation.TransformationImpl;
+import gtna.transformation.Transformation;
+import gtna.util.Parameter;
+import gtna.util.ParameterList;
 
 import java.math.BigInteger;
 import java.util.Random;
@@ -60,7 +62,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public abstract class ObfuscatedLookaheadList extends TransformationImpl {
+public abstract class ObfuscatedLookaheadList extends Transformation {
 	protected double minEpsilon;
 
 	protected double maxEpsilon;
@@ -76,8 +78,9 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 	protected BigInteger min;
 
 	protected ObfuscatedLookaheadList(String key, int minBits, int maxBits) {
-		super(key, new String[] { "MIN_EPSILON", "MAX_EPSILON" }, new String[] {
-				"" + minBits, "" + maxBits });
+		super(key, new Parameter[] {
+				new Parameter("MIN_EPSILON", "" + minBits),
+				new Parameter("MAX_EPSILON", "" + maxBits) });
 		System.out.println("BI");
 		this.minBits = minBits;
 		this.maxBits = maxBits;
@@ -91,34 +94,34 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 
 	protected ObfuscatedLookaheadList(String key, double minEpsilon,
 			double maxEpsilon) {
-		super(key, new String[] { "MIN_EPSILON", "MAX_EPSILON" }, new String[] {
-				"" + minEpsilon, "" + maxEpsilon });
+		super(key, new Parameter[] {
+				new Parameter("MIN_EPSILON", "" + minEpsilon),
+				new Parameter("MAX_EPSILON", "" + maxEpsilon) });
 		System.out.println("D");
 		this.minEpsilon = minEpsilon;
 		this.maxEpsilon = maxEpsilon;
 		this.size = maxEpsilon - minEpsilon;
 	}
 
-	protected ObfuscatedLookaheadList(String key, String[] configKeys,
-			String[] configValues) {
-		super(key, configKeys, configValues);
+	protected ObfuscatedLookaheadList(String key, Parameter[] parameters) {
+		super(key, parameters);
 	}
 
 	protected ObfuscatedLookaheadList(String key, double minEpsilon,
-			double maxEpsilon, String[] configKeys, String[] configValues) {
-		super(key, ObfuscatedLookaheadList.add(configKeys, "MIN_EPSILON",
-				"MAX_EPSILON"), ObfuscatedLookaheadList.add(configValues, ""
-				+ minEpsilon, "" + maxEpsilon));
+			double maxEpsilon, Parameter[] parameters) {
+		super(key, ParameterList.append(parameters, new Parameter[] {
+				new Parameter("MIN_EPSILON", "" + minEpsilon),
+				new Parameter("MAX_EPSILON", "" + maxEpsilon) }));
 		this.minEpsilon = minEpsilon;
 		this.maxEpsilon = maxEpsilon;
 		this.size = maxEpsilon - minEpsilon;
 	}
 
 	protected ObfuscatedLookaheadList(String key, int minBits, int maxBits,
-			String[] configKeys, String[] configValues) {
-		super(key, ObfuscatedLookaheadList.add(configKeys, "MIN_EPSILON",
-				"MAX_EPSILON"), ObfuscatedLookaheadList.add(configValues, ""
-				+ minBits, "" + maxBits));
+			Parameter[] parameters) {
+		super(key, ParameterList.append(parameters, new Parameter[] {
+				new Parameter("MIN_EPSILON", "" + minBits),
+				new Parameter("MAX_EPSILON", "" + maxBits) }));
 		this.minBits = minBits;
 		this.maxBits = maxBits;
 		this.diff = maxBits - minBits;
@@ -194,7 +197,9 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 					.getIdSpace(), position1), new ChordIdentifier(p.getSucc()
 					.getIdSpace(), position2));
 		} else {
-			throw new RuntimeException("Cannot create obfuscated partition for " + partition.getClass());
+			throw new RuntimeException(
+					"Cannot create obfuscated partition for "
+							+ partition.getClass());
 		}
 	}
 
@@ -221,9 +226,11 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 					.getSucc().getIdSpace(), p.getSucc().getId()));
 		} else if (partition instanceof MDPartitionSimple) {
 			MDPartitionSimple p = (MDPartitionSimple) partition;
-			return new MDPartitionSimple(new MDIdentifier(p.getId().getCoordinates(), p.getId().getIdSpace()));
+			return new MDPartitionSimple(new MDIdentifier(p.getId()
+					.getCoordinates(), p.getId().getIdSpace()));
 		} else {
-			throw new RuntimeException("Cannot copy partition for " + partition.getClass());
+			throw new RuntimeException("Cannot copy partition for "
+					+ partition.getClass());
 		}
 	}
 
@@ -234,7 +241,9 @@ public abstract class ObfuscatedLookaheadList extends TransformationImpl {
 			if (p instanceof DIdentifierSpace) {
 				DIdentifier id = (DIdentifier) ((DIdentifierSpace) p)
 						.randomID(rand);
-				if (!(id instanceof RingIdentifier) && !(id instanceof MDIdentifier) && !(id instanceof PlaneIdentifier)) {
+				if (!(id instanceof RingIdentifier)
+						&& !(id instanceof MDIdentifier)
+						&& !(id instanceof PlaneIdentifier)) {
 					return false;
 				}
 			} else if (p instanceof BIIdentifierSpace) {

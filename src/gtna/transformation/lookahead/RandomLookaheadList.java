@@ -36,7 +36,6 @@
 package gtna.transformation.lookahead;
 
 import gtna.id.Partition;
-import gtna.transformation.Transformation;
 
 import java.util.Random;
 
@@ -44,8 +43,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RandomLookaheadList extends RandomObfuscatedLookaheadList
-		implements Transformation {
+public class RandomLookaheadList extends RandomObfuscatedLookaheadList {
 
 	public RandomLookaheadList() {
 		super("RANDOM_LOOKAHEAD_LIST");

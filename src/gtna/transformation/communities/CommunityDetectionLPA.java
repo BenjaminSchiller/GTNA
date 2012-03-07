@@ -39,7 +39,6 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.NodeSorting;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
 import gtna.util.Util;
 
 import java.util.ArrayList;
@@ -50,11 +49,10 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class CommunityDetectionLPA extends TransformationImpl implements
-		Transformation {
+public class CommunityDetectionLPA extends Transformation {
 
 	public CommunityDetectionLPA() {
-		super("COMMUNITY_DETECTION_LPA", new String[] {}, new String[] {});
+		super("COMMUNITY_DETECTION_LPA");
 	}
 
 	@Override
@@ -66,8 +64,8 @@ public class CommunityDetectionLPA extends TransformationImpl implements
 				.mapLabelsToCommunities(labels);
 
 		for (Node n : g.getNodes()) {
-			map.put(n.getIndex(), labelCommunityMapping
-					.get(labels[n.getIndex()]));
+			map.put(n.getIndex(),
+					labelCommunityMapping.get(labels[n.getIndex()]));
 		}
 
 		g.addProperty(g.getNextKey("COMMUNITIES"),
@@ -92,8 +90,8 @@ public class CommunityDetectionLPA extends TransformationImpl implements
 			Node[] X = NodeSorting.random(nodes, rand);
 			finished = true;
 			for (Node x : X) {
-				ArrayList<Integer> maxLabels = selectMaxLabels(x
-						.getOutgoingEdges(), labels);
+				ArrayList<Integer> maxLabels = selectMaxLabels(
+						x.getOutgoingEdges(), labels);
 				if (!maxLabels.isEmpty()) {
 					int maxLabel = maxLabels
 							.get(rand.nextInt(maxLabels.size()));

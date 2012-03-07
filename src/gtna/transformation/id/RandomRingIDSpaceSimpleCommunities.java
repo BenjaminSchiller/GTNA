@@ -43,7 +43,7 @@ import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartitionSimple;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
+import gtna.util.Parameter;
 
 import java.util.Random;
 
@@ -51,8 +51,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RandomRingIDSpaceSimpleCommunities extends TransformationImpl
-		implements Transformation {
+public class RandomRingIDSpaceSimpleCommunities extends Transformation {
 	private double modulus;
 
 	private boolean wrapAround;
@@ -61,8 +60,7 @@ public class RandomRingIDSpaceSimpleCommunities extends TransformationImpl
 	 * 
 	 */
 	public RandomRingIDSpaceSimpleCommunities() {
-		super("RANDOM_RING_ID_SPACE_SIMPLE_COMMUNITIES", new String[] {},
-				new String[] {});
+		super("RANDOM_RING_ID_SPACE_SIMPLE_COMMUNITIES");
 		this.modulus = 1.0;
 		this.wrapAround = true;
 	}
@@ -74,9 +72,9 @@ public class RandomRingIDSpaceSimpleCommunities extends TransformationImpl
 	 * @param wrapAround
 	 */
 	public RandomRingIDSpaceSimpleCommunities(double modulus, boolean wrapAround) {
-		super("RANDOM_RING_ID_SPACE_SIMPLE_COMMUNITIES", new String[] {
-				"MODULUS", "WRAP_AROUND" }, new String[] { "" + modulus,
-				"" + wrapAround });
+		super("RANDOM_RING_ID_SPACE_SIMPLE_COMMUNITIES", new Parameter[] {
+				new Parameter("MODULUS", "" + modulus),
+				new Parameter("WRAP_AROUND", "" + wrapAround) });
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
 	}
@@ -89,15 +87,15 @@ public class RandomRingIDSpaceSimpleCommunities extends TransformationImpl
 			Communities cs = (Communities) gp;
 			RingPartitionSimple[] partitions = new RingPartitionSimple[g
 					.getNodes().length];
-			RingIdentifierSpaceSimple idSpace = new RingIdentifierSpaceSimple(partitions,
-					this.modulus, this.wrapAround);
+			RingIdentifierSpaceSimple idSpace = new RingIdentifierSpaceSimple(
+					partitions, this.modulus, this.wrapAround);
 			double size = this.modulus / (double) cs.getCommunities().length;
 			for (Community c : cs.getCommunities()) {
 				double start = (double) c.getIndex() * size;
 				for (int i = 0; i < c.getNodes().length; i++) {
 					partitions[c.getNodes()[i]] = new RingPartitionSimple(
-							new RingIdentifier(start + rand.nextDouble() * size,
-									idSpace));
+							new RingIdentifier(
+									start + rand.nextDouble() * size, idSpace));
 				}
 			}
 			g.addProperty(g.getNextKey("ID_SPACE"), idSpace);

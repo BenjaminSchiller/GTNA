@@ -40,7 +40,6 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.partition.Partition;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
 
 import java.util.HashMap;
 
@@ -48,11 +47,10 @@ import java.util.HashMap;
  * @author benni
  * 
  */
-public class GiantConnectedComponent extends TransformationImpl implements
-		Transformation {
+public class GiantConnectedComponent extends Transformation {
 
 	public GiantConnectedComponent() {
-		super("GIANT_CONNECTED_COMPONENT", new String[] {}, new String[] {});
+		super("GIANT_CONNECTED_COMPONENT");
 	}
 
 	@Override
@@ -66,13 +64,13 @@ public class GiantConnectedComponent extends TransformationImpl implements
 		for (int i = 0; i < lc.length; i++) {
 			map.put(lc[i], i);
 		}
-		for(Node oldNode : g.getNodes()){
-			if(!map.containsKey(oldNode.getIndex())){
+		for (Node oldNode : g.getNodes()) {
+			if (!map.containsKey(oldNode.getIndex())) {
 				continue;
 			}
 			int src = map.get(oldNode.getIndex());
-			for(int oldOut : oldNode.getOutgoingEdges()){
-				if(!map.containsKey(oldOut)){
+			for (int oldOut : oldNode.getOutgoingEdges()) {
+				if (!map.containsKey(oldOut)) {
 					continue;
 				}
 				int dst = map.get(oldOut);

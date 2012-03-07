@@ -39,7 +39,6 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.partition.Partition;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -49,11 +48,10 @@ import java.util.Queue;
  * @author benni
  * 
  */
-public class WeakConnectivityPartition extends TransformationImpl implements
-		Transformation {
+public class WeakConnectivityPartition extends Transformation {
 
 	public WeakConnectivityPartition() {
-		super("WEAK_CONNECTIVITY_PARTITION", new String[] {}, new String[] {});
+		super("WEAK_CONNECTIVITY_PARTITION");
 	}
 
 	@Override

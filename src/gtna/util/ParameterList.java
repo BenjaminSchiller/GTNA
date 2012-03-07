@@ -69,6 +69,26 @@ public class ParameterList {
 		return buff.toString();
 	}
 
+	protected static Parameter[] append(Parameter[] p1, Parameter p2) {
+		return ParameterList.append(p1, new Parameter[] { p2 });
+	}
+
+	protected static Parameter[] prepend(Parameter[] p1, Parameter p2) {
+		return ParameterList.append(new Parameter[] { p2 }, p1);
+	}
+
+	protected static Parameter[] append(Parameter[] p1, Parameter[] p2) {
+		Parameter[] p = new Parameter[p1.length + p2.length];
+		int index = 0;
+		for (Parameter param : p1) {
+			p[index++] = param;
+		}
+		for (Parameter param : p2) {
+			p[index++] = param;
+		}
+		return p;
+	}
+
 	public String getDescription() {
 		return this.getDescription("");
 	}

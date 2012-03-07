@@ -36,85 +36,81 @@
 package gtna.transformation.attackableEmbedding.swapping;
 
 import gtna.graph.Graph;
-import gtna.graph.Node;
 import gtna.id.ring.RingIdentifier;
 
 import java.util.Random;
 
-
 /**
  * attacker that tries to make the ID space contract in one point
+ * 
  * @author stefanieroos
- *
+ * 
  */
 
-	 public class SwappingAttackerContraction extends SwappingNode {
-	
-	 //private SwappingNode neighbor;
-	
-	 private int index = -1;
-	
-	 public SwappingAttackerContraction(int index, Graph g, Swapping
-	 swapping) {
-	 super(index, g, swapping);
-	 }
-	
-	 /**
+public class SwappingAttackerContraction extends SwappingNode {
+
+	// private SwappingNode neighbor;
+
+	private int index = -1;
+
+	public SwappingAttackerContraction(int index, Graph g, Swapping swapping) {
+		super(index, g, swapping);
+	}
+
+	/**
 	 * try to distribute an ID close to a neighbor
 	 */
-	 public void turn(Random rand) {
-	 // select a random neighbor
-	 if (index == -1) {
-	 this.index = rand.nextInt(this.getOutDegree());
-	 }
-	
-	 // select own ID close to neighbor
-	 RingIdentifier ID = this.swapping.getIds()[this.getIndex()];
-	 ID.setPosition(this.knownIDs[this.index] + rand.nextDouble()
-	 * this.swapping.delta);
-	
-	 // select ID close to neighbor + furthest neighbors
-	 double id = (this.knownIDs[this.index] + rand.nextDouble()
-	 * this.swapping.delta) % 1.0;
-	 double[] neighbors = new double[this.getOutDegree()];
-	 for (int i = 0; i < neighbors.length; i++) {
-	 neighbors[i] = (id + 0.5 + rand.nextDouble() * this.swapping.delta) %
-	 1.0;
-	 }
-	
-	 // select ttl
-	 int ttl = rand.nextInt(6) + 1;
-	
-	 // select starting node
-	 SwappingNode start = (SwappingNode) this.getGraph().getNode(
-			 this.getOutgoingEdges()[rand.nextInt(this.getOutDegree())]);
-	
-	 // send swap request
-	 start.swap(id, neighbors, ttl, rand);
-	 }
-	
-	 /**
+	public void turn(Random rand) {
+		// select a random neighbor
+		if (index == -1) {
+			this.index = rand.nextInt(this.getOutDegree());
+		}
+
+		// select own ID close to neighbor
+		RingIdentifier ID = this.swapping.getIds()[this.getIndex()];
+		ID.setPosition(this.knownIDs[this.index] + rand.nextDouble()
+				* this.swapping.delta);
+
+		// select ID close to neighbor + furthest neighbors
+		double id = (this.knownIDs[this.index] + rand.nextDouble()
+				* this.swapping.delta) % 1.0;
+		double[] neighbors = new double[this.getOutDegree()];
+		for (int i = 0; i < neighbors.length; i++) {
+			neighbors[i] = (id + 0.5 + rand.nextDouble() * this.swapping.delta) % 1.0;
+		}
+
+		// select ttl
+		int ttl = rand.nextInt(6) + 1;
+
+		// select starting node
+		SwappingNode start = (SwappingNode) this.getGraph().getNode(
+				this.getOutgoingEdges()[rand.nextInt(this.getOutDegree())]);
+
+		// send swap request
+		start.swap(id, neighbors, ttl, rand);
+	}
+
+	/**
 	 * return ID close to selected neighbor
 	 */
-	 protected double ask(SwappingNode caller, Random rand) {
-	 // select a random neighbor
-		 if (index == -1) {
-			 this.index = rand.nextInt(this.getOutDegree());
-			 }
-	
-	 // return ID close to neighbor's current ID
-	 double id = (this.knownIDs[this.index] + rand.nextDouble()
-	 * this.swapping.delta) % 1.0;
-	 return id;
-	 }
-	
-	 /**
+	protected double ask(SwappingNode caller, Random rand) {
+		// select a random neighbor
+		if (index == -1) {
+			this.index = rand.nextInt(this.getOutDegree());
+		}
+
+		// return ID close to neighbor's current ID
+		double id = (this.knownIDs[this.index] + rand.nextDouble()
+				* this.swapping.delta) % 1.0;
+		return id;
+	}
+
+	/**
 	 * return ID close to selected neighbor
 	 */
-	 protected double swap(double callerID, double[] callerNeighborIDs, int
-	 ttl,
-	 Random rand) {
-	 return this.ask(this, rand);
-	 }
+	protected double swap(double callerID, double[] callerNeighborIDs, int ttl,
+			Random rand) {
+		return this.ask(this, rand);
+	}
 
 }

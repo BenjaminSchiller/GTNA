@@ -36,53 +36,50 @@
 package gtna.transformation.attackableEmbedding.lmc;
 
 import gtna.graph.Graph;
-import gtna.graph.Node;
-import gtna.id.ring.RingIdentifier;
-import gtna.id.ring.RingIdentifierSpace;
 
 import java.util.Random;
 
-
 /**
  * attacker that tries to make the ID space contract in one point
+ * 
  * @author stefanieroos
- *
+ * 
  */
 
-public class LMCAttackerContraction extends LMCNode{
-	
-	 //private LMCNode neighbor = null;
-	
-	 private int index = -1;
-	
-	 public LMCAttackerContraction(int index, Graph g, LMC lmc) {
-	 super(index,g, lmc);
-	 }
-	
-	 /**
+public class LMCAttackerContraction extends LMCNode {
+
+	// private LMCNode neighbor = null;
+
+	private int index = -1;
+
+	public LMCAttackerContraction(int index, Graph g, LMC lmc) {
+		super(index, g, lmc);
+	}
+
+	/**
 	 * choose an ID close to the selected neighbor
 	 */
-	 public void turn(Random rand) {
-	    this.lmc.getIds()[this.getIndex()].setPosition(this.ask(this, rand));
-	 }
-	
-	 /**
+	public void turn(Random rand) {
+		this.lmc.getIds()[this.getIndex()].setPosition(this.ask(this, rand));
+	}
+
+	/**
 	 * return an ID close to one selected neighbor hoping all neighbors will
 	 * converge to this position
 	 */
-	 protected double ask(LMCNode caller, Random rand) {
-	 // choose a random neighbor to contract to
-	 if (this.index == -1) {
-	  this.index = rand.nextInt(this.getOutDegree());
-	 }
-	
-	 // return ID close to the selected neighbor
-	 if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
-	 return (this.knownIDs[this.index] + this.lmc.delta
-	 * (1.0 + rand.nextDouble())) % 1.0;
-	 } else {
-	 return (this.knownIDs[this.index] + this.lmc.delta
-	 * rand.nextDouble()) % 1.0;
-	 }
-	 }
+	protected double ask(LMCNode caller, Random rand) {
+		// choose a random neighbor to contract to
+		if (this.index == -1) {
+			this.index = rand.nextInt(this.getOutDegree());
+		}
+
+		// return ID close to the selected neighbor
+		if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
+			return (this.knownIDs[this.index] + this.lmc.delta
+					* (1.0 + rand.nextDouble())) % 1.0;
+		} else {
+			return (this.knownIDs[this.index] + this.lmc.delta
+					* rand.nextDouble()) % 1.0;
+		}
+	}
 }

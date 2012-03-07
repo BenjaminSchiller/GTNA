@@ -37,39 +37,47 @@ package gtna.transformation.gd;
 
 import gtna.graph.Graph;
 import gtna.plot.GraphPlotter;
+import gtna.util.Parameter;
 
 /**
  * @author Nico
  * 
  */
 public class CanonicalCircularCrossing extends CircularAbstract {
-	public CanonicalCircularCrossing(int realities, double modulus, boolean wrapAround, GraphPlotter plotter) {
-		super("GDA_CANONICALCIRCULARCROSSING", new String[] { "REALITIES", "MODULUS", "WRAPAROUND" }, new String[] {
-				"" + realities, "" + modulus, "" + wrapAround });
+	public CanonicalCircularCrossing(int realities, double modulus,
+			boolean wrapAround, GraphPlotter plotter) {
+		super("GDA_CANONICALCIRCULARCROSSING", new Parameter[] {
+				new Parameter("REALITIES", "" + realities),
+				new Parameter("MODULUS", "" + modulus),
+				new Parameter("WRAPAROUND", "" + wrapAround) });
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
 	}
-	
+
 	public GraphDrawingAbstract clone() {
-		return new CanonicalCircularCrossing(realities, modulus, wrapAround, graphPlotter);
+		return new CanonicalCircularCrossing(realities, modulus, wrapAround,
+				graphPlotter);
 	}
 
 	@Override
 	public Graph transform(Graph g) {
-		int crossingsStart, crossingsEnd;
+		// int crossingsStart, crossingsEnd;
 
 		initIDSpace(g);
 		if (graphPlotter != null)
 			graphPlotter.plotStartGraph(g, idSpace);
 
-//		crossingsStart = edgeCrossings.calculateCrossings(g.generateEdges(), idSpace, true);
+		// crossingsStart = edgeCrossings.calculateCrossings(g.generateEdges(),
+		// idSpace, true);
 
 		reduceCrossingsBySwapping(g);
 
-//		crossingsEnd = edgeCrossings.calculateCrossings(g.generateEdges(), idSpace, true);
-//		System.out.println("Crossings at the beginning: " + crossingsStart + " - and afterwards: " + crossingsEnd);
+		// crossingsEnd = edgeCrossings.calculateCrossings(g.generateEdges(),
+		// idSpace, true);
+		// System.out.println("Crossings at the beginning: " + crossingsStart +
+		// " - and afterwards: " + crossingsEnd);
 
 		if (graphPlotter != null)
 			graphPlotter.plotFinalGraph(g, idSpace);

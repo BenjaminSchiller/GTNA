@@ -40,6 +40,7 @@ import gtna.graph.spanningTree.SpanningTree;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
+import gtna.util.Parameter;
 
 /**
  * @author Nico
@@ -54,8 +55,8 @@ public abstract class HierarchicalAbstract extends GraphDrawingAbstract {
 	protected double modulusY;
 	protected SpanningTree tree;
 
-	public HierarchicalAbstract(String key, String[] configKeys, String[] configValues) {
-		super(key, configKeys, configValues);
+	public HierarchicalAbstract(String key, Parameter[] parameters) {
+		super(key, parameters);
 	}
 
 	protected void initIDSpace(Graph g) {

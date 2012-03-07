@@ -40,7 +40,7 @@ import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
+import gtna.util.Parameter;
 
 import java.util.Random;
 
@@ -48,8 +48,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RandomPlaneIDSpaceSimple extends TransformationImpl implements
-		Transformation {
+public class RandomPlaneIDSpaceSimple extends Transformation {
 	private int realities;
 
 	private double modulusX;
@@ -59,15 +58,17 @@ public class RandomPlaneIDSpaceSimple extends TransformationImpl implements
 	private boolean wrapAround;
 
 	public RandomPlaneIDSpaceSimple() {
-		super("RANDOM_PLANE_ID_SPACE_SIMPLE", new String[] {}, new String[] {});
+		super("RANDOM_PLANE_ID_SPACE_SIMPLE");
 		this.realities = 1;
 	}
 
 	public RandomPlaneIDSpaceSimple(int realities, double modulusX,
 			double modulusY, boolean wrapAround) {
-		super("RANDOM_PLANE_ID_SPACE_SIMPLE", new String[] { "REALITIES",
-				"MODULUS_X", "MODULUS_Y", "WRAP_AROUND" }, new String[] {
-				"" + realities, "" + modulusX, "" + modulusY, "" + wrapAround });
+		super("RANDOM_PLANE_ID_SPACE_SIMPLE", new Parameter[] {
+				new Parameter("REALITIES", "" + realities),
+				new Parameter("MODULUS_X", "" + modulusX),
+				new Parameter("MODULUS_Y", "" + modulusY),
+				new Parameter("WRAP_AROUND", "" + wrapAround) });
 		this.realities = realities;
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
@@ -80,11 +81,11 @@ public class RandomPlaneIDSpaceSimple extends TransformationImpl implements
 		for (int r = 0; r < this.realities; r++) {
 			PlanePartitionSimple[] partitions = new PlanePartitionSimple[graph
 					.getNodes().length];
-			PlaneIdentifierSpaceSimple idSpace = new PlaneIdentifierSpaceSimple(partitions,
-					this.modulusX, this.modulusY, this.wrapAround);
+			PlaneIdentifierSpaceSimple idSpace = new PlaneIdentifierSpaceSimple(
+					partitions, this.modulusX, this.modulusY, this.wrapAround);
 			for (int i = 0; i < partitions.length; i++) {
-				partitions[i] = new PlanePartitionSimple(PlaneIdentifier.rand(rand,
-						idSpace));
+				partitions[i] = new PlanePartitionSimple(PlaneIdentifier.rand(
+						rand, idSpace));
 			}
 			graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
 		}

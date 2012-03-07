@@ -35,6 +35,13 @@
  */
 package gtna.transformation.spanningtree;
 
+import gtna.graph.Graph;
+import gtna.graph.Node;
+import gtna.graph.spanningTree.ParentChild;
+import gtna.graph.spanningTree.SpanningTree;
+import gtna.transformation.Transformation;
+import gtna.util.Parameter;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,18 +50,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import gtna.graph.Graph;
-import gtna.graph.Node;
-import gtna.graph.spanningTree.ParentChild;
-import gtna.graph.spanningTree.SpanningTree;
-import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
-
 /**
  * @author Nico
  * 
  */
-public class BFS extends TransformationImpl implements Transformation {
+public class BFS extends Transformation {
 	String rootSelector;
 
 	public BFS() {
@@ -62,7 +62,8 @@ public class BFS extends TransformationImpl implements Transformation {
 	}
 
 	public BFS(String rootSelector) {
-		super("SPANNINGTREE_BFS", new String[] { "ROOT_SELECTOR" }, new String[] { rootSelector });
+		super("SPANNINGTREE_BFS", new Parameter[] { new Parameter(
+				"ROOT_SELECTOR", rootSelector) });
 		this.rootSelector = rootSelector;
 	}
 
@@ -80,11 +81,13 @@ public class BFS extends TransformationImpl implements Transformation {
 		HashMap<Integer, ParentChild> parentChildMap = new HashMap<Integer, ParentChild>();
 
 		todoList.add(root);
-		parentChildMap.put(root.getIndex(), new ParentChild(-1, root.getIndex(), 0));
+		parentChildMap.put(root.getIndex(), new ParentChild(-1,
+				root.getIndex(), 0));
 		while (!todoList.isEmpty()) {
 			tempNodeFromList = todoList.pop();
 
-			ParentChild parent = parentChildMap.get(tempNodeFromList.getIndex());
+			ParentChild parent = parentChildMap
+					.get(tempNodeFromList.getIndex());
 			if (parent == null) {
 				depth = 1;
 			} else {
@@ -101,7 +104,9 @@ public class BFS extends TransformationImpl implements Transformation {
 					 */
 					todoList.add(nodes[e]);
 
-					parentChildMap.put(e, new ParentChild(tempNodeFromList.getIndex(), e, depth));
+					parentChildMap.put(e,
+							new ParentChild(tempNodeFromList.getIndex(), e,
+									depth));
 				}
 			}
 		}
@@ -118,8 +123,9 @@ public class BFS extends TransformationImpl implements Transformation {
 					System.err.println();
 				}
 			}
-			throw new RuntimeException("Error: graph contains " + graphNodeSize + ", but spanning tree only contains "
-					+ spanningTreeSize + " nodes - graph might be disconnected");
+			throw new RuntimeException("Error: graph contains " + graphNodeSize
+					+ ", but spanning tree only contains " + spanningTreeSize
+					+ " nodes - graph might be disconnected");
 		}
 		ArrayList<ParentChild> parentChildList = new ArrayList<ParentChild>();
 		parentChildList.addAll(parentChildMap.values());
@@ -143,9 +149,10 @@ public class BFS extends TransformationImpl implements Transformation {
 			 */
 			List<Node> sortedNodeList = Arrays.asList(nodeList.clone());
 			Collections.sort(sortedNodeList);
-			List<Node> highestDegreeNodes = sortedNodeList.subList((int) (0.9 * sortedNodeList.size()),
-					sortedNodeList.size());
-			result = highestDegreeNodes.get(rand.nextInt(highestDegreeNodes.size()));
+			List<Node> highestDegreeNodes = sortedNodeList.subList(
+					(int) (0.9 * sortedNodeList.size()), sortedNodeList.size());
+			result = highestDegreeNodes.get(rand.nextInt(highestDegreeNodes
+					.size()));
 		} else {
 			throw new RuntimeException("Unknown root selector " + rootSelector);
 		}

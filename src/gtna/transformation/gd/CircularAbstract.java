@@ -35,10 +35,6 @@
  */
 package gtna.transformation.gd;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -46,7 +42,12 @@ import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
 import gtna.metrics.EdgeCrossings;
+import gtna.util.Parameter;
 import gtna.util.Util;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 /**
  * @author Nico
@@ -62,21 +63,23 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 	HashSet<String> handledEdges;
 	EdgeCrossings edgeCrossings;
 
-	public CircularAbstract(String key, String[] configKeys, String[] configValues) {
-		super(key, configKeys, configValues);
+	public CircularAbstract(String key, Parameter[] parameters) {
+		super(key, parameters);
 	}
 
 	protected void initIDSpace(Graph g) {
 		for (int r = 0; r < this.realities; r++) {
 			partitions = new RingPartition[g.getNodes().length];
-			idSpace = new RingIdentifierSpace(partitions, this.modulus, this.wrapAround);
+			idSpace = new RingIdentifierSpace(partitions, this.modulus,
+					this.wrapAround);
 			RingIdentifier[] ids = new RingIdentifier[g.getNodes().length];
 			for (int i = 0; i < ids.length; i++) {
 				ids[i] = RingIdentifier.rand(rand, idSpace);
 			}
 			Arrays.sort(ids);
 			for (int i = 0; i < partitions.length; i++) {
-				partitions[i] = new RingPartition(ids[i], ids[(i + 1) % ids.length]);
+				partitions[i] = new RingPartition(ids[i], ids[(i + 1)
+						% ids.length]);
 			}
 			Util.randomize(partitions, rand);
 		}
@@ -97,7 +100,7 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		 * Add all nodes to the todolist
 		 */
 		LinkedList<Integer> todolist = new LinkedList<Integer>();
-		for ( Node n: g.getNodes() ) {
+		for (Node n : g.getNodes()) {
 			todolist.add(n.getIndex());
 		}
 
@@ -106,9 +109,11 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		while ((currentNodeID = todolist.poll()) != null) {
 			countLoop++;
 			if (countLoop % 2000 == 0) {
-//				System.out.println("In iteration " + countLoop + "; todoList still holds " + todolist.size()
-//						+ " elements (prior: " + lastCounter + ", for " + g.getNodes().length + " nodes)");
-//				lastCounter = todolist.size();
+				// System.out.println("In iteration " + countLoop +
+				// "; todoList still holds " + todolist.size()
+				// + " elements (prior: " + lastCounter + ", for " +
+				// g.getNodes().length + " nodes)");
+				// lastCounter = todolist.size();
 			}
 			currentNode = g.getNode(currentNodeID);
 
@@ -132,7 +137,8 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 
 			predecessorID = getPredecessor(currentNode.getIndex());
 			predecessor = g.getNode(predecessorID);
-			currentCrossings = edgeCrossings.calculateCrossings(currentNode, predecessor, idSpace);
+			currentCrossings = edgeCrossings.calculateCrossings(currentNode,
+					predecessor, idSpace);
 
 			if (currentCrossings == 0) {
 				/*
@@ -142,7 +148,8 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 				continue;
 			}
 			swapPositions(currentNodeID, predecessorID);
-			swappedCrossings = edgeCrossings.calculateCrossings(currentNode, predecessor, idSpace);
+			swappedCrossings = edgeCrossings.calculateCrossings(currentNode,
+					predecessor, idSpace);
 			if (swappedCrossings < currentCrossings) {
 				/*
 				 * Leave it that way, boy! But: there might be some more success
@@ -155,9 +162,9 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 				 * - because the predecessor might also have a predecessor
 				 * sharing a lot of edge crossings...
 				 */
-				if ( !todolist.contains(currentNodeID))
+				if (!todolist.contains(currentNodeID))
 					todolist.add(currentNodeID);
-				if ( !todolist.contains(predecessorID))
+				if (!todolist.contains(predecessorID))
 					todolist.add(predecessorID);
 			} else {
 				swapPositions(currentNodeID, predecessorID);
@@ -165,7 +172,8 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 		}
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
-		System.out.println("Did " + countLoop + " loops in " + totalTime + " msec");
+		// System.out.println("Did " + countLoop + " loops in " + totalTime +
+		// " msec");
 	}
 
 	protected int getPredecessor(int i) {
@@ -176,7 +184,8 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 				return j;
 		}
 
-		throw new GDTransformationException("There's a hole in the RingIdentifierSpace!");
+		throw new GDTransformationException(
+				"There's a hole in the RingIdentifierSpace!");
 	}
 
 	protected int getSuccessor(int i) {
@@ -187,7 +196,8 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 				return j;
 		}
 
-		throw new GDTransformationException("There's a hole in the RingIdentifierSpace!");
+		throw new GDTransformationException(
+				"There's a hole in the RingIdentifierSpace!");
 	}
 
 	protected void swapPositions(int i, int j) {

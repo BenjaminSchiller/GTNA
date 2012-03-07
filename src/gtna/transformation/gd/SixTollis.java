@@ -52,6 +52,7 @@ import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingPartition;
 import gtna.metrics.EdgeCrossings;
 import gtna.plot.GraphPlotter;
+import gtna.util.Parameter;
 
 /**
  * @author Nico
@@ -67,9 +68,12 @@ public class SixTollis extends CircularAbstract {
 	private Boolean useOriginalGraphWithoutRemovalList;
 	private Graph g;
 
-	public SixTollis(int realities, double modulus, boolean wrapAround, GraphPlotter plotter) {
-		super("GDA_SIX_TOLLIS", new String[] { "REALITIES", "MODULUS", "WRAPAROUND" }, new String[] { "" + realities,
-				"" + modulus, "" + wrapAround });
+	public SixTollis(int realities, double modulus, boolean wrapAround,
+			GraphPlotter plotter) {
+		super("GDA_SIX_TOLLIS", new Parameter[] {
+				new Parameter("REALITIES", "" + realities),
+				new Parameter("MODULUS", "" + modulus),
+				new Parameter("WRAPAROUND", "" + wrapAround) });
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
@@ -135,8 +139,10 @@ public class SixTollis extends CircularAbstract {
 
 			HashMap<String, Edge> currentVertexConnections = getEdges(currentVertex);
 			int currentVertexDegree = currentVertexConnections.size();
-			int triangulationEdgesCount = (currentVertexDegree - 1) - pairEdges.size();
-			int[] outgoingEdges = filterOutgoingEdges(currentVertex, currentVertexConnections);
+			int triangulationEdgesCount = (currentVertexDegree - 1)
+					- pairEdges.size();
+			int[] outgoingEdges = filterOutgoingEdges(currentVertex,
+					currentVertexConnections);
 
 			// System.out.print(currentVertex.getIndex() +
 			// " has a current degree of " + currentVertexDegree + ", "
@@ -153,7 +159,8 @@ public class SixTollis extends CircularAbstract {
 			while (triangulationEdgesCount > 0) {
 				randDst1 = g.getNode(outgoingEdges[firstCounter]);
 				randDst2 = g.getNode(outgoingEdges[secondCounter]);
-				if (!randDst1.equals(randDst2) && !removedVertices.contains(randDst1)
+				if (!randDst1.equals(randDst2)
+						&& !removedVertices.contains(randDst1)
 						&& !removedVertices.contains(randDst2)) {
 
 					// System.out.println("rand1: " + randDst1.getIndex() +
@@ -166,15 +173,20 @@ public class SixTollis extends CircularAbstract {
 					// System.out.println("");
 
 					if (!connected(randDst1, randDst2)) {
-						tempEdge = new Edge(Math.min(randDst1.getIndex(), randDst2.getIndex()), Math.max(
+						tempEdge = new Edge(Math.min(randDst1.getIndex(),
+								randDst2.getIndex()), Math.max(
 								randDst1.getIndex(), randDst2.getIndex()));
 						tempEdgeString = getEdgeString(tempEdge);
-						if (!additionalEdges[randDst1.getIndex()].containsKey(tempEdgeString)
-								&& !additionalEdges[randDst2.getIndex()].containsKey(tempEdgeString)) {
+						if (!additionalEdges[randDst1.getIndex()]
+								.containsKey(tempEdgeString)
+								&& !additionalEdges[randDst2.getIndex()]
+										.containsKey(tempEdgeString)) {
 							// System.out.println("Adding triangulation edge " +
 							// tempEdge);
-							additionalEdges[randDst1.getIndex()].put(tempEdgeString, tempEdge);
-							additionalEdges[randDst2.getIndex()].put(tempEdgeString, tempEdge);
+							additionalEdges[randDst1.getIndex()].put(
+									tempEdgeString, tempEdge);
+							additionalEdges[randDst2.getIndex()].put(
+									tempEdgeString, tempEdge);
 							triangulationEdgesCount--;
 						}
 					} else {
@@ -190,9 +202,11 @@ public class SixTollis extends CircularAbstract {
 					secondCounter = firstCounter + 1;
 				}
 
-				if (firstCounter == (currentVertexDegree - 1) && triangulationEdgesCount > 0)
-					throw new GDTransformationException("Could not find anymore pair edges for "
-							+ currentVertex.getIndex());
+				if (firstCounter == (currentVertexDegree - 1)
+						&& triangulationEdgesCount > 0)
+					throw new GDTransformationException(
+							"Could not find anymore pair edges for "
+									+ currentVertex.getIndex());
 			}
 
 			/*
@@ -239,7 +253,8 @@ public class SixTollis extends CircularAbstract {
 //		 true);
 //		 System.out.println("Crossings after phase 1: " + countCrossings);
 		if (graphPlotter != null)
-			graphPlotter.plot(g, idSpace, graphPlotter.getBasename() + "-afterPhase1");
+			graphPlotter.plot(g, idSpace, graphPlotter.getBasename()
+					+ "-afterPhase1");
 
 		// System.out.println("Done with phase 1 of S/T");
 		reduceCrossingsBySwapping(g);
@@ -276,7 +291,8 @@ public class SixTollis extends CircularAbstract {
 		 */
 		lastVertex = orderedVertices.getLast();
 		for (Node n : orderedVertices) {
-			partitions[n.getIndex()] = new RingPartition(ids[lastVertex.getIndex()], ids[n.getIndex()]);
+			partitions[n.getIndex()] = new RingPartition(
+					ids[lastVertex.getIndex()], ids[n.getIndex()]);
 			lastVertex = n;
 		}
 	}
@@ -327,7 +343,8 @@ public class SixTollis extends CircularAbstract {
 				 * Current vertex is not connected, so place it anywhere
 				 */
 				neighborPosition = rand.nextInt(longestPath.size());
-			} else if (outgoingEdges.length == 1 && todoList.contains(g.getNode(outgoingEdges[0]))) {
+			} else if (outgoingEdges.length == 1
+					&& todoList.contains(g.getNode(outgoingEdges[0]))) {
 				/*
 				 * Current vertex has only one connection, and the vertex on the
 				 * other end is also in todoList, so also place this one
@@ -390,8 +407,8 @@ public class SixTollis extends CircularAbstract {
 
 		for (Edge i : getAllEdges(n)) {
 			if (!useOriginalGraphWithoutRemovalList
-					&& (removedVertices.contains(g.getNode(i.getDst())) || removedVertices.contains(g.getNode(i
-							.getSrc())))) {
+					&& (removedVertices.contains(g.getNode(i.getDst())) || removedVertices
+							.contains(g.getNode(i.getSrc())))) {
 				continue;
 			}
 			edges.put(getEdgeString(i), i);
@@ -423,7 +440,8 @@ public class SixTollis extends CircularAbstract {
 		return false;
 	}
 
-	private LinkedList<Integer> findLongestPath(SpanningTree tree, int source, int comingFrom) {
+	private LinkedList<Integer> findLongestPath(SpanningTree tree, int source,
+			int comingFrom) {
 		LinkedList<Integer> connections = new LinkedList<Integer>();
 		for (int singleSrc : tree.getChildren(source)) {
 			if (singleSrc == source)
@@ -470,28 +488,32 @@ public class SixTollis extends CircularAbstract {
 		deepestVertex = new ParentChild(-1, start.getIndex(), -1);
 		// System.out.println("Starting DFS at " + start);
 
-		HashMap<Integer, ParentChild> parentChildMap = new HashMap<Integer, ParentChild>(vertexList.size());
+		HashMap<Integer, ParentChild> parentChildMap = new HashMap<Integer, ParentChild>(
+				vertexList.size());
 		dfs(start, deepestVertex, parentChildMap);
 		ArrayList<ParentChild> parentChildList = new ArrayList<ParentChild>();
 		parentChildList.addAll(parentChildMap.values());
 
 		SpanningTree tree = new SpanningTree(g, parentChildList);
 
-		LinkedList<Integer> resultInTree = findLongestPath(tree, deepestVertex.getChild(), -1);
+		LinkedList<Integer> resultInTree = findLongestPath(tree,
+				deepestVertex.getChild(), -1);
 		for (Integer tempVertex : resultInTree) {
 			result.add(g.getNode(tempVertex));
 		}
 		return result;
 	}
 
-	private void dfs(Node n, ParentChild root, HashMap<Integer, ParentChild> visited) {
+	private void dfs(Node n, ParentChild root,
+			HashMap<Integer, ParentChild> visited) {
 		int otherEnd;
 
 		if (visited.containsKey(n.getIndex())) {
 			return;
 		}
 
-		ParentChild current = new ParentChild(root.getChild(), n.getIndex(), root.getDepth() + 1);
+		ParentChild current = new ParentChild(root.getChild(), n.getIndex(),
+				root.getDepth() + 1);
 		visited.put(n.getIndex(), current);
 		if (current.getDepth() > deepestVertex.getDepth()) {
 			deepestVertex = current;
@@ -623,7 +645,8 @@ public class SixTollis extends CircularAbstract {
 			}
 			// System.out.println("For the edge " + tempOuterEdge + ", " +
 			// otherOuterEnd + " is the other vertex");
-			HashMap<String, Edge> allInnerEdges = getEdges(g.getNode(otherOuterEnd));
+			HashMap<String, Edge> allInnerEdges = getEdges(g
+					.getNode(otherOuterEnd));
 			for (Edge tempInnerEdge : allInnerEdges.values()) {
 				// System.out.println(tempInnerEdge + " is an edge for " +
 				// otherOuterEnd);
@@ -637,7 +660,8 @@ public class SixTollis extends CircularAbstract {
 				}
 				tempInnerVertex = g.getNode(otherInnerEnd);
 				if (connected(n, tempInnerVertex)) {
-					tempEdge = new Edge(Math.min(otherInnerEnd, otherOuterEnd), Math.max(otherInnerEnd, otherOuterEnd));
+					tempEdge = new Edge(Math.min(otherInnerEnd, otherOuterEnd),
+							Math.max(otherInnerEnd, otherOuterEnd));
 					// System.out.println(getEdgeString(tempEdge) +
 					// " is a pair edge of " + otherOuterEnd + " and " +
 					// otherInnerEnd);
@@ -653,6 +677,7 @@ public class SixTollis extends CircularAbstract {
 	}
 
 	private String getEdgeString(Edge e) {
-		return Math.min(e.getSrc(), e.getDst()) + "->" + Math.max(e.getSrc(), e.getDst());
+		return Math.min(e.getSrc(), e.getDst()) + "->"
+				+ Math.max(e.getSrc(), e.getDst());
 	}
 }

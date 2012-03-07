@@ -1,28 +1,27 @@
 package gtna.transformation.communities;
 
-import java.util.ArrayList;
-
+import gtna.graph.Graph;
+import gtna.graph.Node;
 import gtna.graph.sorting.NodeSorting;
+import gtna.transformation.Transformation;
+import gtna.util.Config;
+import gtna.util.Parameter;
+import gtna.util.Util;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-import gtna.graph.Graph;
-import gtna.graph.Node;
-import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
-import gtna.util.Config;
-import gtna.util.Util;
-
-public class CommunityDetectionLPAExtended extends TransformationImpl implements
-		Transformation {
+public class CommunityDetectionLPAExtended extends Transformation {
 
 	public static final String key = "COMMUNITY_DETECTION_LPAEXTENDED";
 
 	public CommunityDetectionLPAExtended() {
-		super(key,
-				new String[] { "W", "F", "D", "M" },
-				new String[] { Config.get(key + "_W"), Config.get(key + "_F"),
-						Config.get(key + "_D"), Config.get(key + "_M") });
+		super(key, new Parameter[] {
+				new Parameter("W", Config.get(key + "_W")),
+				new Parameter("F", Config.get(key + "_F")),
+				new Parameter("D", Config.get(key + "_D")),
+				new Parameter("M", Config.get(key + "_M")) });
 	}
 
 	public static interface EdgeWeight {
@@ -49,17 +48,17 @@ public class CommunityDetectionLPAExtended extends TransformationImpl implements
 		EdgeWeight w = null;
 		NodeCharacteristic f = null;
 		try {
-			w = (EdgeWeight) Class.forName(Config.get(key() + "_W"))
+			w = (EdgeWeight) Class.forName(Config.get(this.getKey() + "_W"))
 					.newInstance();
-			f = (NodeCharacteristic) Class.forName(Config.get(key() + "_F"))
-					.newInstance();
+			f = (NodeCharacteristic) Class.forName(
+					Config.get(this.getKey() + "_F")).newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("invalid config - "
 					+ e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
-		double m = Config.getDouble(key() + "_M");
-		double d = Config.getDouble(key() + "_D");
+		double m = Config.getDouble(this.getKey() + "_M");
+		double d = Config.getDouble(this.getKey() + "_D");
 
 		int[] labels = new int[nodes.length];
 		double[] scores = new double[nodes.length];
@@ -136,8 +135,8 @@ public class CommunityDetectionLPAExtended extends TransformationImpl implements
 				.mapLabelsToCommunities(labels);
 
 		for (Node n : g.getNodes()) {
-			map.put(n.getIndex(), labelCommunityMapping
-					.get(labels[n.getIndex()]));
+			map.put(n.getIndex(),
+					labelCommunityMapping.get(labels[n.getIndex()]));
 		}
 
 		g.addProperty(g.getNextKey("COMMUNITIES"),

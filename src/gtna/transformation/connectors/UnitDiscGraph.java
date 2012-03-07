@@ -39,18 +39,18 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
+import gtna.util.Parameter;
 
 /**
  * @author benni
  * 
  */
-public class UnitDiscGraph extends TransformationImpl implements Transformation {
+public class UnitDiscGraph extends Transformation {
 	private double radius;
 
 	public UnitDiscGraph(double radius) {
-		super("UNIT_DISC_GRAPH", new String[] { "RADIUS" }, new String[] { ""
-				+ radius });
+		super("UNIT_DISC_GRAPH", new Parameter[] { new Parameter("RADIUS", ""
+				+ radius) });
 		this.radius = radius;
 	}
 

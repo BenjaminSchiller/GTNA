@@ -41,10 +41,11 @@ import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
 import gtna.util.MDVector;
+import gtna.util.Parameter;
 
 /**
  * @author Nico
- *
+ * 
  */
 public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 
@@ -52,44 +53,47 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 	protected MDPartitionSimple[] partitions;
 	protected int realities;
 	protected double[] moduli;
-	protected Boolean wrapAround;	
+	protected Boolean wrapAround;
 	protected MDVector bias;
-	public ForceDrivenAbstract(String key, String[] configKeys,
-			String[] configValues) {
-		super(key, configKeys, configValues);
+
+	public ForceDrivenAbstract(String key, Parameter[] parameters) {
+		super(key, parameters);
 	}
-	
-	protected void initIDSpace( Graph g ) {
+
+	protected void initIDSpace(Graph g) {
 		for (int r = 0; r < this.realities; r++) {
 			partitions = new MDPartitionSimple[g.getNodes().length];
-			this.idSpace = new MDIdentifierSpaceSimple(partitions, this.moduli, this.wrapAround);
+			this.idSpace = new MDIdentifierSpaceSimple(partitions, this.moduli,
+					this.wrapAround);
 			for (int i = 0; i < partitions.length; i++) {
-				partitions[i] = new MDPartitionSimple(MDIdentifier.rand(rand, idSpace));
+				partitions[i] = new MDPartitionSimple(MDIdentifier.rand(rand,
+						idSpace));
 			}
-		}	
-		generateBias();	
+		}
+		generateBias();
 	}
-	
+
 	protected void generateBias() {
-			/*
-			 * A bias is needed as the internal algorithm works on coordinates
-			 * between (-modulus/2) and (+modulus/2) for each dimension
-			 */
+		/*
+		 * A bias is needed as the internal algorithm works on coordinates
+		 * between (-modulus/2) and (+modulus/2) for each dimension
+		 */
 		bias = new MDVector(this.moduli.length);
 		String moduliString = "";
-		for ( int i = 0; i < this.moduli.length; i++ ) {
+		for (int i = 0; i < this.moduli.length; i++) {
 			moduliString = moduliString + ", " + this.moduli[i];
 			bias.setCoordinate(i, this.moduli[i] / 2);
-		}		
+		}
 	}
-	
-	protected void writeIDSpace ( Graph g ) {
+
+	protected void writeIDSpace(Graph g) {
 		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
 	}
-	
+
 	protected MDVector setNormalized(MDVector v) {
-		for ( int i = 0; i < v.getDimension(); i++ ) {
-			double coordinate = Math.min(idSpace.getModulus(i)/2, Math.max(idSpace.getModulus(i)/-2, v.getCoordinate(i)));
+		for (int i = 0; i < v.getDimension(); i++) {
+			double coordinate = Math.min(idSpace.getModulus(i) / 2,
+					Math.max(idSpace.getModulus(i) / -2, v.getCoordinate(i)));
 			v.setCoordinate(i, coordinate);
 		}
 		return v;
@@ -100,18 +104,20 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 	}
 
 	protected MDVector getCoordinate(int i) {
-			MDVector iV = ((MDIdentifier) partitions[i].getRepresentativeID()).toMDVector();
-	//		System.out.print("Retrieving " + iV);
-			iV.subtract(bias);
-	//		System.out.println(" (biased: " + iV + ") for " +i);
-			return iV;
-		}
+		MDVector iV = ((MDIdentifier) partitions[i].getRepresentativeID())
+				.toMDVector();
+		// System.out.print("Retrieving " + iV);
+		iV.subtract(bias);
+		// System.out.println(" (biased: " + iV + ") for " +i);
+		return iV;
+	}
 
 	protected void setCoordinate(Node v, MDVector newPos) {
-	//		System.out.print("Setting " + newPos);
-			newPos.add(bias);
-	//		System.out.println(" (biased: " + newPos + ")");
-			((MDIdentifier) partitions[v.getIndex()].getRepresentativeID()).setCoordinates(newPos.getCoordinates());
-		}
+		// System.out.print("Setting " + newPos);
+		newPos.add(bias);
+		// System.out.println(" (biased: " + newPos + ")");
+		((MDIdentifier) partitions[v.getIndex()].getRepresentativeID())
+				.setCoordinates(newPos.getCoordinates());
+	}
 
 }

@@ -39,7 +39,6 @@ import gtna.communities.Communities;
 import gtna.graph.Graph;
 import gtna.plot.GephiUtils.NodeColors;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
 
 import java.awt.Color;
 
@@ -47,8 +46,7 @@ import java.awt.Color;
  * @author benni
  * 
  */
-public class CommunityColors extends TransformationImpl implements
-		Transformation {
+public class CommunityColors extends Transformation {
 
 	/**
 	 * @param key
@@ -56,7 +54,7 @@ public class CommunityColors extends TransformationImpl implements
 	 * @param configValues
 	 */
 	public CommunityColors() {
-		super("COMMUNITY_COLORS", new String[] {}, new String[] {});
+		super("COMMUNITY_COLORS");
 	}
 
 	@Override

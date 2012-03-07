@@ -39,16 +39,15 @@ import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
 
 /**
  * @author benni
  * 
  */
-public class Bidirectional extends TransformationImpl implements Transformation {
+public class Bidirectional extends Transformation {
 
 	public Bidirectional() {
-		super("BIDIRECTIONAL", new String[] {}, new String[] {});
+		super("BIDIRECTIONAL");
 	}
 
 	@Override

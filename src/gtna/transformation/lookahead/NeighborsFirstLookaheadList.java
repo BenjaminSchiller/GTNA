@@ -36,7 +36,6 @@
 package gtna.transformation.lookahead;
 
 import gtna.id.Partition;
-import gtna.transformation.Transformation;
 
 import java.util.Random;
 
@@ -45,7 +44,7 @@ import java.util.Random;
  * 
  */
 public class NeighborsFirstLookaheadList extends
-		NeighborsFirstObfuscatedLookaheadList implements Transformation {
+		NeighborsFirstObfuscatedLookaheadList {
 
 	public NeighborsFirstLookaheadList(boolean randomizeOrder) {
 		super("NEIGHBORS_FIRST_LOOKAHEAD_LIST", randomizeOrder);

@@ -42,7 +42,7 @@ import gtna.id.IdentifierSpace;
 import gtna.id.lookahead.LookaheadElement;
 import gtna.id.lookahead.LookaheadList;
 import gtna.id.lookahead.LookaheadLists;
-import gtna.transformation.Transformation;
+import gtna.util.Parameter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,15 +53,14 @@ import java.util.Random;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class RandomObfuscatedLookaheadList extends ObfuscatedLookaheadList
-		implements Transformation {
+public class RandomObfuscatedLookaheadList extends ObfuscatedLookaheadList {
 
 	public RandomObfuscatedLookaheadList(double minEpsilon, double maxEpsilon) {
 		super("RANDOM_OBFUSCATED_LOOKAHEAD_LIST", minEpsilon, maxEpsilon);
 	}
 
 	protected RandomObfuscatedLookaheadList(String key) {
-		super(key, new String[] {}, new String[] {});
+		super(key, new Parameter[0]);
 	}
 
 	@Override

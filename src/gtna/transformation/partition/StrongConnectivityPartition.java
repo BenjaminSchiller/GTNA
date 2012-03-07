@@ -38,7 +38,6 @@ package gtna.transformation.partition;
 import gtna.graph.Graph;
 import gtna.graph.partition.Partition;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
 import gtna.util.Util;
 
 import java.util.ArrayList;
@@ -49,11 +48,10 @@ import java.util.Stack;
  *         components of the given graph http://en.wikipedia.org/wiki/Tarjan
  *         's_strongly_connected_components_algorithm
  */
-public class StrongConnectivityPartition extends TransformationImpl implements
-		Transformation {
+public class StrongConnectivityPartition extends Transformation {
 
 	public StrongConnectivityPartition() {
-		super("STRONG_CONNECTIVITY_PARTITION", new String[] {}, new String[] {});
+		super("STRONG_CONNECTIVITY_PARTITION");
 	}
 
 	private int index;

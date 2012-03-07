@@ -39,10 +39,10 @@ import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.id.DIdentifierSpace;
-import gtna.id.DPartition;
 import gtna.id.ring.RingIdentifier;
 import gtna.transformation.attackableEmbedding.AttackableEmbedding;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
+import gtna.util.Parameter;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -110,10 +110,14 @@ public class LMC extends AttackableEmbedding {
 
 	public LMC(int iterations, String mode, double P, String deltaMode, int C,
 			String attack, String attackerSelection, int attackers) {
-		super(iterations, "LMC", new String[] { "ITERATIONS", "MODE", "P",
-				"DELTA", "C", "ATTACK", "ATTACKERSELECTION", "ATTACKERS" },
-				new String[] { "" + iterations, mode, "" + P, deltaMode,
-						"" + C, attack, attackerSelection, "" + attackers });
+		super(iterations, "LMC", new Parameter[] {
+				new Parameter("ITERATIONS", "" + iterations),
+				new Parameter("MODE", "" + mode), new Parameter("P", "" + P),
+				new Parameter("DELTA", "" + deltaMode),
+				new Parameter("C", "" + C),
+				new Parameter("ATTACK", "" + attack),
+				new Parameter("ATTACKERSELECTION", "" + attackerSelection),
+				new Parameter("ATTACKERS", "" + attackers) });
 		this.mode = mode;
 		this.P = P;
 		this.deltaMode = deltaMode;

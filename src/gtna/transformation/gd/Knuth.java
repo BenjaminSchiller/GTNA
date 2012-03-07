@@ -39,16 +39,19 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
+import gtna.util.Parameter;
 
 /**
  * @author Nico
- *
+ * 
  */
 public class Knuth extends HierarchicalAbstract {
 	int nextFreePosition;
-	
+
 	public Knuth(double modulusX, double modulusY, GraphPlotter plotter) {
-		super("GDA_KNUTH", new String[] {"MODULUS_X", "MODULUS_Y"}, new String[] {"" + modulusX, "" + modulusY});
+		super("GDA_KNUTH", new Parameter[] {
+				new Parameter("MODULUS_X", "" + modulusX),
+				new Parameter("MODULUS_Y", "" + modulusY) });
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;
@@ -57,42 +60,45 @@ public class Knuth extends HierarchicalAbstract {
 	public GraphDrawingAbstract clone() {
 		return new Knuth(modulusX, modulusY, graphPlotter);
 	}
-	
+
 	@Override
 	public Graph transform(Graph g) {
 		tree = (SpanningTree) g.getProperty("SPANNINGTREE");
-		if ( tree == null ) {
+		if (tree == null) {
 			throw new GDTransformationException("SpanningTree property missing");
 		}
 		int source = tree.getSrc();
-		int maxHeight = g.getNodes().length; 
+		int maxHeight = g.getNodes().length;
 		nextFreePosition = 0;
-		
+
 		nodePositionsX = new double[maxHeight];
 		nodePositionsY = new double[maxHeight];
-		for ( int i = 0; i < maxHeight; i++ ) {
+		for (int i = 0; i < maxHeight; i++) {
 			nodePositionsX[i] = 0;
 			nodePositionsY[i] = 0;
 		}
 
-		walkTree (tree, source);
-		
-		for ( Node i: g.getNodes() ) {
-			if ( i == null ) {
+		walkTree(tree, source);
+
+		for (Node i : g.getNodes()) {
+			if (i == null) {
 				System.out.println("Missing node");
 				continue;
 			}
-//			System.out.print("Node " + i.getIndex() + " resides at " + nodePositionsX[i.getIndex()] + "|" + nodePositionsY[i.getIndex()] + " and has edges to ");
-//			for ( int j: tree.getChildren(i.getIndex()) ) System.out.print(j + " ");
-//			System.out.println();
+			// System.out.print("Node " + i.getIndex() + " resides at " +
+			// nodePositionsX[i.getIndex()] + "|" + nodePositionsY[i.getIndex()]
+			// + " and has edges to ");
+			// for ( int j: tree.getChildren(i.getIndex()) ) System.out.print(j
+			// + " ");
+			// System.out.println();
 		}
-		
+
 		writeIDSpace(g);
 		if (graphPlotter != null)
 			graphPlotter.plotFinalGraph(g, idSpace);
 		if (graphPlotter != null)
 			graphPlotter.plotSpanningTree(g, idSpace);
-		
+
 		return g;
 	}
 
@@ -101,18 +107,18 @@ public class Knuth extends HierarchicalAbstract {
 		nodePositionsY[node] = depth;
 
 		int[] children = tree.getChildren(node);
-		if ( children.length == 0 ) {
+		if (children.length == 0) {
 			/*
 			 * Direct positioning at next place
 			 */
 			nodePositionsX[node] = nextFreePosition++;
 		} else {
 			int positionOfParent = (int) Math.floor(children.length / 2);
-			for ( int singleChild: children) {
-				if ( positionOfParent-- == 0 ) {
+			for (int singleChild : children) {
+				if (positionOfParent-- == 0) {
 					nodePositionsX[node] = nextFreePosition++;
 				}
-				walkTree(tree, singleChild);				
+				walkTree(tree, singleChild);
 			}
 		}
 	}

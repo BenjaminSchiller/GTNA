@@ -1,13 +1,9 @@
 package gtna.transformation.communities;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
 import gtna.transformation.communities.matrices.IMyEMatrix;
 import gtna.transformation.communities.matrices.IMyQMatrix;
 import gtna.transformation.communities.matrices.MyEMatrixInt;
@@ -17,7 +13,11 @@ import gtna.transformation.communities.matrices.MyQEMatrixLong;
 import gtna.transformation.communities.matrices.MyQMatrixInt;
 import gtna.transformation.communities.matrices.MyQMatrixLong;
 import gtna.util.Config;
+import gtna.util.Parameter;
 import gtna.util.Util;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Encapsulates the community detection algorithm based on improving the
@@ -29,8 +29,7 @@ import gtna.util.Util;
  * @author Philipp Neubrand
  * 
  */
-public class CommunityDetectionDeltaQ extends TransformationImpl implements
-		Transformation {
+public class CommunityDetectionDeltaQ extends Transformation {
 	// storage for the trace of the algorithm
 	// stores which communities are merged in each step
 	// two arrays are used as storage for performance purposes
@@ -45,11 +44,13 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements
 	 * 
 	 */
 	public CommunityDetectionDeltaQ() {
-		super(key, new String[] { "INTERNALFORMAT",
-				"FORCESEPARATED", "MAXITERATIONS" }, new String[] {
-				Config.get(key + "_INTERNALFORMAT"),
-				Config.get(key + "_FORCESEPARATED"),
-				Config.get(key + "_INTERNALFORMAT") });
+		super(key, new Parameter[] {
+				new Parameter("INTERNALFORMAT", Config.get(key
+						+ "_INTERNALFORMAT")),
+				new Parameter("FORCESEPARATED", Config.get(key
+						+ "_FORCESEPARATED")),
+				new Parameter("MAXITERATIONS", Config.get(key
+						+ "_INTERNALFORMAT")) });
 	}
 
 	/**
@@ -61,9 +62,10 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements
 
 		int nodes = g.getNodes().length;
 
-		boolean forceSeparated = Config.getBoolean(key() + "_FORCESEPARATED");
+		boolean forceSeparated = Config.getBoolean(this.getKey()
+				+ "_FORCESEPARATED");
 
-		String internalFormat = Config.get(key() + "_INTERNALFORMAT");
+		String internalFormat = Config.get(this.getKey() + "_INTERNALFORMAT");
 
 		// Create the needed matrices. Note that due to generics being limited
 		// to non-primitive types, using them is not possible. It would be
@@ -93,7 +95,7 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements
 		// Initialize the algorithm
 		double mod = 0;
 		int t = 0;
-		int maxT = Config.getInt(key() + "_MAXITERATIONS");
+		int maxT = Config.getInt(this.getKey() + "_MAXITERATIONS");
 		if (maxT == 0 || maxT > nodes - 1)
 			maxT = nodes - 1;
 
@@ -206,8 +208,8 @@ public class CommunityDetectionDeltaQ extends TransformationImpl implements
 				.mapLabelsToCommunities(labels);
 
 		for (Node n : g.getNodes()) {
-			map.put(n.getIndex(), labelCommunityMapping
-					.get(labels[n.getIndex()]));
+			map.put(n.getIndex(),
+					labelCommunityMapping.get(labels[n.getIndex()]));
 		}
 
 		g.addProperty(g.getNextKey("COMMUNITIES"),

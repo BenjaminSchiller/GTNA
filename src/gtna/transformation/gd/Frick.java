@@ -39,6 +39,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.plot.GraphPlotter;
 import gtna.util.MDVector;
+import gtna.util.Parameter;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -91,22 +92,27 @@ public class Frick extends ForceDrivenAbstract {
 	 */
 	private final double gamma = 10.0625;
 
-	public Frick(int realities, double[] moduli, Boolean wrapAround, GraphPlotter plotter) {
-		super("GDA_FRICK", new String[]{"REALITIES", "MODULI", "WRAPAROUND"}, new String[]{"" + realities, Arrays.toString(moduli), "" + wrapAround});
+	public Frick(int realities, double[] moduli, Boolean wrapAround,
+			GraphPlotter plotter) {
+		super("GDA_FRICK", new Parameter[] {
+				new Parameter("REALITIES", "" + realities),
+				new Parameter("MODULI", "" + Arrays.toString(moduli)),
+				new Parameter("WRAPAROUND", "" + wrapAround) });
 		this.realities = realities;
 		this.moduli = moduli;
 		this.wrapAround = wrapAround;
 		this.graphPlotter = plotter;
 	}
-	
+
 	public GraphDrawingAbstract clone() {
 		return new Frick(realities, moduli, wrapAround, graphPlotter);
 	}
 
 	@Override
 	public Graph transform(Graph g) {
-		System.err.println("This is not working completely yet, so don't expect good results!");
-		
+		System.err
+				.println("This is not working completely yet, so don't expect good results!");
+
 		initIDSpace(g);
 
 		double[] moduli = this.idSpace.getModuli();
@@ -125,7 +131,8 @@ public class Frick extends ForceDrivenAbstract {
 
 		int currIteration = 0;
 		while (tGlobal > tMin && currIteration < maxIterations) {
-			System.out.println("\n\n   >>> in iteration " + currIteration + " <<<");
+			System.out.println("\n\n   >>> in iteration " + currIteration
+					+ " <<<");
 			if (graphPlotter != null)
 				graphPlotter.plotIteration(g, idSpace, currIteration);
 
@@ -143,7 +150,10 @@ public class Frick extends ForceDrivenAbstract {
 			g = this.doIteration(g, v);
 			currIteration++;
 		}
-		System.out.println("Stopped it - did " + currIteration + " iterations (of maximal " + maxIterations + "), and temperature is " + tGlobal + " (minimal: " + tMin + ")");
+		System.out.println("Stopped it - did " + currIteration
+				+ " iterations (of maximal " + maxIterations
+				+ "), and temperature is " + tGlobal + " (minimal: " + tMin
+				+ ")");
 		if (graphPlotter != null)
 			graphPlotter.plotFinalGraph(g, idSpace);
 		writeIDSpace(g);
@@ -168,7 +178,8 @@ public class Frick extends ForceDrivenAbstract {
 		 * "anywhere"
 		 */
 		System.out.println("Current position: " + getCoordinate(v));
-		MDVector p = getCoordinate(v).multiplyWith(-1).multiplyWith(gamma).multiplyWith(PHI);
+		MDVector p = getCoordinate(v).multiplyWith(-1).multiplyWith(gamma)
+				.multiplyWith(PHI);
 		System.out.println("initial p with barycenter factor: " + p);
 		p.add(getRandomDisturbanceVector());
 
@@ -182,8 +193,9 @@ public class Frick extends ForceDrivenAbstract {
 			deltaNorm = delta.getNorm();
 			if (deltaNorm != 0) {
 				System.out.print("Old p: " + p + ", ");
-				System.out.print("Delta: " + delta + ", multiply with " + eDes + "^2, divide by " + deltaNorm + "^2 = ");
-				delta.multiplyWith( eDes * eDes ).divideBy(deltaNorm * deltaNorm);
+				System.out.print("Delta: " + delta + ", multiply with " + eDes
+						+ "^2, divide by " + deltaNorm + "^2 = ");
+				delta.multiplyWith(eDes * eDes).divideBy(deltaNorm * deltaNorm);
 				System.out.print(delta);
 				p.add(delta);
 				System.out.println(" -- new p:" + p);
@@ -196,24 +208,28 @@ public class Frick extends ForceDrivenAbstract {
 		 * v.getIncomingEdges() and v.getOutgoingEdges() should be identical
 		 */
 		for (int i : v.getOutgoingEdges()) {
-			System.out.println("Doing attractive force between " + getCoordinate(v) + " and " + getCoordinate(i));
+			System.out.println("Doing attractive force between "
+					+ getCoordinate(v) + " and " + getCoordinate(i));
 			delta = getCoordinate(v).subtract(getCoordinate(i));
 			deltaNorm = delta.getNorm();
-			System.out.print("Delta: " + delta + ", multiply with " + deltaNorm + "^2, divide by " + eDes + "^2 * " + PHI + " = ");
-			delta.multiplyWith(deltaNorm * deltaNorm).divideBy(eDes * eDes * PHI);
+			System.out.print("Delta: " + delta + ", multiply with " + deltaNorm
+					+ "^2, divide by " + eDes + "^2 * " + PHI + " = ");
+			delta.multiplyWith(deltaNorm * deltaNorm).divideBy(
+					eDes * eDes * PHI);
 			System.out.println(delta);
 			System.out.print("Old p: " + p);
 			p.subtract(delta);
 			System.out.println(" -- new p: " + p);
 		}
 		System.out.println("After all attractive forces: " + p);
-		
+
 		/*
 		 * End of impulse calculation as done in Fig 2 Following: update the
 		 * position and the temperature as in Fig 3
 		 */
 		if (p.getNorm() != 0) {
-			p.divideBy(p.getNorm()).multiplyWith(vertexData[v.getIndex()].localT);
+			p.divideBy(p.getNorm()).multiplyWith(
+					vertexData[v.getIndex()].localT);
 			MDVector vPos = getCoordinate(v);
 			System.out.print("Old coord: " + vPos);
 			vPos.add(p);
@@ -227,36 +243,47 @@ public class Frick extends ForceDrivenAbstract {
 			/*
 			 * There has been a movement of this node before
 			 */
-			double oldT = vertexData[v.getIndex()].localT;			
+			double oldT = vertexData[v.getIndex()].localT;
 			double beta = p.angleTo(vertexData[v.getIndex()].lastImpulse);
-			System.out.println("Angle to former movement " + vertexData[v.getIndex()].lastImpulse +":  " + beta);
-			if (Math.sin(beta) >= Math.sin(Math.toDegrees(Math.PI / 2 + alphaRotation / 2))) {
+			System.out.println("Angle to former movement "
+					+ vertexData[v.getIndex()].lastImpulse + ":  " + beta);
+			if (Math.sin(beta) >= Math.sin(Math.toDegrees(Math.PI / 2
+					+ alphaRotation / 2))) {
 				/*
 				 * This looks like a rotation
 				 */
 				System.out.println("Rotation?");
-				vertexData[v.getIndex()].skewGauge += sigmaRotation * Math.signum(Math.sin(beta));
+				vertexData[v.getIndex()].skewGauge += sigmaRotation
+						* Math.signum(Math.sin(beta));
 			}
-			if (Math.abs(Math.cos(beta)) >= Math.cos(Math.toDegrees(alphaOscillation / 2))) {
+			if (Math.abs(Math.cos(beta)) >= Math.cos(Math
+					.toDegrees(alphaOscillation / 2))) {
 				/*
 				 * This looks like an oscillation
 				 */
-				System.out.println("Old localT: " + vertexData[v.getIndex()].localT);
-				System.out.println("sigmaOsc: " + sigmaOscillation + ", cos: " + Math.cos(beta) + " (abs larger than " + Math.cos(Math.toDegrees(alphaOscillation / 2))+")");
-				vertexData[v.getIndex()].localT = vertexData[v.getIndex()].localT * sigmaOscillation * Math.cos(beta);
-				System.out.println("New localT: " + vertexData[v.getIndex()].localT);
+				System.out.println("Old localT: "
+						+ vertexData[v.getIndex()].localT);
+				System.out.println("sigmaOsc: " + sigmaOscillation + ", cos: "
+						+ Math.cos(beta) + " (abs larger than "
+						+ Math.cos(Math.toDegrees(alphaOscillation / 2)) + ")");
+				vertexData[v.getIndex()].localT = vertexData[v.getIndex()].localT
+						* sigmaOscillation * Math.cos(beta);
+				System.out.println("New localT: "
+						+ vertexData[v.getIndex()].localT);
 				System.out.println("Handled osc");
 			}
 
-			System.out.println("Old localT: " + vertexData[v.getIndex()].localT + ", skewGauge: "
-					+ vertexData[v.getIndex()].skewGauge);
+			System.out.println("Old localT: " + vertexData[v.getIndex()].localT
+					+ ", skewGauge: " + vertexData[v.getIndex()].skewGauge);
 			vertexData[v.getIndex()].localT = vertexData[v.getIndex()].localT
 					* (1 - Math.abs(vertexData[v.getIndex()].skewGauge));
-			vertexData[v.getIndex()].localT = Math.min(vertexData[v.getIndex()].localT, tMax);
-			System.out.println("New localT: " + vertexData[v.getIndex()].localT);
+			vertexData[v.getIndex()].localT = Math.min(
+					vertexData[v.getIndex()].localT, tMax);
+			System.out
+					.println("New localT: " + vertexData[v.getIndex()].localT);
 			double tDelta = oldT - vertexData[v.getIndex()].localT;
 			System.out.println("Old tGlobal: " + tGlobal);
-			tGlobal = tGlobal - ( tDelta / vertexData.length );
+			tGlobal = tGlobal - (tDelta / vertexData.length);
 			System.out.println("New tGlobal: " + tGlobal);
 		}
 		vertexData[v.getIndex()].lastImpulse = p.clone();
@@ -266,7 +293,8 @@ public class Frick extends ForceDrivenAbstract {
 
 	private MDVector getRandomDisturbanceVector() {
 		double minModulus = idSpace.getMinModulus();
-		return new MDVector(idSpace.getDimensions(), rand.nextDouble() * (minModulus / 100));
+		return new MDVector(idSpace.getDimensions(), rand.nextDouble()
+				* (minModulus / 100));
 	}
 
 	private class VertexData {

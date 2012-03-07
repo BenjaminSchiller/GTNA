@@ -40,7 +40,7 @@ import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
+import gtna.util.Parameter;
 import gtna.util.Util;
 
 import java.util.Arrays;
@@ -53,8 +53,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RandomRingIDSpace extends TransformationImpl implements
-		Transformation {
+public class RandomRingIDSpace extends Transformation {
 	private int realities;
 
 	private double modulus;
@@ -62,16 +61,17 @@ public class RandomRingIDSpace extends TransformationImpl implements
 	private boolean wrapAround;
 
 	public RandomRingIDSpace() {
-		super("RANDOM_RING_ID_SPACE", new String[] {}, new String[] {});
+		super("RANDOM_RING_ID_SPACE");
 		this.realities = 1;
 		this.modulus = 1.0;
 		this.wrapAround = true;
 	}
 
 	public RandomRingIDSpace(int realities, double modulus, boolean wrapAround) {
-		super("RANDOM_RING_ID_SPACE", new String[] { "REALITIES", "MODULUS",
-				"WRAP_AROUND" }, new String[] { "" + realities, "" + modulus,
-				"" + wrapAround });
+		super("RANDOM_RING_ID_SPACE", new Parameter[] {
+				new Parameter("REALITIES", "" + realities),
+				new Parameter("MODULUS", "" + modulus),
+				new Parameter("WRAP_AROUND", "" + wrapAround) });
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
@@ -82,8 +82,8 @@ public class RandomRingIDSpace extends TransformationImpl implements
 		Random rand = new Random();
 		for (int r = 0; r < this.realities; r++) {
 			RingPartition[] partitions = new RingPartition[graph.getNodes().length];
-			RingIdentifierSpace idSpace = new RingIdentifierSpace(partitions, this.modulus,
-					this.wrapAround);
+			RingIdentifierSpace idSpace = new RingIdentifierSpace(partitions,
+					this.modulus, this.wrapAround);
 			RingIdentifier[] ids = new RingIdentifier[graph.getNodes().length];
 			for (int i = 0; i < ids.length; i++) {
 				ids[i] = RingIdentifier.rand(rand, idSpace);
