@@ -35,22 +35,19 @@
  */
 package gtna.data;
 
-import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.util.Config;
 import gtna.util.Util;
 
-import java.util.ArrayList;
-
 public class ConfidenceData extends Data {
 	public static void generate(String destFolder, String[] folders,
 			Metric[] metrics) {
 		for (Metric m : metrics) {
-			String temp2 = destFolder + m.folder() + "/";
+			String temp2 = destFolder + m.getFolder() + "/";
 			String[] temp1 = new String[folders.length];
 			for (int i = 0; i < folders.length; i++) {
-				temp1[i] = folders[i] + m.folder() + "/";
+				temp1[i] = folders[i] + m.getFolder() + "/";
 			}
 			for (String d : m.dataKeys()) {
 				boolean cdf = Config.getBoolean(d + "_DATA_IS_CDF");

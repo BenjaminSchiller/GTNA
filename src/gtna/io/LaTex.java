@@ -73,7 +73,7 @@ public class LaTex {
 				continue;
 			}
 			counter = 0;
-			fw.writeln("\\subsubsection*{" + metrics[i].name() + "}");
+			fw.writeln("\\subsubsection*{" + metrics[i].getName() + "}");
 			for (int j = 0; j < keys[i].length; j++) {
 				writePlot(fw, folder, nwDescription, keys[i][j]);
 				counter++;
@@ -141,11 +141,11 @@ public class LaTex {
 				fw.writeln("\\vspace{1em}");
 			}
 			first = false;
-			writeTable(fw, table, null, metrics[i].name());
+			writeTable(fw, table, null, metrics[i].getName());
 			fw.writeln("\n");
 			fw.writeln("\\vspace{1em}");
-			writeTable(fw, invert(table), null, metrics[i].name());
-			String fn = folder + metrics[i].key()
+			writeTable(fw, invert(table), null, metrics[i].getName());
+			String fn = folder + metrics[i].getKey()
 					+ Config.get("LATEX_EXTENSION");
 			Filewriter fw2 = new Filewriter(fn);
 			writeTable(fw2, table, null, null);

@@ -516,7 +516,7 @@ public class Plot {
 		Filewriter.generateFolders(Config.get("MAIN_PLOT_FOLDER") + folder);
 
 		for (Metric m : metrics) {
-			String[] keys = Config.keys(m.key() + "_DATA_PLOTS");
+			String[] keys = Config.keys(m.getName() + "_DATA_PLOTS");
 			for (String k : keys) {
 				if (type.equals("CONF")) {
 					multiConf(series, folder, k, m);
@@ -565,11 +565,11 @@ public class Plot {
 		// return;
 		// }
 		// }
-		String filename = metric.folder() + "__"
+		String filename = metric.getFolder() + "__"
 				+ Config.get(plotKey + "_PLOT_FILENAME");
 		String ext = Config.get("PLOT_EXTENSION");
 		String title = Config.get(plotKey + "_PLOT_TITLE") + "  -  "
-				+ metric.folder();
+				+ metric.getFolder();
 		String xLabel = Config.get(plotKey + "_PLOT_X");
 		String yLabel = Config.get(plotKey + "_PLOT_Y");
 		String key = Config.get(plotKey + "_PLOT_KEY");
@@ -594,11 +594,11 @@ public class Plot {
 		for (int d = 0; d < data.length; d++) {
 			for (int i = 0; i < series.length; i++) {
 				String filenameConf = series[i].confDataFolder()
-						+ metric.folder() + "/"
+						+ metric.getFolder() + "/"
 						+ Config.get(data[d] + "_DATA_FILENAME")
 						+ Config.get("DATA_EXTENSION");
 				String filenameAvg = series[i].avgDataFolder()
-						+ metric.folder() + "/"
+						+ metric.getFolder() + "/"
 						+ Config.get(data[d] + "_DATA_FILENAME")
 						+ Config.get("DATA_EXTENSION");
 				String name = series[i].network().getDescription();
@@ -648,11 +648,11 @@ public class Plot {
 		// return;
 		// }
 		// }
-		String filename = metric.folder() + "__"
+		String filename = metric.getFolder() + "__"
 				+ Config.get(plotKey + "_PLOT_FILENAME");
 		String ext = Config.get("PLOT_EXTENSION");
 		String title = Config.get(plotKey + "_PLOT_TITLE") + "  -  "
-				+ metric.folder();
+				+ metric.getFolder();
 		String xLabel = Config.get(plotKey + "_PLOT_X");
 		String yLabel = Config.get(plotKey + "_PLOT_Y");
 		String key = Config.get(plotKey + "_PLOT_KEY");
@@ -687,8 +687,8 @@ public class Plot {
 		int counter = 0;
 		for (int d = 0; d < data.length; d++) {
 			for (int i = 0; i < series.length; i++) {
-				String file = series[i].avgDataFolder() + metric.folder() + "/"
-						+ Config.get(data[d] + "_DATA_FILENAME")
+				String file = series[i].avgDataFolder() + metric.getFolder()
+						+ "/" + Config.get(data[d] + "_DATA_FILENAME")
 						+ Config.get("DATA_EXTENSION");
 				String name = series[i].network().getDescription();
 

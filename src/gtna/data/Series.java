@@ -202,20 +202,20 @@ public class Series {
 		// Metric[] metrics = Config.getMetrics();
 		boolean error = false;
 		for (int i = 0; i < metrics.length; i++) {
-			String req = Config.get(metrics[i].key() + "_DEPENDENCY");
+			String req = Config.get(metrics[i].getKey() + "_DEPENDENCY");
 			if (req != null) {
 				String[] required = req.split(Config
 						.get("CONFIG_LIST_SEPARATOR"));
 				for (int a = 0; a < required.length; a++) {
 					boolean found = false;
 					for (int b = 0; b < i; b++) {
-						if (metrics[b].key().equals(required[a])) {
+						if (metrics[b].getKey().equals(required[a])) {
 							found = true;
 						}
 					}
 					if (!found) {
 						String err = Config.get("METRICS_MISSING_PREDECESSOR");
-						err = err.replace("%METRIC", metrics[i].key());
+						err = err.replace("%METRIC", metrics[i].getKey());
 						err = err.replace("%PREDECESSOR", required[a]);
 						System.out.println(err);
 						error = true;
@@ -228,8 +228,8 @@ public class Series {
 		}
 		int maxLength = 0;
 		for (int j = 0; j < metrics.length; j++) {
-			if (metrics[j].name().length() > maxLength) {
-				maxLength = metrics[j].name().length();
+			if (metrics[j].getName().length() > maxLength) {
+				maxLength = metrics[j].getName().length();
 			}
 		}
 		if (averageOutput.length() > maxLength) {
@@ -314,15 +314,15 @@ public class Series {
 			// metrics = Config.getMetrics();
 			HashMap<String, Metric> computedMetrics = new HashMap<String, Metric>();
 			for (int j = 0; j < metrics.length; j++) {
-				Timer timer = new Timer("  - " + metrics[j].name()
-						+ fill(maxLength - 4 - metrics[j].name().length()));
+				Timer timer = new Timer("  - " + metrics[j].getName()
+						+ fill(maxLength - 4 - metrics[j].getName().length()));
 				metrics[j].computeData(g, n, computedMetrics);
-				String folder = s.dataFolders[i] + metrics[j].folder() + "/";
+				String folder = s.dataFolders[i] + metrics[j].getFolder() + "/";
 				(new File(folder)).mkdirs();
 				metrics[j].writeData(folder);
 				// metrics[j].writeData(s.dataFolders[i]);
 				timer.end();
-				computedMetrics.put(metrics[j].key(), metrics[j]);
+				computedMetrics.put(metrics[j].getKey(), metrics[j]);
 			}
 
 			Timer swTimer = new Timer(singlesOutput

@@ -237,7 +237,7 @@ public class Config {
 		// Metric[] metrics = Config.getMetrics();
 		String[][] keys = new String[metrics.length][];
 		for (int i = 0; i < metrics.length; i++) {
-			keys[i] = Config.keys(metrics[i].key() + from);
+			keys[i] = Config.keys(metrics[i].getKey() + from);
 		}
 		return keys;
 	}

@@ -40,9 +40,9 @@ package gtna.util;
  * 
  */
 public class ParameterList {
-	private String key;
+	protected String key;
 
-	private Parameter[] parameters;
+	protected Parameter[] parameters;
 
 	public ParameterList(String key) {
 		this(key, new Parameter[0]);

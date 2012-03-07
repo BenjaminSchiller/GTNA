@@ -40,60 +40,46 @@ import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.util.Timer;
 
-
-
 /**
  * abstract class for counting motifs in a graph
+ * 
  * @author stef
- *
+ * 
  */
 public abstract class MotifCounter extends Metric {
 	protected double[] counts;
 	protected Timer runtime;
+
 	/**
 	 * @param key
 	 */
 	public MotifCounter(String key) {
 		super(key);
-		// TODO Auto-generated constructor stub
 	}
 
-	
-
-	/* (non-Javadoc)
-	 * @see gtna.metrics.Metric#writeData(java.lang.String)
-	 */
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(
-				this.counts,
-				this.name() + "_MOTIF_COUNT", folder);
+		success &= DataWriter.writeWithIndex(this.counts, this.getKey()
+				+ "_MOTIF_COUNT", folder);
 		double sum = 0;
-		for (int i = 0; i < this.counts.length; i++){
+		for (int i = 0; i < this.counts.length; i++) {
 			sum = sum + this.counts[i];
 		}
 		double[] d = new double[this.counts.length];
-		for (int i = 0; i < d.length; i++){
-			d[i] = (double)counts[i]/sum;
+		for (int i = 0; i < d.length; i++) {
+			d[i] = (double) counts[i] / sum;
 		}
-		success &= DataWriter.writeWithIndex(d,
-				this.name() + "_MOTIF_DISTRIBUTION", folder);
-		
+		success &= DataWriter.writeWithIndex(d, this.getKey()
+				+ "_MOTIF_DISTRIBUTION", folder);
+
 		return success;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.metrics.Metric#getValues()
-	 */
 	@Override
 	public Value[] getValues() {
-		return new Value[] {new Value(this.name() +"_RUNTIME",
-				this.runtime.getRuntime())};
+		return new Value[] { new Value(this.getKey() + "_RUNTIME",
+				this.runtime.getRuntime()) };
 	}
-	
-	
-	
-	
 
 }

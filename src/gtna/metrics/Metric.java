@@ -40,21 +40,18 @@ import gtna.graph.Graph;
 import gtna.networks.Network;
 import gtna.util.Config;
 import gtna.util.Parameter;
+import gtna.util.ParameterList;
 
 import java.util.HashMap;
 
-public abstract class Metric {
-	private String key;
-
-	private Parameter[] parameters;
+public abstract class Metric extends ParameterList {
 
 	public Metric(String key) {
 		this(key, new Parameter[0]);
 	}
 
 	public Metric(String key, Parameter[] parameters) {
-		this.key = key;
-		this.parameters = parameters;
+		super(key, parameters);
 	}
 
 	/**
@@ -91,32 +88,6 @@ public abstract class Metric {
 	 */
 	public String[] singlesKeys() {
 		return Config.keys(this.key + "_SINGLES_KEYS");
-	}
-
-	/**
-	 * name of the metric
-	 * 
-	 * @return name of the metric
-	 */
-	public String name() {
-		return Config.get(key + "_NAME");
-	}
-
-	public String folder() {
-		StringBuffer buff = new StringBuffer(this.key);
-		for (Parameter p : this.parameters) {
-			buff.append("-" + p.getValue());
-		}
-		return buff.toString();
-	}
-
-	/**
-	 * key of the metric (mkey)
-	 * 
-	 * @return key of the metric (mkey)
-	 */
-	public String key() {
-		return this.key;
 	}
 
 	/**

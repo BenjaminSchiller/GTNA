@@ -89,20 +89,20 @@ public abstract class Partitioning extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(this.components, this.key()
+		success &= DataWriter.writeWithIndex(this.components, this.getKey()
 				+ "_COMPONENTS", folder);
 		success &= DataWriter.writeWithIndex(this.componentsFraction,
-				this.key() + "_COMPONENTS_FRACTION", folder);
+				this.getKey() + "_COMPONENTS_FRACTION", folder);
 		return success;
 	}
 
 	@Override
 	public Value[] getValues() {
-		Value largestComponent = new Value(this.key() + "_LARGEST_COMPONENT",
-				this.largestComponent);
-		Value largestComponentFraction = new Value(this.key()
+		Value largestComponent = new Value(
+				this.getKey() + "_LARGEST_COMPONENT", this.largestComponent);
+		Value largestComponentFraction = new Value(this.getKey()
 				+ "_LARGEST_COMPONENT_FRACTION", this.largestComponentFraction);
-		Value runtime = new Value(this.key() + "_RUNTIME",
+		Value runtime = new Value(this.getKey() + "_RUNTIME",
 				this.runtime.getRuntime());
 		return new Value[] { largestComponent, largestComponentFraction,
 				runtime };
