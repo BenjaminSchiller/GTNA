@@ -38,8 +38,6 @@ package gtna.networks.util;
 import gtna.graph.Graph;
 import gtna.io.GraphReader;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
 
@@ -56,13 +54,12 @@ import gtna.util.Config;
  * @author benni
  * 
  */
-public class ReadableFile extends NetworkImpl implements Network {
+public class ReadableFile extends Network {
 	private String filename;
 
 	public ReadableFile(String name, String folder, String filename,
-			RoutingAlgorithm ra, Transformation[] t) {
-		super(ReadableFile.key(name, folder), GraphReader.nodes(filename), new String[] {},
-				new String[] {}, ra, t);
+			Transformation[] t) {
+		super(ReadableFile.key(name, folder), GraphReader.nodes(filename), t);
 		this.filename = filename;
 	}
 
@@ -74,7 +71,7 @@ public class ReadableFile extends NetworkImpl implements Network {
 
 	public Graph generate() {
 		Graph graph = GraphReader.readWithProperties(this.filename);
-		graph.setName(this.description());
+		graph.setName(this.getDescription());
 		return graph;
 	}
 }

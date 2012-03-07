@@ -39,8 +39,6 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 
 /**
@@ -51,15 +49,15 @@ import gtna.transformation.Transformation;
  * @author benni
  * 
  */
-public class Complete extends NetworkImpl implements Network {
-	public Complete(int nodes, RoutingAlgorithm ra, Transformation[] t) {
-		super("COMPLETE", nodes, new String[] {}, new String[] {}, ra, t);
+public class Complete extends Network {
+	public Complete(int nodes, Transformation[] t) {
+		super("COMPLETE", nodes, t);
 	}
 
 	public Graph generate() {
-		Graph graph = new Graph(this.description());
-		Node[] nodes = Node.init(this.nodes(), graph);
-		Edges edges = new Edges(nodes, this.nodes() * (this.nodes() - 1));
+		Graph graph = new Graph(this.getDescription());
+		Node[] nodes = Node.init(this.getNodes(), graph);
+		Edges edges = new Edges(nodes, this.getNodes() * (this.getNodes() - 1));
 		for (int i = 0; i < nodes.length; i++) {
 			for (int j = 0; j < nodes.length; j++) {
 				if (j == i) {

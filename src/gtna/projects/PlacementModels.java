@@ -141,7 +141,7 @@ public class PlacementModels {
 				String filename = "/Users/benni/TUD/"
 						+ "PlacementModels/city-mesh/" + name + ".txt";
 				nw[0][i] = new GpsNetwork(filename, name, R[i], null, null);
-				int n = nw[0][i].nodes();
+				int n = nw[0][i].getNodes();
 				double w = 1000;
 				double h = 1000;
 				PlacementModel p1 = new GridPlacementModel(w, h, 1, 1, false);
@@ -151,11 +151,13 @@ public class PlacementModels {
 				PlacementModel p2_random = new RandomPlacementModel(1000, 1000,
 						false);
 				Network pmc_random = new PlacementModelContainer(n, 1, w, h,
-						p1, p2_random, p, c, null, null);
+						p1, p2_random, p, c, null);
 				nw[1][i] = new DescriptionWrapper(pmc_random, "Random " + n);
 			}
-			Series[][] s = GET ? Series.get(nw) : Series.generate(nw, metrics, times);
-			Plot.singlesAvg(s, name + "-" + nw[0][0].nodes() + "-singles/", metrics);
+			Series[][] s = GET ? Series.get(nw) : Series.generate(nw, metrics,
+					times);
+			Plot.singlesAvg(s, name + "-" + nw[0][0].getNodes() + "-singles/",
+					metrics);
 		}
 	}
 
@@ -194,16 +196,20 @@ public class PlacementModels {
 
 			boolean GET = true;
 
-			Series[][] s1 = GET ? Series.get(nw1) : Series.generate(nw1, metrics, times);
+			Series[][] s1 = GET ? Series.get(nw1) : Series.generate(nw1,
+					metrics, times);
 			// Plot.singlesAvg(s1, times + "/Random-" + n + "/");
 
-			Series[][] s2 = GET ? Series.get(nw2) : Series.generate(nw2, metrics, times);
+			Series[][] s2 = GET ? Series.get(nw2) : Series.generate(nw2,
+					metrics, times);
 			// Plot.singlesAvg(s2, times + "/Circle-" + n + "/");
 
-			Series[][] s3 = GET ? Series.get(nw3) : Series.generate(nw3, metrics, times);
+			Series[][] s3 = GET ? Series.get(nw3) : Series.generate(nw3,
+					metrics, times);
 			// Plot.singlesAvg(s3, times + "/Grid-" + n + "/");
 
-			Series[][] s4 = GET ? Series.get(nw4) : Series.generate(nw4, metrics, times);
+			Series[][] s4 = GET ? Series.get(nw4) : Series.generate(nw4,
+					metrics, times);
 			// Plot.singlesAvg(s4, times + "/Communities-" + n + "/");
 
 			Series[][] s = new Series[s1.length + s2.length + s3.length
@@ -232,10 +238,10 @@ public class PlacementModels {
 			NodeConnector c = new UDGConnector(R[i]);
 			PlacementModel p2 = new RandomPlacementModel(w, h, false);
 			Network pmc = new PlacementModelContainer(n, 1, w, h, p1, p2, p, c,
-					null, null);
+					null);
 			nw[0][i] = new DescriptionWrapper(pmc, "Random " + n);
-			System.out.println(pmc.description());
-			System.out.println(nw[0][i].description());
+			System.out.println(pmc.getDescription());
+			System.out.println(nw[0][i].getDescription());
 		}
 		return nw;
 	}
@@ -256,11 +262,11 @@ public class PlacementModels {
 				PlacementModel p2 = new CirclePlacementModel(
 						Math.min(w, h) / 2.0, dt[j][0], dt[j][1], false);
 				Network pmc = new PlacementModelContainer(n, 1, w, h, p1, p2,
-						p, c, null, null);
+						p, c, null);
 				nw[j][i] = new DescriptionWrapper(pmc, "Circle " + n + " ("
 						+ dt[j][0] + " / " + dt[j][1] + ")");
-				System.out.println(pmc.description());
-				System.out.println(nw[j][i].description());
+				System.out.println(pmc.getDescription());
+				System.out.println(nw[j][i].getDescription());
 			}
 		}
 		return nw;
@@ -275,11 +281,11 @@ public class PlacementModels {
 			int rows = cols;
 			PlacementModel p2 = new GridPlacementModel(w, h, cols, rows, false);
 			Network pmc = new PlacementModelContainer(n, 1, w, h, p1, p2, p, c,
-					null, null);
+					null);
 			nw[0][i] = new DescriptionWrapper(pmc, "Grid " + n + " (" + cols
 					+ " x " + rows + ")");
-			System.out.println(pmc.description());
-			System.out.println(nw[0][i].description());
+			System.out.println(pmc.getDescription());
+			System.out.println(nw[0][i].getDescription());
 		}
 		return nw;
 	}
@@ -294,11 +300,11 @@ public class PlacementModels {
 				PlacementModel p2 = new CommunityPlacementModel(w, h, sigma[j],
 						false);
 				Network pmc = new PlacementModelContainer(n, 1, w, h, p1, p2,
-						p, c, null, null);
+						p, c, null);
 				nw[j][i] = new DescriptionWrapper(pmc, "Community " + n + " ("
 						+ sigma[j] + ")");
-				System.out.println(pmc.description());
-				System.out.println(nw[0][i].description());
+				System.out.println(pmc.getDescription());
+				System.out.println(nw[0][i].getDescription());
 			}
 		}
 		return nw;
@@ -317,7 +323,7 @@ public class PlacementModels {
 		for (PlacementModel p2 : placements2) {
 			for (int i = 0; i < times; i++) {
 				PlacementModelContainer nw = new PlacementModelContainer(nodes,
-						1, w, h, p1, p2, new SimplePartitioner(), c, null, null);
+						1, w, h, p1, p2, new SimplePartitioner(), c, null);
 				String name = "./plots/singles/" + p2.getKey() + "-" + r + "-"
 						+ i;
 				PlacementModels.plot(nw, name);
@@ -363,7 +369,7 @@ public class PlacementModels {
 					for (int i = 0; i < times; i++) {
 						PlacementModelContainer nw = new PlacementModelContainer(
 								nodes, hotSpots, w1, h1, p1, p2,
-								new SimplePartitioner(), c, null, null);
+								new SimplePartitioner(), c, null);
 						String name = "./plots/combinations/" + p1.getKey()
 								+ "-" + p2.getKey() + "-"
 								+ c.getConfigValues()[0] + "-" + i;
@@ -383,7 +389,7 @@ public class PlacementModels {
 		if ((new File(filename2)).exists()) {
 			return;
 		}
-		System.out.println(nw.folder());
+		System.out.println(nw.getFolder());
 		System.out.println("=> " + filename1);
 		ge.plot(g, idSpace, filename1);
 		System.out.println("=> " + filename2);

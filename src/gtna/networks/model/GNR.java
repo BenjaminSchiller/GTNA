@@ -39,9 +39,8 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.Parameter;
 
 import java.util.Random;
 
@@ -66,25 +65,25 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class GNR extends NetworkImpl implements Network {
+public class GNR extends Network {
 	private boolean BIDIRECTIONAL;
 
 	private double REDIRECTION_PROBABILITY;
 
 	public GNR(int nodes, boolean BIDIRECTIONAL,
-			double REDIRECTION_PROBABILITY, RoutingAlgorithm ra,
-			Transformation[] t) {
-		super("GNR", nodes, new String[] { "BIDIRECTIONAL",
-				"REDIRECTION_PROBABILITY" }, new String[] { "" + BIDIRECTIONAL,
-				"" + REDIRECTION_PROBABILITY }, ra, t);
+			double REDIRECTION_PROBABILITY, Transformation[] t) {
+		super("GNR", nodes, new Parameter[] {
+				new Parameter("BIDIRECTIONAL", "" + BIDIRECTIONAL),
+				new Parameter("REDIRECTION_PROBABILITY", ""
+						+ REDIRECTION_PROBABILITY) }, t);
 		this.BIDIRECTIONAL = BIDIRECTIONAL;
 		this.REDIRECTION_PROBABILITY = REDIRECTION_PROBABILITY;
 	}
 
 	public Graph generate() {
-		Graph graph = new Graph(this.description());
+		Graph graph = new Graph(this.getDescription());
 		Random rand = new Random(System.currentTimeMillis());
-		Node[] nodes = Node.init(this.nodes(), graph);
+		Node[] nodes = Node.init(this.getNodes(), graph);
 		Edges edges = new Edges(nodes, 100);
 		for (int i = 1; i < nodes.length; i++) {
 			int bootstrap = rand.nextInt(i);

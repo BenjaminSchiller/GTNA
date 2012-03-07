@@ -39,9 +39,8 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.Parameter;
 
 /**
  * Implements a network generator for De Bruijn graph, a deterministic network
@@ -55,31 +54,28 @@ import gtna.transformation.Transformation;
  * @author benni
  * 
  */
-public class DeBruijn extends NetworkImpl implements Network {
+public class DeBruijn extends Network {
 	private int BASE;
 
-	public DeBruijn(int BASE, int DIMENSIONS, RoutingAlgorithm ra,
-			Transformation[] t) {
-		super("DE_BRUIJN", numberOfNodes(BASE, DIMENSIONS), new String[] {
-				"BASE", "DIMENSIONS" }, new String[] { "" + BASE,
-				"" + DIMENSIONS }, ra, t);
+	public DeBruijn(int BASE, int DIMENSIONS, Transformation[] t) {
+		super("DE_BRUIJN", numberOfNodes(BASE, DIMENSIONS), new Parameter[] {
+				new Parameter("BASE", "" + BASE),
+				new Parameter("DIMENSIONS", "" + DIMENSIONS) }, t);
 		this.BASE = BASE;
 	}
 
-	public static DeBruijn[] get(int[] b, int d, RoutingAlgorithm ra,
-			Transformation[] t) {
+	public static DeBruijn[] get(int[] b, int d, Transformation[] t) {
 		DeBruijn[] nw = new DeBruijn[b.length];
 		for (int i = 0; i < b.length; i++) {
-			nw[i] = new DeBruijn(b[i], d, ra, t);
+			nw[i] = new DeBruijn(b[i], d, t);
 		}
 		return nw;
 	}
 
-	public static DeBruijn[] get(int b, int[] d, RoutingAlgorithm ra,
-			Transformation[] t) {
+	public static DeBruijn[] get(int b, int[] d, Transformation[] t) {
 		DeBruijn[] nw = new DeBruijn[d.length];
 		for (int i = 0; i < d.length; i++) {
-			nw[i] = new DeBruijn(b, d[i], ra, t);
+			nw[i] = new DeBruijn(b, d[i], t);
 		}
 		return nw;
 	}
@@ -93,9 +89,9 @@ public class DeBruijn extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Graph graph = new Graph(this.description());
-		Node[] nodes = Node.init(this.nodes(), graph);
-		Edges edges = new Edges(nodes, this.nodes() * this.BASE - this.BASE);
+		Graph graph = new Graph(this.getDescription());
+		Node[] nodes = Node.init(this.getNodes(), graph);
+		Edges edges = new Edges(nodes, this.getNodes() * this.BASE - this.BASE);
 		for (int i = 0; i < nodes.length; i++) {
 			int shiftedId = (i * this.BASE) % nodes.length;
 			for (int j = 0; j < this.BASE; j++) {

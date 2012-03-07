@@ -35,8 +35,6 @@
  */
 package gtna.networks.etc;
 
-import java.util.ArrayList;
-
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifier;
@@ -44,24 +42,27 @@ import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
 import gtna.io.Filereader;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 import gtna.transformation.connectors.UnitDiscGraph;
+import gtna.util.Parameter;
+
+import java.util.ArrayList;
 
 /**
  * @author benni
  * 
  */
-public class GpsNetwork extends NetworkImpl implements Network {
+public class GpsNetwork extends Network {
 	private String filename;
 
 	private double radius;
 
 	public GpsNetwork(String filename, String name, double radius,
 			RoutingAlgorithm ra, Transformation[] t) {
-		super("GPS_NETWORK", GpsNetwork.getNodes(filename), new String[] {
-				"NAME", "RADIUS" }, new String[] { name, "" + radius }, ra, t);
+		super("GPS_NETWORK", GpsNetwork.getNodes(filename), new Parameter[] {
+				new Parameter("NAME", name),
+				new Parameter("RADIUS", "" + radius) }, t);
 		this.filename = filename;
 		this.radius = radius;
 	}
@@ -105,7 +106,7 @@ public class GpsNetwork extends NetworkImpl implements Network {
 		this.mult(coords, 0, 999.0 / this.max(coords, 0));
 		this.mult(coords, 1, 999.0 / this.max(coords, 1));
 		int N = coords.length;
-		Graph graph = new Graph(this.description());
+		Graph graph = new Graph(this.getDescription());
 		Node[] nodes = Node.init(N, graph);
 		graph.setNodes(nodes);
 		double modulusX = Math.ceil(this.max(coords, 0)) + 1;

@@ -39,9 +39,9 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.Parameter;
 
 import java.util.Random;
 
@@ -64,15 +64,16 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class Gilbert extends NetworkImpl implements Network {
+public class Gilbert extends Network {
 	private double p;
 
 	private boolean bidirectional;
 
 	public Gilbert(int nodes, double p, boolean bidirectional,
-			RoutingAlgorithm ra, Transformation[] t) {
-		super("GILBERT", nodes, new String[] { "C", "BIDIRECTIONAL" },
-				new String[] { "" + (p * nodes), "" + bidirectional }, ra, t);
+			Transformation[] t) {
+		super("GILBERT", nodes, new Parameter[] {
+				new Parameter("C", "" + (p * nodes)),
+				new Parameter("BIDIRECTIONAL", "" + bidirectional) }, t);
 		this.p = p;
 		this.bidirectional = bidirectional;
 	}
@@ -81,17 +82,17 @@ public class Gilbert extends NetworkImpl implements Network {
 			RoutingAlgorithm ra, Transformation[] t) {
 		Gilbert[] nw = new Gilbert[p.length];
 		for (int i = 0; i < p.length; i++) {
-			nw[i] = new Gilbert(nodes, p[i], bidirectional, ra, t);
+			nw[i] = new Gilbert(nodes, p[i], bidirectional, t);
 		}
 		return nw;
 	}
 
 	public Graph generate() {
-		Graph graph = new Graph(this.description());
+		Graph graph = new Graph(this.getDescription());
 		Random rand = new Random(System.currentTimeMillis());
-		Node[] nodes = Node.init(this.nodes(), graph);
+		Node[] nodes = Node.init(this.getNodes(), graph);
 		Edges edges = new Edges(nodes,
-				(int) (this.p * this.nodes() * this.nodes()));
+				(int) (this.p * this.getNodes() * this.getNodes()));
 		// double P = this.bidirectional ? this.p / 2 : this.p;
 		double P = this.p;
 		for (int i = 0; i < nodes.length; i++) {

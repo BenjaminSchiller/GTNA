@@ -41,9 +41,9 @@ import gtna.graph.Node;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartitionSimple;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
+import gtna.networks.Network;
 import gtna.transformation.Transformation;
+import gtna.util.Parameter;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -58,17 +58,18 @@ import java.util.Vector;
  * @author stefanie
  * 
  */
-public class ScaleFreeUndirected extends NetworkImpl {
+public class ScaleFreeUndirected extends Network {
 	private double interval;
 	private int C;
 	private double alpha;
 	private int cutoff;
 
 	public ScaleFreeUndirected(int nodes, double alpha, int C, int cutoff,
-			RoutingAlgorithm ra, Transformation[] t) {
-		super("SCALE_FREE_UNDIRECTED", nodes, new String[] { "C", "ALPHA",
-				"CUTOFF" }, new String[] { "" + C, "" + alpha, "" + cutoff },
-				ra, t);
+			Transformation[] t) {
+		super("SCALE_FREE_UNDIRECTED", nodes, new Parameter[] {
+				new Parameter("SIZE", "" + nodes), new Parameter("C", "" + C),
+				new Parameter("ALPHA", "" + alpha),
+				new Parameter("CUTOFF", "" + cutoff) }, t);
 		this.interval = (double) 1 / nodes;
 		this.C = C;
 		this.alpha = alpha;
@@ -130,8 +131,8 @@ public class ScaleFreeUndirected extends NetworkImpl {
 	 */
 	@Override
 	public Graph generate() {
-		Node[] nodes = new Node[this.nodes()];
-		Graph g = new Graph(this.description());
+		Node[] nodes = new Node[this.getNodes()];
+		Graph g = new Graph(this.getDescription());
 		for (int i = 0; i < nodes.length; i++) {
 			nodes[i] = new Node(i, g);
 		}
@@ -174,7 +175,7 @@ public class ScaleFreeUndirected extends NetworkImpl {
 			labels[vec.get(k)] = this.cutoff;
 		}
 
-		Edges edges = new Edges(nodes, (int) Math.round(sum * this.nodes()));
+		Edges edges = new Edges(nodes, (int) Math.round(sum * this.getNodes()));
 
 		// create local edges: randomly choose node within distance C
 		for (int i = 0; i < nodes.length; i++) {

@@ -68,7 +68,9 @@ public class Routing extends Metric {
 	@Override
 	public void computeData(Graph graph, Network network,
 			HashMap<String, Metric> metrics) {
-		RoutingAlgorithm ra = network.routingAlgorithm();
+		// FIXME add routingAlgorithm as parameter to Routing metric
+		// RoutingAlgorithm ra = network.routingAlgorithm();
+		RoutingAlgorithm ra = null;
 		if (ra == null || !ra.applicable(graph)) {
 			this.initEmpty();
 			return;

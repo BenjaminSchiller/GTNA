@@ -62,4 +62,8 @@ public class Parameter {
 	public String getValue() {
 		return this.value;
 	}
+	
+	public String toString(){
+		return this.key + ": " + this.value;
+	}
 }

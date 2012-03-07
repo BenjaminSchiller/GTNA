@@ -48,8 +48,7 @@ public class LaTex {
 
 	public static void writeDataPlots(String filename, String folder,
 			Series[] s, Metric[] metrics) {
-		String nwDescription = s[0].network().description(
-				Config.get("LATEX_PLOTS_DESCRIPTION_TYPE"),
+		String nwDescription = s[0].network().diffDescriptionShort(
 				s[1 % s.length].network());
 		writePlot(filename, folder, nwDescription,
 				Config.allKeys("_DATA_PLOTS", metrics), metrics);
@@ -57,9 +56,8 @@ public class LaTex {
 
 	public static void writeSinglePlots(String filename, String folder,
 			Series[][] s, Metric[] metrics) {
-		String nwDescription = s[0][0].network().description(
-				Config.get("LATEX_PLOTS_DESCRIPTION_TYPE"),
-				s[0][1 % s[0].length].network(), s[1 % s.length][0].network());
+		String nwDescription = s[0][0].network().diffDescriptionShort(
+				s[0][1 % s[0].length].network());
 		writePlot(filename, folder, nwDescription,
 				Config.allKeys("_SINGLES_PLOTS", metrics), metrics);
 	}
@@ -112,8 +110,7 @@ public class LaTex {
 		int decimals = Config.getInt("LATEX_TABLE_DECIMALS");
 		String[][] keys = Config.allKeys("_TABLE_KEYS", metrics);
 		Filewriter fw = new Filewriter(filename);
-		String name = s[0].network().description(
-				Config.get("LATEX_TABLE_DESCRIPTION_TYPE"),
+		String name = s[0].network().diffDescriptionShort(
 				s[1 % s.length].network());
 		fw.writeln("\\subsection{" + name + Config.get("LATEX_TABLE_APPENDIX")
 				+ "}");
@@ -123,13 +120,15 @@ public class LaTex {
 				continue;
 			}
 			String[][] table = new String[s.length + 1][keys[i].length + 1];
-			table[0][0] = s[0].network().compareName(s[1 % s.length].network());
+			table[0][0] = s[0].network().diffParameterName(
+					s[1 % s.length].network());
 			for (int j = 0; j < keys[i].length; j++) {
 				table[0][j + 1] = makeIndex(keys[i][j]);
 			}
 			for (int j = 0; j < s.length; j++) {
-				table[j + 1][0] = s[j].network().compareValue(
-						s[(j + 1) % s.length].network());
+				table[j + 1][0] = ""
+						+ s[j].network().diffParameterValue(
+								s[(j + 1) % s.length].network());
 			}
 			for (int j = 0; j < keys[i].length; j++) {
 				for (int k = 0; k < s.length; k++) {
@@ -172,25 +171,26 @@ public class LaTex {
 		int decimals = Config.getInt("LATEX_TABLE_DECIMALS");
 		String[][] keys = Config.allKeys("_TABLE_KEYS", metrics);
 		Filewriter fw = new Filewriter(filename);
-		String x = s[0][0].network().compareNameShort(
+		String x = s[0][0].network().diffDescriptionShort(
 				s[0][1 % s[0].length].network());
-		String y = s[0][0].network().compareNameShort(
+		String y = s[0][0].network().diffDescriptionShort(
 				s[1 % s.length][0].network());
-		String name = s[0][0].network().description(
-				Config.get("LATEX_TABLE_DESCRIPTION_TYPE"),
-				s[0][1 % s[0].length].network(), s[1 % s.length][0].network());
+		String name = s[0][0].network().diffDescriptionShort(
+				s[0][1 % s[0].length].network());
 		fw.writeln("\\subsection{" + name + Config.get("LATEX_TABLE_APPENDIX")
 				+ "}");
 		boolean first = true;
 		String[][] table = new String[s.length + 1][s[0].length + 1];
 		table[0][0] = y + " $\\backslash$ " + x;
 		for (int i = 0; i < s[0].length; i++) {
-			table[0][i + 1] = s[0][i].network().compareValue(
-					s[0][(i + 1) % s[0].length].network());
+			table[0][i + 1] = ""
+					+ s[0][i].network().diffParameterValue(
+							s[0][(i + 1) % s[0].length].network());
 		}
 		for (int i = 0; i < s.length; i++) {
-			table[i + 1][0] = s[i][0].network().compareValue(
-					s[(i + 1) % s.length][0].network());
+			table[i + 1][0] = ""
+					+ s[i][0].network().diffParameterValue(
+							s[(i + 1) % s.length][0].network());
 		}
 		for (int i = 0; i < keys.length; i++) {
 			for (int j = 0; j < keys[i].length; j++) {

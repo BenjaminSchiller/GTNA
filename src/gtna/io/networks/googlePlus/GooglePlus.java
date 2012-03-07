@@ -38,24 +38,22 @@ package gtna.io.networks.googlePlus;
 import gtna.graph.Graph;
 import gtna.io.GraphReader;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.Parameter;
 
 /**
  * @author benni
  * 
  */
-public class GooglePlus extends NetworkImpl implements Network {
+public class GooglePlus extends Network {
 
 	private String filename;
 
 	private int cid;
 
-	public GooglePlus(String filename, int cid, RoutingAlgorithm ra,
-			Transformation[] t) {
+	public GooglePlus(String filename, int cid, Transformation[] t) {
 		super("GOOGLE_PLUS", GraphReader.nodes(filename),
-				new String[] { "CID" }, new String[] { "" + cid }, ra, t);
+				new Parameter[] { new Parameter("CID", "" + cid) }, t);
 		this.filename = filename;
 		this.cid = cid;
 	}

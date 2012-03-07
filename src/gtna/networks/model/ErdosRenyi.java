@@ -39,9 +39,8 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.Parameter;
 
 import java.util.Random;
 
@@ -65,63 +64,54 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class ErdosRenyi extends NetworkImpl implements Network {
+public class ErdosRenyi extends Network {
 	private double AVERAGE_DEGREE;
 
 	private boolean BIDIRECTIONAL;
 
 	public static ErdosRenyi[] get(int[] n, double d, boolean b,
-			RoutingAlgorithm ra, Transformation[] t) {
+			Transformation[] t) {
 		ErdosRenyi[] nw = new ErdosRenyi[n.length];
 		for (int i = 0; i < n.length; i++) {
-			nw[i] = new ErdosRenyi(n[i], d, b, ra, t);
-		}
-		return nw;
-	}
-
-	public static ErdosRenyi[] get(int n, double d, boolean b,
-			RoutingAlgorithm[] ra, Transformation[] t) {
-		ErdosRenyi[] nw = new ErdosRenyi[ra.length];
-		for (int i = 0; i < nw.length; i++) {
-			nw[i] = new ErdosRenyi(n, d, b, ra[i], t);
+			nw[i] = new ErdosRenyi(n[i], d, b, t);
 		}
 		return nw;
 	}
 
 	public static ErdosRenyi[] get(int n, double[] d, boolean b,
-			RoutingAlgorithm ra, Transformation[] t) {
+			Transformation[] t) {
 		ErdosRenyi[] nw = new ErdosRenyi[d.length];
 		for (int i = 0; i < d.length; i++) {
-			nw[i] = new ErdosRenyi(n, d[i], b, ra, t);
+			nw[i] = new ErdosRenyi(n, d[i], b, t);
 		}
 		return nw;
 	}
 
 	public static ErdosRenyi[][] get(int[] n, double[] d, boolean b,
-			RoutingAlgorithm ra, Transformation[] t) {
+			Transformation[] t) {
 		ErdosRenyi[][] nw = new ErdosRenyi[d.length][n.length];
 		for (int i = 0; i < d.length; i++) {
 			for (int j = 0; j < n.length; j++) {
-				nw[i][j] = new ErdosRenyi(n[j], d[i], b, ra, t);
+				nw[i][j] = new ErdosRenyi(n[j], d[i], b, t);
 			}
 		}
 		return nw;
 	}
 
 	public ErdosRenyi(int nodes, double AVERAGE_DEGREE, boolean BIDIRECTIONAL,
-			RoutingAlgorithm ra, Transformation[] t) {
-		super("ERDOS_RENYI", nodes, new String[] { "AVERAGE_DEGREE",
-				"BIDIRECTIONAL" }, new String[] { "" + AVERAGE_DEGREE,
-				"" + BIDIRECTIONAL }, ra, t);
+			Transformation[] t) {
+		super("ERDOS_RENYI", nodes, new Parameter[] {
+				new Parameter("AVERAGE_DEGREE", "" + AVERAGE_DEGREE),
+				new Parameter("BIDIRECTIONAL", "" + BIDIRECTIONAL) }, t);
 		this.AVERAGE_DEGREE = AVERAGE_DEGREE;
 		this.BIDIRECTIONAL = BIDIRECTIONAL;
 	}
 
 	public Graph generate() {
-		Graph graph = new Graph(this.description());
+		Graph graph = new Graph(this.getDescription());
 		Random rand = new Random(System.currentTimeMillis());
-		Node[] nodes = Node.init(this.nodes(), graph);
-		int toAdd = (int) (this.AVERAGE_DEGREE * this.nodes() / 2);
+		Node[] nodes = Node.init(this.getNodes(), graph);
+		int toAdd = (int) (this.AVERAGE_DEGREE * this.getNodes() / 2);
 		Edges edges = new Edges(nodes, toAdd);
 		while (edges.size() < toAdd) {
 			int src = rand.nextInt(nodes.length);

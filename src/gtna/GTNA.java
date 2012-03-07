@@ -44,8 +44,6 @@ import gtna.metrics.ShortestPaths;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.plot.Plot;
-import gtna.routing.RoutingAlgorithm;
-import gtna.routing.greedy.Greedy;
 import gtna.transformation.Transformation;
 import gtna.transformation.edges.Bidirectional;
 import gtna.transformation.id.RandomRingIDSpace;
@@ -69,7 +67,7 @@ public class GTNA {
 	}
 
 	private static void example1() {
-		Network nw1 = new ErdosRenyi(100, 5, false, null, null);
+		Network nw1 = new ErdosRenyi(100, 5, false, null);
 		Graph g = nw1.generate();
 		GraphWriter.write(g, "./data/firstExample-graph.txt");
 	}
@@ -80,11 +78,11 @@ public class GTNA {
 		// Config.overwrite("METRICS", "DEGREE_DISTRIBUTION");
 		Metric[] metrics = new Metric[] { new DegreeDistribution() };
 
-		Network nw1 = new ErdosRenyi(100, 5, false, null, null);
+		Network nw1 = new ErdosRenyi(100, 5, false, null);
 		Series s1 = Series.generate(nw1, metrics, 5);
 		Plot.multiAvg(s1, "er-unidirectional/", metrics);
 
-		Network nw2 = new ErdosRenyi(100, 5, true, null, null);
+		Network nw2 = new ErdosRenyi(100, 5, true, null);
 		Series s2 = Series.generate(nw2, metrics, 10);
 		Plot.multiAvg(s2, "er-bidirectional/", metrics);
 
@@ -98,8 +96,8 @@ public class GTNA {
 		// Config.overwrite("METRICS", "DEGREE_DISTRIBUTION");
 		Metric[] metrics = new Metric[] { new DegreeDistribution() };
 
-		Network nw1 = new ErdosRenyi(100, 5, false, null, null);
-		Network nw2 = new ErdosRenyi(100, 5, true, null, null);
+		Network nw1 = new ErdosRenyi(100, 5, false, null);
+		Network nw2 = new ErdosRenyi(100, 5, true, null);
 		Network[] nw = new Network[] { nw1, nw2 };
 		Series[] s = Series.get(nw);
 		Plot.multiConf(s, "er-get/", metrics);
@@ -113,8 +111,8 @@ public class GTNA {
 
 		Transformation t1 = new Bidirectional();
 		Transformation[] t = new Transformation[] { t1 };
-		Network nw1 = new ErdosRenyi(100, 5, false, null, null);
-		Network nw2 = new ErdosRenyi(100, 5, false, null, t);
+		Network nw1 = new ErdosRenyi(100, 5, false, null);
+		Network nw2 = new ErdosRenyi(100, 5, false, t);
 		Network[] nw = new Network[] { nw1, nw2 };
 		Series[] s = Series.generate(nw, metrics, 10);
 		Plot.multiAvg(s, "er-transformed/", metrics);
@@ -127,7 +125,7 @@ public class GTNA {
 		Metric[] metrics = new Metric[] { new DegreeDistribution() };
 
 		Network[] nw = ErdosRenyi.get(100, new double[] { 5, 6, 7, 8, 9, 10 },
-				false, null, null);
+				false, null);
 		Series[] s = Series.generate(nw, metrics, 7);
 		Plot.singlesAvg(s, "er-singles/", metrics);
 	}
@@ -145,14 +143,14 @@ public class GTNA {
 		Transformation t2 = new Bidirectional();
 		Transformation[] t = new Transformation[] { t1, t2 };
 
-		RoutingAlgorithm ra = new Greedy();
+		// RoutingAlgorithm ra = new Greedy();
 
 		Network[] nw1 = ErdosRenyi.get(100, new double[] { 5, 6, 7, 8, 9, 10 },
-				false, ra, t);
+				false, t);
 		Network[] nw2 = ErdosRenyi.get(200, new double[] { 5, 6, 7, 8, 9, 10 },
-				false, ra, t);
+				false, t);
 		Network[] nw3 = ErdosRenyi.get(300, new double[] { 5, 6, 7, 8, 9, 10 },
-				false, ra, t);
+				false, t);
 		Network[][] nw = new Network[][] { nw1, nw2, nw3 };
 		Series[][] s = Series.generate(nw, metrics, 3);
 		Series[] s1 = Series.get(nw1);
@@ -172,7 +170,7 @@ public class GTNA {
 		Metric[] metrics = new Metric[] { new ShortestPaths() };
 
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
-		Network nw1 = new ErdosRenyi(100, 5, false, null, null);
+		Network nw1 = new ErdosRenyi(100, 5, false, null);
 		Series s1 = Series.generate(nw1, metrics, 5);
 		Series s2 = Series.generate(nw1, metrics, 10);
 	}

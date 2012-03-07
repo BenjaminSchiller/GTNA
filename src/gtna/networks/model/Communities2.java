@@ -39,15 +39,14 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.Parameter;
 import gtna.util.Util;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Communities2 extends NetworkImpl implements Network {
+public class Communities2 extends Network {
 	private int[] sizes;
 
 	private double[] avgInLinks;
@@ -58,12 +57,12 @@ public class Communities2 extends NetworkImpl implements Network {
 
 	public Communities2(int[] sizes, double[] avgInLinks,
 			int[][] interCommunityLinks, boolean bidirectional,
-			RoutingAlgorithm r, Transformation[] t) {
-		super("COMMUNITIES_NETWORK_2", Util.sum(sizes), new String[] {
-				"COMMUNITY_SIZES", "AVG_IN_LINKS", "INTER_COMMUNITY_LINKS" },
-				new String[] { Util.toFolderString(sizes),
-						Util.toFolderString(avgInLinks),
-						Util.toFolderString(interCommunityLinks) }, r, t);
+			Transformation[] t) {
+		super("COMMUNITIES_NETWORK_2", Util.sum(sizes), new Parameter[] {
+				new Parameter("COMMUNITY_SIZES", Util.toFolderString(sizes)),
+				new Parameter("AVG_IN_LINKS", Util.toFolderString(avgInLinks)),
+				new Parameter("INTER_COMMUNITY_LINKS",
+						Util.toFolderString(interCommunityLinks)) }, t);
 		this.sizes = sizes;
 		this.avgInLinks = avgInLinks;
 		this.interCommunityLinks = interCommunityLinks;
@@ -71,8 +70,8 @@ public class Communities2 extends NetworkImpl implements Network {
 	}
 
 	public Graph generate() {
-		Graph graph = new Graph(this.description());
-		Node[] nodes = Node.init(this.nodes(), graph);
+		Graph graph = new Graph(this.getDescription());
+		Node[] nodes = Node.init(this.getNodes(), graph);
 		Edges edges = new Edges(nodes, 0);
 		Random rand = new Random(System.currentTimeMillis());
 		Node[][] communities = new Node[this.sizes.length][];

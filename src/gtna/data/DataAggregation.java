@@ -111,7 +111,7 @@ public class DataAggregation {
 			summaries[0][i] = new Singles(s[i]
 					+ Config.get("GRAPH_SINGLES_FILENAME"));
 		}
-		String[] names = new String[] { nw.name() };
+		String[] names = new String[] { nw.getName() };
 		Singles.write(summaries, dstSingles, names);
 
 		FileWriter fw;

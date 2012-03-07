@@ -260,10 +260,10 @@ public class Plot {
 		if (byEdges) {
 			xLabel = Config.get("NETWORK_COMPARE_EDGES_NAME");
 		} else {
-			xLabel = series[0][0].network().compareName(
+			xLabel = series[0][0].network().diffParameterName(
 					series[0][1 % series[0].length].network());
 			for (int i = 1; i < series.length; i++) {
-				String name = series[i][0].network().compareName(
+				String name = series[i][0].network().diffParameterName(
 						series[i][1 % series[i].length].network());
 				if (!xLabel.contains(name)) {
 					xLabel += Config.get("SINGLES_PLOT_XLABEL_SEPARATOR")
@@ -309,15 +309,23 @@ public class Plot {
 					values[d][i] = new double[max][2];
 					for (int j = 0; j < max; j++) {
 						if (byEdges) {
-							values[d][i][j][0] = series[i][0].network().edges();
+							// values[d][i][j][0] =
+							// series[i][0].network().edges();
+							// FIXME remove or add property again
+							values[d][i][j][0] = 0;
 						} else {
-							values[d][i][j][0] = Double
-									.parseDouble(series[maxIndex][j]
-											.network()
-											.compareValue(
-													series[maxIndex][(j + 1)
-															% series[maxIndex].length]
-															.network()));
+							values[d][i][j][0] = series[maxIndex][j].network()
+									.diffParameterValue(
+											series[maxIndex][(j + 1)
+													% series[maxIndex].length]
+													.network());
+							// values[d][i][j][0] = Double
+							// .parseDouble(series[maxIndex][j]
+							// .network()
+							// .compareValue(
+							// series[maxIndex][(j + 1)
+							// % series[maxIndex].length]
+							// .network()));
 						}
 						values[d][i][j][1] = series[i][0].avgSingles()
 								.getValue(data[d]);
@@ -326,14 +334,22 @@ public class Plot {
 					values[d][i] = new double[series[i].length][2];
 					for (int j = 0; j < series[i].length; j++) {
 						if (byEdges) {
-							values[d][i][j][0] = series[i][j].network().edges();
+							// values[d][i][j][0] =
+							// series[i][j].network().edges();
+							// FIXME remove or add property again
+							values[d][i][j][0] = 0;
 						} else {
-							values[d][i][j][0] = Double
-									.parseDouble(series[i][j].network()
-											.compareValue(
-													series[i][(j + 1)
-															% series[i].length]
-															.network()));
+							values[d][i][j][0] = series[i][j].network()
+									.diffParameterValue(
+											series[i][(j + 1)
+													% series[maxIndex].length]
+													.network());
+							// values[d][i][j][0] = Double
+							// .parseDouble(series[i][j].network()
+							// .compareValue(
+							// series[i][(j + 1)
+							// % series[i].length]
+							// .network()));
 						}
 						values[d][i][j][1] = series[i][j].avgSingles()
 								.getValue(data[d]);
@@ -360,8 +376,10 @@ public class Plot {
 				String filename = Config.get("TEMP_FOLDER")
 						+ (sv * series.length + i)
 						+ Config.get("DATA_EXTENSION");
-				String name = series[i][0].network().description(
+				String name = series[i][0].network().diffDescription(
 						series[i][1 % series[i].length].network());
+				// String name = series[i][0].network().description(
+				// series[i][1 % series[i].length].network());
 
 				String pre = Config.get(plotKey + "_PLOT_PRE_" + data[sv]);
 				String app = Config.get(plotKey + "_PLOT_APP_" + data[sv]);
@@ -405,12 +423,18 @@ public class Plot {
 				avg[d][i] = new double[series[i].length][2];
 				for (int j = 0; j < series[i].length; j++) {
 					if (byEdges) {
-						avg[d][i][j][0] = series[i][j].network().edges();
+						// avg[d][i][j][0] = series[i][j].network().edges();
+						// FIXME remove or add property again
+						avg[d][i][j][0] = 0;
 					} else {
-						avg[d][i][j][0] = Double.parseDouble(series[i][j]
-								.network().compareValue(
+						avg[d][i][j][0] = series[i][j].network()
+								.diffParameterValue(
 										series[i][(j + 1) % series[i].length]
-												.network()));
+												.network());
+						// avg[d][i][j][0] = Double.parseDouble(series[i][j]
+						// .network().compareValue(
+						// series[i][(j + 1) % series[i].length]
+						// .network()));
 					}
 					avg[d][i][j][1] = series[i][j].avgSingles().getValue(
 							data[d]);
@@ -439,7 +463,7 @@ public class Plot {
 				String filenameAvg = Config.get("TEMP_FOLDER")
 						+ (sv * series.length + i) + "_avg"
 						+ Config.get("DATA_EXTENSION");
-				String name = series[i][0].network().description(
+				String name = series[i][0].network().diffDescription(
 						series[i][1 % series[i].length].network());
 
 				String pre = Config.get(plotKey + "_PLOT_PRE_" + data[sv]);
@@ -533,16 +557,19 @@ public class Plot {
 	 * MULTI CONF
 	 */
 
-	private static void multiConf(Series[] series, String folder, String plotKey, Metric metric) {
+	private static void multiConf(Series[] series, String folder,
+			String plotKey, Metric metric) {
 		String[] data = Config.keys(plotKey + "_PLOT_DATA");
 		// for (int i = 0; i < data.length; i++) {
 		// if (!Config.containsData(data[i])) {
 		// return;
 		// }
 		// }
-		String filename = metric.folder() + "__" + Config.get(plotKey + "_PLOT_FILENAME");
+		String filename = metric.folder() + "__"
+				+ Config.get(plotKey + "_PLOT_FILENAME");
 		String ext = Config.get("PLOT_EXTENSION");
-		String title = Config.get(plotKey + "_PLOT_TITLE") + "  -  " + metric.folder();
+		String title = Config.get(plotKey + "_PLOT_TITLE") + "  -  "
+				+ metric.folder();
 		String xLabel = Config.get(plotKey + "_PLOT_X");
 		String yLabel = Config.get(plotKey + "_PLOT_Y");
 		String key = Config.get(plotKey + "_PLOT_KEY");
@@ -574,7 +601,7 @@ public class Plot {
 						+ metric.folder() + "/"
 						+ Config.get(data[d] + "_DATA_FILENAME")
 						+ Config.get("DATA_EXTENSION");
-				String name = series[i].network().description();
+				String name = series[i].network().getDescription();
 
 				String pre = Config.get(plotKey + "_PLOT_PRE_" + data[d]);
 				String app = Config.get(plotKey + "_PLOT_APP_" + data[d]);
@@ -613,16 +640,19 @@ public class Plot {
 	 * MULTI AVG
 	 */
 
-	private static void multiAvg(Series[] series, String folder, String plotKey, Metric metric) {
+	private static void multiAvg(Series[] series, String folder,
+			String plotKey, Metric metric) {
 		String[] data = Config.keys(plotKey + "_PLOT_DATA");
 		// for (int i = 0; i < data.length; i++) {
 		// if (!Config.containsData(data[i])) {
 		// return;
 		// }
 		// }
-		String filename = metric.folder() + "__" + Config.get(plotKey + "_PLOT_FILENAME");
+		String filename = metric.folder() + "__"
+				+ Config.get(plotKey + "_PLOT_FILENAME");
 		String ext = Config.get("PLOT_EXTENSION");
-		String title = Config.get(plotKey + "_PLOT_TITLE") + "  -  " + metric.folder();
+		String title = Config.get(plotKey + "_PLOT_TITLE") + "  -  "
+				+ metric.folder();
 		String xLabel = Config.get(plotKey + "_PLOT_X");
 		String yLabel = Config.get(plotKey + "_PLOT_Y");
 		String key = Config.get(plotKey + "_PLOT_KEY");
@@ -657,11 +687,10 @@ public class Plot {
 		int counter = 0;
 		for (int d = 0; d < data.length; d++) {
 			for (int i = 0; i < series.length; i++) {
-				String file = series[i].avgDataFolder()
-						+ metric.folder() + "/"
+				String file = series[i].avgDataFolder() + metric.folder() + "/"
 						+ Config.get(data[d] + "_DATA_FILENAME")
 						+ Config.get("DATA_EXTENSION");
-				String name = series[i].network().description();
+				String name = series[i].network().getDescription();
 
 				String pre = Config.get(plotKey + "_PLOT_PRE_" + data[d]);
 				String app = Config.get(plotKey + "_PLOT_APP_" + data[d]);
@@ -735,7 +764,7 @@ public class Plot {
 				String file = series[i].varianceDataFolder()
 						+ Config.get(data[d] + "_DATA_FILENAME")
 						+ Config.get("DATA_EXTENSION");
-				String name = series[i].network().description();
+				String name = series[i].network().getDescription();
 
 				String pre = Config.get(plotKey + "_PLOT_PRE_" + data[d]);
 				String app = Config.get(plotKey + "_PLOT_APP_" + data[d]);

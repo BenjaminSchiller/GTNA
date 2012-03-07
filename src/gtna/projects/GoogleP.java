@@ -1004,7 +1004,7 @@ public class GoogleP {
 
 				// Network nw = new ReadableFile("G+ " + cid, "g+" + cid,
 				// f.getAbsolutePath(), null, transformations);
-				Network nw = new GooglePlus(f.getAbsolutePath(), cid, null,
+				Network nw = new GooglePlus(f.getAbsolutePath(), cid,
 						transformations);
 				Series s = generate ? Series.generate(nw, metrics, 1) : Series
 						.get(nw);
@@ -1037,7 +1037,7 @@ public class GoogleP {
 			}
 			int cid = Integer.parseInt(f.getName().split("-")[0]);
 
-			Network nw = new GooglePlus(f.getAbsolutePath(), cid, null,
+			Network nw = new GooglePlus(f.getAbsolutePath(), cid,
 					transformations);
 			Series s = Series.get(nw);
 

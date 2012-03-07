@@ -133,7 +133,7 @@ public class Singles {
 		String[] names = new String[s.length];
 		for (int i = 0; i < s.length; i++) {
 			summaries[i] = s[i].summaries();
-			names[i] = s[i].network().description();
+			names[i] = s[i].network().getDescription();
 		}
 		write(summaries, dest, names);
 	}

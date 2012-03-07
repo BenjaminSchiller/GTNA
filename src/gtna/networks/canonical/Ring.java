@@ -39,8 +39,6 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 
 /**
@@ -51,15 +49,15 @@ import gtna.transformation.Transformation;
  * @author benni
  * 
  */
-public class Ring extends NetworkImpl implements Network {
-	public Ring(int nodes, RoutingAlgorithm ra, Transformation[] t) {
-		super("RING", nodes, new String[] {}, new String[] {}, ra, t);
+public class Ring extends Network {
+	public Ring(int nodes, Transformation[] t) {
+		super("RING", nodes, t);
 	}
 
 	public Graph generate() {
-		Graph graph = new Graph(this.description());
-		Node[] nodes = Node.init(this.nodes(), graph);
-		Edges edges = new Edges(nodes, this.nodes() * 2);
+		Graph graph = new Graph(this.getDescription());
+		Node[] nodes = Node.init(this.getNodes(), graph);
+		Edges edges = new Edges(nodes, this.getNodes() * 2);
 		for (int i = 0; i < nodes.length; i++) {
 			edges.add(i, (i + 1) % nodes.length);
 			edges.add((i + 1) % nodes.length, i);

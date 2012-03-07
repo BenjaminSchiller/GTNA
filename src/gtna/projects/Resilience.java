@@ -126,7 +126,7 @@ public class Resilience {
 
 	private static void sorting() {
 		if (false) {
-			Network nw = new ErdosRenyi(20, 5, false, null, null);
+			Network nw = new ErdosRenyi(20, 5, false, null);
 			Graph g = nw.generate();
 			NodeSorter sorter = new DegreeNodeSorter(
 					NodeSorter.NodeSorterMode.ASC);
@@ -170,7 +170,7 @@ public class Resilience {
 		Partitioner partitioner = new SimplePartitioner();
 		NodeConnector connector = new UDGConnector(1);
 		return new PlacementModelContainer(nodes, nodes / 100, 40, 40, p1, p2,
-				partitioner, connector, null, t);
+				partitioner, connector, t);
 	}
 
 	private static void print(Node[] nodes, Graph g) {

@@ -48,6 +48,7 @@ import gtna.metrics.Roles2;
 import gtna.metrics.fragmentation.Fragmentation;
 import gtna.metrics.fragmentation.WeakFragmentation;
 import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.placementmodels.NodeConnector;
 import gtna.networks.model.placementmodels.Partitioner;
 import gtna.networks.model.placementmodels.PlacementModel;
@@ -65,6 +66,8 @@ import gtna.transformation.communities.Roles2Generation;
 import gtna.transformation.communities.RolesGeneration;
 import gtna.transformation.partition.GiantConnectedComponent;
 import gtna.util.Config;
+import gtna.util.Parameter;
+import gtna.util.ParameterList;
 
 /**
  * @author benni
@@ -76,6 +79,60 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		Network nw1 = new ErdosRenyi(1000, 10, true, null);
+		Network nw2 = new ErdosRenyi(5000, 50, true, null);
+		System.out.println(nw1.getDescription());
+		System.out.println(nw1.getDescriptionLong());
+		System.out.println(nw1.getDescriptionShort());
+		System.out.println(nw1.getFolder());
+		System.out.println("");
+		System.out.println(nw2.getDescription());
+		System.out.println(nw2.getDescriptionLong());
+		System.out.println(nw2.getDescriptionShort());
+		System.out.println(nw2.getFolder());
+		System.out.println("");
+		System.out.println(nw1.diffDescription(nw2));
+		System.out.println(nw1.diffDescriptionLong(nw2));
+		System.out.println(nw1.diffDescriptionShort(nw2));
+		System.out.println("");
+
+		if (true) {
+			return;
+		}
+
+		String[] names = new String[] { "CLUSTERING_COEFFICIENT",
+				"COMMUNITIES", "COVERAGE", "DEGREE_DISTRIBUTION",
+				"EDGE_CROSSINGS", "RICH_CLUB_CONNECTIVITY", "ROLES", "ROLES2",
+				"ROUTING", "SHORTEST_PATHS", "STRONG_CONNECTIVITY",
+				"WEAK_CONNECTIVITY" };
+		names = new String[] { "COMPLETE", "RING", "STAR", "GPS_NETWORK",
+				"BARABASI_ALBERT", "COMMUNITIES_NETWORK",
+				"COMMUNITIES_NETWORK_2", "COMMUNITIES_NETWORK_3", "DE_BRUIJN",
+				"ERDOS_RENYI", "GILBERT", "GN", "GNC", "GNR", "WATTS_STROGATZ" };
+
+		for (String name : names) {
+			ParameterList list = new ParameterList(name);
+			System.out.println(list.getDescription());
+			System.out.println(list.getDescriptionLong());
+			System.out.println(list.getDescriptionShort());
+			System.out.println(list.getFolder());
+			System.out.println("");
+		}
+
+		ParameterList list = new ParameterList("CLUSTERING_COEFFICIENT");
+		list = new ParameterList("ERDOS_RENYI", new Parameter[] {
+				new Parameter("AVERAGE_DEGREE", "4"),
+				new Parameter("BIDIRECTIONAL", "true") });
+		list = new ParameterList("GREEDY", new Parameter[] { new Parameter(
+				"TTL", "12") });
+		list = new ParameterList("UNDIRECTED_MOTIFS_4");
+		System.out.println(list.getDescription());
+		System.out.println(list.getDescriptionLong());
+		System.out.println(list.getDescriptionShort());
+		System.out.println(list.getFolder());
+	}
+
+	private static void metrics() {
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/metrics-test/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/metrics-test/");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
@@ -113,7 +170,8 @@ public class Test {
 						Fragmentation.Resolution.PERCENT),
 				new WeakFragmentation(new Roles2NodeSorter(
 						Roles2NodeSorter.HS_HB_HC_S_B_C),
-						Fragmentation.Resolution.PERCENT), new Roles(), new Roles2(), new Communities() };
+						Fragmentation.Resolution.PERCENT), new Roles(),
+				new Roles2(), new Communities() };
 		Series[] s = Series.generate(nw, metrics, times);
 		Plot.multiAvg(s, "multi/", metrics);
 	}
@@ -124,6 +182,6 @@ public class Test {
 		Partitioner partitioner = new SimplePartitioner();
 		NodeConnector connector = new UDGConnector(1);
 		return new PlacementModelContainer(nodes, nodes / 100, 40, 40, p1, p2,
-				partitioner, connector, null, t);
+				partitioner, connector, t);
 	}
 }

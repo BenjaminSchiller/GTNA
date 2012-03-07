@@ -39,9 +39,8 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.Parameter;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -59,34 +58,29 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class BarabasiAlbert extends NetworkImpl implements Network {
+public class BarabasiAlbert extends Network {
 	private int INIT_NETWORK_SIZE = 10;
 
 	private int EDGES_PER_NODE = 3;
 
-	public BarabasiAlbert(int nodes, int EDGES_PER_NODE, RoutingAlgorithm ra,
-			Transformation[] t) {
-		super("BARABASI_ALBERT", nodes, new String[] { "EDGES_PER_NODE" },
-				new String[] { "" + EDGES_PER_NODE }, ra, t);
+	public BarabasiAlbert(int nodes, int EDGES_PER_NODE, Transformation[] t) {
+		super("BARABASI_ALBERT", nodes, new Parameter[] { new Parameter(
+				"EDGES_PER_NODE", "" + EDGES_PER_NODE) }, t);
 		this.EDGES_PER_NODE = EDGES_PER_NODE;
 	}
 
-	// TODO takes very long for small network sizes
 	public Graph generate() {
-//		System.out.println("Generate");
-		Graph graph = new Graph(this.description());
+		Graph graph = new Graph(this.getDescription());
 		Random rand = new Random(System.currentTimeMillis());
-		Node[] nodes = Node.init(this.nodes(), graph);
-		// System.out.println("After init");
+		Node[] nodes = Node.init(this.getNodes(), graph);
 		int[] in = new int[nodes.length];
 		int[] out = new int[nodes.length];
 
 		int initNodes = Math.max(this.INIT_NETWORK_SIZE,
 				this.EDGES_PER_NODE + 5);
 		int initEdges = initNodes * this.EDGES_PER_NODE;
-		Graph temp = new ErdosRenyi(initNodes, this.EDGES_PER_NODE, true,
-				this.routingAlgorithm(), this.transformations()).generate();
-		// System.out.println("After temp");
+		Graph temp = new ErdosRenyi(initNodes, this.EDGES_PER_NODE, true, null)
+				.generate();
 		Edges edges = new Edges(nodes, initEdges + (nodes.length - initNodes)
 				* this.EDGES_PER_NODE);
 		for (int i = 0; i < temp.getNodes().length; i++) {
@@ -100,7 +94,6 @@ public class BarabasiAlbert extends NetworkImpl implements Network {
 
 		int edgeCounter = initEdges;
 		for (int i = initNodes; i < nodes.length; i++) {
-			// System.out.println("i " + i);
 			int added = 0;
 			double[] rands = new double[this.EDGES_PER_NODE];
 			for (int j = 0; j < rands.length; j++) {
@@ -123,25 +116,7 @@ public class BarabasiAlbert extends NetworkImpl implements Network {
 					edgeCounter++;
 				}
 				current++;
-				// System.out.println("added " + added + " and current " +
-				// current);
 			}
-			// while (added < this.EDGES_PER_NODE) {
-			// int dest = rand.nextInt(i);
-			// if (edges.contains(i, dest)) {
-			// continue;
-			// }
-			// double pi = (double) (in[i] + out[i])
-			// / (double) (2 * edgeCounter);
-			// if (rand.nextDouble() <= pi) {
-			// in[i]++;
-			// out[i]++;
-			// in[dest]++;
-			// out[dest]++;
-			// edgeCounter++;
-			// added++;
-			// }
-			// }
 		}
 
 		edges.fill();

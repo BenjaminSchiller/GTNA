@@ -39,56 +39,56 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.Parameter;
 
 import java.util.Random;
 
-public class WattsStrogatz extends NetworkImpl implements Network {
+public class WattsStrogatz extends Network {
 	private int LINKS;
 
 	private double BETA;
 
 	public WattsStrogatz(int nodes, int SUCCESSORS, double BETA,
-			RoutingAlgorithm ra, Transformation[] t) {
-		super("WATTS_STROGATZ", nodes, new String[] { "SUCCESSORS", "BETA" },
-				new String[] { "" + SUCCESSORS, "" + BETA }, ra, t);
+			Transformation[] t) {
+		super("WATTS_STROGATZ", nodes, new Parameter[] {
+				new Parameter("SUCCESSORS", "" + SUCCESSORS),
+				new Parameter("BETA", "" + BETA) }, t);
 		this.LINKS = SUCCESSORS;
 		this.BETA = BETA;
 	}
 
 	public static WattsStrogatz[] get(int[] n, int s, double b,
-			RoutingAlgorithm ra, Transformation[] t) {
+			Transformation[] t) {
 		WattsStrogatz[] nw = new WattsStrogatz[n.length];
 		for (int i = 0; i < nw.length; i++) {
-			nw[i] = new WattsStrogatz(n[i], s, b, ra, t);
+			nw[i] = new WattsStrogatz(n[i], s, b, t);
 		}
 		return nw;
 	}
 
 	public static WattsStrogatz[] get(int n, int s[], double b,
-			RoutingAlgorithm ra, Transformation[] t) {
+			Transformation[] t) {
 		WattsStrogatz[] nw = new WattsStrogatz[s.length];
 		for (int i = 0; i < nw.length; i++) {
-			nw[i] = new WattsStrogatz(n, s[i], b, ra, t);
+			nw[i] = new WattsStrogatz(n, s[i], b, t);
 		}
 		return nw;
 	}
 
 	public static WattsStrogatz[] get(int n, int s, double b[],
-			RoutingAlgorithm ra, Transformation[] t) {
+			Transformation[] t) {
 		WattsStrogatz[] nw = new WattsStrogatz[b.length];
 		for (int i = 0; i < nw.length; i++) {
-			nw[i] = new WattsStrogatz(n, s, b[i], ra, t);
+			nw[i] = new WattsStrogatz(n, s, b[i], t);
 		}
 		return nw;
 	}
 
 	public Graph generate() {
-		Graph graph = new Graph(this.description());
+		Graph graph = new Graph(this.getDescription());
 		Random rand = new Random(System.currentTimeMillis());
-		Node[] nodes = Node.init(this.nodes(), graph);
+		Node[] nodes = Node.init(this.getNodes(), graph);
 		Edges edges = new Edges(nodes, this.LINKS * 2 * nodes.length);
 		for (int i = 0; i < nodes.length; i++) {
 			for (int j = 1; j <= this.LINKS; j++) {

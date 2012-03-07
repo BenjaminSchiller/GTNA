@@ -72,7 +72,8 @@ public class PlacementModels2 {
 		// plot(circleCircle1(200), "./plots/_combinations/circle-circle1");
 		// plot(circleCircle2(200), "./plots/_combinations/circle-circle2");
 		// plot(circleGrid(200), "./plots/_combinations/circle-grid");
-		plot(communityCommunity(600), "./plots/_combinations/community-community");
+		plot(communityCommunity(600),
+				"./plots/_combinations/community-community");
 	}
 
 	private static Network circleCircle1(int nodes) {
@@ -81,7 +82,7 @@ public class PlacementModels2 {
 		PlacementModel p2 = new CirclePlacementModel(200,
 				DistributionType.FIXED, DistributionType.FIXED, false);
 		return new PlacementModelContainer(nodes, 10, xy, xy, p1, p2,
-				partitioner, connector, null, null);
+				partitioner, connector, null);
 	}
 
 	private static Network circleCircle2(int nodes) {
@@ -90,7 +91,7 @@ public class PlacementModels2 {
 		PlacementModel p2 = new CirclePlacementModel(300,
 				DistributionType.FIXED, DistributionType.FIXED, false);
 		return new PlacementModelContainer(nodes, 10, xy, xy, p1, p2,
-				partitioner, connector, null, null);
+				partitioner, connector, null);
 	}
 
 	private static Network circleGrid(int nodes) {
@@ -98,14 +99,14 @@ public class PlacementModels2 {
 				DistributionType.FIXED, DistributionType.FIXED, false);
 		PlacementModel p2 = new GridPlacementModel(400, 400, 5, 4, false);
 		return new PlacementModelContainer(nodes, 10, xy, xy, p1, p2,
-				partitioner, connector, null, null);
+				partitioner, connector, null);
 	}
 
 	private static Network communityCommunity(int nodes) {
 		PlacementModel p1 = new CommunityPlacementModel(xy, xy, 0.4, true);
 		PlacementModel p2 = new CommunityPlacementModel(xy, xy, 0.1, true);
 		return new PlacementModelContainer(nodes, 10, xy, xy, p1, p2,
-				partitioner, connector, null, null);
+				partitioner, connector, null);
 	}
 
 	private static void singles() {
@@ -126,7 +127,7 @@ public class PlacementModels2 {
 		// if ((new File(filename2)).exists()) {
 		// return;
 		// }
-		System.out.println(nw.folder());
+		System.out.println(nw.getFolder());
 		System.out.println("=> " + filename1);
 		ge.plot(g, idSpace, filename1);
 		System.out.println("=> " + filename2);
@@ -146,7 +147,7 @@ public class PlacementModels2 {
 		PlacementModel p1 = new RandomPlacementModel(xy, xy, true);
 		PlacementModel p2 = new CommunityPlacementModel(xy, xy, 0.2, true);
 		return new PlacementModelContainer(nodes, 1, xy, xy, p1, p2,
-				partitioner, connector, null, null);
+				partitioner, connector, null);
 	}
 
 	private static Network singleCircle(int nodes) {
@@ -154,7 +155,7 @@ public class PlacementModels2 {
 		PlacementModel p2 = new CirclePlacementModel(900,
 				DistributionType.FIXED, DistributionType.FIXED, true);
 		return new PlacementModelContainer(nodes, 1, xy, xy, p1, p2,
-				partitioner, connector, null, null);
+				partitioner, connector, null);
 	}
 
 	private static Network singleGrid1(int nodes) {
@@ -163,7 +164,7 @@ public class PlacementModels2 {
 		int y = (int) Math.ceil(Math.sqrt(nodes));
 		PlacementModel p2 = new GridPlacementModel(xy, xy, x, y, false);
 		return new PlacementModelContainer(nodes, 1, xy, xy, p1, p2,
-				partitioner, connector, null, null);
+				partitioner, connector, null);
 	}
 
 	private static Network singleGrid2(int nodes) {
@@ -172,7 +173,7 @@ public class PlacementModels2 {
 		int y = (int) Math.ceil(Math.sqrt(nodes));
 		PlacementModel p2 = new GridPlacementModel(xy, xy, x, y, false);
 		return new PlacementModelContainer(nodes, 1, xy, xy, p1, p2,
-				partitioner, new UDGConnector(150), null, null);
+				partitioner, new UDGConnector(150), null);
 	}
 
 	private static Network singleGrid3(int nodes) {
@@ -181,14 +182,14 @@ public class PlacementModels2 {
 		int y = (int) Math.ceil(Math.sqrt(nodes));
 		PlacementModel p2 = new GridPlacementModel(xy, xy, x, y, false);
 		return new PlacementModelContainer(nodes, 1, xy, xy, p1, p2,
-				partitioner, new UDGConnector(200), null, null);
+				partitioner, new UDGConnector(200), null);
 	}
 
 	private static Network singleRandom(int nodes) {
 		PlacementModel p1 = new RandomPlacementModel(xy, xy, true);
 		PlacementModel p2 = new RandomPlacementModel(xy, xy, true);
 		return new PlacementModelContainer(nodes, 1, xy, xy, p1, p2,
-				partitioner, connector, null, null);
+				partitioner, connector, null);
 	}
 
 	private static void exec(String cmd) {

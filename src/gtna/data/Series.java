@@ -69,8 +69,9 @@ public class Series {
 
 	private Series(Network network) {
 		this.network = network;
-		this.folder = Config.get("MAIN_DATA_FOLDER") + network.nodes()
-				+ Config.get("FILESYSTEM_FOLDER_DELIMITER") + network.folder();
+		this.folder = Config.get("MAIN_DATA_FOLDER") + network.getNodes()
+				+ Config.get("FILESYSTEM_FOLDER_DELIMITER")
+				+ network.getFolder();
 		this.averageDataFolder = this.folder
 				+ Config.get("SERIES_AVERAGE_DATA_FOLDER");
 		this.confidenceDataFolder = this.folder
@@ -88,23 +89,24 @@ public class Series {
 	}
 
 	private void process() {
-		if (this.averageSingles.getValue("EDGES") > 0) {
-			this.network.setEdges((int) this.averageSingles.getValue("EDGES"));
-		}
-		if (this.averageSingles.getValue("NODES") > 0) {
-			this.network.setNodes((int) this.averageSingles.getValue("NODES"));
-		}
-		if (this.averageSingles.getValue("CONN") >= 0) {
-			this.network
-					.setConnected(this.averageSingles.getValue("CONN") == 1.0);
-			this.network.setConnectivity(this.averageSingles.getValue("CONN"));
-		}
-		if (this.averageSingles.getValue("RL_FR") >= 0) {
-			this.network.setRoutingFailure(this.averageSingles
-					.getValue("RL_FR") > 0);
-			this.network.setRoutingSuccess(1 - this.averageSingles
-					.getValue("RL_FR"));
-		}
+		// TODO remove
+		// if (this.averageSingles.getValue("EDGES") > 0) {
+		// this.network.setEdges((int) this.averageSingles.getValue("EDGES"));
+		// }
+		// if (this.averageSingles.getValue("NODES") > 0) {
+		// this.network.setNodes((int) this.averageSingles.getValue("NODES"));
+		// }
+		// if (this.averageSingles.getValue("CONN") >= 0) {
+		// this.network
+		// .setConnected(this.averageSingles.getValue("CONN") == 1.0);
+		// this.network.setConnectivity(this.averageSingles.getValue("CONN"));
+		// }
+		// if (this.averageSingles.getValue("RL_FR") >= 0) {
+		// this.network.setRoutingFailure(this.averageSingles
+		// .getValue("RL_FR") > 0);
+		// this.network.setRoutingSuccess(1 - this.averageSingles
+		// .getValue("RL_FR"));
+		// }
 	}
 
 	public static Series[][] get(Network[][] networks) {
@@ -179,7 +181,7 @@ public class Series {
 		Output.writeIndent();
 		String out = Config.get("SERIES_GENERATION");
 		out = out.replace("%TIMES", "" + times);
-		out = out.replace("%NETWORK", n.description());
+		out = out.replace("%NETWORK", n.getDescription());
 		Output.writeln(out);
 		Output.writelnDelimiter();
 
@@ -271,7 +273,7 @@ public class Series {
 					+ Config.get("GRAPH_INFO_FILENAME");
 
 			String networkOutput = Config.get("NETWORK_GENERATION").replace(
-					"%NETWORK", n.description());
+					"%NETWORK", n.getDescription());
 			String singlesOutput = "  "
 					+ Config.get("SINGLES_WRITER_OUTPUT").replace("%FILENAME",
 							singlesFilename);
@@ -325,7 +327,7 @@ public class Series {
 
 			Timer swTimer = new Timer(singlesOutput
 					+ fill(maxLength - singlesOutput.length()));
-			Singles singles = new Singles(n.description(), metrics);
+			Singles singles = new Singles(n.getDescription(), metrics);
 			singles.write(singlesFilename);
 			swTimer.end();
 
@@ -370,7 +372,7 @@ public class Series {
 					+ Config.get("FILESYSTEM_FOLDER_DELIMITER")
 					+ Config.get("GRAPH_SINGLES_FILENAME"));
 		}
-		String[] names = new String[] { n.name() };
+		String[] names = new String[] { n.getName() };
 		Output.writeIndent();
 		Timer summaryTimer = new Timer(summaryOutput);
 		Singles.write(summaries, s.singlesFilename, names);

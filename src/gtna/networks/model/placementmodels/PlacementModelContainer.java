@@ -40,8 +40,7 @@ import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
+import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.Util;
 
@@ -59,7 +58,7 @@ import gtna.util.Util;
  * @author Philipp Neubrand
  * 
  */
-public class PlacementModelContainer extends NetworkImpl {
+public class PlacementModelContainer extends Network {
 	private int nodes;
 	private int hotspots;
 	private Partitioner partitioner;
@@ -102,10 +101,12 @@ public class PlacementModelContainer extends NetworkImpl {
 	public PlacementModelContainer(int nodes, int hotspots, double width,
 			double height, PlacementModel hotspotPlacer,
 			PlacementModel nodePlacer, Partitioner partitioner,
-			NodeConnector nodeConnector, RoutingAlgorithm r, Transformation[] t) {
-		super("HSM", nodes, getConfigKeys(hotspotPlacer, nodePlacer,
-				nodeConnector, partitioner), getConfigValues(hotspotPlacer,
-				nodePlacer, nodeConnector, partitioner), r, t);
+			NodeConnector nodeConnector, Transformation[] t) {
+		// FIXME add parameters of HotSpotPlacer
+		super("HSM", nodes, null, t);
+		// super("HSM", nodes, getConfigKeys(hotspotPlacer, nodePlacer,
+		// nodeConnector, partitioner), getConfigValues(hotspotPlacer,
+		// nodePlacer, nodeConnector, partitioner), r, t);
 		this.nodes = nodes;
 		this.hotspots = hotspots;
 		this.hotspotPlacer = hotspotPlacer;
@@ -233,13 +234,13 @@ public class PlacementModelContainer extends NetworkImpl {
 		}
 
 		// create the required Graph object and fill it
-		Graph g = new Graph(description());
+		Graph g = new Graph(this.getDescription());
 
 		idSpace.setPartitions(coords);
 
 		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
 
-		Node[] nodes = Node.init(this.nodes(), g);
+		Node[] nodes = Node.init(this.getNodes(), g);
 		connector.connect(nodes, idSpace, g);
 
 		g.setNodes(nodes);
@@ -287,8 +288,8 @@ public class PlacementModelContainer extends NetworkImpl {
 			int arrayOffset) {
 		for (int i = 0; i < nodeCoords.length; i++) {
 			pps[i + arrayOffset] = new PlanePartitionSimple(
-					new PlaneIdentifier(nodeCoords[i].getX(), nodeCoords[i]
-							.getY(), idSpace));
+					new PlaneIdentifier(nodeCoords[i].getX(),
+							nodeCoords[i].getY(), idSpace));
 		}
 	}
 }

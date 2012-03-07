@@ -39,10 +39,9 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomChordIDSpace;
+import gtna.util.Parameter;
 
 import java.math.BigInteger;
 
@@ -50,53 +49,57 @@ import java.math.BigInteger;
  * @author benni
  * 
  */
-public class Chord extends NetworkImpl implements Network {
+public class Chord extends Network {
+	public static enum IDSelection {
+		UNIFORM, RANDOM
+	}
+
 	private int bits;
 
-	private boolean uniform;
+	private IDSelection selection;
 
-	public static Chord[] get(int[] nodes, int bits, boolean uniform,
-			RoutingAlgorithm ra, Transformation[] t) {
+	public static Chord[] get(int[] nodes, int bits, IDSelection selection,
+			Transformation[] t) {
 		Chord[] nw = new Chord[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
-			nw[i] = new Chord(nodes[i], bits, uniform, ra, t);
+			nw[i] = new Chord(nodes[i], bits, selection, t);
 		}
 		return nw;
 	}
 
-	public static Chord[] get(int nodes, int[] bits, boolean uniform,
-			RoutingAlgorithm ra, Transformation[] t) {
+	public static Chord[] get(int nodes, int[] bits, IDSelection selection,
+			Transformation[] t) {
 		Chord[] nw = new Chord[bits.length];
 		for (int i = 0; i < bits.length; i++) {
-			nw[i] = new Chord(nodes, bits[i], uniform, ra, t);
+			nw[i] = new Chord(nodes, bits[i], selection, t);
 		}
 		return nw;
 	}
 
-	public static Chord[] get(int nodes, int bits, boolean[] uniform,
-			RoutingAlgorithm ra, Transformation[] t) {
-		Chord[] nw = new Chord[uniform.length];
-		for (int i = 0; i < uniform.length; i++) {
-			nw[i] = new Chord(nodes, bits, uniform[i], ra, t);
-		}
-		return nw;
-	}
-
-	public Chord(int nodes, int bits, boolean uniform, RoutingAlgorithm ra,
+	public static Chord[] get(int nodes, int bits, IDSelection[] selection,
 			Transformation[] t) {
-		super("CHORD", nodes, new String[] { "BITS", "ID_SELECTION" },
-				new String[] { "" + bits, uniform ? "uniform" : "random" }, ra,
-				t);
+		Chord[] nw = new Chord[selection.length];
+		for (int i = 0; i < selection.length; i++) {
+			nw[i] = new Chord(nodes, bits, selection[i], t);
+		}
+		return nw;
+	}
+
+	public Chord(int nodes, int bits, IDSelection selection, Transformation[] t) {
+		super("CHORD", nodes, new Parameter[] {
+				new Parameter("BITS", "" + bits),
+				new Parameter("ID_SELECTION", selection.toString()) }, t);
 		this.bits = bits;
-		this.uniform = uniform;
+		this.selection = selection;
 	}
 
 	@Override
 	public Graph generate() {
-		Graph graph = new Graph(this.description());
-		Node[] nodes = Node.init(this.nodes(), graph);
+		Graph graph = new Graph(this.getDescription());
+		Node[] nodes = Node.init(this.getNodes(), graph);
 		graph.setNodes(nodes);
-		RandomChordIDSpace t = new RandomChordIDSpace(this.bits, this.uniform);
+		RandomChordIDSpace t = new RandomChordIDSpace(this.bits,
+				this.selection == IDSelection.UNIFORM);
 		graph = t.transform(graph);
 
 		ChordIdentifierSpace idSpace = (ChordIdentifierSpace) graph

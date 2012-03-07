@@ -38,8 +38,6 @@ package gtna.networks.util;
 import gtna.graph.Graph;
 import gtna.io.GraphReader;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
 
@@ -50,7 +48,7 @@ import java.util.ArrayList;
  * @author "Benjamin Schiller"
  * 
  */
-public class ReadableFolder extends NetworkImpl implements Network {
+public class ReadableFolder extends Network {
 	private ArrayList<String> files;
 
 	private int index;
@@ -58,15 +56,8 @@ public class ReadableFolder extends NetworkImpl implements Network {
 	private String[] properties;
 
 	public ReadableFolder(String name, String folder, String srcFolder,
-			String extension, RoutingAlgorithm ra, Transformation[] t) {
-		this(name, folder, srcFolder, extension, null, ra, t);
-	}
-
-	public ReadableFolder(String name, String folder, String srcFolder,
-			String extension, String[] properties, RoutingAlgorithm ra,
-			Transformation[] t) {
-		super(ReadableFolder.key(name, folder), Integer.MIN_VALUE,
-				new String[] {}, new String[] {}, ra, t);
+			String extension, Transformation[] t) {
+		super(ReadableFolder.key(name, folder), Integer.MIN_VALUE, t);
 		File d = new File(srcFolder);
 		if (!d.exists()) {
 			this.files = new ArrayList<String>();
@@ -99,14 +90,8 @@ public class ReadableFolder extends NetworkImpl implements Network {
 			return null;
 		}
 		this.index = (this.index + 1) % this.files.size();
-		Graph graph = null;
-		if (this.properties == null) {
-			graph = GraphReader.readWithProperties(this.files.get(this.index));
-		} else {
-			graph = GraphReader.readWithProperties(this.files.get(this.index),
-					properties);
-		}
-		graph.setName(this.description());
+		Graph graph = GraphReader.read(this.files.get(this.index));
+		graph.setName(this.getDescription());
 		return graph;
 	}
 

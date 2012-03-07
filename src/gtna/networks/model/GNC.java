@@ -39,9 +39,8 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.Parameter;
 
 import java.util.Random;
 
@@ -64,23 +63,24 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class GNC extends NetworkImpl implements Network {
+public class GNC extends Network {
 	private boolean BIDIRECTIONAL = false;
 
 	private boolean EDGE_BACK = true;
 
 	public GNC(int nodes, boolean BIDIRECTIONAL, boolean EDGE_BACK,
-			RoutingAlgorithm ra, Transformation[] t) {
-		super("GNC", nodes, new String[] { "BIDIRECTIONAL", "EDGE_BACK" },
-				new String[] { "" + BIDIRECTIONAL, "" + EDGE_BACK }, ra, t);
+			Transformation[] t) {
+		super("GNC", nodes, new Parameter[] {
+				new Parameter("BIDIRECTIONAL", "" + BIDIRECTIONAL),
+				new Parameter("EDGE_BACK", "" + EDGE_BACK) }, t);
 		this.BIDIRECTIONAL = BIDIRECTIONAL;
 		this.EDGE_BACK = EDGE_BACK;
 	}
 
 	public Graph generate() {
-		Graph graph = new Graph(this.description());
+		Graph graph = new Graph(this.getDescription());
 		Random rand = new Random(System.currentTimeMillis());
-		Node[] nodes = Node.init(this.nodes(), graph);
+		Node[] nodes = Node.init(this.getNodes(), graph);
 		Edges edges = new Edges(nodes, 100);
 		for (int i = 1; i < nodes.length; i++) {
 			int bootstrap = rand.nextInt(i);

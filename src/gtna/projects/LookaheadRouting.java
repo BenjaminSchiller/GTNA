@@ -41,6 +41,7 @@ import gtna.metrics.Routing;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.p2p.chord.Chord;
+import gtna.networks.p2p.chord.Chord.IDSelection;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plot;
@@ -142,7 +143,7 @@ public class LookaheadRouting {
 			Metric[] metrics) {
 		int chordNodes = nodes;
 		int chordBits = 20;
-		boolean chordUniform = false;
+		IDSelection chordUniform = Chord.IDSelection.UNIFORM;
 
 		Transformation nf = new NeighborsFirstLookaheadList(false);
 		Transformation nfr = new NeighborsFirstLookaheadList(true);
@@ -163,11 +164,10 @@ public class LookaheadRouting {
 		RoutingAlgorithm lmv = new LookaheadMinVia(50);
 
 		for (Transformation l : ll) {
-			Network nw1 = new Chord(chordNodes, chordBits, chordUniform, g,
-					null);
-			Network nw2 = new Chord(chordNodes, chordBits, chordUniform, ls,
+			Network nw1 = new Chord(chordNodes, chordBits, chordUniform, null);
+			Network nw2 = new Chord(chordNodes, chordBits, chordUniform,
 					new Transformation[] { l });
-			Network nw3 = new Chord(chordNodes, chordBits, chordUniform, lmv,
+			Network nw3 = new Chord(chordNodes, chordBits, chordUniform,
 					new Transformation[] { l });
 			Network[] nw = new Network[] { nw1, nw2, nw3 };
 			Series[] s = generate ? Series.generate(nw, metrics, times)
@@ -177,16 +177,16 @@ public class LookaheadRouting {
 		}
 
 		Network[] sls = new Network[ll.length + 1];
-		sls[0] = new Chord(chordNodes, chordBits, chordUniform, g, null);
+		sls[0] = new Chord(chordNodes, chordBits, chordUniform, null);
 		sls[0] = new DescriptionWrapper(sls[0], "G");
 		Network[] slmv = new Network[ll.length + 1];
-		slmv[0] = new Chord(chordNodes, chordBits, chordUniform, g, null);
+		slmv[0] = new Chord(chordNodes, chordBits, chordUniform, null);
 		slmv[0] = new DescriptionWrapper(sls[0], "G");
 		for (int i = 0; i < ll.length; i++) {
-			sls[i + 1] = new Chord(chordNodes, chordBits, chordUniform, ls,
+			sls[i + 1] = new Chord(chordNodes, chordBits, chordUniform,
 					new Transformation[] { ll[i] });
 			sls[i + 1] = new DescriptionWrapper(sls[i + 1], map.get(ll[i]));
-			slmv[i + 1] = new Chord(chordNodes, chordBits, chordUniform, lmv,
+			slmv[i + 1] = new Chord(chordNodes, chordBits, chordUniform,
 					new Transformation[] { ll[i] });
 			slmv[i + 1] = new DescriptionWrapper(slmv[i + 1], map.get(ll[i]));
 		}
@@ -233,7 +233,7 @@ public class LookaheadRouting {
 			int nodes, Metric[] metrics) {
 		int chordNodes = nodes;
 		int chordBits = 20;
-		boolean chordUniform = false;
+		IDSelection chordUniform = Chord.IDSelection.RANDOM;
 
 		int[] obfuscationBI = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
 				12, 13, 14, 15, 16, 17, 18, 19, 20 };
@@ -303,15 +303,15 @@ public class LookaheadRouting {
 
 		Network[] nw = new Network[ll.length + 1];
 		if (input == Input.Chord) {
-			nw[0] = new Chord(chordNodes, chordBits, chordUniform, greedy, null);
+			nw[0] = new Chord(chordNodes, chordBits, chordUniform, null);
 		} else if (input == Input.SPI) {
-			nw[0] = new ReadableFile(spiName, spiFolder, spiGraph, greedy,
+			nw[0] = new ReadableFile(spiName, spiFolder, spiGraph,
 					new Transformation[] { t1 });
 		} else if (input == Input.WOT) {
-			nw[0] = new ReadableFile(wotName, wotFolder, wotGraph, greedy,
+			nw[0] = new ReadableFile(wotName, wotFolder, wotGraph,
 					new Transformation[] { t1 });
 		} else if (input == Input.ErdosRenyi) {
-			nw[0] = new ErdosRenyi(erNodes, erDegree, erBD, greedy,
+			nw[0] = new ErdosRenyi(erNodes, erDegree, erBD,
 					new Transformation[] { t1 });
 		}
 		nw[0] = new DescriptionWrapper(nw[0], "Greedy");
@@ -319,18 +319,17 @@ public class LookaheadRouting {
 			int index = 0;
 			if (input == Input.Chord) {
 				nw[i + 1] = new Chord(chordNodes, chordBits, chordUniform,
-						lookahead, LL[i]);
+						LL[i]);
 			} else if (input == Input.SPI) {
 				nw[i + 1] = new ReadableFile(spiName, spiFolder, spiGraph,
-						lookahead, LL[i]);
+						LL[i]);
 				index = 1;
 			} else if (input == Input.WOT) {
 				nw[i + 1] = new ReadableFile(wotName, wotFolder, wotGraph,
-						lookahead, LL[i]);
+						LL[i]);
 				index = 1;
 			} else if (input == Input.ErdosRenyi) {
-				nw[i + 1] = new ErdosRenyi(erNodes, erDegree, erBD, lookahead,
-						LL[i]);
+				nw[i + 1] = new ErdosRenyi(erNodes, erDegree, erBD, LL[i]);
 				index = 1;
 			}
 			nw[i + 1] = new DescriptionWrapper(nw[i + 1], map.get(LL[i][index])
@@ -339,9 +338,9 @@ public class LookaheadRouting {
 
 		Series[] s1 = generate ? Series.generate(nw, metrics, times) : Series
 				.get(nw);
-		String folderAvgStd = "obfuscation-" + input + "-" + nw[0].nodes()
+		String folderAvgStd = "obfuscation-" + input + "-" + nw[0].getNodes()
 				+ "-multi-avg/";
-		String folderConfStd = "obfuscation-" + input + "-" + nw[0].nodes()
+		String folderConfStd = "obfuscation-" + input + "-" + nw[0].getNodes()
 				+ "-multi-conf/";
 		Plot.multiAvg(s1, folderAvgStd, metrics);
 		Plot.multiConf(s1, folderConfStd, metrics);
@@ -349,9 +348,9 @@ public class LookaheadRouting {
 		for (int i = 1; i <= s1.length; i++) {
 			Series[] s2 = new Series[i];
 			System.arraycopy(s1, 0, s2, 0, i);
-			String folderAvg = "obfuscation-" + input + "-" + nw[0].nodes()
+			String folderAvg = "obfuscation-" + input + "-" + nw[0].getNodes()
 					+ "-multi-avg-" + i + "/";
-			String folderConf = "obfuscation-" + input + "-" + nw[0].nodes()
+			String folderConf = "obfuscation-" + input + "-" + nw[0].getNodes()
 					+ "-multi-conf-" + i + "/";
 			Plot.multiAvg(s2, folderAvg, metrics);
 			Plot.multiConf(s2, folderConf, metrics);

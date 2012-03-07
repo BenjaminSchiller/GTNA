@@ -111,7 +111,7 @@ public class CommunityDetection {
 		PlacementModel p1 = new RandomPlacementModel(width, height, false);
 		PlacementModel p2 = new RandomPlacementModel(1, 1, true);
 		return new PlacementModelContainer(nodes, nodes, width, height, p1, p2,
-				partitioner, connector, null, null);
+				partitioner, connector, null);
 	}
 
 	private static Network community(int nodes) {
@@ -120,7 +120,7 @@ public class CommunityDetection {
 		PlacementModel p2 = new CommunityPlacementModel(width, height, 0.2,
 				false);
 		return new PlacementModelContainer(nodes, nodes / 100, width, height,
-				p1, p2, partitioner, connector, null, null);
+				p1, p2, partitioner, connector, null);
 	}
 
 	private static Network communityNew(int nodes) {
@@ -129,7 +129,7 @@ public class CommunityDetection {
 		PlacementModel p2 = new CommunityPlacementModel(width, height, 0.2,
 				false);
 		return new PlacementModelContainer(nodes, nodes / 100, 2 * width,
-				2 * height, p1, p2, partitioner, connector, null, null);
+				2 * height, p1, p2, partitioner, connector, null);
 	}
 
 	private static void plot(Network nw, String filename, int times,
