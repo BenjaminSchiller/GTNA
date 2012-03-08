@@ -40,28 +40,24 @@ import gtna.id.BIIdentifier;
 import gtna.id.DIdentifier;
 
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.Random;
 
 /**
  * backtracking
+ * 
  * @author stefanie
- *
+ * 
  */
-public class BacktrackGreedy extends  NodeGreedy{
-	
-	
-	public BacktrackGreedy(int ttl){
+public class BacktrackGreedy extends NodeGreedy {
+
+	public BacktrackGreedy(int ttl) {
 		super(ttl, "BACKTRACK_GREEDY");
 	}
-	
-	public BacktrackGreedy(){
+
+	public BacktrackGreedy() {
 		super("BACKTRACK_GREEDY");
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextD(int, gtna.id.DIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextD(int current, DIdentifier target, Random rand,
 			Node[] nodes) {
@@ -77,15 +73,12 @@ public class BacktrackGreedy extends  NodeGreedy{
 			}
 		}
 		if (minNode == -1 && from.containsKey(current)) {
-	       return from.get(current);
+			return from.get(current);
 		}
 		from.put(minNode, current);
 		return minNode;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextBI(int, gtna.id.BIIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextBI(int current, BIIdentifier target, Random rand,
 			Node[] nodes) {
@@ -95,19 +88,18 @@ public class BacktrackGreedy extends  NodeGreedy{
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
 			BigInteger dist = this.pBI[out].distance(target);
-			if (dist.compareTo(minDist) == -1 && dist.compareTo(currentDist) == -1 && !from.containsKey(out)) {
+			if (dist.compareTo(minDist) == -1
+					&& dist.compareTo(currentDist) == -1
+					&& !from.containsKey(out)) {
 				minDist = dist;
 				minNode = out;
 			}
 		}
 		if (minNode == -1 && from.containsKey(current)) {
-	       return from.get(current);
+			return from.get(current);
 		}
 		from.put(minNode, current);
 		return minNode;
 	}
 
-	
-
-	
 }

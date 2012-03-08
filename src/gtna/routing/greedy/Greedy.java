@@ -47,7 +47,7 @@ import gtna.id.DPartition;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
-import gtna.routing.RoutingAlgorithmImpl;
+import gtna.util.Parameter;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
+public class Greedy extends RoutingAlgorithm {
 	private DIdentifierSpace idSpaceD;
 
 	private DPartition[] pD;
@@ -69,12 +69,12 @@ public class Greedy extends RoutingAlgorithmImpl implements RoutingAlgorithm {
 	private int ttl;
 
 	public Greedy() {
-		super("GREEDY", new String[] {}, new String[] {});
+		super("GREEDY");
 		this.ttl = Integer.MAX_VALUE;
 	}
 
 	public Greedy(int ttl) {
-		super("GREEDY", new String[] { "TTL" }, new String[] { "" + ttl });
+		super("GREEDY", new Parameter[] { new Parameter("TTL", "" + ttl) });
 		this.ttl = ttl;
 	}
 

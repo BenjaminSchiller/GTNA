@@ -37,12 +37,12 @@ package gtna.routing;
 
 /**
  * @author benni
- *
+ * 
  */
 public interface Message {
 	public int getSrc();
-	
+
 	public int getDst();
-	
+
 	public int getHop();
 }

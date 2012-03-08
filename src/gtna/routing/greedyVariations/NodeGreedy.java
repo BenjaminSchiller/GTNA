@@ -35,39 +35,38 @@
  */
 package gtna.routing.greedyVariations;
 
+import gtna.util.Parameter;
+
 import java.util.HashMap;
 
 /**
  * abstract class for greedy variations marking nodes
+ * 
  * @author stefanie
- *
+ * 
  */
 public abstract class NodeGreedy extends GreedyTemplate {
-      HashMap<Integer, Integer> from;
-      
-      public NodeGreedy(String name) {
-  		super(name, new String[] {}, new String[] {});
-  	}
+	HashMap<Integer, Integer> from;
 
-  	public NodeGreedy(int ttl, String name) {
-  		super(ttl, name);
-  	}
-  	
-  	public NodeGreedy(String name, String[] names, String[] values) {
-  		super(name, names, values);
-  	}
+	public NodeGreedy(String name) {
+		super(name);
+	}
 
-  	public NodeGreedy(int ttl, String name, String[] names, String[] values) {
-  		super(ttl, name, names, values);
-  	}
-	
+	public NodeGreedy(int ttl, String name) {
+		super(ttl, name);
+	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#setSets(int)
-	 */
+	public NodeGreedy(String name, Parameter[] parameters) {
+		super(name, parameters);
+	}
+
+	public NodeGreedy(int ttl, String name, Parameter[] parameters) {
+		super(ttl, name, parameters);
+	}
+
 	@Override
 	public void setSets(int nr) {
-		from = new HashMap<Integer,Integer>();
-     }
+		from = new HashMap<Integer, Integer>();
+	}
 
 }

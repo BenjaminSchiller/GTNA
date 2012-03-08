@@ -40,54 +40,48 @@ import gtna.id.BIIdentifier;
 import gtna.id.DIdentifier;
 
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.Random;
 
 /**
  * a weighted depth first search (= Freenet routing)
+ * 
  * @author stefanie
- *
+ * 
  */
 public class DepthFirstGreedy extends NodeGreedy {
-	
-	public DepthFirstGreedy(){
+
+	public DepthFirstGreedy() {
 		super("DEPTH_FIRST_GREEDY");
 	}
-	
-	public DepthFirstGreedy(int ttl){
-		super(ttl,"DEPTH_FIRST_GREEDY");
+
+	public DepthFirstGreedy(int ttl) {
+		super(ttl, "DEPTH_FIRST_GREEDY");
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextD(int, gtna.id.DIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextD(int current, DIdentifier target, Random rand,
 			Node[] nodes) {
-		
+
 		double minDist = this.idSpaceD.getMaxDistance();
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
 			double dist = this.pD[out].distance(target);
-			if (dist < minDist  && !from.containsKey(out)) {
+			if (dist < minDist && !from.containsKey(out)) {
 				minDist = dist;
 				minNode = out;
 			}
 		}
 		if (minNode == -1 && from.containsKey(current)) {
-	       return from.get(current);
+			return from.get(current);
 		}
 		from.put(minNode, current);
 		return minNode;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextBI(int, gtna.id.BIIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextBI(int current, BIIdentifier target, Random rand,
 			Node[] nodes) {
-        BigInteger minDist = this.idSpaceBI.getMaxDistance();
+		BigInteger minDist = this.idSpaceBI.getMaxDistance();
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
 			BigInteger dist = this.pBI[out].distance(target);
@@ -97,12 +91,10 @@ public class DepthFirstGreedy extends NodeGreedy {
 			}
 		}
 		if (minNode == -1 && from.containsKey(current)) {
-	       return from.get(current);
+			return from.get(current);
 		}
 		from.put(minNode, current);
 		return minNode;
 	}
-
-	
 
 }

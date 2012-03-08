@@ -35,11 +35,6 @@
  */
 package gtna.routing.lookahead;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
-
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.BIPartition;
@@ -53,15 +48,19 @@ import gtna.id.lookahead.LookaheadLists;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
-import gtna.routing.RoutingAlgorithmImpl;
+import gtna.util.Parameter;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
 
 /**
  * @author benni
  * 
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public abstract class Lookahead extends RoutingAlgorithmImpl implements
-		RoutingAlgorithm {
+public abstract class Lookahead extends RoutingAlgorithm {
 	protected int ttl;
 
 	protected ViaSelection viaSelection;
@@ -77,13 +76,13 @@ public abstract class Lookahead extends RoutingAlgorithmImpl implements
 	};
 
 	public Lookahead(String key, ViaSelection viaSelection) {
-		super(key, new String[] {}, new String[] {});
+		super(key);
 		this.ttl = Integer.MAX_VALUE;
 		this.viaSelection = viaSelection;
 	}
 
 	public Lookahead(String key, int ttl, ViaSelection viaSelection) {
-		super(key, new String[] { "TTL" }, new String[] { "" + ttl });
+		super(key, new Parameter[] { new Parameter("TTL", "" + ttl) });
 		this.ttl = ttl;
 		this.viaSelection = viaSelection;
 	}

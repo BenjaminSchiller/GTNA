@@ -11,7 +11,8 @@ import gtna.id.DIdentifierSpace;
 import gtna.id.DPartition;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
-import gtna.routing.RoutingAlgorithmImpl;
+import gtna.routing.RoutingAlgorithm;
+import gtna.util.Parameter;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -19,34 +20,34 @@ import java.util.Random;
 
 /**
  * GravityPressure Routing as described in 'Hyperbolic Embedding and Routing for
- *  Dynamic Graphs' by Andrej Cvetkovski Mark Crovella
+ * Dynamic Graphs' by Andrej Cvetkovski Mark Crovella
+ * 
  * @author stefanieroos
- *
+ * 
  */
 
-public class GravityPressureRouting extends RoutingAlgorithmImpl{
+public class GravityPressureRouting extends RoutingAlgorithm {
 	int ttl;
-	 DIdentifierSpace idSpaceD;
-     DPartition[] pD;
-     BIIdentifierSpace idSpaceBI;
-     BIPartition[] pBI;
-     boolean mode; 
-     int[] counts;
-	
-	
+	DIdentifierSpace idSpaceD;
+	DPartition[] pD;
+	BIIdentifierSpace idSpaceBI;
+	BIPartition[] pBI;
+	boolean mode;
+	int[] counts;
+
 	public GravityPressureRouting() {
-        this(Integer.MAX_VALUE);
+		this(Integer.MAX_VALUE);
 	}
 
 	/**
 	 * @param ttl
 	 */
 	public GravityPressureRouting(int ttl) {
-		super("GRAVITY_PRESSURE", new String[] {"TTL"}, new String[] {""+ttl});
-		
+		super("GRAVITY_PRESSURE", new Parameter[] { new Parameter("TTL", ""
+				+ ttl) });
+
 	}
 
-	
 	@Override
 	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
 		this.setSets(graph.getNodes().length);
@@ -78,7 +79,8 @@ public class GravityPressureRouting extends RoutingAlgorithmImpl{
 		if (route.size() > this.ttl) {
 			return new RouteImpl(route, false);
 		}
-		BigInteger[] next = this.getNextBI(current, target, rand, nodes, minDist);
+		BigInteger[] next = this.getNextBI(current, target, rand, nodes,
+				minDist);
 		int minNode = next[0].intValue();
 		BigInteger dist = next[1];
 		if (minNode == -1) {
@@ -107,12 +109,12 @@ public class GravityPressureRouting extends RoutingAlgorithmImpl{
 			return new RouteImpl(route, false);
 		}
 		double[] next = this.getNextD(current, target, rand, nodes, minDist);
-		int minNode = (int)next[0];
-		double dist = next[1]; 
+		int minNode = (int) next[0];
+		// double dist = next[1];
 		if (minNode == -1) {
 			return new RouteImpl(route, false);
 		}
-		return this.routeD(route, minNode, target, rand, nodes,minDist);
+		return this.routeD(route, minNode, target, rand, nodes, minDist);
 	}
 
 	@Override
@@ -142,10 +144,11 @@ public class GravityPressureRouting extends RoutingAlgorithmImpl{
 			this.pBI = null;
 		}
 	}
-	
+
 	/**
-	 * returns the index of next node as well the minimal distance to target of all nodes
-	 * seen up to that point
+	 * returns the index of next node as well the minimal distance to target of
+	 * all nodes seen up to that point
+	 * 
 	 * @param current
 	 * @param target
 	 * @param rand
@@ -153,65 +156,66 @@ public class GravityPressureRouting extends RoutingAlgorithmImpl{
 	 * @param minDist
 	 * @return
 	 */
-	public double[] getNextD(int current,
-			DIdentifier target, Random rand, Node[] nodes, double minDist){
+	public double[] getNextD(int current, DIdentifier target, Random rand,
+			Node[] nodes, double minDist) {
 		double currentDist = this.idSpaceD.getPartitions()[current]
 				.distance(target);
-		//check if in Pressure phase
-		if (this.mode == false){
-			//change to Gravity mode if node offers an improvement
-			if (currentDist < minDist){
+		// check if in Pressure phase
+		if (this.mode == false) {
+			// change to Gravity mode if node offers an improvement
+			if (currentDist < minDist) {
 				this.mode = true;
 			} else {
-				//choose node closest to target among those with least visits
+				// choose node closest to target among those with least visits
 				int minVisits = Integer.MAX_VALUE;
 				double min = Double.MAX_VALUE;
 				int minNode = -1;
 				for (int out : nodes[current].getOutgoingEdges()) {
 					double dist = this.pD[out].distance(target);
-					if (this.counts[out] < minVisits){
+					if (this.counts[out] < minVisits) {
 						minNode = out;
 						min = dist;
 						minVisits = this.counts[out];
 					} else {
-						if (this.counts[out] == minVisits && dist < min){
+						if (this.counts[out] == minVisits && dist < min) {
 							minNode = out;
 							min = dist;
 						}
 					}
 				}
 				this.counts[current]++;
-				return new double[]{(double)minNode,minDist};
+				return new double[] { (double) minNode, minDist };
 			}
 		}
-		if (this.mode){
-			//determine neighbor closest to target
+		if (this.mode) {
+			// determine neighbor closest to target
 			double min = Double.MAX_VALUE;
 			int minNode = -1;
 			for (int out : nodes[current].getOutgoingEdges()) {
 				double dist = this.pD[out].distance(target);
-				if (dist < min){
+				if (dist < min) {
 					minNode = out;
 					min = dist;
-				} 
+				}
 			}
-			if (min < minDist){
-				return new double[]{(double)minNode,min};
+			if (min < minDist) {
+				return new double[] { (double) minNode, min };
 			} else {
-				//change to pressure mode if node is farer away from destination
+				// change to pressure mode if node is farer away from
+				// destination
 				this.mode = false;
 				return this.getNextD(current, target, rand, nodes, minDist);
 			}
 		}
 		return null;
 	}
-	
-	public BigInteger[] getNextBI(int current,
-			BIIdentifier target, Random rand, Node[] nodes, BigInteger minDist){
+
+	public BigInteger[] getNextBI(int current, BIIdentifier target,
+			Random rand, Node[] nodes, BigInteger minDist) {
 		return null;
 	}
-	
-	public void setSets(int nr){
+
+	public void setSets(int nr) {
 		counts = new int[nr];
 	}
 

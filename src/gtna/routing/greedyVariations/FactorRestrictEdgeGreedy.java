@@ -38,90 +38,90 @@ package gtna.routing.greedyVariations;
 import gtna.graph.Node;
 import gtna.id.BIIdentifier;
 import gtna.id.DIdentifier;
+import gtna.util.Parameter;
 
 import java.util.Random;
 import java.util.Vector;
 
 /**
- * a weighted depth first search marking edges that does only allow an decline up to a certain multiple of current distance
+ * a weighted depth first search marking edges that does only allow an decline
+ * up to a certain multiple of current distance
+ * 
  * @author stefanie
- *
+ * 
  */
 public class FactorRestrictEdgeGreedy extends EdgeGreedy {
 
 	double maxBack;
 
-	public FactorRestrictEdgeGreedy(double maxBack){
+	public FactorRestrictEdgeGreedy(double maxBack) {
 		this(maxBack, Integer.MAX_VALUE);
 	}
-	
-	public FactorRestrictEdgeGreedy(double maxBack, int ttl){
-		super(ttl,"FACTOR_RESTRICT_EDGE_GREEDY", new String[]{"TTL", "MAXBACK"}, new String[]{""+ttl, ""+maxBack});
+
+	public FactorRestrictEdgeGreedy(double maxBack, int ttl) {
+		super(ttl, "FACTOR_RESTRICT_EDGE_GREEDY", new Parameter[] {
+				new Parameter("TTL", "" + ttl),
+				new Parameter("MAXBACK", "" + maxBack) });
 		this.maxBack = maxBack;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextD(int, gtna.id.DIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextD(int current, DIdentifier target, Random rand,
 			Node[] nodes) {
 		double currentDist = this.idSpaceD.getPartitions()[current]
 				.distance(target);
-		//System.out.println("Currently at " + current);
+		// System.out.println("Currently at " + current);
 		Vector<Integer> pre = from.get(current);
 		Vector<Integer> res = new Vector<Integer>();
-		if (pre == null){
+		if (pre == null) {
 			pre = new Vector<Integer>();
-			//System.out.println("Null pre " + current);
+			// System.out.println("Null pre " + current);
 		}
 		Vector<Integer> minList = null;
-        double minDist = this.idSpaceD.getMaxDistance();
+		double minDist = this.idSpaceD.getMaxDistance();
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
 			Vector<Integer> list = from.get(out);
-			if (list == null){
+			if (list == null) {
 				list = new Vector<Integer>();
 			}
-			if (list.contains(current)){
+			if (list.contains(current)) {
 				res.add(out);
 			}
-			if (pre.contains(out)){
+			if (pre.contains(out)) {
 				continue;
 			}
 			double dist = this.pD[out].distance(target);
-			
-			if (dist < minDist && dist < currentDist*this.maxBack && !list.contains(current)) {
+
+			if (dist < minDist && dist < currentDist * this.maxBack
+					&& !list.contains(current)) {
 				minDist = dist;
 				minNode = out;
 				minList = list;
 			}
 		}
-		
+
 		if (minNode == -1 && pre.size() > 0) {
-			for (int i = pre.size()-1; i > -1; i--){
-				if (!res.contains(pre.get(i))){
+			for (int i = pre.size() - 1; i > -1; i--) {
+				if (!res.contains(pre.get(i))) {
 					return pre.get(i);
 				}
-			 //return pre.remove(pre.size()-1);
+				// return pre.remove(pre.size()-1);
 			}
 		}
-		if (minList != null){
-		    minList.add(current);
-		 if (!from.containsKey(minNode)){
-			 from.put(minNode, minList);
-		 }
+		if (minList != null) {
+			minList.add(current);
+			if (!from.containsKey(minNode)) {
+				from.put(minNode, minList);
+			}
 		}
 		return minNode;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextBI(int, gtna.id.BIIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextBI(int current, BIIdentifier target, Random rand,
 			Node[] nodes) {
-		
+
 		return -1;
 	}
 

@@ -45,93 +45,88 @@ import java.util.Vector;
 
 /**
  * a weighted depth first search that marks the edges
+ * 
  * @author stefanie
- *
+ * 
  */
 public class DepthFirstEdgeGreedy extends EdgeGreedy {
-	
-	public DepthFirstEdgeGreedy(){
+
+	public DepthFirstEdgeGreedy() {
 		super("DEPTH_FIRST_EDGE_GREEDY");
 	}
-	
-	public DepthFirstEdgeGreedy(int ttl){
-		super(ttl,"DEPTH_FIRST_EDGE_GREEDY");
+
+	public DepthFirstEdgeGreedy(int ttl) {
+		super(ttl, "DEPTH_FIRST_EDGE_GREEDY");
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextD(int, gtna.id.DIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextD(int current, DIdentifier target, Random rand,
 			Node[] nodes) {
-		//System.out.println("Currently at " + current);
+		// System.out.println("Currently at " + current);
 		Vector<Integer> pre = from.get(current);
 		Vector<Integer> res = new Vector<Integer>();
-		if (pre == null){
+		if (pre == null) {
 			pre = new Vector<Integer>();
-			//System.out.println("Null pre " + current);
+			// System.out.println("Null pre " + current);
 		}
 		Vector<Integer> minList = null;
-        double minDist = this.idSpaceD.getMaxDistance();
+		double minDist = this.idSpaceD.getMaxDistance();
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
 			Vector<Integer> list = from.get(out);
-			if (list == null){
+			if (list == null) {
 				list = new Vector<Integer>();
 			}
-			if (list.contains(current)){
+			if (list.contains(current)) {
 				res.add(out);
 			}
-			if (pre.contains(out)){
+			if (pre.contains(out)) {
 				continue;
 			}
 			double dist = this.pD[out].distance(target);
-			
+
 			if (dist < minDist && !list.contains(current)) {
 				minDist = dist;
 				minNode = out;
 				minList = list;
 			}
 		}
-		
+
 		if (minNode == -1 && pre.size() > 0) {
-			for (int i = pre.size()-1; i > -1; i--){
-				if (!res.contains(pre.get(i))){
+			for (int i = pre.size() - 1; i > -1; i--) {
+				if (!res.contains(pre.get(i))) {
 					return pre.get(i);
 				}
-			 //return pre.remove(pre.size()-1);
+				// return pre.remove(pre.size()-1);
 			}
 		}
-		if (minList != null){
-		    minList.add(current);
-		 if (!from.containsKey(minNode)){
-			 from.put(minNode, minList);
-		 }
+		if (minList != null) {
+			minList.add(current);
+			if (!from.containsKey(minNode)) {
+				from.put(minNode, minList);
+			}
 		}
 		return minNode;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextBI(int, gtna.id.BIIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextBI(int current, BIIdentifier target, Random rand,
 			Node[] nodes) {
-		
+
 		Vector<Integer> pre = from.get(current);
-		if (pre == null){
+		if (pre == null) {
 			pre = new Vector<Integer>();
 		}
 		Vector<Integer> minList = null;
-        BigInteger minDist = this.idSpaceBI.getMaxDistance();
+		BigInteger minDist = this.idSpaceBI.getMaxDistance();
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
-			if (pre.contains(out)){
+			if (pre.contains(out)) {
 				continue;
 			}
 			BigInteger dist = this.pBI[out].distance(target);
 			Vector<Integer> list = from.get(out);
-			if (list == null){
+			if (list == null) {
 				list = new Vector<Integer>();
 			}
 			if (dist.compareTo(minDist) == -1 && !list.contains(current)) {
@@ -140,19 +135,17 @@ public class DepthFirstEdgeGreedy extends EdgeGreedy {
 				minList = list;
 			}
 		}
-		
+
 		if (minNode == -1 && pre.size() > 0) {
-			 return pre.remove(pre.size()-1);
+			return pre.remove(pre.size() - 1);
 		}
-		if (minList != null){
-		 minList.add(current);
-		 if (!from.containsKey(minNode)){
-			 from.put(minNode, minList);
-		 }
+		if (minList != null) {
+			minList.add(current);
+			if (!from.containsKey(minNode)) {
+				from.put(minNode, minList);
+			}
 		}
 		return minNode;
 	}
-
-	
 
 }

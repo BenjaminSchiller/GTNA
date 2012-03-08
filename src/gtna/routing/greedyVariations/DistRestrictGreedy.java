@@ -38,32 +38,31 @@ package gtna.routing.greedyVariations;
 import gtna.graph.Node;
 import gtna.id.BIIdentifier;
 import gtna.id.DIdentifier;
+import gtna.util.Parameter;
 
-import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.Random;
 
 /**
- * a weighted depth first search marking edges that does only allow an decline up to a certain (absolute) threshold
+ * a weighted depth first search marking edges that does only allow an decline
+ * up to a certain (absolute) threshold
+ * 
  * @author stefanie
- *
+ * 
  */
 public class DistRestrictGreedy extends NodeGreedy {
 	double maxBack;
 
-	
-	public DistRestrictGreedy(double maxBack){
+	public DistRestrictGreedy(double maxBack) {
 		this(maxBack, Integer.MAX_VALUE);
 	}
-	
-	public DistRestrictGreedy(double maxBack, int ttl){
-		super(ttl,"DIST_RESTRICT_GREEDY", new String[]{"TTL", "MAXBACK"}, new String[]{""+ttl, ""+maxBack});
+
+	public DistRestrictGreedy(double maxBack, int ttl) {
+		super(ttl, "DIST_RESTRICT_GREEDY", new Parameter[] {
+				new Parameter("TTL", "" + ttl),
+				new Parameter("MAXBACK", "" + maxBack) });
 		this.maxBack = maxBack;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextD(int, gtna.id.DIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextD(int current, DIdentifier target, Random rand,
 			Node[] nodes) {
@@ -73,27 +72,23 @@ public class DistRestrictGreedy extends NodeGreedy {
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
 			double dist = this.pD[out].distance(target);
-			if (dist < minDist  && dist < currentDist + this.maxBack && !from.containsKey(out)) {
+			if (dist < minDist && dist < currentDist + this.maxBack
+					&& !from.containsKey(out)) {
 				minDist = dist;
 				minNode = out;
 			}
 		}
 		if (minNode == -1 && from.containsKey(current)) {
-	       return from.get(current);
+			return from.get(current);
 		}
 		from.put(minNode, current);
 		return minNode;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextBI(int, gtna.id.BIIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextBI(int current, BIIdentifier target, Random rand,
 			Node[] nodes) {
 		return -1;
 	}
-
-	
 
 }

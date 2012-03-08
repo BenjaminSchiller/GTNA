@@ -45,30 +45,28 @@ import java.util.Random;
 
 /**
  * a backtracking algorithm allowing one decline
+ * 
  * @author stefanie
- *
+ * 
  */
-public class OneWorseGreedy extends GreedyTemplate{
+public class OneWorseGreedy extends GreedyTemplate {
 	HashMap<Integer, Integer> from;
 	boolean[] done;
-	
-	public OneWorseGreedy(){
+
+	public OneWorseGreedy() {
 		super("ONE_WORSE_GREEDY");
 	}
-	
-	public OneWorseGreedy(int ttl){
+
+	public OneWorseGreedy(int ttl) {
 		super(ttl, "ONE_WORSE_GREEDY");
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextD(int, gtna.id.DIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextD(int current, DIdentifier target, Random rand,
 			Node[] nodes) {
-		//System.out.println(current);
-		if (!from.containsKey(current)){
-			 from.put(current, -1);
+		// System.out.println(current);
+		if (!from.containsKey(current)) {
+			from.put(current, -1);
 		}
 		double currentDist = this.idSpaceD.getPartitions()[current]
 				.distance(target);
@@ -76,30 +74,27 @@ public class OneWorseGreedy extends GreedyTemplate{
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
 			double dist = this.pD[out].distance(target);
-			if (dist < minDist &&  !done[out]) {
+			if (dist < minDist && !done[out]) {
 				minDist = dist;
 				minNode = out;
 			}
 		}
 		if (minNode == -1 && from.containsKey(current)) {
 			done[current] = true;
-	       return from.get(current);
+			return from.get(current);
 		}
-		if (minNode == -1){
+		if (minNode == -1) {
 			return minNode;
 		}
-		if (!from.containsKey(minNode)){
+		if (!from.containsKey(minNode)) {
 			from.put(minNode, current);
 		}
-		if (minDist >= currentDist){
+		if (minDist >= currentDist) {
 			done[current] = true;
 		}
 		return minNode;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextBI(int, gtna.id.BIIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextBI(int current, BIIdentifier target, Random rand,
 			Node[] nodes) {
@@ -109,35 +104,35 @@ public class OneWorseGreedy extends GreedyTemplate{
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
 			BigInteger dist = this.pBI[out].distance(target);
-			if (dist.compareTo(minDist)==-1 &&  !done[out]) {
+			if (dist.compareTo(minDist) == -1 && !done[out]) {
 				minDist = dist;
 				minNode = out;
 			}
 		}
 		if (minNode == -1 && from.containsKey(current)) {
-	       return from.get(current);
+			return from.get(current);
 		}
-		if (minNode == -1){
+		if (minNode == -1) {
 			return minNode;
 		}
-		if (!from.containsKey(minNode)){
+		if (!from.containsKey(minNode)) {
 			from.put(minNode, current);
 		}
-		if (currentDist.compareTo(minDist) == 1){
+		if (currentDist.compareTo(minDist) == 1) {
 			done[current] = true;
 		}
 		return minNode;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.routing.greddyStef.GreedyTemplate#setSets(int)
 	 */
 	@Override
 	public void setSets(int nr) {
-		from = new HashMap<Integer,Integer>();
+		from = new HashMap<Integer, Integer>();
 		done = new boolean[nr];
 	}
-	
-	
 
 }

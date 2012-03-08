@@ -35,11 +35,6 @@
  */
 package gtna.routing.greedyVariations;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
@@ -51,16 +46,21 @@ import gtna.id.DIdentifierSpace;
 import gtna.id.DPartition;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
-import gtna.routing.RoutingAlgorithmImpl;
+import gtna.routing.RoutingAlgorithm;
+import gtna.util.Parameter;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * templete for greedy-like algorithms
+ * 
  * @author stefanie
- *
+ * 
  */
-public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
+public abstract class GreedyTemplate extends RoutingAlgorithm {
 
-	 DIdentifierSpace idSpaceD;
+	DIdentifierSpace idSpaceD;
 
 	DPartition[] pD;
 
@@ -71,22 +71,22 @@ public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
 	private int ttl;
 
 	public GreedyTemplate(String name) {
-		super(name, new String[] {}, new String[] {});
+		super(name);
 		this.ttl = Integer.MAX_VALUE;
 	}
 
 	public GreedyTemplate(int ttl, String name) {
-		super(name, new String[] { "TTL" }, new String[] { "" + ttl });
+		super(name, new Parameter[] { new Parameter("TTL", "" + ttl) });
 		this.ttl = ttl;
 	}
-	
-	public GreedyTemplate(String name, String[] names, String[] values) {
-		super(name, names, values);
+
+	public GreedyTemplate(String name, Parameter[] parameters) {
+		super(name, parameters);
 		this.ttl = Integer.MAX_VALUE;
 	}
 
-	public GreedyTemplate(int ttl, String name, String[] names, String[] values) {
-		super(name, names, values);
+	public GreedyTemplate(int ttl, String name, Parameter[] parameters) {
+		super(name, parameters);
 		this.ttl = ttl;
 	}
 
@@ -107,6 +107,7 @@ public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
 
 	/**
 	 * the route request
+	 * 
 	 * @param graph
 	 * @param start
 	 * @param rand
@@ -122,8 +123,9 @@ public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
 	}
 
 	/**
-	 * generic method for the routing procedure:
-	 * check if target is reached, if not select the next node or fail
+	 * generic method for the routing procedure: check if target is reached, if
+	 * not select the next node or fail
+	 * 
 	 * @param route
 	 * @param current
 	 * @param target
@@ -149,6 +151,7 @@ public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
 
 	/**
 	 * route request
+	 * 
 	 * @param graph
 	 * @param start
 	 * @param rand
@@ -164,8 +167,9 @@ public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
 	}
 
 	/**
-	 * generic method for the routing procedure:
-	 * check if target is reached, if not select the next node or fail
+	 * generic method for the routing procedure: check if target is reached, if
+	 * not select the next node or fail
+	 * 
 	 * @param route
 	 * @param current
 	 * @param target
@@ -182,7 +186,7 @@ public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
 		if (route.size() > this.ttl) {
 			return new RouteImpl(route, false);
 		}
-		int minNode = this.getNextD(current, target,rand,nodes);
+		int minNode = this.getNextD(current, target, rand, nodes);
 		if (minNode == -1) {
 			return new RouteImpl(route, false);
 		}
@@ -216,28 +220,27 @@ public abstract class GreedyTemplate extends RoutingAlgorithmImpl {
 			this.pBI = null;
 		}
 	}
-	
+
 	/**
 	 * abstract method for getting the next nodes
+	 * 
 	 * @param current
 	 * @param target
 	 * @param rand
 	 * @param nodes
 	 * @return
 	 */
-	public abstract int getNextD(int current,
-			DIdentifier target, Random rand, Node[] nodes);
-	
-	public abstract int getNextBI(int current,
-			BIIdentifier target, Random rand, Node[] nodes);
-	
-	
+	public abstract int getNextD(int current, DIdentifier target, Random rand,
+			Node[] nodes);
+
+	public abstract int getNextBI(int current, BIIdentifier target,
+			Random rand, Node[] nodes);
+
 	/**
 	 * abstract method initiating the necessary objects
+	 * 
 	 * @param nr
 	 */
 	public abstract void setSets(int nr);
 
 }
-
-

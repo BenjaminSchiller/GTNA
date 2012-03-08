@@ -35,45 +35,39 @@
  */
 package gtna.routing.greedyVariations;
 
-import gtna.graph.Node;
-import gtna.id.BIIdentifier;
-import gtna.id.DIdentifier;
+import gtna.util.Parameter;
 
 import java.util.HashMap;
-import java.util.Random;
 import java.util.Vector;
 
 /**
  * abstract class for variations marking edges
+ * 
  * @author stefanie
- *
+ * 
  */
 public abstract class EdgeGreedy extends GreedyTemplate {
 	HashMap<Integer, Vector<Integer>> from;
 
-	  public EdgeGreedy(String name) {
-	  		super(name, new String[] {}, new String[] {});
-	  	}
+	public EdgeGreedy(String name) {
+		super(name);
+	}
 
-	  	public EdgeGreedy(int ttl, String name) {
-	  		super(ttl,name);
-	  	}
-	  	
-	  	public EdgeGreedy(String name, String[] names, String[] values) {
-	  		super(name, names, values);
-	  	}
+	public EdgeGreedy(int ttl, String name) {
+		super(ttl, name);
+	}
 
-	  	public EdgeGreedy(int ttl, String name, String[] names, String[] values) {
-	  		super(ttl,name, names, values);
-	  	}
-		
+	public EdgeGreedy(String name, Parameter[] parameters) {
+		super(name, parameters);
+	}
 
-		/* (non-Javadoc)
-		 * @see gtna.routing.greddyStef.GreedyTemplate#setSets(int)
-		 */
-		@Override
-		public void setSets(int nr) {
-			from = new HashMap<Integer, Vector<Integer>>();
-	     }
+	public EdgeGreedy(int ttl, String name, Parameter[] parameters) {
+		super(ttl, name, parameters);
+	}
+
+	@Override
+	public void setSets(int nr) {
+		from = new HashMap<Integer, Vector<Integer>>();
+	}
 
 }

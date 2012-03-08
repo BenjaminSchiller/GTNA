@@ -48,7 +48,7 @@ import gtna.id.storage.StorageList;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
-import gtna.routing.RoutingAlgorithmImpl;
+import gtna.util.Parameter;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -58,8 +58,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class TwoPhaseGreedy extends RoutingAlgorithmImpl implements
-		RoutingAlgorithm {
+public class TwoPhaseGreedy extends RoutingAlgorithm {
 	private DIdentifierSpace idSpaceD;
 
 	private DPartition[] pD;
@@ -73,13 +72,13 @@ public class TwoPhaseGreedy extends RoutingAlgorithmImpl implements
 	private int ttl;
 
 	public TwoPhaseGreedy() {
-		super("TWO_PHASE_GREEDY", new String[] {}, new String[] {});
+		super("TWO_PHASE_GREEDY");
 		this.ttl = Integer.MAX_VALUE;
 	}
 
 	public TwoPhaseGreedy(int ttl) {
-		super("TWO_PHASE_GREEDY", new String[] { "TTL" }, new String[] { ""
-				+ ttl });
+		super("TWO_PHASE_GREEDY", new Parameter[] { new Parameter("TTL", ""
+				+ ttl) });
 		this.ttl = ttl;
 	}
 

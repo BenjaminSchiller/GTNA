@@ -35,7 +35,6 @@
  */
 package gtna.routing;
 
-
 /**
  * Interface for representations of the results of a single routing attempt by a
  * routing algorithm. This contains the path taken by the algorithm and a flag

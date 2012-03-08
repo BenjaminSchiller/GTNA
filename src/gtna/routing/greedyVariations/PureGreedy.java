@@ -44,30 +44,28 @@ import java.util.Random;
 
 /**
  * greedy normal
+ * 
  * @author stefanie
- *
+ * 
  */
 public class PureGreedy extends GreedyTemplate {
-	
+
 	/**
 	 * @param ttl
 	 */
 	public PureGreedy() {
 		super("PURE_GREEDY");
-		
+
 	}
 
 	/**
 	 * @param ttl
 	 */
-	public PureGreedy(int ttl){
+	public PureGreedy(int ttl) {
 		super(ttl, "PURE_GREEDY");
-		
+
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextD(int, gtna.id.DIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextD(int current, DIdentifier target, Random rand,
 			Node[] nodes) {
@@ -85,9 +83,6 @@ public class PureGreedy extends GreedyTemplate {
 		return minNode;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#getNextBI(int, gtna.id.BIIdentifier, java.util.Random, gtna.graph.Node[])
-	 */
 	@Override
 	public int getNextBI(int current, BIIdentifier target, Random rand,
 			Node[] nodes) {
@@ -106,15 +101,10 @@ public class PureGreedy extends GreedyTemplate {
 		return minNode;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.routing.greddyStef.GreedyTemplate#setSets(int)
-	 */
 	@Override
 	public void setSets(int nr) {
 		// TODO Auto-generated method stub
-		
-	}
 
-	
+	}
 
 }
