@@ -41,7 +41,9 @@ import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomChordIDSpace;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.math.BigInteger;
 
@@ -86,9 +88,8 @@ public class Chord extends Network {
 	}
 
 	public Chord(int nodes, int bits, IDSelection selection, Transformation[] t) {
-		super("CHORD", nodes, new Parameter[] {
-				new Parameter("BITS", "" + bits),
-				new Parameter("ID_SELECTION", selection.toString()) }, t);
+		super("CHORD", nodes, new Parameter[] { new IntParameter("BITS", bits),
+				new StringParameter("ID_SELECTION", selection.toString()) }, t);
 		this.bits = bits;
 		this.selection = selection;
 	}

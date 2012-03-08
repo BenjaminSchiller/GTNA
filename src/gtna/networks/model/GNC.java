@@ -40,6 +40,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Random;
@@ -71,8 +72,8 @@ public class GNC extends Network {
 	public GNC(int nodes, boolean BIDIRECTIONAL, boolean EDGE_BACK,
 			Transformation[] t) {
 		super("GNC", nodes, new Parameter[] {
-				new Parameter("BIDIRECTIONAL", "" + BIDIRECTIONAL),
-				new Parameter("EDGE_BACK", "" + EDGE_BACK) }, t);
+				new BooleanParameter("BIDIRECTIONAL", BIDIRECTIONAL),
+				new BooleanParameter("EDGE_BACK", EDGE_BACK) }, t);
 		this.BIDIRECTIONAL = BIDIRECTIONAL;
 		this.EDGE_BACK = EDGE_BACK;
 	}

@@ -52,6 +52,9 @@ import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingPartition;
 import gtna.metrics.EdgeCrossings;
 import gtna.plot.GraphPlotter;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 /**
@@ -71,9 +74,9 @@ public class SixTollis extends CircularAbstract {
 	public SixTollis(int realities, double modulus, boolean wrapAround,
 			GraphPlotter plotter) {
 		super("GDA_SIX_TOLLIS", new Parameter[] {
-				new Parameter("REALITIES", "" + realities),
-				new Parameter("MODULUS", "" + modulus),
-				new Parameter("WRAPAROUND", "" + wrapAround) });
+				new IntParameter("REALITIES", realities),
+				new DoubleParameter("MODULUS", modulus),
+				new BooleanParameter("WRAPAROUND", wrapAround) });
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;

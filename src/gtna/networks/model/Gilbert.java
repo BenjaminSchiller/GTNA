@@ -41,6 +41,8 @@ import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Random;
@@ -72,8 +74,8 @@ public class Gilbert extends Network {
 	public Gilbert(int nodes, double p, boolean bidirectional,
 			Transformation[] t) {
 		super("GILBERT", nodes, new Parameter[] {
-				new Parameter("C", "" + (p * nodes)),
-				new Parameter("BIDIRECTIONAL", "" + bidirectional) }, t);
+				new DoubleParameter("C", p * nodes),
+				new BooleanParameter("BIDIRECTIONAL", bidirectional) }, t);
 		this.p = p;
 		this.bidirectional = bidirectional;
 	}

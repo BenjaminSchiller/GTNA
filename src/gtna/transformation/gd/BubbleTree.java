@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import gtna.graph.Graph;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
+import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
 
 /**
@@ -63,8 +64,8 @@ public class BubbleTree extends HierarchicalAbstract {
 
 	public BubbleTree(double modulusX, double modulusY, GraphPlotter plotter) {
 		super("GDA_BUBBLETREE", new Parameter[] {
-				new Parameter("MODULUS_X", "" + modulusX),
-				new Parameter("MODULUS_Y", "" + modulusY) });
+				new DoubleParameter("MODULUS_X", modulusX),
+				new DoubleParameter("MODULUS_Y", modulusY) });
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;

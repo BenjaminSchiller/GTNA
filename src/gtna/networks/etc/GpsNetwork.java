@@ -45,7 +45,9 @@ import gtna.networks.Network;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 import gtna.transformation.connectors.UnitDiscGraph;
+import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.ArrayList;
 
@@ -61,8 +63,8 @@ public class GpsNetwork extends Network {
 	public GpsNetwork(String filename, String name, double radius,
 			RoutingAlgorithm ra, Transformation[] t) {
 		super("GPS_NETWORK", GpsNetwork.getNodes(filename), new Parameter[] {
-				new Parameter("NAME", name),
-				new Parameter("RADIUS", "" + radius) }, t);
+				new StringParameter("NAME", name),
+				new DoubleParameter("RADIUS", radius) }, t);
 		this.filename = filename;
 		this.radius = radius;
 	}

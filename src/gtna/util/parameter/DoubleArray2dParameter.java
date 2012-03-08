@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * UDG.java
+ * DoubleArrayParameter.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,50 +33,38 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.connectors;
-
-import gtna.graph.Edges;
-import gtna.graph.Graph;
-import gtna.id.plane.PlaneIdentifierSpaceSimple;
-import gtna.transformation.Transformation;
-import gtna.util.parameter.DoubleParameter;
-import gtna.util.parameter.Parameter;
+package gtna.util.parameter;
 
 /**
  * @author benni
  * 
  */
-public class UnitDiscGraph extends Transformation {
-	private double radius;
+public class DoubleArray2dParameter extends Parameter {
+	private double[][] doubleArray2dValue;
 
-	public UnitDiscGraph(double radius) {
-		super("UNIT_DISC_GRAPH", new Parameter[] { new DoubleParameter(
-				"RADIUS", radius) });
-		this.radius = radius;
+	public DoubleArray2dParameter(String key, double[][] doubleArray2dValue) {
+		super(key, DoubleArray2dParameter.toString(doubleArray2dValue));
+		this.doubleArray2dValue = doubleArray2dValue;
 	}
 
-	@Override
-	public Graph transform(Graph g) {
-		Edges edges = new Edges(g.getNodes(), g.getNodes().length
-				* (g.getNodes().length - 1));
-		PlaneIdentifierSpaceSimple idSpace = (PlaneIdentifierSpaceSimple) g
-				.getProperty("ID_SPACE_0");
-		for (int i = 0; i < g.getNodes().length; i++) {
-			for (int j = 0; j < g.getNodes().length; j++) {
-				if (i != j
-						&& idSpace.getPartitions()[i].distance((idSpace
-								.getPartitions()[j].getRepresentativeID())) <= radius) {
-					edges.add(i, j);
+	public double[][] getDoubleArray2dValue() {
+		return this.doubleArray2dValue;
+	}
+
+	private static String toString(double[][] v) {
+		StringBuffer buff = new StringBuffer();
+		for (int i = 0; i < v.length; i++) {
+			if (i > 0) {
+				buff.append("__");
+			}
+			for (int j = 0; j < v[i].length; j++) {
+				if (j == 0) {
+					buff.append(v[i][j]);
+				} else {
+					buff.append("_" + v[i][j]);
 				}
 			}
 		}
-		edges.fill();
-		return g;
+		return buff.toString();
 	}
-
-	@Override
-	public boolean applicable(Graph g) {
-		return g.getProperty("ID_SPACE_0") instanceof PlaneIdentifierSpaceSimple;
-	}
-
 }

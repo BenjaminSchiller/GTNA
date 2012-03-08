@@ -43,6 +43,8 @@ import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartitionSimple;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Random;
@@ -73,8 +75,8 @@ public class RandomRingIDSpaceSimpleCommunities extends Transformation {
 	 */
 	public RandomRingIDSpaceSimpleCommunities(double modulus, boolean wrapAround) {
 		super("RANDOM_RING_ID_SPACE_SIMPLE_COMMUNITIES", new Parameter[] {
-				new Parameter("MODULUS", "" + modulus),
-				new Parameter("WRAP_AROUND", "" + wrapAround) });
+				new DoubleParameter("MODULUS", modulus),
+				new BooleanParameter("WRAP_AROUND", wrapAround) });
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
 	}

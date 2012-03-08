@@ -42,7 +42,10 @@ import gtna.id.DIdentifierSpace;
 import gtna.id.ring.RingIdentifier;
 import gtna.transformation.attackableEmbedding.AttackableEmbedding;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -96,11 +99,11 @@ public class Swapping extends AttackableEmbedding {
 	public Swapping(int iterations, double delta, String attack,
 			String attackerSelection, int attackers) {
 		super(iterations, "SWAPPING", new Parameter[] {
-				new Parameter("ITERATIONS", "" + iterations),
-				new Parameter("DELTA", "" + delta),
-				new Parameter("ATTACK", "" + attack),
-				new Parameter("ATTACKERSELECTION", "" + attackerSelection),
-				new Parameter("ATTACKERS", "" + attackers) });
+				new IntParameter("ITERATIONS", iterations),
+				new DoubleParameter("DELTA", delta),
+				new StringParameter("ATTACK", attack),
+				new StringParameter("ATTACKERSELECTION", attackerSelection),
+				new IntParameter("ATTACKERS", attackers) });
 		this.iterations = iterations;
 		this.delta = delta;
 		this.attack = attack;

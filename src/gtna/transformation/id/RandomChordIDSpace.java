@@ -40,6 +40,8 @@ import gtna.networks.p2p.chord.ChordIdentifier;
 import gtna.networks.p2p.chord.ChordIdentifierSpace;
 import gtna.networks.p2p.chord.ChordPartition;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.math.BigInteger;
@@ -63,8 +65,8 @@ public class RandomChordIDSpace extends Transformation {
 
 	public RandomChordIDSpace(int bits, boolean uniform) {
 		super("RANDOM_CHORD_ID_SPACE", new Parameter[] {
-				new Parameter("BITS", "" + bits),
-				new Parameter("ID_SELECTION", "" + uniform) });
+				new IntParameter("BITS", bits),
+				new BooleanParameter("ID_SELECTION", uniform) });
 		this.bits = bits;
 		this.uniform = uniform;
 		this.realities = 1;
@@ -72,9 +74,9 @@ public class RandomChordIDSpace extends Transformation {
 
 	public RandomChordIDSpace(int bits, boolean uniform, int realities) {
 		super("RANDOM_CHORD_ID_SPACE", new Parameter[] {
-				new Parameter("BITS", "" + bits),
-				new Parameter("REALITIES", "" + realities),
-				new Parameter("ID_SELECTION", "" + uniform) });
+				new IntParameter("BITS", bits),
+				new IntParameter("REALITIES", realities),
+				new BooleanParameter("ID_SELECTION", uniform) });
 		this.bits = bits;
 		this.uniform = uniform;
 		this.realities = realities;

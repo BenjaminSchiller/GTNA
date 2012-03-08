@@ -40,6 +40,8 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Random;
@@ -52,8 +54,8 @@ public class WattsStrogatz extends Network {
 	public WattsStrogatz(int nodes, int SUCCESSORS, double BETA,
 			Transformation[] t) {
 		super("WATTS_STROGATZ", nodes, new Parameter[] {
-				new Parameter("SUCCESSORS", "" + SUCCESSORS),
-				new Parameter("BETA", "" + BETA) }, t);
+				new IntParameter("SUCCESSORS", SUCCESSORS),
+				new DoubleParameter("BETA", BETA) }, t);
 		this.LINKS = SUCCESSORS;
 		this.BETA = BETA;
 	}

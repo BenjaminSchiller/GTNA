@@ -41,6 +41,10 @@ import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.Util;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleArrayParameter;
+import gtna.util.parameter.IntArray2dParameter;
+import gtna.util.parameter.IntArrayParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
@@ -59,10 +63,11 @@ public class Communities2 extends Network {
 			int[][] interCommunityLinks, boolean bidirectional,
 			Transformation[] t) {
 		super("COMMUNITIES_NETWORK_2", Util.sum(sizes), new Parameter[] {
-				new Parameter("COMMUNITY_SIZES", Util.toFolderString(sizes)),
-				new Parameter("AVG_IN_LINKS", Util.toFolderString(avgInLinks)),
-				new Parameter("INTER_COMMUNITY_LINKS",
-						Util.toFolderString(interCommunityLinks)) }, t);
+				new IntArrayParameter("COMMUNITY_SIZES", sizes),
+				new DoubleArrayParameter("AVG_IN_LINKS", avgInLinks),
+				new IntArray2dParameter("INTER_COMMUNITY_LINKS",
+						interCommunityLinks),
+				new BooleanParameter("BIDIRECTIONAL", bidirectional) }, t);
 		this.sizes = sizes;
 		this.avgInLinks = avgInLinks;
 		this.interCommunityLinks = interCommunityLinks;

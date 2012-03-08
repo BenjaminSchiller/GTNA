@@ -42,6 +42,7 @@ import gtna.id.IdentifierSpace;
 import gtna.id.lookahead.LookaheadElement;
 import gtna.id.lookahead.LookaheadList;
 import gtna.id.lookahead.LookaheadLists;
+import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
@@ -59,23 +60,23 @@ public class NeighborsGroupedObfuscatedLookaheadList extends
 	public NeighborsGroupedObfuscatedLookaheadList(double minEpsilon,
 			double maxEpsilon, boolean randomizeOrder) {
 		super("NEIGHBORS_GROUPED_OBFUSCATED_LOOKAHEAD_LIST", minEpsilon,
-				maxEpsilon, new Parameter[] { new Parameter("RANDOMIZE_ORDER",
-						"" + randomizeOrder) });
+				maxEpsilon, new Parameter[] { new BooleanParameter(
+						"RANDOMIZE_ORDER", randomizeOrder) });
 		this.randomizeOrder = randomizeOrder;
 	}
 
 	public NeighborsGroupedObfuscatedLookaheadList(int minBits, int maxBits,
 			boolean randomizeOrder) {
 		super("NEIGHBORS_GROUPED_OBFUSCATED_LOOKAHEAD_LIST", minBits, maxBits,
-				new Parameter[] { new Parameter("RANDOMIZE_ORDER", ""
-						+ randomizeOrder) });
+				new Parameter[] { new BooleanParameter("RANDOMIZE_ORDER",
+						randomizeOrder) });
 		this.randomizeOrder = randomizeOrder;
 	}
 
 	protected NeighborsGroupedObfuscatedLookaheadList(String key,
 			boolean randomizeOrder) {
-		super(key, new Parameter[] { new Parameter("RANDOMIZE_ORDER", ""
-				+ randomizeOrder) });
+		super(key, new Parameter[] { new BooleanParameter("RANDOMIZE_ORDER",
+				randomizeOrder) });
 		this.randomizeOrder = randomizeOrder;
 	}
 

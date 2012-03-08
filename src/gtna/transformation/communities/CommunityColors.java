@@ -74,31 +74,32 @@ public class CommunityColors extends Transformation {
 		Color[] init = new Color[] { Color.green, Color.red, Color.blue,
 				Color.cyan, Color.black, Color.orange, Color.yellow,
 				Color.MAGENTA, Color.pink, Color.darkGray, Color.gray };
-		if (number <= init.length || true) {
-			Color[] c = new Color[number];
-			for (int i = 0; i < c.length; i++) {
-				c[i] = init[i % init.length];
-			}
-			return c;
-		}
-
-		int steps = (int) Math.min(255.0,
-				255.0 / Math.ceil(((double) (number) / 3.0)));
-		int c1 = 0;
-		int c2 = 0;
-		int c3 = 0;
 		Color[] c = new Color[number];
 		for (int i = 0; i < c.length; i++) {
-			c[i] = new Color(c1, c2, c3);
-			if ((i % 3) == 0) {
-				c1 += steps;
-			} else if ((i % 3) == 1) {
-				c2 += steps;
-			} else {
-				c3 += steps;
-			}
+			c[i] = init[i % init.length];
 		}
 		return c;
+
+		// if (number <= init.length || true) {
+		// }
+
+		// int steps = (int) Math.min(255.0,
+		// 255.0 / Math.ceil(((double) (number) / 3.0)));
+		// int c1 = 0;
+		// int c2 = 0;
+		// int c3 = 0;
+		// Color[] c = new Color[number];
+		// for (int i = 0; i < c.length; i++) {
+		// c[i] = new Color(c1, c2, c3);
+		// if ((i % 3) == 0) {
+		// c1 += steps;
+		// } else if ((i % 3) == 1) {
+		// c2 += steps;
+		// } else {
+		// c3 += steps;
+		// }
+		// }
+		// return c;
 	}
 
 	@Override

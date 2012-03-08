@@ -1,5 +1,5 @@
 /* ===========================================================
- * GTNA : Graph-Theoretic Network Analyzer
+w * GTNA : Graph-Theoretic Network Analyzer
  * ===========================================================
  *
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
@@ -39,6 +39,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
+import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
 
 /**
@@ -54,8 +55,8 @@ public class WetherellShannon extends HierarchicalAbstract {
 	public WetherellShannon(double modulusX, double modulusY,
 			GraphPlotter plotter) {
 		super("GDA_WETHERELL_SHANNON", new Parameter[] {
-				new Parameter("MODULUS_X", "" + modulusX),
-				new Parameter("MODULUS_Y", "" + modulusY) });
+				new DoubleParameter("MODULUS_X", modulusX),
+				new DoubleParameter("MODULUS_Y", modulusY) });
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;
 		this.graphPlotter = plotter;

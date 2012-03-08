@@ -45,6 +45,7 @@ import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Timer;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -68,9 +69,9 @@ public abstract class Fragmentation extends Metric {
 
 	public Fragmentation(Type type, NodeSorter sorter, Resolution resolution) {
 		super("FRAGMENTATION", new Parameter[] {
-				new Parameter("TYPE", type.toString()),
-				new Parameter("SORTER", sorter.getKey()),
-				new Parameter("RESOLUTION", resolution.toString()) });
+				new StringParameter("TYPE", type.toString()),
+				new StringParameter("SORTER", sorter.getKey()),
+				new StringParameter("RESOLUTION", resolution.toString()) });
 		this.sorter = sorter;
 		this.resolution = resolution;
 	}
@@ -189,7 +190,7 @@ public abstract class Fragmentation extends Metric {
 	public Value[] getValues() {
 		Value CP = new Value("FRAGMENTATION_CRITICAL_POINT", this.criticalPoint);
 		Value RT = new Value("FRAGMENTATION_RUNTIME", this.runtime.getRuntime());
-		return new Value[] {CP, RT};
+		return new Value[] { CP, RT };
 	}
 
 	protected abstract Partition partition(Graph g, Node[] sorted,

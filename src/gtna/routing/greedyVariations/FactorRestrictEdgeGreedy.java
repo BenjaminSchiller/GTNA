@@ -38,6 +38,8 @@ package gtna.routing.greedyVariations;
 import gtna.graph.Node;
 import gtna.id.BIIdentifier;
 import gtna.id.DIdentifier;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Random;
@@ -60,8 +62,8 @@ public class FactorRestrictEdgeGreedy extends EdgeGreedy {
 
 	public FactorRestrictEdgeGreedy(double maxBack, int ttl) {
 		super(ttl, "FACTOR_RESTRICT_EDGE_GREEDY", new Parameter[] {
-				new Parameter("TTL", "" + ttl),
-				new Parameter("MAXBACK", "" + maxBack) });
+				new IntParameter("TTL", ttl),
+				new DoubleParameter("MAXBACK", maxBack) });
 		this.maxBack = maxBack;
 	}
 

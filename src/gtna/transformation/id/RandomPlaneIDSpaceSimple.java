@@ -40,6 +40,9 @@ import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Random;
@@ -65,10 +68,10 @@ public class RandomPlaneIDSpaceSimple extends Transformation {
 	public RandomPlaneIDSpaceSimple(int realities, double modulusX,
 			double modulusY, boolean wrapAround) {
 		super("RANDOM_PLANE_ID_SPACE_SIMPLE", new Parameter[] {
-				new Parameter("REALITIES", "" + realities),
-				new Parameter("MODULUS_X", "" + modulusX),
-				new Parameter("MODULUS_Y", "" + modulusY),
-				new Parameter("WRAP_AROUND", "" + wrapAround) });
+				new IntParameter("REALITIES", realities),
+				new DoubleParameter("MODULUS_X", modulusX),
+				new DoubleParameter("MODULUS_Y", modulusY),
+				new BooleanParameter("WRAP_AROUND", wrapAround) });
 		this.realities = realities;
 		this.modulusX = modulusX;
 		this.modulusY = modulusY;

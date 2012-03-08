@@ -40,6 +40,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Arrays;
@@ -64,8 +65,8 @@ public class BarabasiAlbert extends Network {
 	private int EDGES_PER_NODE = 3;
 
 	public BarabasiAlbert(int nodes, int EDGES_PER_NODE, Transformation[] t) {
-		super("BARABASI_ALBERT", nodes, new Parameter[] { new Parameter(
-				"EDGES_PER_NODE", "" + EDGES_PER_NODE) }, t);
+		super("BARABASI_ALBERT", nodes, new Parameter[] { new IntParameter(
+				"EDGES_PER_NODE", EDGES_PER_NODE) }, t);
 		this.EDGES_PER_NODE = EDGES_PER_NODE;
 	}
 

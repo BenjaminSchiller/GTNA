@@ -47,6 +47,7 @@ import gtna.id.DPartition;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
@@ -76,7 +77,7 @@ public abstract class GreedyTemplate extends RoutingAlgorithm {
 	}
 
 	public GreedyTemplate(int ttl, String name) {
-		super(name, new Parameter[] { new Parameter("TTL", "" + ttl) });
+		super(name, new Parameter[] { new IntParameter("TTL", ttl) });
 		this.ttl = ttl;
 	}
 

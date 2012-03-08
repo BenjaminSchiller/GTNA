@@ -41,6 +41,9 @@ import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
 import gtna.transformation.Transformation;
 import gtna.util.Util;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Arrays;
@@ -69,9 +72,9 @@ public class RandomRingIDSpace extends Transformation {
 
 	public RandomRingIDSpace(int realities, double modulus, boolean wrapAround) {
 		super("RANDOM_RING_ID_SPACE", new Parameter[] {
-				new Parameter("REALITIES", "" + realities),
-				new Parameter("MODULUS", "" + modulus),
-				new Parameter("WRAP_AROUND", "" + wrapAround) });
+				new IntParameter("REALITIES", realities),
+				new DoubleParameter("MODULUS", modulus),
+				new BooleanParameter("WRAP_AROUND", wrapAround) });
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;

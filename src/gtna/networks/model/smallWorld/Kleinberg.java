@@ -43,6 +43,9 @@ import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Arrays;
@@ -90,14 +93,14 @@ public class Kleinberg extends Network {
 			boolean BIDIRECTIONAL, boolean WRAPAROUND, Transformation[] t) {
 		super("KLEINBERG", (int) Math.pow(edgeLength, DIMENSIONS),
 				new Parameter[] {
-						new Parameter("DIMENSIONS", "" + DIMENSIONS),
-						new Parameter("LOCAL_DISTANCE", "" + LOCAL_DISTANCE),
-						new Parameter("LONG_RANGE_CONTACTS", ""
-								+ LONG_RANGE_CONTACTS),
-						new Parameter("CLUSTERING_EXPONENT", ""
-								+ CLUSTERING_EXPONENT),
-						new Parameter("BIDIRECTIONAL", "" + BIDIRECTIONAL),
-						new Parameter("WRAPAROUND", "" + WRAPAROUND)
+						new IntParameter("DIMENSIONS", DIMENSIONS),
+						new IntParameter("LOCAL_DISTANCE", LOCAL_DISTANCE),
+						new IntParameter("LONG_RANGE_CONTACTS",
+								LONG_RANGE_CONTACTS),
+						new DoubleParameter("CLUSTERING_EXPONENT",
+								CLUSTERING_EXPONENT),
+						new BooleanParameter("BIDIRECTIONAL", BIDIRECTIONAL),
+						new BooleanParameter("WRAPAROUND", WRAPAROUND)
 
 				}, t);
 		this.EDGELENGTH = edgeLength;

@@ -39,6 +39,9 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.plot.GraphPlotter;
 import gtna.util.MDVector;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleArrayParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Arrays;
@@ -95,9 +98,9 @@ public class Frick extends ForceDrivenAbstract {
 	public Frick(int realities, double[] moduli, Boolean wrapAround,
 			GraphPlotter plotter) {
 		super("GDA_FRICK", new Parameter[] {
-				new Parameter("REALITIES", "" + realities),
-				new Parameter("MODULI", "" + Arrays.toString(moduli)),
-				new Parameter("WRAPAROUND", "" + wrapAround) });
+				new IntParameter("REALITIES", realities),
+				new DoubleArrayParameter("MODULI", moduli),
+				new BooleanParameter("WRAPAROUND", wrapAround) });
 		this.realities = realities;
 		this.moduli = moduli;
 		this.wrapAround = wrapAround;

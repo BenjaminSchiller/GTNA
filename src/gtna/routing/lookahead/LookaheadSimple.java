@@ -45,6 +45,7 @@ import gtna.id.Partition;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.math.BigInteger;
@@ -66,8 +67,8 @@ public class LookaheadSimple extends RoutingAlgorithm {
 	protected Partition[] p;
 
 	public LookaheadSimple(int ttl) {
-		super("LOOKAHEAD_SIMPLE", new Parameter[] { new Parameter("TTL", ""
-				+ ttl) });
+		super("LOOKAHEAD_SIMPLE",
+				new Parameter[] { new IntParameter("TTL", ttl) });
 		this.ttl = ttl;
 	}
 

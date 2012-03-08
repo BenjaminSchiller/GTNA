@@ -37,6 +37,9 @@ package gtna.transformation.gd;
 
 import gtna.graph.Graph;
 import gtna.plot.GraphPlotter;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 /**
@@ -47,9 +50,9 @@ public class CanonicalCircularCrossing extends CircularAbstract {
 	public CanonicalCircularCrossing(int realities, double modulus,
 			boolean wrapAround, GraphPlotter plotter) {
 		super("GDA_CANONICALCIRCULARCROSSING", new Parameter[] {
-				new Parameter("REALITIES", "" + realities),
-				new Parameter("MODULUS", "" + modulus),
-				new Parameter("WRAPAROUND", "" + wrapAround) });
+				new IntParameter("REALITIES", realities),
+				new DoubleParameter("MODULUS", modulus),
+				new BooleanParameter("WRAPAROUND", wrapAround) });
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;

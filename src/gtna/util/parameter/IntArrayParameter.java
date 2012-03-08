@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * UDG.java
+ * IntArrayParameter.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,50 +33,34 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.connectors;
-
-import gtna.graph.Edges;
-import gtna.graph.Graph;
-import gtna.id.plane.PlaneIdentifierSpaceSimple;
-import gtna.transformation.Transformation;
-import gtna.util.parameter.DoubleParameter;
-import gtna.util.parameter.Parameter;
+package gtna.util.parameter;
 
 /**
  * @author benni
  * 
  */
-public class UnitDiscGraph extends Transformation {
-	private double radius;
+public class IntArrayParameter extends Parameter {
+	private int[] intArrayValue;
 
-	public UnitDiscGraph(double radius) {
-		super("UNIT_DISC_GRAPH", new Parameter[] { new DoubleParameter(
-				"RADIUS", radius) });
-		this.radius = radius;
+	public IntArrayParameter(String key, int[] intArrayValue) {
+		super(key, IntArrayParameter.toString(intArrayValue));
+		this.intArrayValue = intArrayValue;
 	}
 
-	@Override
-	public Graph transform(Graph g) {
-		Edges edges = new Edges(g.getNodes(), g.getNodes().length
-				* (g.getNodes().length - 1));
-		PlaneIdentifierSpaceSimple idSpace = (PlaneIdentifierSpaceSimple) g
-				.getProperty("ID_SPACE_0");
-		for (int i = 0; i < g.getNodes().length; i++) {
-			for (int j = 0; j < g.getNodes().length; j++) {
-				if (i != j
-						&& idSpace.getPartitions()[i].distance((idSpace
-								.getPartitions()[j].getRepresentativeID())) <= radius) {
-					edges.add(i, j);
-				}
+	public int[] getIntArrayValue() {
+		return this.intArrayValue;
+	}
+
+	private static String toString(int[] v) {
+		StringBuffer buff = new StringBuffer();
+		for (int i : v) {
+			if (buff.length() == 0) {
+				buff.append(i);
+			} else {
+				buff.append("_" + i);
 			}
 		}
-		edges.fill();
-		return g;
-	}
-
-	@Override
-	public boolean applicable(Graph g) {
-		return g.getProperty("ID_SPACE_0") instanceof PlaneIdentifierSpaceSimple;
+		return buff.toString();
 	}
 
 }

@@ -48,6 +48,7 @@ import gtna.id.lookahead.LookaheadLists;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.math.BigInteger;
@@ -82,7 +83,7 @@ public abstract class Lookahead extends RoutingAlgorithm {
 	}
 
 	public Lookahead(String key, int ttl, ViaSelection viaSelection) {
-		super(key, new Parameter[] { new Parameter("TTL", "" + ttl) });
+		super(key, new Parameter[] { new IntParameter("TTL", ttl) });
 		this.ttl = ttl;
 		this.viaSelection = viaSelection;
 	}

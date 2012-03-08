@@ -43,6 +43,8 @@ import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartitionSimple;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Arrays;
@@ -67,9 +69,8 @@ public class ScaleFreeUndirected extends Network {
 	public ScaleFreeUndirected(int nodes, double alpha, int C, int cutoff,
 			Transformation[] t) {
 		super("SCALE_FREE_UNDIRECTED", nodes, new Parameter[] {
-				new Parameter("SIZE", "" + nodes), new Parameter("C", "" + C),
-				new Parameter("ALPHA", "" + alpha),
-				new Parameter("CUTOFF", "" + cutoff) }, t);
+				new DoubleParameter("ALPHA", alpha), new IntParameter("C", C),
+				new IntParameter("CUTOFF", cutoff) }, t);
 		this.interval = (double) 1 / nodes;
 		this.C = C;
 		this.alpha = alpha;

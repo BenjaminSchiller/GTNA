@@ -52,6 +52,8 @@ import gtna.id.ring.RingPartitionSimple;
 import gtna.networks.p2p.chord.ChordIdentifier;
 import gtna.networks.p2p.chord.ChordPartition;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.ParameterList;
 
@@ -78,9 +80,8 @@ public abstract class ObfuscatedLookaheadList extends Transformation {
 	protected BigInteger min;
 
 	protected ObfuscatedLookaheadList(String key, int minBits, int maxBits) {
-		super(key, new Parameter[] {
-				new Parameter("MIN_EPSILON", "" + minBits),
-				new Parameter("MAX_EPSILON", "" + maxBits) });
+		super(key, new Parameter[] { new IntParameter("MIN_BITS", minBits),
+				new IntParameter("MAX_BITS", maxBits) });
 		System.out.println("BI");
 		this.minBits = minBits;
 		this.maxBits = maxBits;
@@ -95,8 +96,8 @@ public abstract class ObfuscatedLookaheadList extends Transformation {
 	protected ObfuscatedLookaheadList(String key, double minEpsilon,
 			double maxEpsilon) {
 		super(key, new Parameter[] {
-				new Parameter("MIN_EPSILON", "" + minEpsilon),
-				new Parameter("MAX_EPSILON", "" + maxEpsilon) });
+				new DoubleParameter("MIN_EPSILON", minEpsilon),
+				new DoubleParameter("MAX_EPSILON", maxEpsilon) });
 		System.out.println("D");
 		this.minEpsilon = minEpsilon;
 		this.maxEpsilon = maxEpsilon;
@@ -110,8 +111,8 @@ public abstract class ObfuscatedLookaheadList extends Transformation {
 	protected ObfuscatedLookaheadList(String key, double minEpsilon,
 			double maxEpsilon, Parameter[] parameters) {
 		super(key, ParameterList.append(parameters, new Parameter[] {
-				new Parameter("MIN_EPSILON", "" + minEpsilon),
-				new Parameter("MAX_EPSILON", "" + maxEpsilon) }));
+				new DoubleParameter("MIN_EPSILON", minEpsilon),
+				new DoubleParameter("MAX_EPSILON", maxEpsilon) }));
 		this.minEpsilon = minEpsilon;
 		this.maxEpsilon = maxEpsilon;
 		this.size = maxEpsilon - minEpsilon;
@@ -120,8 +121,8 @@ public abstract class ObfuscatedLookaheadList extends Transformation {
 	protected ObfuscatedLookaheadList(String key, int minBits, int maxBits,
 			Parameter[] parameters) {
 		super(key, ParameterList.append(parameters, new Parameter[] {
-				new Parameter("MIN_EPSILON", "" + minBits),
-				new Parameter("MAX_EPSILON", "" + maxBits) }));
+				new IntParameter("MIN_BITS", minBits),
+				new IntParameter("MAX_BITS",  maxBits) }));
 		this.minBits = minBits;
 		this.maxBits = maxBits;
 		this.diff = maxBits - minBits;

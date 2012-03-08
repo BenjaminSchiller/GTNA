@@ -8,6 +8,9 @@ import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartitionSimple;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Arrays;
@@ -54,15 +57,15 @@ public class Kleinberg1DC extends Network {
 			boolean BIDIRECTIONAL, boolean RANDOM, int C, Transformation[] t) {
 		super("KLEINBERG_1DC", nodes,
 				new Parameter[] {
-						new Parameter("SHORT_RANGE_CONTACTS", ""
-								+ SHORT_RANGE_CONTACTS),
-						new Parameter("LONG_RANGE_CONTACTS", ""
-								+ LONG_RANGE_CONTACTS),
-						new Parameter("CLUSTERING_EXPONENT", ""
-								+ CLUSTERING_EXPONENT),
-						new Parameter("BIDIRECTIONAL", "" + BIDIRECTIONAL),
-						new Parameter("RANDOM", "" + RANDOM),
-						new Parameter("C", "" + C) }, t);
+						new IntParameter("SHORT_RANGE_CONTACTS",
+								SHORT_RANGE_CONTACTS),
+						new IntParameter("LONG_RANGE_CONTACTS",
+								LONG_RANGE_CONTACTS),
+						new DoubleParameter("CLUSTERING_EXPONENT",
+								CLUSTERING_EXPONENT),
+						new BooleanParameter("BIDIRECTIONAL", BIDIRECTIONAL),
+						new BooleanParameter("RANDOM", RANDOM),
+						new IntParameter("C", C) }, t);
 		this.SHORT_RANGE_CONTACTS = SHORT_RANGE_CONTACTS;
 		this.LONG_RANGE_CONTACTS = LONG_RANGE_CONTACTS;
 		this.CLUSTERING_EXPONENT = CLUSTERING_EXPONENT;

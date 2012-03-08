@@ -14,7 +14,10 @@ import gtna.transformation.communities.matrices.MyQMatrixInt;
 import gtna.transformation.communities.matrices.MyQMatrixLong;
 import gtna.util.Config;
 import gtna.util.Util;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,11 +48,11 @@ public class CommunityDetectionDeltaQ extends Transformation {
 	 */
 	public CommunityDetectionDeltaQ() {
 		super(key, new Parameter[] {
-				new Parameter("INTERNALFORMAT", Config.get(key
+				new StringParameter("INTERNALFORMAT", Config.get(key
 						+ "_INTERNALFORMAT")),
-				new Parameter("FORCESEPARATED", Config.get(key
+				new BooleanParameter("FORCESEPARATED", Config.getBoolean(key
 						+ "_FORCESEPARATED")),
-				new Parameter("MAXITERATIONS", Config.get(key
+				new IntParameter("MAXITERATIONS", Config.getInt(key
 						+ "_INTERNALFORMAT")) });
 	}
 

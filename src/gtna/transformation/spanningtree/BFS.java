@@ -41,6 +41,7 @@ import gtna.graph.spanningTree.ParentChild;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,7 +63,7 @@ public class BFS extends Transformation {
 	}
 
 	public BFS(String rootSelector) {
-		super("SPANNINGTREE_BFS", new Parameter[] { new Parameter(
+		super("SPANNINGTREE_BFS", new Parameter[] { new StringParameter(
 				"ROOT_SELECTOR", rootSelector) });
 		this.rootSelector = rootSelector;
 	}

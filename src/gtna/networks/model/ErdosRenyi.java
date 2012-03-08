@@ -40,6 +40,8 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Random;
@@ -101,8 +103,8 @@ public class ErdosRenyi extends Network {
 	public ErdosRenyi(int nodes, double AVERAGE_DEGREE, boolean BIDIRECTIONAL,
 			Transformation[] t) {
 		super("ERDOS_RENYI", nodes, new Parameter[] {
-				new Parameter("AVERAGE_DEGREE", "" + AVERAGE_DEGREE),
-				new Parameter("BIDIRECTIONAL", "" + BIDIRECTIONAL) }, t);
+				new DoubleParameter("AVERAGE_DEGREE", AVERAGE_DEGREE),
+				new BooleanParameter("BIDIRECTIONAL", BIDIRECTIONAL) }, t);
 		this.AVERAGE_DEGREE = AVERAGE_DEGREE;
 		this.BIDIRECTIONAL = BIDIRECTIONAL;
 	}

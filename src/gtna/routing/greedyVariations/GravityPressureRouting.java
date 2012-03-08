@@ -12,6 +12,7 @@ import gtna.id.DPartition;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.math.BigInteger;
@@ -43,8 +44,8 @@ public class GravityPressureRouting extends RoutingAlgorithm {
 	 * @param ttl
 	 */
 	public GravityPressureRouting(int ttl) {
-		super("GRAVITY_PRESSURE", new Parameter[] { new Parameter("TTL", ""
-				+ ttl) });
+		super("GRAVITY_PRESSURE",
+				new Parameter[] { new IntParameter("TTL", ttl) });
 
 	}
 

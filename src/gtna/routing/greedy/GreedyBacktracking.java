@@ -43,6 +43,7 @@ import gtna.id.DPartition;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
@@ -66,8 +67,8 @@ public class GreedyBacktracking extends RoutingAlgorithm {
 	}
 
 	public GreedyBacktracking(int ttl) {
-		super("GREEDY_BACKTRACKING", new Parameter[] { new Parameter("TTL", ""
-				+ ttl) });
+		super("GREEDY_BACKTRACKING", new Parameter[] { new IntParameter("TTL",
+				ttl) });
 		this.ttl = ttl;
 	}
 

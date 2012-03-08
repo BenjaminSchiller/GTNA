@@ -40,6 +40,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 /**
@@ -59,8 +60,8 @@ public class DeBruijn extends Network {
 
 	public DeBruijn(int BASE, int DIMENSIONS, Transformation[] t) {
 		super("DE_BRUIJN", numberOfNodes(BASE, DIMENSIONS), new Parameter[] {
-				new Parameter("BASE", "" + BASE),
-				new Parameter("DIMENSIONS", "" + DIMENSIONS) }, t);
+				new IntParameter("BASE", BASE),
+				new IntParameter("DIMENSIONS", DIMENSIONS) }, t);
 		this.BASE = BASE;
 	}
 

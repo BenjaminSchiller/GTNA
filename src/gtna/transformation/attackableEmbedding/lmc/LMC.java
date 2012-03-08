@@ -42,7 +42,10 @@ import gtna.id.DIdentifierSpace;
 import gtna.id.ring.RingIdentifier;
 import gtna.transformation.attackableEmbedding.AttackableEmbedding;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -111,13 +114,13 @@ public class LMC extends AttackableEmbedding {
 	public LMC(int iterations, String mode, double P, String deltaMode, int C,
 			String attack, String attackerSelection, int attackers) {
 		super(iterations, "LMC", new Parameter[] {
-				new Parameter("ITERATIONS", "" + iterations),
-				new Parameter("MODE", "" + mode), new Parameter("P", "" + P),
-				new Parameter("DELTA", "" + deltaMode),
-				new Parameter("C", "" + C),
-				new Parameter("ATTACK", "" + attack),
-				new Parameter("ATTACKERSELECTION", "" + attackerSelection),
-				new Parameter("ATTACKERS", "" + attackers) });
+				new IntParameter("ITERATIONS", iterations),
+				new StringParameter("MODE", mode), new DoubleParameter("P", P),
+				new StringParameter("DELTA", deltaMode),
+				new IntParameter("C", C),
+				new StringParameter("ATTACK", attack),
+				new StringParameter("ATTACKERSELECTION", attackerSelection),
+				new IntParameter("ATTACKERS", attackers) });
 		this.mode = mode;
 		this.P = P;
 		this.deltaMode = deltaMode;

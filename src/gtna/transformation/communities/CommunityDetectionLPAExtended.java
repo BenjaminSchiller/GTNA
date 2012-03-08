@@ -6,6 +6,7 @@ import gtna.graph.sorting.NodeSorting;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
 import gtna.util.Util;
+import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
@@ -18,10 +19,10 @@ public class CommunityDetectionLPAExtended extends Transformation {
 
 	public CommunityDetectionLPAExtended() {
 		super(key, new Parameter[] {
-				new Parameter("W", Config.get(key + "_W")),
-				new Parameter("F", Config.get(key + "_F")),
-				new Parameter("D", Config.get(key + "_D")),
-				new Parameter("M", Config.get(key + "_M")) });
+				new DoubleParameter("W", Config.getDouble(key + "_W")),
+				new DoubleParameter("F", Config.getDouble(key + "_F")),
+				new DoubleParameter("D", Config.getDouble(key + "_D")),
+				new DoubleParameter("M", Config.getDouble(key + "_M")) });
 	}
 
 	public static interface EdgeWeight {

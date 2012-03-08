@@ -40,6 +40,8 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Random;
@@ -73,9 +75,9 @@ public class GNR extends Network {
 	public GNR(int nodes, boolean BIDIRECTIONAL,
 			double REDIRECTION_PROBABILITY, Transformation[] t) {
 		super("GNR", nodes, new Parameter[] {
-				new Parameter("BIDIRECTIONAL", "" + BIDIRECTIONAL),
-				new Parameter("REDIRECTION_PROBABILITY", ""
-						+ REDIRECTION_PROBABILITY) }, t);
+				new BooleanParameter("BIDIRECTIONAL", BIDIRECTIONAL),
+				new DoubleParameter("REDIRECTION_PROBABILITY",
+						REDIRECTION_PROBABILITY) }, t);
 		this.BIDIRECTIONAL = BIDIRECTIONAL;
 		this.REDIRECTION_PROBABILITY = REDIRECTION_PROBABILITY;
 	}

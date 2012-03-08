@@ -43,6 +43,7 @@ import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.HashSet;
@@ -57,8 +58,8 @@ public class Roles2Generation extends Transformation {
 	 *            module degree, else all nodes are declared non-hubs
 	 */
 	public Roles2Generation(boolean withHubs) {
-		super("ROLES2_GENERATION", new Parameter[] { new Parameter("WITH_HUBS",
-				"" + withHubs) });
+		super("ROLES2_GENERATION", new Parameter[] { new BooleanParameter(
+				"WITH_HUBS", withHubs) });
 		this.withHubs = withHubs;
 	}
 

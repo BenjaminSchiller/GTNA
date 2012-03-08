@@ -42,6 +42,10 @@ import gtna.networks.Network;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 import gtna.util.Util;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleArrayParameter;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntArrayParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
@@ -59,9 +63,9 @@ public class Communities extends Network {
 	public Communities(int n, double avgCommunitySize, double avgInLinks,
 			double avgOutLinks, boolean bidirectional, Transformation[] t) {
 		super("COMMUNITIES_NETWORK", n, new Parameter[] {
-				new Parameter("AVG_IN_LINKS", "" + avgCommunitySize),
-				new Parameter("AVG_IN_LINKS", "" + avgInLinks),
-				new Parameter("AVG_OUT_LINKS", "" + avgOutLinks) }, t);
+				new DoubleParameter("AVG_IN_LINKS", avgCommunitySize),
+				new DoubleParameter("AVG_IN_LINKS", avgInLinks),
+				new DoubleParameter("AVG_OUT_LINKS", avgOutLinks) }, t);
 		Random rand = new Random(System.currentTimeMillis());
 		this.bidirectional = bidirectional;
 		if (n <= avgCommunitySize) {
@@ -111,14 +115,11 @@ public class Communities extends Network {
 
 	public Communities(int[] sizes, double[] avgInLinks, double[] avgOutLinks,
 			boolean bidirectional, RoutingAlgorithm r, Transformation[] t) {
-		super("COMMUNITIES_NETWORK", Util.sum(sizes),
-				new Parameter[] {
-						new Parameter("AVG_COMMUNITY_SIZE",
-								Util.toFolderString(sizes)),
-						new Parameter("AVG_IN_LINKS",
-								Util.toFolderString(avgInLinks)),
-						new Parameter("AVG_OUT_LINKS",
-								Util.toFolderString(avgOutLinks)) }, t);
+		super("COMMUNITIES_NETWORK", Util.sum(sizes), new Parameter[] {
+				new IntArrayParameter("AVG_COMMUNITY_SIZE", sizes),
+				new DoubleArrayParameter("AVG_IN_LINKS", avgInLinks),
+				new DoubleArrayParameter("AVG_OUT_LINKS", avgOutLinks),
+				new BooleanParameter("BIDIRECTIONAL", bidirectional) }, t);
 		this.sizes = sizes;
 		this.avgInLinks = avgInLinks;
 		this.avgOutLinks = avgOutLinks;

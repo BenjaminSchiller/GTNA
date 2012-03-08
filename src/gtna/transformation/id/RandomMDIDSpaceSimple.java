@@ -40,9 +40,11 @@ import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleArrayParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
-import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -63,9 +65,9 @@ public class RandomMDIDSpaceSimple extends Transformation {
 	public RandomMDIDSpaceSimple(int realities, double[] modulus,
 			boolean wrapAround) {
 		super("RANDOM_MD_ID_SPACE_SIMPLE", new Parameter[] {
-				new Parameter("REALITIES", "" + realities),
-				new Parameter("MODULI", Arrays.toString(modulus)),
-				new Parameter("WRAPAROUND", "" + wrapAround) });
+				new IntParameter("REALITIES", realities),
+				new DoubleArrayParameter("MODULI", modulus),
+				new BooleanParameter("WRAPAROUND", wrapAround) });
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;

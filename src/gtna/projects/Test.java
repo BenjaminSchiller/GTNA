@@ -66,6 +66,8 @@ import gtna.transformation.communities.Roles2Generation;
 import gtna.transformation.communities.RolesGeneration;
 import gtna.transformation.partition.GiantConnectedComponent;
 import gtna.util.Config;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.ParameterList;
 
@@ -121,10 +123,10 @@ public class Test {
 
 		ParameterList list = new ParameterList("CLUSTERING_COEFFICIENT");
 		list = new ParameterList("ERDOS_RENYI", new Parameter[] {
-				new Parameter("AVERAGE_DEGREE", "4"),
-				new Parameter("BIDIRECTIONAL", "true") });
-		list = new ParameterList("GREEDY", new Parameter[] { new Parameter(
-				"TTL", "12") });
+				new IntParameter("AVERAGE_DEGREE", 4),
+				new BooleanParameter("BIDIRECTIONAL", true) });
+		list = new ParameterList("GREEDY", new Parameter[] { new IntParameter(
+				"TTL", 12) });
 		list = new ParameterList("UNDIRECTED_MOTIFS_4");
 		System.out.println(list.getDescription());
 		System.out.println(list.getDescriptionLong());

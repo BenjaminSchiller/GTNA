@@ -39,7 +39,7 @@ package gtna.util.parameter;
  * @author benni
  *
  */
-public class Parameter {
+public abstract class Parameter {
 	private String key;
 	
 	private String value;
