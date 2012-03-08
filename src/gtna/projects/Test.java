@@ -66,8 +66,8 @@ import gtna.transformation.communities.Roles2Generation;
 import gtna.transformation.communities.RolesGeneration;
 import gtna.transformation.partition.GiantConnectedComponent;
 import gtna.util.Config;
-import gtna.util.Parameter;
-import gtna.util.ParameterList;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.ParameterList;
 
 /**
  * @author benni

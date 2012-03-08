@@ -43,7 +43,7 @@ import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.Arrays;
 import java.util.Random;

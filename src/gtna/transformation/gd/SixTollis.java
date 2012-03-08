@@ -52,7 +52,7 @@ import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingPartition;
 import gtna.metrics.EdgeCrossings;
 import gtna.plot.GraphPlotter;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 /**
  * @author Nico

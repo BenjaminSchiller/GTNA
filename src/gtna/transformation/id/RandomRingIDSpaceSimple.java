@@ -40,7 +40,7 @@ import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartitionSimple;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.Random;
 

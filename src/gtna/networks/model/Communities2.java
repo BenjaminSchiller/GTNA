@@ -40,8 +40,8 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
 import gtna.util.Util;
+import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
 import java.util.Random;

@@ -43,7 +43,7 @@ import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.HashSet;
 

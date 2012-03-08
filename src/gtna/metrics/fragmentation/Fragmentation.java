@@ -43,8 +43,8 @@ import gtna.graph.sorting.NodeSorter;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
-import gtna.util.Parameter;
 import gtna.util.Timer;
+import gtna.util.parameter.Parameter;
 
 import java.util.HashMap;
 import java.util.Random;

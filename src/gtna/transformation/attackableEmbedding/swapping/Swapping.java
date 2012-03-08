@@ -42,7 +42,7 @@ import gtna.id.DIdentifierSpace;
 import gtna.id.ring.RingIdentifier;
 import gtna.transformation.attackableEmbedding.AttackableEmbedding;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.HashSet;
 import java.util.Random;

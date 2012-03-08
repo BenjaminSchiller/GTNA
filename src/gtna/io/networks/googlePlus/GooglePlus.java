@@ -39,7 +39,7 @@ import gtna.graph.Graph;
 import gtna.io.GraphReader;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 /**
  * @author benni

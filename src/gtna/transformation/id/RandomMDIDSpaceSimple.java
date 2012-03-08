@@ -40,7 +40,7 @@ import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.Arrays;
 import java.util.Random;

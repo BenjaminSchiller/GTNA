@@ -41,7 +41,7 @@ import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.Random;
 

@@ -39,7 +39,7 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 /**
  * @author benni

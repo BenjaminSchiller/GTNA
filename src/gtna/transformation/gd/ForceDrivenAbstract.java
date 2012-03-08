@@ -41,7 +41,7 @@ import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDPartitionSimple;
 import gtna.util.MDVector;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 /**
  * @author Nico

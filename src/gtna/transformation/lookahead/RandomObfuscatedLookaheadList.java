@@ -42,7 +42,7 @@ import gtna.id.IdentifierSpace;
 import gtna.id.lookahead.LookaheadElement;
 import gtna.id.lookahead.LookaheadList;
 import gtna.id.lookahead.LookaheadLists;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
 import java.util.Collections;

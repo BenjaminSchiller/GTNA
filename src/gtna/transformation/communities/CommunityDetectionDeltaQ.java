@@ -13,8 +13,8 @@ import gtna.transformation.communities.matrices.MyQEMatrixLong;
 import gtna.transformation.communities.matrices.MyQMatrixInt;
 import gtna.transformation.communities.matrices.MyQMatrixLong;
 import gtna.util.Config;
-import gtna.util.Parameter;
 import gtna.util.Util;
+import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -45,7 +45,7 @@ import gtna.id.Partition;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

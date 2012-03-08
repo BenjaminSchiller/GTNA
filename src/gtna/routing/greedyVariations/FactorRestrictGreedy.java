@@ -38,7 +38,7 @@ package gtna.routing.greedyVariations;
 import gtna.graph.Node;
 import gtna.id.BIIdentifier;
 import gtna.id.DIdentifier;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.Random;
 

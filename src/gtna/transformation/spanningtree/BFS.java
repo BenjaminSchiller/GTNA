@@ -40,7 +40,7 @@ import gtna.graph.Node;
 import gtna.graph.spanningTree.ParentChild;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
 import java.util.Arrays;

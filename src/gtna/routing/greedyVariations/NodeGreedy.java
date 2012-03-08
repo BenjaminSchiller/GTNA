@@ -35,7 +35,7 @@
  */
 package gtna.routing.greedyVariations;
 
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.HashMap;
 

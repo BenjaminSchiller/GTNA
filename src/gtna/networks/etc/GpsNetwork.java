@@ -45,7 +45,7 @@ import gtna.networks.Network;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 import gtna.transformation.connectors.UnitDiscGraph;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
 

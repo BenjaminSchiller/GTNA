@@ -36,8 +36,8 @@
 package gtna.routing;
 
 import gtna.graph.Graph;
-import gtna.util.Parameter;
-import gtna.util.ParameterList;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.ParameterList;
 
 import java.util.Random;
 

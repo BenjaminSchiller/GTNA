@@ -39,7 +39,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.plot.GraphPlotter;
 import gtna.util.MDVector;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.Arrays;
 import java.util.Collections;

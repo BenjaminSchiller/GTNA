@@ -38,7 +38,7 @@ package gtna.transformation.gd;
 import gtna.graph.Graph;
 import gtna.plot.GraphPlotter;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.Random;
 

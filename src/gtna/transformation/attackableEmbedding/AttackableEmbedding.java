@@ -47,7 +47,7 @@ import gtna.id.Partition;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingPartitionSimple;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -52,8 +52,8 @@ import gtna.id.ring.RingPartitionSimple;
 import gtna.networks.p2p.chord.ChordIdentifier;
 import gtna.networks.p2p.chord.ChordPartition;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
-import gtna.util.ParameterList;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.ParameterList;
 
 import java.math.BigInteger;
 import java.util.Random;

@@ -40,7 +40,7 @@ import gtna.graph.spanningTree.SpanningTree;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 /**
  * @author Nico

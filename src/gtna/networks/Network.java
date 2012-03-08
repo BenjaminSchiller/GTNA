@@ -37,8 +37,8 @@ package gtna.networks;
 
 import gtna.graph.Graph;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
-import gtna.util.ParameterList;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.ParameterList;
 
 /**
  * Interface that must be implemented by all network generators.

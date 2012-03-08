@@ -40,7 +40,7 @@ import gtna.networks.p2p.chord.ChordIdentifier;
 import gtna.networks.p2p.chord.ChordIdentifierSpace;
 import gtna.networks.p2p.chord.ChordPartition;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.math.BigInteger;
 import java.util.Arrays;

@@ -38,7 +38,7 @@ package gtna.transformation.gd;
 import gtna.graph.Graph;
 import gtna.graph.spanningTree.SpanningTree;
 import gtna.plot.GraphPlotter;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 /**
  * @author Nico

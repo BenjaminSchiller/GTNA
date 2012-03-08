@@ -33,7 +33,9 @@
  * ---------------------------------------
  *
  */
-package gtna.util;
+package gtna.util.parameter;
+
+import gtna.util.Config;
 
 /**
  * @author benni

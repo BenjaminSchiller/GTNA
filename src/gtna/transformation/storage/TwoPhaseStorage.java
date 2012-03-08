@@ -47,7 +47,7 @@ import gtna.id.IdentifierSpace;
 import gtna.id.storage.Storage;
 import gtna.id.storage.StorageList;
 import gtna.transformation.Transformation;
-import gtna.util.Parameter;
+import gtna.util.parameter.Parameter;
 
 import java.math.BigInteger;
 

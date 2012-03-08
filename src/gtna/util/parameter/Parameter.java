@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.util;
+package gtna.util.parameter;
 
 /**
  * @author benni
