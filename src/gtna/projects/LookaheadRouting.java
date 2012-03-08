@@ -333,7 +333,7 @@ public class LookaheadRouting {
 				index = 1;
 			}
 			nw[i + 1] = new DescriptionWrapper(nw[i + 1], map.get(LL[i][index])
-					+ " - " + lookahead.nameShort());
+					+ " - " + lookahead.getNameShort());
 		}
 
 		Series[] s1 = generate ? Series.generate(nw, metrics, times) : Series
