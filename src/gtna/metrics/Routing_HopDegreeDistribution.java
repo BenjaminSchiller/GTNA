@@ -55,6 +55,11 @@ public class Routing_HopDegreeDistribution extends Metric {
 	}
 
 	@Override
+	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+		return true;
+	}
+
+	@Override
 	public void computeData(Graph graph, Network network,
 			HashMap<String, Metric> metrics) {
 		initConfig();

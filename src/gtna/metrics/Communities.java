@@ -64,6 +64,11 @@ public class Communities extends Metric {
 	}
 
 	@Override
+	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+		return true;
+	}
+
+	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		if (!g.hasProperty("COMMUNITIES_0")) {
 			this.runtime = new Timer();

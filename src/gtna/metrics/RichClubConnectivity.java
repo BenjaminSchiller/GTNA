@@ -55,6 +55,11 @@ public class RichClubConnectivity extends Metric {
 		super("RICH_CLUB_CONNECTIVITY");
 	}
 
+	@Override
+	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+		return true;
+	}
+
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		this.timer = new Timer();
 		int[] order = NodeSorting.byDegreeDesc(g.getNodes(), new Random());

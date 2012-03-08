@@ -62,6 +62,11 @@ public class DegreeDistribution extends Metric {
 		super("DEGREE_DISTRIBUTION");
 	}
 
+	@Override
+	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+		return true;
+	}
+
 	public void computeData(Graph graph, Network nw, HashMap<String, Metric> m) {
 		this.runtime = new Timer();
 

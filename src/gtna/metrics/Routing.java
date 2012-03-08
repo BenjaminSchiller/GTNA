@@ -66,6 +66,11 @@ public class Routing extends Metric {
 	}
 
 	@Override
+	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+		return true;
+	}
+
+	@Override
 	public void computeData(Graph graph, Network network,
 			HashMap<String, Metric> metrics) {
 		// FIXME add routingAlgorithm as parameter to Routing metric

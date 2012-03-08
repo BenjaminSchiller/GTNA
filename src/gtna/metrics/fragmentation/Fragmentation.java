@@ -76,6 +76,11 @@ public abstract class Fragmentation extends Metric {
 		this.resolution = resolution;
 	}
 
+	@Override
+	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+		return true;
+	}
+
 	private double[] isolatedComponentSizeAvg;
 
 	private double[] isolatedComponentSizeMax;

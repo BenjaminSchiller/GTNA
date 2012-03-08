@@ -114,4 +114,7 @@ public abstract class Metric extends ParameterList {
 	 * @return single scalar values
 	 */
 	public abstract Value[] getValues();
+
+	public abstract boolean applicable(Graph g, Network n,
+			HashMap<String, Metric> m);
 }

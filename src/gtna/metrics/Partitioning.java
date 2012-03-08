@@ -67,6 +67,11 @@ public abstract class Partitioning extends Metric {
 	}
 
 	@Override
+	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+		return true;
+	}
+
+	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		if (!g.hasProperty(this.property + "_0")) {
 			g = this.addProperty(g);

@@ -65,6 +65,11 @@ public class ClusteringCoefficient extends Metric {
 	}
 
 	@Override
+	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+		return true;
+	}
+
+	@Override
 	public void computeData(Graph graph, Network nw,
 			HashMap<String, Metric> metrics) {
 		this.runtime = new Timer();

@@ -35,7 +35,6 @@
  */
 package gtna.metrics.motifs;
 
-import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.metrics.Metric;
@@ -45,15 +44,12 @@ import gtna.util.Timer;
 import java.util.HashMap;
 
 /**
- * retrieve or analyze all undirected 4 nodes motifs
- * 1: A--B, A--C, A--D (TwoV)
- * 2: A--B, B--C, C--D (FourChain)
- * 3: A--B, B--C, C--A, A--D (ThreeLoopOut)
- * 4: A--B, B--C, C--D, D--A (FoutLoop)
- * 5: A--B, B--C, C--D, D--A, A--C (SemiClique4)
- * 6: A--B, A--C, A--D, B--C, B--D, C--D (Clique4)
- * @author stef
- * based on work by Lachezar Krumov
+ * retrieve or analyze all undirected 4 nodes motifs 1: A--B, A--C, A--D (TwoV)
+ * 2: A--B, B--C, C--D (FourChain) 3: A--B, B--C, C--A, A--D (ThreeLoopOut) 4:
+ * A--B, B--C, C--D, D--A (FoutLoop) 5: A--B, B--C, C--D, D--A, A--C
+ * (SemiClique4) 6: A--B, A--C, A--D, B--C, B--D, C--D (Clique4)
+ * 
+ * @author stef based on work by Lachezar Krumov
  */
 public class UndirectedMotifs4 extends MotifCounter {
 
@@ -64,8 +60,16 @@ public class UndirectedMotifs4 extends MotifCounter {
 		super("UNDIRECTED_MOTIFS_4");
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.metrics.Metric#computeData(gtna.graph.Graph, gtna.networks.Network, java.util.HashMap)
+	@Override
+	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#computeData(gtna.graph.Graph,
+	 * gtna.networks.Network, java.util.HashMap)
 	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
@@ -73,147 +77,163 @@ public class UndirectedMotifs4 extends MotifCounter {
 		this.counts = new double[6];
 		Node[] nodes = g.getNodes();
 		int[] neighbors, neighbors2;
-		//maximal number of edges, nodes => only those that are actual part of motif are evaluated 
-		//(compare MotifAnalyzer.evaluateMotif)
+		// maximal number of edges, nodes => only those that are actual part of
+		// motif are evaluated
+		// (compare MotifAnalyzer.evaluateMotif)
 		Node[] motifNodes = new Node[4];
 		boolean[] motifEdges = new boolean[6];
-        for (int i = 0; i < nodes.length; i++){
-        	motifNodes[0] = nodes[i];
-        	neighbors = nodes[i].getOutgoingEdges();
-        	for (int j = 0; j < neighbors.length-1; j++){
-        		motifEdges[0] = true;
-        		motifNodes[1] = nodes[neighbors[j]];
-        		for (int k = j + 1; k < neighbors.length; k++){
-        			motifEdges[1] = true;
-        			motifNodes[2] = nodes[neighbors[k]];
-        			motifEdges[2] = motifNodes[1].hasNeighbor(motifNodes[2].getIndex());
-        			if (!motifEdges[2]){
-        				
-        				//determine TwoV (motif #1) 
-        				for (int l = k + 1; l < neighbors.length; l++){
-        					motifEdges[2] = true;
-                			motifNodes[3] = nodes[neighbors[l]];
-                			motifEdges[3] = motifNodes[3].hasNeighbor(motifNodes[1].getIndex());
-                			motifEdges[4] = motifNodes[3].hasNeighbor(motifNodes[2].getIndex());
-                		    if (!motifEdges[3]){
-                		    	if (!motifEdges[4]){
-                		    	   counts[0]++;
-                		    	} 
-                		    } 
-                		    if (motifEdges[3] && motifEdges[4] ){
-                		    	if (motifNodes[0].getIndex() < motifNodes[3].getIndex()
-                		    		&& motifNodes[0].getIndex() < motifNodes[1].getIndex()){
-                		    	this.counts[4]++;
-                		    	}
-                		    }
-        				}
-        				
-        				//determine 4Chain (#2) + 4Loop (#4)
-        				if (motifNodes[0].getIndex() < motifNodes[1].getIndex()){
-        				neighbors2 = motifNodes[1].getOutgoingEdges();
-        				for (int l = 0; l < neighbors2.length; l++){
-        					if (neighbors2[l] == i){
-        						continue;
-        					}
-        					motifEdges[2] = true;
-                			motifNodes[3] = nodes[neighbors2[l]];
-                			if (motifNodes[3].hasNeighbor(motifNodes[0].getIndex())){
-                				continue;
-                			}
-                			motifEdges[3] = motifNodes[3].hasNeighbor(motifNodes[2].getIndex());
-                			if (!motifEdges[3]){
-                				this.counts[1]++;
-                			} else {
-                				if(motifNodes[0].getIndex() < motifNodes[3].getIndex()){
-                					this.counts[3]++;
-                				}
-                			}
-        				}
-        				}
-        				
-        				//determine 4Chain (#4) other direction
-        				if (motifNodes[0].getIndex() < motifNodes[2].getIndex()){
-        				neighbors2 = motifNodes[2].getOutgoingEdges();
-        				for (int l = 0; l < neighbors2.length; l++){
-        					if (neighbors2[l] == i){
-        						continue;
-        					}
-        					motifEdges[2] = true;
-                			motifNodes[3] = nodes[neighbors2[l]];
-                			if (motifNodes[3].hasNeighbor(motifNodes[0].getIndex())){
-                				continue;
-                			}
-                			motifEdges[3] = motifNodes[3].hasNeighbor(motifNodes[1].getIndex());
-                			if (!motifEdges[3]){
-                				this.counts[1]++;
-                			} 
-        				}
-        				}
-        			} else {
-        				//found motif #2 (need to break symmetry)
-        				if (motifNodes[0].getIndex() < motifNodes[1].getIndex() &&
-        						motifNodes[0].getIndex() < motifNodes[2].getIndex()){
-        		
-        					
-        					//determine Semi4Clique + 4Clique (#8)
-        					for (int l = k+1; l < neighbors.length; l++){
-        						motifEdges[3] = true;
-        						motifNodes[3] = nodes[neighbors[l]];
-        						motifEdges[4] = motifNodes[1].hasNeighbor(motifNodes[3].getIndex());
-        						motifEdges[5] = motifNodes[2].hasNeighbor(motifNodes[3].getIndex());
-        						if (!motifEdges[4]&& !motifEdges[5]){
-        							
-        						} else {
-        							    if (!motifEdges[4] || !motifEdges[5]){
-        							    	this.counts[4]++;
-        								}else {
-        									if(motifNodes[0].getIndex() < motifNodes[3].getIndex()) {
-        									 this.counts[5]++;
-        									} 
-        								}
-        							
-        								
-        						}
-        					}
-        					
-        					//determine Semi4Clique
-            				neighbors2 = motifNodes[1].getOutgoingEdges();
-            				for (int l = 0; l < neighbors2.length; l++){
-            					if (neighbors2[l] == i){
-            						continue;
-            					}
-            					motifEdges[3] = true;
-                    			motifNodes[3] = nodes[neighbors2[l]];
-                    			if (motifNodes[3].hasNeighbor(motifNodes[0].getIndex())){
-                    				continue;
-                    			}
-                    			motifEdges[4] = motifNodes[3].hasNeighbor(motifNodes[2].getIndex());
-                    			if (motifEdges[4]){
-                    				if(motifNodes[0].getIndex() < motifNodes[3].getIndex()){
-                    					this.counts[4]++;
-                    				}
-                    			}
-            				}
-            				
-        					
-        					
-        				}
-        				
-        				//determine 3LoopOut
-        				for (int l = 0; l < neighbors.length; l++){
-    						motifEdges[3] = true;
-    						motifNodes[3] = nodes[neighbors[l]];
-    						motifEdges[4] = motifNodes[1].hasNeighbor(motifNodes[3].getIndex());
-    						motifEdges[5] = motifNodes[2].hasNeighbor(motifNodes[3].getIndex());
-    						if (!motifEdges[4]&& !motifEdges[5]){
-    							this.counts[2]++;
-    						} 
-    					}
-        			}
-        		}
-        	}
-        }
-      runtime.end();
+		for (int i = 0; i < nodes.length; i++) {
+			motifNodes[0] = nodes[i];
+			neighbors = nodes[i].getOutgoingEdges();
+			for (int j = 0; j < neighbors.length - 1; j++) {
+				motifEdges[0] = true;
+				motifNodes[1] = nodes[neighbors[j]];
+				for (int k = j + 1; k < neighbors.length; k++) {
+					motifEdges[1] = true;
+					motifNodes[2] = nodes[neighbors[k]];
+					motifEdges[2] = motifNodes[1].hasNeighbor(motifNodes[2]
+							.getIndex());
+					if (!motifEdges[2]) {
+
+						// determine TwoV (motif #1)
+						for (int l = k + 1; l < neighbors.length; l++) {
+							motifEdges[2] = true;
+							motifNodes[3] = nodes[neighbors[l]];
+							motifEdges[3] = motifNodes[3]
+									.hasNeighbor(motifNodes[1].getIndex());
+							motifEdges[4] = motifNodes[3]
+									.hasNeighbor(motifNodes[2].getIndex());
+							if (!motifEdges[3]) {
+								if (!motifEdges[4]) {
+									counts[0]++;
+								}
+							}
+							if (motifEdges[3] && motifEdges[4]) {
+								if (motifNodes[0].getIndex() < motifNodes[3]
+										.getIndex()
+										&& motifNodes[0].getIndex() < motifNodes[1]
+												.getIndex()) {
+									this.counts[4]++;
+								}
+							}
+						}
+
+						// determine 4Chain (#2) + 4Loop (#4)
+						if (motifNodes[0].getIndex() < motifNodes[1].getIndex()) {
+							neighbors2 = motifNodes[1].getOutgoingEdges();
+							for (int l = 0; l < neighbors2.length; l++) {
+								if (neighbors2[l] == i) {
+									continue;
+								}
+								motifEdges[2] = true;
+								motifNodes[3] = nodes[neighbors2[l]];
+								if (motifNodes[3].hasNeighbor(motifNodes[0]
+										.getIndex())) {
+									continue;
+								}
+								motifEdges[3] = motifNodes[3]
+										.hasNeighbor(motifNodes[2].getIndex());
+								if (!motifEdges[3]) {
+									this.counts[1]++;
+								} else {
+									if (motifNodes[0].getIndex() < motifNodes[3]
+											.getIndex()) {
+										this.counts[3]++;
+									}
+								}
+							}
+						}
+
+						// determine 4Chain (#4) other direction
+						if (motifNodes[0].getIndex() < motifNodes[2].getIndex()) {
+							neighbors2 = motifNodes[2].getOutgoingEdges();
+							for (int l = 0; l < neighbors2.length; l++) {
+								if (neighbors2[l] == i) {
+									continue;
+								}
+								motifEdges[2] = true;
+								motifNodes[3] = nodes[neighbors2[l]];
+								if (motifNodes[3].hasNeighbor(motifNodes[0]
+										.getIndex())) {
+									continue;
+								}
+								motifEdges[3] = motifNodes[3]
+										.hasNeighbor(motifNodes[1].getIndex());
+								if (!motifEdges[3]) {
+									this.counts[1]++;
+								}
+							}
+						}
+					} else {
+						// found motif #2 (need to break symmetry)
+						if (motifNodes[0].getIndex() < motifNodes[1].getIndex()
+								&& motifNodes[0].getIndex() < motifNodes[2]
+										.getIndex()) {
+
+							// determine Semi4Clique + 4Clique (#8)
+							for (int l = k + 1; l < neighbors.length; l++) {
+								motifEdges[3] = true;
+								motifNodes[3] = nodes[neighbors[l]];
+								motifEdges[4] = motifNodes[1]
+										.hasNeighbor(motifNodes[3].getIndex());
+								motifEdges[5] = motifNodes[2]
+										.hasNeighbor(motifNodes[3].getIndex());
+								if (!motifEdges[4] && !motifEdges[5]) {
+
+								} else {
+									if (!motifEdges[4] || !motifEdges[5]) {
+										this.counts[4]++;
+									} else {
+										if (motifNodes[0].getIndex() < motifNodes[3]
+												.getIndex()) {
+											this.counts[5]++;
+										}
+									}
+
+								}
+							}
+
+							// determine Semi4Clique
+							neighbors2 = motifNodes[1].getOutgoingEdges();
+							for (int l = 0; l < neighbors2.length; l++) {
+								if (neighbors2[l] == i) {
+									continue;
+								}
+								motifEdges[3] = true;
+								motifNodes[3] = nodes[neighbors2[l]];
+								if (motifNodes[3].hasNeighbor(motifNodes[0]
+										.getIndex())) {
+									continue;
+								}
+								motifEdges[4] = motifNodes[3]
+										.hasNeighbor(motifNodes[2].getIndex());
+								if (motifEdges[4]) {
+									if (motifNodes[0].getIndex() < motifNodes[3]
+											.getIndex()) {
+										this.counts[4]++;
+									}
+								}
+							}
+
+						}
+
+						// determine 3LoopOut
+						for (int l = 0; l < neighbors.length; l++) {
+							motifEdges[3] = true;
+							motifNodes[3] = nodes[neighbors[l]];
+							motifEdges[4] = motifNodes[1]
+									.hasNeighbor(motifNodes[3].getIndex());
+							motifEdges[5] = motifNodes[2]
+									.hasNeighbor(motifNodes[3].getIndex());
+							if (!motifEdges[4] && !motifEdges[5]) {
+								this.counts[2]++;
+							}
+						}
+					}
+				}
+			}
+		}
+		runtime.end();
 	}
 
 }
