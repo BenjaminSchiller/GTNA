@@ -134,7 +134,8 @@ public abstract class Fragmentation extends Metric {
 
 			if (this.largestComponentSize[i] < 0.5 * (g.getNodes().length - excludeFirst[i])
 					&& excludeFirst[i] < this.criticalPoint) {
-				this.criticalPoint = excludeFirst[i];
+				this.criticalPoint = (double) excludeFirst[i]
+						/ (double) g.getNodes().length;
 			}
 		}
 		this.runtime.end();
@@ -193,8 +194,10 @@ public abstract class Fragmentation extends Metric {
 
 	@Override
 	public Single[] getSingles() {
-		Single CP = new Single("FRAGMENTATION_CRITICAL_POINT", this.criticalPoint);
-		Single RT = new Single("FRAGMENTATION_RUNTIME", this.runtime.getRuntime());
+		Single CP = new Single("FRAGMENTATION_CRITICAL_POINT",
+				this.criticalPoint);
+		Single RT = new Single("FRAGMENTATION_RUNTIME",
+				this.runtime.getRuntime());
 		return new Single[] { CP, RT };
 	}
 
