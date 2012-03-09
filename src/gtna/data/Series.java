@@ -67,17 +67,25 @@ public class Series {
 		return Config.get("MAIN_DATA_FOLDER") + this.network.getFolder();
 	}
 
-	private String getFolder(Metric m) {
+	public String getFolder(Metric m) {
 		return this.getFolder() + m.getFolder();
 	}
 
-	private String getFolder(int run) {
+	public String getFolder(int run) {
 		return this.getFolder() + run
 				+ Config.get("FILESYSTEM_FOLDER_DELIMITER");
 	}
 
-	private String getFolder(int run, Metric m) {
+	public String getFolder(int run, Metric m) {
 		return this.getFolder(run) + m.getFolder();
+	}
+
+	public String getSinglesFilename(Metric m) {
+		return this.getFolder(m) + Config.get("SERIES_SINGLES_FILENAME");
+	}
+
+	public String getSinglesFilename(int run, Metric m) {
+		return this.getFolder(run, m) + Config.get("SERIES_SINGLES_FILENAME");
 	}
 
 	public String[] getRunFolders() {
@@ -176,6 +184,8 @@ public class Series {
 			m.computeData(g, s.getNetwork(), metrics);
 			metricTimer.end();
 			m.writeData(s.getFolder(run, m));
+			SingleList singleList = new SingleList(m, m.getSingles());
+			singleList.write(s.getSinglesFilename(run, m));
 			metrics.put(m.getKey(), m);
 			metrics.put(m.getFolder(), m);
 		}
