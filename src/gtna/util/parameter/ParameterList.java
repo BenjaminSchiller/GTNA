@@ -63,13 +63,16 @@ public class ParameterList {
 		return this.parameters;
 	}
 
-	public String getFolder() {
+	public String getFolderName() {
 		StringBuffer buff = new StringBuffer(this.key);
 		for (Parameter p : this.parameters) {
 			buff.append("-" + p.getValue());
 		}
-		buff.append(Config.get("FILESYSTEM_FOLDER_DELIMITER"));
 		return buff.toString();
+	}
+
+	public String getFolder() {
+		return this.getFolderName() + Config.get("FILESYSTEM_FOLDER_DELIMITER");
 	}
 
 	protected static Parameter[] append(Parameter[] p1, Parameter p2) {

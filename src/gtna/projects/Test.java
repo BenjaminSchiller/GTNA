@@ -65,6 +65,7 @@ import gtna.transformation.communities.CommunityDetectionDeltaQ;
 import gtna.transformation.communities.CommunityDetectionLPA;
 import gtna.transformation.communities.Roles2Generation;
 import gtna.transformation.communities.RolesGeneration;
+import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.partition.GiantConnectedComponent;
 import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.util.Config;
@@ -85,12 +86,20 @@ public class Test {
 	public static void main(String[] args) {
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/testing/");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
-		Metric[] metrics = new Metric[] { new DegreeDistribution(),
-				new ShortestPaths() };
-		int times = 2;
-		Network nw = new ErdosRenyi(100, 10, true,
-				new Transformation[] { new WeakConnectivityPartition(),
-						new GiantConnectedComponent() });
+		Config.overwrite("SERIES_GRAPH_WRITE", "true");
+		Metric[] metrics = new Metric[] {
+				new DegreeDistribution(),
+				new ShortestPaths(),
+				new WeakFragmentation(new RandomNodeSorter(),
+						Fragmentation.Resolution.PERCENT),
+				new WeakFragmentation(new DegreeNodeSorter(
+						NodeSorter.NodeSorterMode.DESC),
+						Fragmentation.Resolution.PERCENT) };
+		int times = 10;
+		Network nw = new ErdosRenyi(200, 10, true, new Transformation[] {
+				new WeakConnectivityPartition(), new GiantConnectedComponent(),
+				new RandomRingIDSpaceSimple(), new RandomRingIDSpaceSimple(),
+				new RandomRingIDSpaceSimple() });
 		Series s = Series.generate(nw, metrics, times);
 	}
 

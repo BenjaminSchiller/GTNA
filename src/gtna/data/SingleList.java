@@ -41,6 +41,7 @@ import gtna.metrics.Metric;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author benni
@@ -51,9 +52,15 @@ public class SingleList {
 
 	private Single[] singles;
 
+	private HashMap<String, Single> map;
+
 	public SingleList(Metric metric, Single[] singles) {
 		this.metric = metric;
 		this.singles = singles;
+		this.map = new HashMap<String, Single>();
+		for (Single s : this.singles) {
+			this.map.put(s.getKey(), s);
+		}
 	}
 
 	public SingleList(Metric metric, ArrayList<Single> singlesList) {
@@ -62,6 +69,14 @@ public class SingleList {
 		for (int i = 0; i < singlesList.size(); i++) {
 			this.singles[i] = singlesList.get(i);
 		}
+		this.map = new HashMap<String, Single>();
+		for (Single s : this.singles) {
+			this.map.put(s.getKey(), s);
+		}
+	}
+
+	public Single get(String key) {
+		return this.map.get(key);
 	}
 
 	public boolean write(String filename) {
@@ -95,5 +110,13 @@ public class SingleList {
 
 	public Single[] getSingles() {
 		return this.singles;
+	}
+
+	public String[] getKeys() {
+		String[] keys = new String[this.singles.length];
+		for (int i = 0; i < this.singles.length; i++) {
+			keys[i] = this.singles[i].getKey();
+		}
+		return keys;
 	}
 }

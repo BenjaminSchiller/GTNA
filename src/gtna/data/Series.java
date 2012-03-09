@@ -36,6 +36,7 @@
 package gtna.data;
 
 import gtna.graph.Graph;
+import gtna.io.GraphWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
@@ -43,6 +44,7 @@ import gtna.util.Config;
 import gtna.util.Timer;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Series {
@@ -71,27 +73,53 @@ public class Series {
 		return this.getFolder() + m.getFolder();
 	}
 
-	public String getFolder(int run) {
+	public String getSeriesFolderRun(int run) {
 		return this.getFolder() + run
 				+ Config.get("FILESYSTEM_FOLDER_DELIMITER");
 	}
 
-	public String getFolder(int run, Metric m) {
-		return this.getFolder(run) + m.getFolder();
+	public String getMetricFolder(int run, Metric m) {
+		return this.getSeriesFolderRun(run) + m.getFolder();
 	}
 
 	public String getSinglesFilename(Metric m) {
 		return this.getFolder(m) + Config.get("SERIES_SINGLES_FILENAME");
 	}
 
-	public String getSinglesFilename(int run, Metric m) {
-		return this.getFolder(run, m) + Config.get("SERIES_SINGLES_FILENAME");
+	public String getSinglesFilenameRun(int run, Metric m) {
+		return this.getMetricFolder(run, m)
+				+ Config.get("SERIES_SINGLES_FILENAME");
+	}
+
+	public String getMultiFilename(Metric m, String key) {
+		return this.getFolder(m) + Config.get(key + "_DATA_FILENAME")
+				+ Config.get("DATA_EXTENSION");
+	}
+
+	public String getFilenameRun(int run, Metric m, String key) {
+		return this.getMetricFolder(run, m)
+				+ Config.get(key + "_DATA_FILENAME")
+				+ Config.get("DATA_EXTENSION");
+	}
+
+	public String getGraphFilename(int run) {
+		return this.getSeriesFolderRun(run)
+				+ Config.get("SERIES_GRAPH_FILENAME");
+	}
+
+	public String getRuntimesFilename() {
+		return this.getFolder() + Config.get("SERIES_RUNTIME_FILENAME");
+	}
+
+	public String getRuntimesFilenameRun(int run) {
+		return this.getSeriesFolderRun(run)
+				+ Config.get("SERIES_RUNTIME_FILENAME");
 	}
 
 	public String[] getRunFolders() {
 		int run = 0;
 		while (run < 10000000) {
-			File folder = new File(this.getFolder(run));
+			File folder = new File(this.getSeriesFolderRun(run));
 			if (folder.exists()) {
 				run++;
 			} else {
@@ -101,7 +129,7 @@ public class Series {
 		}
 		String[] folders = new String[run + 1];
 		for (int i = 0; i <= run; i++) {
-			folders[i] = this.getFolder(i);
+			folders[i] = this.getSeriesFolderRun(i);
 		}
 		return folders;
 	}
@@ -122,8 +150,7 @@ public class Series {
 				return null;
 			}
 		}
-		// TODO implement
-		return null;
+		return s;
 	}
 
 	public static Series generate(Network nw, Metric[] metrics, int times) {
@@ -143,52 +170,68 @@ public class Series {
 		for (int run = 0; run < times; run++) {
 			if (!Series.generateRun(s, run)) {
 				System.err.println("error in run " + run);
-				break;
+				return null;
 			}
 		}
-		// TODO generate average data, etc.
+		Timer timerAggregation = new Timer("\n===> " + s.getFolder());
+		boolean success = Aggregation.aggregate(s);
+		timerAggregation.end();
+		if (success) {
+			return s;
+		}
+		System.err.println("problems ocurred writing to " + s.getFolder());
 		return null;
 	}
 
 	private static boolean generateRun(Series s, int run) {
 		System.out.println("\n" + run + ":");
-		File folder = new File(s.getFolder(run));
+		ArrayList<Single> runtimes = new ArrayList<Single>();
+		File folder = new File(s.getSeriesFolderRun(run));
 		if (folder.exists() && Config.getBoolean("SKIP_EXISTING_DATA_FOLDERS")) {
 			System.out.println("skipping");
 			return true;
 		}
-		Timer graphTimer = new Timer("G: "
-				+ s.getNetwork().getDescriptionShort());
+		Timer timer = new Timer("G: " + s.getNetwork().getDescriptionShort());
 		Graph g = s.getNetwork().generate();
-		graphTimer.end();
+		timer.end();
+		runtimes.add(new Single("G", timer.getRuntime()));
 		if (s.getNetwork().getTransformations() != null) {
 			for (Transformation t : s.getNetwork().getTransformations()) {
 				if (t.applicable(g)) {
-					Timer transformationTimer = new Timer("T: "
-							+ t.getDescriptionShort());
+					timer = new Timer("T: " + t.getDescriptionShort());
 					g = t.transform(g);
-					transformationTimer.end();
+					timer.end();
+					runtimes.add(new Single(t.getFolderName(), timer.getRuntime()));
+				} else {
+					System.out.println("T: " + t.getDescriptionShort()
+							+ " not applicable");
 				}
 			}
 		}
+		if (Config.getBoolean("SERIES_GRAPH_WRITE")) {
+			GraphWriter.writeWithProperties(g, s.getGraphFilename(run));
+		}
 		HashMap<String, Metric> metrics = new HashMap<String, Metric>();
 		for (Metric m : s.getMetrics()) {
-			folder = new File(s.getFolder(run, m));
+			folder = new File(s.getMetricFolder(run, m));
 			if (!m.applicable(g, s.getNetwork(), metrics)) {
 				continue;
 			}
 			if (!folder.exists()) {
 				folder.mkdirs();
 			}
-			Timer metricTimer = new Timer("M: " + m.getDescriptionShort());
+			timer = new Timer("M: " + m.getDescriptionShort());
 			m.computeData(g, s.getNetwork(), metrics);
-			metricTimer.end();
-			m.writeData(s.getFolder(run, m));
+			timer.end();
+			runtimes.add(new Single(m.getFolderName(), timer.getRuntime()));
+			m.writeData(s.getMetricFolder(run, m));
 			SingleList singleList = new SingleList(m, m.getSingles());
-			singleList.write(s.getSinglesFilename(run, m));
+			singleList.write(s.getSinglesFilenameRun(run, m));
 			metrics.put(m.getKey(), m);
 			metrics.put(m.getFolder(), m);
 		}
+		SingleList rt = new SingleList(null, runtimes);
+		rt.write(s.getRuntimesFilenameRun(run));
 		return true;
 	}
 
