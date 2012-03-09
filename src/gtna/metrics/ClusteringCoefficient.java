@@ -40,7 +40,7 @@
  */
 package gtna.metrics;
 
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -117,12 +117,12 @@ public class ClusteringCoefficient extends Metric {
 	}
 
 	@Override
-	public Value[] getValues() {
-		Value clusteringCoefficient = new Value(
+	public Single[] getSingles() {
+		Single clusteringCoefficient = new Single(
 				"CLUSTERING_COEFFICIENT_CLUSTERING_COEFFICIENT",
 				this.clusteringCoefficient);
-		Value runtime = new Value("CLUSTERING_COEFFICIENT_RUNTIME",
+		Single runtime = new Single("CLUSTERING_COEFFICIENT_RUNTIME",
 				this.runtime.getRuntime());
-		return new Value[] { clusteringCoefficient, runtime };
+		return new Single[] { clusteringCoefficient, runtime };
 	}
 }

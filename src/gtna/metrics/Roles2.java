@@ -36,7 +36,7 @@
 package gtna.metrics;
 
 import gtna.communities.Roles2.Role2;
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
@@ -93,9 +93,9 @@ public class Roles2 extends Metric {
 	}
 
 	@Override
-	public Value[] getValues() {
-		Value runtime = new Value("ROLES2_RUNTIME", this.runtime.getRuntime());
-		return new Value[] { runtime };
+	public Single[] getSingles() {
+		Single runtime = new Single("ROLES2_RUNTIME", this.runtime.getRuntime());
+		return new Single[] { runtime };
 	}
 
 }

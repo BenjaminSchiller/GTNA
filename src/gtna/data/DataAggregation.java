@@ -97,22 +97,22 @@ public class DataAggregation {
 		for (int i = 0; i < s.length; i++) {
 			s[i] = src[i];
 		}
-
-		Singles[] Summaries = new Singles[s.length];
-		for (int i = 0; i < s.length; i++) {
-			Summaries[i] = new Singles(s[i]
-					+ Config.get("GRAPH_SINGLES_FILENAME"));
-		}
-		Singles averageSingles = Singles.average(Summaries);
-		averageSingles.write(dstAverage);
-
-		Singles[][] summaries = new Singles[1][s.length];
-		for (int i = 0; i < s.length; i++) {
-			summaries[0][i] = new Singles(s[i]
-					+ Config.get("GRAPH_SINGLES_FILENAME"));
-		}
-		String[] names = new String[] { nw.getName() };
-		Singles.write(summaries, dstSingles, names);
+		// TODO reimplement
+		// Singles[] Summaries = new Singles[s.length];
+		// for (int i = 0; i < s.length; i++) {
+		// Summaries[i] = new Singles(s[i]
+		// + Config.get("GRAPH_SINGLES_FILENAME"));
+		// }
+		// Singles averageSingles = Singles.average(Summaries);
+		// averageSingles.write(dstAverage);
+		//
+		// Singles[][] summaries = new Singles[1][s.length];
+		// for (int i = 0; i < s.length; i++) {
+		// summaries[0][i] = new Singles(s[i]
+		// + Config.get("GRAPH_SINGLES_FILENAME"));
+		// }
+		// String[] names = new String[] { nw.getName() };
+		// Singles.write(summaries, dstSingles, names);
 
 		FileWriter fw;
 		try {

@@ -35,7 +35,7 @@
  */
 package gtna.metrics;
 
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.id.DPartition;
 import gtna.id.plane.PlaneIdentifier;
@@ -126,8 +126,8 @@ public class Coverage extends Metric {
 	 * @see gtna.metrics.Metric#getValues()
 	 */
 	@Override
-	public Value[] getValues() {
-		return new Value[] { new Value("COVERAGE_PERCENTAGE", percentage) };
+	public Single[] getSingles() {
+		return new Single[] { new Single("COVERAGE_PERCENTAGE", percentage) };
 	}
 
 	/*

@@ -35,7 +35,7 @@
  */
 package gtna.metrics.motifs;
 
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.util.Timer;
@@ -77,8 +77,8 @@ public abstract class MotifCounter extends Metric {
 	}
 
 	@Override
-	public Value[] getValues() {
-		return new Value[] { new Value(this.getKey() + "_RUNTIME",
+	public Single[] getSingles() {
+		return new Single[] { new Single(this.getKey() + "_RUNTIME",
 				this.runtime.getRuntime()) };
 	}
 

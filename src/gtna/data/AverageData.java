@@ -48,7 +48,7 @@ public class AverageData extends Data {
 			for (int i = 0; i < folders.length; i++) {
 				temp1[i] = folders[i] + m.getFolder() + "/";
 			}
-			for (String d : m.dataKeys()) {
+			for (String d : m.getDataKeys()) {
 				boolean cdf = Config.getBoolean(d + "_DATA_IS_CDF");
 				AverageData.generate(temp2, temp1, d, cdf);
 			}

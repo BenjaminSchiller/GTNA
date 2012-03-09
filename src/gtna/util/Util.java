@@ -36,8 +36,7 @@
 package gtna.util;
 
 import gtna.data.Series;
-import gtna.data.Singles;
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Edge;
 import gtna.graph.Node;
 import gtna.networks.Network;
@@ -397,14 +396,6 @@ public class Util {
 		return array;
 	}
 
-	public static Singles[] toSinglesArray(ArrayList<Singles> list) {
-		Singles[] array = new Singles[list.size()];
-		for (int i = 0; i < list.size(); i++) {
-			array[i] = list.get(i);
-		}
-		return array;
-	}
-
 	public static Edge[] toEdgeArray(ArrayList<Edge> list) {
 		Edge[] array = new Edge[list.size()];
 		for (int i = 0; i < list.size(); i++) {
@@ -421,8 +412,8 @@ public class Util {
 		return array;
 	}
 
-	public static Value[] toValueArray(ArrayList<Value> list) {
-		Value[] array = new Value[list.size()];
+	public static Single[] toValueArray(ArrayList<Single> list) {
+		Single[] array = new Single[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			array[i] = list.get(i);
 		}

@@ -1007,10 +1007,10 @@ public class GoogleP {
 				Network nw = new GooglePlus(f.getAbsolutePath(), cid,
 						transformations);
 				Series s = generate ? Series.generate(nw, metrics, 1) : Series
-						.get(nw);
+						.get(nw, metrics);
 
-				if (s == null || s.dataFolders() == null
-						|| s.dataFolders().length == 0) {
+				if (s == null || s.getRunFolders() == null
+						|| s.getRunFolders().length == 0) {
 					System.out.println("SKIPPING " + f.getAbsolutePath());
 				} else {
 					Plot.multiAvg(s, "multi-" + cid + "/", metrics);
@@ -1039,10 +1039,10 @@ public class GoogleP {
 
 			Network nw = new GooglePlus(f.getAbsolutePath(), cid,
 					transformations);
-			Series s = Series.get(nw);
+			Series s = Series.get(nw, metrics);
 
-			if (s != null && s.dataFolders() != null
-					&& s.dataFolders().length != 0) {
+			if (s != null && s.getRunFolders() != null
+					&& s.getRunFolders().length != 0) {
 				list.add(s);
 			}
 		}

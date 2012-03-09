@@ -99,7 +99,7 @@ public class GTNA {
 		Network nw1 = new ErdosRenyi(100, 5, false, null);
 		Network nw2 = new ErdosRenyi(100, 5, true, null);
 		Network[] nw = new Network[] { nw1, nw2 };
-		Series[] s = Series.get(nw);
+		Series[] s = Series.get(nw, metrics);
 		Plot.multiConf(s, "er-get/", metrics);
 	}
 
@@ -153,9 +153,9 @@ public class GTNA {
 				false, t);
 		Network[][] nw = new Network[][] { nw1, nw2, nw3 };
 		Series[][] s = Series.generate(nw, metrics, 3);
-		Series[] s1 = Series.get(nw1);
-		Series[] s2 = Series.get(nw2);
-		Series[] s3 = Series.get(nw3);
+		Series[] s1 = Series.get(nw1, metrics);
+		Series[] s2 = Series.get(nw2, metrics);
+		Series[] s3 = Series.get(nw3, metrics);
 		Plot.singlesConf(s, "er-more-singles/", metrics);
 		Plot.multiConf(s1, "er-more-multi-1/", metrics);
 		Plot.multiConf(s2, "er-more-multi-2/", metrics);

@@ -68,6 +68,7 @@ public class ParameterList {
 		for (Parameter p : this.parameters) {
 			buff.append("-" + p.getValue());
 		}
+		buff.append(Config.get("FILESYSTEM_FOLDER_DELIMITER"));
 		return buff.toString();
 	}
 

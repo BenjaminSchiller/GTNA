@@ -35,7 +35,7 @@
  */
 package gtna.metrics.fragmentation;
 
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.partition.Partition;
@@ -192,10 +192,10 @@ public abstract class Fragmentation extends Metric {
 	}
 
 	@Override
-	public Value[] getValues() {
-		Value CP = new Value("FRAGMENTATION_CRITICAL_POINT", this.criticalPoint);
-		Value RT = new Value("FRAGMENTATION_RUNTIME", this.runtime.getRuntime());
-		return new Value[] { CP, RT };
+	public Single[] getSingles() {
+		Single CP = new Single("FRAGMENTATION_CRITICAL_POINT", this.criticalPoint);
+		Single RT = new Single("FRAGMENTATION_RUNTIME", this.runtime.getRuntime());
+		return new Single[] { CP, RT };
 	}
 
 	protected abstract Partition partition(Graph g, Node[] sorted,

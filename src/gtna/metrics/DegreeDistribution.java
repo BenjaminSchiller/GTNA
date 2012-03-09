@@ -35,7 +35,7 @@
  */
 package gtna.metrics;
 
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.io.DataWriter;
@@ -123,41 +123,41 @@ public class DegreeDistribution extends Metric {
 		return max;
 	}
 
-	public Value[] getValues() {
-		Value nodes = new Value("DEGREE_DISTRIBUTION_NODES", this.nodes);
-		Value edges = new Value("DEGREE_DISTRIBUTION_EDGES", this.edges);
+	public Single[] getSingles() {
+		Single nodes = new Single("DEGREE_DISTRIBUTION_NODES", this.nodes);
+		Single edges = new Single("DEGREE_DISTRIBUTION_EDGES", this.edges);
 
-		Value degreeMin = new Value("DEGREE_DISTRIBUTION_DEGREE_MIN",
+		Single degreeMin = new Single("DEGREE_DISTRIBUTION_DEGREE_MIN",
 				this.degreeDistribution.getMin());
-		Value degreeMed = new Value("DEGREE_DISTRIBUTION_DEGREE_MED",
+		Single degreeMed = new Single("DEGREE_DISTRIBUTION_DEGREE_MED",
 				this.degreeDistribution.getMedian());
-		Value degreeAvg = new Value("DEGREE_DISTRIBUTION_DEGREE_AVG",
+		Single degreeAvg = new Single("DEGREE_DISTRIBUTION_DEGREE_AVG",
 				this.degreeDistribution.getAverage());
-		Value degreeMax = new Value("DEGREE_DISTRIBUTION_DEGREE_MAX",
+		Single degreeMax = new Single("DEGREE_DISTRIBUTION_DEGREE_MAX",
 				this.degreeDistribution.getMax());
 
-		Value inDegreeMin = new Value("DEGREE_DISTRIBUTION_IN_DEGREE_MIN",
+		Single inDegreeMin = new Single("DEGREE_DISTRIBUTION_IN_DEGREE_MIN",
 				this.inDegreeDistribution.getMin());
-		Value inDegreeMed = new Value("DEGREE_DISTRIBUTION_IN_DEGREE_MED",
+		Single inDegreeMed = new Single("DEGREE_DISTRIBUTION_IN_DEGREE_MED",
 				this.inDegreeDistribution.getMedian());
-		Value inDegreeAvg = new Value("DEGREE_DISTRIBUTION_IN_DEGREE_AVG",
+		Single inDegreeAvg = new Single("DEGREE_DISTRIBUTION_IN_DEGREE_AVG",
 				this.inDegreeDistribution.getAverage());
-		Value inDegreeMax = new Value("DEGREE_DISTRIBUTION_IN_DEGREE_MAX",
+		Single inDegreeMax = new Single("DEGREE_DISTRIBUTION_IN_DEGREE_MAX",
 				this.inDegreeDistribution.getMax());
 
-		Value outDegreeMin = new Value("DEGREE_DISTRIBUTION_OUT_DEGREE_MIN",
+		Single outDegreeMin = new Single("DEGREE_DISTRIBUTION_OUT_DEGREE_MIN",
 				this.outDegreeDistribution.getMin());
-		Value outDegreeMed = new Value("DEGREE_DISTRIBUTION_OUT_DEGREE_MED",
+		Single outDegreeMed = new Single("DEGREE_DISTRIBUTION_OUT_DEGREE_MED",
 				this.outDegreeDistribution.getMedian());
-		Value outDegreeAvg = new Value("DEGREE_DISTRIBUTION_OUT_DEGREE_AVG",
+		Single outDegreeAvg = new Single("DEGREE_DISTRIBUTION_OUT_DEGREE_AVG",
 				this.outDegreeDistribution.getAverage());
-		Value outDegreeMax = new Value("DEGREE_DISTRIBUTION_OUT_DEGREE_MAX",
+		Single outDegreeMax = new Single("DEGREE_DISTRIBUTION_OUT_DEGREE_MAX",
 				this.outDegreeDistribution.getMax());
 
-		Value runtime = new Value("DEGREE_DISTRIBUTION_RUNTIME",
+		Single runtime = new Single("DEGREE_DISTRIBUTION_RUNTIME",
 				this.runtime.getRuntime());
 
-		return new Value[] { nodes, edges, degreeMin, degreeMed, degreeAvg,
+		return new Single[] { nodes, edges, degreeMin, degreeMed, degreeAvg,
 				degreeMax, inDegreeMin, inDegreeMed, inDegreeAvg, inDegreeMax,
 				outDegreeMin, outDegreeMed, outDegreeAvg, outDegreeMax, runtime };
 	}

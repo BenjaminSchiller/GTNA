@@ -35,7 +35,7 @@
  */
 package gtna.metrics;
 
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
@@ -200,20 +200,20 @@ public class Routing extends Metric {
 	}
 
 	@Override
-	public Value[] getValues() {
-		Value averageHops = new Value("ROUTING_HOPS_AVG",
+	public Single[] getSingles() {
+		Single averageHops = new Single("ROUTING_HOPS_AVG",
 				this.hopDistribution.getAverage());
-		Value medianHops = new Value("ROUTING_HOPS_MED",
+		Single medianHops = new Single("ROUTING_HOPS_MED",
 				this.hopDistribution.getMedian());
-		Value maximumHops = new Value("ROUTING_HOPS_MAX",
+		Single maximumHops = new Single("ROUTING_HOPS_MAX",
 				this.hopDistribution.getMax());
 		double[] cdf = this.hopDistributionAbsolute.getCdf();
-		Value successRate = new Value("ROUTING_SUCCESS_RATE",
+		Single successRate = new Single("ROUTING_SUCCESS_RATE",
 				cdf[cdf.length - 1]);
-		Value failureRate = new Value("ROUTING_FAILURE_RATE",
+		Single failureRate = new Single("ROUTING_FAILURE_RATE",
 				1 - cdf[cdf.length - 1]);
-		Value runtime = new Value("ROUTING_RUNTIME", this.runtime.getRuntime());
-		return new Value[] { averageHops, medianHops, maximumHops, successRate,
+		Single runtime = new Single("ROUTING_RUNTIME", this.runtime.getRuntime());
+		return new Single[] { averageHops, medianHops, maximumHops, successRate,
 				failureRate, runtime };
 	}
 

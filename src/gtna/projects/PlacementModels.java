@@ -154,8 +154,8 @@ public class PlacementModels {
 						p1, p2_random, p, c, null);
 				nw[1][i] = new DescriptionWrapper(pmc_random, "Random " + n);
 			}
-			Series[][] s = GET ? Series.get(nw) : Series.generate(nw, metrics,
-					times);
+			Series[][] s = GET ? Series.get(nw, metrics) : Series.generate(nw,
+					metrics, times);
 			Plot.singlesAvg(s, name + "-" + nw[0][0].getNodes() + "-singles/",
 					metrics);
 		}
@@ -196,20 +196,20 @@ public class PlacementModels {
 
 			boolean GET = true;
 
-			Series[][] s1 = GET ? Series.get(nw1) : Series.generate(nw1,
-					metrics, times);
+			Series[][] s1 = GET ? Series.get(nw1, metrics) : Series.generate(
+					nw1, metrics, times);
 			// Plot.singlesAvg(s1, times + "/Random-" + n + "/");
 
-			Series[][] s2 = GET ? Series.get(nw2) : Series.generate(nw2,
-					metrics, times);
+			Series[][] s2 = GET ? Series.get(nw2, metrics) : Series.generate(
+					nw2, metrics, times);
 			// Plot.singlesAvg(s2, times + "/Circle-" + n + "/");
 
-			Series[][] s3 = GET ? Series.get(nw3) : Series.generate(nw3,
-					metrics, times);
+			Series[][] s3 = GET ? Series.get(nw3, metrics) : Series.generate(
+					nw3, metrics, times);
 			// Plot.singlesAvg(s3, times + "/Grid-" + n + "/");
 
-			Series[][] s4 = GET ? Series.get(nw4) : Series.generate(nw4,
-					metrics, times);
+			Series[][] s4 = GET ? Series.get(nw4, metrics) : Series.generate(
+					nw4, metrics, times);
 			// Plot.singlesAvg(s4, times + "/Communities-" + n + "/");
 
 			Series[][] s = new Series[s1.length + s2.length + s3.length

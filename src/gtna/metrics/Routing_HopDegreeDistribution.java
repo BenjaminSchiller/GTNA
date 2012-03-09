@@ -35,7 +35,7 @@
  */
 package gtna.metrics;
 
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
@@ -279,18 +279,18 @@ public class Routing_HopDegreeDistribution extends Metric {
 	}
 
 	@Override
-	public Value[] getValues() {
-		Value[] result = new Value[(hopSteps + 1) * 4];
+	public Single[] getSingles() {
+		Single[] result = new Single[(hopSteps + 1) * 4];
 		int counter = 0;
 
 		for (int i = 0; i <= hopSteps; i++) {
-			result[counter++] = new Value("ROUTING_HOP_DEGREE_DISTRIBUTION_"
+			result[counter++] = new Single("ROUTING_HOP_DEGREE_DISTRIBUTION_"
 					+ i + "_AVG", this.hopDegree[i].getAverage());
-			result[counter++] = new Value("ROUTING_HOP_DEGREE_DISTRIBUTION_"
+			result[counter++] = new Single("ROUTING_HOP_DEGREE_DISTRIBUTION_"
 					+ i + "_MED", this.hopDegree[i].getMedian());
-			result[counter++] = new Value("ROUTING_HOP_DEGREE_DISTRIBUTION_"
+			result[counter++] = new Single("ROUTING_HOP_DEGREE_DISTRIBUTION_"
 					+ i + "_MAX", this.hopDegree[i].getMax());
-			result[counter++] = new Value("ROUTING_HOP_DEGREE_DISTRIBUTION_"
+			result[counter++] = new Single("ROUTING_HOP_DEGREE_DISTRIBUTION_"
 					+ i + "_MIN", this.hopDegree[i].getMin());
 		}
 		return result;

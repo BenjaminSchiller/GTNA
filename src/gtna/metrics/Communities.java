@@ -36,7 +36,7 @@
 package gtna.metrics;
 
 import gtna.communities.Community;
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
@@ -141,19 +141,19 @@ public class Communities extends Metric {
 	}
 
 	@Override
-	public Value[] getValues() {
-		Value mod = new Value("COMMUNITIES_MODULARITY", modularity);
-		Value com = new Value("COMMUNITIES_COMMUNITIES", this.communities);
-		Value size_min = new Value("COMMUNITIES_COMMUNITY_SIZE_MIN",
+	public Single[] getSingles() {
+		Single mod = new Single("COMMUNITIES_MODULARITY", modularity);
+		Single com = new Single("COMMUNITIES_COMMUNITIES", this.communities);
+		Single size_min = new Single("COMMUNITIES_COMMUNITY_SIZE_MIN",
 				this.communitySize.getMin());
-		Value size_med = new Value("COMMUNITIES_COMMUNITY_SIZE_MED",
+		Single size_med = new Single("COMMUNITIES_COMMUNITY_SIZE_MED",
 				this.communitySize.getMedian());
-		Value size_avg = new Value("COMMUNITIES_COMMUNITY_SIZE_AVG",
+		Single size_avg = new Single("COMMUNITIES_COMMUNITY_SIZE_AVG",
 				this.communitySize.getAverage());
-		Value size_max = new Value("COMMUNITIES_COMMUNITY_SIZE_MAX",
+		Single size_max = new Single("COMMUNITIES_COMMUNITY_SIZE_MAX",
 				this.communitySize.getMax());
-		Value rt = new Value("COMMUNITIES_RUNTIME", this.runtime.getRuntime());
-		return new Value[] { mod, com, size_min, size_med, size_avg, size_max,
+		Single rt = new Single("COMMUNITIES_RUNTIME", this.runtime.getRuntime());
+		return new Single[] { mod, com, size_min, size_med, size_avg, size_max,
 				rt };
 	}
 

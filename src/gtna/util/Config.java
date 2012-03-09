@@ -220,12 +220,12 @@ public class Config {
 	public static String[] getData(Metric[] metrics) {
 		int counter = 0;
 		for (int i = 0; i < metrics.length; i++) {
-			counter += metrics[i].dataKeys().length;
+			counter += metrics[i].getDataKeys().length;
 		}
 		String[] data = new String[counter];
 		int index = 0;
 		for (int i = 0; i < metrics.length; i++) {
-			String[] keys = metrics[i].dataKeys();
+			String[] keys = metrics[i].getDataKeys();
 			for (int j = 0; j < keys.length; j++) {
 				data[index++] = keys[j];
 			}

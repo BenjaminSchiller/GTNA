@@ -35,7 +35,7 @@
  */
 package gtna.metrics;
 
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.io.DataWriter;
@@ -176,21 +176,21 @@ public class ShortestPaths extends Metric {
 	}
 
 	@Override
-	public Value[] getValues() {
-		Value averageShortestPathLength = new Value(
+	public Single[] getSingles() {
+		Single averageShortestPathLength = new Single(
 				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_AVG",
 				this.shortestPathLengthDistribution.getAverage());
-		Value medianShortestPathLength = new Value(
+		Single medianShortestPathLength = new Single(
 				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_MED",
 				this.shortestPathLengthDistribution.getMedian());
-		Value maximumShortestPathLength = new Value(
+		Single maximumShortestPathLength = new Single(
 				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_MAX",
 				this.shortestPathLengthDistribution.getMax());
-		Value connectivity = new Value("SHORTEST_PATHS_CONNECTIVITY",
+		Single connectivity = new Single("SHORTEST_PATHS_CONNECTIVITY",
 				this.connectivity);
-		Value runtime = new Value("SHORTEST_PATHS_RUNTIME",
+		Single runtime = new Single("SHORTEST_PATHS_RUNTIME",
 				this.runtime.getRuntime());
-		return new Value[] { averageShortestPathLength,
+		return new Single[] { averageShortestPathLength,
 				medianShortestPathLength, maximumShortestPathLength,
 				connectivity, runtime };
 	}

@@ -45,6 +45,7 @@ import gtna.metrics.DegreeDistribution;
 import gtna.metrics.Metric;
 import gtna.metrics.Roles;
 import gtna.metrics.Roles2;
+import gtna.metrics.ShortestPaths;
 import gtna.metrics.fragmentation.Fragmentation;
 import gtna.metrics.fragmentation.WeakFragmentation;
 import gtna.networks.Network;
@@ -65,6 +66,7 @@ import gtna.transformation.communities.CommunityDetectionLPA;
 import gtna.transformation.communities.Roles2Generation;
 import gtna.transformation.communities.RolesGeneration;
 import gtna.transformation.partition.GiantConnectedComponent;
+import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.util.Config;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.IntParameter;
@@ -81,6 +83,18 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/testing/");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Metric[] metrics = new Metric[] { new DegreeDistribution(),
+				new ShortestPaths() };
+		int times = 2;
+		Network nw = new ErdosRenyi(100, 10, true,
+				new Transformation[] { new WeakConnectivityPartition(),
+						new GiantConnectedComponent() });
+		Series s = Series.generate(nw, metrics, times);
+	}
+
+	private static void diff() {
 		Network nw1 = new ErdosRenyi(1000, 10, true, null);
 		Network nw2 = new ErdosRenyi(5000, 50, true, null);
 		System.out.println(nw1.getDescription());
@@ -97,11 +111,9 @@ public class Test {
 		System.out.println(nw1.diffDescriptionLong(nw2));
 		System.out.println(nw1.diffDescriptionShort(nw2));
 		System.out.println("");
+	}
 
-		if (true) {
-			return;
-		}
-
+	private static void lists() {
 		String[] names = new String[] { "CLUSTERING_COEFFICIENT",
 				"COMMUNITIES", "COVERAGE", "DEGREE_DISTRIBUTION",
 				"EDGE_CROSSINGS", "RICH_CLUB_CONNECTIVITY", "ROLES", "ROLES2",

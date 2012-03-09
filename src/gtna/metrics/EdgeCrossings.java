@@ -35,7 +35,7 @@
  */
 package gtna.metrics;
 
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -434,10 +434,10 @@ public class EdgeCrossings extends Metric {
 	}
 
 	@Override
-	public Value[] getValues() {
-		Value ecAVG = new Value("EDGE_CROSSINGS_AVG",
+	public Single[] getSingles() {
+		Single ecAVG = new Single("EDGE_CROSSINGS_AVG",
 				this.completeCrossingDistribution.getAverage());
-		return new Value[] { ecAVG };
+		return new Single[] { ecAVG };
 	}
 
 	private class PlaneEdge {

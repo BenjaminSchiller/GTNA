@@ -35,7 +35,7 @@
  */
 package gtna.metrics;
 
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.networks.Network;
 import gtna.util.Config;
@@ -59,7 +59,7 @@ public abstract class Metric extends ParameterList {
 	 * 
 	 * @return keys of all multi-scalar plots
 	 */
-	public String[] dataPlots() {
+	public String[] getDataPlotKeys() {
 		return Config.keys(this.key + "_DATA_PLOTS");
 	}
 
@@ -68,7 +68,7 @@ public abstract class Metric extends ParameterList {
 	 * 
 	 * @return keys of all single-scalar plots
 	 */
-	public String[] singlesPlots() {
+	public String[] getSinglePlotKeys() {
 		return Config.keys(this.key + "_SINGLES_PLOTS");
 	}
 
@@ -77,7 +77,7 @@ public abstract class Metric extends ParameterList {
 	 * 
 	 * @return data keys of this metric
 	 */
-	public String[] dataKeys() {
+	public String[] getDataKeys() {
 		return Config.keys(this.key + "_DATA_KEYS");
 	}
 
@@ -86,7 +86,7 @@ public abstract class Metric extends ParameterList {
 	 * 
 	 * @return single-scalar valcue keys
 	 */
-	public String[] singlesKeys() {
+	public String[] getSingleKeys() {
 		return Config.keys(this.key + "_SINGLES_KEYS");
 	}
 
@@ -113,7 +113,7 @@ public abstract class Metric extends ParameterList {
 	 * @param values
 	 * @return single scalar values
 	 */
-	public abstract Value[] getValues();
+	public abstract Single[] getSingles();
 
 	public abstract boolean applicable(Graph g, Network n,
 			HashMap<String, Metric> m);

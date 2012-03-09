@@ -35,7 +35,7 @@
  */
 package gtna.metrics;
 
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.sorting.NodeSorting;
@@ -82,10 +82,10 @@ public class RichClubConnectivity extends Metric {
 		timer.end();
 	}
 
-	public Value[] getValues() {
-		Value runtime = new Value("RICH_CLUB_CONNECTIVITY_RUNTIME",
+	public Single[] getSingles() {
+		Single runtime = new Single("RICH_CLUB_CONNECTIVITY_RUNTIME",
 				this.timer.getRuntime());
-		return new Value[] { runtime };
+		return new Single[] { runtime };
 	}
 
 	public boolean writeData(String folder) {

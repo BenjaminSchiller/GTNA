@@ -36,9 +36,7 @@
  */
 package gtna.plot;
 
-import gtna.data.ConfidenceData;
 import gtna.data.Series;
-import gtna.data.Singles;
 import gtna.io.DataWriter;
 import gtna.io.Filewriter;
 import gtna.io.LaTex;
@@ -249,42 +247,43 @@ public class Plot {
 
 	private static void plotSingles(Series[][] series, String folder,
 			boolean byEdges, boolean conf, boolean line, String plotKey) {
-		String[] data = Config.keys(plotKey + "_PLOT_DATA");
-		String fn = Config.get(plotKey + "_PLOT_FILENAME");
-		String ext = Config.get("PLOT_EXTENSION");
-		String dest = folder + fn + ext;
-		String title = Config.get(plotKey + "_PLOT_TITLE");
-		String yLabel = Config.get(plotKey + "_PLOT_Y");
-		String key = Config.get(plotKey + "_PLOT_KEY");
-		String xLabel = null;
-		if (byEdges) {
-			xLabel = Config.get("NETWORK_COMPARE_EDGES_NAME");
-		} else {
-			xLabel = series[0][0].network().diffParameterName(
-					series[0][1 % series[0].length].network());
-			for (int i = 1; i < series.length; i++) {
-				String name = series[i][0].network().diffParameterName(
-						series[i][1 % series[i].length].network());
-				if (!xLabel.contains(name)) {
-					xLabel += Config.get("SINGLES_PLOT_XLABEL_SEPARATOR")
-							+ name;
-				}
-			}
-		}
-		for (int i = 0; i < data.length; i++) {
-			if (Double.isNaN(series[0][0].avgSingles().getValue(data[i]))) {
-				if (!data[i].startsWith(Config.get("PLOT_FUNCTION_KEYWORD"))) {
-					return;
-				}
-			}
-		}
-		if (conf) {
-			plotSinglesConf(series, byEdges, line, data, dest, title, yLabel,
-					xLabel, key, plotKey);
-		} else {
-			plotSinglesAvg(series, byEdges, line, data, dest, title, yLabel,
-					xLabel, key, plotKey);
-		}
+		// TODO reimplement
+		// String[] data = Config.keys(plotKey + "_PLOT_DATA");
+		// String fn = Config.get(plotKey + "_PLOT_FILENAME");
+		// String ext = Config.get("PLOT_EXTENSION");
+		// String dest = folder + fn + ext;
+		// String title = Config.get(plotKey + "_PLOT_TITLE");
+		// String yLabel = Config.get(plotKey + "_PLOT_Y");
+		// String key = Config.get(plotKey + "_PLOT_KEY");
+		// String xLabel = null;
+		// if (byEdges) {
+		// xLabel = Config.get("NETWORK_COMPARE_EDGES_NAME");
+		// } else {
+		// xLabel = series[0][0].getNetwork().diffParameterName(
+		// series[0][1 % series[0].length].getNetwork());
+		// for (int i = 1; i < series.length; i++) {
+		// String name = series[i][0].getNetwork().diffParameterName(
+		// series[i][1 % series[i].length].getNetwork());
+		// if (!xLabel.contains(name)) {
+		// xLabel += Config.get("SINGLES_PLOT_XLABEL_SEPARATOR")
+		// + name;
+		// }
+		// }
+		// }
+		// for (int i = 0; i < data.length; i++) {
+		// if (Double.isNaN(series[0][0].avgSingles().getValue(data[i]))) {
+		// if (!data[i].startsWith(Config.get("PLOT_FUNCTION_KEYWORD"))) {
+		// return;
+		// }
+		// }
+		// }
+		// if (conf) {
+		// plotSinglesConf(series, byEdges, line, data, dest, title, yLabel,
+		// xLabel, key, plotKey);
+		// } else {
+		// plotSinglesAvg(series, byEdges, line, data, dest, title, yLabel,
+		// xLabel, key, plotKey);
+		// }
 	}
 
 	/**
@@ -294,118 +293,122 @@ public class Plot {
 	private static void plotSinglesAvg(Series[][] series, boolean byEdges,
 			boolean line, String[] data, String dest, String title,
 			String yLabel, String xLabel, String key, String plotKey) {
-		double[][][][] values = new double[data.length][series.length][][];
-		int max = 0;
-		int maxIndex = -1;
-		for (int i = 0; i < series.length; i++) {
-			if (series[i].length > max) {
-				max = series[i].length;
-				maxIndex = i;
-			}
-		}
-		for (int d = 0; d < data.length; d++) {
-			for (int i = 0; i < series.length; i++) {
-				if (series[i].length == 1) {
-					values[d][i] = new double[max][2];
-					for (int j = 0; j < max; j++) {
-						if (byEdges) {
-							// values[d][i][j][0] =
-							// series[i][0].network().edges();
-							// FIXME remove or add property again
-							values[d][i][j][0] = 0;
-						} else {
-							values[d][i][j][0] = series[maxIndex][j].network()
-									.diffParameterValue(
-											series[maxIndex][(j + 1)
-													% series[maxIndex].length]
-													.network());
-							// values[d][i][j][0] = Double
-							// .parseDouble(series[maxIndex][j]
-							// .network()
-							// .compareValue(
-							// series[maxIndex][(j + 1)
-							// % series[maxIndex].length]
-							// .network()));
-						}
-						values[d][i][j][1] = series[i][0].avgSingles()
-								.getValue(data[d]);
-					}
-				} else {
-					values[d][i] = new double[series[i].length][2];
-					for (int j = 0; j < series[i].length; j++) {
-						if (byEdges) {
-							// values[d][i][j][0] =
-							// series[i][j].network().edges();
-							// FIXME remove or add property again
-							values[d][i][j][0] = 0;
-						} else {
-							values[d][i][j][0] = series[i][j].network()
-									.diffParameterValue(
-											series[i][(j + 1)
-													% series[maxIndex].length]
-													.network());
-							// values[d][i][j][0] = Double
-							// .parseDouble(series[i][j].network()
-							// .compareValue(
-							// series[i][(j + 1)
-							// % series[i].length]
-							// .network()));
-						}
-						values[d][i][j][1] = series[i][j].avgSingles()
-								.getValue(data[d]);
-					}
-				}
-			}
-		}
-		int lineWidth = Config.getInt("SINGLES_PLOT_LINE_WIDTH");
-		int pointWidth = Config.getInt("SINGLES_PLOT_POINT_WIDTH");
-		PlotData[] plotData = new PlotData[series.length * 2 * values.length];
-		if (!line) {
-			plotData = new PlotData[series.length * values.length];
-		}
-		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
-		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
-		int counter = 0;
-		for (int i = 0; i < series.length; i++) {
-			for (int sv = 0; sv < values.length; sv++) {
-				int index1 = i * values.length + sv;
-				int index2 = index1 + values.length * series.length;
-
-				String filename = Config.get("TEMP_FOLDER")
-						+ (sv * series.length + i)
-						+ Config.get("DATA_EXTENSION");
-				String name = series[i][0].network().diffDescription(
-						series[i][1 % series[i].length].network());
-				// String name = series[i][0].network().description(
-				// series[i][1 % series[i].length].network());
-
-				String pre = Config.get(plotKey + "_PLOT_PRE_" + data[sv]);
-				String app = Config.get(plotKey + "_PLOT_APP_" + data[sv]);
-				if (pre != null && pre.trim().length() > 0) {
-					name = pre + " " + name;
-				}
-				if (app != null && app.trim().length() > 0) {
-					name = name + " " + app;
-				}
-
-				DataWriter.write(values[sv][i], filename, false);
-				plotData[index1] = new PlotData(filename, name,
-						PlotData.POINTS, i + 1, pointWidth, offsetX * counter,
-						offsetY * counter);
-				if (line) {
-					plotData[index2] = new PlotData(filename, null,
-							PlotData.LINE, i + 1, lineWidth, offsetX * counter,
-							offsetY * counter);
-				}
-				counter++;
-			}
-		}
-		boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
-		boolean logscaleY = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_Y");
-		GNUPlot.plot(dest, plotData, title, xLabel, yLabel, key, logscaleX,
-				logscaleY);
+		// TODO reimplement
+		// double[][][][] values = new double[data.length][series.length][][];
+		// int max = 0;
+		// int maxIndex = -1;
+		// for (int i = 0; i < series.length; i++) {
+		// if (series[i].length > max) {
+		// max = series[i].length;
+		// maxIndex = i;
+		// }
+		// }
+		// for (int d = 0; d < data.length; d++) {
+		// for (int i = 0; i < series.length; i++) {
+		// if (series[i].length == 1) {
+		// values[d][i] = new double[max][2];
+		// for (int j = 0; j < max; j++) {
+		// if (byEdges) {
+		// // values[d][i][j][0] =
+		// // series[i][0].network().edges();
+		// // FIXME remove or add property again
+		// values[d][i][j][0] = 0;
+		// } else {
+		// values[d][i][j][0] = series[maxIndex][j].getNetwork()
+		// .diffParameterValue(
+		// series[maxIndex][(j + 1)
+		// % series[maxIndex].length]
+		// .getNetwork());
+		// // values[d][i][j][0] = Double
+		// // .parseDouble(series[maxIndex][j]
+		// // .network()
+		// // .compareValue(
+		// // series[maxIndex][(j + 1)
+		// // % series[maxIndex].length]
+		// // .network()));
+		// }
+		// values[d][i][j][1] = series[i][0].avgSingles()
+		// .getValue(data[d]);
+		// }
+		// } else {
+		// values[d][i] = new double[series[i].length][2];
+		// for (int j = 0; j < series[i].length; j++) {
+		// if (byEdges) {
+		// // values[d][i][j][0] =
+		// // series[i][j].network().edges();
+		// // FIXME remove or add property again
+		// values[d][i][j][0] = 0;
+		// } else {
+		// values[d][i][j][0] = series[i][j].getNetwork()
+		// .diffParameterValue(
+		// series[i][(j + 1)
+		// % series[maxIndex].length]
+		// .getNetwork());
+		// // values[d][i][j][0] = Double
+		// // .parseDouble(series[i][j].network()
+		// // .compareValue(
+		// // series[i][(j + 1)
+		// // % series[i].length]
+		// // .network()));
+		// }
+		// values[d][i][j][1] = series[i][j].avgSingles()
+		// .getValue(data[d]);
+		// }
+		// }
+		// }
+		// }
+		// int lineWidth = Config.getInt("SINGLES_PLOT_LINE_WIDTH");
+		// int pointWidth = Config.getInt("SINGLES_PLOT_POINT_WIDTH");
+		// PlotData[] plotData = new PlotData[series.length * 2 *
+		// values.length];
+		// if (!line) {
+		// plotData = new PlotData[series.length * values.length];
+		// }
+		// double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ?
+		// Config
+		// .getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
+		// double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ?
+		// Config
+		// .getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
+		// int counter = 0;
+		// for (int i = 0; i < series.length; i++) {
+		// for (int sv = 0; sv < values.length; sv++) {
+		// int index1 = i * values.length + sv;
+		// int index2 = index1 + values.length * series.length;
+		//
+		// String filename = Config.get("TEMP_FOLDER")
+		// + (sv * series.length + i)
+		// + Config.get("DATA_EXTENSION");
+		// String name = series[i][0].getNetwork().diffDescription(
+		// series[i][1 % series[i].length].getNetwork());
+		// // String name = series[i][0].network().description(
+		// // series[i][1 % series[i].length].network());
+		//
+		// String pre = Config.get(plotKey + "_PLOT_PRE_" + data[sv]);
+		// String app = Config.get(plotKey + "_PLOT_APP_" + data[sv]);
+		// if (pre != null && pre.trim().length() > 0) {
+		// name = pre + " " + name;
+		// }
+		// if (app != null && app.trim().length() > 0) {
+		// name = name + " " + app;
+		// }
+		//
+		// DataWriter.write(values[sv][i], filename, false);
+		// plotData[index1] = new PlotData(filename, name,
+		// PlotData.POINTS, i + 1, pointWidth, offsetX * counter,
+		// offsetY * counter);
+		// if (line) {
+		// plotData[index2] = new PlotData(filename, null,
+		// PlotData.LINE, i + 1, lineWidth, offsetX * counter,
+		// offsetY * counter);
+		// }
+		// counter++;
+		// }
+		// }
+		// boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
+		// boolean logscaleY = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_Y");
+		// GNUPlot.plot(dest, plotData, title, xLabel, yLabel, key, logscaleX,
+		// logscaleY);
 	}
 
 	/**
@@ -415,85 +418,88 @@ public class Plot {
 	private static void plotSinglesConf(Series[][] series, boolean byEdges,
 			boolean line, String[] data, String dest, String title,
 			String yLabel, String xLabel, String key, String plotKey) {
-		double[][][][] conf = new double[data.length][series.length][][];
-		double[][][][] avg = new double[data.length][series.length][][];
-		for (int d = 0; d < data.length; d++) {
-			for (int i = 0; i < series.length; i++) {
-				conf[d][i] = new double[series[i].length][];
-				avg[d][i] = new double[series[i].length][2];
-				for (int j = 0; j < series[i].length; j++) {
-					if (byEdges) {
-						// avg[d][i][j][0] = series[i][j].network().edges();
-						// FIXME remove or add property again
-						avg[d][i][j][0] = 0;
-					} else {
-						avg[d][i][j][0] = series[i][j].network()
-								.diffParameterValue(
-										series[i][(j + 1) % series[i].length]
-												.network());
-						// avg[d][i][j][0] = Double.parseDouble(series[i][j]
-						// .network().compareValue(
-						// series[i][(j + 1) % series[i].length]
-						// .network()));
-					}
-					avg[d][i][j][1] = series[i][j].avgSingles().getValue(
-							data[d]);
-					conf[d][i][j] = ConfidenceData.getConfidenceInterval(
-							avg[d][i][j][0], Singles.getValues(
-									series[i][j].summaries(), data[d]));
-				}
-			}
-		}
-		int lineWidth = Config.getInt("SINGLES_PLOT_LINE_WIDTH");
-		int whiskerWidth = Config.getInt("SINGLES_PLOT_WHISKER_WIDTH");
-		PlotData[] plotData = new PlotData[series.length * 2 * conf.length];
-		if (!line) {
-			plotData = new PlotData[series.length * conf.length];
-		}
-		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
-		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
-		int counter = 0;
-		for (int i = 0; i < series.length; i++) {
-			for (int sv = 0; sv < conf.length; sv++) {
-				String filenameConf = Config.get("TEMP_FOLDER")
-						+ (sv * series.length + i) + "_conf"
-						+ Config.get("DATA_EXTENSION");
-				String filenameAvg = Config.get("TEMP_FOLDER")
-						+ (sv * series.length + i) + "_avg"
-						+ Config.get("DATA_EXTENSION");
-				String name = series[i][0].network().diffDescription(
-						series[i][1 % series[i].length].network());
-
-				String pre = Config.get(plotKey + "_PLOT_PRE_" + data[sv]);
-				String app = Config.get(plotKey + "_PLOT_APP_" + data[sv]);
-				if (pre != null && pre.trim().length() > 0) {
-					name = pre + " " + name;
-				}
-				if (app != null && app.trim().length() > 0) {
-					name = name + " " + app;
-				}
-
-				DataWriter.write(conf[sv][i], filenameConf, false);
-				DataWriter.write(avg[sv][i], filenameAvg, false);
-				int index1 = i * conf.length + sv;
-				int index2 = index1 + conf.length * series.length;
-				plotData[index1] = new PlotData(filenameConf, null,
-						PlotData.WHISKER, i + 1, whiskerWidth, offsetX
-								* counter, offsetY * counter);
-				if (line) {
-					plotData[index2] = new PlotData(filenameAvg, name,
-							PlotData.LINE, i + 1, lineWidth, offsetX * counter,
-							offsetY * counter);
-				}
-				counter++;
-			}
-		}
-		boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
-		boolean logscaleY = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_Y");
-		GNUPlot.plot(dest, plotData, title, xLabel, yLabel, key, logscaleX,
-				logscaleY);
+		// TODO reimplement
+		// double[][][][] conf = new double[data.length][series.length][][];
+		// double[][][][] avg = new double[data.length][series.length][][];
+		// for (int d = 0; d < data.length; d++) {
+		// for (int i = 0; i < series.length; i++) {
+		// conf[d][i] = new double[series[i].length][];
+		// avg[d][i] = new double[series[i].length][2];
+		// for (int j = 0; j < series[i].length; j++) {
+		// if (byEdges) {
+		// // avg[d][i][j][0] = series[i][j].network().edges();
+		// // FIXME remove or add property again
+		// avg[d][i][j][0] = 0;
+		// } else {
+		// avg[d][i][j][0] = series[i][j].getNetwork()
+		// .diffParameterValue(
+		// series[i][(j + 1) % series[i].length]
+		// .getNetwork());
+		// // avg[d][i][j][0] = Double.parseDouble(series[i][j]
+		// // .network().compareValue(
+		// // series[i][(j + 1) % series[i].length]
+		// // .network()));
+		// }
+		// avg[d][i][j][1] = series[i][j].avgSingles().getValue(
+		// data[d]);
+		// conf[d][i][j] = ConfidenceData.getConfidenceInterval(
+		// avg[d][i][j][0], Singles.getValues(
+		// series[i][j].summaries(), data[d]));
+		// }
+		// }
+		// }
+		// int lineWidth = Config.getInt("SINGLES_PLOT_LINE_WIDTH");
+		// int whiskerWidth = Config.getInt("SINGLES_PLOT_WHISKER_WIDTH");
+		// PlotData[] plotData = new PlotData[series.length * 2 * conf.length];
+		// if (!line) {
+		// plotData = new PlotData[series.length * conf.length];
+		// }
+		// double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ?
+		// Config
+		// .getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
+		// double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ?
+		// Config
+		// .getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
+		// int counter = 0;
+		// for (int i = 0; i < series.length; i++) {
+		// for (int sv = 0; sv < conf.length; sv++) {
+		// String filenameConf = Config.get("TEMP_FOLDER")
+		// + (sv * series.length + i) + "_conf"
+		// + Config.get("DATA_EXTENSION");
+		// String filenameAvg = Config.get("TEMP_FOLDER")
+		// + (sv * series.length + i) + "_avg"
+		// + Config.get("DATA_EXTENSION");
+		// String name = series[i][0].getNetwork().diffDescription(
+		// series[i][1 % series[i].length].getNetwork());
+		//
+		// String pre = Config.get(plotKey + "_PLOT_PRE_" + data[sv]);
+		// String app = Config.get(plotKey + "_PLOT_APP_" + data[sv]);
+		// if (pre != null && pre.trim().length() > 0) {
+		// name = pre + " " + name;
+		// }
+		// if (app != null && app.trim().length() > 0) {
+		// name = name + " " + app;
+		// }
+		//
+		// DataWriter.write(conf[sv][i], filenameConf, false);
+		// DataWriter.write(avg[sv][i], filenameAvg, false);
+		// int index1 = i * conf.length + sv;
+		// int index2 = index1 + conf.length * series.length;
+		// plotData[index1] = new PlotData(filenameConf, null,
+		// PlotData.WHISKER, i + 1, whiskerWidth, offsetX
+		// * counter, offsetY * counter);
+		// if (line) {
+		// plotData[index2] = new PlotData(filenameAvg, name,
+		// PlotData.LINE, i + 1, lineWidth, offsetX * counter,
+		// offsetY * counter);
+		// }
+		// counter++;
+		// }
+		// }
+		// boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
+		// boolean logscaleY = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_Y");
+		// GNUPlot.plot(dest, plotData, title, xLabel, yLabel, key, logscaleX,
+		// logscaleY);
 	}
 
 	/**
@@ -559,81 +565,85 @@ public class Plot {
 
 	private static void multiConf(Series[] series, String folder,
 			String plotKey, Metric metric) {
-		String[] data = Config.keys(plotKey + "_PLOT_DATA");
-		// for (int i = 0; i < data.length; i++) {
-		// if (!Config.containsData(data[i])) {
-		// return;
+		// TODO reimplement
+		// String[] data = Config.keys(plotKey + "_PLOT_DATA");
+		// // for (int i = 0; i < data.length; i++) {
+		// // if (!Config.containsData(data[i])) {
+		// // return;
+		// // }
+		// // }
+		// String filename = metric.getFolder() + "__"
+		// + Config.get(plotKey + "_PLOT_FILENAME");
+		// String ext = Config.get("PLOT_EXTENSION");
+		// String title = Config.get(plotKey + "_PLOT_TITLE") + "  -  "
+		// + metric.getFolder();
+		// String xLabel = Config.get(plotKey + "_PLOT_X");
+		// String yLabel = Config.get(plotKey + "_PLOT_Y");
+		// String key = Config.get(plotKey + "_PLOT_KEY");
+		// String dest = folder + filename + ext;
+		// int lineWidth = Config.getInt("CONF_PLOT_LINE_WIDTH");
+		// int whiskerWidth = Config.getInt("CONF_PLOT_WHISKER_WIDTH");
+		// String mode = Config.get(plotKey + "_PLOT_MODE_CONF");
+		// boolean whiskersOnly = Config.get("PLOT_MODE_CONF_DEFAULT").equals(
+		// Config.get("PLOT_MODE_CONF_WHISKERS_ONLY_KEYWORD"));
+		// if (Config.get("PLOT_MODE_CONF_WHISKERS_ONLY_KEYWORD").equals(mode))
+		// {
+		// whiskersOnly = true;
+		// }
+		// PlotData[] plotData = new PlotData[series.length * 2 * data.length];
+		// if (whiskersOnly) {
+		// plotData = new PlotData[series.length * data.length];
+		// }
+		// double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ?
+		// Config
+		// .getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
+		// double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ?
+		// Config
+		// .getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
+		// int counter = 0;
+		// for (int d = 0; d < data.length; d++) {
+		// for (int i = 0; i < series.length; i++) {
+		// String filenameConf = series[i].confDataFolder()
+		// + metric.getFolder() + "/"
+		// + Config.get(data[d] + "_DATA_FILENAME")
+		// + Config.get("DATA_EXTENSION");
+		// String filenameAvg = series[i].avgDataFolder()
+		// + metric.getFolder() + "/"
+		// + Config.get(data[d] + "_DATA_FILENAME")
+		// + Config.get("DATA_EXTENSION");
+		// String name = series[i].network().getDescription();
+		//
+		// String pre = Config.get(plotKey + "_PLOT_PRE_" + data[d]);
+		// String app = Config.get(plotKey + "_PLOT_APP_" + data[d]);
+		// if (pre != null && pre.trim().length() > 0) {
+		// name = pre + " " + name;
+		// }
+		// if (app != null && app.trim().length() > 0) {
+		// name = name + " " + app;
+		// }
+		//
+		// if (whiskersOnly) {
+		// int index1 = i * data.length + d;
+		// plotData[index1] = new PlotData(filenameConf, null,
+		// PlotData.WHISKER, i + 1, whiskerWidth, offsetX
+		// * counter, offsetY * counter);
+		// } else {
+		// int index1 = i * data.length + d;
+		// int index2 = index1 + data.length * series.length;
+		// plotData[index1] = new PlotData(filenameConf, null,
+		// PlotData.WHISKER, i + 1, whiskerWidth, offsetX
+		// * counter, offsetY * counter);
+		// plotData[index2] = new PlotData(filenameAvg, name,
+		// PlotData.LINE, i + 1, lineWidth + d, offsetX
+		// * counter, offsetY * counter);
+		// }
+		// counter++;
 		// }
 		// }
-		String filename = metric.getFolder() + "__"
-				+ Config.get(plotKey + "_PLOT_FILENAME");
-		String ext = Config.get("PLOT_EXTENSION");
-		String title = Config.get(plotKey + "_PLOT_TITLE") + "  -  "
-				+ metric.getFolder();
-		String xLabel = Config.get(plotKey + "_PLOT_X");
-		String yLabel = Config.get(plotKey + "_PLOT_Y");
-		String key = Config.get(plotKey + "_PLOT_KEY");
-		String dest = folder + filename + ext;
-		int lineWidth = Config.getInt("CONF_PLOT_LINE_WIDTH");
-		int whiskerWidth = Config.getInt("CONF_PLOT_WHISKER_WIDTH");
-		String mode = Config.get(plotKey + "_PLOT_MODE_CONF");
-		boolean whiskersOnly = Config.get("PLOT_MODE_CONF_DEFAULT").equals(
-				Config.get("PLOT_MODE_CONF_WHISKERS_ONLY_KEYWORD"));
-		if (Config.get("PLOT_MODE_CONF_WHISKERS_ONLY_KEYWORD").equals(mode)) {
-			whiskersOnly = true;
-		}
-		PlotData[] plotData = new PlotData[series.length * 2 * data.length];
-		if (whiskersOnly) {
-			plotData = new PlotData[series.length * data.length];
-		}
-		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
-		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
-		int counter = 0;
-		for (int d = 0; d < data.length; d++) {
-			for (int i = 0; i < series.length; i++) {
-				String filenameConf = series[i].confDataFolder()
-						+ metric.getFolder() + "/"
-						+ Config.get(data[d] + "_DATA_FILENAME")
-						+ Config.get("DATA_EXTENSION");
-				String filenameAvg = series[i].avgDataFolder()
-						+ metric.getFolder() + "/"
-						+ Config.get(data[d] + "_DATA_FILENAME")
-						+ Config.get("DATA_EXTENSION");
-				String name = series[i].network().getDescription();
-
-				String pre = Config.get(plotKey + "_PLOT_PRE_" + data[d]);
-				String app = Config.get(plotKey + "_PLOT_APP_" + data[d]);
-				if (pre != null && pre.trim().length() > 0) {
-					name = pre + " " + name;
-				}
-				if (app != null && app.trim().length() > 0) {
-					name = name + " " + app;
-				}
-
-				if (whiskersOnly) {
-					int index1 = i * data.length + d;
-					plotData[index1] = new PlotData(filenameConf, null,
-							PlotData.WHISKER, i + 1, whiskerWidth, offsetX
-									* counter, offsetY * counter);
-				} else {
-					int index1 = i * data.length + d;
-					int index2 = index1 + data.length * series.length;
-					plotData[index1] = new PlotData(filenameConf, null,
-							PlotData.WHISKER, i + 1, whiskerWidth, offsetX
-									* counter, offsetY * counter);
-					plotData[index2] = new PlotData(filenameAvg, name,
-							PlotData.LINE, i + 1, lineWidth + d, offsetX
-									* counter, offsetY * counter);
-				}
-				counter++;
-			}
-		}
-		boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
-		boolean logscaleY = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_Y");
-		GNUPlot.plot(dest, plotData, title, xLabel, yLabel, key, logscaleX,
-				logscaleY);
+		// boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
+		// boolean logscaleY = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_Y");
+		// GNUPlot.plot(dest, plotData, title, xLabel, yLabel, key, logscaleX,
+		// logscaleY);
 	}
 
 	/**
@@ -642,96 +652,99 @@ public class Plot {
 
 	private static void multiAvg(Series[] series, String folder,
 			String plotKey, Metric metric) {
-		String[] data = Config.keys(plotKey + "_PLOT_DATA");
-		// for (int i = 0; i < data.length; i++) {
-		// if (!Config.containsData(data[i])) {
-		// return;
+		// TODO reimplement
+		// String[] data = Config.keys(plotKey + "_PLOT_DATA");
+		// // for (int i = 0; i < data.length; i++) {
+		// // if (!Config.containsData(data[i])) {
+		// // return;
+		// // }
+		// // }
+		// String filename = metric.getFolder() + "__"
+		// + Config.get(plotKey + "_PLOT_FILENAME");
+		// String ext = Config.get("PLOT_EXTENSION");
+		// String title = Config.get(plotKey + "_PLOT_TITLE") + "  -  "
+		// + metric.getFolder();
+		// String xLabel = Config.get(plotKey + "_PLOT_X");
+		// String yLabel = Config.get(plotKey + "_PLOT_Y");
+		// String key = Config.get(plotKey + "_PLOT_KEY");
+		// String dest = folder + filename + ext;
+		// int lineWidth = Config.getInt("AVERAGE_PLOT_LINE_WIDTH");
+		// int pointWidth = Config.getInt("AVERAGE_PLOT_POINT_WIDTH");
+		// int dotWidth = Config.getInt("AVERAGE_PLOT_DOT_WIDTH");
+		// String mode = Config.get(plotKey + "_PLOT_MODE_AVG");
+		// boolean pointsOnly = Config.get("PLOT_MODE_AVG_DEFAULT").equals(
+		// Config.get("PLOT_MODE_AVG_POINTS_ONLY_KEYWORD"));
+		// boolean dotsOnly = Config.get("PLOT_MODE_AVG_DEFAULT").equals(
+		// Config.get("PLOT_MODE_AVG_DOTS_ONLY_KEYWORD"));
+		// boolean lineOnly = Config.get("PLOT_MODE_AVG_DEFAULT").equals(
+		// Config.get("PLOT_MODE_AVG_LINE_ONLY_KEYWORD"));
+		// if (Config.get("PLOT_MODE_AVG_POINTS_ONLY_KEYWORD").equals(mode)) {
+		// pointsOnly = true;
+		// }
+		// if (Config.get("PLOT_MODE_AVG_DOTS_ONLY_KEYWORD").equals(mode)) {
+		// dotsOnly = true;
+		// }
+		// if (Config.get("PLOT_MODE_AVG_LINE_ONLY_KEYWORD").equals(mode)) {
+		// lineOnly = true;
+		// }
+		// PlotData[] plotData = new PlotData[series.length * 2 * data.length];
+		// if (pointsOnly || dotsOnly || lineOnly) {
+		// plotData = new PlotData[series.length * data.length];
+		// }
+		// double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ?
+		// Config
+		// .getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
+		// double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ?
+		// Config
+		// .getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
+		// int counter = 0;
+		// for (int d = 0; d < data.length; d++) {
+		// for (int i = 0; i < series.length; i++) {
+		// String file = series[i].avgDataFolder() + metric.getFolder()
+		// + "/" + Config.get(data[d] + "_DATA_FILENAME")
+		// + Config.get("DATA_EXTENSION");
+		// String name = series[i].getNetwork().getDescription();
+		//
+		// String pre = Config.get(plotKey + "_PLOT_PRE_" + data[d]);
+		// String app = Config.get(plotKey + "_PLOT_APP_" + data[d]);
+		// if (pre != null && pre.trim().length() > 0) {
+		// name = pre + " " + name;
+		// }
+		// if (app != null && app.trim().length() > 0) {
+		// name = name + " " + app;
+		// }
+		// if (pointsOnly) {
+		// int index1 = i * data.length + d;
+		// plotData[index1] = new PlotData(file, name,
+		// PlotData.POINTS, i + 1, pointWidth, offsetX
+		// * counter, offsetY * counter);
+		// } else if (dotsOnly) {
+		// int index1 = i * data.length + d;
+		// plotData[index1] = new PlotData(file, name, PlotData.DOTS,
+		// i + 1, dotWidth, offsetX * counter, offsetY
+		// * counter);
+		// } else if (lineOnly) {
+		// int index1 = i * data.length + d;
+		// plotData[index1] = new PlotData(file, name, PlotData.LINE,
+		// i + 1, pointWidth, offsetX * counter, offsetY
+		// * counter);
+		// } else {
+		// int index1 = i * data.length + d;
+		// int index2 = index1 + data.length * series.length;
+		// plotData[index1] = new PlotData(file, name,
+		// PlotData.POINTS, i + 1, pointWidth, offsetX
+		// * counter, offsetY * counter);
+		// plotData[index2] = new PlotData(file, null, PlotData.LINE,
+		// i + 1, lineWidth, offsetX * counter, offsetY
+		// * counter);
+		// }
+		// counter++;
 		// }
 		// }
-		String filename = metric.getFolder() + "__"
-				+ Config.get(plotKey + "_PLOT_FILENAME");
-		String ext = Config.get("PLOT_EXTENSION");
-		String title = Config.get(plotKey + "_PLOT_TITLE") + "  -  "
-				+ metric.getFolder();
-		String xLabel = Config.get(plotKey + "_PLOT_X");
-		String yLabel = Config.get(plotKey + "_PLOT_Y");
-		String key = Config.get(plotKey + "_PLOT_KEY");
-		String dest = folder + filename + ext;
-		int lineWidth = Config.getInt("AVERAGE_PLOT_LINE_WIDTH");
-		int pointWidth = Config.getInt("AVERAGE_PLOT_POINT_WIDTH");
-		int dotWidth = Config.getInt("AVERAGE_PLOT_DOT_WIDTH");
-		String mode = Config.get(plotKey + "_PLOT_MODE_AVG");
-		boolean pointsOnly = Config.get("PLOT_MODE_AVG_DEFAULT").equals(
-				Config.get("PLOT_MODE_AVG_POINTS_ONLY_KEYWORD"));
-		boolean dotsOnly = Config.get("PLOT_MODE_AVG_DEFAULT").equals(
-				Config.get("PLOT_MODE_AVG_DOTS_ONLY_KEYWORD"));
-		boolean lineOnly = Config.get("PLOT_MODE_AVG_DEFAULT").equals(
-				Config.get("PLOT_MODE_AVG_LINE_ONLY_KEYWORD"));
-		if (Config.get("PLOT_MODE_AVG_POINTS_ONLY_KEYWORD").equals(mode)) {
-			pointsOnly = true;
-		}
-		if (Config.get("PLOT_MODE_AVG_DOTS_ONLY_KEYWORD").equals(mode)) {
-			dotsOnly = true;
-		}
-		if (Config.get("PLOT_MODE_AVG_LINE_ONLY_KEYWORD").equals(mode)) {
-			lineOnly = true;
-		}
-		PlotData[] plotData = new PlotData[series.length * 2 * data.length];
-		if (pointsOnly || dotsOnly || lineOnly) {
-			plotData = new PlotData[series.length * data.length];
-		}
-		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
-		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
-		int counter = 0;
-		for (int d = 0; d < data.length; d++) {
-			for (int i = 0; i < series.length; i++) {
-				String file = series[i].avgDataFolder() + metric.getFolder()
-						+ "/" + Config.get(data[d] + "_DATA_FILENAME")
-						+ Config.get("DATA_EXTENSION");
-				String name = series[i].network().getDescription();
-
-				String pre = Config.get(plotKey + "_PLOT_PRE_" + data[d]);
-				String app = Config.get(plotKey + "_PLOT_APP_" + data[d]);
-				if (pre != null && pre.trim().length() > 0) {
-					name = pre + " " + name;
-				}
-				if (app != null && app.trim().length() > 0) {
-					name = name + " " + app;
-				}
-				if (pointsOnly) {
-					int index1 = i * data.length + d;
-					plotData[index1] = new PlotData(file, name,
-							PlotData.POINTS, i + 1, pointWidth, offsetX
-									* counter, offsetY * counter);
-				} else if (dotsOnly) {
-					int index1 = i * data.length + d;
-					plotData[index1] = new PlotData(file, name, PlotData.DOTS,
-							i + 1, dotWidth, offsetX * counter, offsetY
-									* counter);
-				} else if (lineOnly) {
-					int index1 = i * data.length + d;
-					plotData[index1] = new PlotData(file, name, PlotData.LINE,
-							i + 1, pointWidth, offsetX * counter, offsetY
-									* counter);
-				} else {
-					int index1 = i * data.length + d;
-					int index2 = index1 + data.length * series.length;
-					plotData[index1] = new PlotData(file, name,
-							PlotData.POINTS, i + 1, pointWidth, offsetX
-									* counter, offsetY * counter);
-					plotData[index2] = new PlotData(file, null, PlotData.LINE,
-							i + 1, lineWidth, offsetX * counter, offsetY
-									* counter);
-				}
-				counter++;
-			}
-		}
-		boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
-		boolean logscaleY = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_Y");
-		GNUPlot.plot(dest, plotData, title, xLabel, yLabel, key, logscaleX,
-				logscaleY);
+		// boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
+		// boolean logscaleY = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_Y");
+		// GNUPlot.plot(dest, plotData, title, xLabel, yLabel, key, logscaleX,
+		// logscaleY);
 	}
 
 	/**
@@ -739,52 +752,55 @@ public class Plot {
 	 */
 
 	private static void multiVar(Series[] series, String folder, String plotKey) {
-		String[] data = Config.keys(plotKey + "_PLOT_DATA");
-		// for (int i = 0; i < data.length; i++) {
-		// if (!Config.containsData(data[i])) {
-		// return;
+		// TODO reimplement
+		// String[] data = Config.keys(plotKey + "_PLOT_DATA");
+		// // for (int i = 0; i < data.length; i++) {
+		// // if (!Config.containsData(data[i])) {
+		// // return;
+		// // }
+		// // }
+		// String filename = Config.get(plotKey + "_PLOT_FILENAME");
+		// String ext = Config.get("PLOT_EXTENSION");
+		// String title = Config.get(plotKey + "_PLOT_TITLE");
+		// String xLabel = Config.get(plotKey + "_PLOT_X");
+		// String yLabel = Config.get(plotKey + "_PLOT_Y");
+		// String key = Config.get(plotKey + "_PLOT_KEY");
+		// String dest = folder + filename + ext;
+		// int pointWidth = Config.getInt("AVERAGE_PLOT_POINT_WIDTH");
+		// PlotData[] plotData = new PlotData[series.length * data.length];
+		// double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ?
+		// Config
+		// .getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
+		// double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ?
+		// Config
+		// .getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
+		// int counter = 0;
+		// for (int d = 0; d < data.length; d++) {
+		// for (int i = 0; i < series.length; i++) {
+		// String file = series[i].varianceDataFolder()
+		// + Config.get(data[d] + "_DATA_FILENAME")
+		// + Config.get("DATA_EXTENSION");
+		// String name = series[i].getNetwork().getDescription();
+		//
+		// String pre = Config.get(plotKey + "_PLOT_PRE_" + data[d]);
+		// String app = Config.get(plotKey + "_PLOT_APP_" + data[d]);
+		// if (pre != null && pre.trim().length() > 0) {
+		// name = pre + " " + name;
+		// }
+		// if (app != null && app.trim().length() > 0) {
+		// name = name + " " + app;
+		// }
+		// int index1 = i * data.length + d;
+		// plotData[index1] = new PlotData(file, name, PlotData.VARIANCE,
+		// i + 1, pointWidth, offsetX * counter, offsetY * counter);
+		//
+		// counter++;
 		// }
 		// }
-		String filename = Config.get(plotKey + "_PLOT_FILENAME");
-		String ext = Config.get("PLOT_EXTENSION");
-		String title = Config.get(plotKey + "_PLOT_TITLE");
-		String xLabel = Config.get(plotKey + "_PLOT_X");
-		String yLabel = Config.get(plotKey + "_PLOT_Y");
-		String key = Config.get(plotKey + "_PLOT_KEY");
-		String dest = folder + filename + ext;
-		int pointWidth = Config.getInt("AVERAGE_PLOT_POINT_WIDTH");
-		PlotData[] plotData = new PlotData[series.length * data.length];
-		double offsetX = Config.containsKey(plotKey + "_PLOT_OFFSET_X") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_X") : 0;
-		double offsetY = Config.containsKey(plotKey + "_PLOT_OFFSET_Y") ? Config
-				.getDouble(plotKey + "_PLOT_OFFSET_Y") : 0;
-		int counter = 0;
-		for (int d = 0; d < data.length; d++) {
-			for (int i = 0; i < series.length; i++) {
-				String file = series[i].varianceDataFolder()
-						+ Config.get(data[d] + "_DATA_FILENAME")
-						+ Config.get("DATA_EXTENSION");
-				String name = series[i].network().getDescription();
-
-				String pre = Config.get(plotKey + "_PLOT_PRE_" + data[d]);
-				String app = Config.get(plotKey + "_PLOT_APP_" + data[d]);
-				if (pre != null && pre.trim().length() > 0) {
-					name = pre + " " + name;
-				}
-				if (app != null && app.trim().length() > 0) {
-					name = name + " " + app;
-				}
-				int index1 = i * data.length + d;
-				plotData[index1] = new PlotData(file, name, PlotData.VARIANCE,
-						i + 1, pointWidth, offsetX * counter, offsetY * counter);
-
-				counter++;
-			}
-		}
-		boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
-		boolean logscaleY = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_Y");
-		GNUPlot.plot(dest, plotData, title, xLabel, yLabel, key, logscaleX,
-				logscaleY);
+		// boolean logscaleX = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_X");
+		// boolean logscaleY = Config.getBoolean(plotKey + "_PLOT_LOGSCALE_Y");
+		// GNUPlot.plot(dest, plotData, title, xLabel, yLabel, key, logscaleX,
+		// logscaleY);
 	}
 
 	/**

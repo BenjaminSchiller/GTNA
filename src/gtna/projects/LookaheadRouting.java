@@ -171,7 +171,7 @@ public class LookaheadRouting {
 					new Transformation[] { l });
 			Network[] nw = new Network[] { nw1, nw2, nw3 };
 			Series[] s = generate ? Series.generate(nw, metrics, times)
-					: Series.get(nw);
+					: Series.get(nw, metrics);
 			// Plot.multiAvg(s, "LRA-" + map.get(l) + "-multi-avg/");
 			// Plot.multiConf(s, "LRA-" + map.get(l) + "-multi-conf/");
 		}
@@ -190,12 +190,13 @@ public class LookaheadRouting {
 					new Transformation[] { ll[i] });
 			slmv[i + 1] = new DescriptionWrapper(slmv[i + 1], map.get(ll[i]));
 		}
-		Plot.multiAvg(Series.get(sls), "LRA-LS-multi-avg/", metrics);
-		Plot.multiConf(Series.get(sls), "LRA-LS-multi-conf/", metrics);
-		Plot.multiAvg(Series.get(slmv), "LRA-LMV-multi-avg/", metrics);
-		Plot.multiConf(Series.get(slmv), "LRA-LMV-multi-conf/", metrics);
-		LookaheadRouting.blafasel(Series.get(sls), "LS", metrics);
-		LookaheadRouting.blafasel(Series.get(slmv), "LMV", metrics);
+		Plot.multiAvg(Series.get(sls, metrics), "LRA-LS-multi-avg/", metrics);
+		Plot.multiConf(Series.get(sls, metrics), "LRA-LS-multi-conf/", metrics);
+		Plot.multiAvg(Series.get(slmv, metrics), "LRA-LMV-multi-avg/", metrics);
+		Plot.multiConf(Series.get(slmv, metrics), "LRA-LMV-multi-conf/",
+				metrics);
+		LookaheadRouting.blafasel(Series.get(sls, metrics), "LS", metrics);
+		LookaheadRouting.blafasel(Series.get(slmv, metrics), "LMV", metrics);
 	}
 
 	private static void blafasel(Series[] s1, String S, Metric[] metrics) {
@@ -337,7 +338,7 @@ public class LookaheadRouting {
 		}
 
 		Series[] s1 = generate ? Series.generate(nw, metrics, times) : Series
-				.get(nw);
+				.get(nw, metrics);
 		String folderAvgStd = "obfuscation-" + input + "-" + nw[0].getNodes()
 				+ "-multi-avg/";
 		String folderConfStd = "obfuscation-" + input + "-" + nw[0].getNodes()

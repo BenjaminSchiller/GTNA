@@ -35,7 +35,7 @@
  */
 package gtna.metrics;
 
-import gtna.data.Value;
+import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.partition.Partition;
 import gtna.io.DataWriter;
@@ -102,14 +102,14 @@ public abstract class Partitioning extends Metric {
 	}
 
 	@Override
-	public Value[] getValues() {
-		Value largestComponent = new Value(
+	public Single[] getSingles() {
+		Single largestComponent = new Single(
 				this.getKey() + "_LARGEST_COMPONENT", this.largestComponent);
-		Value largestComponentFraction = new Value(this.getKey()
+		Single largestComponentFraction = new Single(this.getKey()
 				+ "_LARGEST_COMPONENT_FRACTION", this.largestComponentFraction);
-		Value runtime = new Value(this.getKey() + "_RUNTIME",
+		Single runtime = new Single(this.getKey() + "_RUNTIME",
 				this.runtime.getRuntime());
-		return new Value[] { largestComponent, largestComponentFraction,
+		return new Single[] { largestComponent, largestComponentFraction,
 				runtime };
 	}
 
