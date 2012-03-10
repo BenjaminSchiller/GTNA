@@ -50,8 +50,8 @@ import java.io.File;
  */
 public class Plotting {
 
-	public static boolean plotSingle(Series[][] s, Metric[] metrics,
-			String folder, Type type, Style style) {
+	public static boolean single(Series[][] s, Metric[] metrics, String folder,
+			Type type, Style style) {
 		Timer timer = new Timer("single (" + s.length + ") " + type + " / "
 				+ style);
 		boolean subfolders = Config.getBoolean("PLOT_SUBFOLDERS");
@@ -61,21 +61,21 @@ public class Plotting {
 				String pre = Config.get("MAIN_PLOT_FOLDER") + folder
 						+ (subfolders ? m.getFolder() : m.getFolderName());
 				(new File(pre)).mkdirs();
-				success &= Plotting.plotSingle(s, m, key, pre, type, style);
+				success &= Plotting.single(s, m, key, pre, type, style);
 			}
 		}
 		timer.end();
 		return success;
 	}
 
-	private static boolean plotSingle(Series[][] s, Metric m, String plotKey,
+	private static boolean single(Series[][] s, Metric m, String plotKey,
 			String pre, Type type, Style style) {
 		// TODO implement
 		return false;
 	}
 
-	public static boolean plotMulti(Series[] s, Metric[] metrics,
-			String folder, Type type, Style style) {
+	public static boolean multi(Series[] s, Metric[] metrics, String folder,
+			Type type, Style style) {
 		Timer timer = new Timer("multi (" + s.length + ") " + type + " / "
 				+ style);
 		boolean subfolders = Config.getBoolean("PLOT_SUBFOLDERS");
@@ -85,14 +85,14 @@ public class Plotting {
 				String pre = Config.get("MAIN_PLOT_FOLDER") + folder
 						+ (subfolders ? m.getFolder() : m.getFolderName());
 				(new File(pre)).mkdirs();
-				success &= Plotting.plotMulti(s, m, key, pre, type, style);
+				success &= Plotting.multi(s, m, key, pre, type, style);
 			}
 		}
 		timer.end();
 		return success;
 	}
 
-	private static boolean plotMulti(Series[] s, Metric m, String plotKey,
+	private static boolean multi(Series[] s, Metric m, String plotKey,
 			String pre, Type type, Style style) {
 		String[] dataKeys = Config.keys(plotKey + "_PLOT_DATA");
 		Data[] data = new Data[s.length * dataKeys.length];
@@ -119,54 +119,51 @@ public class Plotting {
 		return Gnuplot.plot(plot, m, plotKey);
 	}
 
-	public static boolean plotSingle(Series s, Metric[] metrics, String folder) {
-		return Plotting.plotSingle(s, metrics, folder, Type.average,
+	public static boolean single(Series s, Metric[] metrics, String folder) {
+		return Plotting.single(s, metrics, folder, Type.average,
 				Style.linespoint);
 	}
 
-	public static boolean plotSingle(Series[] s, Metric[] metrics, String folder) {
-		return Plotting.plotSingle(s, metrics, folder, Type.average,
+	public static boolean single(Series[] s, Metric[] metrics, String folder) {
+		return Plotting.single(s, metrics, folder, Type.average,
 				Style.linespoint);
 	}
 
-	public static boolean plotSingle(Series[][] s, Metric[] metrics,
-			String folder) {
-		return Plotting.plotSingle(s, metrics, folder, Type.average,
+	public static boolean single(Series[][] s, Metric[] metrics, String folder) {
+		return Plotting.single(s, metrics, folder, Type.average,
 				Style.linespoint);
 	}
 
-	public static boolean plotSingle(Series s, Metric[] metrics, String folder,
+	public static boolean single(Series s, Metric[] metrics, String folder,
 			Type type, Style style) {
-		return Plotting.plotSingle(new Series[] { s }, metrics, folder, type,
-				style);
+		return Plotting
+				.single(new Series[] { s }, metrics, folder, type, style);
 	}
 
-	public static boolean plotSingle(Series[] s, Metric[] metrics,
-			String folder, Type type, Style style) {
-		return Plotting.plotSingle(new Series[][] { s }, metrics, folder, type,
-				style);
-	}
-
-	public static boolean plotMulti(Series s, Metric[] metrics, String folder) {
-		return Plotting.plotMulti(s, metrics, folder, Type.average,
-				Style.linespoint);
-	}
-
-	public static boolean plotMulti(Series[] s, Metric[] metrics, String folder) {
-		return Plotting.plotMulti(s, metrics, folder, Type.average,
-				Style.linespoint);
-	}
-
-	public static boolean plotMulti(Series[][] s, Metric[] metrics,
-			String folder) {
-		return Plotting.plotMulti(s, metrics, folder, Type.average,
-				Style.linespoint);
-	}
-
-	public static boolean plotMulti(Series s, Metric[] metrics, String folder,
+	public static boolean single(Series[] s, Metric[] metrics, String folder,
 			Type type, Style style) {
-		return Plotting.plotMulti(new Series[] { s }, metrics, folder, type,
+		return Plotting.single(new Series[][] { s }, metrics, folder, type,
 				style);
+	}
+
+	public static boolean multi(Series s, Metric[] metrics, String folder) {
+		return Plotting.multi(s, metrics, folder, Type.average,
+				Style.linespoint);
+	}
+
+	public static boolean multi(Series[] s, Metric[] metrics, String folder) {
+		return Plotting.multi(s, metrics, folder, Type.average,
+				Style.linespoint);
+	}
+
+	public static boolean multi(Series[][] s, Metric[] metrics, String folder) {
+		return Plotting.plotMulti(s, metrics, folder, Type.average,
+				Style.linespoint);
+	}
+
+	public static boolean multi(Series s, Metric[] metrics, String folder,
+			Type type, Style style) {
+		return Plotting.multi(new Series[] { s }, metrics, folder, type, style);
 	}
 
 	public static boolean plotMulti(Series[][] s, Metric[] metrics,
@@ -182,6 +179,6 @@ public class Plotting {
 				S[index++] = s2;
 			}
 		}
-		return Plotting.plotMulti(S, metrics, folder, type, style);
+		return Plotting.multi(S, metrics, folder, type, style);
 	}
 }

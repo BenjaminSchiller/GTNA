@@ -80,14 +80,14 @@ public class GTNA {
 
 		Network nw1 = new ErdosRenyi(100, 5, false, null);
 		Series s1 = Series.generate(nw1, metrics, 5);
-		Plotting.plotMulti(s1, metrics, "er-unidirectional/");
+		Plotting.multi(s1, metrics, "er-unidirectional/");
 
 		Network nw2 = new ErdosRenyi(100, 5, true, null);
 		Series s2 = Series.generate(nw2, metrics, 10);
-		Plotting.plotMulti(s2, metrics, "er-bidirectional/");
+		Plotting.multi(s2, metrics, "er-bidirectional/");
 
 		Series[] s = new Series[] { s1, s2 };
-		Plotting.plotMulti(s, metrics, "er-both/");
+		Plotting.multi(s, metrics, "er-both/");
 	}
 
 	private static void example3() {
@@ -100,7 +100,7 @@ public class GTNA {
 		Network nw2 = new ErdosRenyi(100, 5, true, null);
 		Network[] nw = new Network[] { nw1, nw2 };
 		Series[] s = Series.get(nw, metrics);
-		Plotting.plotMulti(s, metrics, "er-get/");
+		Plotting.multi(s, metrics, "er-get/");
 	}
 
 	private static void example4() {
@@ -115,7 +115,7 @@ public class GTNA {
 		Network nw2 = new ErdosRenyi(100, 5, false, t);
 		Network[] nw = new Network[] { nw1, nw2 };
 		Series[] s = Series.generate(nw, metrics, 10);
-		Plotting.plotMulti(s, metrics, "er-transformed/");
+		Plotting.multi(s, metrics, "er-transformed/");
 	}
 
 	private static void example5() {
@@ -127,7 +127,7 @@ public class GTNA {
 		Network[] nw = ErdosRenyi.get(100, new double[] { 5, 6, 7, 8, 9, 10 },
 				false, null);
 		Series[] s = Series.generate(nw, metrics, 7);
-		Plotting.plotSingle(s, metrics, "er-singles/");
+		Plotting.single(s, metrics, "er-singles/");
 	}
 
 	private static void example6() {
@@ -156,11 +156,11 @@ public class GTNA {
 		Series[] s1 = Series.get(nw1, metrics);
 		Series[] s2 = Series.get(nw2, metrics);
 		Series[] s3 = Series.get(nw3, metrics);
-		Plotting.plotMulti(s, metrics, "er-more-singles/");
-		Plotting.plotMulti(s1, metrics, "er-more-multi-1/");
-		Plotting.plotMulti(s2, metrics, "er-more-multi-2/");
-		Plotting.plotMulti(s3, metrics, "er-more-multi-3/");
-		Plotting.plotMulti(Util.combine(s), metrics, "er-more-multi/");
+		Plotting.multi(s, metrics, "er-more-singles/");
+		Plotting.multi(s1, metrics, "er-more-multi-1/");
+		Plotting.multi(s2, metrics, "er-more-multi-2/");
+		Plotting.multi(s3, metrics, "er-more-multi-3/");
+		Plotting.multi(Util.combine(s), metrics, "er-more-multi/");
 	}
 
 	private static void example7() {

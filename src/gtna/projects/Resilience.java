@@ -119,9 +119,9 @@ public class Resilience {
 		Series[] s_lpa = Series.generate(nw_lpa, metrics, times);
 		Series[] s_dq = Series.generate(nw_dq, metrics, times);
 
-		Plotting.plotMulti(s_lpa, metrics, "lpa/");
-		Plotting.plotMulti(s_dq, metrics, "deltaQ/");
-		Plotting.plotSingle(new Series[][] { s_lpa, s_dq }, metrics, "singles/");
+		Plotting.multi(s_lpa, metrics, "lpa/");
+		Plotting.multi(s_dq, metrics, "deltaQ/");
+		Plotting.single(new Series[][] { s_lpa, s_dq }, metrics, "singles/");
 	}
 
 	private static void sorting() {

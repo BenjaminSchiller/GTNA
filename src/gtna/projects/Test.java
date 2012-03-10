@@ -104,8 +104,9 @@ public class Test {
 		Network[] nw = new Network[] { nw1, nw2 };
 		Series[] s = generate ? Series.generate(nw, metrics, times) : Series
 				.get(nw, metrics);
-		Plotting.plotMulti(s, metrics, "multi/", Data.Type.average,
+		Plotting.multi(s, metrics, "multi/", Data.Type.average,
 				Gnuplot.Style.linespoint);
+		Plotting.single(s, metrics, "single/");
 	}
 
 	private static void series() {

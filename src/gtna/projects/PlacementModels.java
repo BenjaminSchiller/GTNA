@@ -156,7 +156,7 @@ public class PlacementModels {
 			}
 			Series[][] s = GET ? Series.get(nw, metrics) : Series.generate(nw,
 					metrics, times);
-			Plotting.plotSingle(s, metrics, name + "-" + nw[0][0].getNodes()
+			Plotting.single(s, metrics, name + "-" + nw[0][0].getNodes()
 					+ "-singles/");
 		}
 	}
@@ -227,7 +227,7 @@ public class PlacementModels {
 			for (Series[] S : s4) {
 				s[index++] = S;
 			}
-			Plotting.plotSingle(s, metrics, times + "/combination-" + n + "/");
+			Plotting.single(s, metrics, times + "/combination-" + n + "/");
 		}
 	}
 

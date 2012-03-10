@@ -190,8 +190,8 @@ public class LookaheadRouting {
 					new Transformation[] { ll[i] });
 			slmv[i + 1] = new DescriptionWrapper(slmv[i + 1], map.get(ll[i]));
 		}
-		Plotting.plotMulti(Series.get(sls, metrics), metrics, "LRA-LS-multi/");
-		Plotting.plotMulti(Series.get(slmv, metrics), metrics, "LRA-LMV-multi/");
+		Plotting.multi(Series.get(sls, metrics), metrics, "LRA-LS-multi/");
+		Plotting.multi(Series.get(slmv, metrics), metrics, "LRA-LMV-multi/");
 		LookaheadRouting.blafasel(Series.get(sls, metrics), "LS", metrics);
 		LookaheadRouting.blafasel(Series.get(slmv, metrics), "LMV", metrics);
 	}
@@ -200,7 +200,7 @@ public class LookaheadRouting {
 		for (int i = 1; i <= s1.length; i++) {
 			Series[] s = new Series[i];
 			System.arraycopy(s1, 0, s, 0, i);
-			Plotting.plotMulti(s, metrics, "LRA-" + S + "-multi-" + i + "/");
+			Plotting.multi(s, metrics, "LRA-" + S + "-multi-" + i + "/");
 			String m = Config.get("MAIN_PLOT_FOLDER");
 			String e = Config.get("PLOT_EXTENSION");
 			try {
@@ -339,7 +339,7 @@ public class LookaheadRouting {
 				+ "-multi-avg/";
 		String folderConfStd = "obfuscation-" + input + "-" + nw[0].getNodes()
 				+ "-multi-conf/";
-		Plotting.plotMulti(s1, metrics, folderAvgStd);
+		Plotting.multi(s1, metrics, folderAvgStd);
 
 		for (int i = 1; i <= s1.length; i++) {
 			Series[] s2 = new Series[i];
@@ -348,7 +348,7 @@ public class LookaheadRouting {
 					+ "-multi-avg-" + i + "/";
 			String folderConf = "obfuscation-" + input + "-" + nw[0].getNodes()
 					+ "-multi-conf-" + i + "/";
-			Plotting.plotMulti(s2, metrics, folderAvg);
+			Plotting.multi(s2, metrics, folderAvg);
 			String e = Config.get("PLOT_EXTENSION");
 			String fromAvg = Config.get("MAIN_PLOT_FOLDER") + folderAvg
 					+ "r-hopDistributionAbsolute-cdf" + e;
