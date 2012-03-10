@@ -60,7 +60,7 @@ import gtna.networks.model.placementmodels.models.RandomPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.plot.Gephi;
-import gtna.plot.Plot;
+import gtna.plot.Plotting;
 import gtna.util.Config;
 import gtna.util.Stats;
 
@@ -156,8 +156,8 @@ public class PlacementModels {
 			}
 			Series[][] s = GET ? Series.get(nw, metrics) : Series.generate(nw,
 					metrics, times);
-			Plot.singlesAvg(s, name + "-" + nw[0][0].getNodes() + "-singles/",
-					metrics);
+			Plotting.plotSingle(s, metrics, name + "-" + nw[0][0].getNodes()
+					+ "-singles/");
 		}
 	}
 
@@ -227,7 +227,7 @@ public class PlacementModels {
 			for (Series[] S : s4) {
 				s[index++] = S;
 			}
-			Plot.singlesAvg(s, times + "/combination-" + n + "/", metrics);
+			Plotting.plotSingle(s, metrics, times + "/combination-" + n + "/");
 		}
 	}
 

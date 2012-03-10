@@ -57,7 +57,7 @@ import gtna.networks.model.placementmodels.connectors.UDGConnector;
 import gtna.networks.model.placementmodels.models.CommunityPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.networks.util.DescriptionWrapper;
-import gtna.plot.Plot;
+import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityColors;
 import gtna.transformation.communities.CommunityDetectionDeltaQ;
@@ -119,9 +119,9 @@ public class Resilience {
 		Series[] s_lpa = Series.generate(nw_lpa, metrics, times);
 		Series[] s_dq = Series.generate(nw_dq, metrics, times);
 
-		Plot.multiAvg(s_lpa, "lpa/", metrics);
-		Plot.multiAvg(s_dq, "deltaQ/", metrics);
-		Plot.singlesAvg(new Series[][] { s_lpa, s_dq }, "singles/", metrics);
+		Plotting.plotMulti(s_lpa, metrics, "lpa/");
+		Plotting.plotMulti(s_dq, metrics, "deltaQ/");
+		Plotting.plotSingle(new Series[][] { s_lpa, s_dq }, metrics, "singles/");
 	}
 
 	private static void sorting() {

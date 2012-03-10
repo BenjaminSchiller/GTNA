@@ -58,7 +58,9 @@ import gtna.networks.model.placementmodels.connectors.UDGConnector;
 import gtna.networks.model.placementmodels.models.CommunityPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.networks.util.DescriptionWrapper;
-import gtna.plot.Plot;
+import gtna.plot.Data;
+import gtna.plot.Gnuplot;
+import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityColors;
 import gtna.transformation.communities.CommunityDetectionDeltaQ;
@@ -84,6 +86,29 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/testing/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testing/");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("SERIES_GRAPH_WRITE", "false");
+		Metric[] metrics = new Metric[] { new DegreeDistribution(),
+				new ShortestPaths() };
+		int times = 200;
+		boolean generate = false;
+		int nodes = 1000;
+		Network nw1 = new ErdosRenyi(nodes, 10, true,
+				new Transformation[] { new WeakConnectivityPartition(),
+						new GiantConnectedComponent() });
+		Network nw2 = new ErdosRenyi(nodes, 15, true,
+				new Transformation[] { new WeakConnectivityPartition(),
+						new GiantConnectedComponent() });
+		Network[] nw = new Network[] { nw1, nw2 };
+		Series[] s = generate ? Series.generate(nw, metrics, times) : Series
+				.get(nw, metrics);
+		Plotting.plotMulti(s, metrics, "multi/", Data.Type.average,
+				Gnuplot.Style.linespoint);
+	}
+
+	private static void series() {
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/testing/");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 		Config.overwrite("SERIES_GRAPH_WRITE", "true");
@@ -196,7 +221,7 @@ public class Test {
 						Fragmentation.Resolution.PERCENT), new Roles(),
 				new Roles2(), new Communities() };
 		Series[] s = Series.generate(nw, metrics, times);
-		Plot.multiAvg(s, "multi/", metrics);
+		// PlotOld.multiAvg(s, "multi/", metrics);
 	}
 
 	private static Network communityNew(int nodes, Transformation[] t) {

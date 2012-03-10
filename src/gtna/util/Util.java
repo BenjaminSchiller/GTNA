@@ -40,7 +40,6 @@ import gtna.data.Single;
 import gtna.graph.Edge;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.plot.PlotData;
 import gtna.routing.RoutingAlgorithm;
 
 import java.util.ArrayList;
@@ -382,14 +381,6 @@ public class Util {
 
 	public static long[] toLongArray(ArrayList<Long> list) {
 		long[] array = new long[list.size()];
-		for (int i = 0; i < list.size(); i++) {
-			array[i] = list.get(i);
-		}
-		return array;
-	}
-
-	public static PlotData[] toPlotDataArray(ArrayList<PlotData> list) {
-		PlotData[] array = new PlotData[list.size()];
 		for (int i = 0; i < list.size(); i++) {
 			array[i] = list.get(i);
 		}

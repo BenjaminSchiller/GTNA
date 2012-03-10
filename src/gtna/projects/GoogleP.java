@@ -61,8 +61,6 @@ import gtna.io.networks.googlePlus.User;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.plot.Gephi;
-import gtna.plot.Plot;
-import gtna.plot.PlotData;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
 import gtna.transformation.partition.StrongConnectivityPartition;
@@ -449,32 +447,34 @@ public class GoogleP {
 		double[] edgesInc = GoogleP.statsFromWC(main + "stats/edgesInc.log");
 		Config.overwrite("MAIN_PLOT_FOLDER", main + "stats/plots/");
 
-		Plot.fast(new double[][] { crawled, seen }, new String[] {
-				"Crawled Users", "Seen Users" }, "Users in each crawl", "CID",
-				"# of Users", "crawled-seen.pdf");
-		Plot.fast(new double[][] { crawled }, new String[] { "Crawled Users" },
-				"Users in each crawl", "CID", "# of Users", "crawled.pdf");
-		Plot.fast(new double[][] { seen }, new String[] { "Seen Users" },
-				"Users in each crawl", "CID", "# of Users", "seen.pdf");
-
-		Plot.fast(new double[][] { crawledInc, seenInc }, new String[] {
-				"Crawled Users (INC)", "Seen Users (INC)" },
-				"Users (INC) in each crawl", "CID", "# of Users (INC)",
-				"inc-crawled-seen.pdf");
-		Plot.fast(new double[][] { crawledInc },
-				new String[] { "Crawled Users (INC)" },
-				"Users (INC) in each crawl", "CID", "# of Users (INC)",
-				"inc-crawled.pdf");
-		Plot.fast(new double[][] { seenInc },
-				new String[] { "Seen Users (INC)" },
-				"Users (INC) in each crawl", "CID", "# of Users (INC)",
-				"inc-seen.pdf");
-
-		Plot.fast(new double[][] { edges }, new String[] { "Edges" },
-				"Edges in each crawl", "CID", "# of Edges", "edges.pdf");
-		Plot.fast(new double[][] { edgesInc }, new String[] { "Edges (INC)" },
-				"Edges (INC) in each crawl", "CID", "# of Edges (INC)",
-				"inc-edges.pdf");
+		// PlotOld.fast(new double[][] { crawled, seen }, new String[] {
+		// "Crawled Users", "Seen Users" }, "Users in each crawl", "CID",
+		// "# of Users", "crawled-seen.pdf");
+		// PlotOld.fast(new double[][] { crawled }, new String[] {
+		// "Crawled Users" },
+		// "Users in each crawl", "CID", "# of Users", "crawled.pdf");
+		// PlotOld.fast(new double[][] { seen }, new String[] { "Seen Users" },
+		// "Users in each crawl", "CID", "# of Users", "seen.pdf");
+		//
+		// PlotOld.fast(new double[][] { crawledInc, seenInc }, new String[] {
+		// "Crawled Users (INC)", "Seen Users (INC)" },
+		// "Users (INC) in each crawl", "CID", "# of Users (INC)",
+		// "inc-crawled-seen.pdf");
+		// PlotOld.fast(new double[][] { crawledInc },
+		// new String[] { "Crawled Users (INC)" },
+		// "Users (INC) in each crawl", "CID", "# of Users (INC)",
+		// "inc-crawled.pdf");
+		// PlotOld.fast(new double[][] { seenInc },
+		// new String[] { "Seen Users (INC)" },
+		// "Users (INC) in each crawl", "CID", "# of Users (INC)",
+		// "inc-seen.pdf");
+		//
+		// PlotOld.fast(new double[][] { edges }, new String[] { "Edges" },
+		// "Edges in each crawl", "CID", "# of Edges", "edges.pdf");
+		// PlotOld.fast(new double[][] { edgesInc }, new String[] {
+		// "Edges (INC)" },
+		// "Edges (INC) in each crawl", "CID", "# of Edges (INC)",
+		// "inc-edges.pdf");
 
 		stats.end();
 	}
@@ -1013,7 +1013,7 @@ public class GoogleP {
 						|| s.getRunFolders().length == 0) {
 					System.out.println("SKIPPING " + f.getAbsolutePath());
 				} else {
-					Plot.multiAvg(s, "multi-" + cid + "/", metrics);
+					// PlotOld.multiAvg(s, "multi-" + cid + "/", metrics);
 				}
 			}
 			counter++;
@@ -1052,7 +1052,7 @@ public class GoogleP {
 		}
 		// Plot.multiAvg(s, "all-multi/");
 		Config.overwrite("SINGLES_PLOT_LINE_WIDTH", "0");
-		Plot.singlesAvg(s, "all-single/", metrics);
+		// PlotOld.singlesAvg(s, "all-single/", metrics);
 	}
 
 	private static void statistics(String graphs, int maxOffset, String suffix,
@@ -1072,37 +1072,39 @@ public class GoogleP {
 		}
 
 		String[] pre = new String[] { "line/", "points/" };
-		int[] type = new int[] { PlotData.LINE, PlotData.POINTS };
+		// int[] type = new int[] { PlotData.LINE, PlotData.POINTS };
 		for (int j = 0; j < pre.length; j++) {
-			Plot.fast(new double[][] { crawledUsers },
-					new String[] { "users" }, "# of users", "crawl", "#",
-					pre[j] + "Users.pdf", "right", type[j], 1);
-
-			Plot.fast(recrawledUsers, names, "# of Re users", "crawl", "#",
-					pre[j] + "reUsers.pdf", "right", type[j], 1);
-			Plot.fast(recrawledUsersF, namesF, "Fraction of Re users", "crawl",
-					"Fraction", pre[j] + "reUsersF.pdf", "right", type[j], 1);
-
-			for (int i = 1; i < recrawledUsers.length; i++) {
-				Plot.fast(new double[][] { recrawledUsers[i] },
-						new String[] { names[i] }, "# of Re Users", "crawl",
-						"#", pre[j] + "reUsers-" + i + ".pdf", "right",
-						type[j], 1);
-				Plot.fast(
-						new double[][] { recrawledUsers[0], recrawledUsers[i] },
-						new String[] { names[0], names[i] }, "# of Re Users",
-						"crawl", "#", pre[j] + "reUsers_" + i + ".pdf",
-						"right", type[j], 1);
-				Plot.fast(new double[][] { recrawledUsersF[i] },
-						new String[] { namesF[i] }, "Fraction of Re Users",
-						"crawl", "Fraction", pre[j] + "reUsersF-" + i + ".pdf",
-						"right", type[j], 1);
-				Plot.fast(new double[][] { recrawledUsersF[0],
-						recrawledUsersF[i] }, new String[] { namesF[0],
-						namesF[i] }, "Fraction of Re Users", "crawl",
-						"Fraction", pre[j] + "reUsersF_" + i + ".pdf", "right",
-						type[j], 1);
-			}
+			// PlotOld.fast(new double[][] { crawledUsers },
+			// new String[] { "users" }, "# of users", "crawl", "#",
+			// pre[j] + "Users.pdf", "right", type[j], 1);
+			//
+			// PlotOld.fast(recrawledUsers, names, "# of Re users", "crawl",
+			// "#",
+			// pre[j] + "reUsers.pdf", "right", type[j], 1);
+			// PlotOld.fast(recrawledUsersF, namesF, "Fraction of Re users",
+			// "crawl",
+			// "Fraction", pre[j] + "reUsersF.pdf", "right", type[j], 1);
+			//
+			// for (int i = 1; i < recrawledUsers.length; i++) {
+			// PlotOld.fast(new double[][] { recrawledUsers[i] },
+			// new String[] { names[i] }, "# of Re Users", "crawl",
+			// "#", pre[j] + "reUsers-" + i + ".pdf", "right",
+			// type[j], 1);
+			// PlotOld.fast(
+			// new double[][] { recrawledUsers[0], recrawledUsers[i] },
+			// new String[] { names[0], names[i] }, "# of Re Users",
+			// "crawl", "#", pre[j] + "reUsers_" + i + ".pdf",
+			// "right", type[j], 1);
+			// PlotOld.fast(new double[][] { recrawledUsersF[i] },
+			// new String[] { namesF[i] }, "Fraction of Re Users",
+			// "crawl", "Fraction", pre[j] + "reUsersF-" + i + ".pdf",
+			// "right", type[j], 1);
+			// PlotOld.fast(new double[][] { recrawledUsersF[0],
+			// recrawledUsersF[i] }, new String[] { namesF[0],
+			// namesF[i] }, "Fraction of Re Users", "crawl",
+			// "Fraction", pre[j] + "reUsersF_" + i + ".pdf", "right",
+			// type[j], 1);
+			// }
 		}
 	}
 

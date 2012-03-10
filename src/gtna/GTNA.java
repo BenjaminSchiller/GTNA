@@ -43,7 +43,7 @@ import gtna.metrics.Metric;
 import gtna.metrics.ShortestPaths;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
-import gtna.plot.Plot;
+import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.edges.Bidirectional;
 import gtna.transformation.id.RandomRingIDSpace;
@@ -80,14 +80,14 @@ public class GTNA {
 
 		Network nw1 = new ErdosRenyi(100, 5, false, null);
 		Series s1 = Series.generate(nw1, metrics, 5);
-		Plot.multiAvg(s1, "er-unidirectional/", metrics);
+		Plotting.plotMulti(s1, metrics, "er-unidirectional/");
 
 		Network nw2 = new ErdosRenyi(100, 5, true, null);
 		Series s2 = Series.generate(nw2, metrics, 10);
-		Plot.multiAvg(s2, "er-bidirectional/", metrics);
+		Plotting.plotMulti(s2, metrics, "er-bidirectional/");
 
 		Series[] s = new Series[] { s1, s2 };
-		Plot.multiAvg(s, "er-both/", metrics);
+		Plotting.plotMulti(s, metrics, "er-both/");
 	}
 
 	private static void example3() {
@@ -100,7 +100,7 @@ public class GTNA {
 		Network nw2 = new ErdosRenyi(100, 5, true, null);
 		Network[] nw = new Network[] { nw1, nw2 };
 		Series[] s = Series.get(nw, metrics);
-		Plot.multiConf(s, "er-get/", metrics);
+		Plotting.plotMulti(s, metrics, "er-get/");
 	}
 
 	private static void example4() {
@@ -115,7 +115,7 @@ public class GTNA {
 		Network nw2 = new ErdosRenyi(100, 5, false, t);
 		Network[] nw = new Network[] { nw1, nw2 };
 		Series[] s = Series.generate(nw, metrics, 10);
-		Plot.multiAvg(s, "er-transformed/", metrics);
+		Plotting.plotMulti(s, metrics, "er-transformed/");
 	}
 
 	private static void example5() {
@@ -127,7 +127,7 @@ public class GTNA {
 		Network[] nw = ErdosRenyi.get(100, new double[] { 5, 6, 7, 8, 9, 10 },
 				false, null);
 		Series[] s = Series.generate(nw, metrics, 7);
-		Plot.singlesAvg(s, "er-singles/", metrics);
+		Plotting.plotSingle(s, metrics, "er-singles/");
 	}
 
 	private static void example6() {
@@ -156,11 +156,11 @@ public class GTNA {
 		Series[] s1 = Series.get(nw1, metrics);
 		Series[] s2 = Series.get(nw2, metrics);
 		Series[] s3 = Series.get(nw3, metrics);
-		Plot.singlesConf(s, "er-more-singles/", metrics);
-		Plot.multiConf(s1, "er-more-multi-1/", metrics);
-		Plot.multiConf(s2, "er-more-multi-2/", metrics);
-		Plot.multiConf(s3, "er-more-multi-3/", metrics);
-		Plot.multiConf(Util.combine(s), "er-more-multi/", metrics);
+		Plotting.plotMulti(s, metrics, "er-more-singles/");
+		Plotting.plotMulti(s1, metrics, "er-more-multi-1/");
+		Plotting.plotMulti(s2, metrics, "er-more-multi-2/");
+		Plotting.plotMulti(s3, metrics, "er-more-multi-3/");
+		Plotting.plotMulti(Util.combine(s), metrics, "er-more-multi/");
 	}
 
 	private static void example7() {
