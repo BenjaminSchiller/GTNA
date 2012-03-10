@@ -108,15 +108,15 @@ public class ParameterList {
 	}
 
 	public String diffDescription(ParameterList compareTo) {
-		return this.getDescription(this.diffParameterKey(compareTo));
+		return this.getDescription(this.getDiffParameter(compareTo).getKey());
 	}
 
 	public String diffDescriptionLong(ParameterList compareTo) {
-		return this.getDescriptionLong(this.diffParameterKey(compareTo));
+		return this.getDescriptionLong(this.getDiffParameter(compareTo).getKey());
 	}
 
 	public String diffDescriptionShort(ParameterList compareTo) {
-		return this.getDescriptionShort(this.diffParameterKey(compareTo));
+		return this.getDescriptionShort(this.getDiffParameter(compareTo).getKey());
 	}
 
 	private String getDescription(String keyX) {
@@ -182,78 +182,54 @@ public class ParameterList {
 		return buff.toString();
 	}
 
-	public String diffParameterName(ParameterList p2) {
-		return this.diffParameterNameXY(p2, "_NAME");
+	public String getDiffParameterName(ParameterList p2) {
+		return this.getDiffParameterNameXY(p2, "_NAME");
 	}
 
-	public String diffParameterNameLong(ParameterList p2) {
-		return this.diffParameterNameXY(p2, "_NAME_LONG");
+	public String getDiffParameterNameLong(ParameterList p2) {
+		return this.getDiffParameterNameXY(p2, "_NAME_LONG");
 	}
 
-	public String diffParameterNameShort(ParameterList p2) {
-		return this.diffParameterNameXY(p2, "_NAME_SHORT");
+	public String getDiffParameterNameShort(ParameterList p2) {
+		return this.getDiffParameterNameXY(p2, "_NAME_SHORT");
 	}
 
-	private String diffParameterNameXY(ParameterList p2, String xy) {
-		if (!p2.getKey().equals(this.key)) {
+	public Parameter getDiffParameter(ParameterList pl2) {
+		if (!pl2.getKey().equals(this.key)) {
 			return null;
 		}
-		if (p2.getParameters().length != this.parameters.length) {
+		if (pl2.getParameters().length != this.parameters.length) {
 			return null;
 		}
 		for (int i = 0; i < this.parameters.length; i++) {
-			if (!this.parameters[i].getKey().equals(
-					p2.getParameters()[i].getKey())) {
+			Parameter p1 = this.parameters[i];
+			Parameter p2 = pl2.getParameters()[i];
+			if (!p1.getKey().equals(p2.getKey())) {
 				return null;
 			}
-			if (!this.parameters[i].getValue().equals(
-					p2.getParameters()[i].getValue())) {
-				return this.getParameterNameXY(this.parameters[i], xy);
+			if (!p1.getValue().equals(p2.getValue())
+					&& (p1 instanceof DoubleParameter || p1 instanceof IntParameter)) {
+				return p1;
 			}
 		}
 		return null;
 	}
 
-	private String diffParameterKey(ParameterList p2) {
-		if (!p2.getKey().equals(this.key)) {
+	private String getDiffParameterNameXY(ParameterList pl2, String xy) {
+		Parameter p = this.getDiffParameter(pl2);
+		if (p == null) {
 			return null;
 		}
-		if (p2.getParameters().length != this.parameters.length) {
-			return null;
-		}
-		for (int i = 0; i < this.parameters.length; i++) {
-			if (!this.parameters[i].getKey().equals(
-					p2.getParameters()[i].getKey())) {
-				return null;
-			}
-			if (!this.parameters[i].getValue().equals(
-					p2.getParameters()[i].getValue())) {
-				return this.parameters[i].getKey();
-			}
-		}
-		return null;
+		return this.getParameterNameXY(p, xy);
 	}
 
-	public double diffParameterValue(ParameterList p2) {
-		if (!p2.getKey().equals(this.key)) {
-			return -1;
+	public double getDiffParameterValue(ParameterList pl2) {
+		Parameter p = this.getDiffParameter(pl2);
+		if (p instanceof DoubleParameter) {
+			return ((DoubleParameter) p).getDoubleValue();
 		}
-		if (p2.getParameters().length != this.parameters.length) {
-			return -1;
-		}
-		for (int i = 0; i < this.parameters.length; i++) {
-			if (!this.parameters[i].getKey().equals(
-					p2.getParameters()[i].getKey())) {
-				return -1;
-			}
-			if (!this.parameters[i].getValue().equals(
-					p2.getParameters()[i].getValue())) {
-				try {
-					return Double.parseDouble(this.parameters[i].getValue());
-				} catch (Exception e) {
-					return -1;
-				}
-			}
+		if (p instanceof IntParameter) {
+			return ((IntParameter) p).getIntValue();
 		}
 		return -1;
 	}
