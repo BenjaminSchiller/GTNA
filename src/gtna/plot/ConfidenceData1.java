@@ -69,11 +69,14 @@ public class ConfidenceData1 extends Data {
 		buff.append(" lt " + lt + " lw " + lw);
 		buff.append(title == null ? " notitle" : " title \"" + this.title
 				+ "\"");
+		buff.append(",\\\n");
+		buff.append("'' using 1:2 with " + Style.lines + " lt " + lt + " lw "
+				+ lw + " notitle");
 		return buff.toString();
 	}
-	
-	public String[] getConfig(){
-		return new String[]{"set style fill solid", "set boxwidth 0.2"};
+
+	public String[] getConfig() {
+		return new String[] { "set style fill solid", "set boxwidth 0.2" };
 	}
 
 }

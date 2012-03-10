@@ -58,8 +58,8 @@ import gtna.networks.model.placementmodels.connectors.UDGConnector;
 import gtna.networks.model.placementmodels.models.CommunityPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.networks.util.DescriptionWrapper;
-import gtna.plot.Data;
-import gtna.plot.Gnuplot;
+import gtna.plot.Data.Type;
+import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityColors;
@@ -90,23 +90,27 @@ public class Test {
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testing/");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 		Config.overwrite("SERIES_GRAPH_WRITE", "false");
-		Metric[] metrics = new Metric[] { new DegreeDistribution(),
-				new ShortestPaths() };
-		int times = 200;
+		Metric dd = new DegreeDistribution();
+		Metric sp = new ShortestPaths();
+		Metric[] metrics = new Metric[] { dd, sp };
+		int times = 5;
 		boolean generate = false;
-		int nodes = 1000;
-		Network nw1 = new ErdosRenyi(nodes, 10, true,
-				new Transformation[] { new WeakConnectivityPartition(),
-						new GiantConnectedComponent() });
-		Network nw2 = new ErdosRenyi(nodes, 15, true,
-				new Transformation[] { new WeakConnectivityPartition(),
-						new GiantConnectedComponent() });
-		Network[] nw = new Network[] { nw1, nw2 };
-		Series[] s = generate ? Series.generate(nw, metrics, times) : Series
+		double[] d = new double[] { 10, 15, 20, 25, 30, 35, 40, 45, 50 };
+		int[] n = new int[] { 100, 200, 300, 400 };
+		Transformation[] t = new Transformation[] {
+				new WeakConnectivityPartition(), new GiantConnectedComponent() };
+		Network[] nw1 = ErdosRenyi.get(100, d, true, t);
+		Network[] nw2 = ErdosRenyi.get(200, d, true, t);
+		Network[] nw3 = ErdosRenyi.get(300, d, true, t);
+		Network[] nw4 = ErdosRenyi.get(400, d, true, t);
+		Network[] nw5 = ErdosRenyi.get(n, 40, true, t);
+		Network[] nw6 = ErdosRenyi.get(n, 50, true, t);
+		Network[][] nw = new Network[][] { nw1, nw2, nw3, nw4, nw5, nw6 };
+		Series[][] s = generate ? Series.generate(nw, metrics, times) : Series
 				.get(nw, metrics);
-		Plotting.multi(s, metrics, "multi/", Data.Type.average,
-				Gnuplot.Style.linespoint);
-		Plotting.single(s, metrics, "single/");
+		// Plotting.multi(s, metrics, "multi/", Type.average, Style.linespoint);
+		Plotting.single(s, metrics, "single/", Type.average, Style.linespoint);
+		Plotting.singleBy(s, metrics, "single-edges/", dd, "EDGES");
 	}
 
 	private static void series() {
@@ -142,9 +146,9 @@ public class Test {
 		System.out.println(nw2.getDescriptionShort());
 		System.out.println(nw2.getFolder());
 		System.out.println("");
-		System.out.println(nw1.diffDescription(nw2));
-		System.out.println(nw1.diffDescriptionLong(nw2));
-		System.out.println(nw1.diffDescriptionShort(nw2));
+		System.out.println(nw1.getDiffDescription(nw2));
+		System.out.println(nw1.getDiffDescriptionLong(nw2));
+		System.out.println(nw1.getDiffDescriptionShort(nw2));
 		System.out.println("");
 	}
 

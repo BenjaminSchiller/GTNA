@@ -48,7 +48,7 @@ public class LaTex {
 
 	public static void writeDataPlots(String filename, String folder,
 			Series[] s, Metric[] metrics) {
-		String nwDescription = s[0].getNetwork().diffDescriptionShort(
+		String nwDescription = s[0].getNetwork().getDiffDescriptionShort(
 				s[1 % s.length].getNetwork());
 		writePlot(filename, folder, nwDescription,
 				Config.allKeys("_DATA_PLOTS", metrics), metrics);
@@ -56,7 +56,7 @@ public class LaTex {
 
 	public static void writeSinglePlots(String filename, String folder,
 			Series[][] s, Metric[] metrics) {
-		String nwDescription = s[0][0].getNetwork().diffDescriptionShort(
+		String nwDescription = s[0][0].getNetwork().getDiffDescriptionShort(
 				s[0][1 % s[0].length].getNetwork());
 		writePlot(filename, folder, nwDescription,
 				Config.allKeys("_SINGLES_PLOTS", metrics), metrics);

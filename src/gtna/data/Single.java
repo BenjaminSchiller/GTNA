@@ -40,9 +40,16 @@ public class Single {
 
 	public double value;
 
+	public double[] data;
+
 	public Single(String key, double value) {
+		this(key, value, null);
+	}
+
+	public Single(String key, double value, double[] data) {
 		this.key = key;
 		this.value = value;
+		this.data = data;
 	}
 
 	public String getKey() {
@@ -51,6 +58,10 @@ public class Single {
 
 	public double getValue() {
 		return this.value;
+	}
+
+	public double[] getData() {
+		return this.data;
 	}
 
 	public String toString() {

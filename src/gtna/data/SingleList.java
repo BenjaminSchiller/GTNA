@@ -38,6 +38,7 @@ package gtna.data;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
 import gtna.metrics.Metric;
+import gtna.util.Config;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -94,12 +95,22 @@ public class SingleList {
 		Filereader fr = new Filereader(filename);
 		ArrayList<Single> list = new ArrayList<Single>();
 		String line = null;
+		String delimiter = Config.get("DATA_WRITER_DELIMITER");
 		while ((line = fr.readLine()) != null) {
 			if (line.trim().length() == 0) {
 				continue;
 			}
 			String[] temp = line.split("=");
-			list.add(new Single(temp[0], Double.parseDouble(temp[1])));
+			if (temp[1].contains(delimiter)) {
+				String[] temp2 = temp[1].split(delimiter);
+				double[] data = new double[temp2.length];
+				for (int i = 0; i < temp2.length; i++) {
+					data[i] = Double.parseDouble(temp2[i]);
+				}
+				list.add(new Single(temp[0], Double.parseDouble(temp2[0]), data));
+			} else {
+				list.add(new Single(temp[0], Double.parseDouble(temp[1])));
+			}
 		}
 		return new SingleList(metric, list);
 	}

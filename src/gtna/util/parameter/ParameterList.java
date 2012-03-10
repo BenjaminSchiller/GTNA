@@ -37,6 +37,8 @@ package gtna.util.parameter;
 
 import gtna.util.Config;
 
+import java.util.HashMap;
+
 /**
  * @author benni
  * 
@@ -46,6 +48,8 @@ public class ParameterList {
 
 	protected Parameter[] parameters;
 
+	protected HashMap<String, Parameter> map;
+
 	public ParameterList(String key) {
 		this(key, new Parameter[0]);
 	}
@@ -53,6 +57,10 @@ public class ParameterList {
 	public ParameterList(String key, Parameter[] parameters) {
 		this.key = key;
 		this.parameters = parameters;
+		this.map = new HashMap<String, Parameter>();
+		for (Parameter p : parameters) {
+			this.map.put(p.getKey(), p);
+		}
 	}
 
 	public String getKey() {
@@ -61,6 +69,10 @@ public class ParameterList {
 
 	public Parameter[] getParameters() {
 		return this.parameters;
+	}
+
+	public Parameter getParameter(String key) {
+		return this.map.get(key);
 	}
 
 	public String getFolderName() {
@@ -107,16 +119,18 @@ public class ParameterList {
 		return this.getDescriptionShort("");
 	}
 
-	public String diffDescription(ParameterList compareTo) {
+	public String getDiffDescription(ParameterList compareTo) {
 		return this.getDescription(this.getDiffParameter(compareTo).getKey());
 	}
 
-	public String diffDescriptionLong(ParameterList compareTo) {
-		return this.getDescriptionLong(this.getDiffParameter(compareTo).getKey());
+	public String getDiffDescriptionLong(ParameterList compareTo) {
+		return this.getDescriptionLong(this.getDiffParameter(compareTo)
+				.getKey());
 	}
 
-	public String diffDescriptionShort(ParameterList compareTo) {
-		return this.getDescriptionShort(this.getDiffParameter(compareTo).getKey());
+	public String getDiffDescriptionShort(ParameterList compareTo) {
+		return this.getDescriptionShort(this.getDiffParameter(compareTo)
+				.getKey());
 	}
 
 	private String getDescription(String keyX) {

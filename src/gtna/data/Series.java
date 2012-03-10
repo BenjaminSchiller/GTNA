@@ -65,6 +65,18 @@ public class Series {
 		return this.metrics;
 	}
 
+	public SingleList getSingleList(Metric m) {
+		return SingleList.read(m, this.getSinglesFilename(m));
+	}
+
+	public Single getSingle(Metric m, String key) {
+		SingleList sl = this.getSingleList(m);
+		if (sl == null) {
+			return null;
+		}
+		return sl.get(key);
+	}
+
 	public String getFolder() {
 		return Config.get("MAIN_DATA_FOLDER") + this.network.getFolder();
 	}
@@ -201,7 +213,8 @@ public class Series {
 					timer = new Timer("T: " + t.getDescriptionShort());
 					g = t.transform(g);
 					timer.end();
-					runtimes.add(new Single(t.getFolderName(), timer.getRuntime()));
+					runtimes.add(new Single(t.getFolderName(), timer
+							.getRuntime()));
 				} else {
 					System.out.println("T: " + t.getDescriptionShort()
 							+ " not applicable");

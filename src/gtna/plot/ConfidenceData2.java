@@ -72,6 +72,9 @@ public class ConfidenceData2 extends Data {
 		buff.append(",\\\n");
 		buff.append("'' using 1:3:3:3:3 with " + this.style + " lt -1 lw " + lw
 				+ " notitle");
+		buff.append(",\\\n");
+		buff.append("'' using 1:2 with " + Style.lines + " lt " + lt + " lw "
+				+ lw + " notitle");
 		return buff.toString();
 	}
 	

@@ -35,6 +35,7 @@
  */
 package gtna.plot;
 
+import gtna.io.DataWriter;
 import gtna.io.Output;
 import gtna.metrics.Metric;
 import gtna.util.Config;
@@ -54,9 +55,27 @@ public class Gnuplot {
 		lines, dots, points, linespoint, impulses, steps, boxes, candlesticks, yerrorbars
 	}
 
+	private static String getScriptName(Metric m, String plotKey) {
+		return Config.get("TEMP_FOLDER") + m.getFolderName() + "." + plotKey
+				+ ".gnuplot.txt";
+	}
+
+	private static String getDataName(Metric m, String plotKey, int index) {
+		return Config.get("TEMP_FOLDER") + m.getFolderName() + "." + plotKey
+				+ ".data." + index + ".txt";
+	}
+
+	public static String writeTempData(Metric m, String plotKey, int index,
+			double[][] data) {
+		String filename = Gnuplot.getDataName(m, plotKey, index);
+		if (!DataWriter.write(data, filename, false)) {
+			return null;
+		}
+		return filename;
+	}
+
 	public static boolean plot(Plot plot, Metric m, String plotKey) {
-		String filename = Config.get("TEMP_FOLDER") + "gnuplot."
-				+ m.getFolderName() + "." + plotKey + ".txt";
+		String filename = Gnuplot.getScriptName(m, plotKey);
 		String config = null;
 		int index = 0;
 		while ((config = Config.get("GNUPLOT_CONFIG_" + index++)) != null) {
