@@ -35,8 +35,8 @@
  */
 package gtna.transformation.gd;
 
+import gtna.drawing.GraphPlotter;
 import gtna.graph.Graph;
-import gtna.plot.GraphPlotter;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;

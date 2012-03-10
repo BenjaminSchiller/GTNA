@@ -38,9 +38,9 @@ package gtna.transformation.gd;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import gtna.drawing.GraphPlotter;
 import gtna.graph.Graph;
 import gtna.graph.spanningTree.SpanningTree;
-import gtna.plot.GraphPlotter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
 

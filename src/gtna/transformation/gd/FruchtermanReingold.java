@@ -35,10 +35,10 @@
  */
 package gtna.transformation.gd;
 
+import gtna.drawing.GraphPlotter;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.plot.GraphPlotter;
 import gtna.util.MDVector;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleArrayParameter;

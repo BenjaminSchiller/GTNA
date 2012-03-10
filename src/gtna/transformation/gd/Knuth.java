@@ -35,10 +35,10 @@
  */
 package gtna.transformation.gd;
 
+import gtna.drawing.GraphPlotter;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.spanningTree.SpanningTree;
-import gtna.plot.GraphPlotter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
 

@@ -33,10 +33,8 @@
  * ---------------------------------------
  *
  */
-package gtna.plot;
+package gtna.drawing;
 
-import gtna.drawing.Gephi;
-import gtna.drawing.GephiDecorator;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.util.Config;

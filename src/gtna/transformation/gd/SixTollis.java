@@ -43,6 +43,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
+import gtna.drawing.GraphPlotter;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -51,7 +52,6 @@ import gtna.graph.spanningTree.SpanningTree;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingPartition;
 import gtna.metrics.EdgeCrossings;
-import gtna.plot.GraphPlotter;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
