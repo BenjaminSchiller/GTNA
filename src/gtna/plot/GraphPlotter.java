@@ -35,9 +35,10 @@
  */
 package gtna.plot;
 
+import gtna.drawing.Gephi;
+import gtna.drawing.GephiDecorator;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
-import gtna.plot.GephiUtils.GephiDecorator;
 import gtna.util.Config;
 
 /**

@@ -36,8 +36,8 @@
 package gtna.transformation.communities;
 
 import gtna.communities.Communities;
+import gtna.drawing.NodeColors;
 import gtna.graph.Graph;
-import gtna.plot.GephiUtils.NodeColors;
 import gtna.transformation.Transformation;
 
 import java.awt.Color;

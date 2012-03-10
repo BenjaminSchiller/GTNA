@@ -36,6 +36,7 @@
 package gtna.projects;
 
 import gtna.data.Series;
+import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.id.Partition;
@@ -60,7 +61,6 @@ import gtna.io.networks.googlePlus.Task;
 import gtna.io.networks.googlePlus.User;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
-import gtna.plot.Gephi;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
 import gtna.transformation.partition.StrongConnectivityPartition;

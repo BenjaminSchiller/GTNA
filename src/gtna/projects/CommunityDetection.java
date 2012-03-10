@@ -36,6 +36,7 @@
 package gtna.projects;
 
 import gtna.communities.Communities;
+import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.GraphReader;
@@ -49,7 +50,6 @@ import gtna.networks.model.placementmodels.connectors.UDGConnector;
 import gtna.networks.model.placementmodels.models.CommunityPlacementModel;
 import gtna.networks.model.placementmodels.models.RandomPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
-import gtna.plot.Gephi;
 import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityColors;
 import gtna.transformation.communities.CommunityDetectionDeltaQ;

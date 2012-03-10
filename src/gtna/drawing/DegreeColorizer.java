@@ -21,55 +21,45 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * NodeColors.java
+ * DegreeColorizer.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: benni;
+ * Original Author: Nico;
  * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
  *
  */
-package gtna.plot.GephiUtils;
+package gtna.drawing;
+
+import org.gephi.graph.api.Edge;
 
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
-
-import java.awt.Color;
 
 /**
- * @author benni
+ * @author Nico
  * 
  */
-public class NodeColors implements GraphProperty {
+public class DegreeColorizer extends GephiDecorator {
+	int maxDegree = 0;
 
-	private Color[] colors;
-
-	public NodeColors() {
-		this.colors = new Color[0];
-	}
-
-	public NodeColors(Color[] colors) {
-		this.colors = colors;
-	}
-
-	public Color[] getColors() {
-		return this.colors;
+	public void init(Graph g) {
+		for (gtna.graph.Node n : g.getNodes()) {
+			maxDegree = Math.max(maxDegree, n.getDegree());
+		}
+		this.initialized = true;
 	}
 
 	@Override
-	public boolean write(String filename, String key) {
-		// TODO Auto-generated method stub
-		return false;
+	public void decorateNode(org.gephi.graph.api.Node gephiNode, gtna.graph.Node gtnaNode) {
+		if (!initialized) {
+			throw new RuntimeException("GephiDecorator not initialized yet");
+		}
+		int degree = gtnaNode.getDegree();
+		float color = (float) degree / maxDegree;
+		gephiNode.getNodeData().setColor(color, color, color);
 	}
-
-	@Override
-	public void read(String filename, Graph graph) {
-		// TODO Auto-generated method stub
-
-	}
-
 }

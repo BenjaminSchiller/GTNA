@@ -21,48 +21,55 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * GephiDecorator.java
+ * NodeColors.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Nico;
+ * Original Author: benni;
  * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
  *
  */
-package gtna.plot.GephiUtils;
-
-import org.gephi.graph.api.Edge;
+package gtna.drawing;
 
 import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
+
+import java.awt.Color;
 
 /**
- * @author Nico
+ * @author benni
  * 
  */
-public abstract class GephiDecorator {
-	protected boolean initialized = false;
+public class NodeColors implements GraphProperty {
 
-	public GephiDecorator() {
+	private Color[] colors;
+
+	public NodeColors() {
+		this.colors = new Color[0];
 	}
 
-	public abstract void init(Graph g);
-
-	public boolean showNode(gtna.graph.Node gtnaNode) {
-		return true;
+	public NodeColors(Color[] colors) {
+		this.colors = colors;
 	}
 
-	public void decorateNode(org.gephi.graph.api.Node gephiNode, gtna.graph.Node gtnaNode) {
+	public Color[] getColors() {
+		return this.colors;
 	}
 
-	public boolean showEdge(int src, int dest) {
-		return true;
+	@Override
+	public boolean write(String filename, String key) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
-	public void decorateEdge(Edge temp, int src, int dest) {
+	@Override
+	public void read(String filename, Graph graph) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

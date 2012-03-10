@@ -36,6 +36,7 @@
 package gtna.projects;
 
 import gtna.data.Series;
+import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.metrics.ClusteringCoefficient;
@@ -59,7 +60,6 @@ import gtna.networks.model.placementmodels.models.GridPlacementModel;
 import gtna.networks.model.placementmodels.models.RandomPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.networks.util.DescriptionWrapper;
-import gtna.plot.Gephi;
 import gtna.plot.Plotting;
 import gtna.util.Config;
 import gtna.util.Stats;

@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.plot;
+package gtna.drawing;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -49,8 +49,6 @@ import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartition;
 import gtna.id.ring.RingPartitionSimple;
-import gtna.plot.GephiUtils.GephiDecorator;
-import gtna.plot.GephiUtils.NodeColors;
 import gtna.util.Config;
 
 import java.awt.Color;

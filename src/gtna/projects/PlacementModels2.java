@@ -35,6 +35,7 @@
  */
 package gtna.projects;
 
+import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.networks.Network;
@@ -49,7 +50,6 @@ import gtna.networks.model.placementmodels.models.CommunityPlacementModel;
 import gtna.networks.model.placementmodels.models.GridPlacementModel;
 import gtna.networks.model.placementmodels.models.RandomPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
-import gtna.plot.Gephi;
 import gtna.util.Config;
 
 import java.io.IOException;
