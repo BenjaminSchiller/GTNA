@@ -36,6 +36,7 @@
 package gtna.plot;
 
 import gtna.io.Filewriter;
+import gtna.util.Config;
 
 import java.util.ArrayList;
 
@@ -87,17 +88,18 @@ public class Plot {
 			fw.writeln(config);
 		}
 		fw.write("plot ");
+		int lw = Config.getInt("GNUPLOT_LW");
 		for (int i = 0; i < data.length; i++) {
 			if (i > 0) {
-				fw.write(", \\\n" + data[i].getEntry(i + 1, 1));
+				fw.write(", \\\n" + data[i].getEntry(i + 1, lw));
 			} else {
-				fw.write(data[i].getEntry(i + 1, 1));
+				fw.write(data[i].getEntry(i + 1, lw));
 			}
 		}
 		return fw.close();
 	}
-	
-	public Data[] getData(){
+
+	public Data[] getData() {
 		return this.data;
 	}
 
