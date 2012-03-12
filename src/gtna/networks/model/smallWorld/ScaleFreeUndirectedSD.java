@@ -39,7 +39,8 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
-import gtna.transformation.TransformationImpl;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.Random;
 
@@ -47,13 +48,12 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class ScaleFreeUndirectedSD extends TransformationImpl implements
-		Transformation {
+public class ScaleFreeUndirectedSD extends Transformation {
 	private int C;
 
 	public ScaleFreeUndirectedSD(int C) {
-		super("SCALE_FREE_UNDIRECTED_SD", new String[] { "C" },
-				new String[] { "" + C });
+		super("SCALE_FREE_UNDIRECTED_SD", new Parameter[] { new IntParameter(
+				"C", C) });
 		this.C = C;
 	}
 
@@ -62,7 +62,7 @@ public class ScaleFreeUndirectedSD extends TransformationImpl implements
 		Node[] nodes = g.getNodes();
 		Edges edges = g.getEdges();
 		Random rand = new Random();
-		
+
 		// create local edges: randomly choose node within distance C
 		for (int i = 0; i < nodes.length; i++) {
 			int n1 = (i + rand.nextInt(this.C) + 1) % nodes.length;
@@ -73,7 +73,7 @@ public class ScaleFreeUndirectedSD extends TransformationImpl implements
 			edges.add(i, n2);
 			edges.add(n2, i);
 		}
-		
+
 		edges.fill();
 		return g;
 	}

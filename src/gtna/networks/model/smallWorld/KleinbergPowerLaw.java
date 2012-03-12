@@ -6,9 +6,13 @@ import gtna.graph.Node;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartitionSimple;
-import gtna.networks.NetworkImpl;
+import gtna.networks.Network;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -20,7 +24,7 @@ import java.util.Random;
  * @author stefanie
  * 
  */
-public class KleinbergPowerLaw extends NetworkImpl {
+public class KleinbergPowerLaw extends Network {
 
 	private int SHORT_RANGE_CONTACTS;
 
@@ -54,11 +58,12 @@ public class KleinbergPowerLaw extends NetworkImpl {
 	public KleinbergPowerLaw(int nodes, int SHORT_RANGE_CONTACTS,
 			double EXPONENT, int CUTOFF, boolean BIDIRECTIONAL, boolean RANDOM,
 			RoutingAlgorithm ra, Transformation[] t) {
-		super("KLEINBERG_POWER_LAW", nodes, new String[] {
-				"SHORT_RANGE_CONTACTS", "EXPONENT", "CUTOFF", "BIDIRECTIONAL",
-				"RANDOM" }, new String[] { "" + SHORT_RANGE_CONTACTS,
-				"" + EXPONENT, "" + CUTOFF, "" + BIDIRECTIONAL, "" + RANDOM },
-				ra, t);
+		super("KLEINBERG_POWER_LAW", nodes, new Parameter[] {
+				new IntParameter("SHORT_RANGE_CONTACTS", SHORT_RANGE_CONTACTS),
+				new DoubleParameter("EXPONENT", EXPONENT),
+				new IntParameter("CUTOFF", CUTOFF),
+				new BooleanParameter("BIDIRECTIONAL", BIDIRECTIONAL),
+				new BooleanParameter("RANDOM", RANDOM) }, t);
 		this.SHORT_RANGE_CONTACTS = SHORT_RANGE_CONTACTS;
 
 		this.EXPONENT = EXPONENT;
@@ -68,10 +73,10 @@ public class KleinbergPowerLaw extends NetworkImpl {
 	}
 
 	public Graph generate() {
-		Graph g = new Graph(this.description());
+		Graph g = new Graph(this.getDescription());
 		Random rand = new Random();
-		Node[] nodes = new Node[this.nodes()];
-		RingPartitionSimple[] parts = new RingPartitionSimple[this.nodes()];
+		Node[] nodes = new Node[this.getNodes()];
+		RingPartitionSimple[] parts = new RingPartitionSimple[this.getNodes()];
 		RingIdentifierSpaceSimple idSpace = new RingIdentifierSpaceSimple(
 				parts, 1, true);
 
@@ -94,8 +99,9 @@ public class KleinbergPowerLaw extends NetworkImpl {
 		for (int j = 1; j < this.CUTOFF; j++) {
 			norm = norm + Math.pow(j, -this.EXPONENT);
 		}
-		Edges edges = new Edges(nodes,
-				(int) (this.nodes() * (this.SHORT_RANGE_CONTACTS * 2 + norm)));
+		Edges edges = new Edges(
+				nodes,
+				(int) (this.getNodes() * (this.SHORT_RANGE_CONTACTS * 2 + norm)));
 		// short-distance links
 		for (int i = 0; i < nodes.length; i++) {
 			int src = i;

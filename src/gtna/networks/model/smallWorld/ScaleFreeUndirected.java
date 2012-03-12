@@ -76,51 +76,51 @@ public class ScaleFreeUndirected extends Network {
 		this.alpha = alpha;
 		this.cutoff = cutoff;
 	}
-	
-	public int getC(){
+
+	public int getC() {
 		return this.C;
 	}
-	
-	public double getAlpha(){
+
+	public double getAlpha() {
 		return this.alpha;
 	}
-	
-	public int getCutoff(){
+
+	public int getCutoff() {
 		return this.cutoff;
 	}
 
 	public static ScaleFreeUndirected[] get(int[] nodes, double alpha, int C,
-			int cutoff, RoutingAlgorithm ra, Transformation[] t) {
+			int cutoff, Transformation[] t) {
 		ScaleFreeUndirected[] nw = new ScaleFreeUndirected[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
-			nw[i] = new ScaleFreeUndirected(nodes[i], alpha, C, cutoff, ra, t);
+			nw[i] = new ScaleFreeUndirected(nodes[i], alpha, C, cutoff, t);
 		}
 		return nw;
 	}
 
 	public static ScaleFreeUndirected[] get(int nodes, double[] alpha, int C,
-			int cutoff, RoutingAlgorithm ra, Transformation[] t) {
+			int cutoff, Transformation[] t) {
 		ScaleFreeUndirected[] nw = new ScaleFreeUndirected[alpha.length];
 		for (int i = 0; i < alpha.length; i++) {
-			nw[i] = new ScaleFreeUndirected(nodes, alpha[i], C, cutoff, ra, t);
+			nw[i] = new ScaleFreeUndirected(nodes, alpha[i], C, cutoff, t);
 		}
 		return nw;
 	}
 
 	public static ScaleFreeUndirected[] get(int nodes, double alpha, int[] C,
-			int cutoff, RoutingAlgorithm ra, Transformation[] t) {
+			int cutoff, Transformation[] t) {
 		ScaleFreeUndirected[] nw = new ScaleFreeUndirected[C.length];
 		for (int i = 0; i < C.length; i++) {
-			nw[i] = new ScaleFreeUndirected(nodes, alpha, C[i], cutoff, ra, t);
+			nw[i] = new ScaleFreeUndirected(nodes, alpha, C[i], cutoff, t);
 		}
 		return nw;
 	}
 
 	public static ScaleFreeUndirected[] get(int nodes, double alpha, int C,
-			int[] cutoff, RoutingAlgorithm ra, Transformation[] t) {
+			int[] cutoff, Transformation[] t) {
 		ScaleFreeUndirected[] nw = new ScaleFreeUndirected[cutoff.length];
 		for (int i = 0; i < cutoff.length; i++) {
-			nw[i] = new ScaleFreeUndirected(nodes, alpha, C, cutoff[i], ra, t);
+			nw[i] = new ScaleFreeUndirected(nodes, alpha, C, cutoff[i], t);
 		}
 		return nw;
 	}
