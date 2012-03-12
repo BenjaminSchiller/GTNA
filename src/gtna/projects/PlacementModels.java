@@ -38,9 +38,13 @@ package gtna.projects;
 import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
+import gtna.metrics.ClusteringCoefficient;
+import gtna.metrics.DegreeDistribution;
+import gtna.metrics.Metric;
+import gtna.metrics.ShortestPaths;
+import gtna.metrics.WeakConnectivity;
 import gtna.networks.Network;
 import gtna.networks.etc.GpsNetwork;
-import gtna.networks.model.Gilbert;
 import gtna.networks.model.placementmodels.NodeConnector;
 import gtna.networks.model.placementmodels.Partitioner;
 import gtna.networks.model.placementmodels.PlacementModel;
@@ -112,6 +116,9 @@ public class PlacementModels {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, WEAK_CONNECTIVITY, "
 				+ "SHORTEST_PATHS, " + "CLUSTERING_COEFFICIENT");
+		Metric[] metrics = new Metric[] { new DegreeDistribution(),
+				new WeakConnectivity(), new ShortestPaths(),
+				new ClusteringCoefficient() };
 
 		String[] names = new String[] { "berlin", "chicago", "darmstadt_all",
 				"darmstadt_open", "google", "manhattan", "melbourne", "praha",
@@ -147,8 +154,8 @@ public class PlacementModels {
 						p1, p2_random, p, c, null, null);
 				nw[1][i] = new DescriptionWrapper(pmc_random, "Random " + n);
 			}
-			Series[][] s = GET ? Series.get(nw) : Series.generate(nw, times);
-			Plot.singlesAvg(s, name + "-" + nw[0][0].nodes() + "-singles/");
+			Series[][] s = GET ? Series.get(nw) : Series.generate(nw, metrics, times);
+			Plot.singlesAvg(s, name + "-" + nw[0][0].nodes() + "-singles/", metrics);
 		}
 	}
 
@@ -159,6 +166,9 @@ public class PlacementModels {
 
 		Config.overwrite("METRICS", "DEGREE_DISTRIBUTION, WEAK_CONNECTIVITY, "
 				+ "SHORTEST_PATHS, " + "CLUSTERING_COEFFICIENT");
+		Metric[] metrics = new Metric[] { new DegreeDistribution(),
+				new WeakConnectivity(), new ShortestPaths(),
+				new ClusteringCoefficient() };
 		// RICH_CLUB_CONNECTIVITY
 
 		double w = 1000;
@@ -184,16 +194,16 @@ public class PlacementModels {
 
 			boolean GET = true;
 
-			Series[][] s1 = GET ? Series.get(nw1) : Series.generate(nw1, times);
+			Series[][] s1 = GET ? Series.get(nw1) : Series.generate(nw1, metrics, times);
 			// Plot.singlesAvg(s1, times + "/Random-" + n + "/");
 
-			Series[][] s2 = GET ? Series.get(nw2) : Series.generate(nw2, times);
+			Series[][] s2 = GET ? Series.get(nw2) : Series.generate(nw2, metrics, times);
 			// Plot.singlesAvg(s2, times + "/Circle-" + n + "/");
 
-			Series[][] s3 = GET ? Series.get(nw3) : Series.generate(nw3, times);
+			Series[][] s3 = GET ? Series.get(nw3) : Series.generate(nw3, metrics, times);
 			// Plot.singlesAvg(s3, times + "/Grid-" + n + "/");
 
-			Series[][] s4 = GET ? Series.get(nw4) : Series.generate(nw4, times);
+			Series[][] s4 = GET ? Series.get(nw4) : Series.generate(nw4, metrics, times);
 			// Plot.singlesAvg(s4, times + "/Communities-" + n + "/");
 
 			Series[][] s = new Series[s1.length + s2.length + s3.length
@@ -211,7 +221,7 @@ public class PlacementModels {
 			for (Series[] S : s4) {
 				s[index++] = S;
 			}
-			Plot.singlesAvg(s, times + "/combination-" + n + "/");
+			Plot.singlesAvg(s, times + "/combination-" + n + "/", metrics);
 		}
 	}
 

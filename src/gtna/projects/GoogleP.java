@@ -58,6 +58,7 @@ import gtna.io.networks.googlePlus.Node;
 import gtna.io.networks.googlePlus.Statistics;
 import gtna.io.networks.googlePlus.Task;
 import gtna.io.networks.googlePlus.User;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.plot.Gephi;
 import gtna.plot.Plot;
@@ -983,9 +984,9 @@ public class GoogleP {
 	}
 
 	private static void computations(String data, String graph, int mod,
-			int offset, boolean generate, String metrics, String dataDst,
+			int offset, boolean generate, Metric[] metrics, String dataDst,
 			String plotDst, Transformation[] transformations) {
-		Config.overwrite("METRICS", metrics);
+		// Config.overwrite("METRICS", metrics);
 		Config.overwrite("MAIN_DATA_FOLDER", dataDst);
 		Config.overwrite("MAIN_PLOT_FOLDER", plotDst);
 		File folder = new File(graph);
@@ -1005,24 +1006,25 @@ public class GoogleP {
 				// f.getAbsolutePath(), null, transformations);
 				Network nw = new GooglePlus(f.getAbsolutePath(), cid, null,
 						transformations);
-				Series s = generate ? Series.generate(nw, 1) : Series.get(nw);
+				Series s = generate ? Series.generate(nw, metrics, 1) : Series
+						.get(nw);
 
 				if (s == null || s.dataFolders() == null
 						|| s.dataFolders().length == 0) {
 					System.out.println("SKIPPING " + f.getAbsolutePath());
 				} else {
-					Plot.multiAvg(s, "multi-" + cid + "/");
+					Plot.multiAvg(s, "multi-" + cid + "/", metrics);
 				}
 			}
 			counter++;
 		}
 	}
 
-	private static void plotCombined(String graphs, String metrics,
+	private static void plotCombined(String graphs, Metric[] metrics,
 			String dataDst, String plotDst, Transformation[] transformations) {
 		System.out.println("PLOTTING FOR " + metrics + " (from " + dataDst
 				+ ")");
-		Config.overwrite("METRICS", metrics);
+		// Config.overwrite("METRICS", metrics);
 		Config.overwrite("MAIN_DATA_FOLDER", dataDst);
 		Config.overwrite("MAIN_PLOT_FOLDER", plotDst);
 		File folder = new File(graphs);
@@ -1050,7 +1052,7 @@ public class GoogleP {
 		}
 		// Plot.multiAvg(s, "all-multi/");
 		Config.overwrite("SINGLES_PLOT_LINE_WIDTH", "0");
-		Plot.singlesAvg(s, "all-single/");
+		Plot.singlesAvg(s, "all-single/", metrics);
 	}
 
 	private static void statistics(String graphs, int maxOffset, String suffix,

@@ -35,7 +35,6 @@
  */
 package gtna.projects;
 
-import gtna.communities.Roles;
 import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -43,6 +42,11 @@ import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.Roles2NodeSorter;
 import gtna.graph.sorting.RolesNodeSorter;
+import gtna.metrics.Communities;
+import gtna.metrics.DegreeDistribution;
+import gtna.metrics.Metric;
+import gtna.metrics.Roles;
+import gtna.metrics.Roles2;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.placementmodels.NodeConnector;
@@ -60,6 +64,8 @@ import gtna.transformation.communities.CommunityDetectionDeltaQ;
 import gtna.transformation.communities.CommunityDetectionLPA;
 import gtna.transformation.communities.Roles2Generation;
 import gtna.transformation.communities.RolesGeneration;
+import gtna.transformation.partition.GiantConnectedComponent;
+import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.util.Config;
 
 import java.util.Random;
@@ -76,15 +82,21 @@ public class Resilience {
 		Transformation t_cc = new CommunityColors();
 		Transformation t_r = new RolesGeneration();
 		Transformation t_r2 = new Roles2Generation(true);
+		Transformation t_gcc = new GiantConnectedComponent();
+		Transformation t_wcp = new WeakConnectivityPartition();
 
-		int[] nodes = new int[] { 1000, 2000, 3000, 4000, 5000, 6000, 7000 };
+		int[] nodes = new int[] { 1000, 2000, 3000, 4000 };
 
-		Transformation[] t1 = new Transformation[] { t_lpa, t_r, t_r2 };
-		Transformation[] t2 = new Transformation[] { t_dq, t_r, t_r2 };
+		int times = 1;
+
+		Transformation[] t1 = new Transformation[] { t_wcp, t_gcc, t_lpa, t_r,
+				t_r2 };
+		Transformation[] t2 = new Transformation[] { t_wcp, t_gcc, t_dq, t_r,
+				t_r2 };
 		Network nw1 = new DescriptionWrapper(Resilience.communityNew(2000, t1),
-				"LPA - 2000");
+				"LPA");
 		Network nw2 = new DescriptionWrapper(Resilience.communityNew(2000, t2),
-				"DeltaQ - 2000");
+				"DeltaQ");
 		Network[] nw = new Network[] { nw1, nw2 };
 
 		Network[] nw_lpa = new Network[nodes.length];
@@ -98,18 +110,18 @@ public class Resilience {
 					t2), "DeltaQ - " + nodes[i]);
 		}
 
-		Config.overwrite("METRICS", "ROLES, ROLES2, COMMUNITIES");
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/roles/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/roles/");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Metric[] metrics = new Metric[] { new Roles(), new Roles2(),
+				new Communities(), new DegreeDistribution() };
 
-		Series[] s_lpa = Series.generate(nw_lpa, 1);
-		Series[] s_dq = Series.generate(nw_dq, 1);
+		Series[] s_lpa = Series.generate(nw_lpa, metrics, times);
+		Series[] s_dq = Series.generate(nw_dq, metrics, times);
 
-		Plot.multiAvg(s_lpa, "lpa/");
-		Plot.singlesAvg(s_lpa, "lpa-singles/");
-		Plot.multiAvg(s_dq, "deltaQ/");
-		Plot.singlesAvg(new Series[][] { s_lpa, s_dq }, "singles/");
+		Plot.multiAvg(s_lpa, "lpa/", metrics);
+		Plot.multiAvg(s_dq, "deltaQ/", metrics);
+		Plot.singlesAvg(new Series[][] { s_lpa, s_dq }, "singles/", metrics);
 	}
 
 	private static void sorting() {
@@ -163,7 +175,8 @@ public class Resilience {
 
 	private static void print(Node[] nodes, Graph g) {
 		// Roles2 roles = (Roles2) g.getProperty("ROLES2_0");
-		Roles roles = (Roles) g.getProperty("ROLES_0");
+		gtna.communities.Roles roles = (gtna.communities.Roles) g
+				.getProperty("ROLES_0");
 		for (int i = 0; i < nodes.length; i++) {
 			if (i > 0
 					&& roles.getRoleOfNode(nodes[i].getIndex()) == roles

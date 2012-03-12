@@ -36,6 +36,8 @@
 package gtna.projects;
 
 import gtna.data.Series;
+import gtna.metrics.Metric;
+import gtna.metrics.Routing;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.p2p.chord.Chord;
@@ -48,7 +50,6 @@ import gtna.routing.lookahead.LookaheadMinVia;
 import gtna.routing.lookahead.LookaheadSequential;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.RandomRingIDSpace;
-import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.lookahead.NeighborsFirstLookaheadList;
 import gtna.transformation.lookahead.NeighborsFirstObfuscatedLookaheadList;
 import gtna.transformation.lookahead.NeighborsGroupedLookaheadList;
@@ -72,6 +73,7 @@ public class LookaheadRouting {
 		Stats stats = new Stats();
 
 		Config.overwrite("METRICS", "R");
+		Metric[] metrics = new Metric[] { new Routing() };
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/lookahead/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/lookahead/");
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
@@ -98,7 +100,8 @@ public class LookaheadRouting {
 		int nodes = 1000;
 
 		// LookaheadRouting.obfuscation(generate, times, Input.Chord, nodes);
-		LookaheadRouting.obfuscation(generate, times, Input.SPI, nodes);
+		LookaheadRouting
+				.obfuscation(generate, times, Input.SPI, nodes, metrics);
 		// LookaheadRouting.obfuscation(generate, times, Input.ErdosRenyi,
 		// nodes);
 		// LookaheadRouting.lookahead(generate, times, nodes);
@@ -135,7 +138,8 @@ public class LookaheadRouting {
 	// Plot.multiAvg(s, "multi/");
 	// }
 
-	private static void lookahead(boolean generate, int times, int nodes) {
+	private static void lookahead(boolean generate, int times, int nodes,
+			Metric[] metrics) {
 		int chordNodes = nodes;
 		int chordBits = 20;
 		boolean chordUniform = false;
@@ -166,7 +170,8 @@ public class LookaheadRouting {
 			Network nw3 = new Chord(chordNodes, chordBits, chordUniform, lmv,
 					new Transformation[] { l });
 			Network[] nw = new Network[] { nw1, nw2, nw3 };
-			Series[] s = generate ? Series.generate(nw, times) : Series.get(nw);
+			Series[] s = generate ? Series.generate(nw, metrics, times)
+					: Series.get(nw);
 			// Plot.multiAvg(s, "LRA-" + map.get(l) + "-multi-avg/");
 			// Plot.multiConf(s, "LRA-" + map.get(l) + "-multi-conf/");
 		}
@@ -185,20 +190,20 @@ public class LookaheadRouting {
 					new Transformation[] { ll[i] });
 			slmv[i + 1] = new DescriptionWrapper(slmv[i + 1], map.get(ll[i]));
 		}
-		Plot.multiAvg(Series.get(sls), "LRA-LS-multi-avg/");
-		Plot.multiConf(Series.get(sls), "LRA-LS-multi-conf/");
-		Plot.multiAvg(Series.get(slmv), "LRA-LMV-multi-avg/");
-		Plot.multiConf(Series.get(slmv), "LRA-LMV-multi-conf/");
-		LookaheadRouting.blafasel(Series.get(sls), "LS");
-		LookaheadRouting.blafasel(Series.get(slmv), "LMV");
+		Plot.multiAvg(Series.get(sls), "LRA-LS-multi-avg/", metrics);
+		Plot.multiConf(Series.get(sls), "LRA-LS-multi-conf/", metrics);
+		Plot.multiAvg(Series.get(slmv), "LRA-LMV-multi-avg/", metrics);
+		Plot.multiConf(Series.get(slmv), "LRA-LMV-multi-conf/", metrics);
+		LookaheadRouting.blafasel(Series.get(sls), "LS", metrics);
+		LookaheadRouting.blafasel(Series.get(slmv), "LMV", metrics);
 	}
 
-	private static void blafasel(Series[] s1, String S) {
+	private static void blafasel(Series[] s1, String S, Metric[] metrics) {
 		for (int i = 1; i <= s1.length; i++) {
 			Series[] s = new Series[i];
 			System.arraycopy(s1, 0, s, 0, i);
-			Plot.multiAvg(s, "LRA-" + S + "-multi-avg-" + i + "/");
-			Plot.multiConf(s, "LRA-" + S + "-multi-conf-" + i + "/");
+			Plot.multiAvg(s, "LRA-" + S + "-multi-avg-" + i + "/", metrics);
+			Plot.multiConf(s, "LRA-" + S + "-multi-conf-" + i + "/", metrics);
 			String m = Config.get("MAIN_PLOT_FOLDER");
 			String e = Config.get("PLOT_EXTENSION");
 			try {
@@ -225,7 +230,7 @@ public class LookaheadRouting {
 	}
 
 	private static void obfuscation(boolean generate, int times, Input input,
-			int nodes) {
+			int nodes, Metric[] metrics) {
 		int chordNodes = nodes;
 		int chordBits = 20;
 		boolean chordUniform = false;
@@ -247,8 +252,8 @@ public class LookaheadRouting {
 
 		double[] obfuscationD = new double[] { 0.0, .1E-10, .1E-9, .1E-8,
 				.1E-7, .1E-6, .1E-5, .1E-4, .1E-3, .1E-2, .1E-1 };
-//		double[] obfuscationD = new double[] { 0.0, .1E-10, .1E-9, .1E-8,
-//				.1E-7, .1E-6, .1E-5, .1E-4, .1E-3, .1E-2, .1E-1, .1 };
+		// double[] obfuscationD = new double[] { 0.0, .1E-10, .1E-9, .1E-8,
+		// .1E-7, .1E-6, .1E-5, .1E-4, .1E-3, .1E-2, .1E-1, .1 };
 
 		Transformation t1 = new RandomRingIDSpace();
 
@@ -332,13 +337,14 @@ public class LookaheadRouting {
 					+ " - " + lookahead.nameShort());
 		}
 
-		Series[] s1 = generate ? Series.generate(nw, times) : Series.get(nw);
+		Series[] s1 = generate ? Series.generate(nw, metrics, times) : Series
+				.get(nw);
 		String folderAvgStd = "obfuscation-" + input + "-" + nw[0].nodes()
 				+ "-multi-avg/";
 		String folderConfStd = "obfuscation-" + input + "-" + nw[0].nodes()
 				+ "-multi-conf/";
-		Plot.multiAvg(s1, folderAvgStd);
-		Plot.multiConf(s1, folderConfStd);
+		Plot.multiAvg(s1, folderAvgStd, metrics);
+		Plot.multiConf(s1, folderConfStd, metrics);
 
 		for (int i = 1; i <= s1.length; i++) {
 			Series[] s2 = new Series[i];
@@ -347,8 +353,8 @@ public class LookaheadRouting {
 					+ "-multi-avg-" + i + "/";
 			String folderConf = "obfuscation-" + input + "-" + nw[0].nodes()
 					+ "-multi-conf-" + i + "/";
-			Plot.multiAvg(s2, folderAvg);
-			Plot.multiConf(s2, folderConf);
+			Plot.multiAvg(s2, folderAvg, metrics);
+			Plot.multiConf(s2, folderConf, metrics);
 			String e = Config.get("PLOT_EXTENSION");
 			String fromAvg = Config.get("MAIN_PLOT_FOLDER") + folderAvg
 					+ "r-hopDistributionAbsolute-cdf" + e;
