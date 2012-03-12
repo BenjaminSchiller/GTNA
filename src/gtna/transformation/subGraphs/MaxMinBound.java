@@ -38,7 +38,9 @@ package gtna.transformation.subGraphs;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.transformation.TransformationImpl;
+import gtna.transformation.Transformation;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -50,7 +52,7 @@ import java.util.Random;
  * deleting edges from higher-degree nodes randomly
  *
  */
-public class MaxMinBound extends TransformationImpl {
+public class MaxMinBound extends Transformation {
 	//max and min allowed degree
 	private int min,max;
 	//array of deleted nodes's indices
@@ -65,7 +67,8 @@ public class MaxMinBound extends TransformationImpl {
 	 * @param configValues
 	 */
 	public MaxMinBound(int min, int max) {
-		super("MAX_MIN_DEGREE", new String[] {"MIN", "MAX"}, new String[]{""+min, ""+max});
+		super("MAX_MIN_BOUND", new Parameter[] { new IntParameter(
+				"MIN", min), new IntParameter("MAX", max)});
 		this.max = max;
 		this.min = min;
 	}
