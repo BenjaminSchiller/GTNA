@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.degree;
+package gtna.transformation.subGraphs;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
@@ -45,11 +45,17 @@ import java.util.Random;
 
 /**
  * @author stef
+ * bound the degree by a minimum and maximum by removing
+ * nodes that do not have the minimal amount of edges, and
+ * deleting edges from higher-degree nodes randomly
  *
  */
 public class MaxMinBound extends TransformationImpl {
+	//max and min allowed degree
 	private int min,max;
+	//array of deleted nodes's indices
 	private boolean[] deleted;
+	//deleted edges per node
 	private boolean[][] deletedEdges;
 	private int[] curDegree;
 
@@ -77,14 +83,18 @@ public class MaxMinBound extends TransformationImpl {
 			curDegree[i] = nodes[i].getOutDegree();
 			deletedEdges[i] = new boolean[nodes[i].getOutDegree()];
 		}
+		//remove nodes with too low degree
 		for (int n = 0; n < nodes.length; n++){
 			removeMin(n,nodes);
 		}
+		
+		//remove edges for nodes with a too high degree
 		Random rand = new Random();
 		for (int n = 0; n < nodes.length; n++){
 			removeMax(n,nodes, rand);
 		}
 		
+		//build new graph
 		HashMap<Integer, Integer> index = new HashMap<Integer,Integer>();
 		int count = 0;
 		for (int i = 0; i < deleted.length; i++){
@@ -99,6 +109,7 @@ public class MaxMinBound extends TransformationImpl {
 			if (!deleted[i]){
 			int nr = index.get(i);
 			nNodes[nr] = nodes[i];
+			nNodes[nr].setIndex(nr);
 			int[] out = nodes[i].getOutgoingEdges();
 			for (int j = 0; j < out.length; j++){
 				if (!deletedEdges[i][j]){
@@ -108,11 +119,15 @@ public class MaxMinBound extends TransformationImpl {
 			}
 		}
 		edges.fill();
-		g = new Graph(g.getName());
+		//g = new Graph(g.getName());
 		g.setNodes(nNodes);
 		return g;
 	}
 	
+	/**
+	 * remove nodes with a too low degree and
+	 * recursively call function on all neighbors
+	 */
 	private void removeMin(int nr, Node[] nodes){
 		if (!deleted[nr] && curDegree[nr] < this.min){
 			deleted[nr] = true;
@@ -132,6 +147,13 @@ public class MaxMinBound extends TransformationImpl {
 		}
 	}
 	
+	/**
+	 * remove edges from node with too high degree uniformly at random
+	 * call removeMin on node to which each edge leads
+	 * @param nr
+	 * @param nodes
+	 * @param rand
+	 */
 	private void removeMax(int nr, Node[] nodes, Random rand){
 		while (curDegree[nr] > this.max){
 			int[] out = nodes[nr].getOutgoingEdges();
