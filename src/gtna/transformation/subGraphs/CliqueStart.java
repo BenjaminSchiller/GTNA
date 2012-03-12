@@ -40,6 +40,7 @@ import gtna.graph.Node;
 import gtna.transformation.TransformationImpl;
 
 import java.util.Random;
+import java.util.Vector;
 
 /**
  * @author stef
@@ -94,7 +95,12 @@ public class CliqueStart extends TransformationImpl {
 		return result;
 	}
 	
-	
+	private int checkLinked(int index, Vector<Node> neighs){
+		int c = 0;
+		for (int i = 0; i < neighs.size(); i++){
+			if (neighs.get(i).)
+		}
+	}
 	
 	
 
