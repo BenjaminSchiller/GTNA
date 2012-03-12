@@ -33,13 +33,13 @@
  * ---------------------------------------
  *
  */
-package gtna.projects;
+package gtna.projects.pets;
 
 import gtna.graph.Graph;
 import gtna.io.GraphReader;
 import gtna.networks.Network;
 import gtna.networks.model.smallWorld.ScaleFreeUndirected;
-import gtna.projects.PET.cutoffType;
+import gtna.projects.pets.PET.cutoffType;
 import gtna.routing.RoutingAlgorithm;
 import gtna.util.Config;
 
@@ -82,7 +82,7 @@ public class PETTest {
 			for (double alpha : Alpha) {
 				Network nwLD = PET.getLD(nodes, alpha, type);
 				System.out.println(times.get(nodes) + " x "
-						+ nwLD.description());
+						+ nwLD.getDescription());
 				if (PET.generateGraphs) {
 					System.out.println("      graphLD: "
 							+ PET.graphLDFilename(nwLD, 0));
@@ -99,7 +99,8 @@ public class PETTest {
 									.getSDR(nodes, alpha, type, c, r);
 							System.out.println("      data:              "
 									+ Config.get("MAIN_DATA_FOLDER")
-									+ nwSDR.nodes() + "/" + nwSDR.folder());
+									+ nwSDR.getNodes() + "/"
+									+ nwSDR.getFolder());
 						}
 					}
 				}
@@ -116,7 +117,7 @@ public class PETTest {
 			for (double alpha : Alpha) {
 				for (int i = 0; i < times; i++) {
 					Network nwLD = new ScaleFreeUndirected(nodes, alpha, -1,
-							cut, null, null);
+							cut, null);
 					String filenameLD = PET.graphLDFilename(nwLD, i);
 					if (!(new File(filenameLD)).exists()) {
 						System.out.println("ERROR LD - does not exist: "
@@ -135,7 +136,7 @@ public class PETTest {
 				for (int c : C) {
 					for (int i = 0; i < times; i++) {
 						Network nw = new ScaleFreeUndirected(nodes, alpha, c,
-								cut, null, null);
+								cut, null);
 						String filename = PET.graphFilename(nw, i);
 						if (!(new File(filename)).exists()) {
 							System.out.println("ERROR: does not exist: "

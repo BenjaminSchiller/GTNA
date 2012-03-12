@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.projects;
+package gtna.projects.pets;
 
 import gtna.networks.Network;
 

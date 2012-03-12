@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.projects;
+package gtna.projects.pets;
 
 import gtna.networks.Network;
 import gtna.networks.model.smallWorld.Kleinberg1D;
@@ -177,8 +177,7 @@ public class PET {
 			return new KleinbergPowerLaw(n, 0, alpha, PET.cutoff(n, type),
 					PET.bidirectional, false, null, null);
 		} else {
-			return new Kleinberg1D(n, 0, 1, 1, PET.bidirectional, false, null,
-					null);
+			return new Kleinberg1D(n, 0, 1, 1, PET.bidirectional, false, null);
 		}
 	}
 
@@ -193,7 +192,7 @@ public class PET {
 			return new KleinbergPowerLaw(n, 0, alpha, PET.cutoff(n, type),
 					PET.bidirectional, false, r, t);
 		} else {
-			return new Kleinberg1D(n, 0, 1, 1, PET.bidirectional, false, r, t);
+			return new Kleinberg1D(n, 0, 1, 1, PET.bidirectional, false, t);
 		}
 	}
 
@@ -214,7 +213,7 @@ public class PET {
 	}
 
 	public static String graphFolder(Network nw) {
-		return PET.graphs + nw.nodes() + "/" + nw.folder();
+		return PET.graphs + nw.getNodes() + "/" + nw.getFolder();
 	}
 
 	public static String graphFilename(Network nw, int i) {
@@ -222,11 +221,11 @@ public class PET {
 	}
 
 	public static String idSpaceFilename(Network nw) {
-		return PET.graphs + nw.nodes() + "/ID_SPACE_0";
+		return PET.graphs + nw.getNodes() + "/ID_SPACE_0";
 	}
 
 	public static String graphLDFolder(Network nw) {
-		return PET.graphsLD + nw.nodes() + "/" + nw.folder();
+		return PET.graphsLD + nw.getNodes() + "/" + nw.getFolder();
 	}
 
 	public static String graphLDFilename(Network nw, int i) {
@@ -234,7 +233,7 @@ public class PET {
 	}
 
 	public static String idSpaceLDFilename(Network nw) {
-		return PET.graphsLD + nw.nodes() + "/ID_SPACE_0";
+		return PET.graphsLD + nw.getNodes() + "/ID_SPACE_0";
 	}
 
 	public static int cutoff(int N, cutoffType type) {

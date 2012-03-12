@@ -33,12 +33,10 @@
  * ---------------------------------------
  *
  */
-package gtna.projects;
+package gtna.projects.pets;
 
-import gtna.data.Series;
 import gtna.networks.Network;
-import gtna.networks.util.ReadableFolder;
-import gtna.projects.PET.cutoffType;
+import gtna.projects.pets.PET.cutoffType;
 import gtna.routing.RoutingAlgorithm;
 
 import java.util.ArrayList;
@@ -60,11 +58,14 @@ public class PETData {
 					for (RoutingAlgorithm r : R) {
 						Network nwSD = PET.getSD(nodes, alpha, type, c);
 						Network nwLD = PET.getLD(nodes, alpha, type);
-						Network readable = new ReadableFolder(
-								nwSD.description(), nwLD.folder().replace("/",
-										""), PET.graphFolder(nwSD), ".txt",
-								new String[] { PET.idSpaceFilename(nwSD) }, r,
-								nwSD.transformations());
+						// Network readable = new ReadableFolder(
+						// nwSD.getDescription(), nwLD.getFolder()
+						// .replace("/", ""),
+						// PET.graphFolder(nwSD), ".txt",
+						// new String[] { PET.idSpaceFilename(nwSD) },
+						// nwSD.getTransformations());
+						// nw.add(readable);
+
 						// Network nwSDR = PET.getSDR(nodes, alpha, type, c, r);
 						// String folder = "kpl-0-" + alpha + "-"
 						// + PET.cutoff(nodes, type) + "-true-false-"
@@ -81,7 +82,6 @@ public class PETData {
 						// System.out.println("SDR: " + nwSDR.folder());
 						// System.out.println("R:   " + readable.folder());
 						// System.out.println("R2:  " + readable2.folder());
-						nw.add(readable);
 					}
 				}
 			}
@@ -99,8 +99,8 @@ public class PETData {
 		@Override
 		protected boolean process(Network nw) {
 			System.out.println("@@@ " + offset + "/" + this.threads
-					+ ": generating " + nw.description());
-			Series.generate(nw, this.times.get(nw.nodes()));
+					+ ": generating " + nw.getDescription());
+			// Series.generate(nw, this.times.get(nw.getNodes()));
 			return true;
 		}
 	}
