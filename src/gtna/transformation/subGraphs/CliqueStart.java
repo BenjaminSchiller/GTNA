@@ -37,7 +37,10 @@ package gtna.transformation.subGraphs;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.transformation.TransformationImpl;
+import gtna.transformation.Transformation;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.Random;
 import java.util.Vector;
@@ -46,7 +49,7 @@ import java.util.Vector;
  * @author stef
  *
  */
-public class CliqueStart extends TransformationImpl {
+public class CliqueStart extends Transformation {
 
 	static String ADD_RANDOM = "RANDOM";
 	static String ADD_LARGEST = "LARGEST";
@@ -60,7 +63,8 @@ public class CliqueStart extends TransformationImpl {
 	 * @param configValues
 	 */
 	public CliqueStart(int k, int min, int max, String add) {
-		super("CLIQUE_START", new String[]{"K", "MIN","MAX", "ADD"}, new String[] {""+k, ""+min, ""+max,""+add});
+		super("CLIQUE_START", new Parameter[]{new IntParameter("K", k), new IntParameter("MIN", min),
+				new IntParameter("MAX", max), new StringParameter("ADD", add)});
 		this.add = add;
 		this.min = min;
 		this.max = max;
@@ -83,8 +87,31 @@ public class CliqueStart extends TransformationImpl {
 		boolean found = false;
 		while (count < nodes.length & !found){
 			count++;
-			if (nodes[n].getOutDegree() >= this.k){
-				
+			if (nodes[n].getOutDegree() >= this.k && nodes[n].getInDegree() >= this.k){
+				Vector<Node> neighs = new Vector<Node>();
+				Node cur;
+				for (int i = 0; i < nodes[n].getOutDegree(); i++){
+					cur = nodes[nodes[n].getOutgoingEdges()[i]];
+					if (cur.getInDegree() >= this.k && cur.getOutDegree() >= this.k)
+					neighs.add(cur);
+				}
+				neighs.add(nodes[n]);
+				int round = 0;
+				int pos = 0;
+				while (round < neighs.size() && neighs.size() >= k){
+					if (this.checkLinked(neighs.get(pos).getIndex(),neighs) < k){
+						if (pos == neighs.size()){
+							neighs = new Vector<Node>();
+						} else {
+						round = 0;
+						neighs.remove(pos);
+						}
+					} else {
+						pos = (pos +1) % neighs.size();
+						round++;
+					}
+					
+				}
 			}
 			
 			n = (n + 1) % nodes.length;
@@ -98,8 +125,17 @@ public class CliqueStart extends TransformationImpl {
 	private int checkLinked(int index, Vector<Node> neighs){
 		int c = 0;
 		for (int i = 0; i < neighs.size(); i++){
-			if (neighs.get(i).)
+			if (neighs.get(i).hasIn(index) && neighs.get(i).hasOut(index)){
+				c++;
+			}
 		}
+		return c;
+	}
+	
+	private Vector<Node[]> determineMClique(int M, Vector<Node> neighs){
+		Vector<Node[]> res = new Vector<Node[]>();
+		
+		return res;
 	}
 	
 	
