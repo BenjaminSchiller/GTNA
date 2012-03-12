@@ -38,7 +38,10 @@ package gtna.transformation.subGraphs;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.transformation.TransformationImpl;
+import gtna.transformation.Transformation;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -48,7 +51,7 @@ import java.util.Vector;
  * @author stef
  *
  */
-public class SandbergTransformation extends TransformationImpl {
+public class SandbergTransformation extends Transformation {
 	public static String START_NODE_RANDOM = "RANDOM";
 	public static String START_NODE_LARGEST = "LARGEST";
 	
@@ -61,7 +64,8 @@ public class SandbergTransformation extends TransformationImpl {
 	 * @param configValues
 	 */
 	public SandbergTransformation(int nodesToInclude, String startnode) {
-		super("SANDBERG", new String[]{"INCLUDE", "STARTNODE"}, new String[]{""+nodesToInclude, ""+startnode});
+		super("SANDBERG", new Parameter[]{new IntParameter("INCLUDE",nodesToInclude), 
+				new StringParameter("STARTNODE",startnode)});
 		this.include = nodesToInclude;
 		this.startnode = startnode;
 	}
@@ -133,7 +137,6 @@ public class SandbergTransformation extends TransformationImpl {
 				
 			}
 		}
-		System.out.println(c);
 		c = 0;
 		for (int i = 0; i < added.length; i++){
 			if (added[i]){
