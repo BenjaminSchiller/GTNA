@@ -93,11 +93,7 @@ public class Gnuplot {
 
 	private static boolean execute(String cmd) {
 		try {
-			String[] envp = new String[] { Config.get("GNUPLOT_ENVP") };
-			if (envp[0] == null || envp.length == 0) {
-				envp = null;
-			}
-			Process p = Runtime.getRuntime().exec(cmd, envp);
+			Process p = Runtime.getRuntime().exec(cmd, null);
 
 			if (Config.getBoolean("GNUPLOT_PRINT_ERRORS")) {
 				InputStream stderr = p.getErrorStream();

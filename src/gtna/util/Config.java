@@ -169,7 +169,7 @@ public class Config {
 		initWithFolders(new String[] { folder });
 	}
 
-	private static void init() throws IOException {
+	public static void init() throws IOException {
 		// initWithFolder(defaultConfigFolder);
 		Vector<String> v = new Vector<String>();
 		File folder = new File(defaultConfigFolder);

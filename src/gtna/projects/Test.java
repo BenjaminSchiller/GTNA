@@ -93,8 +93,8 @@ public class Test {
 		Metric dd = new DegreeDistribution();
 		Metric sp = new ShortestPaths();
 		Metric[] metrics = new Metric[] { dd, sp };
-		int times = 5;
-		boolean generate = false;
+		int times = 2;
+		boolean generate = true;
 		double[] d = new double[] { 10, 15, 20, 25, 30, 35, 40, 45, 50 };
 		int[] n = new int[] { 100, 200, 300, 400 };
 		Transformation[] t = new Transformation[] {
