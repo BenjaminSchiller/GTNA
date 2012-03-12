@@ -35,10 +35,6 @@
  */
 package gtna.networks.model.smallWorld;
 
-import java.util.Arrays;
-import java.util.Random;
-import java.util.Vector;
-
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -46,36 +42,43 @@ import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartitionSimple;
 import gtna.networks.Network;
-import gtna.networks.NetworkImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
+
+import java.util.Arrays;
+import java.util.Random;
+import java.util.Vector;
 
 /**
  * @author benni
  * 
  */
-public class ScaleFreeUndirectedLD extends NetworkImpl implements Network {
+public class ScaleFreeUndirectedLD extends Network {
 	private double interval;
 	private double alpha;
 	private int cutoff;
 
 	public ScaleFreeUndirectedLD(int nodes, double alpha, int cutoff,
 			RoutingAlgorithm ra, Transformation[] t) {
-		super("SCALE_FREE_UNDIRECTED_LD", nodes, new String[] { "ALPHA",
-				"CUTOFF" }, new String[] { "" + alpha, "" + cutoff }, ra, t);
+		super("SCALE_FREE_UNDIRECTED_LD", nodes, new Parameter[] {
+				new DoubleParameter("ALPHA", alpha),
+				new IntParameter("CUTOFF", cutoff) }, t);
 		this.interval = (double) 1 / nodes;
 		this.alpha = alpha;
 		this.cutoff = cutoff;
 	}
-	
-	public double getAlpha(){
+
+	public double getAlpha() {
 		return this.alpha;
 	}
 
 	@Override
 	public Graph generate() {
-		Node[] nodes = new Node[this.nodes()];
-		Graph g = new Graph(this.description());
+		Node[] nodes = new Node[this.getNodes()];
+		Graph g = new Graph(this.getDescription());
 		for (int i = 0; i < nodes.length; i++) {
 			nodes[i] = new Node(i, g);
 		}
@@ -118,7 +121,7 @@ public class ScaleFreeUndirectedLD extends NetworkImpl implements Network {
 			labels[vec.get(k)] = this.cutoff;
 		}
 
-		Edges edges = new Edges(nodes, (int) Math.round(sum * this.nodes()));
+		Edges edges = new Edges(nodes, (int) Math.round(sum * this.getNodes()));
 
 		// create long-range edges: use labels and distance for each pair of
 		// nodes
