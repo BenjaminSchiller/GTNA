@@ -33,14 +33,14 @@
  * ---------------------------------------
  *
  */
-package gtna.projects;
+package gtna.projects.pets;
 
 import gtna.graph.Graph;
 import gtna.io.Filewriter;
 import gtna.io.GraphReader;
 import gtna.io.GraphWriter;
 import gtna.networks.Network;
-import gtna.projects.PET.cutoffType;
+import gtna.projects.pets.PET.cutoffType;
 import gtna.transformation.Transformation;
 import gtna.util.Timer;
 
@@ -81,9 +81,8 @@ public class PETGraphs {
 		protected boolean process(Network nw) {
 			boolean success = true;
 			double alpha = PET.getAlpha(nw);
-			for (int i = 0; i < this.times.get(nw.nodes()); i++) {
-				Network nwLD = PET.getLD(nw.nodes(), alpha,
-						this.type);
+			for (int i = 0; i < this.times.get(nw.getNodes()); i++) {
+				Network nwLD = PET.getLD(nw.getNodes(), alpha, this.type);
 				String folderLD = PET.graphLDFolder(nwLD);
 				String filenameLD = PET.graphLDFilename(nwLD, i);
 				String idSpaceFilenameLD = PET.idSpaceLDFilename(nwLD);
@@ -129,7 +128,7 @@ public class PETGraphs {
 							+ filename);
 					continue;
 				}
-				Transformation t = nw.transformations()[0];
+				Transformation t = nw.getTransformations()[0];
 				Timer timer = new Timer(this.offset + ": generateSD "
 						+ filename);
 				Graph g = t.transform(gLD);

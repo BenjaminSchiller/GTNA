@@ -33,10 +33,8 @@
  * ---------------------------------------
  *
  */
-package gtna.projects;
+package gtna.projects.pets;
 
-import gtna.data.Series;
-import gtna.networks.Network;
 import gtna.routing.RoutingAlgorithm;
 
 /**
@@ -53,8 +51,8 @@ public class PETComputation {
 		RoutingAlgorithm r1 = R[0];
 		RoutingAlgorithm r2 = R[1];
 		System.out.println("\n\n\n\ndiff for " + singleKey);
-		System.out.println("alpha / c : " + r1.nameShort() + " / "
-				+ r2.nameShort());
+		System.out.println("alpha / c : " + r1.getNameShort() + " / "
+				+ r2.getNameShort());
 		System.out.println("\\begin{tabular}{p{2cm} *{" + Nodes.length
 				+ "}{l}}");
 		for (int nodes : Nodes) {
@@ -65,17 +63,17 @@ public class PETComputation {
 			for (double alpha : Alpha) {
 				System.out.print(alpha + "/" + c);
 				for (int nodes : Nodes) {
-					Network nw1 = PET.getSDR(nodes, alpha, type, c, r1);
-					Network nw2 = PET.getSDR(nodes, alpha, type, c, r2);
-					Series s1 = Series.get(nw1);
-					Series s2 = Series.get(nw2);
-					double v1 = s1.avgSingles().getValue(singleKey);
-					double v2 = s2.avgSingles().getValue(singleKey);
-					double v3 = (v2 - v1) / v2;
+					// Network nw1 = PET.getSDR(nodes, alpha, type, c, r1);
+					// Network nw2 = PET.getSDR(nodes, alpha, type, c, r2);
+					// Series s1 = Series.get(nw1);
+					// Series s2 = Series.get(nw2);
+					// double v1 = s1.avgSingles().getValue(singleKey);
+					// double v2 = s2.avgSingles().getValue(singleKey);
+					// double v3 = (v2 - v1) / v2;
 					// System.out.println(nodes + "/" + alpha + "/" + c +
 					// " :	=> "
 					// + v3);
-					System.out.print(" & " + PETComputation.sub(v3));
+					// System.out.print(" & " + PETComputation.sub(v3));
 				}
 				System.out.println("\\\\");
 			}
@@ -84,7 +82,7 @@ public class PETComputation {
 	}
 
 	private static String sub(double v) {
-//		return (-1.0 * v) + "";
+		// return (-1.0 * v) + "";
 		v = -1.0 * v;
 		return String.format("%.5g", v);
 		// v = Math.round(v * -100000.0) / 100000.0;
