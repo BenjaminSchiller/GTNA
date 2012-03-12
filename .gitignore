@@ -12,3 +12,6 @@ bin
 
 # deploy
 deploy*
+
+# etc
+etc/configKeys.txt
