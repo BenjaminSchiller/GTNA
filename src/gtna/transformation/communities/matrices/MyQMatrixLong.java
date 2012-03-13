@@ -2,8 +2,6 @@ package gtna.transformation.communities.matrices;
 
 import java.util.TreeSet;
 
-import gtna.io.Log;
-
 /**
  * Encapsulates the Matrix Q of the community detection algorithm based on
  * improving Q in every step. Further information on this algorithm can be found
@@ -144,9 +142,9 @@ public class MyQMatrixLong implements IMyQMatrix {
 		erg[0] = next.i;
 		erg[1] = next.j;
 
-		if (debug)
-			Log.debug("Next merge (" + erg[0] + ", " + erg[1] + ") = "
-					+ lastDelta);
+		// if (debug)
+		// Log.debug("Next merge (" + erg[0] + ", " + erg[1] + ") = "
+		// + lastDelta);
 	}
 
 	/*

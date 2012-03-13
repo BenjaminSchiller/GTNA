@@ -1,7 +1,5 @@
 package gtna.transformation.communities.matrices;
 
-import gtna.io.Log;
-
 /**
  * Encapsulates the Matrix Q of the community detection algorithm based on
  * improving Q in every step. Further information on this algorithm can be found
@@ -68,8 +66,9 @@ public class MyQMatrixClassic implements IMyQMatrix {
 				// and therefore the associated value in the QMatrix is set to
 				// Integer.MAX_VALUE so this join will be ignored
 				else
-					setValue(i, j, (edges * (e.getValue(j, i) + e.getValue(i, j)) - 2 * e.getRowSum(i)
-							* e.getRowSum(j)));
+					setValue(i, j,
+							(edges * (e.getValue(j, i) + e.getValue(i, j)) - 2
+									* e.getRowSum(i) * e.getRowSum(j)));
 
 				// as defined by the paper referred to in the Class Description
 			}
@@ -135,7 +134,8 @@ public class MyQMatrixClassic implements IMyQMatrix {
 				// are checked
 				for (int j = i + 1; j < dimension; j++) {
 					if (!deleted[j]) {
-						if (getValue(i, j) > aktMaxValue && getValue(i, j) != Integer.MAX_VALUE) {
+						if (getValue(i, j) > aktMaxValue
+								&& getValue(i, j) != Integer.MAX_VALUE) {
 							aktMaxValue = getValue(i, j);
 							aktMaxI = i;
 							aktMaxJ = j;
@@ -148,11 +148,11 @@ public class MyQMatrixClassic implements IMyQMatrix {
 		lastDelta = aktMaxValue;
 		erg[0] = aktMaxI;
 		erg[1] = aktMaxJ;
-		
-		if(debug)
-			Log.debug("Next merge (" + aktMaxI + ", " + aktMaxJ + ") = " + aktMaxValue);
 
-		
+		// if(debug)
+		// Log.debug("Next merge (" + aktMaxI + ", " + aktMaxJ + ") = " +
+		// aktMaxValue);
+
 	}
 
 	/*
@@ -178,10 +178,15 @@ public class MyQMatrixClassic implements IMyQMatrix {
 				if (e.getValue(i, k) == 0 && e.getValue(k, i) == 0)
 					setValue(i, k, Integer.MAX_VALUE);
 				else
-					setValue(i, k, (edges * (e.getValue(k, i) + e.getValue(i, k)) - (2 * e.getRowSum(k) * e.getRowSum(i))));
+					setValue(
+							i,
+							k,
+							(edges * (e.getValue(k, i) + e.getValue(i, k)) - (2 * e
+									.getRowSum(k) * e.getRowSum(i))));
 
-				if (debug)
-					Log.debug("Set value for (" + i + ", " + k + ") to " + getValue(i, k));
+				// if (debug)
+				// Log.debug("Set value for (" + i + ", " + k + ") to "
+				// + getValue(i, k));
 			}
 		}
 		// second recalculate the column i starting from 0 and ending at i-1 for
@@ -199,11 +204,15 @@ public class MyQMatrixClassic implements IMyQMatrix {
 				if (e.getValue(k, i) == 0 && e.getValue(i, k) == 0)
 					setValue(k, i, Integer.MAX_VALUE);
 				else
-					setValue(k, i, (edges * ( e.getValue(i, k) + e.getValue(k, i)) - (2 * e.getRowSum(k) * e
-							.getRowSum(i))));
+					setValue(
+							k,
+							i,
+							(edges * (e.getValue(i, k) + e.getValue(k, i)) - (2 * e
+									.getRowSum(k) * e.getRowSum(i))));
 
-			if (debug)
-				Log.debug("Set value for (" + i + ", " + j + ") to " + getValue(i, k));
+			// if (debug)
+			// Log.debug("Set value for (" + i + ", " + j + ") to "
+			// + getValue(i, k));
 		}
 	}
 
@@ -227,7 +236,7 @@ public class MyQMatrixClassic implements IMyQMatrix {
 				ret.append("\t");
 				for (int j = 0; j < dimension; j++) {
 					if (!deleted[j]) {
-						if(getValue(i, j) == Integer.MAX_VALUE)
+						if (getValue(i, j) == Integer.MAX_VALUE)
 							ret.append("x");
 						else
 							ret.append(getValue(i, j));
@@ -244,7 +253,6 @@ public class MyQMatrixClassic implements IMyQMatrix {
 	public double getLastDelta() {
 		return lastDelta;
 	}
-
 
 	@Override
 	public void setDebug(boolean debug) {

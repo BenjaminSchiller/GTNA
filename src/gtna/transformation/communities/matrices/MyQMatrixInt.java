@@ -2,8 +2,6 @@ package gtna.transformation.communities.matrices;
 
 import java.util.TreeSet;
 
-import gtna.io.Log;
-
 /**
  * Encapsulates the Matrix Q of the community detection algorithm based on
  * improving Q in every step. Further information on this algorithm can be found
@@ -28,7 +26,7 @@ public class MyQMatrixInt implements IMyQMatrix {
 	private boolean[] deleted;
 
 	// A tree representation of all possible merges and their values. This is
-	// used to determinate the next merge in log(n) rather than in n². The tree
+	// used to determinate the next merge in log(n) rather than in nï¿½. The tree
 	// needs to be updated whenever values are changed, to speed up that process
 	// the values for each merge are also kept in matrix form.
 	private TreeSet<MergeValueInt> data;
@@ -138,24 +136,23 @@ public class MyQMatrixInt implements IMyQMatrix {
 	 * @see gtna.metrics.communities.IMyQMatrix#getNextMerge()
 	 */
 	public void getNextMerge(int[] erg) {
-		
-		if(data.size() == 0){
+
+		if (data.size() == 0) {
 			erg[0] = -1;
 			erg[1] = -1;
 			return;
 		}
-		
+
 		MergeValueInt next = data.last();
 
 		lastDelta = next.value;
 
 		erg[0] = next.i;
 		erg[1] = next.j;
-		
 
-		if (debug)
-			Log.debug("Next merge (" + erg[0] + ", " + erg[1] + ") = "
-					+ lastDelta);
+		// if (debug)
+		// Log.debug("Next merge (" + erg[0] + ", " + erg[1] + ") = "
+		// + lastDelta);
 	}
 
 	/*
@@ -210,8 +207,10 @@ public class MyQMatrixInt implements IMyQMatrix {
 	 * matrix is first checked if the value is stored in the tree and it is then
 	 * only removed if it is in the tree.
 	 * 
-	 * @param j the first community of the join
-	 * @param k the second community of the join
+	 * @param j
+	 *            the first community of the join
+	 * @param k
+	 *            the second community of the join
 	 */
 	private void removeValue(int j, int k) {
 		if (data2[j][k] != Integer.MAX_VALUE) {
