@@ -110,7 +110,28 @@ public class CliqueStart extends Transformation {
 						pos = (pos +1) % neighs.size();
 						round++;
 					}
-					
+				}
+				if (neighs.size() >= k){
+					neighs.remove(neighs.get(neighs.size()-1));
+					Vector<Node[]> old = determinePairs(neighs);
+					Vector<Node[]> next;
+					int m = 3;
+					while (old.size() > 0 && m < this.k){
+						m++;
+						next = new Vector<Node[]>();
+						for (int j = 0; j < old.size(); j++){
+							next.addAll(this.determineMClique(old.get(j), neighs));
+						}
+						old = next;
+					}
+					if (m == this.k && old.size() > 0){
+						Node[] res = old.get(rand.nextInt(old.size()));
+						for (int j = 0; j < this.k -1; j++){
+							result[j] = res[j].getIndex();
+						}
+						result[this.k-1] = nodes[n].getIndex();
+						return result;
+					}
 				}
 			}
 			
@@ -132,9 +153,40 @@ public class CliqueStart extends Transformation {
 		return c;
 	}
 	
-	private Vector<Node[]> determineMClique(int M, Vector<Node> neighs){
+	private Vector<Node[]> determinePairs(Vector<Node> neighs){
 		Vector<Node[]> res = new Vector<Node[]>();
-		
+		Node[] array = new Node[2];
+		for (int i = 0; i < neighs.size(); i++){
+			array[0] = neighs.get(i);
+			for (int j = i+1; j < neighs.size(); j++){
+				if (array[0].hasIn(neighs.get(j).getIndex()) && array[0].hasOut(neighs.get(j).getIndex())){
+					array[1] = neighs.get(j);
+					res.add(array.clone());
+				}
+			}
+		}
+		return res;
+	}
+	
+	private Vector<Node[]> determineMClique(Node[] oldClique, Vector<Node> neighs){
+		Vector<Node[]> res = new Vector<Node[]>();
+		Node[] array = new Node[oldClique.length+1];
+		for (int i = 0; i < array.length-1; i++){
+			array[i] = oldClique[i];
+		}
+		for (int i = 0; i < neighs.size(); i++){
+			boolean ok = true;
+			Node cur = neighs.get(i);
+			for (int j = 0; j < oldClique.length; j++){
+				if (cur.getIndex() < oldClique[j].getIndex() || !cur.hasIn(oldClique[j].getIndex())
+						|| !cur.hasOut(oldClique[j].getIndex())){
+					ok = false;
+				}
+			}
+			if (ok){
+				res.add(array.clone());
+			}
+		}
 		return res;
 	}
 	
