@@ -51,57 +51,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import org.apache.commons.math.MathException;
-import org.apache.commons.math.distribution.NormalDistributionImpl;
-import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
-
 public class Util {
-
-	// ///////////////////////
-	// STATISTICS
-	// ///////////////////////
-
-	public static final boolean isBiasCorrected = false;
-
-	public static double getStandardDeviation(double[] values) {
-		StandardDeviation sd = new StandardDeviation(isBiasCorrected);
-		double value = sd.evaluate(values);
-		if (!Double.isNaN(value)) {
-			return value;
-		}
-		int counter = 0;
-		for (int i = 0; i < values.length; i++) {
-			if (!Double.isNaN(values[i])) {
-				counter++;
-			}
-		}
-		double[] newValues = new double[counter];
-		int index = 0;
-		for (int i = 0; i < values.length; i++) {
-			if (!Double.isNaN(values[i])) {
-				newValues[index++] = values[i];
-			}
-		}
-		double newValue = sd.evaluate(newValues);
-		return newValue;
-	}
-
-	public static double[] getConfidenceInterval(double mean,
-			double standardDeviation, int n, double alpha) {
-		double standardError = standardDeviation / Math.sqrt(n);
-		NormalDistributionImpl nd = new NormalDistributionImpl();
-		double z;
-		try {
-			z = nd.inverseCumulativeProbability((double) 1 - (double) alpha
-					/ (double) 2);
-			double from = mean - z * standardError;
-			double to = mean + z * standardError;
-			return new double[] { from, to };
-		} catch (MathException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
 
 	// ///////////////////////
 	// toFolderString
