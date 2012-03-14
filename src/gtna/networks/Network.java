@@ -37,6 +37,8 @@ package gtna.networks;
 
 import gtna.graph.Graph;
 import gtna.transformation.Transformation;
+import gtna.util.Config;
+import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.ParameterList;
@@ -92,26 +94,79 @@ public abstract class Network extends ParameterList {
 	 */
 	public abstract Graph generate();
 
-	// public String compareName(Network nw, String key);
-	//
-	// public String compareName(Network nw);
-	//
-	// public String compareNameShort(Network nw);
-	//
-	// public String compareNameLong(Network nw);
-	//
-	// public String compareValue(Network nw);
-	//
-	// public String description();
-	//
-	// public String description(Network compare);
-	//
-	// public String description(Network compare1, Network compare2);
-	//
-	// public String description(String key);
-	//
-	// public String description(String key, Network compare);
-	//
-	// public String description(String key, Network compare1, Network
-	// compare2);
+	public String getFolderName() {
+		StringBuffer buff = new StringBuffer(super.getFolderName());
+		for (Transformation t : this.transformations) {
+			buff.append("--" + t.getFolderName());
+		}
+		return buff.toString();
+	}
+
+	public String getDescription(String keyX) {
+		StringBuffer buff = new StringBuffer(super.getDescription(keyX));
+		for (Transformation t : this.transformations) {
+			buff.append(" " + t.getDescription(keyX));
+		}
+		return buff.toString();
+	}
+
+	public String getDescriptionLong(String keyX) {
+		StringBuffer buff = new StringBuffer(super.getDescriptionLong(keyX));
+		for (Transformation t : this.transformations) {
+			buff.append(" " + t.getDescriptionLong(keyX));
+		}
+		return buff.toString();
+	}
+
+	public String getDescriptionShort(String keyX) {
+		StringBuffer buff = new StringBuffer(super.getDescriptionShort(keyX));
+		for (Transformation t : this.transformations) {
+			buff.append(" " + t.getDescriptionShort(keyX));
+		}
+		return buff.toString();
+	}
+
+	public Parameter getDiffParameter(ParameterList pl2) {
+		if (!pl2.getKey().equals(this.key)) {
+			return null;
+		}
+		if (pl2.getParameters().length != this.parameters.length) {
+			return null;
+		}
+		Network nw = (Network) pl2;
+		Parameter p1 = super.getDiffParameter(nw);
+		if (p1 != null) {
+			return p1;
+		}
+		for (int i = 0; i < this.transformations.length; i++) {
+			Parameter p2 = this.transformations[i].getDiffParameter(nw
+					.getTransformations()[i]);
+			if (p2 != null) {
+				return p2;
+			}
+		}
+		return null;
+	}
+
+	public String getDiffParameterNameXY(ParameterList pl2, String xy) {
+		if (!pl2.getKey().equals(this.key)) {
+			return null;
+		}
+		if (pl2.getParameters().length != this.parameters.length) {
+			return null;
+		}
+		Network nw = (Network) pl2;
+		Parameter p1 = super.getDiffParameter(nw);
+		if (p1 != null) {
+			return this.getParameterNameXY(p1, xy);
+		}
+		for (int i = 0; i < this.transformations.length; i++) {
+			Parameter p2 = this.transformations[i].getDiffParameter(nw
+					.getTransformations()[i]);
+			if (p2 != null) {
+				return this.transformations[i].getParameterNameXY(p2, xy);
+			}
+		}
+		return null;
+	}
 }

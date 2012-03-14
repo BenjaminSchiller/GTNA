@@ -76,7 +76,8 @@ public class Plotting {
 			}
 			x[i] = new double[s[i].length];
 			for (int j = 0; j < s[i].length; j++) {
-				Parameter p = s[i][j].getNetwork().getParameter(diff);
+				Parameter p = s[i][j].getNetwork().getDiffParameter(
+						s[i][(j + 1) % s[i].length].getNetwork());
 				if (p instanceof IntParameter) {
 					x[i][j] = ((IntParameter) p).getIntValue();
 				} else if (p instanceof DoubleParameter) {
@@ -306,8 +307,8 @@ public class Plotting {
 		return Plotting.multi(new Series[] { s }, metrics, folder, type, style);
 	}
 
-	public static boolean multi(Series[][] s, Metric[] metrics,
-			String folder, Type type, Style style) {
+	public static boolean multi(Series[][] s, Metric[] metrics, String folder,
+			Type type, Style style) {
 		int index = 0;
 		for (Series[] s1 : s) {
 			index += s1.length;

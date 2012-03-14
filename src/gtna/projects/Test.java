@@ -40,6 +40,7 @@ import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.RandomNodeSorter;
 import gtna.graph.sorting.Roles2NodeSorter;
+import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.metrics.Communities;
 import gtna.metrics.DegreeDistribution;
 import gtna.metrics.Metric;
@@ -47,6 +48,7 @@ import gtna.metrics.Roles;
 import gtna.metrics.Roles2;
 import gtna.metrics.ShortestPaths;
 import gtna.metrics.fragmentation.Fragmentation;
+import gtna.metrics.fragmentation.Fragmentation.Resolution;
 import gtna.metrics.fragmentation.WeakFragmentation;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
@@ -62,6 +64,7 @@ import gtna.plot.Data.Type;
 import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
+import gtna.transformation.attackableEmbedding.lmc.LMC;
 import gtna.transformation.communities.CommunityColors;
 import gtna.transformation.communities.CommunityDetectionDeltaQ;
 import gtna.transformation.communities.CommunityDetectionLPA;
@@ -86,31 +89,59 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Config.overwrite("MAIN_DATA_FOLDER", "./data/testing/");
-		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/testing/");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/quick_example/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/quick_example/");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
-		Config.overwrite("SERIES_GRAPH_WRITE", "false");
+		Config.overwrite("SERIES_GRAPH_WRITE", "true");
+
 		Metric dd = new DegreeDistribution();
 		Metric sp = new ShortestPaths();
-		Metric[] metrics = new Metric[] { dd, sp };
-		int times = 2;
+		Metric wf_d = new WeakFragmentation(new DegreeNodeSorter(
+				NodeSorterMode.DESC), Resolution.PERCENT);
+		Metric wf_r = new WeakFragmentation(new RandomNodeSorter(),
+				Resolution.PERCENT);
+		Metric[] metrics = new Metric[] { dd, sp, wf_d, wf_r };
+
+		int times = 5;
 		boolean generate = true;
-		double[] d = new double[] { 10, 15, 20, 25, 30, 35, 40, 45, 50 };
-		int[] n = new int[] { 100, 200, 300, 400 };
-		Transformation[] t = new Transformation[] {
-				new WeakConnectivityPartition(), new GiantConnectedComponent() };
-		Network[] nw1 = ErdosRenyi.get(100, d, true, t);
-		Network[] nw2 = ErdosRenyi.get(200, d, true, t);
-		Network[] nw3 = ErdosRenyi.get(300, d, true, t);
-		Network[] nw4 = ErdosRenyi.get(400, d, true, t);
-		Network[] nw5 = ErdosRenyi.get(n, 40, true, t);
-		Network[] nw6 = ErdosRenyi.get(n, 50, true, t);
-		Network[][] nw = new Network[][] { nw1, nw2, nw3, nw4, nw5, nw6 };
+
+		// double[] d = new double[] { 10, 15, 20, 25, 30, 35, 40, 45, 50 };
+		// Transformation[] t = new Transformation[] {
+		// new WeakConnectivityPartition(), new GiantConnectedComponent() };
+		// Network[] nw1 = ErdosRenyi.get(100, d, true, t);
+		// Network[] nw2 = ErdosRenyi.get(200, d, true, t);
+		// Network[] nw3 = ErdosRenyi.get(300, d, true, t);
+		// Network[] nw4 = ErdosRenyi.get(400, d, true, t);
+		// Network[][] nw = new Network[][] { nw1, nw2, nw3, nw4 };
+
+		Transformation[] t1 = new Transformation[] {
+				new WeakConnectivityPartition(), new GiantConnectedComponent(),
+				new LMC(100, "mode", 1.1, "deltaMode", 1001) };
+		Transformation[] t2 = new Transformation[] {
+				new WeakConnectivityPartition(), new GiantConnectedComponent(),
+				new LMC(100, "mode", 1.1, "deltaMode", 1002) };
+		Transformation[] t3 = new Transformation[] {
+				new WeakConnectivityPartition(), new GiantConnectedComponent(),
+				new LMC(100, "mode", 1.1, "deltaMode", 1003) };
+
+		Network nw11 = new ErdosRenyi(100, 10, true, t1);
+		Network nw12 = new ErdosRenyi(100, 10, true, t2);
+		Network nw13 = new ErdosRenyi(100, 10, true, t3);
+		Network nw21 = new ErdosRenyi(200, 10, true, t1);
+		Network nw22 = new ErdosRenyi(200, 10, true, t2);
+		Network nw23 = new ErdosRenyi(200, 10, true, t3);
+		Network[] nw1 = new Network[] { nw11, nw12, nw13 };
+		Network[] nw2 = new Network[] { nw21, nw22, nw23 };
+		Network[][] nw = new Network[][] { nw1, nw2 };
+
 		Series[][] s = generate ? Series.generate(nw, metrics, times) : Series
 				.get(nw, metrics);
-		// Plotting.multi(s, metrics, "multi/", Type.average, Style.linespoint);
+		Series[] s1 = Series.get(nw1, metrics);
+
 		Plotting.single(s, metrics, "single/", Type.average, Style.linespoint);
-		Plotting.singleBy(s, metrics, "single-edges/", dd, "EDGES");
+		// Plotting.singleBy(s, metrics, "single-edges/", dd, "EDGES");
+		// Plotting.multi(s1, metrics, "multi/", Type.confidence1,
+		// Style.candlesticks);
 	}
 
 	private static void series() {

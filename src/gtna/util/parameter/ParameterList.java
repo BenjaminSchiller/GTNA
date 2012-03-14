@@ -133,7 +133,7 @@ public class ParameterList {
 				.getKey());
 	}
 
-	private String getDescription(String keyX) {
+	public String getDescription(String keyX) {
 		StringBuffer buff = new StringBuffer(this.getName());
 		if (this.parameters.length == 0) {
 			return buff.toString();
@@ -154,7 +154,7 @@ public class ParameterList {
 		return buff.toString();
 	}
 
-	private String getDescriptionLong(String keyX) {
+	public String getDescriptionLong(String keyX) {
 		StringBuffer buff = new StringBuffer(this.getNameLong());
 		if (this.parameters.length == 0) {
 			return buff.toString();
@@ -175,7 +175,7 @@ public class ParameterList {
 		return buff.toString();
 	}
 
-	private String getDescriptionShort(String keyX) {
+	public String getDescriptionShort(String keyX) {
 		StringBuffer buff = new StringBuffer(this.getNameShort());
 		if (this.parameters.length == 0) {
 			return buff.toString();
@@ -229,7 +229,7 @@ public class ParameterList {
 		return null;
 	}
 
-	private String getDiffParameterNameXY(ParameterList pl2, String xy) {
+	public String getDiffParameterNameXY(ParameterList pl2, String xy) {
 		Parameter p = this.getDiffParameter(pl2);
 		if (p == null) {
 			return null;
@@ -272,11 +272,11 @@ public class ParameterList {
 		return this.getParameterNameXY(p, "_NAME_SHORT");
 	}
 
-	private String getNameXY(String xy) {
+	public String getNameXY(String xy) {
 		return Config.get(this.key + xy);
 	}
 
-	private String getParameterNameXY(Parameter p, String xy) {
+	public String getParameterNameXY(Parameter p, String xy) {
 		if (p.getKey().equals("NODES")) {
 			if (xy.endsWith("_LONG")) {
 				return "Nodes";
