@@ -66,7 +66,7 @@ public class BuildSubGraph extends Transformation {
 		super("BUILD_SUB_GRAPH", new Parameter[]{new IntParameter("INCLUDE",include), new IntParameter("MINDEGREE",minDegree), 
 				new IntParameter("STARTNODES",startNodes), new StringParameter("SELECTION",selection)});
 		this.selection = selection;
-		this.minDegree = minDegree;
+		this.minDegree = Math.max(minDegree,1);
 		this.include = include;
 		this.startNodes = startNodes;
 	}
@@ -77,9 +77,6 @@ public class BuildSubGraph extends Transformation {
 	@Override
 	public Graph transform(Graph g) {
 		Node[] nodesOld = g.getNodes();
-		if (this.include >= nodesOld.length){
-			return g;
-		}
 		boolean[] added = new boolean[nodesOld.length]; 
 		Vector<Vector<Integer>> in = new Vector<Vector<Integer>>();
 		HashMap<Integer, Integer> newIndex = new HashMap<Integer, Integer>();
@@ -117,13 +114,13 @@ public class BuildSubGraph extends Transformation {
 			}
 		}
 		
-		int count = this.startNodes;
+		int count = start.length;
 		int max;
 		Node last;
 		while (count < this.include && count < nodesOld.length){
 			
 			max = in.size()-1;
-			while (in.get(max).size() == 0){
+			while (in.get(max).size() == 0 && max > -1){
 				max--;
 			}
 			if (max < this.minDegree-1){
@@ -203,9 +200,9 @@ public class BuildSubGraph extends Transformation {
     		return determineCliqueRandom(rand,nodes);
     	}
     	if (this.selection.equals(SELECTION_OUTDEGREE)){
-    		return determineCliqueRandom(rand,nodes);
+    		return determineCliqueMostLinks(rand,nodes);
     	}
-	 return null;
+	   throw new IllegalArgumentException("Selection type " + this.selection + " in BuildSubGraph not known");
     }
     
     private int[] determineCliqueRandom(Random rand, Node[] nodes){
@@ -277,7 +274,7 @@ public class BuildSubGraph extends Transformation {
 			n = (n + 1) % nodes.length;
 		}
 		if (!found){
-			throw new IllegalArgumentException("There is no clique of required size: " + this.startNodes);
+			return new int[0];
 		}
 		return result;
 	}
@@ -410,7 +407,7 @@ public class BuildSubGraph extends Transformation {
 				n = (n + 1) % nodes.length;
 			}
 			if (!found){
-				throw new IllegalArgumentException("There is no clique of required size: " + this.startNodes);
+				return new int[0];
 			}
 			return maxIndex.get(rand.nextInt(maxIndex.size()));
 		}
