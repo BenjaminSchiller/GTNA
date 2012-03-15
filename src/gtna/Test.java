@@ -53,8 +53,8 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//Network net = new BarabasiAlbert(200,4,new Transformation[]{new BuildSubGraph(50,1,3,BuildSubGraph.SELECTION_OUTDEGREE)});
-		Network net = new BarabasiAlbert(200,4,null);
+		Network net = new BarabasiAlbert(200,4,new Transformation[]{new BuildSubGraph(50,1,3,BuildSubGraph.SELECTION_OUTDEGREE)});
+		//Network net = new BarabasiAlbert(200,4,null);
         Series.generate(net, new Metric[]{new DegreeDistribution()}, 1); 
 	}
 
