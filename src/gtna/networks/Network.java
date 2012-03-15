@@ -37,8 +37,6 @@ package gtna.networks;
 
 import gtna.graph.Graph;
 import gtna.transformation.Transformation;
-import gtna.util.Config;
-import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.ParameterList;
@@ -63,6 +61,9 @@ public abstract class Network extends ParameterList {
 		super(key, Network.add(parameters, nodes));
 		this.nodes = nodes;
 		this.transformations = transformations;
+		if (this.transformations == null) {
+			this.transformations = new Transformation[0];
+		}
 	}
 
 	private static Parameter[] add(Parameter[] p1, int nodes) {
