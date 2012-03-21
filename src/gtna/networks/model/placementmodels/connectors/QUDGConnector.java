@@ -102,7 +102,7 @@ public class QUDGConnector extends NodeConnectorImpl {
 			}
 		}
 		
-		g.addProperty("RANGE_0", new RangeProperty(range1));
+		g.addProperty("RANGE_0", new RangeProperty(range1, nodes.length));
 
 		edges.fill();
 

@@ -80,7 +80,7 @@ public class ParameterList {
 		for (Parameter p : this.parameters) {
 			buff.append("-" + p.getValue());
 		}
-		return buff.toString();
+		return Integer.toString(buff.toString().hashCode());
 	}
 
 	public String getFolder() {

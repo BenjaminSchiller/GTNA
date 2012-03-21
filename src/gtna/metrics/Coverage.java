@@ -47,6 +47,20 @@ import gtna.util.Config;
 import java.util.HashMap;
 
 /**
+ * The <code>Coverage</code> metric calculates the coverage (in percent) a disk
+ * graph has for the given field. The radii are read from the
+ * <code>RangeProperty</code> stored in RANGES_0, the positions of the nodes are
+ * read from the <code>PlaneIdentifierSpaceSimple</code> stored in ID_SPACE_0.
+ * 
+ * The coverage is calculated by placing a grid over the rectangle from (0, 0)
+ * to (idspace.getModulusX(), idSpace.getModulusY()). The number of rows and
+ * columns for this grid can be specified in the configuration file. The center
+ * of each cell in the grid is then checked against the disk graph with the
+ * given positions and radii. While this only gives an estimate on the real
+ * coverage percentage, the resolution of the grid can be adjusted as necessary.
+ * In practice, resolutions of about 1000x1000 have proven to be rather accurate
+ * while still being fairly fast.
+ * 
  * @author Philipp Neubrand
  * 
  */
@@ -91,18 +105,13 @@ public class Coverage extends Metric {
 		percentage = (((double) in) / (cols * rows));
 	}
 
-	/**
-	 * @param d
-	 * @param e
-	 * @param idspace
-	 * @param range
-	 * @return
-	 */
 	private boolean inside(double x, double y,
 			PlaneIdentifierSpaceSimple idspace, RangeProperty range) {
 		double dist = 0;
 		boolean ret = false;
+		int id = 0;
 		for (DPartition akt : idspace.getPartitions()) {
+
 			dist = Math
 					.sqrt(Math.pow(
 							((PlaneIdentifier) akt.getRepresentativeID())
@@ -111,30 +120,21 @@ public class Coverage extends Metric {
 									((PlaneIdentifier) akt
 											.getRepresentativeID()).getY() - y,
 									2));
-			if (dist < range.getRange()) {
+			if (dist < range.getRanges()[id]) {
 				ret = true;
 				break;
 			}
+			id++;
 		}
 
 		return ret;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.metrics.Metric#getValues()
-	 */
 	@Override
 	public Single[] getSingles() {
 		return new Single[] { new Single("COVERAGE_PERCENTAGE", percentage) };
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.metrics.Metric#writeData(java.lang.String)
-	 */
 	@Override
 	public boolean writeData(String folder) {
 		return true;
