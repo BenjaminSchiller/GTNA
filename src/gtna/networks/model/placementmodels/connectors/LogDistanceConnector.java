@@ -115,6 +115,20 @@ public class LogDistanceConnector extends NodeConnectorImpl {
 			}
 		}
 
+		// As the distance calculation for this connector involves a random
+		// element, establishing a reliable minimum distance is not that easy.
+		// Even if the first element of the formula is 0, the random portion can
+		// theoretically be greater than the range, thus preventing a connection
+		// from being established. Using the fact that 99.6% of all values for a
+		// gaussian distribution are within 3*sigma, we use 3*sigma as kind of a
+		// maximum value for the random part of the equation. Solving the
+		// equation for d then yields the result below.
+		g.addProperty(
+				"RANGE_0",
+				new RangeProperty(Math.pow(10, (range - 3 * sigma)
+						/ (10 * gamma))
+						* d0, nodes.length));
+
 		edges.fill();
 
 		return edges;

@@ -100,7 +100,7 @@ public abstract class Network extends ParameterList {
 		for (Transformation t : this.transformations) {
 			buff.append("--" + t.getFolderName());
 		}
-		return buff.toString();
+		return Integer.toString(buff.toString().hashCode());
 	}
 
 	public String getDescription(String keyX) {

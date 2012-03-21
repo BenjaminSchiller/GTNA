@@ -84,7 +84,7 @@ public class UDGConnector extends NodeConnectorImpl {
 			}
 		}
 		
-		g.addProperty("RANGE_0", new RangeProperty(range));
+		g.addProperty("RANGE_0", new RangeProperty(range, nodes.length));
 
 		edges.fill();
 
