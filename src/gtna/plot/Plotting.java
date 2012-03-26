@@ -63,10 +63,10 @@ public class Plotting {
 		double[][] x = new double[s.length][];
 		ArrayList<String> labels = new ArrayList<String>();
 		for (int i = 0; i < s.length; i++) {
-			String diff = s[i][0].getNetwork()
-					.getDiffParameter(s[i][1 % s[i].length].getNetwork())
-					.getKey();
-			if (diff == null) {
+			Parameter diffP = s[i][0].getNetwork().getDiffParameter(
+					s[i][1 % s[i].length].getNetwork());
+			if (diffP == null || diffP.getKey() == null) {
+				System.err.println("no diff param found");
 				return false;
 			}
 			String label = s[i][0].getNetwork().getDiffParameterName(
@@ -83,6 +83,7 @@ public class Plotting {
 				} else if (p instanceof DoubleParameter) {
 					x[i][j] = ((DoubleParameter) p).getDoubleValue();
 				} else {
+					System.err.println("diff param not of type int or long");
 					return false;
 				}
 			}
