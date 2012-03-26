@@ -33,12 +33,13 @@
  * ---------------------------------------
  *
  */
-package gtna.metrics;
+package gtna.metrics.communities;
 
-import gtna.communities.Roles2.Role2;
+import gtna.communities.Roles.Role;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Distribution;
 import gtna.util.Timer;
@@ -49,13 +50,13 @@ import java.util.HashMap;
  * @author benni
  * 
  */
-public class Roles2 extends Metric {
+public class Roles extends Metric {
 	private Distribution distribution;
 
 	private Timer runtime;
 
-	public Roles2() {
-		super("ROLES2");
+	public Roles() {
+		super("ROLES");
 	}
 
 	@Override
@@ -65,18 +66,18 @@ public class Roles2 extends Metric {
 
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		if (!g.hasProperty("ROLES2_0")) {
+		if (!g.hasProperty("ROLES_0")) {
 			this.runtime = new Timer();
 			this.distribution = new Distribution(new double[] { 0.0 });
 			this.runtime.end();
 			return;
 		}
 		this.runtime = new Timer();
-		gtna.communities.Roles2 roles = (gtna.communities.Roles2) g
-				.getProperty("ROLES2_0");
-		double[] r = new double[Role2.values().length];
-		for (Role2 role : Role2.values()) {
-			r[gtna.communities.Roles2.toIndex(role) - 1] = (double) roles
+		gtna.communities.Roles roles = (gtna.communities.Roles) g
+				.getProperty("ROLES_0");
+		double[] r = new double[Role.values().length];
+		for (Role role : Role.values()) {
+			r[gtna.communities.Roles.toIndex(role) - 1] = (double) roles
 					.getNodesOfRole(role).size() / (double) g.getNodes().length;
 		}
 		this.distribution = new Distribution(r);
@@ -87,14 +88,14 @@ public class Roles2 extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(
-				this.distribution.getDistribution(), "ROLES2_DISTRIBUTION",
+				this.distribution.getDistribution(), "ROLES_DISTRIBUTION",
 				folder);
 		return success;
 	}
 
 	@Override
 	public Single[] getSingles() {
-		Single runtime = new Single("ROLES2_RUNTIME", this.runtime.getRuntime());
+		Single runtime = new Single("ROLES_RUNTIME", this.runtime.getRuntime());
 		return new Single[] { runtime };
 	}
 

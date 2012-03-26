@@ -33,11 +33,12 @@
  * ---------------------------------------
  *
  */
-package gtna.metrics;
+package gtna.metrics.routing;
 
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.routing.Route;
 import gtna.util.Config;

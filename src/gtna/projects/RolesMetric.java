@@ -36,11 +36,11 @@
 package gtna.projects;
 
 import gtna.data.Series;
-import gtna.metrics.Communities;
-import gtna.metrics.Coverage;
 import gtna.metrics.DegreeDistribution;
 import gtna.metrics.Metric;
-import gtna.metrics.RolesComparison;
+import gtna.metrics.communities.Communities;
+import gtna.metrics.communities.RolesComparison;
+import gtna.metrics.placement.Coverage;
 import gtna.networks.Network;
 import gtna.networks.model.placementmodels.NodeConnector;
 import gtna.networks.model.placementmodels.Partitioner;

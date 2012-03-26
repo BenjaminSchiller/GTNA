@@ -33,12 +33,13 @@
  * ---------------------------------------
  *
  */
-package gtna.metrics;
+package gtna.metrics.communities;
 
 import gtna.communities.Community;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Distribution;
 import gtna.util.Timer;
