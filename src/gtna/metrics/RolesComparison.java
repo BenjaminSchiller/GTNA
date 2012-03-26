@@ -35,20 +35,18 @@
  */
 package gtna.metrics;
 
+import gtna.communities.Roles;
+import gtna.communities.Roles.Role;
+import gtna.communities.Roles2;
+import gtna.communities.Roles2.Role2;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
-import gtna.util.Util;
-import gtna.communities.Roles;
-import gtna.communities.Roles.Role;
-import gtna.communities.Roles2;
-import gtna.communities.Roles2.Role2;
 
 import java.util.HashMap;
 import java.util.TreeSet;
-
 
 /**
  * @author Flipp
@@ -80,12 +78,12 @@ public class RolesComparison extends Metric {
 
 		GraphProperty[] p = g.getProperties("ROLES");
 		countRoles = p.length;
-		System.out.println("PROPS: " + p.length +"--");
+		System.out.println("PROPS: " + p.length + "--");
 		Roles r;
 
 		for (GraphProperty akt : p) {
 			r = (Roles) akt;
-			for (int i = 0; i < n.getNodes(); i++) {
+			for (int i = 0; i < g.getNodes().length; i++) {
 				results[i][r.getRoleOfNode(i).ordinal()]++;
 			}
 		}
@@ -95,61 +93,58 @@ public class RolesComparison extends Metric {
 		Roles2 r2;
 		for (GraphProperty akt : p) {
 			r2 = (Roles2) akt;
-			for (int i = 0; i < n.getNodes(); i++) {
+			for (int i = 0; i < g.getNodes().length; i++) {
 				resultsR2[i][r2.getRoleOfNode(i).ordinal()]++;
 			}
 		}
-		
+
 		erg = new TreeSet<MaxRolePercRole>();
-		
-		for(int i = 0; i < results.length; i++){
+
+		for (int i = 0; i < results.length; i++) {
 			erg.add(new MaxRolePercRole(results[i], countRoles, i));
 		}
-		
+
 		erg2 = new TreeSet<MaxRolePercRole2>();
-		
-		for(int i = 0; i < results.length; i++){
-			
+
+		for (int i = 0; i < results.length; i++) {
+
 			erg2.add(new MaxRolePercRole2(resultsR2[i], countRoles2, i));
 		}
-		
-	
+
 	}
-	
-	
 
 	@Override
 	public boolean writeData(String folder) {
-		System.out.println(folder);
 		boolean ret = true;
-		ret &= DataWriter.writeWithIndex(toValueArray(erg), getKey() + "_RMAX_ROLES", folder);
+		ret &= DataWriter.writeWithIndex(toValueArray(erg), getKey()
+				+ "_RMAX_ROLES", folder);
 
-		for (Role akt : Roles.Role.values()){
+		for (Role akt : Roles.Role.values()) {
 			System.out.println("Filtering: " + akt);
 			System.out.println("ERG: " + erg.size());
 			System.out.println("FILTERED: " + filter(erg, akt).size());
-			System.out.println("ARAY: " + toValueArray(filter(erg, akt)).length);
-			for(int i = 0; i < toValueArray(filter(erg, akt)).length; i++)
-				System.out.println(i + " => " + toValueArray(filter(erg, akt))[i]);
+			System.out
+					.println("ARAY: " + toValueArray(filter(erg, akt)).length);
+			for (int i = 0; i < toValueArray(filter(erg, akt)).length; i++)
+				System.out.println(i + " => "
+						+ toValueArray(filter(erg, akt))[i]);
 			ret &= DataWriter.writeWithIndex(toValueArray(filter(erg, akt)),
 					getKey() + "_RMAX_ROLES_" + akt.name(), folder);
 		}
-		
-		ret &= DataWriter.writeWithIndex(calcAverages(erg), getKey() + "_RPERC", folder);
-		
-		
 
-		ret &= DataWriter.writeWithIndex(toValueArray2(erg2),getKey() + "_RMAX_R2", folder);
+		ret &= DataWriter.writeWithIndex(calcAverages(erg),
+				getKey() + "_RPERC", folder);
+
+		ret &= DataWriter.writeWithIndex(toValueArray2(erg2), getKey()
+				+ "_RMAX_R2", folder);
 
 		for (Role2 akt : Roles2.Role2.values())
 			ret &= DataWriter.writeWithIndex(toValueArray2(filter2(erg2, akt)),
 					getKey() + "_RMAX_R2_" + akt.name(), folder);
-		
-		ret &= DataWriter.writeWithIndex(calcAverages2(erg2), getKey() + "_R2PERC", folder);
-		
-		
 
-		
+		ret &= DataWriter.writeWithIndex(calcAverages2(erg2), getKey()
+				+ "_R2PERC", folder);
+
 		return ret;
 	}
 
@@ -158,18 +153,18 @@ public class RolesComparison extends Metric {
 	 * @return
 	 */
 	private double[] calcAverages2(TreeSet<MaxRolePercRole2> erg3) {
-			double[] ret = new double[Role2.values().length];
-			int[] c  = new int[Role2.values().length];
-			
-			for(MaxRolePercRole2 akt : erg3){
-				ret[akt.getRole().ordinal()] += akt.getValue();
-				c[akt.getRole().ordinal()]++;
-			}
-			
-			for(int i = 0; i < ret.length; i++)
-				ret[i] = (double) (ret[i] / c[i]);
-			
-			return ret;
+		double[] ret = new double[Role2.values().length];
+		int[] c = new int[Role2.values().length];
+
+		for (MaxRolePercRole2 akt : erg3) {
+			ret[akt.getRole().ordinal()] += akt.getValue();
+			c[akt.getRole().ordinal()]++;
+		}
+
+		for (int i = 0; i < ret.length; i++)
+			ret[i] = (double) (ret[i] / c[i]);
+
+		return ret;
 	}
 
 	/**
@@ -178,23 +173,23 @@ public class RolesComparison extends Metric {
 	 */
 	private double[] calcAverages(TreeSet<MaxRolePercRole> erg3) {
 		double[] ret = new double[Role.values().length];
-		for(int i = 0; i < ret.length; i++)
+		for (int i = 0; i < ret.length; i++)
 			ret[i] = 0;
-		double[] c  = new double[Role.values().length];
-		
-		for(MaxRolePercRole akt : erg3){
+		double[] c = new double[Role.values().length];
+
+		for (MaxRolePercRole akt : erg3) {
 			ret[akt.getRole().ordinal()] += akt.getValue();
 			c[akt.getRole().ordinal()]++;
 		}
-		
-		for(int i = 0; i < ret.length; i++){
-			if(ret[i] != 0)
+
+		for (int i = 0; i < ret.length; i++) {
+			if (ret[i] != 0)
 				ret[i] = (double) (ret[i] / c[i]);
-		System.out.println(i + " = " + ret[i]);
+			System.out.println(i + " = " + ret[i]);
 		}
-		
+
 		return ret;
-		
+
 	}
 
 	/**
@@ -205,10 +200,10 @@ public class RolesComparison extends Metric {
 	private TreeSet<MaxRolePercRole2> filter2(TreeSet<MaxRolePercRole2> erg3,
 			Role2 akt) {
 		TreeSet<MaxRolePercRole2> r = new TreeSet<MaxRolePercRole2>();
-		for(MaxRolePercRole2 aktp : erg3)
-			if(aktp.getRole().equals(akt))
+		for (MaxRolePercRole2 aktp : erg3)
+			if (aktp.getRole().equals(akt))
 				r.add(aktp);
-		
+
 		return r;
 	}
 
@@ -220,13 +215,13 @@ public class RolesComparison extends Metric {
 	private TreeSet<MaxRolePercRole> filter(TreeSet<MaxRolePercRole> erg3,
 			Role akt) {
 		TreeSet<MaxRolePercRole> r = new TreeSet<MaxRolePercRole>();
-		for(MaxRolePercRole aktp : erg3)
-			if(aktp.getRole().equals(akt)){
+		for (MaxRolePercRole aktp : erg3)
+			if (aktp.getRole().equals(akt)) {
 				r.add(aktp);
 			}
-		
+
 		return r;
-		
+
 	}
 
 	/**
@@ -236,16 +231,15 @@ public class RolesComparison extends Metric {
 	private double[] toValueArray(TreeSet<MaxRolePercRole> erg3) {
 		double[] ret = new double[erg3.size()];
 		int i = 0;
-		
-		for(MaxRolePercRole akt : erg3){
+
+		for (MaxRolePercRole akt : erg3) {
 			ret[i] = akt.getValue();
 			i++;
 		}
-		
-		return ret;
-			
-	}
 
+		return ret;
+
+	}
 
 	/**
 	 * @param erg22
@@ -254,14 +248,14 @@ public class RolesComparison extends Metric {
 	private double[] toValueArray2(TreeSet<MaxRolePercRole2> erg3) {
 		double[] ret = new double[erg3.size()];
 		int i = 0;
-		
-		for(MaxRolePercRole2 akt : erg3){
+
+		for (MaxRolePercRole2 akt : erg3) {
 			ret[i] = akt.getValue();
 			i++;
 		}
-		
+
 		return ret;
-			
+
 	}
 
 	/*
