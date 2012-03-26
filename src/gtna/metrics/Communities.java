@@ -93,10 +93,6 @@ public class Communities extends Metric {
 		this.communitySize = new Distribution(c);
 		this.modularity = this.calculateModularity(g, communities);
 		this.communities = communities.getCommunities().length;
-		System.out.println("\ncommunities: " + this.communities);
-		for(Community cc : communities.getCommunities()){
-			System.out.println(cc.getNodes().length);
-		}
 		this.runtime.end();
 
 	}
