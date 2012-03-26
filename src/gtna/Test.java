@@ -35,17 +35,14 @@
  */
 package gtna;
 
-import org.jfree.chart.plot.PlotState;
-
 import gtna.data.Series;
 import gtna.metrics.DegreeDistribution;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
-import gtna.plot.Plot;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
-import gtna.transformation.subGraphs.BuildSubGraph;
+import gtna.transformation.subGraphs.BuildSubGraphMax;
 
 /**
  * @author stef
@@ -57,7 +54,7 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Network net = new BarabasiAlbert(200,4,new Transformation[]{new BuildSubGraph(50,1,4,BuildSubGraph.SELECTION_OUTDEGREE)});
+		Network net = new BarabasiAlbert(200,4,new Transformation[]{new BuildSubGraphMax(100,1,5,4,BuildSubGraphMax.SELECTION_OUTDEGREE)});
 		//Network net = new BarabasiAlbert(200,4,null);
 		Metric[] m = new Metric[]{new DegreeDistribution()};
         Series ser = Series.generate(net, m , 5); 
