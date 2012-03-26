@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.metrics;
+package gtna.metrics.edges;
 
 import gtna.data.Single;
 import gtna.graph.Edge;
@@ -51,6 +51,7 @@ import gtna.id.plane.PlanePartitionSimple;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
 import gtna.io.DataWriter;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Distribution;
 import gtna.util.Timer;

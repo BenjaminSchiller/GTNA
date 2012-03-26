@@ -41,7 +41,7 @@ import gtna.graph.Node;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingPartition;
-import gtna.metrics.EdgeCrossings;
+import gtna.metrics.edges.EdgeCrossings;
 import gtna.util.Util;
 import gtna.util.parameter.Parameter;
 

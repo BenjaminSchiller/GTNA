@@ -37,7 +37,7 @@ package gtna.projects;
 
 import gtna.data.Series;
 import gtna.metrics.Metric;
-import gtna.metrics.Routing;
+import gtna.metrics.routing.Routing;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.p2p.chord.Chord;

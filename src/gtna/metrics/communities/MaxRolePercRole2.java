@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * MaxRolePercRole.java
+ * MaxRolePercRole2.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,40 +33,41 @@
  * ---------------------------------------
  *
  */
-package gtna.metrics;
+package gtna.metrics.communities;
 
-import gtna.communities.Roles.Role;
+import gtna.communities.Roles2.Role2;
 
 /**
  * @author Flipp
  * 
  */
-public class MaxRolePercRole implements Comparable<MaxRolePercRole> {
+public class MaxRolePercRole2 implements Comparable<MaxRolePercRole2> {
 	double perc;
-	Role maxRole;
+	Role2 maxRole;
 	int node;
 
 	/**
 	 * @param is
 	 * @param countRoles
+	 * @param i2
 	 */
-	public MaxRolePercRole(int[] is, int countRoles, int node) {
+	public MaxRolePercRole2(int[] is, int countRoles, int i2) {
 		double max = 0;
-		this.node = node;
+		node = i2;
 		for (int i = 0; i < is.length; i++) {
 			if (is[i] > max) {
-				maxRole = Role.values()[i];
+				maxRole = Role2.values()[i];
 				max = is[i];
 			}
 		}
 
-		perc = (max / (double) countRoles);
+		perc = max / (double) countRoles;
 	}
 
 	/**
 	 * @return
 	 */
-	public Role getRole() {
+	public Role2 getRole() {
 		return maxRole;
 	}
 
@@ -77,18 +78,24 @@ public class MaxRolePercRole implements Comparable<MaxRolePercRole> {
 		return perc;
 	}
 
-	public int compareTo(MaxRolePercRole arg0) {
-		if(perc < arg0.getValue())
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(MaxRolePercRole2 arg0) {
+		if (perc < arg0.getValue())
 			return -1;
-		else if(perc == arg0.getValue()){
-			if(getNode() < arg0.getNode())
+		else if (perc == arg0.getValue()) {
+			if (getNode() < arg0.getNode())
 				return -1;
-			else if(getNode() == arg0.getNode())
+			else if (getNode() == arg0.getNode())
 				return 0;
-			
+
 			return 1;
 		}
-		
+
 		return 1;
 	}
 
@@ -98,5 +105,4 @@ public class MaxRolePercRole implements Comparable<MaxRolePercRole> {
 	private int getNode() {
 		return node;
 	}
-
 }

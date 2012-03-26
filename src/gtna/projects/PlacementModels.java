@@ -43,7 +43,7 @@ import gtna.metrics.ClusteringCoefficient;
 import gtna.metrics.DegreeDistribution;
 import gtna.metrics.Metric;
 import gtna.metrics.ShortestPaths;
-import gtna.metrics.WeakConnectivity;
+import gtna.metrics.connectivity.WeakConnectivity;
 import gtna.networks.Network;
 import gtna.networks.etc.GpsNetwork;
 import gtna.networks.model.placementmodels.NodeConnector;

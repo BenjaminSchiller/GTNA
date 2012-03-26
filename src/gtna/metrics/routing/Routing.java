@@ -33,11 +33,12 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.metrics;
+package gtna.metrics.routing;
 
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
@@ -212,9 +213,10 @@ public class Routing extends Metric {
 				cdf[cdf.length - 1]);
 		Single failureRate = new Single("ROUTING_FAILURE_RATE",
 				1 - cdf[cdf.length - 1]);
-		Single runtime = new Single("ROUTING_RUNTIME", this.runtime.getRuntime());
-		return new Single[] { averageHops, medianHops, maximumHops, successRate,
-				failureRate, runtime };
+		Single runtime = new Single("ROUTING_RUNTIME",
+				this.runtime.getRuntime());
+		return new Single[] { averageHops, medianHops, maximumHops,
+				successRate, failureRate, runtime };
 	}
 
 	private class RoutingThread extends Thread {
