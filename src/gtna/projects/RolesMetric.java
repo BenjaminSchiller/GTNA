@@ -36,8 +36,8 @@
 package gtna.projects;
 
 import gtna.data.Series;
-import gtna.metrics.DegreeDistribution;
 import gtna.metrics.Metric;
+import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.communities.Communities;
 import gtna.metrics.communities.RolesComparison;
 import gtna.metrics.placement.Coverage;
