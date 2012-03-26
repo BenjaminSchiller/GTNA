@@ -67,6 +67,9 @@ public abstract class Network extends ParameterList {
 	}
 
 	private static Parameter[] add(Parameter[] p1, int nodes) {
+		if (p1 == null) {
+			p1 = new Parameter[0];
+		}
 		Parameter[] p2 = new Parameter[p1.length + 1];
 		p2[0] = new IntParameter("NODES", nodes);
 		for (int i = 0; i < p1.length; i++) {
@@ -100,7 +103,11 @@ public abstract class Network extends ParameterList {
 		for (Transformation t : this.transformations) {
 			buff.append("--" + t.getFolderName());
 		}
-		return Integer.toString(buff.toString().hashCode());
+		String folderName = buff.toString();
+		if (folderName.length() > 255) {
+			return Integer.toString(folderName.hashCode());
+		}
+		return folderName;
 	}
 
 	public String getDescription(String keyX) {
@@ -138,6 +145,10 @@ public abstract class Network extends ParameterList {
 		Parameter p1 = super.getDiffParameter(nw);
 		if (p1 != null) {
 			return p1;
+		}
+		if (this.transformations.length != nw.getTransformations().length) {
+			System.err.println("cannot compare networks with different number of transformations");
+			return null;
 		}
 		for (int i = 0; i < this.transformations.length; i++) {
 			Parameter p2 = this.transformations[i].getDiffParameter(nw
