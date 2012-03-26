@@ -33,13 +33,14 @@
  * ---------------------------------------
  *
  */
-package gtna.metrics;
+package gtna.metrics.placement;
 
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.id.DPartition;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.networks.model.placementmodels.connectors.RangeProperty;
 import gtna.util.Config;

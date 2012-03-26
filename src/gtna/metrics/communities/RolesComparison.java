@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.metrics;
+package gtna.metrics.communities;
 
 import gtna.communities.Roles;
 import gtna.communities.Roles.Role;
@@ -43,6 +43,7 @@ import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.io.DataWriter;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
 
 import java.util.HashMap;

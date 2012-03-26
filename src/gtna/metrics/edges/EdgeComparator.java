@@ -1,5 +1,5 @@
 /* ===========================================================
-y * GTNA : Graph-Theoretic Network Analyzer
+ * GTNA : Graph-Theoretic Network Analyzer
  * ===========================================================
  *
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
@@ -21,38 +21,60 @@ y * GTNA : Graph-Theoretic Network Analyzer
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * StrongConnectivity.java
+ * EdgeComparator.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: benni;
+ * Original Author: Nico;
  * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
  *
  */
-package gtna.metrics;
+package gtna.metrics.edges;
 
-import gtna.graph.Graph;
-import gtna.transformation.Transformation;
-import gtna.transformation.partition.StrongConnectivityPartition;
+import gtna.graph.Edge;
+import gtna.id.ring.RingPartition;
+
+import java.util.Comparator;
 
 /**
- * @author benni
+ * @author Nico
  * 
  */
-public class StrongConnectivity extends Partitioning {
+public class EdgeComparator implements Comparator<Edge> {
 
-	public StrongConnectivity() {
-		super("STRONG_CONNECTIVITY", "STRONG_CONNECTIVITY_PARTITION");
+	private RingPartition[] partitions;
+
+	public EdgeComparator(RingPartition[] partitions) {
+		this.partitions = partitions;
 	}
 
 	@Override
-	protected Graph addProperty(Graph g) {
-		Transformation t = new StrongConnectivityPartition();
-		return t.transform(g);
+	public int compare(Edge x, Edge y) {
+		double xStart = Math.min(getPositionRing(x.getSrc()),
+				getPositionRing(x.getDst()));
+		double xEnd = Math.max(getPositionRing(x.getSrc()),
+				getPositionRing(x.getDst()));
+		double yStart = Math.min(getPositionRing(y.getSrc()),
+				getPositionRing(y.getDst()));
+		double yEnd = Math.max(getPositionRing(y.getSrc()),
+				getPositionRing(y.getDst()));
+		if (xStart > yStart) {
+			return 1;
+		}
+		if (xStart == yStart) {
+			if (xEnd > yEnd) {
+				return 1;
+			}
+		}
+		return -1;
+	}
+
+	protected double getPositionRing(int i) {
+		return partitions[i].getStart().getPosition();
 	}
 
 }
