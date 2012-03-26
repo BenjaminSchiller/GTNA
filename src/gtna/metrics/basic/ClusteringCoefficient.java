@@ -38,12 +38,13 @@
  *              low-degree graphs (BS);
  * 2011-05-24 : all config parameters starting with CC (BS);
  */
-package gtna.metrics;
+package gtna.metrics.basic;
 
 import gtna.data.Single;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Timer;
 import gtna.util.Util;
