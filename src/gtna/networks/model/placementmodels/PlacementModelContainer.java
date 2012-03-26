@@ -43,6 +43,10 @@ import gtna.id.plane.PlanePartitionSimple;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.Util;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
  * A <code>PlacementModelContainer</code> is a network definition that contains
@@ -103,7 +107,16 @@ public class PlacementModelContainer extends Network {
 			PlacementModel nodePlacer, Partitioner partitioner,
 			NodeConnector nodeConnector, Transformation[] t) {
 		// FIXME add parameters of HotSpotPlacer
-		super("HSM", nodes, null, t);
+		super("HSM", nodes, new Parameter[] {
+				new IntParameter("HOTSPOTS", hotspots),
+				new DoubleParameter("WIDTH", width),
+				new DoubleParameter("HEIGHT", height),
+				new StringParameter("HOTSPOT_PLACER", hotspotPlacer.getKey()),
+				new StringParameter("NODE_PLACER", nodePlacer.getKey()),
+				new StringParameter("PARTITIONER", partitioner.getClass()
+						.toString()),
+				new StringParameter("NODE_CONNECTOR", nodeConnector.getClass()
+						.toString()) }, t);
 		// super("HSM", nodes, getConfigKeys(hotspotPlacer, nodePlacer,
 		// nodeConnector, partitioner), getConfigValues(hotspotPlacer,
 		// nodePlacer, nodeConnector, partitioner), r, t);
