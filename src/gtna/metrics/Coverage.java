@@ -74,7 +74,7 @@ public class Coverage extends Metric {
 
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-		return true;
+		return g.hasProperty("RANGE_0") && g.hasProperty("ID_SPACE_0");
 	}
 
 	@Override
