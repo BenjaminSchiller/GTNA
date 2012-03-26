@@ -50,6 +50,8 @@ import gtna.util.parameter.StringParameter;
 /**
  * @author stef
  *
+ *build a subgraph of an existing graph starting from a clique of predefined size
+ *in case such a clique does not exist, an empty graph is returned
  */
 public class BuildSubGraph extends Transformation {
 	
@@ -59,12 +61,17 @@ public class BuildSubGraph extends Transformation {
 	String selection;
 
 	/**
-	 * @param key
-	 * @param parameters
+	 * 
+	 * @param include: nodes that are MAXIMALLY included in subgraph
+	 * @param minDegree: minimum number of links a node has to have to nodes that are already included in the subgraph to be added
+	 * @param startNodes: size of the initial clique
+	 * @param selection: selection of the initial clique:
+	 *                   a) RANDOM: choose a clique randomly from all cliques in the graph
+	 *                   b) OUTDEGREE: choose the clique for which the number of outgoing links is highest
 	 */
 	public BuildSubGraph(int include, int minDegree, int startNodes, String selection) {
 		super("BUILD_SUB_GRAPH", new Parameter[]{new IntParameter("INCLUDE",include), new IntParameter("MINDEGREE",minDegree), 
-				new IntParameter("STARTNODES",startNodes), new StringParameter("SELECTION",selection)});
+				new IntParameter("STARTNODES",startNodes),  new StringParameter("SELECTION",selection)});
 		this.selection = selection;
 		this.minDegree = Math.max(minDegree,1);
 		this.include = include;
@@ -82,14 +89,16 @@ public class BuildSubGraph extends Transformation {
 		HashMap<Integer, Integer> newIndex = new HashMap<Integer, Integer>();
 		HashMap<Integer, Integer> inDegree = new HashMap<Integer,Integer>();
 		Random rand = new Random();
+		int[] out;
 		int[] start = this.getStartIndex(nodesOld, rand);
+		
 		Integer inDeg;
 		Vector<Integer> list;
 		for (int s = 0; s < start.length; s++){
 			added[start[s]] = true;
 		}
 		for (int s = 0; s < start.length; s++){
-			int[] out = nodesOld[start[s]].getOutgoingEdges();
+			out = nodesOld[start[s]].getOutgoingEdges();
 			for (int i = 0; i < out.length; i++){
 				if (!added[out[i]]){
 					inDeg = inDegree.remove(out[i]);
@@ -120,7 +129,7 @@ public class BuildSubGraph extends Transformation {
 		while (count < this.include && count < nodesOld.length){
 			
 			max = in.size()-1;
-			while (in.get(max).size() == 0 && max > -1){
+			while (max > -1 && in.get(max).size() == 0){
 				max--;
 			}
 			if (max < this.minDegree-1){
@@ -129,10 +138,9 @@ public class BuildSubGraph extends Transformation {
 			int s = in.get(max).remove(rand.nextInt(in.get(max).size()));
 			last = nodesOld[s];
 			added[s] = true;
-			//System.out.println(count + " " + s);
+			out = last.getOutgoingEdges();
 			count++;
 			
-			int[] out = last.getOutgoingEdges();
 			for (int i = 0; i < out.length; i++){
 				if (!added[out[i]]){
 					inDeg = inDegree.remove(out[i]);
@@ -171,7 +179,7 @@ public class BuildSubGraph extends Transformation {
 		c = 0;
 		for (int i = 0; i < added.length; i++){
 			if (added[i]){
-				int[] out = nodesNew[c].getOutgoingEdges();
+				out = nodesNew[c].getOutgoingEdges();
 				for (int j = 0; j < out.length; j++){
 					if (added[out[j]]){
 						edges.add(c, newIndex.get(out[j]));
@@ -195,6 +203,12 @@ public class BuildSubGraph extends Transformation {
 		return true;
 	}
 	
+	/**
+	 * returns indices of initial nodes
+	 * @param nodes
+	 * @param rand
+	 * @return
+	 */
     private int[] getStartIndex(Node[] nodes, Random rand){
     	if (this.selection.equals(SELECTION_RANDOM)){
     		return determineCliqueRandom(rand,nodes);
@@ -205,6 +219,12 @@ public class BuildSubGraph extends Transformation {
 	   throw new IllegalArgumentException("Selection type " + this.selection + " in BuildSubGraph not known");
     }
     
+    /**
+     * determine initial nodes for random case
+     * @param rand
+     * @param nodes
+     * @return
+     */
     private int[] determineCliqueRandom(Random rand, Node[] nodes){
     	if (this.startNodes == 1){
     		return new int[]{rand.nextInt(nodes.length)};
@@ -279,6 +299,12 @@ public class BuildSubGraph extends Transformation {
 		return result;
 	}
 	
+    /**
+     * return number of links node with index index has into the set neighs
+     * @param index
+     * @param neighs
+     * @return
+     */
 	private int checkLinked(int index, Vector<Node> neighs){
 		int c = 0;
 		for (int i = 0; i < neighs.size(); i++){
@@ -289,6 +315,11 @@ public class BuildSubGraph extends Transformation {
 		return c;
 	}
 	
+	/**
+	 * all connected pairs in neighs (bidirectional connection required)
+	 * @param neighs
+	 * @return
+	 */
 	private Vector<Node[]> determinePairs(Vector<Node> neighs){
 		Vector<Node[]> res = new Vector<Node[]>();
 		Node[] array = new Node[2];
@@ -304,6 +335,13 @@ public class BuildSubGraph extends Transformation {
 		return res;
 	}
 	
+	/**
+	 * return all cliques that can be generated from oldClique by adding
+	 * a node in neighs
+	 * @param oldClique
+	 * @param neighs
+	 * @return
+	 */
 	private Vector<Node[]> determineMClique(Node[] oldClique, Vector<Node> neighs){
 		Vector<Node[]> res = new Vector<Node[]>();
 		Node[] array = new Node[oldClique.length+1];
@@ -327,6 +365,12 @@ public class BuildSubGraph extends Transformation {
 		return res;
 	}
 	
+	/**
+	 * determine clique for case OUTDEGREE
+	 * @param rand
+	 * @param nodes
+	 * @return
+	 */
 	 private int[] determineCliqueMostLinks(Random rand, Node[] nodes){
 	    	if (this.startNodes == 1){
 	    		return new int[]{this.getMaxDegree(nodes, rand)};
@@ -412,6 +456,13 @@ public class BuildSubGraph extends Transformation {
 			return maxIndex.get(rand.nextInt(maxIndex.size()));
 		}
 	
+	 /**
+	  * index of highest-degree node
+	  * ties are broken randomly 
+	  * @param nodes
+	  * @param rand
+	  * @return
+	  */
 	private int getMaxDegree(Node[] nodes, Random rand){
 		int max = 0;
 		Vector<Integer> maxIndex = new Vector<Integer>();
@@ -427,6 +478,12 @@ public class BuildSubGraph extends Transformation {
 		return maxIndex.get(rand.nextInt(maxIndex.size()));
 	}
 	
+	/**
+	 * connected pair of nodes with highest degree
+	 * @param nodes
+	 * @param rand
+	 * @return
+	 */
 	private int[] getMaxPair(Node[] nodes, Random rand){
 		int max = 0;
 		int cur;
