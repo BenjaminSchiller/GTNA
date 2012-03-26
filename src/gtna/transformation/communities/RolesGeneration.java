@@ -135,7 +135,9 @@ public class RolesGeneration extends Transformation {
 
 		double psum = 0;
 		for (Community community : counter.keySet()) {
-			psum += Math.pow(counter.get(community) / node.getOutDegree(), 2);
+			psum += Math.pow(
+					(double) counter.get(community)
+							/ (double) node.getOutDegree(), 2);
 		}
 		return 1.0 - psum;
 	}
