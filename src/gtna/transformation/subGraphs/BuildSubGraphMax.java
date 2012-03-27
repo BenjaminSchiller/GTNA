@@ -52,6 +52,7 @@ import gtna.util.parameter.StringParameter;
  *
  *build a subgraph of an existing graph starting from a clique of predefined size
  *in case such a clique does not exist, an empty graph is returned
+ *one can restrict the maximum degree on this subgraph
  */
 public class BuildSubGraphMax extends Transformation {
 	
@@ -64,6 +65,7 @@ public class BuildSubGraphMax extends Transformation {
 	 * 
 	 * @param include: nodes that are MAXIMALLY included in subgraph
 	 * @param minDegree: minimum number of links a node has to have to nodes that are already included in the subgraph to be added
+	 * @param maxDegree: maximum degree a node in the subgraph is allowed to have
 	 * @param startNodes: size of the initial clique
 	 * @param selection: selection of the initial clique:
 	 *                   a) RANDOM: choose a clique randomly from all cliques in the graph
