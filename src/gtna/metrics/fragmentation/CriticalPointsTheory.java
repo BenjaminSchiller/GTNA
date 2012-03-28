@@ -53,12 +53,12 @@ import java.util.HashMap;
  */
 public class CriticalPointsTheory extends Metric {
 	private boolean dir;
-	//different types of node slection
+	//different types of node selection
 	public static String RANDOM = "RANDOM"; //random deletion of nodes
 	public static String LARGEST = "LARGEST"; //deletion of nodes with highest degree
 	public static String LARGESTOUT = "LARGESTOUT"; //deletion of nodes with highest out-degree
 	public static String LARGESTIN = "LARGESTIN"; //deletion of nodes with highest out-degree
-	public static String DEGREEBOUND = "DEGREEBOUND"; //deletion of edges of nodes so that maximal degree is bounded
+	public static String DEGREEBOUND = "DEGREEBOUND"; //deletion of edges of nodes so that maximal degree is bounded: only undirected
 	private double p;
 	private double deg;
 	private Timer runtime;
@@ -80,6 +80,7 @@ public class CriticalPointsTheory extends Metric {
 		this.runtime = new Timer();
 		Node[] nodes = g.getNodes();
         if (this.dir){
+        	//directed: determine matrix of out-in-degree
         	int maxOut = 0;
         	int maxIn = 0;
         	for (int i = 0; i < nodes.length; i++){
@@ -99,6 +100,7 @@ public class CriticalPointsTheory extends Metric {
         			dist[i][j] = dist[i][j]/(double)nodes.length;
         		}
         	}
+        	//iterate over different deletion methods
         	boolean success = false;
         	if (this.t.equals(RANDOM)){
         		success = true;
@@ -132,6 +134,7 @@ public class CriticalPointsTheory extends Metric {
         		throw new IllegalArgumentException("Unknown deletion type " + this.t + " directed: " + this.dir + " in CriticalPointsTheory");
         	}
         } else {
+        	//undirected => derive degree vector
         	int max = 0;
         	for (int i = 0; i < nodes.length; i++){
         		if (nodes[i].getOutDegree() > max){
@@ -147,15 +150,16 @@ public class CriticalPointsTheory extends Metric {
         	for (int i = 0; i < dd.length; i++){
         		dd[i] = dd[i]/sum;
         	}
+        	//iterate over all possible deletion methods
         	double[] res = null; 
         	if(this.t.equals(RANDOM)){
-        		res = this.getCPUndirectedRandom(dd);
+        		res = getCPUndirectedRandom(dd);
         	}
         	if(this.t.equals(LARGEST)){
-        		res = this.getCPUndirectedLargest(dd);
+        		res = getCPUndirectedLargest(dd);
         	}
         	if(this.t.equals(DEGREEBOUND)){
-        		res = this.getCPUndirectedMaxDegree(dd);
+        		res = getCPUndirectedMaxDegree(dd);
         	}
         	if (res == null){
         		throw new IllegalArgumentException("Unknown deletion type " + this.t + " directed: " + this.dir + " in CriticalPointsTheory");
@@ -179,8 +183,10 @@ public class CriticalPointsTheory extends Metric {
 	 */
 	@Override
 	public Single[] getSingles() {
+		//crirtical point
 		Single pR = new Single("CRITICAL_POINTS_CP",
 				this.p);
+		//maximal degree of remaining nodes
 		Single degR = new Single("CRITICAL_POINTS_DEG",
 				this.deg);
 		Single runtime = new Single("CRITICAL_POINTS_RUNTIME",
@@ -196,7 +202,7 @@ public class CriticalPointsTheory extends Metric {
 		return true;
 	}
 	
-	private double[] getCPUndirectedRandom(double[] dd){
+	private static double[] getCPUndirectedRandom(double[] dd){
 		double k0 = getk0(dd);
 		double r = 1 - 1/(k0-1);
 		if (r < 0){
@@ -249,7 +255,6 @@ public class CriticalPointsTheory extends Metric {
 		double p = 0;
 		double edgef = 0;
 		double fpN;
-		double k0;
 		int degree = dist.length + dist[0].length-2;
 		for (int j = 0; j < dist.length; j++){
 			for (int i = 0; i < j+1; i++){
@@ -279,7 +284,6 @@ public class CriticalPointsTheory extends Metric {
 		double p = 0;
 		double edgef = 0;
 		double fpN;
-		double k0;
 		for (int j = dist.length-1; j > 0; j--){
 			for (int i = 0; i < dist[j].length; i++){
 				p = p + dist[j][i];
@@ -311,7 +315,6 @@ public class CriticalPointsTheory extends Metric {
 			}
 			double[] r = getk0Directed(dist,Integer.MAX_VALUE, Integer.MAX_VALUE,j);
 			fpN = (2*r[0]-r[1]-r[2])/(2*r[0]-r[1]);
-			//System.out.println(fpN + " " + edgef);
 			if (edgef > fpN){ 
 				return new double[]{p,j-1};
 			}
@@ -352,6 +355,12 @@ public class CriticalPointsTheory extends Metric {
 	}
 	
 	
+	/**
+	 * criterion for a giant component in an undirected graph:
+	 * @param dist: degree distribution
+	 * @param bound: maximal degree
+	 * @return
+	 */
 	private static double getk0(double[] dist, int bound){
 		double firstMoment = 0;
 		double secondMoment = 0;
@@ -366,20 +375,25 @@ public class CriticalPointsTheory extends Metric {
 		return getk0(dist,dist.length);
 	}
 	
+	/**
+	 * criterion for giant component directed
+	 * @param dist: degree distribution
+	 * @param bound: upper bound on degree
+	 * @param boundOut: upper bound on out degree
+	 * @param boundIn: upper bound on in degree
+	 * @return
+	 */
 	private static double[] getk0Directed(double[][] dist, int bound, int boundOut, int boundIn){
 		double jk = 0;
 		double j = 0;
 		double k = 0;
-		//System.out.println(dist.length);
 		for (int i = 1; i < Math.min(Math.min(dist.length,bound),boundOut); i++){
 			for (int i2 = 1; i2 < Math.min(Math.min(dist[i].length,bound-i),boundIn);i2++){
-				//System.out.println(i + " " + i2 + " " +dist[i][i2]);
 				jk = jk + i*i2*dist[i][i2];
 				j = j + i*dist[i][i2];
 				k = k + i2*dist[i][i2];
 			}
 		}
-		//System.out.println(jk + " " + j);
 		return new double[]{jk,j,k};
 	}
 	
