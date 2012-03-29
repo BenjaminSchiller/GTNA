@@ -53,7 +53,7 @@ import java.util.HashMap;
  */
 public class CriticalPointsTheory extends Metric {
 	private boolean dir;
-	//different types of node slection
+	//different types of node selection
 	public static String RANDOM = "RANDOM"; //random deletion of nodes
 	public static String LARGEST = "LARGEST"; //deletion of nodes with highest degree
 	public static String LARGESTOUT = "LARGESTOUT"; //deletion of nodes with highest out-degree
