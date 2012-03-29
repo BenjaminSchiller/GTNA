@@ -101,12 +101,8 @@ public class BuildSubGraphMax extends Transformation {
 		for (int s = 0; s < start.length; s++){
 			added[start[s]] = true;
 			list = new Vector<Integer>();
-//			for (int t = 0; t < start.length; t++){
-//				if (t != s){
-//					list.add(start[t]);
-//				}
-//			}
-//			neighs.put(start[s], list);
+            neighs.put(start[s], list);
+            inDegree.put(start[s],0);
 		}
 		Vector<Integer> f;
 		for (int s = 0; s < start.length; s++){
@@ -166,10 +162,14 @@ public class BuildSubGraphMax extends Transformation {
 					for (int k = 0; k < out.length; k++){
 						if (!added[out[k]]){
 							Vector<Integer> cur = neighs.get(out[k]);
-							cur.remove(list.get(i));
+							cur.removeElement(list.get(i));
+							System.out.println(cur.size() + " " + in.size());
 							in.get(cur.size()).removeElement(out[k]);
 							if (cur.size() > 0)
 							in.get(cur.size()-1).add(out[k]);
+							inDeg = inDegree.remove(out[k]);
+							inDeg--;
+							inDegree.put(out[i],inDeg);
 						}
 					}
 				}
@@ -210,6 +210,7 @@ public class BuildSubGraphMax extends Transformation {
 		}
 		
 		Node[] nodesNew = new Node[count];
+		System.out.println("COUNT" + count);
 		Edges edges = new Edges(nodesNew,g.computeNumberOfEdges());
 		int c = 0;
 		for (int i = 0; i < added.length; i++){
@@ -220,7 +221,9 @@ public class BuildSubGraphMax extends Transformation {
 				
 			}
 		}
+		System.out.println("C" + c);
 		c = 0;
+		
 		for (int i = 0; i < added.length; i++){
 			if (added[i]){
 				list = neighs.get(i);
