@@ -148,7 +148,7 @@ public class CommunityDetection {
 			Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
 			Config.overwrite("GEPHI_NODE_SIZE", "200");
 
-			String graphFilename = "/tmp/graph.txt";
+			String graphFilename = "D:/tmp/graph.txt";
 			String plotFilenameDQ = filename + "_DQ_" + i + ".pdf";
 			String plotFilenameLPA = filename + "_LPA_" + i + ".pdf";
 

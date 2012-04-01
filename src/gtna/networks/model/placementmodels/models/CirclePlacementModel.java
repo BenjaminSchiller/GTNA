@@ -38,6 +38,9 @@ package gtna.networks.model.placementmodels.models;
 import gtna.networks.model.placementmodels.PlacementModelImpl;
 import gtna.networks.model.placementmodels.PlacementNotPossibleException;
 import gtna.networks.model.placementmodels.Point;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.Random;
 
@@ -93,16 +96,17 @@ public class CirclePlacementModel extends PlacementModelImpl {
 	 *            If set to <code>true</code> will place a node in the center of
 	 *            the circle.
 	 */
-	public CirclePlacementModel(double radius,
-			DistributionType oalpha, DistributionType od, boolean inCenter) {
+	public CirclePlacementModel(double radius, DistributionType oalpha,
+			DistributionType od, boolean inCenter) {
 		this.radius = radius;
 		this.oalpha = oalpha;
 		setInCenter(inCenter);
 		this.od = od;
 		setKey("CIRCLE");
-		setAdditionalConfigKeys(new String[] { "RADIUS", "OALPHA", "OD"});
-		setAdditionalConfigValues(new String[] { Double.toString(radius),
-				oalpha.toString(), od.toString()});
+		setAdditionalConfigParameters(new Parameter[] {
+				new DoubleParameter("RADIUS", radius),
+				new StringParameter("OALPHA", oalpha.toString()),
+				new StringParameter("OD", od.toString()) });
 	}
 
 	/**
@@ -113,7 +117,7 @@ public class CirclePlacementModel extends PlacementModelImpl {
 		Random rnd = new Random();
 		Point[] ret = new Point[count];
 		int offset = 0;
-		if(getInCenter()){
+		if (getInCenter()) {
 			ret[0] = new Point(center.getX(), center.getY());
 			offset = 1;
 			count--;
@@ -125,7 +129,7 @@ public class CirclePlacementModel extends PlacementModelImpl {
 
 		int tries;
 
-		for(int i = 0; i < count; i++){
+		for (int i = 0; i < count; i++) {
 			tries = 0;
 			do {
 
@@ -165,7 +169,7 @@ public class CirclePlacementModel extends PlacementModelImpl {
 						+ center.getY() + "), radius=" + radius + ", F=("
 						+ maxX + ", " + maxY + "), count=" + count
 						+ ", Distribs=(" + oalpha + ", " + od + ")");
-			ret[i+offset] = new Point(x, y);
+			ret[i + offset] = new Point(x, y);
 		}
 
 		return ret;

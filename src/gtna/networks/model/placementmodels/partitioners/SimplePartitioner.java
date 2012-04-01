@@ -52,7 +52,7 @@ public class SimplePartitioner extends PartitionerImpl {
 	 * Standard constructor, no configuration values are needed.
 	 */
 	public SimplePartitioner() {
-		setKey("Simple");
+		setKey("SIMPLE");
 	}
 
 	/**
@@ -72,5 +72,4 @@ public class SimplePartitioner extends PartitionerImpl {
 		}
 		return ret;
 	}
-
 }
