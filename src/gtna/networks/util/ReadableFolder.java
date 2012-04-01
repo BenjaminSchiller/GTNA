@@ -81,6 +81,8 @@ public class ReadableFolder extends Network {
 
 	public static String key(String name, String folder) {
 		Config.overwrite("READABLE_FOLDER_" + folder + "_NAME", name);
+		Config.overwrite("READABLE_FOLDER_" + folder + "_NAME_SHORT", name);
+		Config.overwrite("READABLE_FOLDER_" + folder + "_NAME_LONG", name);
 		Config.overwrite("READABLE_FOLDER_" + folder + "_FOLDER", folder);
 		return "READABLE_FOLDER_" + folder;
 	}
