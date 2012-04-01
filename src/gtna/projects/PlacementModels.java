@@ -372,7 +372,7 @@ public class PlacementModels {
 								new SimplePartitioner(), c, null);
 						String name = "./plots/combinations/" + p1.getKey()
 								+ "-" + p2.getKey() + "-"
-								+ c.getConfigValues()[0] + "-" + i;
+								+ c.getConfigParameters()[0] + "-" + i;
 						PlacementModels.plot(nw, name);
 					}
 				}

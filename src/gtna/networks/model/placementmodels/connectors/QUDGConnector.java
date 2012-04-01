@@ -38,6 +38,8 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.networks.model.placementmodels.NodeConnectorImpl;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.Parameter;
 
 /**
  * A <code>QUDGConnector</code> connects nodes based on their distance. If the
@@ -72,9 +74,7 @@ public class QUDGConnector extends NodeConnectorImpl {
 		this.range2 = range2;
 		this.perc = perc;
 		setKey("QUDG");
-		setAdditionalConfigKeys(new String[] { "RANGE1", "RANGE2", "PROB" });
-		setAdditionalConfigValues(new String[] { Double.toString(range1),
-				Double.toString(range2), Double.toString(perc) });
+		setAdditionalConfigParameters(new Parameter[] { new DoubleParameter("RANGE1", range1), new DoubleParameter("RANGE2", range2), new DoubleParameter("PROB", perc) });
 	}
 
 	/**

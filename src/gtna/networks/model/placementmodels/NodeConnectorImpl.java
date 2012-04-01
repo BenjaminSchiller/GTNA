@@ -34,6 +34,8 @@
 package gtna.networks.model.placementmodels;
 
 import gtna.util.Util;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
  * An <code>AbstractNodeConnector</code> is the abstract implementation of the
@@ -51,31 +53,7 @@ import gtna.util.Util;
 public abstract class NodeConnectorImpl implements NodeConnector {
 	private String key;
 
-	private String[] additionalConfigKeys;
-
-	private String[] additionalConfigValues;
-
-	/**
-	 * Sets additional configuration keys of this NodeConnector, to be returned
-	 * by getConfigKeys().
-	 * 
-	 * @param additionalConfigKeys
-	 *            The additional configuration keys to be set.
-	 */
-	public void setAdditionalConfigKeys(String[] additionalConfigKeys) {
-		this.additionalConfigKeys = additionalConfigKeys;
-	}
-
-	/**
-	 * Sets additional configuration values of this NodeConnector, to be
-	 * returned by getConfigKeys().
-	 * 
-	 * @param additionalConfigValues
-	 *            The additional configuration values to be set.
-	 */
-	public void setAdditionalConfigValues(String[] additionalConfigValues) {
-		this.additionalConfigValues = additionalConfigValues;
-	}
+	private Parameter[] additionalConfigParams;
 
 	/**
 	 * Sets the key of the current NodeConnector. Will be returned as the first
@@ -89,20 +67,29 @@ public abstract class NodeConnectorImpl implements NodeConnector {
 	}
 
 	/**
-	 * Returns a String array containing "KEY" as the first value and all values
-	 * set with <code>setAdditionalConfigKeys()</code>.
+	 * Setter for the additional configuration parameters, those will be
+	 * returned in addition to the key of the NodeConnector.
+	 * 
+	 * @param parameters
+	 *            The additional parameters.
 	 */
-	@Override
-	public String[] getConfigKeys() {
-		return Util.mergeArrays(new String[] { "KEY" }, additionalConfigKeys);
+	protected void setAdditionalConfigParameters(Parameter[] parameters) {
+		additionalConfigParams = parameters;
 	}
 
 	/**
-	 * Returns a String array containing the key of this NodeConnector followed
-	 * by all values set by <code>setAdditionalConfigValues()</code>.
+	 * Getter for the additional configuration parameters.
+	 * 
+	 * @return An array containing the additional configuration parameters.
 	 */
-	@Override
-	public String[] getConfigValues() {
-		return Util.mergeArrays(new String[] { key }, additionalConfigValues);
+	protected Parameter[] getAdditionalConfigParameters() {
+		return additionalConfigParams;
 	}
+
+	@Override
+	public Parameter[] getConfigParameters() {
+		return Util.mergeArrays(new Parameter[] { new StringParameter("KEY",
+				key) }, getAdditionalConfigParameters());
+	}
+
 }

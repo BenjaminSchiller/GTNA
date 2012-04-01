@@ -35,6 +35,8 @@
  */
 package gtna.networks.model.placementmodels;
 
+import gtna.util.parameter.Parameter;
+
 /**
  * A <code>PlacementModel</code> is a way to determine a number of positions in
  * a two-dimensional coordinate system. These positions can then be used to
@@ -55,20 +57,6 @@ public interface PlacementModel {
 	public String getKey();
 
 	/**
-	 * Getter for all the configuration values.
-	 * 
-	 * @return A string array containing all the configuration values.
-	 */
-	public String[] getConfigValues();
-
-	/**
-	 * Getter for all the configuration keys.
-	 * 
-	 * @return A string array containing all the configuration values.
-	 */
-	public String[] getConfigKeys();
-
-	/**
 	 * 
 	 * Finds and returns <code>number</code> positions.
 	 * 
@@ -83,5 +71,12 @@ public interface PlacementModel {
 	 * @return An array with size <code>count</code> containing the positions.
 	 */
 	Point[] place(int count, Point center, double maxX, double maxY);
+
+	/**
+	 * Getter for the configuration Parameters.
+	 * 
+	 * @return An array containing all the configuration parameters.
+	 */
+	public Parameter[] getConfigParameters();
 
 }
