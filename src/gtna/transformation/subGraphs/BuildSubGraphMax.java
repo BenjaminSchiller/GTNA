@@ -524,52 +524,6 @@ public class BuildSubGraphMax extends Transformation {
 		return maxIndex.get(rand.nextInt(maxIndex.size()));
 	}
 	
-	private void checkAdded(Vector<Vector<Integer>> vec, boolean[] add){
-	Vector<Integer> cur,com;
-	int index = 0;
-	while (index < vec.size()-1){
-		cur = vec.get(index);
-		for (int j = 0; j < cur.size(); j++){
-			if (add[cur.get(j)]){
-				System.out.println("ADDED " + cur.get(j) + " in " + index);
-				throw new IllegalArgumentException("Wrong");
-			}
-		}
-		index++;
-	}
-}
 	
-//	private void checkVector(Vector<Vector<Integer>> vec){
-//		Vector<Integer> cur,com;
-//		int index = 0;
-//		while (index < vec.size()-1){
-//			cur = vec.get(index);
-//			for (int j = 0; j < cur.size(); j++){
-//				for (int i = index+1; i < vec.size(); i++){
-//					com = vec.get(i);
-//					if (com.contains(cur.get(j))){
-//						System.out.println(index + " " + i);
-//					}
-//				}
-//			}
-//			index++;
-//		}
-//	}
-//	
-//	private void checkDouble(Vector<Vector<Integer>> vec){
-//		Vector<Integer> cur,com;
-//		int index = 0;
-//		while (index < vec.size()-1){
-//			cur = vec.get(index);
-//			for (int j = 0; j < cur.size(); j++){
-//				for (int i = j+1; i < cur.size(); i++){
-//					if (cur.get(j) == cur.get(i)){
-//						System.out.println("TWICE");
-//					}
-//				}
-//			}
-//			index++;
-//		}
-//	}
 
 }
