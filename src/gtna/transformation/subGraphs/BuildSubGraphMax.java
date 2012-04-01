@@ -35,10 +35,6 @@
  */
 package gtna.transformation.subGraphs;
 
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Vector;
-
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -46,6 +42,10 @@ import gtna.transformation.Transformation;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
+
+import java.util.HashMap;
+import java.util.Random;
+import java.util.Vector;
 
 /**
  * @author stef
@@ -79,6 +79,9 @@ public class BuildSubGraphMax extends Transformation {
 		this.maxDegree = maxDegree;
 		this.include = include;
 		this.startNodes = startNodes;
+		if (maxDegree < startNodes-1 || minDegree > maxDegree){
+			throw new IllegalArgumentException("Degree constraints do not agree in BuildSubGraphMax " + maxDegree);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -88,147 +91,86 @@ public class BuildSubGraphMax extends Transformation {
 	public Graph transform(Graph g) {
 		Node[] nodesOld = g.getNodes();
 		boolean[] added = new boolean[nodesOld.length]; 
-		Vector<Vector<Integer>> in = new Vector<Vector<Integer>>();
-		HashMap<Integer, Integer> newIndex = new HashMap<Integer, Integer>();
-		HashMap<Integer, Integer> inDegree = new HashMap<Integer,Integer>();
-		HashMap<Integer, Vector<Integer>> neighs = new HashMap<Integer,Vector<Integer>>();
+		int[] degree = new int[nodesOld.length];
 		Random rand = new Random();
 		int[] out;
-		int[] start = this.getStartIndex(nodesOld, rand);
-		
-		Integer inDeg;
-		Vector<Integer> list;
-		for (int s = 0; s < start.length; s++){
-			added[start[s]] = true;
-			list = new Vector<Integer>();
-            neighs.put(start[s], list);
-            inDegree.put(start[s],0);
+		int maxdeg = nodesOld[this.getMaxDegree(nodesOld, rand)].getOutDegree();
+		if (this.maxDegree < maxdeg){
+			maxdeg = this.maxDegree;
 		}
-		Vector<Integer> f;
-		for (int s = 0; s < start.length; s++){
-			out = nodesOld[start[s]].getOutgoingEdges();
-			for (int i = 0; i < out.length; i++){
-				f = neighs.get(out[i]);
-				if (f == null){
-					f = new Vector<Integer>();
-					neighs.put(out[i],f);
-				}
-				if (f.size() < this.maxDegree){
-					f.add(start[s]);
-				}
-				if (!added[out[i]]){
-					inDeg = inDegree.remove(out[i]);
-					if (inDeg == null){
-						inDeg = 0;
-					}
-					inDeg++;
-					inDegree.put(out[i],inDeg);
-					
-					if (inDeg > 1){
-						list = in.get(inDeg-2);
-						list.removeElement(out[i]);
-					}
-					if (inDeg > in.size()){
-						list = new Vector<Integer>();
-						in.add(list);
-					} else {
-						list = in.get(inDeg-1);
-					}
-					list.add(out[i]);
-				}
-			}
+		int[] start = this.getStartIndex(nodesOld, rand);
+		HashMap<Integer, Integer> newIndex = new HashMap<Integer, Integer>(Math.min(nodesOld.length, this.include));
+		HashMap<Integer,Vector<Integer>> neighs = new HashMap<Integer,Vector<Integer>>(nodesOld.length);
+		Vector<Vector<Integer>> inDegree = new Vector<Vector<Integer>>(maxdeg+1);
+		for (int i = 0; i < maxdeg+1; i++){
+			inDegree.add(new Vector<Integer>());
 		}
 		
 		int count = start.length;
-		int max;
-		Node last;
-		while (count < this.include && count < nodesOld.length){
-			max = in.size()-1;
-			while (max > -1 && in.get(max).size() == 0){
-				max--;
+		Vector<Integer> list;
+		for (int i = 0; i < start.length; i++){
+			added[start[i]] = true;
+			degree[start[i]] = start.length-1;
+			Vector<Integer> neighbors = new Vector<Integer>();
+			for (int k = 0; k < i; k++){
+				neighbors.add(start[k]);
 			}
-			if (max < this.minDegree-1){
+			neighs.put(start[i], neighbors);
+		}
+		for (int i = 0; i < start.length; i++){
+			if (degree[start[i]] == this.maxDegree){
+				//full[start[i]] = true;
+			} else {
+				out = nodesOld[start[i]].getOutgoingEdges();
+				for (int j = 0; j < out.length; j++){
+					if (!added[out[j]] && degree[out[j]] < this.maxDegree){
+						inDegree.get(degree[out[j]]).removeElement(out[j]);
+						degree[out[j]]++;
+						inDegree.get(degree[out[j]]).add(out[j]);
+					}
+				}
+			}
+			
+		}
+		while (count < this.include && count < nodesOld.length){
+			while (inDegree.get(maxdeg).size() > 0){
+				int chosen = inDegree.get(maxdeg).remove(rand.nextInt(inDegree.get(maxdeg).size()));
+				neighs.put(chosen, this.addNode(added,degree,nodesOld[chosen], inDegree,nodesOld));
+				count++;
+			}
+			
+			
+			int max = maxdeg-1;
+			while (max > 0 && inDegree.get(max).size() == 0) max--;
+			if (max < this.minDegree){
 				break;
 			}
-			int s = in.get(max).remove(rand.nextInt(in.get(max).size()));
-			last = nodesOld[s];
-			added[s] = true;
-			list = neighs.get(s);
-			for (int i = 0; i < list.size(); i++){
-				f = neighs.get(list.get(i));
-				f.add(s);
-				if (f.size() == this.maxDegree){
-					out = nodesOld[list.get(i)].getOutgoingEdges();
-					for (int k = 0; k < out.length; k++){
-						if (!added[out[k]]){
-							Vector<Integer> cur = neighs.get(out[k]);
-							cur.removeElement(list.get(i));
-							System.out.println(cur.size() + " " + in.size());
-							in.get(cur.size()).removeElement(out[k]);
-							if (cur.size() > 0)
-							in.get(cur.size()-1).add(out[k]);
-							inDeg = inDegree.remove(out[k]);
-							inDeg--;
-							inDegree.put(out[i],inDeg);
-						}
-					}
-				}
-			}
-			out = last.getOutgoingEdges();
-			count++;
 			
-			for (int i = 0; i < out.length; i++){
-				f = neighs.get(out[i]);
-				if (f == null){
-					f = new Vector<Integer>();
-					neighs.put(out[i],f);
-				}
-				if (f.size() < this.maxDegree){
-					f.add(s);
-				}
-				if (!added[out[i]]){
-					inDeg = inDegree.remove(out[i]);
-					if (inDeg == null){
-						inDeg = 0;
-					}
-					inDeg++;
-					inDegree.put(out[i],inDeg);
-					
-					if (inDeg > 1){
-						list = in.get(inDeg-2);
-						list.removeElement(out[i]);
-					}
-					if (inDeg > in.size()){
-						list = new Vector<Integer>();
-						in.add(list);
-					} else {
-						list = in.get(inDeg-1);
-					}
-					list.add(out[i]);
-				} 
-			}
+			int chosen = inDegree.get(max).remove(rand.nextInt(inDegree.get(max).size()));
+			neighs.put(chosen, this.addNode(added,degree,nodesOld[chosen], inDegree,nodesOld));
+			count++;
 		}
 		
+		
 		Node[] nodesNew = new Node[count];
-		System.out.println("COUNT" + count);
 		Edges edges = new Edges(nodesNew,g.computeNumberOfEdges());
 		int c = 0;
 		for (int i = 0; i < added.length; i++){
 			if (added[i]){
 				nodesNew[c] = nodesOld[i];
 				newIndex.put(i, c);
+				nodesNew[c].setIndex(c);
 				c++;
 				
 			}
 		}
-		System.out.println("C" + c);
 		c = 0;
-		
 		for (int i = 0; i < added.length; i++){
 			if (added[i]){
 				list = neighs.get(i);
 				for (int j = 0; j < list.size(); j++){
 					edges.add(c, newIndex.get(list.get(j)));
+					edges.add( newIndex.get(list.get(j)), c);
 				}
 				c++;
 			}
@@ -236,6 +178,37 @@ public class BuildSubGraphMax extends Transformation {
 		edges.fill();
 		g.setNodes(nodesNew);
 		return g;
+	}
+	
+	private Vector<Integer> addNode(boolean[] added,  int[] degree, Node n, Vector<Vector<Integer>> inDegree, Node[] nodes){
+		int[] out = n.getIncomingEdges();
+		Vector<Integer> neighbors = new Vector<Integer>();
+		added[n.getIndex()] = true;
+		for (int i = 0; i < out.length; i++){
+			if (added[out[i]] && degree[out[i]] < this.maxDegree && neighbors.size() < this.maxDegree){
+				neighbors.add(out[i]);
+				degree[out[i]]++;
+				if (degree[out[i]] == this.maxDegree){
+					int[] o = nodes[out[i]].getOutgoingEdges();
+					for (int k = 0; k < o.length; k++){
+						if (!added[o[k]]){
+						inDegree.get(degree[o[k]]).removeElement(o[k]);
+						degree[o[k]]--;
+						inDegree.get(degree[o[k]]).add(o[k]);
+						}
+					}
+				}
+			}
+			if (!added[out[i]] && degree[out[i]] < this.maxDegree){
+				inDegree.get(degree[out[i]]).removeElement(out[i]);
+				degree[out[i]]++;
+				inDegree.get(degree[out[i]]).add(out[i]);
+			}
+		}
+		
+		
+		
+		return neighbors;
 	}
 	
 	
@@ -551,6 +524,52 @@ public class BuildSubGraphMax extends Transformation {
 		return maxIndex.get(rand.nextInt(maxIndex.size()));
 	}
 	
+	private void checkAdded(Vector<Vector<Integer>> vec, boolean[] add){
+	Vector<Integer> cur,com;
+	int index = 0;
+	while (index < vec.size()-1){
+		cur = vec.get(index);
+		for (int j = 0; j < cur.size(); j++){
+			if (add[cur.get(j)]){
+				System.out.println("ADDED " + cur.get(j) + " in " + index);
+				throw new IllegalArgumentException("Wrong");
+			}
+		}
+		index++;
+	}
+}
 	
+//	private void checkVector(Vector<Vector<Integer>> vec){
+//		Vector<Integer> cur,com;
+//		int index = 0;
+//		while (index < vec.size()-1){
+//			cur = vec.get(index);
+//			for (int j = 0; j < cur.size(); j++){
+//				for (int i = index+1; i < vec.size(); i++){
+//					com = vec.get(i);
+//					if (com.contains(cur.get(j))){
+//						System.out.println(index + " " + i);
+//					}
+//				}
+//			}
+//			index++;
+//		}
+//	}
+//	
+//	private void checkDouble(Vector<Vector<Integer>> vec){
+//		Vector<Integer> cur,com;
+//		int index = 0;
+//		while (index < vec.size()-1){
+//			cur = vec.get(index);
+//			for (int j = 0; j < cur.size(); j++){
+//				for (int i = j+1; i < cur.size(); i++){
+//					if (cur.get(j) == cur.get(i)){
+//						System.out.println("TWICE");
+//					}
+//				}
+//			}
+//			index++;
+//		}
+//	}
 
 }
