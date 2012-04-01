@@ -89,9 +89,10 @@ public class BuildSubGraphMax extends Transformation {
 	 */
 	@Override
 	public Graph transform(Graph g) {
+		//PHASE 1: initialize variables and get initial clique
 		Node[] nodesOld = g.getNodes();
-		boolean[] added = new boolean[nodesOld.length]; 
-		int[] degree = new int[nodesOld.length];
+		boolean[] added = new boolean[nodesOld.length]; //added nodes
+		int[] degree = new int[nodesOld.length]; //current number of links into the subgraphs
 		Random rand = new Random();
 		int[] out;
 		int maxdeg = nodesOld[this.getMaxDegree(nodesOld, rand)].getOutDegree();
@@ -99,13 +100,15 @@ public class BuildSubGraphMax extends Transformation {
 			maxdeg = this.maxDegree;
 		}
 		int[] start = this.getStartIndex(nodesOld, rand);
-		HashMap<Integer, Integer> newIndex = new HashMap<Integer, Integer>(Math.min(nodesOld.length, this.include));
-		HashMap<Integer,Vector<Integer>> neighs = new HashMap<Integer,Vector<Integer>>(nodesOld.length);
-		Vector<Vector<Integer>> inDegree = new Vector<Vector<Integer>>(maxdeg+1);
+		HashMap<Integer, Integer> newIndex = new HashMap<Integer, Integer>(Math.min(nodesOld.length, this.include)); //index of node in subgraph
+		HashMap<Integer,Vector<Integer>> neighs = new HashMap<Integer,Vector<Integer>>(nodesOld.length); //neighbors in subgraph (only those added earlier!!)
+		Vector<Vector<Integer>> inDegree = new Vector<Vector<Integer>>(maxdeg+1); //current links into subgraph for nodes not yet contained; 
+		              //i-th entry=list of node index with i links 
 		for (int i = 0; i < maxdeg+1; i++){
 			inDegree.add(new Vector<Integer>());
 		}
 		
+		//PHASE 2: create neighbor list for nodes in initial clique
 		int count = start.length;
 		Vector<Integer> list;
 		for (int i = 0; i < start.length; i++){
@@ -119,8 +122,9 @@ public class BuildSubGraphMax extends Transformation {
 		}
 		for (int i = 0; i < start.length; i++){
 			if (degree[start[i]] == this.maxDegree){
-				//full[start[i]] = true;
+				//no neighbor is added later on since maximum degree is reached
 			} else {
+				//add in-link for each neighbor
 				out = nodesOld[start[i]].getOutgoingEdges();
 				for (int j = 0; j < out.length; j++){
 					if (!added[out[j]] && degree[out[j]] < this.maxDegree){
@@ -132,14 +136,17 @@ public class BuildSubGraphMax extends Transformation {
 			}
 			
 		}
+		
+		//PHASE 3: add nodes until desired size is reached or no node can be added 
 		while (count < this.include && count < nodesOld.length){
+			//add all nodes that have maximal allowed connections in => these do not create new entries in inDegree
 			while (inDegree.get(maxdeg).size() > 0){
 				int chosen = inDegree.get(maxdeg).remove(rand.nextInt(inDegree.get(maxdeg).size()));
 				neighs.put(chosen, this.addNode(added,degree,nodesOld[chosen], inDegree,nodesOld));
 				count++;
 			}
 			
-			
+			//choose one node to add that potentially changes inDegree
 			int max = maxdeg-1;
 			while (max > 0 && inDegree.get(max).size() == 0) max--;
 			if (max < this.minDegree){
@@ -151,7 +158,7 @@ public class BuildSubGraphMax extends Transformation {
 			count++;
 		}
 		
-		
+		//PHASE 4: create new graph
 		Node[] nodesNew = new Node[count];
 		Edges edges = new Edges(nodesNew,g.computeNumberOfEdges());
 		int c = 0;
@@ -180,6 +187,15 @@ public class BuildSubGraphMax extends Transformation {
 		return g;
 	}
 	
+	/**
+	 * add a node to the subgraph and change inDegree accordingly
+	 * @param added
+	 * @param degree
+	 * @param n
+	 * @param inDegree
+	 * @param nodes
+	 * @return
+	 */
 	private Vector<Integer> addNode(boolean[] added,  int[] degree, Node n, Vector<Vector<Integer>> inDegree, Node[] nodes){
 		int[] out = n.getIncomingEdges();
 		Vector<Integer> neighbors = new Vector<Integer>();
