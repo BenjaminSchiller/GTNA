@@ -57,8 +57,7 @@ import gtna.util.Config;
  */
 public class ReadableList extends Network {
 	private String[] files;
-
-	private int index;
+    private int index;
 
 	public ReadableList(String name, String folder, String[] files,
 			Transformation[] t) {
@@ -70,6 +69,8 @@ public class ReadableList extends Network {
 
 	public static String key(String name, String folder) {
 		Config.overwrite("READABLE_LIST_" + folder + "_NAME", name);
+		Config.overwrite("READABLE_LIST_" + folder + "_NAME_SHORT", name);
+		Config.overwrite("READABLE_LIST_" + folder + "_NAME_LONG", name);
 		Config.overwrite("READABLE_LIST_" + folder + "_FOLDER", folder);
 		return "READABLE_LIST_" + folder;
 	}
