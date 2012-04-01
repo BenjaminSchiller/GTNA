@@ -79,7 +79,6 @@ public class RolesComparison extends Metric {
 
 		GraphProperty[] p = g.getProperties("ROLES");
 		countRoles = p.length;
-		System.out.println("PROPS: " + p.length + "--");
 		Roles r;
 
 		for (GraphProperty akt : p) {
@@ -121,16 +120,11 @@ public class RolesComparison extends Metric {
 				+ "_RMAX_ROLES", folder);
 
 		for (Role akt : Roles.Role.values()) {
-			System.out.println("Filtering: " + akt);
-			System.out.println("ERG: " + erg.size());
-			System.out.println("FILTERED: " + filter(erg, akt).size());
-			System.out
-					.println("ARAY: " + toValueArray(filter(erg, akt)).length);
+
 			for (int i = 0; i < toValueArray(filter(erg, akt)).length; i++)
-				System.out.println(i + " => "
-						+ toValueArray(filter(erg, akt))[i]);
-			ret &= DataWriter.writeWithIndex(toValueArray(filter(erg, akt)),
-					getKey() + "_RMAX_ROLES_" + akt.name(), folder);
+				ret &= DataWriter.writeWithIndex(
+						toValueArray(filter(erg, akt)), getKey()
+								+ "_RMAX_ROLES_" + akt.name(), folder);
 		}
 
 		ret &= DataWriter.writeWithIndex(calcAverages(erg),
@@ -186,7 +180,6 @@ public class RolesComparison extends Metric {
 		for (int i = 0; i < ret.length; i++) {
 			if (ret[i] != 0)
 				ret[i] = (double) (ret[i] / c[i]);
-			System.out.println(i + " = " + ret[i]);
 		}
 
 		return ret;
@@ -220,6 +213,8 @@ public class RolesComparison extends Metric {
 			if (aktp.getRole().equals(akt)) {
 				r.add(aktp);
 			}
+		
+	
 
 		return r;
 
@@ -230,6 +225,9 @@ public class RolesComparison extends Metric {
 	 * @return
 	 */
 	private double[] toValueArray(TreeSet<MaxRolePercRole> erg3) {
+		if(erg3.size() == 0)
+			return new double[]{0};
+		
 		double[] ret = new double[erg3.size()];
 		int i = 0;
 
@@ -259,23 +257,11 @@ public class RolesComparison extends Metric {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.metrics.Metric#getSingles()
-	 */
 	@Override
 	public Single[] getSingles() {
-		// TODO Auto-generated method stub
 		return new Single[] {};
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.metrics.Metric#applicable(gtna.graph.Graph,
-	 * gtna.networks.Network, java.util.HashMap)
-	 */
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 		return g.hasProperty("ROLES_0") || g.hasProperty("ROLES2_0");
