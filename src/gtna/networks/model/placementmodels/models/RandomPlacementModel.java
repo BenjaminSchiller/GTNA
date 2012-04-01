@@ -38,6 +38,8 @@ package gtna.networks.model.placementmodels.models;
 import gtna.networks.model.placementmodels.PlacementModelImpl;
 import gtna.networks.model.placementmodels.PlacementNotPossibleException;
 import gtna.networks.model.placementmodels.Point;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.Random;
 
@@ -67,9 +69,9 @@ public class RandomPlacementModel extends PlacementModelImpl {
 		this.height = height;
 		setInCenter(inCenter);
 		setKey("RANDOM");
-		setAdditionalConfigKeys(new String[] { "WIDTH", "HEIGHT" });
-		setAdditionalConfigValues(new String[] { Double.toString(width),
-				Double.toString(height) });
+		setAdditionalConfigParameters(new Parameter[] {
+				new DoubleParameter("WIDTH", width),
+				new DoubleParameter("HEIGHT", height) });
 	}
 
 	/**

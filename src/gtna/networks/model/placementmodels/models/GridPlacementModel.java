@@ -38,6 +38,9 @@ package gtna.networks.model.placementmodels.models;
 import gtna.networks.model.placementmodels.PlacementModelImpl;
 import gtna.networks.model.placementmodels.PlacementNotPossibleException;
 import gtna.networks.model.placementmodels.Point;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
 
 /**
  * Places the nodes in a grid with <code>rows</code> rows and <code>cols</code>
@@ -78,11 +81,10 @@ public class GridPlacementModel extends PlacementModelImpl {
 		this.height = height;
 		setInCenter(inCenter);
 		setKey("GRID");
-		setAdditionalConfigKeys(new String[] { "COLS", "ROWS", "WIDTH",
-				"HEIGHT" });
-		setAdditionalConfigValues(new String[] { Integer.toString(cols),
-				Integer.toString(rows), Double.toString(width),
-				Double.toString(height) });
+		setAdditionalConfigParameters(new Parameter[] {
+				new IntParameter("COLS", cols), new IntParameter("ROWS", rows),
+				new DoubleParameter("WIDTH", width),
+				new DoubleParameter("HEIGHT", height) });
 	}
 
 	/**

@@ -66,4 +66,11 @@ public abstract class Parameter {
 	public String toString(){
 		return this.key + ": " + this.value;
 	}
+
+	/**
+	 * @param string
+	 */
+	public void setKey(String string) {
+		key = string;
+	}
 }

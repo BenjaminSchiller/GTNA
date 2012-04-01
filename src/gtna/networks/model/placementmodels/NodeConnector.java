@@ -39,6 +39,7 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
+import gtna.util.parameter.Parameter;
 
 /**
  * An <code>INodeConnector</code> connects the nodes in a given graph based on
@@ -57,29 +58,17 @@ public interface NodeConnector {
 	 *            An array of nodes in the graph.
 	 * @param coordinates
 	 *            The coordinates of the nodes in the graph.
-	 * @param g 
+	 * @param g
 	 * @return An Edges object containing the connections between the nodes.
 	 */
-	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple coordinates, Graph g);
+	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple coordinates,
+			Graph g);
 
 	/**
-	 * The Getter for the configuration keys for the particular
-	 * <code>NodeConnector</code>.
+	 * Getter for the configuration Parameters.
 	 * 
-	 * @return A String array containing the keys, the first value should be
-	 *         "KEY", identifying the key for the particular NodeConnector.
+	 * @return An array containing all the configuration parameters.
 	 */
-	public String[] getConfigKeys();
-
-	/**
-	 * The Getter for the configuration values for the particular
-	 * <code>NodeConnector</code>.
-	 * 
-	 * @return A String array containing the values, the first value should be
-	 *         the key of the particular <code>NodeConnector</code>. Has to have
-	 *         the same order as the <code>getConfigKeys()</code> array.
-	 * 
-	 */
-	public String[] getConfigValues();
+	public Parameter[] getConfigParameters();
 
 }

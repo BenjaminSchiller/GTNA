@@ -40,6 +40,8 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.networks.model.placementmodels.NodeConnectorImpl;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.Parameter;
 
 /**
  * The <code>LogDistanceConnector</code> connects nodes based on their distance.
@@ -82,10 +84,11 @@ public class LogDistanceConnector extends NodeConnectorImpl {
 		this.d0 = d0;
 		this.sigma = sigma;
 		setKey("LOG");
-		setAdditionalConfigKeys(new String[] { "RANGE", "GAMMA", "D0", "SIGMA" });
-		setAdditionalConfigValues(new String[] { Double.toString(range),
-				Double.toString(gamma), Double.toString(d0),
-				Double.toString(sigma) });
+		setAdditionalConfigParameters(new Parameter[] {
+				new DoubleParameter("RANGE", range),
+				new DoubleParameter("GAMMA", gamma),
+				new DoubleParameter("D0", d0),
+				new DoubleParameter("SIGMA", sigma) });
 	}
 
 	/**

@@ -36,6 +36,8 @@
 package gtna.networks.model.placementmodels;
 
 import gtna.util.Util;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
  * Abstract implementation of the <code>IPartitioner</code> interface,
@@ -50,58 +52,7 @@ import gtna.util.Util;
 public abstract class PartitionerImpl implements Partitioner {
 	// contains the key for the partitioner
 	private String key;
-
-	// contains all additional config keys, this array will be returned in
-	// addition to "KEY"
-	private String[] additionalConfigKeys;
-
-	// contains all additional config values, this array will be returned in
-	// addition to the key of this partitioner
-	private String[] additionalConfigValues;
-
-	/**
-	 * Setter for additionalConfigKeys. Should be called in the Constructor of
-	 * the implementing class to store any additional configuration keys for the
-	 * particular Partitioner.
-	 * 
-	 * @param additionalConfigKeys
-	 *            A String array containing all the additional configuration
-	 *            keys.
-	 */
-	public void setAdditionalConfigKeys(String[] additionalConfigKeys) {
-		this.additionalConfigKeys = additionalConfigKeys;
-	}
-
-	/**
-	 * Setter for additionalConfigValues. Should be called in the Constructor of
-	 * the implementing class to store any additional configuration values for
-	 * the particular Partitioner.
-	 * 
-	 * @param additionalConfigKeys
-	 *            A String array containing all the additional configuration
-	 *            values.
-	 */
-	public void setAdditionalConfigValues(String[] additionalConfigValues) {
-		this.additionalConfigValues = additionalConfigValues;
-	}
-
-	/**
-	 * Default implementation of <code>getConfigKeys</code>. Will return "KEY"
-	 * as well as any additional configuration keys stored in
-	 * <code>additionalConfigKeys</code>.
-	 */
-	public String[] getConfigKeys() {
-		return Util.mergeArrays(new String[] { "KEY" }, additionalConfigKeys);
-	}
-
-	/**
-	 * Default implementation of <code>getConfigValues</code>. Will return the
-	 * key as well as any additional configuration values stored in
-	 * <code>additionalConfigValues</code>.
-	 */
-	public String[] getConfigValues() {
-		return Util.mergeArrays(new String[] { key }, additionalConfigValues);
-	}
+	private Parameter[] additionalConfigParams;
 
 	/**
 	 * Setter for the key of the particular Partitioner. Should be called in the
@@ -112,6 +63,32 @@ public abstract class PartitionerImpl implements Partitioner {
 	 */
 	public void setKey(String key) {
 		this.key = key;
+	}
+
+	@Override
+	public Parameter[] getConfigParameters() {
+		return Util.mergeArrays(new Parameter[] { new StringParameter("KEY",
+				key) }, getAdditionalConfigParameters());
+	}
+
+	/**
+	 * Getter for the additional configuration parameters.
+	 * 
+	 * @return An array containing the additional configuration parameters.
+	 */
+	protected Parameter[] getAdditionalConfigParameters() {
+		return additionalConfigParams;
+	}
+
+	/**
+	 * Setter for the additional configuration parameters, those will be
+	 * returned in addition to the key of the Partitioner.
+	 * 
+	 * @param parameters
+	 *            The additional parameters.
+	 */
+	protected void setAdditionalConfigParams(Parameter[] parameters) {
+		additionalConfigParams = parameters;
 	}
 
 }
