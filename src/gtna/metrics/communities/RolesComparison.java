@@ -66,7 +66,7 @@ public class RolesComparison extends Metric {
 	 * @param key
 	 */
 	public RolesComparison() {
-		super("ROLESCOMPARISON");
+		super("ROLES_COMPARISON");
 	}
 
 	@Override
@@ -116,26 +116,40 @@ public class RolesComparison extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean ret = true;
-		ret &= DataWriter.writeWithIndex(toValueArray(erg), getKey()
+		ret &= DataWriter.writeWithIndex(toValueArray(erg, null), getKey()
 				+ "_RMAX_ROLES", folder);
 
-		for (Role akt : Roles.Role.values()) {
-
-			for (int i = 0; i < toValueArray(filter(erg, akt)).length; i++)
+		Role akt;
+		Role subRole;
+		for (int i = 0; i < Roles.Role.values().length; i++){
+			akt = Roles.Role.values()[i];
+			for (int j = 0; j < Roles.Role.values().length; j++){
+				subRole = Roles.Role.values()[j];
 				ret &= DataWriter.writeWithIndex(
-						toValueArray(filter(erg, akt)), getKey()
-								+ "_RMAX_ROLES_" + akt.name(), folder);
+						toValueArray(filter(erg, akt), subRole),
+						getKey() + "_RMAX_ROLES_R" + (i+1) + "_R"
+								+ (j+1), folder);
+			}
 		}
 
 		ret &= DataWriter.writeWithIndex(calcAverages(erg),
 				getKey() + "_RPERC", folder);
 
-		ret &= DataWriter.writeWithIndex(toValueArray2(erg2), getKey()
-				+ "_RMAX_R2", folder);
+		ret &= DataWriter.writeWithIndex(toValueArray2(erg2, null), getKey()
+				+ "_RMAX_ROLES2", folder);
 
-		for (Role2 akt : Roles2.Role2.values())
-			ret &= DataWriter.writeWithIndex(toValueArray2(filter2(erg2, akt)),
-					getKey() + "_RMAX_R2_" + akt.name(), folder);
+		Role2 akt2;
+		Role2 subRole2;
+		for (int i = 0; i < Roles2.Role2.values().length; i++){
+			akt2 = Roles2.Role2.values()[i];
+			for (int j = 0; j < Roles2.Role2.values().length; j++){
+				subRole2 = Roles2.Role2.values()[j];
+				ret &= DataWriter.writeWithIndex(
+						toValueArray2(filter2(erg2, akt2), subRole2),
+						getKey() + "_RMAX_ROLES2_R" + (i+1) + "_R"
+								+ (j+1), folder);
+			}
+		}
 
 		ret &= DataWriter.writeWithIndex(calcAverages2(erg2), getKey()
 				+ "_R2PERC", folder);
@@ -213,8 +227,6 @@ public class RolesComparison extends Metric {
 			if (aktp.getRole().equals(akt)) {
 				r.add(aktp);
 			}
-		
-	
 
 		return r;
 
@@ -224,15 +236,18 @@ public class RolesComparison extends Metric {
 	 * @param erg3
 	 * @return
 	 */
-	private double[] toValueArray(TreeSet<MaxRolePercRole> erg3) {
-		if(erg3.size() == 0)
-			return new double[]{0};
-		
+	private double[] toValueArray(TreeSet<MaxRolePercRole> erg3, Role aktRole) {
+		if (erg3.size() == 0)
+			return new double[] { 0 };
+
 		double[] ret = new double[erg3.size()];
 		int i = 0;
 
 		for (MaxRolePercRole akt : erg3) {
-			ret[i] = akt.getValue();
+			if (aktRole == null)
+				ret[i] = akt.getValue();
+			else
+				ret[i] = akt.getValueOfRole(aktRole);
 			i++;
 		}
 
@@ -244,12 +259,15 @@ public class RolesComparison extends Metric {
 	 * @param erg22
 	 * @return
 	 */
-	private double[] toValueArray2(TreeSet<MaxRolePercRole2> erg3) {
+	private double[] toValueArray2(TreeSet<MaxRolePercRole2> erg3, Role2 aktRole) {
 		double[] ret = new double[erg3.size()];
 		int i = 0;
 
 		for (MaxRolePercRole2 akt : erg3) {
-			ret[i] = akt.getValue();
+			if (aktRole == null)
+				ret[i] = akt.getValue();
+			else
+				ret[i] = akt.getValueOfRole(aktRole);
 			i++;
 		}
 

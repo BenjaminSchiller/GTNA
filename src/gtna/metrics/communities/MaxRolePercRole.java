@@ -44,7 +44,9 @@ import gtna.communities.Roles.Role;
 public class MaxRolePercRole implements Comparable<MaxRolePercRole> {
 	double perc;
 	Role maxRole;
+	int[] counts;
 	int node;
+	int count;
 
 	/**
 	 * @param is
@@ -53,6 +55,8 @@ public class MaxRolePercRole implements Comparable<MaxRolePercRole> {
 	public MaxRolePercRole(int[] is, int countRoles, int node) {
 		double max = 0;
 		this.node = node;
+		counts = is;
+		count = countRoles;
 		for (int i = 0; i < is.length; i++) {
 			if (is[i] > max) {
 				maxRole = Role.values()[i];
@@ -97,6 +101,14 @@ public class MaxRolePercRole implements Comparable<MaxRolePercRole> {
 	 */
 	private int getNode() {
 		return node;
+	}
+
+	/**
+	 * @param aktRole
+	 * @return
+	 */
+	public double getValueOfRole(Role aktRole) {
+		return ((double) counts[aktRole.ordinal()]) / (double) count;
 	}
 
 }

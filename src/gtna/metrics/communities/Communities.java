@@ -59,6 +59,7 @@ public class Communities extends Metric {
 	private double modularity;
 
 	private double communities;
+	private double averageSize;
 
 	public Communities() {
 		super("COMMUNITIES");
@@ -82,9 +83,11 @@ public class Communities extends Metric {
 				.getProperty("COMMUNITIES_0");
 		double[] c = new double[communities.getCommunities().length];
 		for (int i = 0; i < c.length; i++) {
+			averageSize += communities.getCommunities()[i].getNodes().length;
 			c[i] = (double) communities.getCommunities()[i].getNodes().length
 					/ (double) g.getNodes().length;
 		}
+		averageSize = averageSize / communities.getCommunities().length;
 		Arrays.sort(c);
 		for (int i = 0; i < c.length / 2; i++) {
 			double temp = c[i];
@@ -145,8 +148,10 @@ public class Communities extends Metric {
 				this.communitySize.getMin());
 		Single size_med = new Single("COMMUNITIES_COMMUNITY_SIZE_MED",
 				this.communitySize.getMedian());
+		// FIXME should not be implemented here, but distribution class might be
+		// buggy at the moment...
 		Single size_avg = new Single("COMMUNITIES_COMMUNITY_SIZE_AVG",
-				this.communitySize.getAverage());
+				this.averageSize);
 		Single size_max = new Single("COMMUNITIES_COMMUNITY_SIZE_MAX",
 				this.communitySize.getMax());
 		Single rt = new Single("COMMUNITIES_RUNTIME", this.runtime.getRuntime());
