@@ -21,56 +21,94 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Parameter.java
+ * MaxRolePercRole.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: benni;
+ * Original Author: Flipp;
  * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
  *
  */
-package gtna.util.parameter;
+package gtna.metrics.communities;
+
+import gtna.communities.Roles.Role;
 
 /**
- * @author benni
- *
+ * @author Flipp
+ * 
  */
-public abstract class Parameter {
-	private String key;
-	
-	private String value;
-	
-	public Parameter(String key, String value){
-		this.key = key;
-		this.value = value;
+public class MaxRolePercRole implements Comparable<MaxRolePercRole> {
+	double perc;
+	Role maxRole;
+	int[] counts;
+	int node;
+	int count;
+
+	/**
+	 * @param is
+	 * @param countRoles
+	 */
+	public MaxRolePercRole(int[] is, int countRoles, int node) {
+		double max = 0;
+		this.node = node;
+		counts = is;
+		count = countRoles;
+		for (int i = 0; i < is.length; i++) {
+			if (is[i] > max) {
+				maxRole = Role.values()[i];
+				max = is[i];
+			}
+		}
+
+		perc = (max / (double) countRoles);
 	}
 
 	/**
-	 * @return the key
+	 * @return
 	 */
-	public String getKey() {
-		return this.key;
+	public Role getRole() {
+		return maxRole;
 	}
 
 	/**
-	 * @return the value
+	 * @return
 	 */
-	public String getValue() {
-		return this.value;
+	public double getValue() {
+		return perc;
 	}
-	
-	public String toString(){
-		return this.key + ": " + this.value;
+
+	public int compareTo(MaxRolePercRole arg0) {
+		if (perc < arg0.getValue())
+			return -1;
+		else if (perc == arg0.getValue()) {
+			if (getNode() < arg0.getNode())
+				return -1;
+			else if (getNode() == arg0.getNode())
+				return 0;
+
+			return 1;
+		}
+
+		return 1;
 	}
 
 	/**
-	 * @param string
+	 * @return
 	 */
-	public void setKey(String string) {
-		key = string;
+	private int getNode() {
+		return node;
 	}
+
+	/**
+	 * @param aktRole
+	 * @return
+	 */
+	public double getValueOfRole(Role aktRole) {
+		return ((double) counts[aktRole.ordinal()]) / (double) count;
+	}
+
 }

@@ -39,11 +39,11 @@ import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
-import gtna.metrics.ClusteringCoefficient;
-import gtna.metrics.DegreeDistribution;
 import gtna.metrics.Metric;
-import gtna.metrics.ShortestPaths;
-import gtna.metrics.WeakConnectivity;
+import gtna.metrics.basic.ClusteringCoefficient;
+import gtna.metrics.basic.DegreeDistribution;
+import gtna.metrics.basic.ShortestPaths;
+import gtna.metrics.connectivity.WeakConnectivity;
 import gtna.networks.Network;
 import gtna.networks.etc.GpsNetwork;
 import gtna.networks.model.placementmodels.NodeConnector;
@@ -372,7 +372,7 @@ public class PlacementModels {
 								new SimplePartitioner(), c, null);
 						String name = "./plots/combinations/" + p1.getKey()
 								+ "-" + p2.getKey() + "-"
-								+ c.getConfigValues()[0] + "-" + i;
+								+ c.getConfigParameters()[0] + "-" + i;
 						PlacementModels.plot(nw, name);
 					}
 				}

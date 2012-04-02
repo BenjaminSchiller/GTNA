@@ -33,13 +33,14 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.metrics;
+package gtna.metrics.connectivity;
 
 import gtna.data.Single;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.sorting.NodeSorting;
 import gtna.io.DataWriter;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Timer;
 

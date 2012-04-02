@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * SimplePartitioner.java
+ * MaxRolePercRole2.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,43 +33,89 @@
  * ---------------------------------------
  *
  */
-package gtna.networks.model.placementmodels.partitioners;
+package gtna.metrics.communities;
 
-import gtna.networks.model.placementmodels.PartitionerImpl;
+import gtna.communities.Roles.Role;
+import gtna.communities.Roles2.Role2;
 
 /**
- * Distributes the nodes evenly among the hotspots. Every hotspot will contain
- * <code>Math.floor(nodes / hotspots)</code> nodes, with the remaining nodes
- * evenly distributed among the hotspots (the first (nodes % hotspots) hotspots
- * will contain an additional node).
- * 
- * @author Philipp Neubrand
+ * @author Flipp
  * 
  */
-public class SimplePartitioner extends PartitionerImpl {
+public class MaxRolePercRole2 implements Comparable<MaxRolePercRole2> {
+	double perc;
+	Role2 maxRole;
+	int node;
+	int[] counts;
+	int count;
 
 	/**
-	 * Standard constructor, no configuration values are needed.
+	 * @param is
+	 * @param countRoles
+	 * @param i2
 	 */
-	public SimplePartitioner() {
-		setKey("SIMPLE");
+	public MaxRolePercRole2(int[] is, int countRoles, int i2) {
+		double max = 0;
+		node = i2;
+		counts = is;
+		count = countRoles;
+		for (int i = 0; i < is.length; i++) {
+			if (is[i] > max) {
+				maxRole = Role2.values()[i];
+				max = is[i];
+			}
+		}
+
+		perc = max / (double) countRoles;
 	}
 
 	/**
-	 * Distributes the nodes among the hotspots, (nodes % hotspots) hotspots
-	 * will contain (floor(nodes / hotspots) + 1) nodes, the rest will contain
-	 * (nodes / hotspots) nodes.
+	 * @return
+	 */
+	public Role2 getRole() {
+		return maxRole;
+	}
+
+	/**
+	 * @return
+	 */
+	public double getValue() {
+		return perc;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int[] partition(int nodes, int hotspots) {
-		int t = nodes % hotspots;
-		int[] ret = new int[hotspots];
-		for (int i = 0; i < hotspots; i++) {
-			ret[i] = nodes / hotspots;
-			if (i < t)
-				ret[i]++;
+	public int compareTo(MaxRolePercRole2 arg0) {
+		if (perc < arg0.getValue())
+			return -1;
+		else if (perc == arg0.getValue()) {
+			if (getNode() < arg0.getNode())
+				return -1;
+			else if (getNode() == arg0.getNode())
+				return 0;
 
+			return 1;
 		}
-		return ret;
+
+		return 1;
+	}
+
+	/**
+	 * @return
+	 */
+	private int getNode() {
+		return node;
+	}
+
+	/**
+	 * @param aktRole
+	 * @return
+	 */
+	public double getValueOfRole(Role2 aktRole) {
+		return ((double) counts[aktRole.ordinal()]) / (double) count;
 	}
 }

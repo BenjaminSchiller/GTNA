@@ -35,6 +35,8 @@
  */
 package gtna.networks.model.placementmodels;
 
+import gtna.util.parameter.Parameter;
+
 /**
  * An <code>IPartitioner</code> distributes a number of nodes to a number of
  * hotspots. In the most simple case, the nodes are distributed even among the
@@ -59,21 +61,10 @@ public interface Partitioner {
 	public int[] partition(int nodes, int hotspots);
 
 	/**
-	 * Getter for a String array of all the configuration keys. The first value
-	 * should be "KEY", identifying the key of the particular Partitioner.
+	 * Getter for the configuration Parameters.
 	 * 
-	 * @return A String array containing all configuration keys.
+	 * @return An array containing all the configuration parameters.
 	 */
-	public String[] getConfigKeys();
-
-	/**
-	 * Getter for a String array of all the configuration values. Has to have
-	 * the same order as the array returned by <code>getConfigKeys()</code>.
-	 * Therefore, the first value should be the actual key of the particular
-	 * Partitioner.
-	 * 
-	 * @return A String array containing all configuration values.
-	 */
-	public String[] getConfigValues();
+	public Parameter[] getConfigParameters();
 
 }

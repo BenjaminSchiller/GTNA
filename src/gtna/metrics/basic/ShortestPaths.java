@@ -33,12 +33,13 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.metrics;
+package gtna.metrics.basic;
 
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.io.DataWriter;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Distribution;
 import gtna.util.Timer;

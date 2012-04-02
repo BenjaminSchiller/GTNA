@@ -38,6 +38,8 @@ package gtna.networks.model.placementmodels.models;
 import gtna.networks.model.placementmodels.PlacementModelImpl;
 import gtna.networks.model.placementmodels.PlacementNotPossibleException;
 import gtna.networks.model.placementmodels.Point;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.Random;
 
@@ -78,8 +80,7 @@ public class CommunityPlacementModel extends PlacementModelImpl {
 		this.height = height;
 		setKey("COMMUNITY");
 
-		setAdditionalConfigKeys(new String[] { "SIGMA", "WIDTH", "HEIGHT" });
-		setAdditionalConfigValues(new String[] { Double.toString(sigma), Double.toString(width), Double.toString(height) });
+		setAdditionalConfigParameters(new Parameter[] { new DoubleParameter("SIGMA", sigma), new DoubleParameter("WIDTH", width), new DoubleParameter("HEIGHT", height) });
 	}
 
 	/**
