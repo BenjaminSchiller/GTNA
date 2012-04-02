@@ -66,9 +66,9 @@ public class CondonAndKarp extends Network {
 	 * @param parameters
 	 * @param transformations
 	 */
-	public CondonAndKarp(String key, int nodes, int groups, double pin, double pout,
+	public CondonAndKarp(int nodes, int groups, double pin, double pout,
 			Transformation[] transformations) {
-		super(key, nodes, new Parameter[]{new IntParameter("GROUPS", groups), new DoubleParameter("PIN", pin), new DoubleParameter("POUT", pout)}, transformations);
+		super("CONDON_KARP", nodes, new Parameter[]{new IntParameter("GROUPS", groups), new DoubleParameter("PIN", pin), new DoubleParameter("POUT", pout)}, transformations);
 
 		this.groups = groups;
 		this.pin = pin;
