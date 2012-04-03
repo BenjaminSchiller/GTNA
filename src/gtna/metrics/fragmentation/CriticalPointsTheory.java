@@ -139,13 +139,11 @@ public class CriticalPointsTheory extends Metric {
         		}
         	}
         	double[] dd = new double[max+1];
-        	double sum = 0;
         	for (int i = 0; i < nodes.length; i++){
         		dd[nodes[i].getOutDegree()]++;
-        		sum = sum + nodes[i].getOutDegree();
         	}
         	for (int i = 0; i < dd.length; i++){
-        		dd[i] = dd[i]/sum;
+        		dd[i] = dd[i]/nodes.length;
         	}
         	double[] res = null; 
         	if(this.t.equals(RANDOM)){

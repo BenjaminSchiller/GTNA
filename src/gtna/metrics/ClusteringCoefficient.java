@@ -59,6 +59,8 @@ public class ClusteringCoefficient extends Metric {
 	private double clusteringCoefficient;
 
 	private Timer runtime;
+	
+	private double transitivity;
 
 	public ClusteringCoefficient() {
 		super("CLUSTERING_COEFFICIENT");
@@ -78,6 +80,7 @@ public class ClusteringCoefficient extends Metric {
 				.computeLocalClusteringCoefficient(graph.getNodes(), edges);
 		this.clusteringCoefficient = this
 				.computeClusteringCoefficient(this.localClusteringCoefficient);
+		this.transitivity = this.computeTransitivity(graph.getNodes());
 		this.runtime.end();
 	}
 
@@ -109,6 +112,25 @@ public class ClusteringCoefficient extends Metric {
 	private double computeClusteringCoefficient(double[] lcc) {
 		return Util.avg(lcc);
 	}
+	
+	private double computeTransitivity(Node[] nodes) {
+		Node cur;
+		int triangles = 0;
+		int triples = 0;
+		for (int i = 0; i < nodes.length; i++){
+			int[] out = nodes[i].getOutgoingEdges();
+			for (int j = 0; j < out.length; j++){
+				for (int k = j+1; k < out.length; k++){
+					if (nodes[out[j]].hasNeighbor(out[k])){
+						triangles++;
+					}
+					triples++;
+					
+				}
+			}
+		}
+		return (double)triangles/(double)triples;
+	}
 
 	@Override
 	public boolean writeData(String folder) {
@@ -121,8 +143,11 @@ public class ClusteringCoefficient extends Metric {
 		Single clusteringCoefficient = new Single(
 				"CLUSTERING_COEFFICIENT_CLUSTERING_COEFFICIENT",
 				this.clusteringCoefficient);
+		Single trans = new Single(
+				"CLUSTERING_COEFFICIENT_TRANSITIVITY",
+				this.transitivity);
 		Single runtime = new Single("CLUSTERING_COEFFICIENT_RUNTIME",
 				this.runtime.getRuntime());
-		return new Single[] { clusteringCoefficient, runtime };
+		return new Single[] { clusteringCoefficient, trans, runtime };
 	}
 }
