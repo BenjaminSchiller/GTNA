@@ -57,7 +57,7 @@ public class ClusteringCoefficient extends Metric {
 	private double[] localClusteringCoefficient;
 
 	private double clusteringCoefficient;
-	
+
 	private double transitivity;
 
 	private Timer runtime;
@@ -108,28 +108,30 @@ public class ClusteringCoefficient extends Metric {
 		return (double) counter
 				/ (double) (neighbors.length * (neighbors.length - 1));
 	}
-	
+
 	/**
 	 * transitivity = triangles/(3*triples) in graph
+	 * 
 	 * @param g
 	 * @return
 	 */
-	private double computeTransitivity(Graph g){
+	private double computeTransitivity(Graph g) {
 		int triangles = 0;
 		int triples = 0;
 		Node[] nodes = g.getNodes();
-		for (int i = 0; i < nodes.length; i++){
-			triples = triples + (nodes[i].getOutDegree())*(nodes[i].getOutDegree()-1)/2;
+		for (int i = 0; i < nodes.length; i++) {
+			triples = triples + (nodes[i].getOutDegree())
+					* (nodes[i].getOutDegree() - 1) / 2;
 			int[] out = nodes[i].getOutgoingEdges();
-			for (int j = 0; j < out.length; j++){
-				for (int k = j+1; k < out.length; k++){
-					if (nodes[out[j]].hasNeighbor(out[k])){
+			for (int j = 0; j < out.length; j++) {
+				for (int k = j + 1; k < out.length; k++) {
+					if (nodes[out[j]].hasNeighbor(out[k])) {
 						triangles++;
 					}
 				}
 			}
 		}
-		return (double)triangles/(double)triples;
+		return (double) triangles / (double) triples;
 	}
 
 	private double computeClusteringCoefficient(double[] lcc) {
@@ -147,8 +149,7 @@ public class ClusteringCoefficient extends Metric {
 		Single clusteringCoefficient = new Single(
 				"CLUSTERING_COEFFICIENT_CLUSTERING_COEFFICIENT",
 				this.clusteringCoefficient);
-		Single transitivity = new Single(
-				"CLUSTERING_COEFFICIENT_TRANSITIVITY",
+		Single transitivity = new Single("CLUSTERING_COEFFICIENT_TRANSITIVITY",
 				this.transitivity);
 		Single runtime = new Single("CLUSTERING_COEFFICIENT_RUNTIME",
 				this.runtime.getRuntime());
