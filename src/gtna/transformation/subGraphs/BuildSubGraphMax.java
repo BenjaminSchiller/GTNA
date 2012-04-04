@@ -58,8 +58,11 @@ public class BuildSubGraphMax extends Transformation {
 	
 	public static String SELECTION_RANDOM = "RANDOM";
 	public static String SELECTION_OUTDEGREE = "OUTDEGREE";
+	public static String SELECTION_NEXT_MAX = "NEXT_MAX";
+	public static String SELECTION_NEXT_RANDOM = "NEXT_RANDOM";
+	public static String SELECTION_NEXT_MIN = "NEXT_MIN";
 	int include,minDegree,maxDegree,startNodes;
-	String selection;
+	String selection,selectionNext;
 
 	/**
 	 * 
@@ -71,7 +74,7 @@ public class BuildSubGraphMax extends Transformation {
 	 *                   a) RANDOM: choose a clique randomly from all cliques in the graph
 	 *                   b) OUTDEGREE: choose the clique for which the number of outgoing links is highest
 	 */
-	public BuildSubGraphMax(int include, int minDegree,int maxDegree, int startNodes, String selection) {
+	public BuildSubGraphMax(int include, int minDegree,int maxDegree, int startNodes, String selection, String selectionNext) {
 		super("BUILD_SUB_GRAPH_MAX", new Parameter[]{new IntParameter("INCLUDE",include), new IntParameter("MINDEGREE",minDegree), 
 				new IntParameter("MAXDEGREE",maxDegree), new IntParameter("STARTNODES",startNodes),  new StringParameter("SELECTION",selection)});
 		this.selection = selection;
@@ -79,9 +82,24 @@ public class BuildSubGraphMax extends Transformation {
 		this.maxDegree = maxDegree;
 		this.include = include;
 		this.startNodes = startNodes;
+		this.selectionNext = selectionNext;
 		if (maxDegree < startNodes-1 || minDegree > maxDegree){
 			throw new IllegalArgumentException("Degree constraints do not agree in BuildSubGraphMax " + maxDegree);
 		}
+	}
+	
+	/**
+	 * 
+	 * @param include: nodes that are MAXIMALLY included in subgraph
+	 * @param minDegree: minimum number of links a node has to have to nodes that are already included in the subgraph to be added
+	 * @param maxDegree: maximum degree a node in the subgraph is allowed to have
+	 * @param startNodes: size of the initial clique
+	 * @param selection: selection of the initial clique:
+	 *                   a) RANDOM: choose a clique randomly from all cliques in the graph
+	 *                   b) OUTDEGREE: choose the clique for which the number of outgoing links is highest
+	 */
+	public BuildSubGraphMax(int include, int minDegree,int maxDegree, int startNodes, String selection) {
+		this(include,minDegree,maxDegree,startNodes,selection,BuildSubGraphMax.SELECTION_NEXT_MAX);
 	}
 
 	/* (non-Javadoc)
@@ -185,6 +203,39 @@ public class BuildSubGraphMax extends Transformation {
 		edges.fill();
 		g.setNodes(nodesNew);
 		return g;
+	}
+	
+	private int getNext(Vector<Vector<Integer>> degs, Random rand){
+		if (this.selectionNext.equals(BuildSubGraphMax.SELECTION_NEXT_MAX)){
+			int max = degs.size()-1;
+			while (max >= this.minDegree && degs.get(max).size() == 0){
+				max--;
+			}
+			if (max < this.minDegree){
+				return -1;
+			} else {
+				return degs.get(max).remove(rand.nextInt(degs.get(max).size()));
+			}
+		}
+		if (this.selectionNext.equals(BuildSubGraphMax.SELECTION_NEXT_RANDOM)){
+			int count = 0;
+			for (int j = 1; j < degs.size(); j++){
+				count = count + degs.get(j).size();
+			}
+			if (count == 0){
+				return -1;				
+			} else {
+				int c = rand.nextInt(count);
+				count = 0;
+				for (int j = 1; j < degs.size(); j++){
+					if (count + degs.size() > c){
+						return degs.get(j).remove(c-count);
+					}
+					count = count + degs.get(j).size();
+				}
+			}
+		}
+		return 0;
 	}
 	
 	/**
