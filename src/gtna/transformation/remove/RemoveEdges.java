@@ -44,8 +44,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 /**
- * @author stef
- * abstract class for removing edges
+ * @author stef abstract class for removing edges
  */
 public abstract class RemoveEdges extends Transformation {
 
@@ -56,38 +55,42 @@ public abstract class RemoveEdges extends Transformation {
 	public RemoveEdges(String key, Parameter[] parameters) {
 		super(key, parameters);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.transformation.Transformation#transform(gtna.graph.Graph)
 	 */
 	@Override
 	public Graph transform(Graph g) {
 		HashMap<Integer, Vector<Integer>> map = this.getEdgeSet(g);
-		Edges edges = new Edges(g.getNodes(),g.getEdges().size()-map.size());
-		for (int i = 0; i < g.getNodes().length; i++){
+		Edges edges = new Edges(g.getNodes(), g.getEdges().size() - map.size());
+		for (int i = 0; i < g.getNodes().length; i++) {
 			int[] out = g.getNodes()[i].getOutgoingEdges();
 			Vector<Integer> deleted = map.get(i);
-			if (deleted == null){
+			if (deleted == null) {
 				deleted = new Vector<Integer>();
-			} 
-			for (int j = 0; j < out.length; j++){
-				if (!deleted.contains(out[j])){
-					edges.add(i,out[j]);
-				} 
+			}
+			for (int j = 0; j < out.length; j++) {
+				if (!deleted.contains(out[j])) {
+					edges.add(i, out[j]);
+				}
 			}
 		}
 		edges.fill();
 		return g;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.transformation.Transformation#applicable(gtna.graph.Graph)
 	 */
 	@Override
 	public boolean applicable(Graph g) {
 		return true;
 	}
-	
+
 	public abstract HashMap<Integer, Vector<Integer>> getEdgeSet(Graph g);
 
 }

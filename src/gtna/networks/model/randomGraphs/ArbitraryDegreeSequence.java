@@ -49,8 +49,7 @@ import java.util.Random;
 import java.util.Vector;
 
 /**
- * @author stef
- * create an undirected graph with a arbitrary degree sequence
+ * @author stef create an undirected graph with a arbitrary degree sequence
  */
 public class ArbitraryDegreeSequence extends Network {
 	int[] sequence;
@@ -62,44 +61,54 @@ public class ArbitraryDegreeSequence extends Network {
 	 * 
 	 * @param nodes
 	 * @param name
-	 * @param sequence: position i = degree of node i
+	 * @param sequence
+	 *            : position i = degree of node i
 	 * @param ra
 	 * @param t
 	 */
-	public ArbitraryDegreeSequence(int nodes, String name, int[] sequence, Transformation[] t) {
-		super("ARBITRARY_DEGREE_SEQUENCE", nodes, new Parameter[]{new StringParameter("NAME", name), new BooleanParameter("DIRECTED", false)}, t);
+	public ArbitraryDegreeSequence(int nodes, String name, int[] sequence,
+			Transformation[] t) {
+		super("ARBITRARY_DEGREE_SEQUENCE", nodes, new Parameter[] {
+				new StringParameter("NAME", name),
+				new BooleanParameter("DIRECTED", false) }, t);
 		this.sequence = sequence;
 		this.directed = false;
 	}
-	
-	public ArbitraryDegreeSequence(int nodes, String name, int[] sequenceIn, int[] sequenceOut, Transformation[] t) {
-		super("ARBITRARY_DEGREE_SEQUENCE", nodes, new Parameter[]{new StringParameter("NAME", name), new BooleanParameter("DIRECTED", true)}, t);
+
+	public ArbitraryDegreeSequence(int nodes, String name, int[] sequenceIn,
+			int[] sequenceOut, Transformation[] t) {
+		super("ARBITRARY_DEGREE_SEQUENCE", nodes, new Parameter[] {
+				new StringParameter("NAME", name),
+				new BooleanParameter("DIRECTED", true) }, t);
 		this.sequenceIn = sequenceIn;
 		this.sequenceOut = sequenceOut;
 		this.directed = true;
 	}
-	
-	public ArbitraryDegreeSequence(String name, Graph g,  Transformation[] t, boolean directed) {
-		super("ARBITRARY_DEGREE_SEQUENCE", g.getNodes().length, new Parameter[]{new StringParameter("NAME", name), new BooleanParameter("DIRECTED", directed)}, t);
-        this.directed = directed;
+
+	public ArbitraryDegreeSequence(String name, Graph g, Transformation[] t,
+			boolean directed) {
+		super("ARBITRARY_DEGREE_SEQUENCE", g.getNodes().length,
+				new Parameter[] { new StringParameter("NAME", name),
+						new BooleanParameter("DIRECTED", directed) }, t);
+		this.directed = directed;
 		Node[] nodes = g.getNodes();
-		if (directed){
+		if (directed) {
 			this.sequenceIn = new int[nodes.length];
-		for (int i = 0; i < nodes.length; i++){
-			this.sequenceIn[i] = nodes[i].getInDegree();
-		}
-		this.sequenceOut = new int[nodes.length];
-		for (int i = 0; i < nodes.length; i++){
-			this.sequenceOut[i] = nodes[i].getOutDegree();
-		}
+			for (int i = 0; i < nodes.length; i++) {
+				this.sequenceIn[i] = nodes[i].getInDegree();
+			}
+			this.sequenceOut = new int[nodes.length];
+			for (int i = 0; i < nodes.length; i++) {
+				this.sequenceOut[i] = nodes[i].getOutDegree();
+			}
 		} else {
 			this.sequence = new int[nodes.length];
-			for (int i = 0; i < nodes.length; i++){
+			for (int i = 0; i < nodes.length; i++) {
 				this.sequenceIn[i] = nodes[i].getInDegree();
 			}
 		}
 	}
-	
+
 	/**
 	 * @param key
 	 * @param nodes
@@ -108,97 +117,102 @@ public class ArbitraryDegreeSequence extends Network {
 	 * @param ra
 	 * @param t
 	 */
-	public ArbitraryDegreeSequence(int nodes, Parameter[] parameters, int[] sequence,Transformation[] t) {
+	public ArbitraryDegreeSequence(int nodes, Parameter[] parameters,
+			int[] sequence, Transformation[] t) {
 		super("ARBITRARY_DEGREE_SEQUENCE", nodes, parameters, t);
 		this.sequence = sequence;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.networks.Network#generate()
 	 */
 	@Override
 	public Graph generate() {
-		if (this.directed){
+		if (this.directed) {
 			return this.generateDirected();
 		} else {
 			return this.generateUndirected();
 		}
-		
+
 	}
-	
-	private Graph generateUndirected(){
+
+	private Graph generateUndirected() {
 		Graph graph = new Graph(this.getDescription());
 		Random rand = new Random(System.currentTimeMillis());
 		Node[] nodes = Node.init(this.getNodes(), graph);
 		int sum = 0;
-		for (int j = 0; j < sequence.length; j++){
+		for (int j = 0; j < sequence.length; j++) {
 			sum = sum + sequence[j];
 		}
 		Edges edges = new Edges(nodes, sum);
 		Vector<Integer> stubs = new Vector<Integer>();
 		Arrays.sort(sequence);
-		for (int i = 0; i < sequence.length; i++){
-			for (int j = 0; j < sequence[sequence.length-i-1]; j++){
-				stubs.add(sequence.length-i-1);
+		for (int i = 0; i < sequence.length; i++) {
+			for (int j = 0; j < sequence[sequence.length - i - 1]; j++) {
+				stubs.add(sequence.length - i - 1);
 			}
 		}
 		int k = 0;
-		int src,dst;
+		int src, dst;
 		Vector<Integer> cStubs = (Vector<Integer>) stubs.clone();
-		while (k < 1000 && stubs.size() > 1){
+		while (k < 1000 && stubs.size() > 1) {
 			src = stubs.remove(0);
 			int med = rand.nextInt(stubs.size());
 			dst = stubs.remove(med);
 			int t = 0;
-			while (t < 1000 && src==dst){
-				stubs.add(med,dst);
+			while (t < 1000 && src == dst) {
+				stubs.add(med, dst);
 				t++;
 				med = rand.nextInt(stubs.size());
 				dst = stubs.remove(med);
 			}
-			if (src == dst){
+			if (src == dst) {
 				k++;
 				stubs = cStubs;
 			} else {
 				edges.add(src, dst);
-				edges.add(dst,src);
+				edges.add(dst, src);
 			}
 		}
-		if (stubs.size() > 0){
-			throw new IllegalArgumentException("Graph construction not possible");
+		if (stubs.size() > 0) {
+			throw new IllegalArgumentException(
+					"Graph construction not possible");
 		}
 		edges.fill();
 		graph.setNodes(nodes);
 		return graph;
 	}
-	
-	private Graph generateDirected(){
+
+	private Graph generateDirected() {
 		Graph graph = new Graph(this.getDescription());
 		Random rand = new Random(System.currentTimeMillis());
 		Node[] nodes = Node.init(this.getNodes(), graph);
 		int sum = 0;
-		for (int j = 0; j < this.sequenceIn.length; j++){
+		for (int j = 0; j < this.sequenceIn.length; j++) {
 			sum = sum + this.sequenceIn[j];
 		}
 		Edges edges = new Edges(nodes, sum);
 		Vector<Integer> stubsOut = new Vector<Integer>(sum);
 		Vector<Integer> stubsIn = new Vector<Integer>(sum);
-		for (int i = 0; i < this.sequenceOut.length; i++){
-			for (int j = 0; j < this.sequenceOut[i]; j++){
-				stubsOut.add(i); 
+		for (int i = 0; i < this.sequenceOut.length; i++) {
+			for (int j = 0; j < this.sequenceOut[i]; j++) {
+				stubsOut.add(i);
 			}
-			for (int j = 0; j < this.sequenceIn[i]; j++){
-				stubsIn.add(i); 
+			for (int j = 0; j < this.sequenceIn[i]; j++) {
+				stubsIn.add(i);
 			}
 		}
-        if (stubsIn.size() != stubsOut.size()){
-        	throw new IllegalArgumentException("Graph construction not possible");
+		if (stubsIn.size() != stubsOut.size()) {
+			throw new IllegalArgumentException(
+					"Graph construction not possible");
 		}
-		int src,dst;
-		while (stubsIn.size() > 0 && stubsOut.size() > 0){
-			src = stubsOut.remove(stubsOut.size()-1);
+		int src, dst;
+		while (stubsIn.size() > 0 && stubsOut.size() > 0) {
+			src = stubsOut.remove(stubsOut.size() - 1);
 			dst = stubsIn.remove(rand.nextInt(stubsIn.size()));
-			edges.add(src,dst);
+			edges.add(src, dst);
 		}
 		edges.fill();
 		graph.setNodes(nodes);

@@ -44,14 +44,14 @@ import gtna.util.parameter.StringParameter;
 
 /**
  * @author stef
- *
+ * 
  */
 public class RemoveSmallest extends RemoveNodes {
 
 	int min;
 	Type type;
-	
-	public static enum Type{
+
+	public static enum Type {
 		IN, OUT, TOTAL
 	}
 
@@ -60,26 +60,30 @@ public class RemoveSmallest extends RemoveNodes {
 	 * @param parameters
 	 */
 	public RemoveSmallest(int min, Type type) {
-		super("REMOVE_SMALLEST", new Parameter[]{new IntParameter("MIN",min), new StringParameter("TYPE", type.toString())});
+		super("REMOVE_SMALLEST", new Parameter[] {
+				new IntParameter("MIN", min),
+				new StringParameter("TYPE", type.toString()) });
 		this.min = min;
 		this.type = type;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.transformation.remove.RemoveNodes#getNodeSet(gtna.graph.Graph)
 	 */
 	@Override
 	public boolean[] getNodeSet(Graph g) {
 		Node[] nodes = g.getNodes();
 		boolean[] remove = new boolean[nodes.length];
-		for (int j = 0; j < nodes.length; j++){
-			if (this.type == Type.TOTAL && nodes[j].getDegree() < this.min){
+		for (int j = 0; j < nodes.length; j++) {
+			if (this.type == Type.TOTAL && nodes[j].getDegree() < this.min) {
 				remove[j] = true;
 			}
-			if (this.type == Type.IN && nodes[j].getInDegree() < this.min){
+			if (this.type == Type.IN && nodes[j].getInDegree() < this.min) {
 				remove[j] = true;
 			}
-			if (this.type == Type.OUT && nodes[j].getOutDegree() < this.min){
+			if (this.type == Type.OUT && nodes[j].getOutDegree() < this.min) {
 				remove[j] = true;
 			}
 		}
