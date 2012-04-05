@@ -43,6 +43,8 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
+import gtna.transformation.subGraphs.BuildSubGraphMax.CliqueSelection;
+import gtna.transformation.subGraphs.BuildSubGraphMax.NextSelection;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
@@ -55,27 +57,65 @@ import gtna.util.parameter.StringParameter;
  */
 public class BuildSubGraph extends Transformation {
 	
-	public static String SELECTION_RANDOM = "RANDOM";
-	public static String SELECTION_OUTDEGREE = "OUTDEGREE";
-	int include,minDegree,startNodes;
-	String selection;
+	/**
+	 * choice of the clique in the beginning:
+	 * -clique with highest number of outgoing links: MAXOUTDEGREE 
+	 * -zufällige Clique der gewünschten Größe: RANDOM
+	 */
+	public static enum CliqueSelection {
+		RANDOM, MAXOUTDEGREE
+	};
+	
+	/**
+	 * choice of the next node:
+	 * -randomly from all nodes who have the required minimal degree: RANDOM
+	 * -randomly from all nodes with highest number of links into subGraph: MAX
+	 * -randomly from all nodes with lowest (exceeding minimal required degree) number of links into the subgraph: MIN
+	 */
+	public static enum NextSelection {
+		RANDOM, MAX, MIN
+	};
+	
+	int include,minDegree,maxDegree,startNodes;
+	CliqueSelection selection;
+	NextSelection selectionNext;
 
 	/**
 	 * 
 	 * @param include: nodes that are MAXIMALLY included in subgraph
 	 * @param minDegree: minimum number of links a node has to have to nodes that are already included in the subgraph to be added
+	 * @param maxDegree: maximum degree a node in the subgraph is allowed to have
+	 * @param startNodes: size of the initial clique
+	 * @param selection: selection of the initial clique:
+	 * @param selectionNext: selection criteria for next node to add
+	 */
+	public BuildSubGraph(int include, int minDegree,int maxDegree, int startNodes, CliqueSelection selection, NextSelection selectionNext) {
+		super("BUILD_SUB_GRAPH", new Parameter[]{new IntParameter("INCLUDE",include), new IntParameter("MINDEGREE",minDegree), 
+				new IntParameter("MAXDEGREE",maxDegree), new IntParameter("STARTNODES",startNodes),  new StringParameter("SELECTION",selection.toString()),
+				new StringParameter("SELECTION_NEXT",selectionNext.toString())});
+		this.selection = selection;
+		this.minDegree = Math.max(minDegree,1);
+		this.maxDegree = maxDegree;
+		this.include = include;
+		this.startNodes = startNodes;
+		this.selectionNext = selectionNext;
+		if (maxDegree < startNodes-1 || minDegree > maxDegree){
+			throw new IllegalArgumentException("Degree constraints do not agree in BuildSubGraphMax " + maxDegree);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param include: nodes that are MAXIMALLY included in subgraph
+	 * @param minDegree: minimum number of links a node has to have to nodes that are already included in the subgraph to be added
+	 * @param maxDegree: maximum degree a node in the subgraph is allowed to have
 	 * @param startNodes: size of the initial clique
 	 * @param selection: selection of the initial clique:
 	 *                   a) RANDOM: choose a clique randomly from all cliques in the graph
 	 *                   b) OUTDEGREE: choose the clique for which the number of outgoing links is highest
 	 */
-	public BuildSubGraph(int include, int minDegree, int startNodes, String selection) {
-		super("BUILD_SUB_GRAPH", new Parameter[]{new IntParameter("INCLUDE",include), new IntParameter("MINDEGREE",minDegree), 
-				new IntParameter("STARTNODES",startNodes),  new StringParameter("SELECTION",selection)});
-		this.selection = selection;
-		this.minDegree = Math.max(minDegree,1);
-		this.include = include;
-		this.startNodes = startNodes;
+	public BuildSubGraph(int include, int minDegree,int maxDegree, int startNodes, CliqueSelection selection) {
+		this(include,minDegree,maxDegree,startNodes,selection,NextSelection.MAX);
 	}
 
 	/* (non-Javadoc)
@@ -83,88 +123,65 @@ public class BuildSubGraph extends Transformation {
 	 */
 	@Override
 	public Graph transform(Graph g) {
+		//PHASE 1: initialize variables and get initial clique
 		Node[] nodesOld = g.getNodes();
-		boolean[] added = new boolean[nodesOld.length]; 
-		Vector<Vector<Integer>> in = new Vector<Vector<Integer>>();
-		HashMap<Integer, Integer> newIndex = new HashMap<Integer, Integer>();
-		HashMap<Integer, Integer> inDegree = new HashMap<Integer,Integer>();
+		boolean[] added = new boolean[nodesOld.length]; //added nodes
+		int[] degree = new int[nodesOld.length]; //current number of links into the subgraphs
 		Random rand = new Random();
 		int[] out;
-		int[] start = this.getStartIndex(nodesOld, rand);
-		
-		Integer inDeg;
-		Vector<Integer> list;
-		for (int s = 0; s < start.length; s++){
-			added[start[s]] = true;
+		int maxdeg = nodesOld[this.getMaxDegree(nodesOld, rand)].getOutDegree();
+		if (this.maxDegree < maxdeg){
+			maxdeg = this.maxDegree;
 		}
-		for (int s = 0; s < start.length; s++){
-			out = nodesOld[start[s]].getOutgoingEdges();
-			for (int i = 0; i < out.length; i++){
-				if (!added[out[i]]){
-					inDeg = inDegree.remove(out[i]);
-					if (inDeg == null){
-						inDeg = 0;
+		int[] start = this.getStartIndex(nodesOld, rand);
+		HashMap<Integer, Integer> newIndex = new HashMap<Integer, Integer>(Math.min(nodesOld.length, this.include)); //index of node in subgraph
+		HashMap<Integer,Vector<Integer>> neighs = new HashMap<Integer,Vector<Integer>>(nodesOld.length); //neighbors in subgraph (only those added earlier!!)
+		Vector<Vector<Integer>> inDegree = new Vector<Vector<Integer>>(maxdeg+1); //current links into subgraph for nodes not yet contained; 
+		              //i-th entry=list of node index with i links 
+		for (int i = 0; i < maxdeg+1; i++){
+			inDegree.add(new Vector<Integer>());
+		}
+		
+		//PHASE 2: create neighbor list for nodes in initial clique
+		int count = start.length;
+		Vector<Integer> list;
+		for (int i = 0; i < start.length; i++){
+			added[start[i]] = true;
+			degree[start[i]] = start.length-1;
+			Vector<Integer> neighbors = new Vector<Integer>();
+			for (int k = 0; k < i; k++){
+				neighbors.add(start[k]);
+			}
+			neighs.put(start[i], neighbors);
+		}
+		for (int i = 0; i < start.length; i++){
+			if (degree[start[i]] == this.maxDegree){
+				//no neighbor is added later on since maximum degree is reached
+			} else {
+				//add in-link for each neighbor
+				out = nodesOld[start[i]].getOutgoingEdges();
+				for (int j = 0; j < out.length; j++){
+					if (!added[out[j]] && degree[out[j]] < this.maxDegree){
+						inDegree.get(degree[out[j]]).removeElement(out[j]);
+						degree[out[j]]++;
+						inDegree.get(degree[out[j]]).add(out[j]);
 					}
-					inDeg++;
-					inDegree.put(out[i],inDeg);
-					
-					if (inDeg > 1){
-						list = in.get(inDeg-2);
-						list.removeElement(out[i]);
-					}
-					if (inDeg > in.size()){
-						list = new Vector<Integer>();
-						in.add(list);
-					} else {
-						list = in.get(inDeg-1);
-					}
-					list.add(out[i]);
 				}
 			}
+			
 		}
 		
-		int count = start.length;
-		int max;
-		Node last;
+		//PHASE 3: add nodes until desired size is reached or no node can be added 
 		while (count < this.include && count < nodesOld.length){
-			
-			max = in.size()-1;
-			while (max > -1 && in.get(max).size() == 0){
-				max--;
-			}
-			if (max < this.minDegree-1){
+			int chosen = this.getNext(inDegree, rand);
+			if (chosen == -1){
 				break;
 			}
-			int s = in.get(max).remove(rand.nextInt(in.get(max).size()));
-			last = nodesOld[s];
-			added[s] = true;
-			out = last.getOutgoingEdges();
+			neighs.put(chosen, this.addNode(added,degree,nodesOld[chosen], inDegree,nodesOld));
 			count++;
-			
-			for (int i = 0; i < out.length; i++){
-				if (!added[out[i]]){
-					inDeg = inDegree.remove(out[i]);
-					if (inDeg == null){
-						inDeg = 0;
-					}
-					inDeg++;
-					inDegree.put(out[i],inDeg);
-					
-					if (inDeg > 1){
-						list = in.get(inDeg-2);
-						list.removeElement(out[i]);
-					}
-					if (inDeg > in.size()){
-						list = new Vector<Integer>();
-						in.add(list);
-					} else {
-						list = in.get(inDeg-1);
-					}
-					list.add(out[i]);
-				}
-			}
 		}
 		
+		//PHASE 4: create new graph
 		Node[] nodesNew = new Node[count];
 		Edges edges = new Edges(nodesNew,g.computeNumberOfEdges());
 		int c = 0;
@@ -172,6 +189,7 @@ public class BuildSubGraph extends Transformation {
 			if (added[i]){
 				nodesNew[c] = nodesOld[i];
 				newIndex.put(i, c);
+				nodesNew[c].setIndex(c);
 				c++;
 				
 			}
@@ -179,11 +197,10 @@ public class BuildSubGraph extends Transformation {
 		c = 0;
 		for (int i = 0; i < added.length; i++){
 			if (added[i]){
-				out = nodesNew[c].getOutgoingEdges();
-				for (int j = 0; j < out.length; j++){
-					if (added[out[j]]){
-						edges.add(c, newIndex.get(out[j]));
-					}
+				list = neighs.get(i);
+				for (int j = 0; j < list.size(); j++){
+					edges.add(c, newIndex.get(list.get(j)));
+					edges.add( newIndex.get(list.get(j)), c);
 				}
 				c++;
 			}
@@ -191,6 +208,91 @@ public class BuildSubGraph extends Transformation {
 		edges.fill();
 		g.setNodes(nodesNew);
 		return g;
+	}
+	
+	private int getNext(Vector<Vector<Integer>> degs, Random rand){
+		if (this.selectionNext == NextSelection.MAX){
+			int max = degs.size()-1;
+			while (max >= this.minDegree && degs.get(max).size() == 0){
+				max--;
+			}
+			if (max < this.minDegree){
+				return -1;
+			} else {
+				return degs.get(max).remove(rand.nextInt(degs.get(max).size()));
+			}
+		}
+		if (this.selectionNext == NextSelection.RANDOM){
+			int count = 0;
+			for (int j = this.minDegree; j < degs.size(); j++){
+				count = count + degs.get(j).size();
+			}
+			if (count == 0){
+				return -1;				
+			} else {
+				int c = rand.nextInt(count);
+				count = 0;
+				for (int j = this.minDegree; j < degs.size(); j++){
+					if (count + degs.get(j).size() > c){
+						return degs.get(j).remove(c-count);
+					}
+					count = count + degs.get(j).size();
+				}
+			}
+		}
+		if (this.selectionNext == NextSelection.MIN){
+			int min = this.minDegree;
+			while (min < degs.size() && degs.get(min).size() == 0){
+				min++;
+			}
+			if (min >= degs.size()){
+				return -1;
+			}
+			return degs.get(min).remove(rand.nextInt(degs.get(min).size()));
+			
+		}
+		return -1;
+	}
+	
+	/**
+	 * add a node to the subgraph and change inDegree accordingly
+	 * @param added
+	 * @param degree
+	 * @param n
+	 * @param inDegree
+	 * @param nodes
+	 * @return
+	 */
+	private Vector<Integer> addNode(boolean[] added,  int[] degree, Node n, Vector<Vector<Integer>> inDegree, Node[] nodes){
+		int[] out = n.getIncomingEdges();
+		Vector<Integer> neighbors = new Vector<Integer>();
+		added[n.getIndex()] = true;
+		for (int i = 0; i < out.length; i++){
+			if (added[out[i]] && degree[out[i]] < this.maxDegree && neighbors.size() < this.maxDegree){
+				neighbors.add(out[i]);
+				degree[out[i]]++;
+				if (degree[out[i]] == this.maxDegree){
+					int[] o = nodes[out[i]].getOutgoingEdges();
+					for (int k = 0; k < o.length; k++){
+						if (!added[o[k]] && degree[o[k]] > 0){
+						inDegree.get(degree[o[k]]).removeElement(o[k]);
+						degree[o[k]]--;
+						if (degree[o[k]] > 0)
+						inDegree.get(degree[o[k]]).add(o[k]);
+						}
+					}
+				}
+			}
+			if (!added[out[i]] && degree[out[i]] < this.maxDegree && degree[out[i]] > 0){
+				inDegree.get(degree[out[i]]).removeElement(out[i]);
+				degree[out[i]]++;
+				inDegree.get(degree[out[i]]).add(out[i]);
+			}
+		}
+		
+		
+		
+		return neighbors;
 	}
 	
 	
@@ -210,13 +312,13 @@ public class BuildSubGraph extends Transformation {
 	 * @return
 	 */
     private int[] getStartIndex(Node[] nodes, Random rand){
-    	if (this.selection.equals(SELECTION_RANDOM)){
+    	if (this.selection == CliqueSelection.RANDOM){
     		return determineCliqueRandom(rand,nodes);
     	}
-    	if (this.selection.equals(SELECTION_OUTDEGREE)){
+    	if (this.selection == CliqueSelection.MAXOUTDEGREE){
     		return determineCliqueMostLinks(rand,nodes);
     	}
-	   throw new IllegalArgumentException("Selection type " + this.selection + " in BuildSubGraph not known");
+	   throw new IllegalArgumentException("Selection type " + this.selection.toString() + " in BuildSubGraph not known");
     }
     
     /**
