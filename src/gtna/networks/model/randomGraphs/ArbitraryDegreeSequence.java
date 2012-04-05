@@ -200,7 +200,7 @@ public class ArbitraryDegreeSequence extends Network {
 			dst = stubsIn.remove(rand.nextInt(stubsIn.size()));
 			edges.add(src,dst);
 		}
-		
+		edges.fill();
 		graph.setNodes(nodes);
 		return graph;
 	}
