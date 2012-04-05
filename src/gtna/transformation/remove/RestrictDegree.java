@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.subGraphs;
+package gtna.transformation.remove;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
