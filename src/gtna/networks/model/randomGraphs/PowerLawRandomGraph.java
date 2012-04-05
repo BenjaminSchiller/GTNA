@@ -37,19 +37,20 @@ package gtna.networks.model.randomGraphs;
 
 import gtna.graph.Graph;
 import gtna.networks.Network;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
  * @author stef
  *
  */
 public class PowerLawRandomGraph extends Network {
-	double alpha;
-	int min,max;
+	double[] alpha;
+	int[] min,max;
 	boolean directed;
 
 	/**
@@ -61,12 +62,26 @@ public class PowerLawRandomGraph extends Network {
 	 * @param ra
 	 * @param t
 	 */
-	public PowerLawRandomGraph(int nodes, double alpha, int minDegree, int maxDegree , Transformation[] t) {
+	public PowerLawRandomGraph(int nodes, double alpha, int minDegree, int maxDegree , Transformation[] t, boolean directed) {
 		super("POWER_LAW_RANDOM", nodes, new Parameter[]{new DoubleParameter("ALPHA",alpha), 
-				new IntParameter("MINDEG",minDegree),new IntParameter("MAXDEG",maxDegree)}, t);
-		this.alpha = alpha;
-        this.max = maxDegree;
-        this.min = minDegree;
+				new IntParameter("MINDEG",minDegree),new IntParameter("MAXDEG",maxDegree), new BooleanParameter("DIRECTED", directed)}, t);
+		this.alpha = new double[]{alpha, alpha};
+        this.max = new int[]{maxDegree, maxDegree};
+        this.min = new int[]{minDegree, minDegree};
+        this.directed = directed;
+		
+	}
+	
+	public PowerLawRandomGraph(int nodes, double alphaOut, double alphaIn, int minDegreeOut, int minDegreeIn, 
+			int maxDegreeOut, int maxDegreeIn, Transformation[] t, boolean directed) {
+		super("POWER_LAW_RANDOM", nodes, new Parameter[]{new StringParameter("ALPHA","(" +alphaOut + "," + alphaIn + ")" ), 
+				new StringParameter("MINDEG","(" +minDegreeOut + "," + minDegreeIn + ")"),
+				new StringParameter("MAXDEG","(" +maxDegreeOut + "," + maxDegreeIn + ")"), new BooleanParameter("DIRECTED", directed)}, t);
+		this.alpha = new double[]{alphaOut, alphaIn};
+        this.max = new int[]{maxDegreeOut, maxDegreeOut};
+        this.min = new int[]{minDegreeIn, minDegreeIn};
+        this.directed = directed;
+		
 	}
 
 	/* (non-Javadoc)
@@ -74,16 +89,46 @@ public class PowerLawRandomGraph extends Network {
 	 */
 	@Override
 	public Graph generate() {
-		double[] probs = new double[Math.min(this.max,this.getNodes())+1];
+		if (this.directed){
+			return this.generateDirected();
+		} else {
+			return this.generateUndirected();
+		}
+	}
+	
+	private Graph generateUndirected(){
+		double[] probs = new double[Math.min(this.max[0],this.getNodes())+1];
 		double norm = 0;
-		for (int i = this.min; i < probs.length; i++){
-			norm = norm + Math.pow(i, -alpha);
+		for (int i = this.min[0]; i < probs.length; i++){
+			norm = norm + Math.pow(i, -alpha[0]);
 			probs[i] = norm;
 		}
-		for (int i = this.min; i < probs.length; i++){
+		for (int i = this.min[0]; i < probs.length; i++){
 			probs[i] = probs[i]/norm;
 		}
 		return (new ArbitraryDegreeDistribution(this.getNodes(), this.getName(), probs,null)).generate();
+	}
+	
+	private Graph generateDirected(){
+		double[] probsOut = new double[Math.min(this.max[0],this.getNodes())+1];
+		double norm = 0;
+		for (int i = this.min[0]; i < probsOut.length; i++){
+			norm = norm + Math.pow(i, -alpha[0]);
+			probsOut[i] = norm;
+		}
+		for (int i = this.min[0]; i < probsOut.length; i++){
+			probsOut[i] = probsOut[i]/norm;
+		}
+		double[] probsIn = new double[Math.min(this.max[1],this.getNodes())+1];
+		norm = 0;
+		for (int i = this.min[1]; i < probsIn.length; i++){
+			norm = norm + Math.pow(i, -alpha[1]);
+			probsIn[i] = norm;
+		}
+		for (int i = this.min[1]; i < probsIn.length; i++){
+			probsIn[i] = probsIn[i]/norm;
+		}
+		return (new ArbitraryDegreeDistribution(this.getNodes(), this.getName(), probsOut,probsIn,null)).generate();
 	}
 
 }
