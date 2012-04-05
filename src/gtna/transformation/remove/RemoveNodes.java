@@ -43,11 +43,8 @@ import gtna.util.parameter.Parameter;
 
 import java.util.HashMap;
 
-
-
 /**
- * @author stef
- * abstract class for removing nodes
+ * @author stef abstract class for removing nodes
  */
 public abstract class RemoveNodes extends Transformation {
 
@@ -59,18 +56,20 @@ public abstract class RemoveNodes extends Transformation {
 		super(key, parameters);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.transformation.Transformation#transform(gtna.graph.Graph)
 	 */
 	@Override
 	public Graph transform(Graph g) {
 		boolean[] remove = this.getNodeSet(g);
 		Node[] oldNodes = g.getNodes();
-		//Node[] newNodes = new Node[oldNodes.length-remove.size()];
-		HashMap<Integer, Integer> map = new HashMap<Integer,Integer>();
+		// Node[] newNodes = new Node[oldNodes.length-remove.size()];
+		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
 		int count = 0;
-		for (int i = 0; i < oldNodes.length; i++){
-			if (!remove[i]){
+		for (int i = 0; i < oldNodes.length; i++) {
+			if (!remove[i]) {
 				map.put(i, count);
 				count++;
 			}
@@ -78,20 +77,20 @@ public abstract class RemoveNodes extends Transformation {
 		Node[] newNodes = new Node[count];
 		int edges = 0;
 		count = 0;
-		for (int i = 0; i < oldNodes.length; i++){
-			if (!remove[i]){
-			newNodes[count] = oldNodes[i];
-			newNodes[count].setIndex(count);
-			count++;
-			edges = edges + oldNodes[i].getOutDegree();
+		for (int i = 0; i < oldNodes.length; i++) {
+			if (!remove[i]) {
+				newNodes[count] = oldNodes[i];
+				newNodes[count].setIndex(count);
+				count++;
+				edges = edges + oldNodes[i].getOutDegree();
 			}
 		}
-		Edges edgeSet = new Edges(newNodes,edges);
-		for (int j = 0; j < newNodes.length; j++){
+		Edges edgeSet = new Edges(newNodes, edges);
+		for (int j = 0; j < newNodes.length; j++) {
 			int[] out = newNodes[j].getOutgoingEdges();
-			for (int i = 0; i < out.length; i++){
-				if (!remove[out[i]]){
-					edgeSet.add(j,map.get(out[i]));
+			for (int i = 0; i < out.length; i++) {
+				if (!remove[out[i]]) {
+					edgeSet.add(j, map.get(out[i]));
 				}
 			}
 		}
@@ -100,14 +99,16 @@ public abstract class RemoveNodes extends Transformation {
 		return g;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.transformation.Transformation#applicable(gtna.graph.Graph)
 	 */
 	@Override
 	public boolean applicable(Graph g) {
 		return true;
 	}
-	
+
 	public abstract boolean[] getNodeSet(Graph g);
 
 }

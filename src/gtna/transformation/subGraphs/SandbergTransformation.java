@@ -41,18 +41,22 @@ import gtna.util.parameter.StringParameter;
 
 /**
  * @author stef
- *
- *Sandberg's Transformation as a special case of BuildSubGraph
+ * 
+ *         Sandberg's Transformation as a special case of BuildSubGraph
  */
 public class SandbergTransformation extends BuildSubGraph {
 
 	/**
-	 * @param include:number of nodes in subgraph
-	 * @param selection: selection of first nodes
+	 * @param include
+	 *            :number of nodes in subgraph
+	 * @param selection
+	 *            : selection of first nodes
 	 */
 	public SandbergTransformation(int include, CliqueSelection selection) {
-		super("SANDBERG", include, 1, Integer.MAX_VALUE, 1, selection, BuildSubGraph.NextSelection.MAX,
-				new Parameter[] {new IntParameter("INCLUDE", include), new StringParameter("SELECTION", selection.toString())});
+		super("SANDBERG",include,1,Integer.MAX_VALUE,1, selection,
+				BuildSubGraph.NextSelection.MAX,
+				new Parameter[] { new IntParameter("INCLUDE", include),
+						new StringParameter("SELECTION", selection.toString()) });
 	}
 
 }
