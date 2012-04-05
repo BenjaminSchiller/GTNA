@@ -38,8 +38,8 @@ package gtna.networks.model.randomGraphs;
 import gtna.graph.Graph;
 import gtna.io.DataReader;
 import gtna.networks.Network;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
@@ -49,10 +49,13 @@ import java.util.Random;
 
 /**
  * @author stef
- * create an undirected graph with a arbitrary degree sequence
+ * create a graph with a arbitrary degree sequence
  */
 public class ArbitraryDegreeDistribution extends Network {
 	double[] cdf;
+	double[] cdfIn;
+	double[] cdfOut;
+	boolean directed;
 
 	/**
 	 * 
@@ -63,14 +66,29 @@ public class ArbitraryDegreeDistribution extends Network {
 	 * @param t
 	 */
 	public ArbitraryDegreeDistribution(int nodes, String name, double[] distribution, Transformation[] t) {
-		super("ARBITRARY_DEGREE_DISTRIBUTION", nodes, new Parameter[]{new StringParameter("NAME", name)}, t);
+		super("ARBITRARY_DEGREE_DISTRIBUTION", nodes, new Parameter[]{new StringParameter("NAME", name), new BooleanParameter("DIRECTED", false)}, t);
 		this.cdf = distribution;
-		
+		this.directed = false;
+	}
+	
+	public ArbitraryDegreeDistribution(int nodes, String name, double[] distributionIn, double[] distributionOut, Transformation[] t) {
+		super("ARBITRARY_DEGREE_DISTRIBUTION", nodes, new Parameter[]{new StringParameter("NAME", name), new BooleanParameter("DIRECTED", true)}, t);
+		this.cdfIn = distributionIn;
+		this.cdfOut = distributionOut;
+		this.directed = true;
 	}
 	
 	public ArbitraryDegreeDistribution(int nodes, String name, String file,Transformation[] t) {
-		super("ARBITRARY_DEGREE_DISTRIBUTION", nodes, new Parameter[]{new StringParameter("NAME", name)}, t);
+		super("ARBITRARY_DEGREE_DISTRIBUTION", nodes, new Parameter[]{new StringParameter("NAME", name), new BooleanParameter("DIRECTED", false)}, t);
 		this.cdf = DataReader.readDouble(file);
+		this.directed = false;
+	}
+	
+	public ArbitraryDegreeDistribution(int nodes, String name, String fileIn, String fileOut, Transformation[] t) {
+		super("ARBITRARY_DEGREE_DISTRIBUTION", nodes, new Parameter[]{new StringParameter("NAME", name), new BooleanParameter("DIRECTED",true)}, t);
+		this.cdfIn = DataReader.readDouble(fileIn);
+		this.cdfOut = DataReader.readDouble(fileOut);
+		this.directed = true;
 	}
 	
 	
@@ -80,6 +98,15 @@ public class ArbitraryDegreeDistribution extends Network {
 	 */
 	@Override
 	public Graph generate() {
+		if (this.directed){
+			return this.generateDirected();
+		} else {
+			return this.generateUndirected();
+		}
+		
+	}
+	
+	private Graph generateUndirected(){
 		int[] sequence = new int[this.getNodes()];
 		Random rand = new Random(System.currentTimeMillis());
 		int sum = 0;
@@ -105,7 +132,64 @@ public class ArbitraryDegreeDistribution extends Network {
 		}
 		
 		return (new ArbitraryDegreeSequence(this.getNodes(), this.getName(), sequence,null)).generate();
-		
+	}
+	
+	private Graph generateDirected(){
+		int[] sequenceIn = new int[this.getNodes()];
+		int[] sequenceOut = new int[this.getNodes()];
+		Random rand = new Random(System.currentTimeMillis());
+		int sumIn = 0, sumOut = 0;
+		int k = 0;
+		for (int i = 0; i < sequenceIn.length; i++){
+			double bound = rand.nextDouble();
+			k=0;
+			while (this.cdfIn[k] < bound){
+				k++;
+			}
+			sequenceIn[i] = k;
+			sumIn = sumIn + k;
+			
+			bound = rand.nextDouble();
+			k=0;
+			while (this.cdfOut[k] < bound){
+				k++;
+			}
+			sequenceOut[i] = k;
+			sumOut = sumOut + k;
+		}
+		while (sumOut > sumIn){
+			boolean out = rand.nextBoolean();
+			if (out){
+				int c = rand.nextInt(sequenceIn.length);
+				while (sequenceOut[c] < 2){
+					c = rand.nextInt(sequenceIn.length);
+				}
+				sequenceOut[c]--;
+			} else {
+				int c = rand.nextInt(sequenceIn.length);
+				while (sequenceIn[c] >= cdfIn.length-1){
+					c = rand.nextInt(sequenceIn.length);
+				}
+				sequenceIn[c]++;
+			}
+		}
+		while (sumOut < sumIn){
+			boolean out = rand.nextBoolean();
+			if (out){
+				int c = rand.nextInt(sequenceIn.length);
+				while (sequenceOut[c] >= cdfOut.length){
+					c = rand.nextInt(sequenceIn.length);
+				}
+				sequenceOut[c]++;
+			} else {
+				int c = rand.nextInt(sequenceIn.length);
+				while (sequenceIn[c] < 2){
+					c = rand.nextInt(sequenceIn.length);
+				}
+				sequenceIn[c]--;
+			}
+		}
+		return (new ArbitraryDegreeSequence(this.getNodes(), this.getName(), sequenceIn, sequenceOut,null)).generate();
 	}
 
 }
