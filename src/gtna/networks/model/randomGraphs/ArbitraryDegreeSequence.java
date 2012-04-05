@@ -73,14 +73,14 @@ public class ArbitraryDegreeSequence extends Network {
 	}
 	
 	public ArbitraryDegreeSequence(int nodes, String name, int[] sequenceIn, int[] sequenceOut, Transformation[] t) {
-		super("ARBITRARY_DEGREE_SEQUENCE", nodes, new Parameter[]{new StringParameter("NAME", name), new BooleanParameter("DIRECTED", false)}, t);
+		super("ARBITRARY_DEGREE_SEQUENCE", nodes, new Parameter[]{new StringParameter("NAME", name), new BooleanParameter("DIRECTED", true)}, t);
 		this.sequenceIn = sequenceIn;
 		this.sequenceOut = sequenceOut;
-		this.directed = false;
+		this.directed = true;
 	}
 	
 	public ArbitraryDegreeSequence(String name, Graph g,  Transformation[] t, boolean directed) {
-		super("ARBITRARY_DEGREE_SEQUENCE", g.getNodes().length, new Parameter[]{new StringParameter("NAME", name)}, t);
+		super("ARBITRARY_DEGREE_SEQUENCE", g.getNodes().length, new Parameter[]{new StringParameter("NAME", name), new BooleanParameter("DIRECTED", directed)}, t);
         this.directed = directed;
 		Node[] nodes = g.getNodes();
 		if (directed){
