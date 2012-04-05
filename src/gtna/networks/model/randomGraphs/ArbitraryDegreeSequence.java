@@ -39,8 +39,8 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
@@ -54,6 +54,9 @@ import java.util.Vector;
  */
 public class ArbitraryDegreeSequence extends Network {
 	int[] sequence;
+	int[] sequenceIn;
+	int[] sequenceOut;
+	boolean directed;
 
 	/**
 	 * 
@@ -64,17 +67,36 @@ public class ArbitraryDegreeSequence extends Network {
 	 * @param t
 	 */
 	public ArbitraryDegreeSequence(int nodes, String name, int[] sequence, Transformation[] t) {
-		super("ARBITRARY_DEGREE_SEQUENCE", nodes, new Parameter[]{new StringParameter("NAME", name)}, t);
+		super("ARBITRARY_DEGREE_SEQUENCE", nodes, new Parameter[]{new StringParameter("NAME", name), new BooleanParameter("DIRECTED", false)}, t);
 		this.sequence = sequence;
-		
+		this.directed = false;
 	}
 	
-	public ArbitraryDegreeSequence(String name, Graph g,  Transformation[] t) {
+	public ArbitraryDegreeSequence(int nodes, String name, int[] sequenceIn, int[] sequenceOut, Transformation[] t) {
+		super("ARBITRARY_DEGREE_SEQUENCE", nodes, new Parameter[]{new StringParameter("NAME", name), new BooleanParameter("DIRECTED", false)}, t);
+		this.sequenceIn = sequenceIn;
+		this.sequenceOut = sequenceOut;
+		this.directed = false;
+	}
+	
+	public ArbitraryDegreeSequence(String name, Graph g,  Transformation[] t, boolean directed) {
 		super("ARBITRARY_DEGREE_SEQUENCE", g.getNodes().length, new Parameter[]{new StringParameter("NAME", name)}, t);
-		this.sequence = new int[g.getNodes().length];
+        this.directed = directed;
 		Node[] nodes = g.getNodes();
+		if (directed){
+			this.sequenceIn = new int[nodes.length];
 		for (int i = 0; i < nodes.length; i++){
-			sequence[i] = nodes[i].getInDegree();
+			this.sequenceIn[i] = nodes[i].getInDegree();
+		}
+		this.sequenceOut = new int[nodes.length];
+		for (int i = 0; i < nodes.length; i++){
+			this.sequenceOut[i] = nodes[i].getOutDegree();
+		}
+		} else {
+			this.sequence = new int[nodes.length];
+			for (int i = 0; i < nodes.length; i++){
+				this.sequenceIn[i] = nodes[i].getInDegree();
+			}
 		}
 	}
 	
@@ -96,6 +118,15 @@ public class ArbitraryDegreeSequence extends Network {
 	 */
 	@Override
 	public Graph generate() {
+		if (this.directed){
+			return this.generateDirected();
+		} else {
+			return this.generateUndirected();
+		}
+		
+	}
+	
+	private Graph generateUndirected(){
 		Graph graph = new Graph(this.getDescription());
 		Random rand = new Random(System.currentTimeMillis());
 		Node[] nodes = Node.init(this.getNodes(), graph);
@@ -139,7 +170,39 @@ public class ArbitraryDegreeSequence extends Network {
 		edges.fill();
 		graph.setNodes(nodes);
 		return graph;
+	}
+	
+	private Graph generateDirected(){
+		Graph graph = new Graph(this.getDescription());
+		Random rand = new Random(System.currentTimeMillis());
+		Node[] nodes = Node.init(this.getNodes(), graph);
+		int sum = 0;
+		for (int j = 0; j < this.sequenceIn.length; j++){
+			sum = sum + this.sequenceIn[j];
+		}
+		Edges edges = new Edges(nodes, sum);
+		Vector<Integer> stubsOut = new Vector<Integer>(sum);
+		Vector<Integer> stubsIn = new Vector<Integer>(sum);
+		for (int i = 0; i < this.sequenceOut.length; i++){
+			for (int j = 0; j < this.sequenceOut[i]; j++){
+				stubsOut.add(i); 
+			}
+			for (int j = 0; j < this.sequenceIn[i]; j++){
+				stubsIn.add(i); 
+			}
+		}
+        if (stubsIn.size() != stubsOut.size()){
+        	throw new IllegalArgumentException("Graph construction not possible");
+		}
+		int src,dst;
+		while (stubsIn.size() > 0 && stubsOut.size() > 0){
+			src = stubsOut.remove(stubsOut.size()-1);
+			dst = stubsIn.remove(rand.nextInt(stubsIn.size()));
+			edges.add(src,dst);
+		}
 		
+		graph.setNodes(nodes);
+		return graph;
 	}
 
 }
