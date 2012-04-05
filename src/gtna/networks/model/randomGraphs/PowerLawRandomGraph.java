@@ -47,9 +47,10 @@ import gtna.util.parameter.Parameter;
  * @author stef
  *
  */
-public class ScaleFreeRandomGraph extends Network {
+public class PowerLawRandomGraph extends Network {
 	double alpha;
 	int min,max;
+	boolean directed;
 
 	/**
 	 * 
@@ -60,8 +61,8 @@ public class ScaleFreeRandomGraph extends Network {
 	 * @param ra
 	 * @param t
 	 */
-	public ScaleFreeRandomGraph(int nodes, double alpha, int minDegree, int maxDegree , Transformation[] t) {
-		super("SCALE_FREE_RANDOM", nodes, new Parameter[]{new DoubleParameter("ALPHA",alpha), 
+	public PowerLawRandomGraph(int nodes, double alpha, int minDegree, int maxDegree , Transformation[] t) {
+		super("POWER_LAW_RANDOM", nodes, new Parameter[]{new DoubleParameter("ALPHA",alpha), 
 				new IntParameter("MINDEG",minDegree),new IntParameter("MAXDEG",maxDegree)}, t);
 		this.alpha = alpha;
         this.max = maxDegree;
