@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * RemoveEdges.java
+ * RemoveNodes.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -37,49 +37,69 @@ package gtna.transformation.remove;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
+import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.Parameter;
 
 import java.util.HashMap;
-import java.util.Vector;
+
+
 
 /**
  * @author stef
- * abstract class for removing edges
+ * abstract class for removing nodes
  */
-public abstract class RemoveEdges extends Transformation {
+public abstract class RemoveNodes extends Transformation {
 
 	/**
 	 * @param key
 	 * @param parameters
 	 */
-	public RemoveEdges(String key, Parameter[] parameters) {
+	public RemoveNodes(String key, Parameter[] parameters) {
 		super(key, parameters);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see gtna.transformation.Transformation#transform(gtna.graph.Graph)
 	 */
 	@Override
 	public Graph transform(Graph g) {
-		HashMap<Integer, Vector<Integer>> map = this.getEdgeSet(g);
-		Edges edges = new Edges(g.getNodes(),g.getEdges().size()-map.size());
-		for (int i = 0; i < g.getNodes().length; i++){
-			int[] out = g.getNodes()[i].getOutgoingEdges();
-			Vector<Integer> deleted = map.get(i);
-			if (deleted == null){
-				deleted = new Vector<Integer>();
-			} 
-			for (int j = 0; j < out.length; j++){
-				if (!deleted.contains(out[j])){
-					edges.add(i,out[j]);
-				} 
+		boolean[] remove = this.getNodeSet(g);
+		Node[] oldNodes = g.getNodes();
+		//Node[] newNodes = new Node[oldNodes.length-remove.size()];
+		HashMap<Integer, Integer> map = new HashMap<Integer,Integer>();
+		int count = 0;
+		for (int i = 0; i < oldNodes.length; i++){
+			if (!remove[i]){
+				map.put(i, count);
+				count++;
 			}
 		}
-		edges.fill();
+		Node[] newNodes = new Node[count];
+		int edges = 0;
+		count = 0;
+		for (int i = 0; i < oldNodes.length; i++){
+			if (!remove[i]){
+			newNodes[count] = oldNodes[i];
+			newNodes[count].setIndex(count);
+			count++;
+			edges = edges + oldNodes[i].getOutDegree();
+			}
+		}
+		Edges edgeSet = new Edges(newNodes,edges);
+		for (int j = 0; j < newNodes.length; j++){
+			int[] out = newNodes[j].getOutgoingEdges();
+			for (int i = 0; i < out.length; i++){
+				if (!remove[out[i]]){
+					edgeSet.add(j,map.get(out[i]));
+				}
+			}
+		}
+		edgeSet.fill();
+		g.setNodes(newNodes);
 		return g;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see gtna.transformation.Transformation#applicable(gtna.graph.Graph)
 	 */
@@ -88,6 +108,6 @@ public abstract class RemoveEdges extends Transformation {
 		return true;
 	}
 	
-	public abstract HashMap<Integer, Vector<Integer>> getEdgeSet(Graph g);
+	public abstract boolean[] getNodeSet(Graph g);
 
 }
