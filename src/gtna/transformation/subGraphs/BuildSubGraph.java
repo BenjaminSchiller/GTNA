@@ -43,8 +43,6 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
-import gtna.transformation.subGraphs.BuildSubGraphMax.CliqueSelection;
-import gtna.transformation.subGraphs.BuildSubGraphMax.NextSelection;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
@@ -116,6 +114,24 @@ public class BuildSubGraph extends Transformation {
 	 */
 	public BuildSubGraph(int include, int minDegree,int maxDegree, int startNodes, CliqueSelection selection) {
 		this(include,minDegree,maxDegree,startNodes,selection,NextSelection.MAX);
+	}
+	
+	/**
+	 * 
+	 * constructor allowing reseting the name
+	 */
+	public BuildSubGraph(String key, int include, int minDegree,int maxDegree, int startNodes, CliqueSelection selection, NextSelection selectionNext,
+			Parameter[] params) {
+		super(key, params);
+		this.selection = selection;
+		this.minDegree = Math.max(minDegree,1);
+		this.maxDegree = maxDegree;
+		this.include = include;
+		this.startNodes = startNodes;
+		this.selectionNext = selectionNext;
+		if (maxDegree < startNodes-1 || minDegree > maxDegree){
+			throw new IllegalArgumentException("Degree constraints do not agree in BuildSubGraphMax " + maxDegree);
+		}
 	}
 
 	/* (non-Javadoc)
