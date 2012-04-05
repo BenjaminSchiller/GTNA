@@ -145,7 +145,7 @@ public class BuildSubGraph extends Transformation {
 		int[] degree = new int[nodesOld.length]; //current number of links into the subgraphs
 		Random rand = new Random();
 		int[] out;
-		int maxdeg = nodesOld[this.getMaxDegree(nodesOld, rand)].getOutDegree();
+		int maxdeg = nodesOld[this.getMaxDegree(nodesOld, rand)].getDegree();
 		if (this.maxDegree < maxdeg){
 			maxdeg = this.maxDegree;
 		}
@@ -163,6 +163,7 @@ public class BuildSubGraph extends Transformation {
 		Vector<Integer> list;
 		for (int i = 0; i < start.length; i++){
 			added[start[i]] = true;
+			System.out.println("Added Initial " + start[i]);
 			degree[start[i]] = start.length-1;
 			Vector<Integer> neighbors = new Vector<Integer>();
 			for (int k = 0; k < i; k++){
@@ -299,7 +300,7 @@ public class BuildSubGraph extends Transformation {
 					}
 				}
 			}
-			if (!added[out[i]] && degree[out[i]] < this.maxDegree && degree[out[i]] > 0){
+			if (!added[out[i]] && degree[out[i]] < this.maxDegree){
 				inDegree.get(degree[out[i]]).removeElement(out[i]);
 				degree[out[i]]++;
 				inDegree.get(degree[out[i]]).add(out[i]);
