@@ -62,7 +62,7 @@ public class PowerLawRandomGraph extends Network {
 	 * @param ra
 	 * @param t
 	 */
-	public PowerLawRandomGraph(int nodes, double alpha, int minDegree, int maxDegree , Transformation[] t, boolean directed) {
+	public PowerLawRandomGraph(int nodes, double alpha, int minDegree, int maxDegree , boolean directed, Transformation[] t) {
 		super("POWER_LAW_RANDOM", nodes, new Parameter[]{new DoubleParameter("ALPHA",alpha), 
 				new IntParameter("MINDEG",minDegree),new IntParameter("MAXDEG",maxDegree), new BooleanParameter("DIRECTED", directed)}, t);
 		this.alpha = new double[]{alpha, alpha};
@@ -73,14 +73,15 @@ public class PowerLawRandomGraph extends Network {
 	}
 	
 	public PowerLawRandomGraph(int nodes, double alphaOut, double alphaIn, int minDegreeOut, int minDegreeIn, 
-			int maxDegreeOut, int maxDegreeIn, Transformation[] t, boolean directed) {
+			int maxDegreeOut, int maxDegreeIn, Transformation[] t) {
 		super("POWER_LAW_RANDOM", nodes, new Parameter[]{new StringParameter("ALPHA","(" +alphaOut + "," + alphaIn + ")" ), 
 				new StringParameter("MINDEG","(" +minDegreeOut + "," + minDegreeIn + ")"),
-				new StringParameter("MAXDEG","(" +maxDegreeOut + "," + maxDegreeIn + ")"), new BooleanParameter("DIRECTED", directed)}, t);
+				new StringParameter("MAXDEG","(" +maxDegreeOut + "," + maxDegreeIn + ")"),
+				new BooleanParameter("DIRECTED", true)}, t);
 		this.alpha = new double[]{alphaOut, alphaIn};
         this.max = new int[]{maxDegreeOut, maxDegreeOut};
         this.min = new int[]{minDegreeIn, minDegreeIn};
-        this.directed = directed;
+        this.directed = true;
 		
 	}
 

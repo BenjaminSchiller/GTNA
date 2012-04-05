@@ -165,12 +165,14 @@ public class ArbitraryDegreeDistribution extends Network {
 					c = rand.nextInt(sequenceIn.length);
 				}
 				sequenceOut[c]--;
+				sumOut--;
 			} else {
 				int c = rand.nextInt(sequenceIn.length);
 				while (sequenceIn[c] >= cdfIn.length-1){
 					c = rand.nextInt(sequenceIn.length);
 				}
 				sequenceIn[c]++;
+				sumIn++;
 			}
 		}
 		while (sumOut < sumIn){
@@ -181,12 +183,14 @@ public class ArbitraryDegreeDistribution extends Network {
 					c = rand.nextInt(sequenceIn.length);
 				}
 				sequenceOut[c]++;
+				sumOut++;
 			} else {
 				int c = rand.nextInt(sequenceIn.length);
 				while (sequenceIn[c] < 2){
 					c = rand.nextInt(sequenceIn.length);
 				}
 				sequenceIn[c]--;
+				sumIn--;
 			}
 		}
 		return (new ArbitraryDegreeSequence(this.getNodes(), this.getName(), sequenceIn, sequenceOut,null)).generate();
