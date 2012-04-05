@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * RestrictDegree.java
+ * RemoveMax.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -39,64 +39,49 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
-
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Vector;
+import gtna.util.parameter.StringParameter;
 
 /**
  * @author stef
- * remove edges from nodes that exceed a maximal degree 
+ * remove all nodes whose degree exceeds a certian bound
  */
-public class RestrictDegree extends RemoveEdges {
+public class RemoveLargest extends RemoveNodes {
 	int max;
+	Type type;
 	
+	public static enum Type{
+		IN, OUT, TOTAL
+	}
+
 	/**
 	 * @param key
 	 * @param parameters
 	 */
-	public RestrictDegree(int max) {
-		super("RESTRICT_DEGREE", new Parameter[] {new IntParameter("MAX", max)});
+	public RemoveLargest(int max, Type type) {
+		super("REMOVE_LARGEST", new Parameter[]{new IntParameter("MAX",max), new StringParameter("TYPE", type.toString())});
 		this.max = max;
+		this.type = type;
 	}
 
 	/* (non-Javadoc)
-	 * @see gtna.transformation.subGraphs.RemoveEdges#getEdgeSet(gtna.graph.Graph)
+	 * @see gtna.transformation.remove.RemoveNodes#getNodeSet(gtna.graph.Graph)
 	 */
 	@Override
-	public HashMap<Integer, Vector<Integer>> getEdgeSet(Graph g) {
+	public boolean[] getNodeSet(Graph g) {
 		Node[] nodes = g.getNodes();
-		HashMap<Integer, Vector<Integer>> map = new HashMap<Integer, Vector<Integer>>(nodes.length);
-		Vector<Integer> cur;
-		Vector<Integer> neighs, vec;
-		Random rand = new Random();
-		for (int i = 0; i < nodes.length; i++){
-			if (nodes[i].getOutDegree() > this.max){
-				neighs = new Vector<Integer>(nodes[i].getOutDegree());
-				for (int j = 0; j < nodes[i].getOutDegree(); j++){
-					neighs.add(nodes[i].getOutgoingEdges()[j]);
-				}
-				cur = map.get(i);
-				if (cur == null){
-					cur = new Vector<Integer>();
-					map.put(i, cur);
-				}
-				for (int j = 0; j <  nodes[i].getOutDegree() - this.max; j++){
-					int removed = neighs.remove(rand.nextInt(neighs.size()));
-					cur.add(removed);
-					
-					vec = map.get(removed);
-					if (vec == null){
-						vec = new Vector<Integer>();
-						map.put(removed, vec);
-					}
-					vec.add(i);
-				}
+		boolean[] remove = new boolean[nodes.length];
+		for (int j = 0; j < nodes.length; j++){
+			if (this.type == Type.TOTAL && nodes[j].getDegree() > this.max){
+				remove[j] = true;
+			}
+			if (this.type == Type.IN && nodes[j].getInDegree() > this.max){
+				remove[j] = true;
+			}
+			if (this.type == Type.OUT && nodes[j].getOutDegree() > this.max){
+				remove[j] = true;
 			}
 		}
-		return map;
-	}; 
-
-	
+		return remove;
+	}
 
 }
