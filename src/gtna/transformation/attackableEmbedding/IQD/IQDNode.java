@@ -49,14 +49,16 @@ import java.util.Random;
  */
 public abstract class IQDNode extends AttackableEmbeddingNode {
     double id;
+    protected IQDEmbedding embedding;
 	
 	/**
 	 * @param index
 	 * @param g
 	 */
-	public IQDNode(int index, Graph g, double id) {
+	public IQDNode(int index, Graph g, double id, IQDEmbedding embedding) {
 		super(index, g);
 		this.id = id;
+		this.embedding = embedding;
 	}
 
 
