@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * ClosenessCentralityNodeSorter.java
+ * BetweennessCentralityNodeSorter.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -37,7 +37,6 @@ package gtna.graph.sorting;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -47,12 +46,12 @@ import java.util.Random;
  * @author truong
  * 
  */
-public class ClosenessCentralityNodeSorter extends NodeSorter {
+public class BetweennessCentralityNodeSorter extends NodeSorter {
 
 	private HashMap<Node, Double> map = new HashMap<Node, Double>();
 
-	public ClosenessCentralityNodeSorter(NodeSorterMode mode) {
-		super("CLOSENESS", mode);
+	public BetweennessCentralityNodeSorter(NodeSorterMode mode) {
+		super("BETWEENNESS", mode);
 	}
 
 	/*
