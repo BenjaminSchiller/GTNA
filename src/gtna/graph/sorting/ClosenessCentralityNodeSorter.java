@@ -38,6 +38,7 @@ package gtna.graph.sorting;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Random;
@@ -62,8 +63,21 @@ public class ClosenessCentralityNodeSorter extends NodeSorter {
 	 */
 	@Override
 	public Node[] sort(Graph g, Random rand) {
+		this.calculateCC();
+		Node[] sorted = this.clone(g.getNodes());
+		Arrays.sort(sorted, new DegreeAsc());
+		this.randomize(sorted, rand);
+		if (this.mode == NodeSorterMode.DESC) {
+			sorted = this.reverse(sorted);
+		}
+		return sorted;
+	}
+
+	/**
+	 * 
+	 */
+	private void calculateCC() {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
 	private class DegreeAsc implements Comparator<Node> {
