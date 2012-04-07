@@ -50,7 +50,7 @@ import gtna.networks.model.ErdosRenyi;
  */
 public class NodeSortingTest {
 	public static void main(String[] args) {
-		Network nw = new ErdosRenyi(20, 4, true, null);
+		Network nw = new ErdosRenyi(20, 4, false, null);
 		Graph g = nw.generate();
 		
 		// nodes
@@ -67,5 +67,6 @@ public class NodeSortingTest {
 		for (int i = 0; i < sorted.length; i++) {
 			System.out.println(i + ": " + sorted[i]);
 		}
+		
 	}
 }
