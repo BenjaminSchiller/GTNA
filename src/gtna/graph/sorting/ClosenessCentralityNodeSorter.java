@@ -38,6 +38,8 @@ package gtna.graph.sorting;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -45,6 +47,8 @@ import java.util.Random;
  * 
  */
 public class ClosenessCentralityNodeSorter extends NodeSorter {
+
+	private HashMap<Node, Double> ccMap = new HashMap<Node, Double>();
 
 	public ClosenessCentralityNodeSorter(NodeSorterMode mode) {
 		super("CLOSENESS", mode);
@@ -60,6 +64,22 @@ public class ClosenessCentralityNodeSorter extends NodeSorter {
 	public Node[] sort(Graph g, Random rand) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	private class DegreeAsc implements Comparator<Node> {
+		public int compare(Node n1, Node n2) {
+			double ccPoint1 = ccMap.get(n1).doubleValue();
+			double ccPoint2 = ccMap.get(n2).doubleValue();
+			int result;
+			if (ccPoint1 == ccPoint2) {
+				result = 0;
+			} else if (ccPoint1 > ccPoint2) {
+				result = 1;
+			} else {
+				result = -1;
+			}
+			return result;
+		}
 	}
 
 	/*
@@ -80,8 +100,7 @@ public class ClosenessCentralityNodeSorter extends NodeSorter {
 	 */
 	@Override
 	protected boolean isPropertyEqual(Node n1, Node n2) {
-		// TODO Auto-generated method stub
-		return false;
+		return ccMap.get(n1).doubleValue() == ccMap.get(n2).doubleValue();
 	}
 
 }
