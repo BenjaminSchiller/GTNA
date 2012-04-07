@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * ClosenessCentralityNodeSorter.java
+ * NodeSortingTest.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,55 +33,39 @@
  * ---------------------------------------
  *
  */
-package gtna.graph.sorting;
-
-import gtna.graph.Graph;
-import gtna.graph.Node;
+package gtna.projects.resilienceMeasures;
 
 import java.util.Random;
 
+import gtna.graph.Graph;
+import gtna.graph.Node;
+import gtna.graph.sorting.DegreeNodeSorter;
+import gtna.graph.sorting.NodeSorter;
+import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
+
 /**
  * @author truong
- * 
+ *
  */
-public class ClosenessCentralityNodeSorter extends NodeSorter {
-
-	public ClosenessCentralityNodeSorter(NodeSorterMode mode) {
-		super("CLOSENESS", mode);
+public class NodeSortingTest {
+	public static void main(String[] args) {
+		Network nw = new ErdosRenyi(20, 4, true, null);
+		Graph g = nw.generate();
+		
+		// nodes
+		Node[] nodes = g.getNodes();
+		
+		// sorting
+		NodeSorter sorter = new DegreeNodeSorter(NodeSorter.NodeSorterMode.ASC);
+		Node[] sorted = sorter.sort(g, new Random());
+		
+		for (int i = 0; i < nodes.length; i++) {
+			System.out.println(i + ": " + nodes[i]);
+		}
+		System.out.println("-----");
+		for (int i = 0; i < sorted.length; i++) {
+			System.out.println(i + ": " + sorted[i]);
+		}
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.graph.sorting.NodeSorter#sort(gtna.graph.Graph,
-	 * java.util.Random)
-	 */
-	@Override
-	public Node[] sort(Graph g, Random rand) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.graph.sorting.NodeSorter#applicable(gtna.graph.Graph)
-	 */
-	@Override
-	public boolean applicable(Graph g) {
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.graph.sorting.NodeSorter#isPropertyEqual(gtna.graph.Node,
-	 * gtna.graph.Node)
-	 */
-	@Override
-	protected boolean isPropertyEqual(Node n1, Node n2) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }
