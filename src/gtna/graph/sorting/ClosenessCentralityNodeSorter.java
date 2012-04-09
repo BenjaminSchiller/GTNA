@@ -43,6 +43,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Random;
 
+import org.openide.util.lookup.AbstractLookup.Pair;
+
 /**
  * @author truong
  * 
@@ -115,6 +117,25 @@ public class ClosenessCentralityNodeSorter extends NodeSorter {
 	@Override
 	protected boolean isPropertyEqual(Node n1, Node n2) {
 		return map.get(n1).doubleValue() == map.get(n2).doubleValue();
+	}
+
+	private void allShortestPaths() {
+		int row, col, k;
+
+		// initialize(true);
+	}
+
+	private HashMap<Pair<Integer>, Integer> shortestPaths = null;
+
+	private void initialize(Graph g, boolean diagonal) {
+		int numEdges = g.getEdges().size();
+		for (int row = 0; row < numEdges; row++) {
+			for (int col = 0; col < numEdges; col++) {
+				if (g.getEdges().contains(row, col)) {
+					
+				}
+			}
+		}
 	}
 
 }
