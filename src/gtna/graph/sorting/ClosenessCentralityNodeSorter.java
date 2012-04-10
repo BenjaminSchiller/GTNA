@@ -35,6 +35,7 @@
  */
 package gtna.graph.sorting;
 
+import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 
@@ -43,8 +44,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Random;
 
-import org.openide.util.lookup.AbstractLookup.Pair;
-
 /**
  * @author truong
  * 
@@ -52,6 +51,7 @@ import org.openide.util.lookup.AbstractLookup.Pair;
 public class ClosenessCentralityNodeSorter extends NodeSorter {
 
 	private HashMap<Node, Double> map = new HashMap<Node, Double>();
+	private HashMap<String, Double> distances = new HashMap<String, Double>();
 
 	public ClosenessCentralityNodeSorter(NodeSorterMode mode) {
 		super("CLOSENESS", mode);
@@ -65,7 +65,7 @@ public class ClosenessCentralityNodeSorter extends NodeSorter {
 	 */
 	@Override
 	public Node[] sort(Graph g, Random rand) {
-		this.calculate();
+		this.calculate(g);
 		Node[] sorted = this.clone(g.getNodes());
 		Arrays.sort(sorted, new DegreeAsc());
 		this.randomize(sorted, rand);
@@ -78,8 +78,20 @@ public class ClosenessCentralityNodeSorter extends NodeSorter {
 	/**
 	 * 
 	 */
-	private void calculate() {
-		// TODO Auto-generated method stub
+	private void calculate(Graph g) {
+		allShortestPaths(g);
+		for (int i = 0; i < g.getNodes().length; i++) {
+			double sum = 0;
+			for (int j = 0; j < g.getNodes().length; j++) {
+				if (j == i) {
+					continue;
+				}
+				if (distances.containsKey(Edge.toString(i, j))) {
+					sum += distances.get(Edge.toString(i, j));
+				}
+			}
+			map.put(g.getNode(i), 1 / sum);
+		}
 	}
 
 	private class DegreeAsc implements Comparator<Node> {
@@ -119,23 +131,32 @@ public class ClosenessCentralityNodeSorter extends NodeSorter {
 		return map.get(n1).doubleValue() == map.get(n2).doubleValue();
 	}
 
-	private void allShortestPaths() {
-		int row, col, k;
+	private final double INF = Double.MAX_VALUE / 2;
 
-		// initialize(true);
-	}
+	private void allShortestPaths(Graph g) {
+		for (int i = 0; i < g.getNodes().length; i++) {
+			this.distances.put(new String(Edge.toString(i, i)), 0.0);
+		}
 
-	private HashMap<Pair<Integer>, Integer> shortestPaths = null;
+		for (int i = 0; i < g.getEdges().size(); i++) {
+			Edge e = g.getEdges().getEdges().get(i);
+			this.distances.put(
+					new String(Edge.toString(e.getSrc(), e.getDst())), 1.0);
+		}
 
-	private void initialize(Graph g, boolean diagonal) {
-		int numEdges = g.getEdges().size();
-		for (int row = 0; row < numEdges; row++) {
-			for (int col = 0; col < numEdges; col++) {
-				if (g.getEdges().contains(row, col)) {
-					
+		for (int k = 0; k < g.getNodes().length; k++) {
+			for (int i = 0; i < g.getNodes().length; i++) {
+				for (int j = 0; j < g.getNodes().length; j++) {
+					if (!distances.containsKey(Edge.toString(i, j))) {
+						distances.put(Edge.toString(i, j), INF);
+					}
+					double newDistance = distances.get(Edge.toString(i, k))
+							+ distances.get(Edge.toString(k, j));
+					if (distances.get(Edge.toString(i, j)) < newDistance) {
+						distances.put(Edge.toString(i, j), newDistance);
+					}
 				}
 			}
 		}
 	}
-
 }

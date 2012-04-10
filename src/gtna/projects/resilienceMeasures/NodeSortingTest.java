@@ -35,16 +35,12 @@
  */
 package gtna.projects.resilienceMeasures;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
-import java.util.Set;
 
 import gtna.graph.Edge;
-import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
 import gtna.graph.Node;
+import gtna.graph.sorting.ClosenessCentralityNodeSorter;
 import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.networks.Network;
@@ -56,38 +52,35 @@ import gtna.networks.model.ErdosRenyi;
  */
 public class NodeSortingTest {
 	public static void main(String[] args) {
-		Network nw = new ErdosRenyi(20, 4, false, null);
+		Network nw = new ErdosRenyi(10, 4, true, null);
 		Graph g = nw.generate();
 
 		// nodes
 		Node[] nodes = g.getNodes();
 
 		// sorting
-		NodeSorter sorter = new DegreeNodeSorter(NodeSorter.NodeSorterMode.ASC);
+		NodeSorter sorter = new ClosenessCentralityNodeSorter(
+				NodeSorter.NodeSorterMode.ASC);
 		Node[] sorted = sorter.sort(g, new Random());
 
+		// original
+		System.out.println("Origninal:");
 		for (int i = 0; i < nodes.length; i++) {
 			System.out.println(i + ": " + nodes[i]);
 		}
+
+		// sorted
 		System.out.println("-----");
+		System.out.println("Sorted:");
 		for (int i = 0; i < sorted.length; i++) {
 			System.out.println(i + ": " + sorted[i]);
 		}
 
-		// properties
-		HashMap<String, GraphProperty> map = g.getProperties();
-		Set<String> keySet = map.keySet();
-		for (String s : keySet) {
-			System.out.println("" + s + ": " + map.get(s));
-		}
-
-		// edges
-		Edges edges = g.getEdges();
-		for (Edge e : edges.getEdges()) {
+		// edge
+		System.out.println("-----");
+		System.out.println("Edges:");
+		for (Edge e : g.getEdges().getEdges()) {
 			System.out.println(e.toString());
 		}
-		
-		// graph
-		System.out.println(g.toString());
 	}
 }
