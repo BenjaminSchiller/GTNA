@@ -46,7 +46,8 @@ import java.util.Random;
  */
 public abstract class IdentifierNode extends IQDNode {
 	
-	
+	public static int TTL = 6;
+	protected double[] swapped;
 	
 	/**
 	 * @param index
@@ -54,8 +55,8 @@ public abstract class IdentifierNode extends IQDNode {
 	 * @param id
 	 * @param epsilon: random offset for IDs
 	 */
-	public IdentifierNode(int index, Graph g, double id, IQDEmbedding embedding) {
-		super(index, g, id, embedding);
+	public IdentifierNode(int index, Graph g,  IQDEmbedding embedding) {
+		super(index, g,  embedding);
 	}
 
 	
@@ -67,40 +68,113 @@ public abstract class IdentifierNode extends IQDNode {
 	public double[] getIdentifiers(Random rand) {
 		if (this.embedding.getIdMethod() == IQDEmbedding.IdentifierMethod.ONERANDOM){
 			//return a random alternative ID
-			return new double[]{this.getID(),rand.nextDouble()};
+			return new double[]{rand.nextDouble(), this.getID()};
 		}
-		if (this.embedding.getIdMethod() == IQDEmbedding.IdentifierMethod.ONERANDOM){
+		if (this.embedding.getIdMethod() == IQDEmbedding.IdentifierMethod.TWORANDOM){
 			//return two random alternative IDs
-			return new double[]{this.getID(),rand.nextDouble(), rand.nextDouble()};
+			return new double[]{rand.nextDouble(), rand.nextDouble(), this.getID()};
+		}
+		if (this.embedding.getIdMethod() == IQDEmbedding.IdentifierMethod.SWAPPING){
+			IQDNode node = this.swap(TTL, rand);
+			this.swapped = node.knownIDs;
+			return new double[]{node.getID(),this.getID()};
 		}
 		if (this.embedding.getIdMethod() == IQDEmbedding.IdentifierMethod.RANDNEIGHBOR){
-			double next = this.knownIDs[rand.nextInt(this.knownIDs.length)]+this.embedding.getEpsilon()*rand.nextDouble();
-			if (next > 1){
-				next--;	
+			//return an ID close to one neighbor
+			double next = this.knownIDs[rand.nextInt(this.knownIDs.length)]-this.embedding.getEpsilon()*rand.nextDouble();
+			if (next < 0){
+				next++;	
 			}
-			return new double[]{this.getID(),next};
+			if (this.embedding.isCheckold()){
+				boolean found = false;
+				for (int i = 0; i < knownIDs.length; i++){
+					if (this.embedding.computeDistance(knownIDs[i], this.id) < this.embedding.getEpsilon()){
+						found = true;
+						break;
+					}
+				}
+				if (!found){
+					return new double[]{next};
+				}
+			}
+			return new double[]{next, this.getID()};
+		}
+		if (this.embedding.getIdMethod() == IQDEmbedding.IdentifierMethod.RANDNEIGHBORMIDDLE){
+			//return an ID close to one neighbor
+			double[] sort = this.knownIDs.clone();
+			Arrays.sort(sort);
+			int chosen = rand.nextInt(this.knownIDs.length);
+			double next = (sort[chosen]+sort[chosen+1%sort.length])/(double)2-this.embedding.getEpsilon()*rand.nextDouble();
+			if (next < 0){
+				next++;	
+			}
+			if (this.embedding.isCheckold()){
+				boolean found = false;
+				for (int i = 0; i < knownIDs.length; i++){
+					if (this.embedding.computeDistance((sort[i]+sort[i+1%sort.length])/(double)2, this.id) < this.embedding.getEpsilon()){
+						found = true;
+						break;
+					}
+				}
+				if (!found){
+					return new double[]{next};
+				}
+			}
+			return new double[]{next, this.getID()};
 		}
 		if (this.embedding.getIdMethod() == IQDEmbedding.IdentifierMethod.ALLNEIGHBOR){
-			double[] res = new double[this.knownIDs.length+1];
-			res[0] = this.getID();
-			for (int i = 1; i < res.length; i++){
-				double next = this.knownIDs[i]+this.embedding.getEpsilon()*rand.nextDouble();
-				if (next > 1){
-					next--;	
+			//return IDs close to all neighbors
+			boolean found = true;
+			if (this.embedding.isCheckold()){
+				found = false;
+				for (int i = 0; i < knownIDs.length; i++){
+					if (this.embedding.computeDistance(knownIDs[i], this.id) < this.embedding.getEpsilon()){
+						found = true;
+						break;
+					}
+				}
+			}
+			double[] res;
+			if (found){
+			res = new double[this.knownIDs.length+1];
+			res[res.length-1] = this.getID();
+			} else {
+				res = new double[this.knownIDs.length];
+			}
+			for (int i = 0; i < this.knownIDs.length; i++){
+				double next = this.knownIDs[i]-this.embedding.getEpsilon()*rand.nextDouble();
+				if (next < 0){
+					next++;	
 				}
 				res[i] = next;
 			}
 			return res;
 		}
 		if (this.embedding.getIdMethod() == IQDEmbedding.IdentifierMethod.ALLNEIGHBORMIDDLE){
+			//return IDs in the middle of all neighbor-pairs
 			double[] sort = this.knownIDs.clone();
 			Arrays.sort(sort);
-			double[] res = new double[this.knownIDs.length+1];
-			res[0] = this.getID();
-			for (int i = 1; i < res.length-1; i++){
-				res[i] = (sort[i]+sort[i-1])/(double)2 + this.embedding.getEpsilon()*rand.nextDouble();
+			boolean found = true;
+			if (this.embedding.isCheckold()){
+				found = false;
+				for (int i = 0; i < knownIDs.length; i++){
+					if (this.embedding.computeDistance((sort[i]+sort[i+1%sort.length])/(double)2, this.id) < this.embedding.getEpsilon()){
+						found = true;
+						break;
+					}
+				}
 			}
-			res[res.length-1] = (1+sort[0]+sort[sort.length-1])/2 + this.embedding.getEpsilon()*rand.nextDouble();
+			double[] res;
+			if (found){
+			res = new double[this.knownIDs.length+1];
+			res[res.length-1] = this.getID();
+			} else {
+				res = new double[this.knownIDs.length];
+			}
+			for (int i = 0; i < this.knownIDs.length-1; i++){
+				res[i] = (sort[i]+sort[i-1])/(double)2 - this.embedding.getEpsilon()*rand.nextDouble();
+			}
+			res[this.knownIDs.length-1] = (1+sort[0]+sort[sort.length-1])/2 + this.embedding.getEpsilon()*rand.nextDouble();
 			while (res[res.length-1] > 1){
 				res[res.length-1]--;
 			}
@@ -109,8 +183,17 @@ public abstract class IdentifierNode extends IQDNode {
 		return null;
 	}
 	
-	
+	private IQDNode swap(int ttl, Random rand){
+		if (ttl <= 1){
+			int[] out = this.getOutgoingEdges();
+			return (IQDNode)this.getGraph().getNode(out[rand.nextInt(out.length)]);
+		} else {
+			int[] out = this.getOutgoingEdges();
+			return ((IdentifierNode)this.getGraph().getNode(out[rand.nextInt(out.length)])).swap(ttl-1, rand);
+		}
+	}
 
+	
 
 
 }
