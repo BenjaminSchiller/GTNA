@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.projects;
+package gtna.projects.placement;
 
 import gtna.data.Series;
 import gtna.metrics.Metric;
