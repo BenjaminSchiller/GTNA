@@ -45,6 +45,7 @@ import gtna.util.Timer;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class Series {
@@ -212,7 +213,9 @@ public class Series {
 			for (Transformation t : s.getNetwork().getTransformations()) {
 				if (t.applicable(g)) {
 					timer = new Timer("T: " + t.getDescriptionShort());
-					g = t.transform(g);
+					for (int i = 0; i < t.getTimes(); i++) {
+						g = t.transform(g);
+					}
 					timer.end();
 					runtimes.add(new Single(t.getFolderName(), timer
 							.getRuntime()));
@@ -226,10 +229,16 @@ public class Series {
 			GraphWriter.writeWithProperties(g, s.getGraphFilename(run));
 		}
 		StringBuffer p = new StringBuffer();
-		for(String gp : g.getProperties().keySet()){
-			if(p.length() == 0){
+		ArrayList<String> properties = new ArrayList<String>(g.getProperties()
+				.size());
+		for (String gp : g.getProperties().keySet()) {
+			properties.add(gp);
+		}
+		Collections.sort(properties);
+		for (String gp : properties) {
+			if (p.length() == 0) {
 				p.append(gp);
-			}else{
+			} else {
 				p.append(", " + gp);
 			}
 		}
