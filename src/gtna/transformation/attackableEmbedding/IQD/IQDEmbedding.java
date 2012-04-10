@@ -35,7 +35,16 @@
  */
 package gtna.transformation.attackableEmbedding.IQD;
 
+import java.util.Random;
+
+import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
+import gtna.id.DIdentifierSpace;
+import gtna.id.Partition;
+import gtna.id.ring.RingIdentifier;
+import gtna.id.ring.RingPartitionSimple;
 import gtna.transformation.attackableEmbedding.AttackableEmbedding;
+import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
@@ -46,10 +55,25 @@ import gtna.util.parameter.StringParameter;
  *
  */
 public abstract class IQDEmbedding extends AttackableEmbedding {
+	
+	public static enum IdentifierMethod{
+		ONERANDOM, TWORANDOM, RANDNEIGHBOR,  RANDNEIGHBORMIDDLE, ALLNEIGHBOR, ALLNEIGHBORMIDDLE, SWAPPING
+	}
+	
+	public static enum DecisionMethod{
+		BESTPREFEROLD, BESTPREFERNEW, METROPOLIS, PROPORTIONAL, SA, SATIMEDEPENDENT 
+	}
+	
+	public static enum DistanceMethod{
+		CIRCLE, CLOCKWISE, SIGNED
+	}
+	
 	IdentifierMethod idMethod;
 	DecisionMethod deMethod;
+	DistanceMethod distance;
 	double epsilon;
 	boolean checkold;
+	RingIdentifier[] ids;
 	
 	
 
@@ -58,11 +82,12 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	 * @param key
 	 * @param parameters
 	 */
-	public IQDEmbedding(int iterations, String key, IdentifierMethod idMethod, DecisionMethod deMethod,
+	public IQDEmbedding(int iterations, String key, IdentifierMethod idMethod, DecisionMethod deMethod, DistanceMethod distance,
 	double epsilon, boolean checkold, Parameter[] parameters) {
-		super(iterations, key, combineParameter(idMethod,deMethod,epsilon,checkold,parameters));
+		super(iterations, key, combineParameter(idMethod,deMethod,distance,epsilon,checkold,parameters));
 		this.idMethod = idMethod;
 		this.deMethod = deMethod;
+		this.distance = distance;
 		this.epsilon = epsilon;
 		this.checkold = checkold;
 	}
@@ -83,27 +108,108 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 		return this.checkold;
 	}
 
-	private static Parameter[] combineParameter(IdentifierMethod idMethod, DecisionMethod deMethod,
+	private static Parameter[] combineParameter(IdentifierMethod idMethod, DecisionMethod deMethod, DistanceMethod distance, 
 			double epsilon, boolean checkold, Parameter[] parameters){
-		Parameter[] res = new Parameter[parameters.length+4];
+		Parameter[] res = new Parameter[parameters.length+5];
 		res[0] = new StringParameter("IDENTIFER_METHOD", idMethod.toString());
 		res[1] = new StringParameter("DECISION_METHOD", deMethod.toString());
 		res[2] = new DoubleParameter("EPSILON", epsilon);
 		res[3] = new BooleanParameter("CHECKOLD", checkold);
-		for (int i = 4; i < res.length; i++){
+		res[4] = new StringParameter("DISTANCE", distance.toString());
+		for (int i = 5; i < res.length; i++){
 			res[i] = parameters[i-4];
 		}
 		return res;
 	}
 	
-	public static enum IdentifierMethod{
-		ONERANDOM, TWORANDOM, RANDNEIGHBOR, ALLNEIGHBOR, ALLNEIGHBORMIDDLE
-	}
 	
-	public static enum DecisionMethod{
-		BESTPREFEROLD, BESTPREFERNEW, METROPOLIS, TEMPERATUR 
-	}
 
+	public Graph transform(Graph g) {
+        Random rand = new Random();
+		AttackableEmbeddingNode[] nodes = this.generateNodes(g, rand);
+		AttackableEmbeddingNode[] selectionSet = this.generateSelectionSet(
+				nodes, rand);
+		g.setNodes(nodes);
+		GraphProperty[] prop = g.getProperties("ID_SPACE");
+		DIdentifierSpace idSpace = (DIdentifierSpace) prop[prop.length - 1];
+		this.setIdspace(idSpace);
+		RingIdentifier[] ids = this.getIds();
+        for (int i = 0; i < ids.length; i++){
+        	((IQDNode)nodes[i]).setID(ids[i].getPosition());
+        }
+		for (int i = 0; i < this.iterations * selectionSet.length; i++) {
+			int index = rand.nextInt(selectionSet.length);
+			if (selectionSet[index].getOutDegree() > 0) {
+				selectionSet[index].updateNeighbors(rand);
+				selectionSet[index].turn(rand);
+			}
+		}
+		 for (int i = 0; i < ids.length; i++){
+	        	ids[i].setPosition(((IQDNode)nodes[i]).getID());
+	        }
+		Partition<Double>[] parts = new RingPartitionSimple[g.getNodes().length];
+
+		for (int i = 0; i < parts.length; i++) {
+			parts[i] = new RingPartitionSimple(ids[i]);
+		}
+	  	idSpace.setPartitions(parts);
+	    return g;
+	}
 	
+	public double computeDistance(double a, double b){
+		if (this.distance == DistanceMethod.CIRCLE){
+			return Math.min(Math.abs(a-b), Math.min(1-a+b, 1-b+a));
+		}
+		if (this.distance == DistanceMethod.CLOCKWISE){
+			if (a > b){
+				return a-b;
+			} else {
+				return 1+a-b;
+			}
+		}
+		if (this.distance == DistanceMethod.SIGNED){
+			if (a > b){
+				if (a - b < 0.5){
+					return a-b;
+				} else {
+					return -(1+b-a);
+				}
+			} else {
+				if (a-b > -0.5){
+					return a-b;
+				} else {
+					return 1+a-b;
+				}
+			}
+		}
+		throw new IllegalArgumentException("Distance calculation not set!");
+	}
+	
+	/**
+	 * init IdSpace from a graph g
+	 * 
+	 * @param g
+	 */
+	public void initIds(Graph g) {
+		GraphProperty[] gp = g.getProperties("ID_SPACE");
+		GraphProperty p = gp[gp.length - 1];
+		DIdentifierSpace idSpaceD = (DIdentifierSpace) p;
+		this.ids = new RingIdentifier[g.getNodes().length];
+		for (int i = 0; i < ids.length; i++) {
+			ids[i] = (RingIdentifier) idSpaceD.getPartitions()[i]
+					.getRepresentativeID();
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.transformation.attackableEmbedding.AttackableEmbedding#getIDs()
+	 */
+	@Override
+	public RingIdentifier[] getIds() {
+		// TODO Auto-generated method stub
+		return this.ids;
+	}
 
 }
