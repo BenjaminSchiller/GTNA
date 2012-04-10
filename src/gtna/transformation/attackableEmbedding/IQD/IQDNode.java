@@ -55,9 +55,8 @@ public abstract class IQDNode extends AttackableEmbeddingNode {
 	 * @param index
 	 * @param g
 	 */
-	public IQDNode(int index, Graph g, double id, IQDEmbedding embedding) {
+	public IQDNode(int index, Graph g, IQDEmbedding embedding) {
 		super(index, g);
-		this.id = id;
 		this.embedding = embedding;
 	}
 
@@ -103,5 +102,7 @@ public abstract class IQDNode extends AttackableEmbeddingNode {
 	public double ask(Random rand, Node node){
 		return this.id;
 	}
+	
+	
 
 }

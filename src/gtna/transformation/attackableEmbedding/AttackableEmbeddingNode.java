@@ -54,7 +54,7 @@ public abstract class AttackableEmbeddingNode extends Node{
 	
 	 protected HashMap<Integer, Integer> position;
 	
-	 protected double[] knownIDs;
+	 public double[] knownIDs;
 	
 	 public AttackableEmbeddingNode(int index, Graph g) {
 	       super(index, g);
