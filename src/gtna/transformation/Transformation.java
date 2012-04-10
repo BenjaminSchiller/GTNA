@@ -36,6 +36,7 @@
 package gtna.transformation;
 
 import gtna.graph.Graph;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.ParameterList;
 
@@ -46,12 +47,46 @@ import gtna.util.parameter.ParameterList;
  * 
  */
 public abstract class Transformation extends ParameterList {
-	public Transformation(String key){
-		super(key);
+	private int times;
+
+	public Transformation(String key) {
+		this(key, 1);
 	}
-	
+
+	public Transformation(String key, int times) {
+		this(key, null, times);
+	}
+
 	public Transformation(String key, Parameter[] parameters) {
-		super(key, parameters);
+		this(key, parameters, 1);
+	}
+
+	public Transformation(String key, Parameter[] parameters, int times) {
+		super(key, Transformation.add(parameters, times));
+		this.times = times;
+	}
+
+	private static Parameter[] add(Parameter[] p1, int times) {
+		if (p1 == null) {
+			p1 = new Parameter[0];
+		}
+		if (times == 1) {
+			return p1;
+		}
+		Parameter[] p2 = new Parameter[p1.length + 1];
+		p2[0] = new IntParameter("TIMES", times);
+		for (int i = 0; i < p1.length; i++) {
+			p2[i + 1] = p1[i];
+		}
+		return p2;
+	}
+
+	/**
+	 * 
+	 * @return number of times this transformation should be executed
+	 */
+	public int getTimes() {
+		return this.times;
 	}
 
 	/**

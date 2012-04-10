@@ -290,6 +290,15 @@ public class ParameterList {
 				return "Nodes";
 			}
 		}
+		if (p.getKey().equals("TIMES")) {
+			if (xy.endsWith("_LONG")) {
+				return "Times";
+			} else if (xy.endsWith("_SHORT")) {
+				return "T";
+			} else {
+				return "Times";
+			}
+		}
 		return Config.get(this.key + "_" + p.getKey() + xy);
 	}
 }
