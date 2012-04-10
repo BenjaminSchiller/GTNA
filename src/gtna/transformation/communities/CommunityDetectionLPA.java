@@ -52,7 +52,11 @@ import java.util.Random;
 public class CommunityDetectionLPA extends Transformation {
 
 	public CommunityDetectionLPA() {
-		super("COMMUNITY_DETECTION_LPA");
+		this(1);
+	}
+
+	public CommunityDetectionLPA(int times) {
+		super("COMMUNITY_DETECTION_LPA", times);
 	}
 
 	@Override
@@ -85,7 +89,7 @@ public class CommunityDetectionLPA extends Transformation {
 		int[] labels = new int[nodes.length];
 		for (int i = 0; i < labels.length; i++)
 			labels[i] = i;
-		
+
 		int count = 0;
 
 		while (!finished) {
@@ -104,8 +108,8 @@ public class CommunityDetectionLPA extends Transformation {
 				}
 			}
 			count++;
-			
-			if(count > 5000)
+
+			if (count > 5000)
 				finished = true;
 		}
 		return labels;
