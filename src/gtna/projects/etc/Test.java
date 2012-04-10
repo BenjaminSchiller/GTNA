@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.projects;
+package gtna.projects.etc;
 
 import gtna.data.Series;
 import gtna.graph.sorting.DegreeNodeSorter;
