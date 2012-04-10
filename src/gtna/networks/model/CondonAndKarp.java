@@ -21,74 +21,90 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * NodeConnector.java
+ * CondonAndKarp.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Philipp Neubrand;
+ * Original Author: Flipp;
  * Contributors:    -;
  *
+ * Changes since 2011-05-17
  * ---------------------------------------
+ *
  */
-package gtna.networks.model.placementmodels.connectors;
+package gtna.networks.model;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.plane.PlaneIdentifierSpaceSimple;
-import gtna.networks.model.placementmodels.NodeConnectorImpl;
+import gtna.networks.Network;
+import gtna.transformation.Transformation;
 import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 /**
- * Connects nodes based on their distance. If the distance is below
- * <code>range</code> the nodes are connect, else they are not.
- * 
- * 
  * @author Philipp Neubrand
  * 
+ * Brandes, U., M. Gaertler, and D. Wagner, 2003, in Proceed-
+ings of ESA (Springer-Verlag, Berlin, Germany), pp. 568{
+579.
+ *
  */
-public class UDGConnector extends NodeConnectorImpl {
+public class CondonAndKarp extends Network {
+	
+	
 
-	private double range;
+	private int groups;
+	private double pin;
+	private double pout;
 
 	/**
-	 * The standard constructor for this class.
-	 * 
-	 * @param range
-	 *            The range below which all nodes are connected.
+	 * @param key
+	 * @param nodes
+	 * @param parameters
+	 * @param transformations
 	 */
-	public UDGConnector(double range) {
-		this.range = range;
-		setKey("UDG");
-		setAdditionalConfigParameters(new Parameter[] { new DoubleParameter("RANGE", range) });
+	public CondonAndKarp(int nodes, int groups, double pin, double pout,
+			Transformation[] transformations) {
+		super("CONDON_KARP", nodes, new Parameter[]{new IntParameter("GROUPS", groups), new DoubleParameter("PIN", pin), new DoubleParameter("POUT", pout)}, transformations);
+
+		this.groups = groups;
+		this.pin = pin;
+		this.pout = pout;
 	}
 
-	/**
-	 * Connects nodes based on their distance. If the distance is below
-	 * <code>range</code> the nodes are connect, else they are not.
+	/* (non-Javadoc)
+	 * @see gtna.networks.Network#generate()
 	 */
 	@Override
-	public Edges connect(Node[] nodes, PlaneIdentifierSpaceSimple ids, Graph g) {
-
-		Edges edges = new Edges(nodes, nodes.length * (nodes.length - 1));
-
-		for (int i = 0; i < nodes.length; i++) {
-			for (int j = 0; j < nodes.length; j++) {
-				if (i != j
-						&& ids.getPartitions()[i]
-								.distance((ids.getPartitions()[j]
-										.getRepresentativeID())) <= range) {
-					edges.add(i, j);
+	public Graph generate() {
+		Graph graph = new Graph(this.getDescription());
+		
+		Node[] nodes = Node.init(this.getNodes(), graph);
+		int nodesPerCom = getNodes() / groups;
+		Edges edges = new Edges(nodes, 1);
+		
+		for(int i = 0; i < getNodes(); i++){
+			for(int j = 0; j < getNodes(); j++){
+				if(i == j)
+					continue;
+				
+				if(i / nodesPerCom == j / nodesPerCom){
+					if(Math.random() < pin)
+						edges.add(i, j);
 				}
+				else
+					if(Math.random() < pout)
+						edges.add(i, j);
 			}
+			
 		}
 		
-		g.addProperty("RANGE_0", new RangeProperty(range, nodes.length));
-
 		edges.fill();
-
-		return edges;
+		graph.setNodes(nodes);
+		return graph;
 	}
+
 }

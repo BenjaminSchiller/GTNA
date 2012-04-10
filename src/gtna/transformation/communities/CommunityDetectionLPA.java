@@ -85,8 +85,11 @@ public class CommunityDetectionLPA extends Transformation {
 		int[] labels = new int[nodes.length];
 		for (int i = 0; i < labels.length; i++)
 			labels[i] = i;
+		
+		int count = 0;
 
 		while (!finished) {
+
 			Node[] X = NodeSorting.random(nodes, rand);
 			finished = true;
 			for (Node x : X) {
@@ -100,6 +103,10 @@ public class CommunityDetectionLPA extends Transformation {
 					labels[x.getIndex()] = maxLabel;
 				}
 			}
+			count++;
+			
+			if(count > 5000)
+				finished = true;
 		}
 		return labels;
 	}

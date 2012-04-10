@@ -41,6 +41,7 @@ import gtna.graph.Edge;
 import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.routing.RoutingAlgorithm;
+import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -629,13 +630,13 @@ public class Util {
 	 *         the elements of arr1 and arr2.
 	 * @author Philipp Neubrand
 	 */
-	public static String[] mergeArrays(String[] arr1, String[] arr2) {
+	public static Parameter[] mergeArrays(Parameter[] arr1, Parameter[] arr2) {
 		if (arr2 == null)
 			return arr1;
 		if (arr1 == null)
 			return arr2;
 
-		String[] ret = new String[arr1.length + arr2.length];
+		Parameter[] ret = new Parameter[arr1.length + arr2.length];
 		for (int i = 0; i < arr1.length; i++)
 			ret[i] = arr1[i];
 		for (int i = 0; i < arr2.length; i++)
@@ -643,23 +644,24 @@ public class Util {
 
 		return ret;
 	}
+	
 
 	/**
 	 * Prefixes all values in the array with the given prefix.
 	 * 
 	 * @param prefix
 	 *            The prefix to be attached to all values in the array.
-	 * @param arr
+	 * @param parameters
 	 *            The array to which the prefix is to be attached.
 	 * @return The same String array with prefix attached to all the values.
 	 * @author Philipp Neubrand
 	 */
-	public static String[] addPrefix(String prefix, String[] arr) {
-		for (int i = 0; i < arr.length; i++) {
-			arr[i] = prefix + arr[i];
+	public static Parameter[] addPrefix(String prefix, Parameter[] parameters) {
+		for (int i = 0; i < parameters.length; i++) {
+			parameters[i].setKey(prefix+parameters[i].getKey());
 		}
 
-		return arr;
+		return parameters;
 	}
 
 	/**

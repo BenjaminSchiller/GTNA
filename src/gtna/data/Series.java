@@ -188,6 +188,7 @@ public class Series {
 		Timer timerAggregation = new Timer("\n===> " + s.getFolder());
 		boolean success = Aggregation.aggregate(s);
 		timerAggregation.end();
+		System.out.println("\n");
 		if (success) {
 			return s;
 		}
@@ -224,10 +225,21 @@ public class Series {
 		if (Config.getBoolean("SERIES_GRAPH_WRITE")) {
 			GraphWriter.writeWithProperties(g, s.getGraphFilename(run));
 		}
+		StringBuffer p = new StringBuffer();
+		for(String gp : g.getProperties().keySet()){
+			if(p.length() == 0){
+				p.append(gp);
+			}else{
+				p.append(", " + gp);
+			}
+		}
+		System.out.println("P: " + p.toString());
 		HashMap<String, Metric> metrics = new HashMap<String, Metric>();
 		for (Metric m : s.getMetrics()) {
 			folder = new File(s.getMetricFolder(run, m));
 			if (!m.applicable(g, s.getNetwork(), metrics)) {
+				System.out.println("M: " + m.getDescriptionShort()
+						+ " not applicable");
 				continue;
 			}
 			if (!folder.exists()) {

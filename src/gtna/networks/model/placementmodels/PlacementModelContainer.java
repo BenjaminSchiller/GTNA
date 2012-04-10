@@ -43,6 +43,10 @@ import gtna.id.plane.PlanePartitionSimple;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.Util;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
  * A <code>PlacementModelContainer</code> is a network definition that contains
@@ -102,11 +106,20 @@ public class PlacementModelContainer extends Network {
 			double height, PlacementModel hotspotPlacer,
 			PlacementModel nodePlacer, Partitioner partitioner,
 			NodeConnector nodeConnector, Transformation[] t) {
-		// FIXME add parameters of HotSpotPlacer
-		super("HSM", nodes, null, t);
-		// super("HSM", nodes, getConfigKeys(hotspotPlacer, nodePlacer,
-		// nodeConnector, partitioner), getConfigValues(hotspotPlacer,
-		// nodePlacer, nodeConnector, partitioner), r, t);
+		super("HSM", nodes, Util.mergeArrays(new Parameter[] {
+				new StringParameter("KEY", getKey(hotspotPlacer, nodePlacer)),
+				new IntParameter("HOTSPOTS", hotspots),
+				new DoubleParameter("WIDTH", width),
+				new DoubleParameter("HEIGHT", height) }, Util.mergeArrays(Util
+				.addPrefix("PART_", partitioner.getConfigParameters()), Util
+				.mergeArrays(Util.addPrefix("CON_",
+						nodeConnector.getConfigParameters()),
+						Util.mergeArrays(
+								Util.addPrefix("HP_",
+										hotspotPlacer.getConfigParameters()),
+								Util.addPrefix("NP_",
+										nodePlacer.getConfigParameters()))))),
+				t);
 		this.nodes = nodes;
 		this.hotspots = hotspots;
 		this.hotspotPlacer = hotspotPlacer;
@@ -134,73 +147,6 @@ public class PlacementModelContainer extends Network {
 	private static String getKey(PlacementModel hotspotPlacer,
 			PlacementModel nodePlacer) {
 		return "HSM_" + hotspotPlacer.getKey() + "_" + nodePlacer.getKey();
-	}
-
-	/**
-	 * Constructs an array containing all the configuration values used for the
-	 * particular <code>PlacementModelContainer</code>. Basically combines all
-	 * the configuration values of both <code>PlacementModels</code>, the
-	 * <code>Partitioner</code> and the <code>NodeConnector</code> into one big
-	 * string array and adds the key of the <code>PlacementModelContainer</code>
-	 * to this array.
-	 * 
-	 * @param hotspotPlacer
-	 *            The <code>PlacementModel</code> used to place the hotspots.
-	 * @param nodePlacer
-	 *            The <code>PlacementModel</code> used to place the nodes within
-	 *            the hotspots.
-	 * @param partitioner
-	 *            The <code>Partitioner</code> used to determine the number of
-	 *            nodes in each hotspot.
-	 * @param nodeConnector
-	 *            The <code>NodeConnector</code> used to connect the nodes after
-	 *            placing them.
-	 * @return A string array containg all the configuration values.
-	 */
-	private static String[] getConfigValues(PlacementModel hotspotPlacer,
-			PlacementModel nodePlacer, NodeConnector connector,
-			Partitioner partitioner) {
-		return Util.mergeArrays(
-				new String[] { getKey(hotspotPlacer, nodePlacer) },
-				Util.mergeArrays(partitioner.getConfigValues(), Util
-						.mergeArrays(connector.getConfigValues(), Util
-								.mergeArrays(hotspotPlacer.getConfigValues(),
-										nodePlacer.getConfigValues()))));
-	}
-
-	/**
-	 * Constructs an array containing all the configuration keys used for the
-	 * particular <code>PlacementModelContainer</code>. Basically combines all
-	 * the configuration keys of both <code>PlacementModels</code> (prefixed by
-	 * "HP_" and "NP_" respectively), the <code>Partitioner</code> (prefixed by
-	 * "PART_") and the <code>NodeConnector</code> (prefixed by "NC_") into one
-	 * big string array and adds "KEY" without a prefix to it.
-	 * 
-	 * @param hotspotPlacer
-	 *            The <code>PlacementModel</code> used to place the hotspots.
-	 * @param nodePlacer
-	 *            The <code>PlacementModel</code> used to place the nodes within
-	 *            the hotspots.
-	 * @param partitioner
-	 *            The <code>Partitioner</code> used to determine the number of
-	 *            nodes in each hotspot.
-	 * @param nodeConnector
-	 *            The <code>NodeConnector</code> used to connect the nodes after
-	 *            placing them.
-	 * @return A string array containg all the configuration keys.
-	 */
-	private static String[] getConfigKeys(PlacementModel hotspotPlacer,
-			PlacementModel nodePlacer, NodeConnector connector,
-			Partitioner partitioner) {
-		return Util.mergeArrays(new String[] { "KEY" }, Util.mergeArrays(
-				Util.addPrefix("PART_", partitioner.getConfigKeys()),
-				Util.mergeArrays(
-						Util.addPrefix("CON_", connector.getConfigKeys()),
-						Util.mergeArrays(
-								Util.addPrefix("HP_",
-										hotspotPlacer.getConfigKeys()),
-								Util.addPrefix("NP_",
-										nodePlacer.getConfigKeys())))));
 	}
 
 	/**
