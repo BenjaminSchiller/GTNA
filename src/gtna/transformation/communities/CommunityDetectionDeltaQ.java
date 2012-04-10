@@ -47,13 +47,17 @@ public class CommunityDetectionDeltaQ extends Transformation {
 	 * 
 	 */
 	public CommunityDetectionDeltaQ() {
+		this(1);
+	}
+
+	public CommunityDetectionDeltaQ(int times) {
 		super(key, new Parameter[] {
 				new StringParameter("INTERNALFORMAT", Config.get(key
 						+ "_INTERNALFORMAT")),
 				new BooleanParameter("FORCESEPARATED", Config.getBoolean(key
 						+ "_FORCESEPARATED")),
 				new IntParameter("MAXITERATIONS", Config.getInt(key
-						+ "_MAXITERATIONS")) });
+						+ "_MAXITERATIONS")) }, times);
 	}
 
 	/**
