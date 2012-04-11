@@ -201,7 +201,6 @@ public class BuildSubGraph extends Transformation {
 		Vector<Integer> list;
 		for (int i = 0; i < start.length; i++) {
 			added[start[i]] = true;
-			System.out.println("Added Initial " + start[i]);
 			degree[start[i]] = start.length - 1;
 			Vector<Integer> neighbors = new Vector<Integer>();
 			for (int k = 0; k < i; k++) {
