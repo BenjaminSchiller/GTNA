@@ -44,13 +44,33 @@ import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.HashSet;
 
 public class Roles2Generation extends Transformation {
 
-	private boolean withHubs;
+	private double z;
+
+	private int commonNAC;
+
+	private int bridgeNAC;
+
+	private boolean hubs;
+
+	public Roles2Generation(double z, int commonNAC, int bridgeNAC, boolean hubs) {
+		super("ROLES2_GENERATION", new Parameter[] {
+				new DoubleParameter("Z", z),
+				new IntParameter("COMMON_NAC", commonNAC),
+				new IntParameter("BRIDGE_NAC", bridgeNAC),
+				new BooleanParameter("HUBS", hubs) });
+		this.z = z;
+		this.commonNAC = commonNAC;
+		this.bridgeNAC = bridgeNAC;
+		this.hubs = hubs;
+	}
 
 	/**
 	 * @param withHubs
@@ -58,9 +78,7 @@ public class Roles2Generation extends Transformation {
 	 *            module degree, else all nodes are declared non-hubs
 	 */
 	public Roles2Generation(boolean withHubs) {
-		super("ROLES2_GENERATION", new Parameter[] { new BooleanParameter(
-				"WITH_HUBS", withHubs) });
-		this.withHubs = withHubs;
+		this(0.5, 1, 2, withHubs);
 	}
 
 	@Override
@@ -72,11 +90,11 @@ public class Roles2Generation extends Transformation {
 
 			for (Node node : g.getNodes()) {
 				double z;
-				if (withHubs) {
+				if (this.hubs) {
 					z = getRelativeWithinModuleDegree(node.getIndex(), g,
 							communities);
 				} else {
-					z = 0; // nodes with z < 0.5 are non-hubs
+					z = 0; // nodes with z < this.z are non-hubs
 				}
 				int c = getNrOfAdjacentCommunities(node, communities);
 				roleOfNode[node.getIndex()] = this.getRole2(c, z);
@@ -151,18 +169,18 @@ public class Roles2Generation extends Transformation {
 	 * @return role2
 	 */
 	private Role2 getRole2(int c, double z) {
-		if (z < 0.5) {
-			if (c <= 1) {
+		if (z < this.z) {
+			if (c <= this.commonNAC) {
 				return Role2.COMMON;
-			} else if (c == 2) {
+			} else if (c <= this.bridgeNAC) {
 				return Role2.BRIDGE;
 			} else {
 				return Role2.STAR;
 			}
 		} else {
-			if (c <= 1) {
+			if (c <= this.commonNAC) {
 				return Role2.HUB_COMMON;
-			} else if (c == 2) {
+			} else if (c <= this.bridgeNAC) {
 				return Role2.HUB_BRIDGE;
 			} else {
 				return Role2.HUB_STAR;
