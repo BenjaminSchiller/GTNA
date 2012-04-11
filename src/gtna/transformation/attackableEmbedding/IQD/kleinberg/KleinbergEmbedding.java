@@ -99,13 +99,6 @@ public class KleinbergEmbedding extends IQDEmbedding {
 		return nodes;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.AttackableEmbedding#getIds()
-	 */
-	@Override
-	public RingIdentifier[] getIds() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 }
