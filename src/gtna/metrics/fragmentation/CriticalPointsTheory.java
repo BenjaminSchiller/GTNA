@@ -102,13 +102,9 @@ public class CriticalPointsTheory extends Metric {
         	boolean success = false;
         	if (this.t.equals(RANDOM)){
         		success = true;
-        		this.deg = Math.max(maxIn, maxOut);
-        		double[] r = getk0Directed(dist);
-        		if (r[0] - r[1] <= 0){
-        			this.p = 0;
-        		}else {
-        			this.p = (r[0]-r[1])/r[0];
-        		}
+        		double[] r = getCPDirectedRandom(dist);
+        		this.p = r[0];
+        		this.deg = r[1];
         	}
         	if (this.t.equals(LARGEST)){
         		success = true;
@@ -194,6 +190,18 @@ public class CriticalPointsTheory extends Metric {
 		return true;
 	}
 	
+	private double[] getCPDirectedRandom(double[][] dist){
+		int degR = dist.length+dist[0].length;
+		double[] r = getk0Directed(dist);
+		double pR;
+		if (r[0] - r[1] <= 0){
+			pR = 0;
+		}else {
+			pR = (r[0]-r[1])/r[0];
+		}
+		return new double[]{pR,degR};
+	}
+	
 	private double[] getCPUndirectedRandom(double[] dd){
 		double k0 = getk0(dd);
 		double r = 1 - 1/(k0-1);
@@ -239,30 +247,35 @@ public class CriticalPointsTheory extends Metric {
 	
 	public static double[] getCPDirectedLargest(double[][] dist){
 		double av = 0;
+		int max = 0;
 		for (int i = 0; i < dist.length; i++){
 			for (int j = 0; j < dist[i].length; j++){
-				av = av + (i+j)*dist[i][j];
+				av = av + i*dist[i][j];
+			}
+			if (dist[i].length-1 + i > max){
+				max = dist[i].length-1 + i;
 			}
 		}
 		double p = 0;
-		double edgef = 0;
+		double out = 0;
+		double in = 0;
 		double fpN;
 		double k0;
-		int degree = dist.length + dist[0].length-2;
-		for (int j = 0; j < dist.length; j++){
-			for (int i = 0; i < j+1; i++){
-				if (dist[0].length -1 -j + i > -1){
-				p = p + dist[dist.length-1-i][dist[0].length-1-j+i];
-				edgef = edgef + dist[dist.length-1-i][dist[0].length-1-j+i]*degree/(av);
+		for (int j = max; j > 0; j--){
+			for (int i = 0; i < j; i++){
+				if (i < dist.length && dist[i].length > j-i){
+					p = p + dist[i][j-i];
+					out = out + dist[i][j-i]*i/av;
+					in = in + dist[i][j-i]*(j-i)/av;
 				}
 			}
 			
-			double[] r = getk0Directed(dist,degree,Integer.MAX_VALUE, Integer.MAX_VALUE);
-			fpN = (2*r[0]-r[1]-r[2])/(2*r[0]);
-			if (edgef > fpN){
-				return new double[]{p,degree-1};
+			double[] r = getk0Directed(dist,j,Integer.MAX_VALUE, Integer.MAX_VALUE);
+			fpN = (1-out)*(1-in)*2*r[0]-(1-in)*r[1]-(1-out)*r[2];
+			if (fpN < 0){
+				return new double[]{p,j-1};
 			}
-			degree--;
+			
 		}
 		return new double[]{1,1};
 	}
@@ -275,17 +288,19 @@ public class CriticalPointsTheory extends Metric {
 			}
 		}
 		double p = 0;
-		double edgef = 0;
+		double out = 0;
+		double in = 0;
 		double fpN;
 		double k0;
 		for (int j = dist.length-1; j > 0; j--){
 			for (int i = 0; i < dist[j].length; i++){
 				p = p + dist[j][i];
-				edgef = edgef + dist[j][i]*j/(av);
+				out = out + dist[j][i]*j/(av);
+				in = in + dist[j][i]*i/av;
 			}
 			double[] r = getk0Directed(dist,Integer.MAX_VALUE,j, Integer.MAX_VALUE);
-			fpN = (2*r[0]-r[1]-r[2])/(2*r[0]-r[2]);
-			if (edgef > fpN){
+			fpN = (1-out)*(1-in)*2*r[0]-(1-in)*r[1]-(1-out)*r[2];
+			if (fpN < 0){
 				return new double[]{p,j-1};
 			}
 		}
@@ -294,28 +309,38 @@ public class CriticalPointsTheory extends Metric {
 	
 	public static double[] getCPDirectedLargestIn(double[][] dist){
 		double av = 0;
+		int max = 0;
 		for (int i = 0; i < dist.length; i++){
 			for (int j = 0; j < dist[i].length; j++){
-				av = av + (j)*dist[i][j];
+				av = av + j*dist[i][j];
+			}
+			if (dist[i].length -1 > max){
+				max = dist[i].length-1;
 			}
 		}
 		double p = 0;
-		double edgef = 0;
+		double out = 0;
+		double in = 0;
 		double fpN;
-		for (int j = dist[0].length-1; j > 0; j--){
+		for (int j = max; j > 0; j--){
 			for (int i = 0; i < dist.length; i++){
+				if (j < dist[i].length){
 				p = p + dist[i][j];
-				edgef = edgef + dist[i][j]*j/(av);
+				out = out + dist[i][j]*i/(av);
+				in = in + dist[i][j]*j/av;
+				}
 			}
 			double[] r = getk0Directed(dist,Integer.MAX_VALUE, Integer.MAX_VALUE,j);
-			fpN = (2*r[0]-r[1]-r[2])/(2*r[0]-r[1]);
-			//System.out.println(fpN + " " + edgef);
-			if (edgef > fpN){ 
+			fpN = (1-out)*(1-in)*2*r[0]-(1-in)*r[1]-(1-out)*r[2];
+			if (fpN < 0){
 				return new double[]{p,j-1};
 			}
 		}
 		return new double[]{1,1};
 	}
+	
+	
+	
 	
 	
 	public static double[] getCPUndirectedMaxDegree(double[] dist){
@@ -368,16 +393,13 @@ public class CriticalPointsTheory extends Metric {
 		double jk = 0;
 		double j = 0;
 		double k = 0;
-		//System.out.println(dist.length);
 		for (int i = 1; i < Math.min(Math.min(dist.length,bound),boundOut); i++){
 			for (int i2 = 1; i2 < Math.min(Math.min(dist[i].length,bound-i),boundIn);i2++){
-				//System.out.println(i + " " + i2 + " " +dist[i][i2]);
 				jk = jk + i*i2*dist[i][i2];
 				j = j + i*dist[i][i2];
 				k = k + i2*dist[i][i2];
 			}
 		}
-		//System.out.println(jk + " " + j);
 		return new double[]{jk,j,k};
 	}
 	
