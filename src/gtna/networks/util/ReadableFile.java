@@ -75,6 +75,8 @@ public class ReadableFile extends Network {
 		Config.overwrite("READABLE_FILE_" + folder + "_NAME_SHORT", name);
 		Config.overwrite("READABLE_FILE_" + folder + "_NAME_LONG", name);
 		Config.overwrite("READABLE_FILE_" + folder + "_FOLDER", folder);
+		Config.overwrite("READABLE_FILE_" + folder + "_NAME_SHORT", folder);
+		Config.overwrite("READABLE_FILE_" + folder + "_NAME_LONG", folder);
 		return "READABLE_FILE_" + folder;
 	}
 
