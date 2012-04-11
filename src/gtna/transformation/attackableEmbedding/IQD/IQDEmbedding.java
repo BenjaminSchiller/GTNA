@@ -208,7 +208,6 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	 */
 	@Override
 	public RingIdentifier[] getIds() {
-		// TODO Auto-generated method stub
 		return this.ids;
 	}
 
