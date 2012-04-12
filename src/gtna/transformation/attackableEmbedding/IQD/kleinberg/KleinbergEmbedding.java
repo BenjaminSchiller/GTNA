@@ -35,28 +35,20 @@
  */
 package gtna.transformation.attackableEmbedding.IQD.kleinberg;
 
-import java.util.Random;
-
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
-import gtna.id.DIdentifierSpace;
-import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
 import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
-import gtna.transformation.attackableEmbedding.lmc.LMCAttackerContraction;
-import gtna.transformation.attackableEmbedding.lmc.LMCAttackerConvergence;
-import gtna.transformation.attackableEmbedding.lmc.LMCAttackerKleinberg;
-import gtna.transformation.attackableEmbedding.lmc.LMCNode;
 import gtna.util.parameter.Parameter;
+
+import java.util.Random;
 
 /**
  * @author stef
- *
+ * 
  */
 public class KleinbergEmbedding extends IQDEmbedding {
-   
-	
+
 	/**
 	 * @param iterations
 	 * @param key
@@ -67,20 +59,39 @@ public class KleinbergEmbedding extends IQDEmbedding {
 	 * @param checkold
 	 * @param parameters
 	 */
-	public KleinbergEmbedding(int iterations, 
-			IdentifierMethod idMethod, DecisionMethod deMethod,
-			Distance distance, double epsilon, boolean checkold, boolean adjustone,
-			Parameter[] parameters) {
-		super(iterations, "KLEINBERG", idMethod, deMethod, distance, epsilon, checkold,
-				adjustone, parameters);
+	public KleinbergEmbedding(int iterations, IdentifierMethod idMethod,
+			DecisionMethod deMethod, Distance distance, double epsilon,
+			boolean checkold, boolean adjustone, Parameter[] parameters) {
+		super(iterations, "KLEINBERG", idMethod, deMethod, distance, epsilon,
+				checkold, adjustone, parameters);
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.AttackableEmbedding#generateNodes(gtna.graph.Graph, java.util.Random)
+	/**
+	 * @param i
+	 * @param identifierMethod
+	 * @param decisionMethod
+	 * @param distance
+	 * @param epsilon 
+	 * @param checkold
+	 */
+	public KleinbergEmbedding(int i, IdentifierMethod identifierMethod,
+			DecisionMethod decisionMethod, Distance distance, double epsilon,
+			boolean checkold, boolean adjustone) {
+		this(i, identifierMethod, decisionMethod, distance, epsilon, checkold,
+				adjustone, new Parameter[0]);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.attackableEmbedding.AttackableEmbedding#generateNodes
+	 * (gtna.graph.Graph, java.util.Random)
 	 */
 	@Override
 	protected AttackableEmbeddingNode[] generateNodes(Graph g, Random rand) {
-		AttackableEmbeddingNode[] nodes = new AttackableEmbeddingNode[g.getNodes().length];
+		AttackableEmbeddingNode[] nodes = new AttackableEmbeddingNode[g
+				.getNodes().length];
 		for (int i = 0; i < g.getNodes().length; i++) {
 			nodes[i] = new KleinbergNode(i, g, this);
 		}
@@ -88,11 +99,5 @@ public class KleinbergEmbedding extends IQDEmbedding {
 		this.initIds(g);
 		return nodes;
 	}
-	
-	
-
-	
-
-	
 
 }
