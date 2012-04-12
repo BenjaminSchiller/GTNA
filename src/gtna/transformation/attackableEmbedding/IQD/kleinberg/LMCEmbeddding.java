@@ -41,7 +41,7 @@ import gtna.util.parameter.Parameter;
 
 /**
  * @author stef
- *
+ * 
  */
 public class LMCEmbeddding extends KleinbergEmbedding {
 
@@ -55,7 +55,9 @@ public class LMCEmbeddding extends KleinbergEmbedding {
 	 * @param parameters
 	 */
 	public LMCEmbeddding(int iterations, Distance distance, double epsilon) {
-		super(iterations, IQDEmbedding.IdentifierMethod.ONERANDOM, IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon, false, new Parameter[0]);
+		super(iterations, IQDEmbedding.IdentifierMethod.ONERANDOM,
+				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
+				false, false, new Parameter[0]);
 	}
 
 }
