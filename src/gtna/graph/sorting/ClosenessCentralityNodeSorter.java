@@ -35,10 +35,9 @@
  */
 package gtna.graph.sorting;
 
-import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-
+import gtna.graph.sorting.algorithms.GraphSPallFloyd;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -51,7 +50,6 @@ import java.util.Random;
 public class ClosenessCentralityNodeSorter extends NodeSorter {
 
 	private HashMap<Node, Double> map = new HashMap<Node, Double>();
-	private HashMap<String, Double> distances = new HashMap<String, Double>();
 
 	public ClosenessCentralityNodeSorter(NodeSorterMode mode) {
 		super("CLOSENESS", mode);
@@ -79,15 +77,15 @@ public class ClosenessCentralityNodeSorter extends NodeSorter {
 	 * 
 	 */
 	private void calculate(Graph g) {
-		allShortestPaths(g);
+		GraphSPallFloyd floyd = new GraphSPallFloyd(g);
 		for (int i = 0; i < g.getNodes().length; i++) {
 			double sum = 0;
 			for (int j = 0; j < g.getNodes().length; j++) {
 				if (j == i) {
 					continue;
 				}
-				if (distances.containsKey(Edge.toString(i, j))) {
-					sum += distances.get(Edge.toString(i, j));
+				if (floyd.dist(i, j) < floyd.INF) {
+					sum += floyd.dist(i, j);
 				}
 			}
 			map.put(g.getNode(i), 1 / sum);
@@ -131,32 +129,4 @@ public class ClosenessCentralityNodeSorter extends NodeSorter {
 		return map.get(n1).doubleValue() == map.get(n2).doubleValue();
 	}
 
-	private final double INF = Double.MAX_VALUE / 2;
-
-	private void allShortestPaths(Graph g) {
-		for (int i = 0; i < g.getNodes().length; i++) {
-			this.distances.put(new String(Edge.toString(i, i)), 0.0);
-		}
-
-		for (int i = 0; i < g.getEdges().size(); i++) {
-			Edge e = g.getEdges().getEdges().get(i);
-			this.distances.put(
-					new String(Edge.toString(e.getSrc(), e.getDst())), 1.0);
-		}
-
-		for (int k = 0; k < g.getNodes().length; k++) {
-			for (int i = 0; i < g.getNodes().length; i++) {
-				for (int j = 0; j < g.getNodes().length; j++) {
-					if (!distances.containsKey(Edge.toString(i, j))) {
-						distances.put(Edge.toString(i, j), INF);
-					}
-					double newDistance = distances.get(Edge.toString(i, k))
-							+ distances.get(Edge.toString(k, j));
-					if (distances.get(Edge.toString(i, j)) < newDistance) {
-						distances.put(Edge.toString(i, j), newDistance);
-					}
-				}
-			}
-		}
-	}
 }

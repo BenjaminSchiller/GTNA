@@ -37,11 +37,9 @@ package gtna.projects.resilienceMeasures;
 
 import java.util.Random;
 
-import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.ClosenessCentralityNodeSorter;
-import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
@@ -52,8 +50,10 @@ import gtna.networks.model.ErdosRenyi;
  */
 public class NodeSortingTest {
 	public static void main(String[] args) {
-		Network nw = new ErdosRenyi(10, 4, true, null);
+		System.out.println("Generating graph...");
+		Network nw = new ErdosRenyi(5000, 2000, true, null);
 		Graph g = nw.generate();
+		System.out.println("Graph generated!");
 
 		// nodes
 		Node[] nodes = g.getNodes();
@@ -77,10 +77,9 @@ public class NodeSortingTest {
 		}
 
 		// edge
-		System.out.println("-----");
-		System.out.println("Edges:");
-		for (Edge e : g.getEdges().getEdges()) {
-			System.out.println(e.toString());
-		}
+		/*
+		 * System.out.println("-----"); System.out.println("Edges:"); for (Edge
+		 * e : g.getEdges().getEdges()) { System.out.println(e.toString()); }
+		 */
 	}
 }
