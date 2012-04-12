@@ -73,6 +73,7 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	double epsilon;
 	boolean checkold;
 	RingIdentifier[] ids;
+	boolean adjustOneDegree;
 	
 	
 
@@ -82,13 +83,14 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	 * @param parameters
 	 */
 	public IQDEmbedding(int iterations, String key, IdentifierMethod idMethod, DecisionMethod deMethod, Distance distance,
-	double epsilon, boolean checkold, Parameter[] parameters) {
-		super(iterations, key, combineParameter(idMethod,deMethod,distance,epsilon,checkold,parameters));
+	double epsilon, boolean checkold, boolean adjustOne, Parameter[] parameters) {
+		super(iterations, key, combineParameter(idMethod,deMethod,distance,epsilon,checkold,adjustOne,parameters));
 		this.idMethod = idMethod;
 		this.deMethod = deMethod;
 		this.distance = distance;
 		this.epsilon = epsilon;
 		this.checkold = checkold;
+		this.adjustOneDegree = adjustOne;
 	}
 	
 	public IdentifierMethod getIdMethod() {
@@ -108,14 +110,15 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	}
 
 	private static Parameter[] combineParameter(IdentifierMethod idMethod, DecisionMethod deMethod, Distance distance, 
-			double epsilon, boolean checkold, Parameter[] parameters){
-		Parameter[] res = new Parameter[parameters.length+5];
+			double epsilon, boolean checkold, boolean adjustone, Parameter[] parameters){
+		Parameter[] res = new Parameter[parameters.length+6];
 		res[0] = new StringParameter("IDENTIFER_METHOD", idMethod.toString());
 		res[1] = new StringParameter("DECISION_METHOD", deMethod.toString());
 		res[2] = new DoubleParameter("EPSILON", epsilon);
 		res[3] = new BooleanParameter("CHECKOLD", checkold);
 		res[4] = new StringParameter("DISTANCE", distance.toString());
-		for (int i = 5; i < res.length; i++){
+		res[5] = new BooleanParameter("ADJUST_ONE", adjustone);
+		for (int i = 6; i < res.length; i++){
 			res[i] = parameters[i-4];
 		}
 		return res;
@@ -139,8 +142,18 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 		for (int i = 0; i < this.iterations * selectionSet.length; i++) {
 			int index = rand.nextInt(selectionSet.length);
 			if (selectionSet[index].getOutDegree() > 0) {
-				selectionSet[index].updateNeighbors(rand);
-				selectionSet[index].turn(rand);
+				if (this.adjustOneDegree && selectionSet[index].getDegree() == 2){
+					IQDNode node = (IQDNode)selectionSet[index]; 
+					double neighPos = ((IQDNode)nodes[node.getOutgoingEdges()[0]]).getID();
+					if (Math.abs(this.computeDistance(neighPos, node.getID())) > this.epsilon){
+						double id = neighPos - rand.nextDouble()*this.epsilon;
+						if (id < 0) id++;
+						node.setID(id);
+					}
+				} else {
+					selectionSet[index].updateNeighbors(rand);
+				    selectionSet[index].turn(rand);
+				}
 			}
 		}
 		 for (int i = 0; i < ids.length; i++){
