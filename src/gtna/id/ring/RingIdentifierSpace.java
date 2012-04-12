@@ -58,12 +58,19 @@ public class RingIdentifierSpace implements DIdentifierSpace {
 	protected boolean wrapAround;
 
 	protected double maxDistance;
+	
+	public static enum Distance{
+		RING, CLOCKWISE, SIGNED
+	}
+	
+	protected Distance distance;
 
 	public RingIdentifierSpace() {
 		this.partitions = new RingPartition[] {};
 		this.modulus = Double.MAX_VALUE;
 		this.wrapAround = false;
 		this.maxDistance = Double.MAX_VALUE;
+		this.distance = Distance.RING;
 	}
 
 	public RingIdentifierSpace(RingPartition[] partitions, double modulus,
@@ -72,6 +79,16 @@ public class RingIdentifierSpace implements DIdentifierSpace {
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
 		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
+		this.distance = Distance.RING;
+	}
+	
+	public RingIdentifierSpace(RingPartition[] partitions, double modulus,
+			boolean wrapAround, Distance distance) {
+		this.partitions = partitions;
+		this.modulus = modulus;
+		this.wrapAround = wrapAround;
+		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
+		this.distance = distance;
 	}
 
 	@Override
