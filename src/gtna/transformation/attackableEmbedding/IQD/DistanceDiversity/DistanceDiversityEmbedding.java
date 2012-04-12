@@ -67,10 +67,10 @@ public class DistanceDiversityEmbedding extends IQDEmbedding {
 	 */
 	public DistanceDiversityEmbedding(int iterations,
 			IdentifierMethod idMethod, DecisionMethod deMethod,
-			Distance distance, double epsilon, boolean checkold, int max,
-			double exp) {
+			Distance distance, double epsilon, boolean checkold, boolean adjustone,
+			int max, double exp) {
 		super(iterations, "DISTANCE_DIVERSITY", idMethod, deMethod, distance,
-				epsilon, checkold, new Parameter[] {
+				epsilon, checkold, adjustone, new Parameter[] {
 						new IntParameter("MAX_LOG", max),
 						new DoubleParameter("EXPONENT", exp) });
 		this.max = max;
