@@ -63,10 +63,10 @@ public class RegionCoverageEmbedding extends IQDEmbedding {
 	 */
 	public RegionCoverageEmbedding(int iterations,
 			IdentifierMethod idMethod, DecisionMethod deMethod,
-			Distance distance, double epsilon, boolean checkold,
+			Distance distance, double epsilon, boolean checkold, boolean adjustone,
 			int max) {
 		super(iterations, "REGION_COVERAGE", idMethod, deMethod, distance, epsilon, checkold,
-				new Parameter[] {new IntParameter("MAX_LOG", max)});
+				adjustone, new Parameter[] {new IntParameter("MAX_LOG", max)});
 		this.max = max;
 	}
 
