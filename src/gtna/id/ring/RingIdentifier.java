@@ -101,7 +101,7 @@ public class RingIdentifier implements DIdentifier, Comparable<RingIdentifier> {
 	private double getClockwiseDistance(Identifier<Double> id){
 		double dest = ((RingIdentifier) id).getPosition();
 		if (this.getIdSpace().isWrapAround()) {
-			if (dest > this.getPosition()){
+			if (dest >= this.getPosition()){
 				return dest - this.getPosition();
 			} else {
 				return (this.getIdSpace().getModulus()+dest-this.getPosition());
