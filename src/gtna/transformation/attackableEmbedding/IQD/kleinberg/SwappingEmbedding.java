@@ -41,7 +41,7 @@ import gtna.util.parameter.Parameter;
 
 /**
  * @author stef
- *
+ * 
  */
 public class SwappingEmbedding extends KleinbergEmbedding {
 
@@ -55,7 +55,9 @@ public class SwappingEmbedding extends KleinbergEmbedding {
 	 * @param parameters
 	 */
 	public SwappingEmbedding(int iterations, Distance distance, double epsilon) {
-		super(iterations, IQDEmbedding.IdentifierMethod.SWAPPING, IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon, false, new Parameter[0]);
+		super(iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
+				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
+				false, false, new Parameter[0]);
 	}
 
 }
