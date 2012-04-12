@@ -37,6 +37,7 @@ package gtna.id.ring;
 
 import gtna.id.DIdentifier;
 import gtna.id.Identifier;
+import gtna.id.ring.RingIdentifierSpace.Distance;
 
 import java.util.Random;
 
@@ -74,6 +75,19 @@ public class RingIdentifier implements DIdentifier, Comparable<RingIdentifier> {
 
 	@Override
 	public Double distance(Identifier<Double> id) {
+		if (this.getIdSpace().distance == Distance.RING){
+			return getRingDistance(id);
+		}
+		if (this.getIdSpace().distance == Distance.CLOCKWISE){
+			return getClockwiseDistance(id);
+		}
+		if (this.getIdSpace().distance == Distance.SIGNED){
+			return getSignedDistance(id);
+		}
+		return null;
+	}
+	
+	private double getRingDistance(Identifier<Double> id){
 		double dest = ((RingIdentifier) id).getPosition();
 		if (this.idSpace.isWrapAround()) {
 			return Math.min(Math.abs(this.position - dest), 
@@ -81,6 +95,36 @@ public class RingIdentifier implements DIdentifier, Comparable<RingIdentifier> {
 		            		  this.getIdSpace().getModulus()- this.position + dest));
 		} else {
 			return Math.abs(dest - this.position);
+		}
+	}
+	
+	private double getClockwiseDistance(Identifier<Double> id){
+		double dest = ((RingIdentifier) id).getPosition();
+		if (this.getIdSpace().isWrapAround()) {
+			if (dest > this.getPosition()){
+				return dest - this.getPosition();
+			} else {
+				return (this.getIdSpace().getModulus()+dest-this.getPosition());
+			}
+		} else {
+			throw new IllegalArgumentException("Clockwise distance only possible with wraparound");
+		}
+	}
+	
+	private double getSignedDistance(Identifier<Double> id){
+		double dest = ((RingIdentifier) id).getPosition();
+		if (this.getIdSpace().isWrapAround()) {
+			if (Math.abs(dest-this.getPosition()) < this.getIdSpace().getMaxDistance()){
+				return dest-this.getPosition();
+			} else {
+				if (dest > this.getPosition()){
+					return -(this.getIdSpace().getModulus()+this.getPosition()-dest);
+				} else {
+					return -(this.getIdSpace().getModulus()+dest-this.getPosition());
+				}
+			}
+		} else {
+			return dest-this.getPosition();
 		}
 	}
 
