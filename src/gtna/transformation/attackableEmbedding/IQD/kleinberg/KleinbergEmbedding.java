@@ -69,10 +69,10 @@ public class KleinbergEmbedding extends IQDEmbedding {
 	 */
 	public KleinbergEmbedding(int iterations, 
 			IdentifierMethod idMethod, DecisionMethod deMethod,
-			Distance distance, double epsilon, boolean checkold,
+			Distance distance, double epsilon, boolean checkold, boolean adjustone,
 			Parameter[] parameters) {
 		super(iterations, "KLEINBERG", idMethod, deMethod, distance, epsilon, checkold,
-				parameters);
+				adjustone, parameters);
 	}
 
 	/* (non-Javadoc)
