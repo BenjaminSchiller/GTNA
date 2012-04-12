@@ -35,6 +35,7 @@
  */
 package gtna.transformation.attackableEmbedding.IQD.kleinberg;
 
+import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
 import gtna.util.parameter.Parameter;
 
@@ -53,7 +54,7 @@ public class SwappingEmbedding extends KleinbergEmbedding {
 	 * @param checkold
 	 * @param parameters
 	 */
-	public SwappingEmbedding(int iterations, DistanceMethod distance, double epsilon) {
+	public SwappingEmbedding(int iterations, Distance distance, double epsilon) {
 		super(iterations, IQDEmbedding.IdentifierMethod.SWAPPING, IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon, false, new Parameter[0]);
 	}
 

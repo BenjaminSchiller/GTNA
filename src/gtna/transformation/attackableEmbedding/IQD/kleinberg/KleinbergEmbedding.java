@@ -41,6 +41,7 @@ import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.id.DIdentifierSpace;
 import gtna.id.ring.RingIdentifier;
+import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
 import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
 import gtna.transformation.attackableEmbedding.lmc.LMCAttackerContraction;
@@ -68,7 +69,7 @@ public class KleinbergEmbedding extends IQDEmbedding {
 	 */
 	public KleinbergEmbedding(int iterations, 
 			IdentifierMethod idMethod, DecisionMethod deMethod,
-			DistanceMethod distance, double epsilon, boolean checkold,
+			Distance distance, double epsilon, boolean checkold,
 			Parameter[] parameters) {
 		super(iterations, "KLEINBERG", idMethod, deMethod, distance, epsilon, checkold,
 				parameters);

@@ -42,6 +42,7 @@ import gtna.graph.GraphProperty;
 import gtna.id.DIdentifierSpace;
 import gtna.id.Partition;
 import gtna.id.ring.RingIdentifier;
+import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.id.ring.RingPartitionSimple;
 import gtna.transformation.attackableEmbedding.AttackableEmbedding;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
@@ -64,13 +65,11 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 		BESTPREFEROLD, BESTPREFERNEW, METROPOLIS, PROPORTIONAL, SA, SATIMEDEPENDENT 
 	}
 	
-	public static enum DistanceMethod{
-		CIRCLE, CLOCKWISE, SIGNED
-	}
+	
 	
 	IdentifierMethod idMethod;
 	DecisionMethod deMethod;
-	DistanceMethod distance;
+	Distance distance;
 	double epsilon;
 	boolean checkold;
 	RingIdentifier[] ids;
@@ -82,7 +81,7 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	 * @param key
 	 * @param parameters
 	 */
-	public IQDEmbedding(int iterations, String key, IdentifierMethod idMethod, DecisionMethod deMethod, DistanceMethod distance,
+	public IQDEmbedding(int iterations, String key, IdentifierMethod idMethod, DecisionMethod deMethod, Distance distance,
 	double epsilon, boolean checkold, Parameter[] parameters) {
 		super(iterations, key, combineParameter(idMethod,deMethod,distance,epsilon,checkold,parameters));
 		this.idMethod = idMethod;
@@ -108,7 +107,7 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 		return this.checkold;
 	}
 
-	private static Parameter[] combineParameter(IdentifierMethod idMethod, DecisionMethod deMethod, DistanceMethod distance, 
+	private static Parameter[] combineParameter(IdentifierMethod idMethod, DecisionMethod deMethod, Distance distance, 
 			double epsilon, boolean checkold, Parameter[] parameters){
 		Parameter[] res = new Parameter[parameters.length+5];
 		res[0] = new StringParameter("IDENTIFER_METHOD", idMethod.toString());
@@ -157,17 +156,17 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	}
 	
 	public double computeDistance(double a, double b){
-		if (this.distance == DistanceMethod.CIRCLE){
+		if (this.distance == Distance.RING){
 			return Math.min(Math.abs(a-b), Math.min(1-a+b, 1-b+a));
 		}
-		if (this.distance == DistanceMethod.CLOCKWISE){
+		if (this.distance == Distance.CLOCKWISE){
 			if (a > b){
 				return a-b;
 			} else {
 				return 1+a-b;
 			}
 		}
-		if (this.distance == DistanceMethod.SIGNED){
+		if (this.distance == Distance.SIGNED){
 			if (a > b){
 				if (a - b < 0.5){
 					return a-b;
