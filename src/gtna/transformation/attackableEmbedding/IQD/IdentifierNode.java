@@ -104,14 +104,14 @@ public abstract class IdentifierNode extends IQDNode {
 			double[] sort = this.knownIDs.clone();
 			Arrays.sort(sort);
 			int chosen = rand.nextInt(this.knownIDs.length);
-			double next = (sort[chosen]+sort[chosen+1%sort.length])/(double)2-this.embedding.getEpsilon()*rand.nextDouble();
+			double next = (sort[chosen]+sort[(chosen+1)%sort.length])/(double)2-this.embedding.getEpsilon()*rand.nextDouble();
 			if (next < 0){
 				next++;	
 			}
 			if (this.embedding.isCheckold()){
 				boolean found = false;
 				for (int i = 0; i < knownIDs.length; i++){
-					if (this.embedding.computeDistance((sort[i]+sort[i+1%sort.length])/(double)2, this.id) < this.embedding.getEpsilon()){
+					if (this.embedding.computeDistance((sort[i]+sort[(i+1)%sort.length])/(double)2, this.id) < this.embedding.getEpsilon()){
 						found = true;
 						break;
 					}
@@ -158,7 +158,7 @@ public abstract class IdentifierNode extends IQDNode {
 			if (this.embedding.isCheckold()){
 				found = false;
 				for (int i = 0; i < knownIDs.length; i++){
-					if (this.embedding.computeDistance((sort[i]+sort[i+1%sort.length])/(double)2, this.id) < this.embedding.getEpsilon()){
+					if (this.embedding.computeDistance((sort[i]+sort[(i+1)%sort.length])/(double)2, this.id) < this.embedding.getEpsilon()){
 						found = true;
 						break;
 					}
@@ -171,7 +171,7 @@ public abstract class IdentifierNode extends IQDNode {
 			} else {
 				res = new double[this.knownIDs.length];
 			}
-			for (int i = 0; i < this.knownIDs.length-1; i++){
+			for (int i = 1; i < this.knownIDs.length; i++){
 				res[i] = (sort[i]+sort[i-1])/(double)2 - this.embedding.getEpsilon()*rand.nextDouble();
 			}
 			res[this.knownIDs.length-1] = (1+sort[0]+sort[sort.length-1])/2 + this.embedding.getEpsilon()*rand.nextDouble();
