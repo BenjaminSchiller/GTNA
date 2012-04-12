@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * KleinbergEmbedding.java
+ * DistanceDiversityEmbedding.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,30 +33,28 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.attackableEmbedding.IQD.kleinberg;
-
-import java.util.Random;
+package gtna.transformation.attackableEmbedding.IQD.DistanceDiversity;
 
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
-import gtna.id.DIdentifierSpace;
-import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
 import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
-import gtna.transformation.attackableEmbedding.lmc.LMCAttackerContraction;
-import gtna.transformation.attackableEmbedding.lmc.LMCAttackerConvergence;
-import gtna.transformation.attackableEmbedding.lmc.LMCAttackerKleinberg;
-import gtna.transformation.attackableEmbedding.lmc.LMCNode;
+import gtna.transformation.attackableEmbedding.IQD.kleinberg.KleinbergNode;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+
+import java.util.Random;
 
 /**
  * @author stef
- *
+ * 
  */
-public class KleinbergEmbedding extends IQDEmbedding {
-   
-	
+public class DistanceDiversityEmbedding extends IQDEmbedding {
+
+	private int max;
+	private double exponent;
+
 	/**
 	 * @param iterations
 	 * @param key
@@ -67,32 +65,43 @@ public class KleinbergEmbedding extends IQDEmbedding {
 	 * @param checkold
 	 * @param parameters
 	 */
-	public KleinbergEmbedding(int iterations, 
+	public DistanceDiversityEmbedding(int iterations,
 			IdentifierMethod idMethod, DecisionMethod deMethod,
-			Distance distance, double epsilon, boolean checkold,
-			Parameter[] parameters) {
-		super(iterations, "KLEINBERG", idMethod, deMethod, distance, epsilon, checkold,
-				parameters);
+			Distance distance, double epsilon, boolean checkold, int max,
+			double exp) {
+		super(iterations, "DISTANCE_DIVERSITY", idMethod, deMethod, distance,
+				epsilon, checkold, new Parameter[] {
+						new IntParameter("MAX_LOG", max),
+						new DoubleParameter("EXPONENT", exp) });
+		this.max = max;
+		this.exponent = exp;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.AttackableEmbedding#generateNodes(gtna.graph.Graph, java.util.Random)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.attackableEmbedding.AttackableEmbedding#generateNodes
+	 * (gtna.graph.Graph, java.util.Random)
 	 */
 	@Override
 	protected AttackableEmbeddingNode[] generateNodes(Graph g, Random rand) {
-		AttackableEmbeddingNode[] nodes = new AttackableEmbeddingNode[g.getNodes().length];
+		AttackableEmbeddingNode[] nodes = new AttackableEmbeddingNode[g
+				.getNodes().length];
 		for (int i = 0; i < g.getNodes().length; i++) {
-			nodes[i] = new KleinbergNode(i, g, this);
+			nodes[i] = new DistanceDiversityNode(i, g, this);
 		}
 		this.init(g, nodes);
 		this.initIds(g);
 		return nodes;
 	}
-	
-	
 
-	
+	public int getMax() {
+		return this.max;
+	}
 
-	
+	public double getExponent() {
+		return this.exponent;
+	}
 
 }
