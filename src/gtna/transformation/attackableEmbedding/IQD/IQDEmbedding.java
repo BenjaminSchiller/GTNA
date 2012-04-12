@@ -35,8 +35,6 @@
  */
 package gtna.transformation.attackableEmbedding.IQD;
 
-import java.util.Random;
-
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.id.DIdentifierSpace;
@@ -51,22 +49,22 @@ import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
+import java.util.Random;
+
 /**
  * @author stef
- *
+ * 
  */
 public abstract class IQDEmbedding extends AttackableEmbedding {
-	
-	public static enum IdentifierMethod{
-		ONERANDOM, TWORANDOM, RANDNEIGHBOR,  RANDNEIGHBORMIDDLE, ALLNEIGHBOR, ALLNEIGHBORMIDDLE, SWAPPING
+
+	public static enum IdentifierMethod {
+		ONERANDOM, TWORANDOM, RANDNEIGHBOR, RANDNEIGHBORMIDDLE, ALLNEIGHBOR, ALLNEIGHBORMIDDLE, SWAPPING
 	}
-	
-	public static enum DecisionMethod{
-		BESTPREFEROLD, BESTPREFERNEW, METROPOLIS, PROPORTIONAL, SA, SATIMEDEPENDENT 
+
+	public static enum DecisionMethod {
+		BESTPREFEROLD, BESTPREFERNEW, METROPOLIS, PROPORTIONAL, SA, SATIMEDEPENDENT
 	}
-	
-	
-	
+
 	IdentifierMethod idMethod;
 	DecisionMethod deMethod;
 	Distance distance;
@@ -74,17 +72,17 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	boolean checkold;
 	RingIdentifier[] ids;
 	boolean adjustOneDegree;
-	
-	
 
 	/**
 	 * @param iterations
 	 * @param key
 	 * @param parameters
 	 */
-	public IQDEmbedding(int iterations, String key, IdentifierMethod idMethod, DecisionMethod deMethod, Distance distance,
-	double epsilon, boolean checkold, boolean adjustOne, Parameter[] parameters) {
-		super(iterations, key, combineParameter(idMethod,deMethod,distance,epsilon,checkold,adjustOne,parameters));
+	public IQDEmbedding(int iterations, String key, IdentifierMethod idMethod,
+			DecisionMethod deMethod, Distance distance, double epsilon,
+			boolean checkold, boolean adjustOne, Parameter[] parameters) {
+		super(iterations, key, combineParameter(idMethod, deMethod, distance,
+				epsilon, checkold, adjustOne, parameters));
 		this.idMethod = idMethod;
 		this.deMethod = deMethod;
 		this.distance = distance;
@@ -92,7 +90,7 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 		this.checkold = checkold;
 		this.adjustOneDegree = adjustOne;
 	}
-	
+
 	public IdentifierMethod getIdMethod() {
 		return this.idMethod;
 	}
@@ -109,25 +107,50 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 		return this.checkold;
 	}
 
-	private static Parameter[] combineParameter(IdentifierMethod idMethod, DecisionMethod deMethod, Distance distance, 
-			double epsilon, boolean checkold, boolean adjustone, Parameter[] parameters){
-		Parameter[] res = new Parameter[parameters.length+6];
+	private static Parameter[] combineParameter(IdentifierMethod idMethod,
+			DecisionMethod deMethod, Distance distance, double epsilon,
+			boolean checkold, boolean adjustone, Parameter[] parameters) {
+		Parameter[] res = new Parameter[parameters.length + 6];
 		res[0] = new StringParameter("IDENTIFIER_METHOD", idMethod.toString());
 		res[1] = new StringParameter("DECISION_METHOD", deMethod.toString());
 		res[2] = new DoubleParameter("EPSILON", epsilon);
 		res[3] = new BooleanParameter("CHECKOLD", checkold);
 		res[4] = new StringParameter("DISTANCE", distance.toString());
 		res[5] = new BooleanParameter("ADJUST_ONE", adjustone);
-		for (int i = 6; i < res.length; i++){
-			res[i] = parameters[i-6];
+		for (int i = 6; i < res.length; i++) {
+			res[i] = parameters[i - 6];
 		}
 		return res;
 	}
-	
-	
+
+	/**
+	 * test if identifier selection and decision method are compatible
+	 * a simple simulated annealing technique cannot be used with more than 
+	 * two possibilities
+	 * @param d
+	 * @param id
+	 * @return
+	 */
+	public static boolean isCombinable(DecisionMethod d, IdentifierMethod id) {
+		if (d == DecisionMethod.BESTPREFERNEW
+				|| d == DecisionMethod.BESTPREFEROLD
+				|| d == DecisionMethod.PROPORTIONAL) {
+			return true;
+		}
+		if (d == DecisionMethod.METROPOLIS
+				|| d == DecisionMethod.SA
+				|| d == DecisionMethod.SATIMEDEPENDENT) {
+			if (id == IdentifierMethod.TWORANDOM
+					|| id == IdentifierMethod.ALLNEIGHBOR
+					|| id == IdentifierMethod.ALLNEIGHBORMIDDLE){
+				return false;
+			}
+		}
+		return true;
+	}
 
 	public Graph transform(Graph g) {
-        Random rand = new Random();
+		Random rand = new Random();
 		AttackableEmbeddingNode[] nodes = this.generateNodes(g, rand);
 		AttackableEmbeddingNode[] selectionSet = this.generateSelectionSet(
 				nodes, rand);
@@ -136,67 +159,70 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 		DIdentifierSpace idSpace = (DIdentifierSpace) prop[prop.length - 1];
 		this.setIdspace(idSpace);
 		RingIdentifier[] ids = this.getIds();
-        for (int i = 0; i < ids.length; i++){
-        	((IQDNode)nodes[i]).setID(ids[i].getPosition());
-        }
+		for (int i = 0; i < ids.length; i++) {
+			((IQDNode) nodes[i]).setID(ids[i].getPosition());
+		}
 		for (int i = 0; i < this.iterations * selectionSet.length; i++) {
 			int index = rand.nextInt(selectionSet.length);
 			if (selectionSet[index].getOutDegree() > 0) {
-				if (this.adjustOneDegree && selectionSet[index].getDegree() == 2){
-					IQDNode node = (IQDNode)selectionSet[index]; 
-					double neighPos = ((IQDNode)nodes[node.getOutgoingEdges()[0]]).getID();
-					if (Math.abs(this.computeDistance(neighPos, node.getID())) > this.epsilon){
-						double id = neighPos - rand.nextDouble()*this.epsilon;
-						if (id < 0) id++;
+				if (this.adjustOneDegree
+						&& selectionSet[index].getDegree() == 2) {
+					IQDNode node = (IQDNode) selectionSet[index];
+					double neighPos = ((IQDNode) nodes[node.getOutgoingEdges()[0]])
+							.getID();
+					if (Math.abs(this.computeDistance(neighPos, node.getID())) > this.epsilon) {
+						double id = neighPos - rand.nextDouble() * this.epsilon;
+						if (id < 0)
+							id++;
 						node.setID(id);
 					}
 				} else {
 					selectionSet[index].updateNeighbors(rand);
-				    selectionSet[index].turn(rand);
+					selectionSet[index].turn(rand);
 				}
 			}
 		}
-		 for (int i = 0; i < ids.length; i++){
-	        	ids[i].setPosition(((IQDNode)nodes[i]).getID());
-	        }
+		for (int i = 0; i < ids.length; i++) {
+			ids[i].setPosition(((IQDNode) nodes[i]).getID());
+		}
 		Partition<Double>[] parts = new RingPartitionSimple[g.getNodes().length];
 
 		for (int i = 0; i < parts.length; i++) {
 			parts[i] = new RingPartitionSimple(ids[i]);
 		}
-	  	idSpace.setPartitions(parts);
-	    return g;
+		idSpace.setPartitions(parts);
+		return g;
 	}
-	
-	public double computeDistance(double a, double b){
-		if (this.distance == Distance.RING){
-			return Math.min(Math.abs(a-b), Math.min(1-a+b, 1-b+a));
+
+	public double computeDistance(double a, double b) {
+		if (this.distance == Distance.RING) {
+			return Math.min(Math.abs(a - b), Math.min(1 - a + b, 1 - b + a));
 		}
-		if (this.distance == Distance.CLOCKWISE){
-			if (a > b){
-				return a-b;
+		if (this.distance == Distance.CLOCKWISE) {
+			if (a > b) {
+				return a - b;
 			} else {
-				return 1+a-b;
+				return 1 + a - b;
 			}
 		}
-		if (this.distance == Distance.SIGNED){
-			if (a > b){
-				if (a - b < 0.5){
-					return a-b;
+		if (this.distance == Distance.SIGNED) {
+			if (a > b) {
+				if (a - b < 0.5) {
+					return a - b;
 				} else {
-					return -(1+b-a);
+					return -(1 + b - a);
 				}
 			} else {
-				if (a-b > -0.5){
-					return a-b;
+				if (a - b > -0.5) {
+					return a - b;
 				} else {
-					return 1+a-b;
+					return 1 + a - b;
 				}
 			}
 		}
 		throw new IllegalArgumentException("Distance calculation not set!");
 	}
-	
+
 	/**
 	 * init IdSpace from a graph g
 	 * 
@@ -212,7 +238,7 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 					.getRepresentativeID();
 		}
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -222,9 +248,14 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	public RingIdentifier[] getIds() {
 		return this.ids;
 	}
-	
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.AttackableEmbedding#generateSelectionSet(gtna.transformation.attackableEmbedding.AttackableEmbeddingNode[], java.util.Random)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.transformation.attackableEmbedding.AttackableEmbedding#
+	 * generateSelectionSet
+	 * (gtna.transformation.attackableEmbedding.AttackableEmbeddingNode[],
+	 * java.util.Random)
 	 */
 	@Override
 	protected AttackableEmbeddingNode[] generateSelectionSet(
