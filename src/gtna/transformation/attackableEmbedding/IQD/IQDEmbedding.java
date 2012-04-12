@@ -209,5 +209,18 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	public RingIdentifier[] getIds() {
 		return this.ids;
 	}
+	
+	/* (non-Javadoc)
+	 * @see gtna.transformation.attackableEmbedding.AttackableEmbedding#generateSelectionSet(gtna.transformation.attackableEmbedding.AttackableEmbeddingNode[], java.util.Random)
+	 */
+	@Override
+	protected AttackableEmbeddingNode[] generateSelectionSet(
+			AttackableEmbeddingNode[] nodes, Random rand) {
+		return nodes;
+	}
+
+	public Distance getDistance() {
+		return this.distance;
+	}
 
 }
