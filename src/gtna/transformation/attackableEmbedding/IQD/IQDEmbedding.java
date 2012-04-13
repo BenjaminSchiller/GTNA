@@ -124,9 +124,10 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	}
 
 	/**
-	 * test if identifier selection and decision method are compatible
-	 * a simple simulated annealing technique cannot be used with more than 
-	 * two possibilities
+	 * test if identifier selection and decision method are compatible a simple
+	 * simulated annealing technique cannot be used with more than two
+	 * possibilities
+	 * 
 	 * @param d
 	 * @param id
 	 * @return
@@ -137,12 +138,29 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 				|| d == DecisionMethod.PROPORTIONAL) {
 			return true;
 		}
-		if (d == DecisionMethod.METROPOLIS
-				|| d == DecisionMethod.SA
+		if (d == DecisionMethod.METROPOLIS || d == DecisionMethod.SA
 				|| d == DecisionMethod.SATIMEDEPENDENT) {
 			if (id == IdentifierMethod.TWORANDOM
 					|| id == IdentifierMethod.ALLNEIGHBOR
-					|| id == IdentifierMethod.ALLNEIGHBORMIDDLE){
+					|| id == IdentifierMethod.ALLNEIGHBORMIDDLE) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static boolean isSensible(boolean checkold, boolean adjustone,
+			DecisionMethod decision, IdentifierMethod id) {
+		if (checkold) {
+			if (id == IdentifierMethod.ONERANDOM
+					|| id == IdentifierMethod.TWORANDOM
+					|| id == IdentifierMethod.SWAPPING) {
+				return false;
+			}
+		}
+		if (adjustone) {
+			if (id == IdentifierMethod.ALLNEIGHBOR
+					|| id == IdentifierMethod.RANDNEIGHBOR) {
 				return false;
 			}
 		}
