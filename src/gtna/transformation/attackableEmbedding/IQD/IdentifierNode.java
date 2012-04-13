@@ -75,7 +75,7 @@ public abstract class IdentifierNode extends IQDNode {
 			return new double[]{rand.nextDouble(), rand.nextDouble(), this.getID()};
 		}
 		if (this.embedding.getIdMethod() == IQDEmbedding.IdentifierMethod.SWAPPING){
-			IQDNode node = this.swap(TTL, rand);
+			IQDNode node = this.swap(this.getID(), this.knownIDs,TTL, rand);
 			this.swapped = node.knownIDs;
 			return new double[]{node.getID(),this.getID()};
 		}
@@ -183,13 +183,14 @@ public abstract class IdentifierNode extends IQDNode {
 		return null;
 	}
 	
-	private IQDNode swap(int ttl, Random rand){
+	private IQDNode swap(double callerID, double[] neighborsID, int ttl, Random rand){
 		if (ttl <= 1){
 			int[] out = this.getOutgoingEdges();
 			return (IQDNode)this.getGraph().getNode(out[rand.nextInt(out.length)]);
 		} else {
 			int[] out = this.getOutgoingEdges();
-			return ((IdentifierNode)this.getGraph().getNode(out[rand.nextInt(out.length)])).swap(ttl-1, rand);
+			return ((IdentifierNode)this.getGraph().getNode(out[rand.nextInt(out.length)])).
+					swap(callerID, neighborsID, ttl-1, rand);
 		}
 	}
 
