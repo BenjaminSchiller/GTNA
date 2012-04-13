@@ -37,6 +37,8 @@ package gtna.projects.resilienceMeasures;
 
 import java.util.Random;
 
+import org.gephi.statistics.plugin.GraphDistance;
+
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.BetweennessCentralityNodeSorter;
@@ -51,16 +53,20 @@ import gtna.networks.model.ErdosRenyi;
  */
 public class NodeSortingTest {
 	public static void main(String[] args) {
-		System.out.println("Generating graph...");
-		Network nw = new ErdosRenyi(1000, 10, true, null);
-		Graph g = nw.generate();
-		System.out.println("Graph generated!");
+		/*
+		 * System.out.println("Generating graph..."); Network nw = new
+		 * ErdosRenyi(1000, 10, true, null); Graph g = nw.generate();
+		 */
+		System.out.println("Importing...");
+		Utils u = new Utils();
+		Graph g = u.importGraphFromFile("vietnam_modified.gml");
+		System.out.println("Graph imported!");
 
 		// nodes
 		Node[] nodes = g.getNodes();
 
 		// sorting
-		NodeSorter sorter = new BetweennessCentralityNodeSorter(
+		NodeSorter sorter = new ClosenessCentralityNodeSorter(
 				NodeSorter.NodeSorterMode.ASC);
 		Node[] sorted = sorter.sort(g, new Random());
 
@@ -74,13 +80,26 @@ public class NodeSortingTest {
 		System.out.println("-----");
 		System.out.println("Sorted:");
 		for (int i = 0; i < sorted.length; i++) {
-			System.out.println(i + ": " + sorted[i]);
+			System.out.println(i
+					+ ": "
+					+ sorted[i]
+					+ " -- "
+					+ ((ClosenessCentralityNodeSorter) sorter)
+							.getCentrality(g.getNode(i)));
 		}
 
-		// edge
-		/*
-		 * System.out.println("-----"); System.out.println("Edges:"); for (Edge
-		 * e : g.getEdges().getEdges()) { System.out.println(e.toString()); }
-		 */
+		// print centrality from gtna
+		System.out.println("GTNA Centrality:");
+		for (Node n : g.getNodes()) {
+			System.out.println(""
+					+ n.toString()
+					+ " = "
+					+ ((ClosenessCentralityNodeSorter) sorter)
+							.getCentrality(n));
+		}
+
+		// print centrality from gephi
+		u.printCentrality(GraphDistance.CLOSENESS);
+
 	}
 }
