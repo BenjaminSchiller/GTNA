@@ -35,12 +35,18 @@
  */
 package gtna.graph.sorting;
 
+import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
+import java.util.Stack;
 
 /**
  * @author truong
@@ -62,7 +68,7 @@ public class BetweennessCentralityNodeSorter extends NodeSorter {
 	 */
 	@Override
 	public Node[] sort(Graph g, Random rand) {
-		this.calculate();
+		this.calculate(g);
 		Node[] sorted = this.clone(g.getNodes());
 		Arrays.sort(sorted, new DegreeAsc());
 		this.randomize(sorted, rand);
@@ -75,8 +81,73 @@ public class BetweennessCentralityNodeSorter extends NodeSorter {
 	/**
 	 * 
 	 */
-	private void calculate() {
-		// TODO Auto-generated method stub
+	private void calculate(Graph g) {
+		Node[] nodes = g.getNodes();
+		// -----
+		for (int i = 0; i < nodes.length; i++) {
+			map.put(nodes[i], 0.0);
+		}
+		// -----
+		for (int i = 0; i < nodes.length; i++) {
+			Node s = nodes[i];
+			Stack<Node> S = new Stack<Node>();
+			HashMap<Node, ArrayList<Node>> P = new HashMap<Node, ArrayList<Node>>();
+			for (Node n : nodes) {
+				P.put(n, new ArrayList<Node>());
+			}
+
+			HashMap<Node, Integer> sigma = new HashMap<Node, Integer>();
+			for (Node n : nodes) {
+				sigma.put(n, 0);
+			}
+			sigma.put(s, 1);
+
+			HashMap<Node, Integer> d = new HashMap<Node, Integer>();
+			for (Node n : nodes) {
+				d.put(n, -1);
+			}
+			d.put(s, 0);
+
+			LinkedList<Node> Q = new LinkedList<Node>();
+			Q.add(s);
+
+			while (!Q.isEmpty()) {
+				Node v = Q.remove();
+				S.add(v);
+				for (int outIndex : v.getOutgoingEdges()) {
+					Node w = nodes[outIndex];
+					// w found for the first time?
+					if (d.get(w) < 0) {
+						Q.add(w);
+						d.put(w, d.get(v) + 1);
+					}
+					// shortest path to w via v?
+					if (d.get(w).intValue() == d.get(v).intValue() + 1) {
+						sigma.put(w, sigma.get(w) + sigma.get(v));
+						P.get(w).add(v);
+					}
+				}
+			}
+
+			HashMap<Node, Double> delta = new HashMap<Node, Double>();
+			for (Node n : nodes) {
+				delta.put(n, 0.0);
+			}
+			// S returns vertices in order of non-increasing distance from s
+			while (!S.isEmpty()) {
+				Node w = S.pop();
+				for (Node v : P.get(w)) {
+					delta.put(
+							v,
+							delta.get(v) + ((double) sigma.get(v))
+									/ sigma.get(w) * (1 + sigma.get(w)));
+				}
+				if (w != s) {
+					map.put(w, map.get(w) + delta.get(w));
+				}
+			}
+		}
+
 	}
 
 	private class DegreeAsc implements Comparator<Node> {
