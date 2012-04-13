@@ -133,7 +133,7 @@ public class LMC extends AttackableEmbedding {
 
 	protected AttackableEmbeddingNode[] generateNodes(Graph g, Random rand) {
 		this.setDelta(g);
-		HashSet<Node> attackers = new HashSet<Node>();
+		HashSet<Integer> attackers = new HashSet<Integer>();
 		if (!ATTACK_NONE.equals(this.attack)
 				&& !ATTACKER_SELECTION_NONE.equals(this.attackerSelection)) {
 			if (ATTACKER_SELECTION_LARGEST.equals(this.attackerSelection)) {
@@ -159,7 +159,7 @@ public class LMC extends AttackableEmbedding {
 
 		for (int i = 0; i < g.getNodes().length; i++) {
 			// double pos = ((RingNode) g.getNodes()[i]).getID().pos;
-			if (attackers.contains(g.getNodes()[i])) {
+			if (attackers.contains(i)) {
 				// System.out.println("adding attacker @ " + i + " (D="
 				// + g.getNodes()[i].out().length * 2 + ")");
 				if (ATTACK_CONTRACTION.equals(this.attack)) {
