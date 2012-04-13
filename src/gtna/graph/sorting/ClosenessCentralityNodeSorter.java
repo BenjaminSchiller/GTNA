@@ -81,21 +81,20 @@ public class ClosenessCentralityNodeSorter extends NodeSorter {
 		for (int i = 0; i < g.getNodes().length; i++) {
 			double sum = 0;
 			for (int j = 0; j < g.getNodes().length; j++) {
-				if (j == i) {
-					continue;
-				}
 				if (floyd.dist(i, j) < floyd.INF) {
 					sum += floyd.dist(i, j);
 				}
 			}
-			map.put(g.getNode(i), 1 / sum);
+			map.put(g.getNode(i), 1.0 / sum);
 		}
 	}
 
 	private class DegreeAsc implements Comparator<Node> {
 		public int compare(Node n1, Node n2) {
-			double point1 = map.get(n1).doubleValue();
-			double point2 = map.get(n2).doubleValue();
+			double point1 = ClosenessCentralityNodeSorter.this.map.get(n1)
+					.doubleValue();
+			double point2 = ClosenessCentralityNodeSorter.this.map.get(n2)
+					.doubleValue();
 			int result;
 			if (point1 == point2) {
 				result = 0;
@@ -127,6 +126,10 @@ public class ClosenessCentralityNodeSorter extends NodeSorter {
 	@Override
 	protected boolean isPropertyEqual(Node n1, Node n2) {
 		return map.get(n1).doubleValue() == map.get(n2).doubleValue();
+	}
+
+	public double getCentrality(Node n) {
+		return map.get(n);
 	}
 
 }

@@ -68,7 +68,6 @@ public class GraphSPallFloyd extends GraphSPall {
 			for (int t = 0; t < V; t++) {
 				if (g.getEdges().contains(s, t)) {
 					p[s][t] = g.getEdges().getEdge(s, t);
-					// TODO: weighted graph
 					d[s][t] = 1;
 				}
 			}
@@ -93,6 +92,13 @@ public class GraphSPallFloyd extends GraphSPall {
 						}
 					}
 				}
+			}
+		}
+
+		System.out.println("All shortest path: ");
+		for (int i = 0; i < V; i++) {
+			for (int j = 0; j < V; j++) {
+				System.out.println("" + i + " -> " + j + " = " + d[i][j]);
 			}
 		}
 	}

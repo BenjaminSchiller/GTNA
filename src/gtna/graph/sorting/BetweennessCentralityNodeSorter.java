@@ -187,4 +187,8 @@ public class BetweennessCentralityNodeSorter extends NodeSorter {
 		return map.get(n1).doubleValue() == map.get(n2).doubleValue();
 	}
 
+	public double getCentrality(Node n) {
+		return map.get(n);
+	}
+
 }

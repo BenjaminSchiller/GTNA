@@ -35,7 +35,15 @@
  */
 package gtna.projects.resilienceMeasures;
 
+import java.util.Random;
+
+import org.gephi.statistics.plugin.GraphDistance;
+
 import gtna.graph.Graph;
+import gtna.graph.Node;
+import gtna.graph.sorting.BetweennessCentralityNodeSorter;
+import gtna.graph.sorting.ClosenessCentralityNodeSorter;
+import gtna.graph.sorting.NodeSorter;
 
 /**
  * @author truong
@@ -45,5 +53,24 @@ public class ImportTest {
 	public static void main(String[] args) {
 		Utils u = new Utils();
 		Graph g = u.importGraphFromFile("germany.gml");
+
+		// print centrality from gephi
+		u.printCentrality(GraphDistance.CLOSENESS);
+
+		// sorting
+		NodeSorter sorter = new ClosenessCentralityNodeSorter(
+				NodeSorter.NodeSorterMode.ASC);
+		sorter.sort(g, new Random());
+
+		// print centrality from gtna
+		System.out.println("GTNA Centrality:");
+		for (Node n : g.getNodes()) {
+			System.out
+					.println(""
+							+ n.toString()
+							+ " = "
+							+ ((ClosenessCentralityNodeSorter) sorter)
+									.getCentrality(n));
+		}
 	}
 }
