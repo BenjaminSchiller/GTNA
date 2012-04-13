@@ -112,7 +112,7 @@ public class Swapping extends AttackableEmbedding {
 	}
 
 	protected AttackableEmbeddingNode[] generateNodes(Graph g, Random rand) {
-		HashSet<Node> attackers = new HashSet<Node>();
+		HashSet<Integer> attackers = new HashSet<Integer>();
 		if (!ATTACK_NONE.equals(this.attack)
 				&& !ATTACKER_SELECTION_NONE.equals(this.attackerSelection)) {
 			if (ATTACKER_SELECTION_LARGEST.equals(this.attackerSelection)) {
@@ -137,7 +137,7 @@ public class Swapping extends AttackableEmbedding {
 				.getNodes().length];
 		for (int i = 0; i < g.getNodes().length; i++) {
 			// double pos = ((RingNode) g.getNodes()[i]).getID().pos;
-			if (attackers.contains(g.getNodes()[i])) {
+			if (attackers.contains(i)) {
 				if (ATTACK_CONTRACTION.equals(this.attack)) {
 					nodes[i] = new SwappingAttackerContraction(i, g, this);
 				} else if (ATTACK_CONVERGENCE.equals(this.attack)) {
