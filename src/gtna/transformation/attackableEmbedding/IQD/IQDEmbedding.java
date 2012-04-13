@@ -46,6 +46,7 @@ import gtna.transformation.attackableEmbedding.AttackableEmbedding;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
@@ -81,7 +82,7 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	public IQDEmbedding(int iterations, String key, IdentifierMethod idMethod,
 			DecisionMethod deMethod, Distance distance, double epsilon,
 			boolean checkold, boolean adjustOne, Parameter[] parameters) {
-		super(iterations, key, combineParameter(idMethod, deMethod, distance,
+		super(iterations, key, combineParameter(iterations, idMethod, deMethod, distance,
 				epsilon, checkold, adjustOne, parameters));
 		this.idMethod = idMethod;
 		this.deMethod = deMethod;
@@ -107,18 +108,19 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 		return this.checkold;
 	}
 
-	private static Parameter[] combineParameter(IdentifierMethod idMethod,
+	private static Parameter[] combineParameter(int iter, IdentifierMethod idMethod,
 			DecisionMethod deMethod, Distance distance, double epsilon,
 			boolean checkold, boolean adjustone, Parameter[] parameters) {
-		Parameter[] res = new Parameter[parameters.length + 6];
-		res[0] = new StringParameter("IDENTIFIER_METHOD", idMethod.toString());
-		res[1] = new StringParameter("DECISION_METHOD", deMethod.toString());
-		res[2] = new DoubleParameter("EPSILON", epsilon);
-		res[3] = new BooleanParameter("CHECKOLD", checkold);
-		res[4] = new StringParameter("DISTANCE", distance.toString());
-		res[5] = new BooleanParameter("ADJUST_ONE", adjustone);
-		for (int i = 6; i < res.length; i++) {
-			res[i] = parameters[i - 6];
+		Parameter[] res = new Parameter[parameters.length + 7];
+		res[0] = new IntParameter("ITERATIONS", iter);
+		res[1] = new StringParameter("IDENTIFIER_METHOD", idMethod.toString());
+		res[2] = new StringParameter("DECISION_METHOD", deMethod.toString());
+		res[3] = new DoubleParameter("EPSILON", epsilon);
+		res[4] = new BooleanParameter("CHECKOLD", checkold);
+		res[5] = new StringParameter("DISTANCE", distance.toString());
+		res[6] = new BooleanParameter("ADJUST_ONE", adjustone);
+		for (int i = 7; i < res.length; i++) {
+			res[i] = parameters[i - 7];
 		}
 		return res;
 	}
