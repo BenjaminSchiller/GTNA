@@ -76,6 +76,7 @@ public abstract class IdentifierNode extends IQDNode {
 		}
 		if (this.embedding.getIdMethod() == IQDEmbedding.IdentifierMethod.SWAPPING){
 			double[][] ids = this.swap(this.getID(), this.knownIDs, TTL, rand);
+			this.partnerID = (int) ids[0][1];
 			this.swapped = ids[1];
 			return new double[]{ids[0][0],this.getID()};
 		}
@@ -186,7 +187,7 @@ public abstract class IdentifierNode extends IQDNode {
 	protected double[][] swap(double callerID, double[] neighborsID, int ttl, Random rand){
 		if (ttl <= 1){
 			double[][] res = new double[2][];
-			res[0] = new double[] {this.getID()};
+			res[0] = new double[] {this.getID(), this.getIndex()};
 			res[1] = this.knownIDs;
 			return res;
 		} else {
