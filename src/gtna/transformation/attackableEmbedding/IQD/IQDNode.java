@@ -50,6 +50,7 @@ import java.util.Random;
 public abstract class IQDNode extends AttackableEmbeddingNode {
     double id;
     protected IQDEmbedding embedding;
+    int partnerID=-1;
 	
 	/**
 	 * @param index
@@ -76,7 +77,11 @@ public abstract class IQDNode extends AttackableEmbeddingNode {
 	public void turn(Random rand) {
 		double[] ids = this.getIdentifiers(rand);
 		double[] q = this.getQuality(rand, ids);
-        this.setID(ids[this.getDecision(rand, q)]);
+		double newID = this.getDecision(rand, q);
+		if (this.partnerID != -1){
+			((IQDNode)this.getGraph().getNode(this.partnerID)).setID(this, this.getID());
+		}
+        this.setID(newID);
 	}
 	
 	public abstract double[] getIdentifiers(Random rand);
@@ -86,6 +91,10 @@ public abstract class IQDNode extends AttackableEmbeddingNode {
 	public abstract int getDecision(Random rand, double[] metrics);
 	
 	public void setID(double id){
+		this.id = id;
+	}
+	
+	public void setID(Node caller,double id){
 		this.id = id;
 	}
 	
