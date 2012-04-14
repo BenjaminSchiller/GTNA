@@ -77,11 +77,11 @@ public abstract class IQDNode extends AttackableEmbeddingNode {
 	public void turn(Random rand) {
 		double[] ids = this.getIdentifiers(rand);
 		double[] q = this.getQuality(rand, ids);
-		double newID = this.getDecision(rand, q);
+		int newID = this.getDecision(rand, q);
 		if (this.partnerID != -1){
 			((IQDNode)this.getGraph().getNode(this.partnerID)).setID(this, this.getID());
 		}
-        this.setID(newID);
+        this.setID(ids[newID]);
 	}
 	
 	public abstract double[] getIdentifiers(Random rand);
