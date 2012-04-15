@@ -36,6 +36,7 @@
 package gtna.projects.resilienceMeasures;
 
 import java.io.File;
+import java.util.HashMap;
 
 import org.gephi.data.attributes.api.AttributeColumn;
 import org.gephi.data.attributes.api.AttributeController;
@@ -140,7 +141,8 @@ public class Utils {
 		return gtnaGraph;
 	}
 
-	public void printCentrality(String centralityString) {
+	public HashMap<Integer, Double> gephiCentrality(String centralityString) {
+		HashMap<Integer, Double> result = new HashMap<Integer, Double>();
 		// get graph model and attribute model of current workspace
 		GraphModel graphModel = Lookup.getDefault()
 				.lookup(GraphController.class).getModel();
@@ -157,11 +159,12 @@ public class Utils {
 				centralityString);
 
 		// iterate over values
-		System.out.println("Gephi centrality:");
 		for (Node n : gephi.getNodes()) {
 			Double c = (Double) n.getNodeData().getAttributes()
 					.getValue(col.getId());
-			System.out.println("" + n.getId() + " = " + c);
+			// System.out.println("" + n.getId() + " = " + c);
+			result.put(n.getId() - 1, c);
 		}
+		return result;
 	}
 }

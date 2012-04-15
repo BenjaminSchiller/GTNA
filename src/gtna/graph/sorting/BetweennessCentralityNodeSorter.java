@@ -35,7 +35,6 @@
  */
 package gtna.graph.sorting;
 
-import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 
@@ -44,7 +43,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Random;
 import java.util.Stack;
 
@@ -83,67 +81,86 @@ public class BetweennessCentralityNodeSorter extends NodeSorter {
 	 */
 	private void calculate(Graph g) {
 		Node[] nodes = g.getNodes();
-		// -----
-		for (int i = 0; i < nodes.length; i++) {
-			map.put(nodes[i], 0.0);
+
+		// initiate betweenness centrality points
+		for (Node n : nodes) {
+			this.map.put(n, 0.0);
 		}
-		// -----
-		for (int i = 0; i < nodes.length; i++) {
-			Node s = nodes[i];
+
+		for (Node s : nodes) {
+			// empty stack
 			Stack<Node> S = new Stack<Node>();
+			S.clear();
+
 			HashMap<Node, ArrayList<Node>> P = new HashMap<Node, ArrayList<Node>>();
 			for (Node n : nodes) {
 				P.put(n, new ArrayList<Node>());
 			}
 
+			// sigma
 			HashMap<Node, Integer> sigma = new HashMap<Node, Integer>();
 			for (Node n : nodes) {
 				sigma.put(n, 0);
 			}
 			sigma.put(s, 1);
 
+			// d
 			HashMap<Node, Integer> d = new HashMap<Node, Integer>();
 			for (Node n : nodes) {
 				d.put(n, -1);
 			}
 			d.put(s, 0);
 
+			// empty queue
 			LinkedList<Node> Q = new LinkedList<Node>();
+			Q.clear();
 			Q.add(s);
 
 			while (!Q.isEmpty()) {
 				Node v = Q.remove();
+				System.out.println("--> Run with node " + v.getIndex());
 				S.add(v);
+
+				// for each neighbor w of v
 				for (int outIndex : v.getOutgoingEdges()) {
 					Node w = nodes[outIndex];
+					System.out.println("Node " + w.getIndex());
+
 					// w found for the first time?
-					if (d.get(w) < 0) {
+					if (d.get(w).intValue() < 0) {
 						Q.add(w);
-						d.put(w, d.get(v) + 1);
+						d.put(w, d.get(v).intValue() + 1);
+						System.out.println("Found for the first time!");
 					}
 					// shortest path to w via v?
 					if (d.get(w).intValue() == d.get(v).intValue() + 1) {
-						sigma.put(w, sigma.get(w) + sigma.get(v));
+						sigma.put(w, sigma.get(w).intValue()
+								+ sigma.get(v).intValue());
 						P.get(w).add(v);
+						System.out.println("Shortest path to " + w.getIndex()
+								+ " via " + v.getIndex());
 					}
 				}
 			}
 
+			// delta
 			HashMap<Node, Double> delta = new HashMap<Node, Double>();
 			for (Node n : nodes) {
 				delta.put(n, 0.0);
 			}
+
 			// S returns vertices in order of non-increasing distance from s
 			while (!S.isEmpty()) {
 				Node w = S.pop();
 				for (Node v : P.get(w)) {
-					delta.put(
-							v,
-							delta.get(v) + ((double) sigma.get(v))
-									/ sigma.get(w) * (1 + sigma.get(w)));
+					delta.put(v, delta.get(v).doubleValue()
+							+ sigma.get(v).doubleValue()
+							/ sigma.get(w).doubleValue()
+							* (1 + delta.get(w).doubleValue()));
 				}
-				if (w != s) {
-					map.put(w, map.get(w) + delta.get(w));
+				if (w.getIndex() != s.getIndex()) {
+					map.put(w, map.get(w).doubleValue()
+							+ delta.get(w).doubleValue());
 				}
 			}
 		}
