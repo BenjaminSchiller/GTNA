@@ -44,7 +44,9 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.BetweennessCentralityNodeSorter;
 import gtna.graph.sorting.ClosenessCentralityNodeSorter;
+import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.NodeSorter;
+import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 
@@ -55,7 +57,7 @@ import gtna.networks.model.ErdosRenyi;
 public class NodeSortingTest {
 	public static void main(String[] args) {
 
-		NodeSortingTest.test1();
+		NodeSortingTest.speedTest();
 
 	}
 
@@ -104,5 +106,20 @@ public class NodeSortingTest {
 					+ (gephiCentrality.get(n.getIndex()) * 2));
 		}
 
+	}
+
+	public static void speedTest() {
+		Utils u = new Utils();
+		Graph g = u.importGraphFromFile("power.gml");
+
+		ClosenessCentralityNodeSorter bc = new ClosenessCentralityNodeSorter(
+				NodeSorterMode.ASC);
+
+		Node[] sorted = bc.sort(g, new Random());
+
+		for (int i = 0; i < sorted.length; i++) {
+			System.out.println(sorted[i].toString() + " -- "
+					+ +bc.getCentrality(sorted[i]));
+		}
 	}
 }

@@ -118,27 +118,22 @@ public class BetweennessCentralityNodeSorter extends NodeSorter {
 
 			while (!Q.isEmpty()) {
 				Node v = Q.remove();
-				System.out.println("--> Run with node " + v.getIndex());
 				S.add(v);
 
 				// for each neighbor w of v
 				for (int outIndex : v.getOutgoingEdges()) {
 					Node w = nodes[outIndex];
-					System.out.println("Node " + w.getIndex());
 
 					// w found for the first time?
 					if (d.get(w).intValue() < 0) {
 						Q.add(w);
 						d.put(w, d.get(v).intValue() + 1);
-						System.out.println("Found for the first time!");
 					}
 					// shortest path to w via v?
 					if (d.get(w).intValue() == d.get(v).intValue() + 1) {
 						sigma.put(w, sigma.get(w).intValue()
 								+ sigma.get(v).intValue());
 						P.get(w).add(v);
-						System.out.println("Shortest path to " + w.getIndex()
-								+ " via " + v.getIndex());
 					}
 				}
 			}
