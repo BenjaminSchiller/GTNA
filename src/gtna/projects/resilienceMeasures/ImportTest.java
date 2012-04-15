@@ -55,7 +55,6 @@ public class ImportTest {
 		Graph g = u.importGraphFromFile("germany.gml");
 
 		// print centrality from gephi
-		u.printCentrality(GraphDistance.CLOSENESS);
 
 		// sorting
 		NodeSorter sorter = new ClosenessCentralityNodeSorter(
