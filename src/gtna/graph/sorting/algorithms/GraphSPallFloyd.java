@@ -56,14 +56,12 @@ public class GraphSPallFloyd extends GraphSPall {
 		p = new Edge[V][V];
 		d = new int[V][V];
 
-		System.out.println("Initiate INF");
 		for (int s = 0; s < V; s++) {
 			for (int t = 0; t < V; t++) {
 				d[s][t] = INF;
 			}
 		}
 
-		System.out.println("Initiate Distances");
 		for (int s = 0; s < V; s++) {
 			for (int t = 0; t < V; t++) {
 				if (g.getEdges().contains(s, t)) {
@@ -73,14 +71,11 @@ public class GraphSPallFloyd extends GraphSPall {
 			}
 		}
 
-		System.out.println("Initiate Diagonal");
 		for (int s = 0; s < V; s++) {
 			d[s][s] = 0;
 		}
 
-		System.out.println("Running:");
 		for (int i = 0; i < V; i++) {
-			System.out.println("i = " + i);
 			for (int s = 0; s < V; s++) {
 				if (p[s][i] != null) {
 					for (int t = 0; t < V; t++) {
@@ -95,12 +90,6 @@ public class GraphSPallFloyd extends GraphSPall {
 			}
 		}
 
-		System.out.println("All shortest path: ");
-		for (int i = 0; i < V; i++) {
-			for (int j = 0; j < V; j++) {
-				System.out.println("" + i + " -> " + j + " = " + d[i][j]);
-			}
-		}
 	}
 
 	/*
