@@ -38,16 +38,19 @@ package gtna.transformation.attackableEmbedding.IQD.kleinberg;
 import gtna.graph.Graph;
 import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
-import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
+import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding;
+import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding.DecisionMethod;
+import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding.IdentifierMethod;
 import gtna.util.parameter.Parameter;
 
+import java.util.HashSet;
 import java.util.Random;
 
 /**
  * @author stef
  * 
  */
-public class KleinbergEmbedding extends IQDEmbedding {
+public class KleinbergEmbedding extends AttackerIQDEmbedding {
 
 	/**
 	 * @param iterations
@@ -65,6 +68,14 @@ public class KleinbergEmbedding extends IQDEmbedding {
 		super(iterations, "KLEINBERG", idMethod, deMethod, distance, epsilon,
 				checkold, adjustone, parameters);
 	}
+	
+	public KleinbergEmbedding(int iterations, IdentifierMethod idMethod,
+			DecisionMethod deMethod, Distance distance, double epsilon,
+			boolean checkold, boolean adjustone, AttackerType type, AttackerSelection selection,
+		int attackercount, Parameter[] parameters) {
+		super(iterations, "KLEINBERG", idMethod, deMethod, distance, epsilon,
+				checkold, adjustone, type, selection, attackercount, parameters);
+	}
 
 	/**
 	 * @param i
@@ -80,6 +91,14 @@ public class KleinbergEmbedding extends IQDEmbedding {
 		this(i, identifierMethod, decisionMethod, distance, epsilon, checkold,
 				adjustone, new Parameter[0]);
 	}
+	
+	public KleinbergEmbedding(int iterations, IdentifierMethod idMethod,
+			DecisionMethod deMethod, Distance distance, double epsilon,
+			boolean checkold, boolean adjustone, AttackerType type, AttackerSelection selection,
+		int attackercount) {
+		super(iterations, "KLEINBERG", idMethod, deMethod, distance, epsilon,
+				checkold, adjustone, type, selection, attackercount, new Parameter[0]);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -92,8 +111,13 @@ public class KleinbergEmbedding extends IQDEmbedding {
 	protected AttackableEmbeddingNode[] generateNodes(Graph g, Random rand) {
 		AttackableEmbeddingNode[] nodes = new AttackableEmbeddingNode[g
 				.getNodes().length];
+		HashSet<Integer> map = this.getAttackers(g, rand);
 		for (int i = 0; i < g.getNodes().length; i++) {
-			nodes[i] = new KleinbergNode(i, g, this);
+			if (map.contains(i)){
+			   nodes[i] = new KleinbergNode(i, g, this, true);
+			}else {
+			   nodes[i] = new KleinbergNode(i, g, this, false);
+			}
 		}
 		this.init(g, nodes);
 		this.initIds(g);
