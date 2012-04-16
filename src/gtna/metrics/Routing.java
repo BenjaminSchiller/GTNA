@@ -44,12 +44,13 @@ import gtna.routing.RoutingAlgorithm;
 import gtna.util.Config;
 import gtna.util.Distribution;
 import gtna.util.Timer;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
-// TODO reimplement Routing
 public class Routing extends Metric {
 	private Distribution hopDistribution;
 
@@ -60,9 +61,11 @@ public class Routing extends Metric {
 	private double[] betweennessCentrality;
 
 	private Timer runtime;
+	private RoutingAlgorithm ra;
 
-	public Routing() {
-		super("ROUTING");
+	public Routing(RoutingAlgorithm ra) {
+		super("ROUTING", new Parameter[] { new StringParameter(
+				"ROUTING_ALGORITHM", ra.getDescription()) });
 	}
 
 	@Override
@@ -75,13 +78,12 @@ public class Routing extends Metric {
 			HashMap<String, Metric> metrics) {
 		// FIXME add routingAlgorithm as parameter to Routing metric
 		// RoutingAlgorithm ra = network.routingAlgorithm();
-		RoutingAlgorithm ra = null;
 		if (ra == null || !ra.applicable(graph)) {
 			this.initEmpty();
 			return;
 		}
 		this.runtime = new Timer();
-		ra.preprocess(graph);
+		this.ra.preprocess(graph);
 		int times = Config.getInt("ROUTING_ROUTES_PER_NODE");
 		Random rand = new Random();
 		this.routes = new Route[graph.getNodes().length * times];
@@ -212,9 +214,10 @@ public class Routing extends Metric {
 				cdf[cdf.length - 1]);
 		Single failureRate = new Single("ROUTING_FAILURE_RATE",
 				1 - cdf[cdf.length - 1]);
-		Single runtime = new Single("ROUTING_RUNTIME", this.runtime.getRuntime());
-		return new Single[] { averageHops, medianHops, maximumHops, successRate,
-				failureRate, runtime };
+		Single runtime = new Single("ROUTING_RUNTIME",
+				this.runtime.getRuntime());
+		return new Single[] { averageHops, medianHops, maximumHops,
+				successRate, failureRate, runtime };
 	}
 
 	private class RoutingThread extends Thread {

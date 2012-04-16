@@ -49,118 +49,132 @@ import java.util.HashMap;
 
 /**
  * @author stef
- *
+ * 
  */
 public class CriticalPointsTheory extends Metric {
 	private boolean dir;
-	//different types of node selection
-	public static String RANDOM = "RANDOM"; //random deletion of nodes
-	public static String LARGEST = "LARGEST"; //deletion of nodes with highest degree
-	public static String LARGESTOUT = "LARGESTOUT"; //deletion of nodes with highest out-degree
-	public static String LARGESTIN = "LARGESTIN"; //deletion of nodes with highest out-degree
-	public static String DEGREEBOUND = "DEGREEBOUND"; //deletion of edges of nodes so that maximal degree is bounded
+
+	public static enum Selection {
+		// different types of node selection
+		RANDOM, // random deletion of nodes
+		LARGEST, // deletion of nodes with highest degree
+		LARGESTOUT, // deletion of nodes with highest out-degree
+		LARGESTIN, // deletion of nodes with highest out-degree
+		DEGREEBOUND // deletion of edges of nodes so that maximal degree is
+					// bounded
+	}
+
 	private double p;
 	private double deg;
 	private Timer runtime;
-	private String t;
-	
-	public CriticalPointsTheory(boolean directed, String type){
-		super("CRITICAL_POINTS", new Parameter[]{new BooleanParameter("DIRECTED",directed), new StringParameter("TYPE", type)});
-		this.dir = directed;
-		this.t = type;
-	}
-	
-	
+	private Selection selection;
 
-	/* (non-Javadoc)
-	 * @see gtna.metrics.Metric#computeData(gtna.graph.Graph, gtna.networks.Network, java.util.HashMap)
+	public CriticalPointsTheory(boolean directed, Selection selection) {
+		super("CRITICAL_POINTS", new Parameter[] {
+				new BooleanParameter("DIRECTED", directed),
+				new StringParameter("TYPE", selection.toString()) });
+		this.dir = directed;
+		this.selection = selection;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#computeData(gtna.graph.Graph,
+	 * gtna.networks.Network, java.util.HashMap)
 	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		this.runtime = new Timer();
 		Node[] nodes = g.getNodes();
-        if (this.dir){
-        	int maxOut = 0;
-        	int maxIn = 0;
-        	for (int i = 0; i < nodes.length; i++){
-        		if (nodes[i].getInDegree() > maxIn){
-        			maxIn = nodes[i].getInDegree();
-        		}
-        		if (nodes[i].getOutDegree() > maxOut){
-        			maxOut = nodes[i].getOutDegree();
-        		}
-        	}
-        	double[][] dist = new double[maxOut+1][maxIn+1];
-        	for (int i = 0; i < nodes.length; i++){
-        		dist[nodes[i].getOutDegree()][nodes[i].getInDegree()]++;
-        	}
-        	for (int i = 0; i < dist.length; i++){
-        		for (int j = 0; j < dist[i].length; j++){
-        			dist[i][j] = dist[i][j]/(double)nodes.length;
-        		}
-        	}
-        	boolean success = false;
-        	if (this.t.equals(RANDOM)){
-        		success = true;
-        		double[] r = getCPDirectedRandom(dist);
-        		this.p = r[0];
-        		this.deg = r[1];
-        	}
-        	if (this.t.equals(LARGEST)){
-        		success = true;
-        		double[] r = getCPDirectedLargest(dist);
-        		this.p = r[0];
-        		this.deg = r[1];
-        	}
-        	if (this.t.equals(LARGESTOUT)){
-        		success = true;
-        		double[] r = getCPDirectedLargestOut(dist);
-        		this.p = r[0];
-        		this.deg = r[1];
-        	}
-        	if (this.t.equals(LARGESTIN)){
-        		success = true;
-        		double[] r = getCPDirectedLargestIn(dist);
-        		this.p = r[0];
-        		this.deg = r[1];
-        	}
-        	if (!success){
-        		throw new IllegalArgumentException("Unknown deletion type " + this.t + " directed: " + this.dir + " in CriticalPointsTheory");
-        	}
-        } else {
-        	int max = 0;
-        	for (int i = 0; i < nodes.length; i++){
-        		if (nodes[i].getOutDegree() > max){
-        			max = nodes[i].getOutDegree();
-        		}
-        	}
-        	double[] dd = new double[max+1];
-        	for (int i = 0; i < nodes.length; i++){
-        		dd[nodes[i].getOutDegree()]++;
-        	}
-        	for (int i = 0; i < dd.length; i++){
-        		dd[i] = dd[i]/nodes.length;
-        	}
-        	double[] res = null; 
-        	if(this.t.equals(RANDOM)){
-        		res = this.getCPUndirectedRandom(dd);
-        	}
-        	if(this.t.equals(LARGEST)){
-        		res = this.getCPUndirectedLargest(dd);
-        	}
-        	if(this.t.equals(DEGREEBOUND)){
-        		res = this.getCPUndirectedMaxDegree(dd);
-        	}
-        	if (res == null){
-        		throw new IllegalArgumentException("Unknown deletion type " + this.t + " directed: " + this.dir + " in CriticalPointsTheory");
-        	}
-        	this.p = res[0];
-        	this.deg = res[1];
-        }
-        this.runtime.end();
+		if (this.dir) {
+			int maxOut = 0;
+			int maxIn = 0;
+			for (int i = 0; i < nodes.length; i++) {
+				if (nodes[i].getInDegree() > maxIn) {
+					maxIn = nodes[i].getInDegree();
+				}
+				if (nodes[i].getOutDegree() > maxOut) {
+					maxOut = nodes[i].getOutDegree();
+				}
+			}
+			double[][] dist = new double[maxOut + 1][maxIn + 1];
+			for (int i = 0; i < nodes.length; i++) {
+				dist[nodes[i].getOutDegree()][nodes[i].getInDegree()]++;
+			}
+			for (int i = 0; i < dist.length; i++) {
+				for (int j = 0; j < dist[i].length; j++) {
+					dist[i][j] = dist[i][j] / (double) nodes.length;
+				}
+			}
+			boolean success = false;
+			if (this.selection == Selection.RANDOM) {
+				success = true;
+				double[] r = getCPDirectedRandom(dist);
+				this.p = r[0];
+				this.deg = r[1];
+			}
+			if (this.selection == Selection.LARGEST) {
+				success = true;
+				double[] r = getCPDirectedLargest(dist);
+				this.p = r[0];
+				this.deg = r[1];
+			}
+			if (this.selection == Selection.LARGESTOUT) {
+				success = true;
+				double[] r = getCPDirectedLargestOut(dist);
+				this.p = r[0];
+				this.deg = r[1];
+			}
+			if (this.selection == Selection.LARGESTIN) {
+				success = true;
+				double[] r = getCPDirectedLargestIn(dist);
+				this.p = r[0];
+				this.deg = r[1];
+			}
+			if (!success) {
+				throw new IllegalArgumentException("Unknown deletion type "
+						+ this.selection + " directed: " + this.dir
+						+ " in CriticalPointsTheory");
+			}
+		} else {
+			int max = 0;
+			for (int i = 0; i < nodes.length; i++) {
+				if (nodes[i].getOutDegree() > max) {
+					max = nodes[i].getOutDegree();
+				}
+			}
+			double[] dd = new double[max + 1];
+			for (int i = 0; i < nodes.length; i++) {
+				dd[nodes[i].getOutDegree()]++;
+			}
+			for (int i = 0; i < dd.length; i++) {
+				dd[i] = dd[i] / nodes.length;
+			}
+			double[] res = null;
+			if (this.selection == Selection.RANDOM) {
+				res = this.getCPUndirectedRandom(dd);
+			}
+			if (this.selection == Selection.LARGEST) {
+				res = this.getCPUndirectedLargest(dd);
+			}
+			if (this.selection == Selection.DEGREEBOUND) {
+				res = this.getCPUndirectedMaxDegree(dd);
+			}
+			if (res == null) {
+				throw new IllegalArgumentException("Unknown deletion type "
+						+ this.selection + " directed: " + this.dir
+						+ " in CriticalPointsTheory");
+			}
+			this.p = res[0];
+			this.deg = res[1];
+		}
+		this.runtime.end();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.metrics.Metric#writeData(java.lang.String)
 	 */
 	@Override
@@ -168,92 +182,95 @@ public class CriticalPointsTheory extends Metric {
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.metrics.Metric#getSingles()
 	 */
 	@Override
 	public Single[] getSingles() {
-		Single pR = new Single("CRITICAL_POINTS_CP",
-				this.p);
-		Single degR = new Single("CRITICAL_POINTS_DEG",
-				this.deg);
+		Single pR = new Single("CRITICAL_POINTS_CP", this.p);
+		Single degR = new Single("CRITICAL_POINTS_DEG", this.deg);
 		Single runtime = new Single("CRITICAL_POINTS_RUNTIME",
 				this.runtime.getRuntime());
-		return new Single[]{pR,degR,runtime};
+		return new Single[] { pR, degR, runtime };
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.metrics.Metric#applicable(gtna.graph.Graph, gtna.networks.Network, java.util.HashMap)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#applicable(gtna.graph.Graph,
+	 * gtna.networks.Network, java.util.HashMap)
 	 */
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 		return true;
 	}
-	
-	private double[] getCPDirectedRandom(double[][] dist){
-		int degR = dist.length+dist[0].length;
+
+	private double[] getCPDirectedRandom(double[][] dist) {
+		int degR = dist.length + dist[0].length;
 		double[] r = getk0Directed(dist);
 		double pR;
-		if (r[0] - r[1] <= 0){
+		if (r[0] - r[1] <= 0) {
 			pR = 0;
-		}else {
-			pR = (r[0]-r[1])/r[0];
+		} else {
+			pR = (r[0] - r[1]) / r[0];
 		}
-		return new double[]{pR,degR};
+		return new double[] { pR, degR };
 	}
-	
-	private double[] getCPUndirectedRandom(double[] dd){
+
+	private double[] getCPUndirectedRandom(double[] dd) {
 		double k0 = getk0(dd);
-		double r = 1 - 1/(k0-1);
-		if (r < 0){
-			return new double[]{0,dd.length-1};
-		}else {
-			return new double[]{r,dd.length-1};
+		double r = 1 - 1 / (k0 - 1);
+		if (r < 0) {
+			return new double[] { 0, dd.length - 1 };
+		} else {
+			return new double[] { r, dd.length - 1 };
 		}
 	}
-	
-	public static double[] getCPUndirectedLargest(double[] dist){
+
+	public static double[] getCPUndirectedLargest(double[] dist) {
 		double k0 = getk0(dist);
 		double av = 0;
-		for (int i = 1; i < dist.length; i++){
-			av = av + dist[i]*i;
+		for (int i = 1; i < dist.length; i++) {
+			av = av + dist[i] * i;
 		}
-		double r = 1 - 1/(k0-1);
-		if (r < 0){
-			return new double[]{0,dist.length-1};
-		}else {
+		double r = 1 - 1 / (k0 - 1);
+		if (r < 0) {
+			return new double[] { 0, dist.length - 1 };
+		} else {
 			double p = 0;
 			double[] distN = new double[dist.length];
 			double edgef = 0;
 			double fpN;
-			for (int j = dist.length-1; j > 0; j--){
+			for (int j = dist.length - 1; j > 0; j--) {
 				p = p + dist[j];
-				edgef = edgef + dist[j]*j/(av);
-				for (int i = 0; i < j; i++){
-					distN[i] = dist[i]/(1-p);
+				edgef = edgef + dist[j] * j / (av);
+				for (int i = 0; i < j; i++) {
+					distN[i] = dist[i] / (1 - p);
 				}
-               for (int i = j; i < dist.length; i++){
-            	   distN[i] = 0;
-               }
-			   k0 = getk0(distN,j-1);
-			   fpN = 1 - 1/(k0-1);
-			   if (edgef > fpN){
-					return new double[]{p,j};
+				for (int i = j; i < dist.length; i++) {
+					distN[i] = 0;
+				}
+				k0 = getk0(distN, j - 1);
+				fpN = 1 - 1 / (k0 - 1);
+				if (edgef > fpN) {
+					return new double[] { p, j };
 				}
 			}
 		}
-		return new double[]{1,1};
+		return new double[] { 1, 1 };
 	}
-	
-	public static double[] getCPDirectedLargest(double[][] dist){
+
+	public static double[] getCPDirectedLargest(double[][] dist) {
 		double av = 0;
 		int max = 0;
-		for (int i = 0; i < dist.length; i++){
-			for (int j = 0; j < dist[i].length; j++){
-				av = av + i*dist[i][j];
+		for (int i = 0; i < dist.length; i++) {
+			for (int j = 0; j < dist[i].length; j++) {
+				av = av + i * dist[i][j];
 			}
-			if (dist[i].length-1 + i > max){
-				max = dist[i].length-1 + i;
+			if (dist[i].length - 1 + i > max) {
+				max = dist[i].length - 1 + i;
 			}
 		}
 		double p = 0;
@@ -261,30 +278,32 @@ public class CriticalPointsTheory extends Metric {
 		double in = 0;
 		double fpN;
 		double k0;
-		for (int j = max; j > 0; j--){
-			for (int i = 0; i < j; i++){
-				if (i < dist.length && dist[i].length > j-i){
-					p = p + dist[i][j-i];
-					out = out + dist[i][j-i]*i/av;
-					in = in + dist[i][j-i]*(j-i)/av;
+		for (int j = max; j > 0; j--) {
+			for (int i = 0; i < j; i++) {
+				if (i < dist.length && dist[i].length > j - i) {
+					p = p + dist[i][j - i];
+					out = out + dist[i][j - i] * i / av;
+					in = in + dist[i][j - i] * (j - i) / av;
 				}
 			}
-			
-			double[] r = getk0Directed(dist,j,Integer.MAX_VALUE, Integer.MAX_VALUE);
-			fpN = (1-out)*(1-in)*2*r[0]-(1-in)*r[1]-(1-out)*r[2];
-			if (fpN < 0){
-				return new double[]{p,j-1};
+
+			double[] r = getk0Directed(dist, j, Integer.MAX_VALUE,
+					Integer.MAX_VALUE);
+			fpN = (1 - out) * (1 - in) * 2 * r[0] - (1 - in) * r[1] - (1 - out)
+					* r[2];
+			if (fpN < 0) {
+				return new double[] { p, j - 1 };
 			}
-			
+
 		}
-		return new double[]{1,1};
+		return new double[] { 1, 1 };
 	}
-	
-	public static double[] getCPDirectedLargestOut(double[][] dist){
+
+	public static double[] getCPDirectedLargestOut(double[][] dist) {
 		double av = 0;
-		for (int i = 0; i < dist.length; i++){
-			for (int j = 0; j < dist[i].length; j++){
-				av = av + i*dist[i][j];
+		for (int i = 0; i < dist.length; i++) {
+			for (int j = 0; j < dist[i].length; j++) {
+				av = av + i * dist[i][j];
 			}
 		}
 		double p = 0;
@@ -292,119 +311,121 @@ public class CriticalPointsTheory extends Metric {
 		double in = 0;
 		double fpN;
 		double k0;
-		for (int j = dist.length-1; j > 0; j--){
-			for (int i = 0; i < dist[j].length; i++){
+		for (int j = dist.length - 1; j > 0; j--) {
+			for (int i = 0; i < dist[j].length; i++) {
 				p = p + dist[j][i];
-				out = out + dist[j][i]*j/(av);
-				in = in + dist[j][i]*i/av;
+				out = out + dist[j][i] * j / (av);
+				in = in + dist[j][i] * i / av;
 			}
-			double[] r = getk0Directed(dist,Integer.MAX_VALUE,j, Integer.MAX_VALUE);
-			fpN = (1-out)*(1-in)*2*r[0]-(1-in)*r[1]-(1-out)*r[2];
-			if (fpN < 0){
-				return new double[]{p,j-1};
+			double[] r = getk0Directed(dist, Integer.MAX_VALUE, j,
+					Integer.MAX_VALUE);
+			fpN = (1 - out) * (1 - in) * 2 * r[0] - (1 - in) * r[1] - (1 - out)
+					* r[2];
+			if (fpN < 0) {
+				return new double[] { p, j - 1 };
 			}
 		}
-		return new double[]{1,1};
+		return new double[] { 1, 1 };
 	}
-	
-	public static double[] getCPDirectedLargestIn(double[][] dist){
+
+	public static double[] getCPDirectedLargestIn(double[][] dist) {
 		double av = 0;
 		int max = 0;
-		for (int i = 0; i < dist.length; i++){
-			for (int j = 0; j < dist[i].length; j++){
-				av = av + j*dist[i][j];
+		for (int i = 0; i < dist.length; i++) {
+			for (int j = 0; j < dist[i].length; j++) {
+				av = av + j * dist[i][j];
 			}
-			if (dist[i].length -1 > max){
-				max = dist[i].length-1;
+			if (dist[i].length - 1 > max) {
+				max = dist[i].length - 1;
 			}
 		}
 		double p = 0;
 		double out = 0;
 		double in = 0;
 		double fpN;
-		for (int j = max; j > 0; j--){
-			for (int i = 0; i < dist.length; i++){
-				if (j < dist[i].length){
-				p = p + dist[i][j];
-				out = out + dist[i][j]*i/(av);
-				in = in + dist[i][j]*j/av;
+		for (int j = max; j > 0; j--) {
+			for (int i = 0; i < dist.length; i++) {
+				if (j < dist[i].length) {
+					p = p + dist[i][j];
+					out = out + dist[i][j] * i / (av);
+					in = in + dist[i][j] * j / av;
 				}
 			}
-			double[] r = getk0Directed(dist,Integer.MAX_VALUE, Integer.MAX_VALUE,j);
-			fpN = (1-out)*(1-in)*2*r[0]-(1-in)*r[1]-(1-out)*r[2];
-			if (fpN < 0){
-				return new double[]{p,j-1};
+			double[] r = getk0Directed(dist, Integer.MAX_VALUE,
+					Integer.MAX_VALUE, j);
+			fpN = (1 - out) * (1 - in) * 2 * r[0] - (1 - in) * r[1] - (1 - out)
+					* r[2];
+			if (fpN < 0) {
+				return new double[] { p, j - 1 };
 			}
 		}
-		return new double[]{1,1};
+		return new double[] { 1, 1 };
 	}
-	
-	
-	
-	
-	
-	public static double[] getCPUndirectedMaxDegree(double[] dist){
+
+	public static double[] getCPUndirectedMaxDegree(double[] dist) {
 		double k0 = getk0(dist);
 		double av = 0;
-		for (int i = 1; i < dist.length; i++){
-			av = av + dist[i]*i;
+		for (int i = 1; i < dist.length; i++) {
+			av = av + dist[i] * i;
 		}
-		double r = 1 - 1/(k0-1);
-		if (r < 0){
-			return new double[]{0,dist.length-1};
-		}else {
+		double r = 1 - 1 / (k0 - 1);
+		if (r < 0) {
+			return new double[] { 0, dist.length - 1 };
+		} else {
 			double p = 0;
 			double[] distN = dist.clone();
 			double edgef = 0;
 			double fpN;
-			for (int j = dist.length-1; j > 0; j--){
+			for (int j = dist.length - 1; j > 0; j--) {
 				p = p + dist[j];
-				edgef = edgef + p/(av);
-				distN[j-1] = dist[j-1]+p;
-				for (int i = j; i < dist.length; i++){
-            	   distN[i] = 0;
-               }
-			   k0 = getk0(distN,j-1);
-			   fpN = 1 - 1/(k0-1);
-			   if (edgef > fpN){
-					return new double[]{p,j};
+				edgef = edgef + p / (av);
+				distN[j - 1] = dist[j - 1] + p;
+				for (int i = j; i < dist.length; i++) {
+					distN[i] = 0;
+				}
+				k0 = getk0(distN, j - 1);
+				fpN = 1 - 1 / (k0 - 1);
+				if (edgef > fpN) {
+					return new double[] { p, j };
 				}
 			}
 		}
-		return new double[]{1,1};
+		return new double[] { 1, 1 };
 	}
-	
-	
-	private static double getk0(double[] dist, int bound){
+
+	private static double getk0(double[] dist, int bound) {
 		double firstMoment = 0;
 		double secondMoment = 0;
-		for (int i = 0; i < Math.min(dist.length,bound+1); i++){
-			firstMoment = firstMoment+ i*dist[i];
-			secondMoment = secondMoment+ i*i*dist[i];
+		for (int i = 0; i < Math.min(dist.length, bound + 1); i++) {
+			firstMoment = firstMoment + i * dist[i];
+			secondMoment = secondMoment + i * i * dist[i];
 		}
-		return secondMoment/firstMoment;
+		return secondMoment / firstMoment;
 	}
-	
-	private static double getk0(double[] dist){
-		return getk0(dist,dist.length);
+
+	private static double getk0(double[] dist) {
+		return getk0(dist, dist.length);
 	}
-	
-	private static double[] getk0Directed(double[][] dist, int bound, int boundOut, int boundIn){
+
+	private static double[] getk0Directed(double[][] dist, int bound,
+			int boundOut, int boundIn) {
 		double jk = 0;
 		double j = 0;
 		double k = 0;
-		for (int i = 1; i < Math.min(Math.min(dist.length,bound),boundOut); i++){
-			for (int i2 = 1; i2 < Math.min(Math.min(dist[i].length,bound-i),boundIn);i2++){
-				jk = jk + i*i2*dist[i][i2];
-				j = j + i*dist[i][i2];
-				k = k + i2*dist[i][i2];
+		for (int i = 1; i < Math.min(Math.min(dist.length, bound), boundOut); i++) {
+			for (int i2 = 1; i2 < Math.min(Math.min(dist[i].length, bound - i),
+					boundIn); i2++) {
+				jk = jk + i * i2 * dist[i][i2];
+				j = j + i * dist[i][i2];
+				k = k + i2 * dist[i][i2];
 			}
 		}
-		return new double[]{jk,j,k};
+		return new double[] { jk, j, k };
 	}
-	
-	private static double[] getk0Directed(double[][] dist){
-		return getk0Directed(dist,Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+
+	private static double[] getk0Directed(double[][] dist) {
+		return getk0Directed(dist, Integer.MAX_VALUE, Integer.MAX_VALUE,
+				Integer.MAX_VALUE);
 	}
 
 }
