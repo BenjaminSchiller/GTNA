@@ -47,6 +47,8 @@ import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.util.Timer;
 import gtna.util.Util;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.HashMap;
 
@@ -60,8 +62,18 @@ public class ClusteringCoefficient extends Metric {
 
 	private Timer runtime;
 
+	private double transitivity;
+
+	private boolean includeOne;
+
+	public ClusteringCoefficient(boolean includeDegreeOne) {
+		super("CLUSTERING_COEFFICIENT", new Parameter[] { new BooleanParameter(
+				"INCLUDE_ONE", includeDegreeOne) });
+		this.includeOne = includeDegreeOne;
+	}
+
 	public ClusteringCoefficient() {
-		super("CLUSTERING_COEFFICIENT");
+		this(true);
 	}
 
 	@Override
@@ -76,8 +88,9 @@ public class ClusteringCoefficient extends Metric {
 		Edges edges = new Edges(graph.getNodes(), graph.generateEdges());
 		this.localClusteringCoefficient = this
 				.computeLocalClusteringCoefficient(graph.getNodes(), edges);
-		this.clusteringCoefficient = this
-				.computeClusteringCoefficient(this.localClusteringCoefficient);
+		this.clusteringCoefficient = this.computeClusteringCoefficient(
+				this.localClusteringCoefficient, graph.getNodes());
+		this.transitivity = this.computeTransitivity(graph.getNodes());
 		this.runtime.end();
 	}
 
@@ -106,8 +119,39 @@ public class ClusteringCoefficient extends Metric {
 				/ (double) (neighbors.length * (neighbors.length - 1));
 	}
 
-	private double computeClusteringCoefficient(double[] lcc) {
-		return Util.avg(lcc);
+	private double computeClusteringCoefficient(double[] lcc, Node[] nodes) {
+		if (this.includeOne) {
+			return Util.avg(lcc);
+		} else {
+			double av = 0;
+			int count = 0;
+			for (int i = 0; i < nodes.length; i++) {
+				if (nodes[i].getOutDegree() > 1) {
+					av = av + lcc[i];
+					count++;
+				}
+			}
+			return av / (double) count;
+		}
+	}
+
+	private double computeTransitivity(Node[] nodes) {
+		Node cur;
+		int triangles = 0;
+		int triples = 0;
+		for (int i = 0; i < nodes.length; i++) {
+			int[] out = nodes[i].getOutgoingEdges();
+			for (int j = 0; j < out.length; j++) {
+				for (int k = j + 1; k < out.length; k++) {
+					if (nodes[out[j]].hasNeighbor(out[k])) {
+						triangles++;
+					}
+					triples++;
+
+				}
+			}
+		}
+		return (double) triangles / (double) triples;
 	}
 
 	@Override
@@ -121,8 +165,10 @@ public class ClusteringCoefficient extends Metric {
 		Single clusteringCoefficient = new Single(
 				"CLUSTERING_COEFFICIENT_CLUSTERING_COEFFICIENT",
 				this.clusteringCoefficient);
+		Single trans = new Single("CLUSTERING_COEFFICIENT_TRANSITIVITY",
+				this.transitivity);
 		Single runtime = new Single("CLUSTERING_COEFFICIENT_RUNTIME",
 				this.runtime.getRuntime());
-		return new Single[] { clusteringCoefficient, runtime };
+		return new Single[] { clusteringCoefficient, trans, runtime };
 	}
 }
