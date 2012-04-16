@@ -35,28 +35,26 @@
  */
 package gtna.transformation.attackableEmbedding.IQD.DistanceDiversity;
 
-import java.util.Random;
-import java.util.Vector;
-
 import gtna.graph.Graph;
 import gtna.id.ring.RingIdentifierSpace.Distance;
-import gtna.transformation.attackableEmbedding.IQD.DecisionNode;
-import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
-import gtna.transformation.attackableEmbedding.IQD.RegionCoverage.RegionCoverageEmbedding;
+import gtna.transformation.attackableEmbedding.IQD.AttackerNode;
+
+import java.util.Random;
+import java.util.Vector;
 
 /**
  * @author stef
  *
  */
-public class DistanceDiversityNode extends DecisionNode{
+public class DistanceDiversityNode extends AttackerNode{
 
 	/**
 	 * @param index
 	 * @param g
 	 * @param embedding
 	 */
-	public DistanceDiversityNode(int index, Graph g, IQDEmbedding embedding) {
-		super(index, g, embedding);
+	public DistanceDiversityNode(int index, Graph g, DistanceDiversityEmbedding embedding, boolean isAttacker) {
+		super(index, g, embedding,isAttacker);
 	}
 
 	/* (non-Javadoc)

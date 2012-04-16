@@ -38,18 +38,18 @@ package gtna.transformation.attackableEmbedding.IQD.RegionCoverage;
 import gtna.graph.Graph;
 import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
-import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
-import gtna.transformation.attackableEmbedding.IQD.kleinberg.KleinbergNode;
+import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
+import java.util.HashSet;
 import java.util.Random;
 
 /**
  * @author stef
  *
  */
-public class RegionCoverageEmbedding extends IQDEmbedding {
+public class RegionCoverageEmbedding extends AttackerIQDEmbedding {
 	int max;
 	/**
 	 * @param iterations
@@ -64,9 +64,9 @@ public class RegionCoverageEmbedding extends IQDEmbedding {
 	public RegionCoverageEmbedding(int iterations,
 			IdentifierMethod idMethod, DecisionMethod deMethod,
 			Distance distance, double epsilon, boolean checkold, boolean adjustone,
-			int max) {
+			int max, AttackerType type, AttackerSelection selection, int attackercount) {
 		super(iterations, "REGION_COVERAGE", idMethod, deMethod, distance, epsilon, checkold,
-				adjustone, new Parameter[] {new IntParameter("MAX_LOG", max)});
+				adjustone, type, selection, attackercount, new Parameter[] {new IntParameter("MAX_LOG", max)});
 		this.max = max;
 	}
 
@@ -85,8 +85,13 @@ public class RegionCoverageEmbedding extends IQDEmbedding {
 	@Override
 	protected AttackableEmbeddingNode[] generateNodes(Graph g, Random rand) {
 		AttackableEmbeddingNode[] nodes = new AttackableEmbeddingNode[g.getNodes().length];
+		HashSet<Integer> attackers = this.getAttackers(g, rand);
 		for (int i = 0; i < g.getNodes().length; i++) {
-			nodes[i] = new RegionCoverageNode(i, g, this);
+			if (attackers.contains(i)){
+			    nodes[i] = new RegionCoverageNode(i, g, this, true);
+			} else {
+				nodes[i] = new RegionCoverageNode(i, g, this, false);
+			}
 		}
 		this.init(g, nodes);
 		this.initIds(g);

@@ -38,19 +38,19 @@ package gtna.transformation.attackableEmbedding.IQD.DistanceDiversity;
 import gtna.graph.Graph;
 import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
-import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
-import gtna.transformation.attackableEmbedding.IQD.kleinberg.KleinbergNode;
+import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
+import java.util.HashSet;
 import java.util.Random;
 
 /**
  * @author stef
  * 
  */
-public class DistanceDiversityEmbedding extends IQDEmbedding {
+public class DistanceDiversityEmbedding extends AttackerIQDEmbedding {
 
 	private int max;
 	private double exponent;
@@ -76,6 +76,18 @@ public class DistanceDiversityEmbedding extends IQDEmbedding {
 		this.max = max;
 		this.exponent = exp;
 	}
+	
+	public DistanceDiversityEmbedding(int iterations,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			Distance distance, double epsilon, boolean checkold, boolean adjustone,
+			int max, double exp, AttackerType type, AttackerSelection selection, int attackercount) {
+		super(iterations, "DISTANCE_DIVERSITY", idMethod, deMethod, distance,
+				epsilon, checkold, adjustone, type, selection, attackercount,new Parameter[] {
+						new IntParameter("MAX_LOG", max),
+						new DoubleParameter("EXPONENT", exp) });
+		this.max = max;
+		this.exponent = exp;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -88,8 +100,13 @@ public class DistanceDiversityEmbedding extends IQDEmbedding {
 	protected AttackableEmbeddingNode[] generateNodes(Graph g, Random rand) {
 		AttackableEmbeddingNode[] nodes = new AttackableEmbeddingNode[g
 				.getNodes().length];
+		HashSet<Integer> attackers = this.getAttackers(g, rand);
 		for (int i = 0; i < g.getNodes().length; i++) {
-			nodes[i] = new DistanceDiversityNode(i, g, this);
+			if (attackers.contains(i)){
+			  nodes[i] = new DistanceDiversityNode(i, g, this, true);
+			} else {
+				nodes[i] = new DistanceDiversityNode(i, g, this, false);
+			}
 		}
 		this.init(g, nodes);
 		this.initIds(g);
