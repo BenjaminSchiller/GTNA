@@ -37,8 +37,7 @@ package gtna.transformation.attackableEmbedding.IQD.RegionCoverage;
 
 import gtna.graph.Graph;
 import gtna.id.ring.RingIdentifierSpace.Distance;
-import gtna.transformation.attackableEmbedding.IQD.DecisionNode;
-import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
+import gtna.transformation.attackableEmbedding.IQD.AttackerNode;
 
 import java.util.Random;
 import java.util.Vector;
@@ -47,15 +46,15 @@ import java.util.Vector;
  * @author stef
  *
  */
-public class RegionCoverageNode extends DecisionNode {
+public class RegionCoverageNode extends AttackerNode {
 
 	/**
 	 * @param index
 	 * @param g
 	 * @param embedding
 	 */
-	public RegionCoverageNode(int index, Graph g, IQDEmbedding embedding) {
-		super(index, g, embedding);
+	public RegionCoverageNode(int index, Graph g, RegionCoverageEmbedding embedding, boolean isAttacker) {
+		super(index, g, embedding, isAttacker);
 	}
 
 	/* (non-Javadoc)
