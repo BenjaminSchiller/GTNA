@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * SwappingEmbedding.java
+ * LMCEmbeddding.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -37,15 +37,13 @@ package gtna.transformation.attackableEmbedding.IQD.kleinberg;
 
 import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
-import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding.AttackerSelection;
-import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding.AttackerType;
 import gtna.util.parameter.Parameter;
 
 /**
  * @author stef
  * 
  */
-public class SwappingEmbedding extends KleinbergEmbedding {
+public class LMCEmbedding extends KleinbergEmbedding {
 
 	/**
 	 * @param iterations
@@ -56,17 +54,18 @@ public class SwappingEmbedding extends KleinbergEmbedding {
 	 * @param checkold
 	 * @param parameters
 	 */
-	public SwappingEmbedding(int iterations, Distance distance, double epsilon) {
-		super(iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
+	public LMCEmbedding(int iterations, Distance distance, double epsilon) {
+		super(iterations, IQDEmbedding.IdentifierMethod.ONERANDOM,
 				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
 				false, false, new Parameter[0]);
 	}
 	
-	public SwappingEmbedding(int iterations, Distance distance, double epsilon, AttackerType type, AttackerSelection selection,
+	public LMCEmbedding(int iterations, Distance distance, double epsilon, AttackerType type, AttackerSelection selection,
 			int attackercount) {
-		super(iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
+		super(iterations, IQDEmbedding.IdentifierMethod.ONERANDOM,
 				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
-				false, false, type, selection, attackercount);
+				false, false, type, selection,attackercount);
 	}
+	
 
 }
