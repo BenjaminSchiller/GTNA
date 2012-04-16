@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.metrics;
+package gtna.metrics.connectivity;
 
 import gtna.graph.Graph;
 import gtna.transformation.Transformation;

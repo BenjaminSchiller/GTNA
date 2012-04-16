@@ -53,7 +53,7 @@ public class CommunityDetectionDeltaQ extends Transformation {
 				new BooleanParameter("FORCESEPARATED", Config.getBoolean(key
 						+ "_FORCESEPARATED")),
 				new IntParameter("MAXITERATIONS", Config.getInt(key
-						+ "_INTERNALFORMAT")) });
+						+ "_MAXITERATIONS")) });
 	}
 
 	/**

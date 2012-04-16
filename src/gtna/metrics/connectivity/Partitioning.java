@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Roles.java
+ * Connectivity.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,14 +33,14 @@
  * ---------------------------------------
  *
  */
-package gtna.metrics;
+package gtna.metrics.connectivity;
 
-import gtna.communities.Roles.Role;
 import gtna.data.Single;
 import gtna.graph.Graph;
+import gtna.graph.partition.Partition;
 import gtna.io.DataWriter;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
-import gtna.util.Distribution;
 import gtna.util.Timer;
 
 import java.util.HashMap;
@@ -49,13 +49,22 @@ import java.util.HashMap;
  * @author benni
  * 
  */
-public class Roles extends Metric {
-	private Distribution distribution;
+public abstract class Partitioning extends Metric {
+	private double largestComponent;
+
+	private double largestComponentFraction;
+
+	private double[] components;
+
+	private double[] componentsFraction;
+
+	private String property;
 
 	private Timer runtime;
 
-	public Roles() {
-		super("ROLES");
+	public Partitioning(String key, String property) {
+		super(key);
+		this.property = property;
 	}
 
 	@Override
@@ -65,37 +74,46 @@ public class Roles extends Metric {
 
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		if (!g.hasProperty("ROLES_0")) {
-			this.runtime = new Timer();
-			this.distribution = new Distribution(new double[] { 0.0 });
-			this.runtime.end();
-			return;
+		if (!g.hasProperty(this.property + "_0")) {
+			g = this.addProperty(g);
 		}
 		this.runtime = new Timer();
-		gtna.communities.Roles roles = (gtna.communities.Roles) g
-				.getProperty("ROLES_0");
-		double[] r = new double[Role.values().length];
-		for (Role role : Role.values()) {
-			r[gtna.communities.Roles.toIndex(role) - 1] = (double) roles
-					.getNodesOfRole(role).size() / (double) g.getNodes().length;
+		Partition p = (Partition) g.getProperty(this.property + "_0");
+		this.largestComponent = p.getComponents()[0].length;
+		this.largestComponentFraction = this.largestComponent
+				/ (double) g.getNodes().length;
+		this.components = new double[p.getComponents().length];
+		this.componentsFraction = new double[p.getComponents().length];
+		for (int i = 0; i < p.getComponents().length; i++) {
+			this.components[i] = p.getComponents()[i].length;
+			this.componentsFraction[i] = this.components[i]
+					/ (double) g.getNodes().length;
 		}
-		this.distribution = new Distribution(r);
 		this.runtime.end();
 	}
 
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(
-				this.distribution.getDistribution(), "ROLES_DISTRIBUTION",
-				folder);
+		success &= DataWriter.writeWithIndex(this.components, this.getKey()
+				+ "_COMPONENTS", folder);
+		success &= DataWriter.writeWithIndex(this.componentsFraction,
+				this.getKey() + "_COMPONENTS_FRACTION", folder);
 		return success;
 	}
 
 	@Override
 	public Single[] getSingles() {
-		Single runtime = new Single("ROLES_RUNTIME", this.runtime.getRuntime());
-		return new Single[] { runtime };
+		Single largestComponent = new Single(this.getKey()
+				+ "_LARGEST_COMPONENT", this.largestComponent);
+		Single largestComponentFraction = new Single(this.getKey()
+				+ "_LARGEST_COMPONENT_FRACTION", this.largestComponentFraction);
+		Single runtime = new Single(this.getKey() + "_RUNTIME",
+				this.runtime.getRuntime());
+		return new Single[] { largestComponent, largestComponentFraction,
+				runtime };
 	}
+
+	protected abstract Graph addProperty(Graph g);
 
 }

@@ -36,6 +36,8 @@
 package gtna.networks.model.placementmodels;
 
 import gtna.util.Util;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
  * 
@@ -54,10 +56,9 @@ import gtna.util.Util;
  */
 public abstract class PlacementModelImpl implements PlacementModel {
 	private String key;
-	private String[] additionalConfigKeys;
-	private String[] additionalConfigValues;
 	protected final int maxTries = 100;
 	private boolean inCenter;
+	private Parameter[] additionalConfigParams;
 
 	/**
 	 * Getter for the key of the particular <code>PlacementModel</code>.
@@ -78,51 +79,30 @@ public abstract class PlacementModelImpl implements PlacementModel {
 		this.key = key;
 	}
 
-	/**
-	 * Getter for the configuration keys. Returns "KEY", "IN_CENTER" as well as
-	 * any additional configuration keys set by
-	 * <code>setAdditionalConfigKeys()</code>.
-	 * 
-	 * @return A string array containing all the configuration keys.
-	 */
-	public String[] getConfigKeys() {
-		return Util.mergeArrays(new String[] { "KEY", "IN_CENTER" },
-				additionalConfigKeys);
+	@Override
+	public Parameter[] getConfigParameters() {
+		return Util.mergeArrays(new Parameter[] { new StringParameter("KEY",
+				key) }, getAdditionalConfigParameters());
 	}
 
 	/**
-	 * Setter for the additional configuration keys. Those will be returned in
-	 * addition to "KEY", "IN_CENTER" by <code>getConfigKeys()</code>.
+	 * Getter for the additional configuration parameters.
 	 * 
-	 * @param arr
-	 *            The new additional configuration keys.
+	 * @return An array containing the additional configuration parameters.
 	 */
-	public void setAdditionalConfigKeys(String[] arr) {
-		additionalConfigKeys = arr;
+	protected Parameter[] getAdditionalConfigParameters() {
+		return additionalConfigParams;
 	}
 
 	/**
-	 * Setter for the additional configuration values. Those will be returned in
-	 * addition to the key, the width and the height by
-	 * <code>getConfigValues()</code>.
+	 * Setter for the additional configuration parameters, those will be
+	 * returned in addition to the key of the PlacementModel.
 	 * 
-	 * @param arr
-	 *            The new additional configuration values.
+	 * @param parameters
+	 *            The additional parameters.
 	 */
-	public void setAdditionalConfigValues(String[] arr) {
-		additionalConfigValues = arr;
-	}
-
-	/**
-	 * Getter for the configuration values. Returns key and inCenter as well as
-	 * any additional configuration keys set by
-	 * <code>setAdditionalConfigValues()</code>.
-	 * 
-	 * @return A string array containing all the configuration values.
-	 */
-	public String[] getConfigValues() {
-		return Util.mergeArrays(new String[] { getKey(),
-				Boolean.toString(getInCenter()) }, additionalConfigValues);
+	protected void setAdditionalConfigParameters(Parameter[] params) {
+		additionalConfigParams = params;
 	}
 
 	/**
