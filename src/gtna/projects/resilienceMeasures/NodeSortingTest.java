@@ -43,12 +43,9 @@ import org.gephi.statistics.plugin.GraphDistance;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.BetweennessCentralityNodeSorter;
-import gtna.graph.sorting.ClosenessCentralityNodeSorter;
-import gtna.graph.sorting.DegreeNodeSorter;
+import gtna.graph.sorting.CentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
-import gtna.networks.Network;
-import gtna.networks.model.ErdosRenyi;
 
 /**
  * @author truong
@@ -57,69 +54,59 @@ import gtna.networks.model.ErdosRenyi;
 public class NodeSortingTest {
 	public static void main(String[] args) {
 
-		NodeSortingTest.speedTest();
+		NodeSortingTest.test();
 
 	}
 
-	public static void test1() {
+	public static void test() {
 		System.out.println("Importing...");
 		Utils u = new Utils();
 		Graph g = u.importGraphFromFile("germany.gml");
 		System.out.println("Graph imported!");
 
-		// nodes
-		Node[] nodes = g.getNodes();
-
 		// sorting
-		NodeSorter sorter = new BetweennessCentralityNodeSorter(
+		CentralityNodeSorter sorter = new CentralityNodeSorter(
 				NodeSorter.NodeSorterMode.ASC);
+		sorter.setCentrality("CLOSENESS");
 		Node[] sorted = sorter.sort(g, new Random());
-
-		// original
-		System.out.println("Origninal:");
-		for (int i = 0; i < nodes.length; i++) {
-			System.out.println(i + ": " + nodes[i]);
-		}
 
 		// sorted
 		System.out.println("-----");
 		System.out.println("Sorted:");
 		for (int i = 0; i < sorted.length; i++) {
-			System.out.println(i
-					+ ": "
-					+ sorted[i]
-					+ " -- "
-					+ ((BetweennessCentralityNodeSorter) sorter)
-							.getCentrality(g.getNode(i)));
+			System.out.println(sorted[i] + " -- "
+					+ sorter.getCentrality(sorted[i]));
 		}
 
 		// print centrality from gtna and gephi
 		HashMap<Integer, Double> gephiCentrality = u
-				.gephiCentrality(GraphDistance.BETWEENNESS);
+				.gephiCentrality(GraphDistance.CLOSENESS);
 		System.out.println("GTNA Centrality:");
 		for (Node n : g.getNodes()) {
-			System.out.println(""
-					+ n.toString()
-					+ " = "
-					+ ((BetweennessCentralityNodeSorter) sorter)
-							.getCentrality(n) + " -- gephi: "
-					+ (gephiCentrality.get(n.getIndex()) * 2));
+			System.out
+					.println(""
+							+ n.toString()
+							+ " = "
+							+ sorter.getCentrality(n)
+							+ " -- gephi: "
+							+ (gephiCentrality.get(n.getIndex()) / 6.219512195121951 * 255));
 		}
 
 	}
 
 	public static void speedTest() {
 		Utils u = new Utils();
-		Graph g = u.importGraphFromFile("power.gml");
+		Graph g = u.importGraphFromFile("germany.gml");
 
-		ClosenessCentralityNodeSorter bc = new ClosenessCentralityNodeSorter(
+		BetweennessCentralityNodeSorter bc = new BetweennessCentralityNodeSorter(
 				NodeSorterMode.ASC);
 
 		Node[] sorted = bc.sort(g, new Random());
 
+		System.out.println("Sorted:");
 		for (int i = 0; i < sorted.length; i++) {
 			System.out.println(sorted[i].toString() + " -- "
-					+ +bc.getCentrality(sorted[i]));
+					+ bc.getCentrality(sorted[i]));
 		}
 	}
 }
