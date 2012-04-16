@@ -35,17 +35,17 @@
  */
 package gtna.transformation.attackableEmbedding.IQD.kleinberg;
 
-import java.util.Random;
-
 import gtna.graph.Graph;
-import gtna.transformation.attackableEmbedding.IQD.DecisionNode;
+import gtna.transformation.attackableEmbedding.IQD.AttackerNode;
 import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
+
+import java.util.Random;
 
 /**
  * @author stef
  *
  */
-public class KleinbergNode extends DecisionNode{
+public class KleinbergNode extends AttackerNode{
 
 	/**
 	 * @param index
@@ -53,8 +53,8 @@ public class KleinbergNode extends DecisionNode{
 	 * @param id
 	 * @param embedding
 	 */
-	public KleinbergNode(int index, Graph g,  IQDEmbedding embedding) {
-		super(index, g, embedding);
+	public KleinbergNode(int index, Graph g,  KleinbergEmbedding embedding, boolean isAttacker) {
+		super(index, g, embedding, isAttacker);
 	}
 
 	/* (non-Javadoc)
