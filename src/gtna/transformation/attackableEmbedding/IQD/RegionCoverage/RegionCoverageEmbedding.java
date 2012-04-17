@@ -51,6 +51,25 @@ import java.util.Random;
  */
 public class RegionCoverageEmbedding extends AttackerIQDEmbedding {
 	int max;
+	
+	/**
+	 * @param iterations
+	 * @param key
+	 * @param idMethod
+	 * @param deMethod
+	 * @param distance
+	 * @param epsilon
+	 * @param checkold
+	 * @param parameters
+	 */
+	public RegionCoverageEmbedding(int iterations,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			Distance distance, double epsilon, boolean checkold, boolean adjustone,
+			int max) {
+		super(iterations, "REGION_COVERAGE", idMethod, deMethod, distance, epsilon, checkold,
+				adjustone, new Parameter[] {new IntParameter("MAX_LOG", max)});
+		this.max = max;
+	}
 	/**
 	 * @param iterations
 	 * @param key

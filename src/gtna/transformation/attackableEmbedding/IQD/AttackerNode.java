@@ -158,14 +158,14 @@ public abstract class AttackerNode extends DecisionNode {
 		double[][] res = new double[2][];
 		AttackerIQDEmbedding attEmbedding = (AttackerIQDEmbedding)this.embedding;
 		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.CONTRACTION){
-			res[0] = new double[]{this.ask(rand, this)};
+			res[0] = new double[]{this.ask(rand, this),-1};
 			res[1] = new double[this.knownIDs.length];
 			for (int i = 0; i < res[1].length; i++){
 				res[1][i] = (callerID +close*rand.nextDouble())%1;
 			}
 		}
 		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.DIVERGENCE){
-			res[0] = new double[]{rand.nextDouble()};
+			res[0] = new double[]{rand.nextDouble(),-1};
 			res[1] = new double[this.knownIDs.length];
 			for (int i = 0; i < res[1].length; i++){
 				res[1][i] = (callerID +close*rand.nextDouble())%1;
@@ -173,7 +173,7 @@ public abstract class AttackerNode extends DecisionNode {
 		}
 		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.REJECTION){
 			res[0] = new double[]{(maxMiddle(neighborsID) + rand.nextDouble()
-					 * close) % 1.0};
+					 * close) % 1.0,-1};
 			res[1] = new double[this.knownIDs.length];
 			for (int i = 0; i < res[1].length; i++){
 				res[1][i] = (callerID +close*rand.nextDouble())%1;
