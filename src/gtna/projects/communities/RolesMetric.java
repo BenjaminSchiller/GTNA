@@ -55,8 +55,8 @@ import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityDetectionDeltaQ;
 import gtna.transformation.communities.CommunityDetectionLPA;
-import gtna.transformation.communities.Roles2Generation;
-import gtna.transformation.communities.RolesGeneration;
+import gtna.transformation.communities.GuimeraRolesTransformation;
+import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.transformation.partition.GiantConnectedComponent;
 import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.util.Config;
@@ -89,8 +89,8 @@ public class RolesMetric {
 		Transformation gcc = new GiantConnectedComponent();
 		Transformation dq = new CommunityDetectionDeltaQ();
 		Transformation lpa = new CommunityDetectionLPA();
-		Transformation r = new RolesGeneration();
-		Transformation r2 = new Roles2Generation(true);
+		Transformation r = new GuimeraRolesTransformation();
+		Transformation r2 = new WsnRolesTransformation();
 
 		Transformation[] t1 = new Transformation[] { dq, dq, dq, dq, dq, dq, r,
 				r2 };
