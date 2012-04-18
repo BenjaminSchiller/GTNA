@@ -35,44 +35,44 @@
  */
 package gtna.metrics.communities;
 
-import gtna.communities.Roles.Role;
-
 /**
  * @author Flipp
  * 
  */
 public class MaxRolePercRole implements Comparable<MaxRolePercRole> {
 	double perc;
-	Role maxRole;
+	// Role maxRole;
 	int[] counts;
 	int node;
 	int count;
+
+	// TODO adapt to changes in roles
 
 	/**
 	 * @param is
 	 * @param countRoles
 	 */
 	public MaxRolePercRole(int[] is, int countRoles, int node) {
-		double max = 0;
-		this.node = node;
-		counts = is;
-		count = countRoles;
-		for (int i = 0; i < is.length; i++) {
-			if (is[i] > max) {
-				maxRole = Role.values()[i];
-				max = is[i];
-			}
-		}
-
-		perc = (max / (double) countRoles);
+		// double max = 0;
+		// this.node = node;
+		// counts = is;
+		// count = countRoles;
+		// for (int i = 0; i < is.length; i++) {
+		// if (is[i] > max) {
+		// maxRole = Role.values()[i];
+		// max = is[i];
+		// }
+		// }
+		//
+		// perc = (max / (double) countRoles);
 	}
 
-	/**
-	 * @return
-	 */
-	public Role getRole() {
-		return maxRole;
-	}
+	// /**
+	// * @return
+	// */
+	// public Role getRole() {
+	// return maxRole;
+	// }
 
 	/**
 	 * @return
@@ -103,12 +103,12 @@ public class MaxRolePercRole implements Comparable<MaxRolePercRole> {
 		return node;
 	}
 
-	/**
-	 * @param aktRole
-	 * @return
-	 */
-	public double getValueOfRole(Role aktRole) {
-		return ((double) counts[aktRole.ordinal()]) / (double) count;
-	}
+	// /**
+	// * @param aktRole
+	// * @return
+	// */
+	// public double getValueOfRole(Role aktRole) {
+	// return ((double) counts[aktRole.ordinal()]) / (double) count;
+	// }
 
 }
