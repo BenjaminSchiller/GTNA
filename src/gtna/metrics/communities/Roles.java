@@ -35,14 +35,17 @@
  */
 package gtna.metrics.communities;
 
-import gtna.communities.Roles.Role;
+import gtna.communities.Role;
+import gtna.communities.Role.RoleType;
+import gtna.communities.RolesGraphProperty;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Distribution;
-import gtna.util.Timer;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.HashMap;
 
@@ -51,37 +54,36 @@ import java.util.HashMap;
  * 
  */
 public class Roles extends Metric {
+	private RoleType type;
+
 	private Distribution distribution;
 
-	private Timer runtime;
-
-	public Roles() {
-		super("ROLES");
+	public Roles(RoleType type) {
+		super("ROLES", new Parameter[] { new StringParameter("TYPE",
+				type.toString()) });
+		this.type = type;
 	}
 
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-		return true;
+		return g.hasProperty("ROLES_" + this.type.toString() + "_0");
 	}
 
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		if (!g.hasProperty("ROLES_0")) {
-			this.runtime = new Timer();
+		if (!g.hasProperty("ROLES_" + this.type.toString() + "_0")) {
 			this.distribution = new Distribution(new double[] { 0.0 });
-			this.runtime.end();
 			return;
 		}
-		this.runtime = new Timer();
-		gtna.communities.Roles roles = (gtna.communities.Roles) g
-				.getProperty("ROLES_0");
-		double[] r = new double[Role.values().length];
-		for (Role role : Role.values()) {
-			r[gtna.communities.Roles.toIndex(role) - 1] = (double) roles
-					.getNodesOfRole(role).size() / (double) g.getNodes().length;
+		RolesGraphProperty roles = (RolesGraphProperty) g.getProperty("ROLES_"
+				+ this.type.toString() + "_0");
+		Role[] types = roles.getRoles()[0].getRoleTypes();
+		double[] r = new double[types.length];
+		for (Role role : types) {
+			r[role.toIndex()] = (double) roles.getNodes(role).length
+					/ (double) g.getNodes().length;
 		}
 		this.distribution = new Distribution(r);
-		this.runtime.end();
 	}
 
 	@Override
@@ -95,8 +97,7 @@ public class Roles extends Metric {
 
 	@Override
 	public Single[] getSingles() {
-		Single runtime = new Single("ROLES_RUNTIME", this.runtime.getRuntime());
-		return new Single[] { runtime };
+		return new Single[0];
 	}
 
 }
