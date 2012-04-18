@@ -35,18 +35,18 @@
  */
 package gtna.projects.etc;
 
+import gtna.communities.Role;
 import gtna.data.Series;
 import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.RandomNodeSorter;
-import gtna.graph.sorting.Roles2NodeSorter;
+import gtna.graph.sorting.WsnRolesNodeSorter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
 import gtna.metrics.communities.Communities;
 import gtna.metrics.communities.Roles;
-import gtna.metrics.communities.Roles2;
 import gtna.metrics.fragmentation.Fragmentation;
 import gtna.metrics.fragmentation.Fragmentation.Resolution;
 import gtna.metrics.fragmentation.WeakFragmentation;
@@ -68,8 +68,8 @@ import gtna.transformation.attackableEmbedding.lmc.LMC;
 import gtna.transformation.communities.CommunityColors;
 import gtna.transformation.communities.CommunityDetectionDeltaQ;
 import gtna.transformation.communities.CommunityDetectionLPA;
-import gtna.transformation.communities.Roles2Generation;
-import gtna.transformation.communities.RolesGeneration;
+import gtna.transformation.communities.GuimeraRolesTransformation;
+import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.partition.GiantConnectedComponent;
 import gtna.transformation.partition.WeakConnectivityPartition;
@@ -227,8 +227,8 @@ public class Test {
 		Transformation t_lpa = new CommunityDetectionLPA();
 		Transformation t_dq = new CommunityDetectionDeltaQ();
 		Transformation t_cc = new CommunityColors();
-		Transformation t_r = new RolesGeneration();
-		Transformation t_r2 = new Roles2Generation(true);
+		Transformation t_r = new GuimeraRolesTransformation();
+		Transformation t_r2 = new WsnRolesTransformation();
 		Transformation t_gcc = new GiantConnectedComponent();
 
 		Transformation[] t1 = new Transformation[] { t_gcc, t_lpa, t_r, t_r2 };
@@ -246,16 +246,17 @@ public class Test {
 						Fragmentation.Resolution.PERCENT),
 				new WeakFragmentation(new RandomNodeSorter(),
 						Fragmentation.Resolution.PERCENT),
-				new WeakFragmentation(new Roles2NodeSorter(
-						Roles2NodeSorter.HS_S_HB_B_HC_C),
+				new WeakFragmentation(new WsnRolesNodeSorter(
+						WsnRolesNodeSorter.HS_S_HB_B_HC_C),
 						Fragmentation.Resolution.PERCENT),
-				new WeakFragmentation(new Roles2NodeSorter(
-						Roles2NodeSorter.HS_HB_S_B_HC_C),
+				new WeakFragmentation(new WsnRolesNodeSorter(
+						WsnRolesNodeSorter.HS_HB_S_B_HC_C),
 						Fragmentation.Resolution.PERCENT),
-				new WeakFragmentation(new Roles2NodeSorter(
-						Roles2NodeSorter.HS_HB_HC_S_B_C),
-						Fragmentation.Resolution.PERCENT), new Roles(),
-				new Roles2(), new Communities() };
+				new WeakFragmentation(new WsnRolesNodeSorter(
+						WsnRolesNodeSorter.HS_HB_HC_S_B_C),
+						Fragmentation.Resolution.PERCENT),
+				new Roles(Role.RoleType.GUIMERA), new Roles(Role.RoleType.WSN),
+				new Communities() };
 		Series[] s = Series.generate(nw, metrics, times);
 		// PlotOld.multiAvg(s, "multi/", metrics);
 	}

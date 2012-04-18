@@ -35,18 +35,20 @@
  */
 package gtna.projects.etc;
 
+import gtna.communities.Role;
+import gtna.communities.Role.RoleType;
+import gtna.communities.RolesGraphProperty;
 import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.DegreeNodeSorter;
+import gtna.graph.sorting.GuimeraRolesNodeSorter;
 import gtna.graph.sorting.NodeSorter;
-import gtna.graph.sorting.Roles2NodeSorter;
-import gtna.graph.sorting.RolesNodeSorter;
+import gtna.graph.sorting.WsnRolesNodeSorter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.communities.Communities;
 import gtna.metrics.communities.Roles;
-import gtna.metrics.communities.Roles2;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.placementmodels.NodeConnector;
@@ -62,8 +64,8 @@ import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityColors;
 import gtna.transformation.communities.CommunityDetectionDeltaQ;
 import gtna.transformation.communities.CommunityDetectionLPA;
-import gtna.transformation.communities.Roles2Generation;
-import gtna.transformation.communities.RolesGeneration;
+import gtna.transformation.communities.GuimeraRolesTransformation;
+import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.transformation.partition.GiantConnectedComponent;
 import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.util.Config;
@@ -80,8 +82,8 @@ public class Resilience {
 		Transformation t_lpa = new CommunityDetectionLPA();
 		Transformation t_dq = new CommunityDetectionDeltaQ();
 		Transformation t_cc = new CommunityColors();
-		Transformation t_r = new RolesGeneration();
-		Transformation t_r2 = new Roles2Generation(true);
+		Transformation t_r = new GuimeraRolesTransformation();
+		Transformation t_r2 = new WsnRolesTransformation();
 		Transformation t_gcc = new GiantConnectedComponent();
 		Transformation t_wcp = new WeakConnectivityPartition();
 
@@ -113,8 +115,9 @@ public class Resilience {
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/roles/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/roles/");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
-		Metric[] metrics = new Metric[] { new Roles(), new Roles2(),
-				new Communities(), new DegreeDistribution() };
+		Metric[] metrics = new Metric[] { new Roles(Role.RoleType.GUIMERA),
+				new Roles(RoleType.WSN), new Communities(),
+				new DegreeDistribution() };
 
 		Series[] s_lpa = Series.generate(nw_lpa, metrics, times);
 		Series[] s_dq = Series.generate(nw_dq, metrics, times);
@@ -143,8 +146,8 @@ public class Resilience {
 		Network nw = Resilience.communityNew(2000, null);
 		Transformation t_lpa = new CommunityDetectionLPA();
 		Transformation t_cc = new CommunityColors();
-		Transformation t_r = new RolesGeneration();
-		Transformation t_r2 = new Roles2Generation(true);
+		Transformation t_r = new GuimeraRolesTransformation();
+		Transformation t_r2 = new WsnRolesTransformation();
 		Graph g = nw.generate();
 		g = t_lpa.transform(g);
 		g = t_cc.transform(g);
@@ -152,9 +155,10 @@ public class Resilience {
 		g = t_r2.transform(g);
 
 		Random rand = new Random();
-		NodeSorter sorter = new Roles2NodeSorter(
-				Roles2NodeSorter.HS_HB_HC_S_B_C);
-		sorter = new RolesNodeSorter(RolesNodeSorter.GH_CH_PH_SC_P_UP_KN);
+		NodeSorter sorter = new WsnRolesNodeSorter(
+				WsnRolesNodeSorter.HS_HB_HC_S_B_C);
+		sorter = new GuimeraRolesNodeSorter(
+				GuimeraRolesNodeSorter.GH_CH_PH_SC_P_UP_KN);
 
 		System.out.println(sorter.getKey() + ":");
 		Resilience.print(sorter.sort(g, rand), g);
@@ -175,16 +179,16 @@ public class Resilience {
 
 	private static void print(Node[] nodes, Graph g) {
 		// Roles2 roles = (Roles2) g.getProperty("ROLES2_0");
-		gtna.communities.Roles roles = (gtna.communities.Roles) g
+		RolesGraphProperty roles = (RolesGraphProperty) g
 				.getProperty("ROLES_0");
 		for (int i = 0; i < nodes.length; i++) {
 			if (i > 0
-					&& roles.getRoleOfNode(nodes[i].getIndex()) == roles
-							.getRoleOfNode(nodes[i - 1].getIndex())) {
+					&& roles.getRole(nodes[i].getIndex()) == roles
+							.getRole(nodes[i - 1].getIndex())) {
 				continue;
 			}
 			System.out.println("  " + nodes[i] + " @ "
-					+ roles.getRoleOfNode(nodes[i].getIndex()));
+					+ roles.getRole(nodes[i].getIndex()));
 			// System.out.println("  " + nodes[i]);
 		}
 	}
