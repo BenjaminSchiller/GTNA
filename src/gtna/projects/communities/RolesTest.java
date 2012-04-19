@@ -89,9 +89,10 @@ public class RolesTest {
 		Transformation r2 = new WsnRolesTransformation();
 		Transformation[] t = new Transformation[] { lpa, r1, r2 };
 
-		int times = 10;
+		int times = 2;
 
-		Network[] nw = RolesTest.nwCCs(new int[] { 1000, 1500, 2000 }, t);
+		Network[] nw = RolesTest.nwCCs(new int[] { 1000, 1500, 2000, 2500,
+				3000, 3500, 4000, 4500, 5000 }, t);
 		Series[] s = Series.generate(nw, metrics, times);
 
 		Plotting.multi(s, metrics, "multi/");
