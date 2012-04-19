@@ -76,6 +76,21 @@ public class KleinbergEmbedding extends AttackerIQDEmbedding {
 		super(iterations, "KLEINBERG", idMethod, deMethod, distance, epsilon,
 				checkold, adjustone, type, selection, attackercount, parameters);
 	}
+	
+	public KleinbergEmbedding(String key, int iterations, IdentifierMethod idMethod,
+			DecisionMethod deMethod, Distance distance, double epsilon,
+			boolean checkold, boolean adjustone, Parameter[] parameters) {
+		super(iterations, key, idMethod, deMethod, distance, epsilon,
+				checkold, adjustone, parameters);
+	}
+	
+	public KleinbergEmbedding(String key, int iterations, IdentifierMethod idMethod,
+			DecisionMethod deMethod, Distance distance, double epsilon,
+			boolean checkold, boolean adjustone, AttackerType type, AttackerSelection selection,
+		int attackercount, Parameter[] parameters) {
+		super(iterations, key, idMethod, deMethod, distance, epsilon,
+				checkold, adjustone, type, selection, attackercount, parameters);
+	}
 
 	/**
 	 * @param i
@@ -97,6 +112,21 @@ public class KleinbergEmbedding extends AttackerIQDEmbedding {
 			boolean checkold, boolean adjustone, AttackerType type, AttackerSelection selection,
 		int attackercount) {
 		super(iterations, "KLEINBERG", idMethod, deMethod, distance, epsilon,
+				checkold, adjustone, type, selection, attackercount, new Parameter[0]);
+	}
+	
+	public KleinbergEmbedding(String key, int i, IdentifierMethod identifierMethod,
+			DecisionMethod decisionMethod, Distance distance, double epsilon,
+			boolean checkold, boolean adjustone) {
+		this(key,i, identifierMethod, decisionMethod, distance, epsilon, checkold,
+				adjustone, new Parameter[0]);
+	}
+	
+	public KleinbergEmbedding(String key, int iterations, IdentifierMethod idMethod,
+			DecisionMethod deMethod, Distance distance, double epsilon,
+			boolean checkold, boolean adjustone, AttackerType type, AttackerSelection selection,
+		int attackercount) {
+		super(iterations, key, idMethod, deMethod, distance, epsilon,
 				checkold, adjustone, type, selection, attackercount, new Parameter[0]);
 	}
 
