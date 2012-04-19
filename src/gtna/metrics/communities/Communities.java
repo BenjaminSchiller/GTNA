@@ -38,69 +38,173 @@ package gtna.metrics.communities;
 import gtna.communities.Community;
 import gtna.data.Single;
 import gtna.graph.Graph;
+import gtna.graph.Node;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.ArrayUtils;
 import gtna.util.Distribution;
-import gtna.util.Timer;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author benni
  * 
  */
 public class Communities extends Metric {
-	private Distribution communitySize;
+	private double[] communitySize;
 
-	private Timer runtime;
+	private double[] communitySizeFraction;
+
+	private Distribution sizeDistribution;
+
+	private Distribution adjacentCommunities;
 
 	private double modularity;
 
-	private double communities;
-	private double averageSize;
+	private double communityCount;
 
 	public Communities() {
 		super("COMMUNITIES");
+		this.communitySize = new double[] { -1 };
+		this.sizeDistribution = new Distribution(new double[] { -1 });
+		this.adjacentCommunities = new Distribution(new double[] { -1 });
+		this.modularity = -1;
+		this.communityCount = -1;
 	}
 
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-		return true;
+		return g.hasProperty("COMMUNITIES_0");
 	}
 
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		if (!g.hasProperty("COMMUNITIES_0")) {
-			this.runtime = new Timer();
-			this.communitySize = new Distribution(new double[] { 0.0 });
-			this.runtime.end();
-			return;
-		}
-		this.runtime = new Timer();
 		gtna.communities.Communities communities = (gtna.communities.Communities) g
 				.getProperty("COMMUNITIES_0");
-		double[] c = new double[communities.getCommunities().length];
-		for (int i = 0; i < c.length; i++) {
-			averageSize += communities.getCommunities()[i].getNodes().length;
-			c[i] = (double) communities.getCommunities()[i].getNodes().length
-					/ (double) g.getNodes().length;
-		}
-		averageSize = averageSize / communities.getCommunities().length;
-		Arrays.sort(c);
-		for (int i = 0; i < c.length / 2; i++) {
-			double temp = c[i];
-			c[i] = c[c.length - i - 1];
-			c[c.length - i - 1] = temp;
-		}
-		this.communitySize = new Distribution(c);
-		this.modularity = this.calculateModularity(g, communities);
-		this.communities = communities.getCommunities().length;
-		this.runtime.end();
 
+		this.communitySize = this.computeCommunitySize(communities);
+		this.communitySizeFraction = this.communitySize.clone();
+		ArrayUtils.divide(this.communitySizeFraction, g.getNodes().length);
+
+		this.sizeDistribution = this.computeSizeDistribution(communities);
+
+		this.adjacentCommunities = this.computeAdjacentCommunities(g,
+				communities);
+
+		this.modularity = this.calculateModularity(g, communities);
+		this.communityCount = communities.getCommunities().length;
 	}
 
+	/**
+	 * Computes the list of community sizes ordered descending.
+	 * 
+	 * @param communities
+	 *            communityList
+	 * @return list of community sizes, ordered descending
+	 */
+	private double[] computeCommunitySize(
+			gtna.communities.Communities communities) {
+		double[] size = new double[communities.getCommunities().length];
+		for (int i = 0; i < communities.getCommunities().length; i++) {
+			size[i] = communities.getCommunities()[i].getNodes().length;
+		}
+		Arrays.sort(size);
+		ArrayUtils.reverse(size);
+		return size;
+	}
+
+	/**
+	 * Computes the distribution of community sizes.
+	 * 
+	 * @param communities
+	 *            communityList
+	 * @return distribution of community sizes
+	 */
+	private Distribution computeSizeDistribution(
+			gtna.communities.Communities communities) {
+		int max = 0;
+		for (Community c : communities.getCommunities()) {
+			max = Math.max(max, c.getNodes().length);
+		}
+
+		double[] sd = new double[max + 1];
+		for (Community c : communities.getCommunities()) {
+			sd[c.getNodes().length]++;
+		}
+
+		for (int i = 0; i < sd.length; i++) {
+			sd[i] /= communities.getCommunities().length;
+		}
+
+		return new Distribution(sd);
+	}
+
+	/**
+	 * Computes the distribution of adjacent communities in a given graph for a
+	 * given communityList.
+	 * 
+	 * @param g
+	 *            graph
+	 * @param communities
+	 *            communityList
+	 * @return distribution of adjacent communities
+	 */
+	private Distribution computeAdjacentCommunities(Graph g,
+			gtna.communities.Communities communities) {
+		int[] nac = new int[g.getNodes().length];
+		int max = 0;
+		for (Node node : g.getNodes()) {
+			nac[node.getIndex()] = this.getAdjacentCommunities(node, g,
+					communities);
+			max = Math.max(max, nac[node.getIndex()]);
+		}
+		double[] ac = new double[max + 1];
+		for (int i = 0; i < nac.length; i++) {
+			ac[nac[i]]++;
+		}
+		for (int i = 0; i < ac.length; i++) {
+			ac[i] = ac[i] / (double) g.getNodes().length;
+		}
+		return new Distribution(ac);
+	}
+
+	/**
+	 * Computes the number of communities adjacent to the given node, i.e., the
+	 * number of communities reachable through the node's outgoing edges.
+	 * Adjacent communities includes the node's own communits, hence
+	 * adjacentComunities >= 1.
+	 * 
+	 * @param node
+	 *            node index
+	 * @param g
+	 *            graph
+	 * @param communities
+	 *            communityList
+	 * @return number of communiities adjacent to the given node
+	 */
+	private int getAdjacentCommunities(Node node, Graph g,
+			gtna.communities.Communities communities) {
+		Set<Integer> ac = new HashSet<Integer>();
+		ac.add(communities.getCommunityOfNode(node.getIndex()).getIndex());
+		for (int out : node.getOutgoingEdges()) {
+			ac.add(communities.getCommunityOfNode(out).getIndex());
+		}
+		return ac.size();
+	}
+
+	/**
+	 * Computes the modularity of the given CommunityList
+	 * 
+	 * @param g
+	 *            graph
+	 * @param communities
+	 *            communityList
+	 * @return modularity of the given CommunityList
+	 */
 	private double calculateModularity(Graph g,
 			gtna.communities.Communities communities) {
 		double E = g.getEdges().size();
@@ -132,31 +236,57 @@ public class Communities extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
+
+		success &= DataWriter.writeWithIndex(this.communitySize,
+				"COMMUNITIES_COMMUNITY_SIZE", folder);
+		success &= DataWriter.writeWithIndex(this.communitySizeFraction,
+				"COMMUNITIES_COMMUNITY_SIZE_FRACTION", folder);
+
 		success &= DataWriter.writeWithIndex(
-				this.communitySize.getDistribution(), "COMMUNITIES_SIZE",
-				folder);
-		success &= DataWriter.writeWithIndex(this.communitySize.getCdf(),
-				"COMMUNITIES_SIZE_CDF", folder);
+				this.sizeDistribution.getDistribution(),
+				"COMMUNITIES_SIZE_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.sizeDistribution.getCdf(),
+				"COMMUNITIES_SIZE_DISTRIBUTION_CDF", folder);
+
+		success &= DataWriter.writeWithIndex(
+				this.adjacentCommunities.getDistribution(),
+				"COMMUNITIES_ADJACENT_COMMUNITIES", folder);
+		success &= DataWriter.writeWithIndex(this.adjacentCommunities.getCdf(),
+				"COMMUNITIES_ADJACENT_COMMUNITIES_CDF", folder);
+
 		return success;
 	}
 
 	@Override
 	public Single[] getSingles() {
 		Single mod = new Single("COMMUNITIES_MODULARITY", modularity);
-		Single com = new Single("COMMUNITIES_COMMUNITIES", this.communities);
+		Single com = new Single("COMMUNITIES_COMMUNITY_COUNT",
+				this.communityCount);
+
 		Single size_min = new Single("COMMUNITIES_COMMUNITY_SIZE_MIN",
-				this.communitySize.getMin());
+				this.sizeDistribution.getMin());
 		Single size_med = new Single("COMMUNITIES_COMMUNITY_SIZE_MED",
-				this.communitySize.getMedian());
-		// FIXME should not be implemented here, but distribution class might be
-		// buggy at the moment...
+				this.sizeDistribution.getMedian());
 		Single size_avg = new Single("COMMUNITIES_COMMUNITY_SIZE_AVG",
-				this.averageSize);
+				this.sizeDistribution.getAverage());
 		Single size_max = new Single("COMMUNITIES_COMMUNITY_SIZE_MAX",
-				this.communitySize.getMax());
-		Single rt = new Single("COMMUNITIES_RUNTIME", this.runtime.getRuntime());
+				this.sizeDistribution.getMax());
+
+		Single adjacent_min = new Single(
+				"COMMUNITIES_ADJACENT_COMMUNITIES_MIN",
+				this.adjacentCommunities.getMin());
+		Single adjacent_med = new Single(
+				"COMMUNITIES_ADJACENT_COMMUNITIES_MED",
+				this.adjacentCommunities.getMedian());
+		Single adjacent_avg = new Single(
+				"COMMUNITIES_ADJACENT_COMMUNITIES_AVG",
+				this.adjacentCommunities.getAverage());
+		Single adjacent_max = new Single(
+				"COMMUNITIES_ADJACENT_COMMUNITIES_MAX",
+				this.adjacentCommunities.getMax());
+
 		return new Single[] { mod, com, size_min, size_med, size_avg, size_max,
-				rt };
+				adjacent_min, adjacent_med, adjacent_avg, adjacent_max };
 	}
 
 }
