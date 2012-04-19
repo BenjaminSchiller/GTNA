@@ -35,7 +35,7 @@
  */
 package gtna.projects.communities;
 
-import gtna.communities.Communities;
+import gtna.communities.CommunityList;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
@@ -160,7 +160,7 @@ public class CommunityDetection {
 				g = GraphReader.readWithProperties(graphFilename);
 				g = t_dq.transform(g);
 				g = t_cc.transform(g);
-				Communities c = (Communities) g.getProperty("COMMUNITIES_0");
+				CommunityList c = (CommunityList) g.getProperty("COMMUNITIES_0");
 				IdentifierSpace ids = (IdentifierSpace) g
 						.getProperty("ID_SPACE_0");
 				System.out.println("deltaQ: " + c.getCommunities().length);
@@ -170,7 +170,7 @@ public class CommunityDetection {
 				g = GraphReader.readWithProperties(graphFilename);
 				g = t_lpa.transform(g);
 				g = t_cc.transform(g);
-				Communities c = (Communities) g.getProperty("COMMUNITIES_0");
+				CommunityList c = (CommunityList) g.getProperty("COMMUNITIES_0");
 				IdentifierSpace ids = (IdentifierSpace) g
 						.getProperty("ID_SPACE_0");
 				System.out.println("LPA: " + c.getCommunities().length);

@@ -35,7 +35,7 @@
  */
 package gtna.transformation.communities;
 
-import gtna.communities.Communities;
+import gtna.communities.CommunityList;
 import gtna.communities.Community;
 import gtna.communities.Role;
 import gtna.communities.RolesGraphProperty;
@@ -86,7 +86,7 @@ public class WsnRolesTransformation extends Transformation {
 	public Graph transform(Graph g) {
 		GraphProperty[] properties = g.getProperties("COMMUNITIES");
 		for (GraphProperty gp : properties) {
-			Communities communities = (Communities) gp;
+			CommunityList communities = (CommunityList) gp;
 			Role[] roles = new Role[g.getNodes().length];
 
 			for (Node node : g.getNodes()) {
@@ -113,7 +113,7 @@ public class WsnRolesTransformation extends Transformation {
 	 * @return nr of links to nodes in the same community
 	 */
 	private int getWithinModuleDegree(int nodeIndex, Graph graph,
-			Communities communities) {
+			CommunityList communities) {
 		int k = 0;
 		for (int neighbor : graph.getNodes()[nodeIndex].getOutgoingEdges()) {
 			if (communities.getCommunityOfNode(nodeIndex).equals(
@@ -131,7 +131,7 @@ public class WsnRolesTransformation extends Transformation {
 	 * @return relative within module degree P
 	 */
 	private double getRelativeWithinModuleDegree(int nodeIndex, Graph graph,
-			Communities communities) {
+			CommunityList communities) {
 		double k = getWithinModuleDegree(nodeIndex, graph, communities);
 		double avgk = 0;
 		double avgkquad = 0;
@@ -154,7 +154,7 @@ public class WsnRolesTransformation extends Transformation {
 	 * @param communities
 	 * @return number of communities adjacent to the node
 	 */
-	private int getNrOfAdjacentCommunities(Node node, Communities communities) {
+	private int getNrOfAdjacentCommunities(Node node, CommunityList communities) {
 		HashSet<Integer> adjacentCommunities = new HashSet<Integer>();
 		for (int neighbor : node.getOutgoingEdges()) {
 			adjacentCommunities.add(communities.getCommunityOfNode(neighbor)

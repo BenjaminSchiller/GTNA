@@ -35,7 +35,7 @@
  */
 package gtna.transformation.communities;
 
-import gtna.communities.Communities;
+import gtna.communities.CommunityList;
 import gtna.drawing.NodeColors;
 import gtna.graph.Graph;
 import gtna.transformation.Transformation;
@@ -59,7 +59,7 @@ public class CommunityColors extends Transformation {
 
 	@Override
 	public Graph transform(Graph g) {
-		Communities c = (Communities) g.getProperty("COMMUNITIES_0");
+		CommunityList c = (CommunityList) g.getProperty("COMMUNITIES_0");
 		Color[] C = this.getColors(c.getCommunities().length);
 		Color[] colors = new Color[g.getNodes().length];
 		for (int i = 0; i < g.getNodes().length; i++) {

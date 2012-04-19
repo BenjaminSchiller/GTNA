@@ -220,7 +220,7 @@ public class CommunityDetectionDeltaQ extends Transformation {
 		}
 
 		g.addProperty(g.getNextKey("COMMUNITIES"),
-				new gtna.communities.Communities(map));
+				new gtna.communities.CommunityList(map));
 		return g;
 	}
 }

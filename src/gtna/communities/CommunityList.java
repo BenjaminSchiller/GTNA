@@ -48,18 +48,18 @@ import java.util.HashMap;
  * @author benni
  * 
  */
-public class Communities implements GraphProperty {
+public class CommunityList implements GraphProperty {
 	private Community[] communities;
 
 	private int[] communityOfNode;
 
-	public Communities() {
+	public CommunityList() {
 		this.communities = new Community[] {};
 		this.communityOfNode = new int[] {};
 	}
 
-	public Communities(HashMap<Integer, Integer> map) {
-		this(Communities.compute(map));
+	public CommunityList(HashMap<Integer, Integer> map) {
+		this(CommunityList.compute(map));
 	}
 
 	private static Community[] compute(HashMap<Integer, Integer> map) {
@@ -84,7 +84,7 @@ public class Communities implements GraphProperty {
 		return c;
 	}
 
-	public Communities(ArrayList<Community> communities) {
+	public CommunityList(ArrayList<Community> communities) {
 		this.communities = new Community[communities.size()];
 		for (int i = 0; i < communities.size(); i++) {
 			this.communities[i] = communities.get(i);
@@ -92,7 +92,7 @@ public class Communities implements GraphProperty {
 		this.computeCommunityOfNodes();
 	}
 
-	public Communities(Community[] communities) {
+	public CommunityList(Community[] communities) {
 		this.communities = communities;
 		this.computeCommunityOfNodes();
 	}
