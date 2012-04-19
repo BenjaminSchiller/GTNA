@@ -50,8 +50,6 @@ import gtna.networks.model.placementmodels.models.CommunityPlacementModel;
 import gtna.networks.model.placementmodels.models.RandomPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.networks.util.DescriptionWrapper;
-import gtna.plot.Data;
-import gtna.plot.Gnuplot;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityDetectionDeltaQ;
@@ -91,13 +89,14 @@ public class RolesTest {
 		Transformation r2 = new WsnRolesTransformation();
 		Transformation[] t = new Transformation[] { lpa, r1, r2 };
 
-		int times = 30;
+		int times = 10;
 
-		Network nw = RolesTest.nwCC(1000, t);
-		Series s = Series.generate(nw, metrics, times);
+		Network[] nw = RolesTest.nwCCs(new int[] { 1000, 1500, 2000 }, t);
+		Series[] s = Series.generate(nw, metrics, times);
 
-		Plotting.multi(s, metrics, "multi/", Data.Type.confidence1,
-				Gnuplot.Style.candlesticks);
+		Plotting.multi(s, metrics, "multi/");
+
+		Plotting.single(s, metrics, "singles/");
 	}
 
 	public static void rolesStability() {
@@ -191,9 +190,11 @@ public class RolesTest {
 	private static Network nwCC(int nodes, Transformation[] t) {
 		PlacementModel p1 = new CommunityPlacementModel(xy, xy, 0.4, true);
 		PlacementModel p2 = new CommunityPlacementModel(xy, xy, 0.1, true);
-		return new DescriptionWrapper(new PlacementModelContainer(nodes, 10,
-				xy, xy, p1, p2, partitioner, connector, t), "Communities "
-				+ nodes);
+		// return new DescriptionWrapper(new PlacementModelContainer(nodes, 10,
+		// xy, xy, p1, p2, partitioner, connector, t), "Communities "
+		// + nodes);
+		return new PlacementModelContainer(nodes, 10, xy, xy, p1, p2,
+				partitioner, connector, t);
 	}
 
 	private static Network nwR(int nodes, Transformation[] t) {

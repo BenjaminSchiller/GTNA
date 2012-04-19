@@ -36,6 +36,7 @@
 package gtna.metrics.communities;
 
 import gtna.communities.Community;
+import gtna.communities.CommunityList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -83,7 +84,7 @@ public class Communities extends Metric {
 
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		gtna.communities.Communities communities = (gtna.communities.Communities) g
+		CommunityList communities = (CommunityList) g
 				.getProperty("COMMUNITIES_0");
 
 		this.communitySize = this.computeCommunitySize(communities);
@@ -107,7 +108,7 @@ public class Communities extends Metric {
 	 * @return list of community sizes, ordered descending
 	 */
 	private double[] computeCommunitySize(
-			gtna.communities.Communities communities) {
+			CommunityList communities) {
 		double[] size = new double[communities.getCommunities().length];
 		for (int i = 0; i < communities.getCommunities().length; i++) {
 			size[i] = communities.getCommunities()[i].getNodes().length;
@@ -125,7 +126,7 @@ public class Communities extends Metric {
 	 * @return distribution of community sizes
 	 */
 	private Distribution computeSizeDistribution(
-			gtna.communities.Communities communities) {
+			CommunityList communities) {
 		int max = 0;
 		for (Community c : communities.getCommunities()) {
 			max = Math.max(max, c.getNodes().length);
@@ -154,7 +155,7 @@ public class Communities extends Metric {
 	 * @return distribution of adjacent communities
 	 */
 	private Distribution computeAdjacentCommunities(Graph g,
-			gtna.communities.Communities communities) {
+			CommunityList communities) {
 		int[] nac = new int[g.getNodes().length];
 		int max = 0;
 		for (Node node : g.getNodes()) {
@@ -187,7 +188,7 @@ public class Communities extends Metric {
 	 * @return number of communiities adjacent to the given node
 	 */
 	private int getAdjacentCommunities(Node node, Graph g,
-			gtna.communities.Communities communities) {
+			CommunityList communities) {
 		Set<Integer> ac = new HashSet<Integer>();
 		ac.add(communities.getCommunityOfNode(node.getIndex()).getIndex());
 		for (int out : node.getOutgoingEdges()) {
@@ -206,7 +207,7 @@ public class Communities extends Metric {
 	 * @return modularity of the given CommunityList
 	 */
 	private double calculateModularity(Graph g,
-			gtna.communities.Communities communities) {
+			CommunityList communities) {
 		double E = g.getEdges().size();
 		double Q = 0;
 		for (Community c : communities.getCommunities()) {

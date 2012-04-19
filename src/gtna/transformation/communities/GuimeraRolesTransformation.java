@@ -35,7 +35,7 @@
  */
 package gtna.transformation.communities;
 
-import gtna.communities.Communities;
+import gtna.communities.CommunityList;
 import gtna.communities.Community;
 import gtna.communities.GuimeraRole;
 import gtna.communities.Role;
@@ -60,7 +60,7 @@ public class GuimeraRolesTransformation extends Transformation {
 	public Graph transform(Graph g) {
 		GraphProperty[] properties = g.getProperties("COMMUNITIES");
 		for (GraphProperty gp : properties) {
-			Communities communities = (Communities) gp;
+			CommunityList communities = (CommunityList) gp;
 			Role[] roles = new Role[g.getNodes().length];
 
 			for (Node node : g.getNodes()) {
@@ -82,7 +82,7 @@ public class GuimeraRolesTransformation extends Transformation {
 	 * @return nr of links to nodes in the same community
 	 */
 	private int getWithinModuleDegree(int nodeIndex, Graph graph,
-			Communities communities) {
+			CommunityList communities) {
 		int k = 0;
 		for (int neighbor : graph.getNodes()[nodeIndex].getOutgoingEdges()) {
 			if (communities.getCommunityOfNode(nodeIndex).equals(
@@ -100,7 +100,7 @@ public class GuimeraRolesTransformation extends Transformation {
 	 * @return relative within module degree P
 	 */
 	private double getRelativeWithinModuleDegree(int nodeIndex, Graph graph,
-			Communities communities) {
+			CommunityList communities) {
 		double k = getWithinModuleDegree(nodeIndex, graph, communities);
 		double avgk = 0;
 		double avgkquad = 0;
@@ -124,7 +124,7 @@ public class GuimeraRolesTransformation extends Transformation {
 	 * @return participation coefficient z
 	 */
 	private double getParticipationCoefficient(Node node,
-			Communities communities) {
+			CommunityList communities) {
 		HashMap<Community, Integer> counter = new HashMap<Community, Integer>();
 
 		for (int dst : node.getOutgoingEdges()) {
