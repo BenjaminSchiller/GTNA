@@ -37,7 +37,7 @@ package gtna.metrics.communities;
 
 import gtna.communities.Role;
 import gtna.communities.Role.RoleType;
-import gtna.communities.RolesGraphProperty;
+import gtna.communities.RoleList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
@@ -75,7 +75,7 @@ public class Roles extends Metric {
 			this.distribution = new Distribution(new double[] { 0.0 });
 			return;
 		}
-		RolesGraphProperty roles = (RolesGraphProperty) g.getProperty("ROLES_"
+		RoleList roles = (RoleList) g.getProperty("ROLES_"
 				+ this.type.toString() + "_0");
 		Role[] types = roles.getRoles()[0].getRoleTypes();
 		double[] r = new double[types.length];

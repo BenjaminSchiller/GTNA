@@ -37,7 +37,7 @@ package gtna.projects.etc;
 
 import gtna.communities.Role;
 import gtna.communities.Role.RoleType;
-import gtna.communities.RolesGraphProperty;
+import gtna.communities.RoleList;
 import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -179,7 +179,7 @@ public class Resilience {
 
 	private static void print(Node[] nodes, Graph g) {
 		// Roles2 roles = (Roles2) g.getProperty("ROLES2_0");
-		RolesGraphProperty roles = (RolesGraphProperty) g
+		RoleList roles = (RoleList) g
 				.getProperty("ROLES_0");
 		for (int i = 0; i < nodes.length; i++) {
 			if (i > 0

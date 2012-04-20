@@ -36,7 +36,7 @@
 package gtna.graph.sorting;
 
 import gtna.communities.Role;
-import gtna.communities.RolesGraphProperty;
+import gtna.communities.RoleList;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 
@@ -54,7 +54,7 @@ public class RolesNodeSorter extends NodeSorter {
 
 	protected Role[] order;
 
-	protected RolesGraphProperty roles;
+	protected RoleList roles;
 
 	public RolesNodeSorter(String key, Role[] order) {
 		super("ROLES_" + key + "_" + RolesNodeSorter.toString(order));
@@ -77,7 +77,7 @@ public class RolesNodeSorter extends NodeSorter {
 	@Override
 	public Node[] sort(Graph g, Random rand) {
 		Node[] sorted = this.clone(g.getNodes());
-		this.roles = (RolesGraphProperty) g.getProperty("ROLES_WSN_0");
+		this.roles = (RoleList) g.getProperty("ROLES_WSN_0");
 
 		RolesAsc asc = new RolesAsc(this.order, this.roles);
 		Arrays.sort(sorted, asc);
@@ -100,14 +100,14 @@ public class RolesNodeSorter extends NodeSorter {
 	private static class RolesAsc implements Comparator<Node> {
 		private HashMap<Role, Integer> map;
 
-		private RolesGraphProperty roles;
+		private RoleList roles;
 
-		private RolesAsc(HashMap<Role, Integer> map, RolesGraphProperty roles) {
+		private RolesAsc(HashMap<Role, Integer> map, RoleList roles) {
 			this.map = map;
 			this.roles = roles;
 		}
 
-		private RolesAsc(Role[] order, RolesGraphProperty roles) {
+		private RolesAsc(Role[] order, RoleList roles) {
 			this(RolesAsc.generateMap(order), roles);
 		}
 
