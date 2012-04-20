@@ -46,14 +46,14 @@ import java.util.Set;
  * @author benni
  * 
  */
-public class RolesGraphProperty implements GraphProperty {
+public class RoleList implements GraphProperty {
 	private Role[] roles;
 
-	public RolesGraphProperty(Role[] roles) {
+	public RoleList(Role[] roles) {
 		this.roles = roles;
 	}
 
-	public RolesGraphProperty(ArrayList<Role> roles) {
+	public RoleList(ArrayList<Role> roles) {
 		this.roles = new Role[roles.size()];
 		for (int i = 0; i < roles.size(); i++) {
 			this.roles[i] = roles.get(i);

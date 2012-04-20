@@ -38,7 +38,7 @@ package gtna.transformation.communities;
 import gtna.communities.CommunityList;
 import gtna.communities.Community;
 import gtna.communities.Role;
-import gtna.communities.RolesGraphProperty;
+import gtna.communities.RoleList;
 import gtna.communities.WsnRole;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
@@ -100,7 +100,7 @@ public class WsnRolesTransformation extends Transformation {
 				int c = getNrOfAdjacentCommunities(node, communities);
 				roles[node.getIndex()] = this.getRole(c, z);
 			}
-			g.addProperty(g.getNextKey("ROLES_WSN"), new RolesGraphProperty(
+			g.addProperty(g.getNextKey("ROLES_WSN"), new RoleList(
 					roles));
 		}
 		return g;

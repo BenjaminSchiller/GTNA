@@ -39,7 +39,7 @@ import gtna.communities.CommunityList;
 import gtna.communities.Community;
 import gtna.communities.GuimeraRole;
 import gtna.communities.Role;
-import gtna.communities.RolesGraphProperty;
+import gtna.communities.RoleList;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
@@ -70,7 +70,7 @@ public class GuimeraRolesTransformation extends Transformation {
 				roles[node.getIndex()] = this.getRole(z, p);
 			}
 			g.addProperty(g.getNextKey("ROLES_GUIMERA"),
-					new RolesGraphProperty(roles));
+					new RoleList(roles));
 		}
 		return g;
 	}
