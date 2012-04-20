@@ -37,61 +37,84 @@ package gtna.metrics;
 
 import gtna.data.Single;
 import gtna.graph.Graph;
+import gtna.graph.Node;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
 import gtna.util.Config;
 import gtna.util.Distribution;
-import gtna.util.Timer;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.ParameterListParameter;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
-// TODO reimplement Routing
 public class Routing extends Metric {
-	private Distribution hopDistribution;
 
-	private Distribution hopDistributionAbsolute;
+	private RoutingAlgorithm ra;
+	private int routesPerNode;
 
 	private Route[] routes;
 
+	private Distribution hopDistribution;
+	private Distribution hopDistributionAbsolute;
+
 	private double[] betweennessCentrality;
 
-	private Timer runtime;
+	private double successRate;
+	private double failureRate;
 
-	public Routing() {
-		super("ROUTING");
+	public Routing(RoutingAlgorithm ra) {
+		super("ROUTING", new Parameter[] { new ParameterListParameter(
+				"ROUTING_ALGORITHM", ra) });
+
+		this.ra = ra;
+		this.routesPerNode = Config.getInt("ROUTING_ROUTES_PER_NODE");
+
+		this.init();
+	}
+
+	public Routing(RoutingAlgorithm ra, int routesPerNode) {
+		super("ROUTING", new Parameter[] {
+				new ParameterListParameter("ROUTING_ALGORITHM", ra),
+				new IntParameter("ROUTES_PER_NODE", routesPerNode) });
+
+		this.ra = ra;
+		this.routesPerNode = routesPerNode;
+
+		this.init();
+	}
+
+	private void init() {
+		this.hopDistribution = new Distribution(new double[] { -1 });
+		this.hopDistributionAbsolute = new Distribution(new double[] { -1 });
+		this.betweennessCentrality = new double[] { -1 };
+		this.routes = new Route[0];
+		this.successRate = -1;
+		this.failureRate = -1;
 	}
 
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-		return true;
+		return this.ra.applicable(g);
 	}
 
 	@Override
 	public void computeData(Graph graph, Network network,
 			HashMap<String, Metric> metrics) {
-		// FIXME add routingAlgorithm as parameter to Routing metric
-		// RoutingAlgorithm ra = network.routingAlgorithm();
-		RoutingAlgorithm ra = null;
-		if (ra == null || !ra.applicable(graph)) {
-			this.initEmpty();
-			return;
-		}
-		this.runtime = new Timer();
-		ra.preprocess(graph);
-		int times = Config.getInt("ROUTING_ROUTES_PER_NODE");
+		this.ra.preprocess(graph);
 		Random rand = new Random();
-		this.routes = new Route[graph.getNodes().length * times];
-		// int index = 0;
-		// for (Node start : graph.getNodes()) {
-		// for (int i = 0; i < times; i++) {
-		// this.routes[index++] = ra.routeToRandomTarget(graph,
-		// start.getIndex(), rand);
-		// }
-		// }
+		this.routes = new Route[graph.getNodes().length * this.routesPerNode];
+		int index = 0;
+		for (Node start : graph.getNodes()) {
+			for (int i = 0; i < this.routesPerNode; i++) {
+				this.routes[index++] = ra.routeToRandomTarget(graph,
+						start.getIndex(), rand);
+			}
+		}
 		RoutingThread[] threads = new RoutingThread[Config
 				.getInt("PARALLEL_ROUTINGS")];
 		for (int i = 0; i < threads.length; i++) {
@@ -100,10 +123,11 @@ public class Routing extends Metric {
 			if (i == threads.length - 1) {
 				end = graph.getNodes().length - 1;
 			}
-			threads[i] = new RoutingThread(start, end, times, graph, ra, rand);
+			threads[i] = new RoutingThread(start, end, this.routesPerNode,
+					graph, ra, rand);
 			threads[i].start();
 		}
-		int index = 0;
+		index = 0;
 		for (RoutingThread t : threads) {
 			try {
 				t.join();
@@ -119,7 +143,19 @@ public class Routing extends Metric {
 		this.hopDistributionAbsolute = this.computeHopDistributionAbsolute();
 		this.betweennessCentrality = this.computeBetweennessCentrality(graph
 				.getNodes().length);
-		this.runtime.end();
+
+		this.successRate = this.computeSuccessRate();
+		this.failureRate = 1 - this.successRate;
+	}
+
+	private double computeSuccessRate() {
+		int success = 0;
+		for (Route route : this.routes) {
+			if (route.isSuccessful()) {
+				success++;
+			}
+		}
+		return (double) success / (double) this.routes.length;
 	}
 
 	private double[] computeBetweennessCentrality(int nodes) {
@@ -130,6 +166,9 @@ public class Routing extends Metric {
 			}
 		}
 		Arrays.sort(bc);
+		for (int i = 0; i < bc.length; i++) {
+			bc[i] /= (double) this.routes.length;
+		}
 		return bc;
 	}
 
@@ -171,15 +210,6 @@ public class Routing extends Metric {
 		return this.routes;
 	}
 
-	private void initEmpty() {
-		this.hopDistribution = new Distribution(new double[] { 0 });
-		this.hopDistributionAbsolute = new Distribution(new double[] { 0 });
-		this.betweennessCentrality = new double[] { 0 };
-		this.routes = new Route[0];
-		this.runtime = new Timer();
-		this.runtime.end();
-	}
-
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
@@ -207,14 +237,14 @@ public class Routing extends Metric {
 				this.hopDistribution.getMedian());
 		Single maximumHops = new Single("ROUTING_HOPS_MAX",
 				this.hopDistribution.getMax());
-		double[] cdf = this.hopDistributionAbsolute.getCdf();
+
 		Single successRate = new Single("ROUTING_SUCCESS_RATE",
-				cdf[cdf.length - 1]);
+				this.successRate);
 		Single failureRate = new Single("ROUTING_FAILURE_RATE",
-				1 - cdf[cdf.length - 1]);
-		Single runtime = new Single("ROUTING_RUNTIME", this.runtime.getRuntime());
-		return new Single[] { averageHops, medianHops, maximumHops, successRate,
-				failureRate, runtime };
+				this.failureRate);
+
+		return new Single[] { averageHops, medianHops, maximumHops,
+				successRate, failureRate };
 	}
 
 	private class RoutingThread extends Thread {

@@ -74,7 +74,7 @@ public class LookaheadRouting {
 		Stats stats = new Stats();
 
 		Config.overwrite("METRICS", "R");
-		Metric[] metrics = new Metric[] { new Routing() };
+		Metric[] metrics = new Metric[] { };
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/lookahead/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/lookahead/");
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
