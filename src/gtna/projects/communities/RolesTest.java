@@ -37,6 +37,9 @@ package gtna.projects.communities;
 
 import gtna.communities.Role;
 import gtna.data.Series;
+import gtna.drawing.Gephi;
+import gtna.graph.Graph;
+import gtna.id.IdentifierSpace;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.communities.Communities;
@@ -57,6 +60,7 @@ import gtna.transformation.communities.CommunityDetectionLPA;
 import gtna.transformation.communities.GuimeraRolesTransformation;
 import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.util.Config;
+import gtna.util.Stats;
 
 /**
  * @author benni
@@ -72,9 +76,11 @@ public class RolesTest {
 	}
 
 	public static void rolesTest() {
+		Stats stats = new Stats();
+
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/roles-test/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/roles-test/");
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 		Config.overwrite("SERIES_GRAPH_WRITE", "false");
 
 		Metric dd = new DegreeDistribution();
@@ -89,15 +95,26 @@ public class RolesTest {
 		Transformation r2 = new WsnRolesTransformation();
 		Transformation[] t = new Transformation[] { lpa, r1, r2 };
 
-		int times = 2;
+		int times = 10;
 
-		Network[] nw = RolesTest.nwCCs(new int[] { 1000, 1500, 2000, 2500,
-				3000, 3500, 4000, 4500, 5000 }, t);
+		Network[] nw = RolesTest.nwCCs(new int[] { 1000, 2000, 3000, 4000,
+				5000, 6000, 7000, 8000, 9000, 10000 }, t);
+
+		// for (Network NW : nw) {
+		// for (int i = 0; i < 3; i++) {
+		// Graph g = NW.generate();
+		// Gephi gephi = new Gephi();
+		// gephi.plot(g, (IdentifierSpace) g.getProperty("ID_SPACE_0"),
+		// "./plots/" + NW.getFolderName() + "-" + i + ".png");
+		// }
+		// }
+
 		Series[] s = Series.generate(nw, metrics, times);
 
 		Plotting.multi(s, metrics, "multi/");
-
 		Plotting.single(s, metrics, "singles/");
+
+		stats.end();
 	}
 
 	public static void rolesStability() {
@@ -142,11 +159,16 @@ public class RolesTest {
 		// done
 	}
 
+	private static final double xyAll = 40000;
+	private static final double xyHotspots = 40000;
+	private static final double devHotspots = 5000;
+	private static final double xyNodes = 40000;
+	private static final double devNodes = 1000;
+	private static final double radius = 1983;
+
 	private static final Partitioner partitioner = new SimplePartitioner();
 
-	private static final NodeConnector connector = new UDGConnector(120);
-
-	private static final double xy = 2000;
+	private static final NodeConnector connector = new UDGConnector(radius);
 
 	private static Network[] nwCCs(int nodes, double z, boolean withHubs,
 			Transformation[] t) {
@@ -189,20 +211,23 @@ public class RolesTest {
 	}
 
 	private static Network nwCC(int nodes, Transformation[] t) {
-		PlacementModel p1 = new CommunityPlacementModel(xy, xy, 0.4, true);
-		PlacementModel p2 = new CommunityPlacementModel(xy, xy, 0.1, true);
-		// return new DescriptionWrapper(new PlacementModelContainer(nodes, 10,
-		// xy, xy, p1, p2, partitioner, connector, t), "Communities "
-		// + nodes);
-		return new PlacementModelContainer(nodes, 10, xy, xy, p1, p2,
-				partitioner, connector, t);
+		PlacementModel p1 = new CommunityPlacementModel(xyHotspots, xyHotspots,
+				devHotspots / (xyHotspots / 2), true);
+		PlacementModel p2 = new CommunityPlacementModel(xyNodes, xyNodes,
+				devNodes / (xyNodes / 2), true);
+		Network nw = new PlacementModelContainer(nodes, nodes / 100, xyAll,
+				xyAll, p1, p2, partitioner, connector, t);
+		// return new DescriptionWrapper(nw, "Communities " + nodes);
+		return nw;
 	}
 
 	private static Network nwR(int nodes, Transformation[] t) {
-		PlacementModel p1 = new RandomPlacementModel(xy, xy, true);
-		PlacementModel p2 = new RandomPlacementModel(xy, xy, true);
-		return new DescriptionWrapper(new PlacementModelContainer(nodes, 1, xy,
-				xy, p1, p2, partitioner, connector, t), "Random" + nodes);
+		PlacementModel p1 = new RandomPlacementModel(xyAll, xyAll, true);
+		PlacementModel p2 = new RandomPlacementModel(xyAll, xyAll, true);
+		Network nw = new PlacementModelContainer(nodes, 1, xyAll, xyAll, p1,
+				p2, partitioner, connector, t);
+		// return new DescriptionWrapper(nw, "Random" + nodes);
+		return nw;
 	}
 
 	private static Transformation[] getRoles(double z, boolean withHubs) {
