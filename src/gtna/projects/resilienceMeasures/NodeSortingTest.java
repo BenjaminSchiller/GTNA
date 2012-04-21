@@ -109,9 +109,11 @@ public class NodeSortingTest {
 
 	public static void biconnectedTest() {
 		Utils u = new Utils();
-		Graph g = u.importGraphFromFile("power.gml");
+		Graph g = u.importGraphFromFile("internetRouter.gml");
 
 		ResilienceMetrics rm = new ResilienceMetrics(g);
 		rm.biconnectedComponents();
+		System.out.println("Size of max component = "
+				+ rm.getMaxComponent().size());
 	}
 }
