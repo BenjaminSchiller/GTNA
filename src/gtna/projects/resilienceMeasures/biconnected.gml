@@ -67,10 +67,6 @@ graph [
     	target 0
   	]
   	edge [
-   		source 2
-    	target 4
-  	]
-  	edge [
    		source 4
     	target 5
   	]

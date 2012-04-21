@@ -38,12 +38,14 @@ package gtna.projects.resilienceMeasures;
 import java.util.HashMap;
 import java.util.Random;
 
+import org.gephi.statistics.plugin.EigenvectorCentrality;
 import org.gephi.statistics.plugin.GraphDistance;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.BetweennessCentralityNodeSorter;
 import gtna.graph.sorting.CentralityNodeSorter;
+import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.algorithms.ResilienceMetrics;
@@ -109,11 +111,31 @@ public class NodeSortingTest {
 
 	public static void biconnectedTest() {
 		Utils u = new Utils();
-		Graph g = u.importGraphFromFile("internetRouter.gml");
+		Graph g = u.importGraphFromFile("biconnected.gml");
 
 		ResilienceMetrics rm = new ResilienceMetrics(g);
 		rm.biconnectedComponents();
 		System.out.println("Size of max component = "
 				+ rm.getMaxComponent().size());
+	}
+
+	public static void eigenVectorTest() {
+		System.out.println("Importing...");
+		Utils u = new Utils();
+		Graph g = u.importGraphFromFile("germany.gml");
+		System.out.println("Graph imported!");
+
+		// sorting
+		EigenvectorCentralityNodeSorter sorter = new EigenvectorCentralityNodeSorter(
+				NodeSorter.NodeSorterMode.ASC);
+		Node[] sorted = sorter.sort(g, new Random());
+
+		// sorted
+		System.out.println("-----");
+		System.out.println("Sorted:");
+		for (int i = 0; i < sorted.length; i++) {
+			System.out.println(sorted[i] + " -- "
+					+ sorter.getCentrality(sorted[i]));
+		}
 	}
 }

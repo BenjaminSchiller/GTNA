@@ -54,8 +54,6 @@ import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.statistics.plugin.GraphDistance;
 import org.openide.util.Lookup;
-import org.w3c.css.sac.AttributeCondition;
-
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 
@@ -110,18 +108,16 @@ public class Utils {
 		 */
 
 		// import edges
-		int importedEdges = 0;
 		Edges edges = new Edges(nodes, gephi.getEdgeCount() * 2);
 		for (Edge e : gephi.getEdges()) {
 			// gtna.graph.Edge edge = new
 			// gtna.graph.Edge(nodes[e.getSource().getId() - 1],
 			// nodes[e.getTarget().getId() - 1]);
-			importedEdges++;
-			System.out.println("--> import edge :" + importedEdges
-					+ " gephi:  " + e.toString());
+			// System.out.println("--> import edge :" + importedEdges
+			// + " gephi:  " + e.toString());
 			int src = e.getSource().getId() - 1;
 			int dst = e.getTarget().getId() - 1;
-			System.out.println("src = " + src + "  dst = " + dst);
+			// System.out.println("src = " + src + "  dst = " + dst);
 			edges.add(src, dst);
 			edges.add(dst, src);
 		}
