@@ -38,8 +38,6 @@ package gtna.graph.sorting;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.graph.sorting.NodeSorter.NodeSorterMode;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -162,9 +160,10 @@ public class CentralityNodeSorter extends NodeSorter {
 						.get(n).intValue());
 			}
 			// collect eccentricity
-			int lastIndex = (int) (nodes.length * this.eccentricityRate - 1);
+			int lastIndex = (int) (Math.floor(nodes.length
+					* this.eccentricityRate - 1));
 			int pathLengthToLastIndex = d.get(S.get(lastIndex));
-			this.eccentricityPoints.put(s, (double) pathLengthToLastIndex);
+			this.eccentricityPoints.put(s, (double) pathLengthToLastIndex + 1);
 
 			// delta
 			HashMap<Node, Double> delta = new HashMap<Node, Double>();
@@ -204,7 +203,7 @@ public class CentralityNodeSorter extends NodeSorter {
 				sum += shortestPaths.get(Edge.toString(i, j));
 			}
 			// TODO:
-			this.closenessPoints.put(nodes[i], sum);
+			this.closenessPoints.put(nodes[i], 1 / sum);
 		}
 	}
 

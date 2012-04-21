@@ -46,6 +46,7 @@ import gtna.graph.sorting.BetweennessCentralityNodeSorter;
 import gtna.graph.sorting.CentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
+import gtna.graph.sorting.algorithms.ResilienceMetrics;
 
 /**
  * @author truong
@@ -54,20 +55,20 @@ import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 public class NodeSortingTest {
 	public static void main(String[] args) {
 
-		NodeSortingTest.test();
+		NodeSortingTest.biconnectedTest();
 
 	}
 
 	public static void test() {
 		System.out.println("Importing...");
 		Utils u = new Utils();
-		Graph g = u.importGraphFromFile("germany.gml");
+		Graph g = u.importGraphFromFile("vietnam.gml");
 		System.out.println("Graph imported!");
 
 		// sorting
 		CentralityNodeSorter sorter = new CentralityNodeSorter(
 				NodeSorter.NodeSorterMode.ASC);
-		sorter.setCentrality("CLOSENESS");
+		sorter.setCentrality("BETWEENNESS");
 		Node[] sorted = sorter.sort(g, new Random());
 
 		// sorted
@@ -80,16 +81,12 @@ public class NodeSortingTest {
 
 		// print centrality from gtna and gephi
 		HashMap<Integer, Double> gephiCentrality = u
-				.gephiCentrality(GraphDistance.CLOSENESS);
+				.gephiCentrality(GraphDistance.BETWEENNESS);
 		System.out.println("GTNA Centrality:");
 		for (Node n : g.getNodes()) {
-			System.out
-					.println(""
-							+ n.toString()
-							+ " = "
-							+ sorter.getCentrality(n)
-							+ " -- gephi: "
-							+ (gephiCentrality.get(n.getIndex()) / 6.219512195121951 * 255));
+			System.out.println("" + n.toString() + " = "
+					+ sorter.getCentrality(n) + " -- gephi: "
+					+ (gephiCentrality.get(n.getIndex())));
 		}
 
 	}
@@ -108,5 +105,13 @@ public class NodeSortingTest {
 			System.out.println(sorted[i].toString() + " -- "
 					+ bc.getCentrality(sorted[i]));
 		}
+	}
+
+	public static void biconnectedTest() {
+		Utils u = new Utils();
+		Graph g = u.importGraphFromFile("power.gml");
+
+		ResilienceMetrics rm = new ResilienceMetrics(g);
+		rm.biconnectedComponents();
 	}
 }
