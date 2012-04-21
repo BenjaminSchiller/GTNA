@@ -35,6 +35,7 @@
  */
 package gtna.graph.sorting.algorithms;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 import gtna.graph.Edge;
@@ -53,6 +54,8 @@ public class ResilienceMetrics {
 	private int count;
 	private int[] d;
 	private int[] low;
+
+	private ArrayList<Node> maxComponent = new ArrayList<Node>();
 
 	/**
 	 * @param g2
@@ -123,15 +126,34 @@ public class ResilienceMetrics {
 	 * @param v
 	 */
 	private void outputComp(Node u, Node v) {
-		System.out.println("New Biconnected Component Found");
+		ArrayList<Node> max = new ArrayList<Node>();
+		// System.out.println("New Biconnected Component Found");
 		while (!stack.isEmpty()) {
 			Edge e = stack.pop();
-			System.out.println("" + e);
+			Node src = g.getNode(e.getSrc());
+			Node dst = g.getNode(e.getDst());
+			if (!max.contains(src)) {
+				max.add(src);
+			}
+			if (!max.contains(dst)) {
+				max.add(dst);
+			}
+			// System.out.println("" + e);
 			if (e.getSrc() == u.getIndex() && e.getDst() == v.getIndex()) {
-				System.out.println("End of this component!");
+				if (max.size() > 2) {
+					System.out.println("Size = " + max.size());
+				}
+				// System.out.println("End of this component!");
+				if (max.size() > this.maxComponent.size()) {
+					this.maxComponent = max;
+				}
 				return;
 			}
 		}
 		System.out.println("It can have errors!!!");
+	}
+
+	public ArrayList<Node> getMaxComponent() {
+		return this.maxComponent;
 	}
 }
