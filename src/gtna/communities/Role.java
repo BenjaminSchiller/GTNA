@@ -45,13 +45,13 @@ public abstract class Role {
 	};
 
 	public abstract String getName();
-	
+
 	public abstract String getKey();
 
 	public abstract String toString();
 
 	public abstract int toInt();
-	
+
 	public abstract int toIndex();
 
 	public abstract void setType(String typeStr);
@@ -59,4 +59,15 @@ public abstract class Role {
 	public abstract void setType(int typeInt);
 
 	public abstract Role[] getRoleTypes();
+
+	public static Role[] getRoleTypes(RoleType type) {
+		switch (type) {
+		case GUIMERA:
+			return new GuimeraRole().getRoleTypes();
+		case WSN:
+			return new WsnRole().getRoleTypes();
+		default:
+			return new Role[0];
+		}
+	}
 }
