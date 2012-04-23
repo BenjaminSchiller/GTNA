@@ -35,6 +35,8 @@
  */
 package gtna.util;
 
+import java.util.ArrayList;
+
 /**
  * @author benni
  * 
@@ -55,10 +57,26 @@ public class ArrayUtils {
 			array[array.length - i - 1] = temp;
 		}
 	}
-	
-	public static void divide(double[] array, double divisor){
-		for(int i=0; i<array.length; i++){
+
+	public static void divide(double[] array, double divisor) {
+		for (int i = 0; i < array.length; i++) {
 			array[i] /= divisor;
 		}
+	}
+
+	public static String[] toStringArray(ArrayList<String> list) {
+		String[] array = new String[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			array[i] = list.get(i);
+		}
+		return array;
+	}
+
+	public static double[] toDoubleArray(ArrayList<Double> list) {
+		double[] array = new double[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			array[i] = list.get(i);
+		}
+		return array;
 	}
 }
