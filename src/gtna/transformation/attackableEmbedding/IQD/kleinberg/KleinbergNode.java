@@ -66,13 +66,21 @@ public class KleinbergNode extends AttackerNode{
 		for (int i = 0; i < ids.length; i++){
 			q[i] = 1;
 			for (int j = 0; j < this.knownIDs.length; j++){
-				if (ids[i] != this.knownIDs[j])
-				q[i] = q[i]*this.embedding.computeDistance(this.knownIDs[j], ids[i]);
+				if (ids[i] != this.knownIDs[j]){
+					//System.out.println("OWN: " + this.knownIDs[j]);
+				q[i] = q[i]*this.embedding.computeDistance( ids[i], this.knownIDs[j]);
+				} else {
+					q[i] = q[i]*this.embedding.computeDistance( ids[i], ids[(i+1)%2]);
+				}
 			}
 			if (this.embedding.getIdMethod() == IQDEmbedding.IdentifierMethod.SWAPPING){
 				for (int k = 0; k < this.swapped.length; k++){
-					if (ids[i] != this.swapped[k])
-					q[i] = q[i]*this.embedding.computeDistance(this.swapped[k], ids[i]);
+					//System.out.println("SWAPPED " + swapped[k]);
+					if (ids[i] != this.swapped[k]){
+					q[i] = q[i]*this.embedding.computeDistance(ids[(i+1)%2], this.swapped[k]);
+				} else {
+					q[i] = q[i]*this.embedding.computeDistance( ids[i], ids[(i+1)%2]);
+				}
 				}
 			}
 			q[i] = 1/q[i];
