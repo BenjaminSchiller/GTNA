@@ -84,9 +84,9 @@ public class WsnRole extends Role {
 			return 2;
 		case HUB_COMMON:
 			return 3;
-		case HUB_STAR:
-			return 4;
 		case HUB_BRIDGE:
+			return 4;
+		case HUB_STAR:
 			return 5;
 		}
 		return -1;
