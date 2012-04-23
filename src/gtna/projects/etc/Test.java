@@ -255,8 +255,8 @@ public class Test {
 				new WeakFragmentation(new WsnRolesNodeSorter(
 						WsnRolesNodeSorter.HS_HB_HC_S_B_C),
 						Fragmentation.Resolution.PERCENT),
-				new Roles(Role.RoleType.GUIMERA), new Roles(Role.RoleType.WSN),
-				new Communities() };
+				new Roles(Role.RoleType.GUIMERA),
+				new Roles(Role.RoleType.WSN), new Communities() };
 		Series[] s = Series.generate(nw, metrics, times);
 		// PlotOld.multiAvg(s, "multi/", metrics);
 	}

@@ -37,12 +37,10 @@ package gtna.projects.communities;
 
 import gtna.communities.Role;
 import gtna.data.Series;
-import gtna.drawing.Gephi;
-import gtna.graph.Graph;
-import gtna.id.IdentifierSpace;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.communities.Communities;
+import gtna.metrics.communities.Roles;
 import gtna.networks.Network;
 import gtna.networks.model.placementmodels.NodeConnector;
 import gtna.networks.model.placementmodels.Partitioner;
@@ -72,6 +70,8 @@ public class RolesTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		// Metric rc1 = new RolesCorrelation(Role.RoleType.GUIMERA);
+		// Metric rc2 = new RolesCorrelation(Role.RoleType.WSN);
 		RolesTest.rolesTest();
 	}
 
@@ -80,25 +80,24 @@ public class RolesTest {
 
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/roles-test/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/roles-test/");
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 		Config.overwrite("SERIES_GRAPH_WRITE", "false");
 
 		Metric dd = new DegreeDistribution();
 		Metric communities = new Communities();
-		Metric roles = new gtna.metrics.communities.Roles(Role.RoleType.GUIMERA);
-		Metric roles2 = new gtna.metrics.communities.Roles(Role.RoleType.WSN);
-		Metric[] metrics = new Metric[] { dd, communities, roles, roles2 };
+		Metric roles1 = new Roles(Role.RoleType.GUIMERA);
+		Metric roles2 = new Roles(Role.RoleType.WSN);
+		Metric[] metrics = new Metric[] { roles2 };
 
-		Transformation lpa = new CommunityDetectionLPA(1);
-		Transformation dq = new CommunityDetectionDeltaQ(1);
+		Transformation lpa = new CommunityDetectionLPA(50);
+		Transformation dq = new CommunityDetectionDeltaQ(50);
 		Transformation r1 = new GuimeraRolesTransformation();
 		Transformation r2 = new WsnRolesTransformation();
-		Transformation[] t = new Transformation[] { lpa, r1, r2 };
+		Transformation[] t = new Transformation[] { lpa, r2 };
 
-		int times = 10;
+		int times = 1;
 
-		Network[] nw = RolesTest.nwCCs(new int[] { 1000, 2000, 3000, 4000,
-				5000, 6000, 7000, 8000, 9000, 10000 }, t);
+		Network[] nw = RolesTest.nwCCs(new int[] { 1000 }, t);
 
 		// for (Network NW : nw) {
 		// for (int i = 0; i < 3; i++) {
@@ -125,8 +124,8 @@ public class RolesTest {
 
 		Metric dd = new DegreeDistribution();
 		Metric communities = new Communities();
-		Metric roles = new gtna.metrics.communities.Roles(Role.RoleType.GUIMERA);
-		Metric roles2 = new gtna.metrics.communities.Roles(Role.RoleType.WSN);
+		Metric roles = new Roles(Role.RoleType.GUIMERA);
+		Metric roles2 = new Roles(Role.RoleType.WSN);
 		Metric[] metrics = new Metric[] { dd, communities, roles, roles2 };
 
 		Transformation lpa = new CommunityDetectionLPA(3);
