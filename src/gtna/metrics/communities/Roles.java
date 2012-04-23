@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Roles.java
+ * RolesCorrelation.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -40,13 +40,18 @@ import gtna.communities.Role.RoleType;
 import gtna.communities.RoleList;
 import gtna.data.Single;
 import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
+import gtna.graph.Node;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
-import gtna.util.Distribution;
+import gtna.util.ArrayUtils;
+import gtna.util.Config;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -56,12 +61,31 @@ import java.util.HashMap;
 public class Roles extends Metric {
 	private RoleType type;
 
-	private Distribution distribution;
+	private Role[] roles;
+
+	private double[][] rolesMaxPerNode;
+
+	private double[][] rolesMaxFraction;
+
+	private double[] rolesMax;
 
 	public Roles(RoleType type) {
 		super("ROLES", new Parameter[] { new StringParameter("TYPE",
 				type.toString()) });
+
 		this.type = type;
+
+		this.roles = Role.getRoleTypes(type);
+
+		this.initConfig();
+
+		Config.overwrite("ROLES_SINGLES_KEYS", "");
+		Config.overwrite("ROLES_SINGLES_PLOTS", "");
+		Config.overwrite("ROLES_TABLE_KEYS", "");
+
+		this.rolesMaxPerNode = new double[this.roles.length][];
+		this.rolesMaxFraction = new double[this.roles.length][];
+		this.rolesMax = new double[this.roles.length];
 	}
 
 	@Override
@@ -69,35 +93,208 @@ public class Roles extends Metric {
 		return g.hasProperty("ROLES_" + this.type.toString() + "_0");
 	}
 
+	private void initConfig() {
+		this.dataKeys = new ArrayList<String>();
+		this.singleKeys = new ArrayList<String>();
+
+		for (Role role : this.roles) {
+			String key = "ROLES_" + this.type.toString()
+					+ "_ROLES_MAX_PER_NODE_" + role.getKey();
+			String name = "Occurrences of most frequent role per node ("
+					+ role.getName() + ")";
+			String filename = "max-per-node-" + role.toIndex() + "-"
+					+ role.getKey();
+			String title = name;
+			String x = "Nodes sorted by descending frequency";
+			String y = "Fraction of occurrences of most frequent role ("
+					+ role.getName() + ")";
+			this.addMulti(key, name, filename, title, x, y, false);
+		}
+
+		for (Role role : this.roles) {
+			String key = "ROLES_" + this.type.toString()
+					+ "_ROLES_MAX_FRACTION_" + role.getKey();
+			String name = "Fraction of role occurrences for max "
+					+ role.getName();
+			String filename = "max-fraction-" + role.toIndex() + "-"
+					+ role.getKey();
+			String title = name;
+			String x = "Role";
+			String y = "Fraction";
+			this.addMulti(key, name, filename, title, x, y, true);
+		}
+
+		String key = "ROLES_" + this.type.toString() + "_ROLES_MAX";
+		String name = "Occurrence of role as most frequent role";
+		String filename = "max";
+		String title = name;
+		String x = "Roles";
+		String y = "Fraction of occurrence of role as most frequent role";
+		this.addMulti(key, name, filename, title, x, y, true);
+	}
+
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		if (!g.hasProperty("ROLES_" + this.type.toString() + "_0")) {
-			this.distribution = new Distribution(new double[] { 0.0 });
-			return;
+		GraphProperty[] gp = g.getProperties("ROLES_" + this.type.toString());
+		RoleList[] roleLists = new RoleList[gp.length];
+		for (int i = 0; i < gp.length; i++) {
+			roleLists[i] = (RoleList) gp[i];
 		}
-		RoleList roles = (RoleList) g.getProperty("ROLES_"
-				+ this.type.toString() + "_0");
-		Role[] types = roles.getRoles()[0].getRoleTypes();
-		double[] r = new double[types.length];
-		for (Role role : types) {
-			r[role.toIndex()] = (double) roles.getNodes(role).length
-					/ (double) g.getNodes().length;
+
+		for (Role role : this.roles) {
+			this.rolesMaxPerNode[role.toIndex()] = this.computeMaxPerNode(g,
+					roleLists, role);
 		}
-		this.distribution = new Distribution(r);
+		for (Role role : this.roles) {
+			this.rolesMaxFraction[role.toIndex()] = this.computeMaxFraction(g,
+					roleLists, role);
+		}
+		this.rolesMax = this.computeMax(g, this.rolesMaxPerNode);
+	}
+
+	private double[] computeMax(Graph g, double[][] rolesMaxPerNode) {
+		double[] max = new double[this.roles.length];
+		for (Role role : this.roles) {
+			max[role.toIndex()] = rolesMaxPerNode[role.toIndex()].length;
+		}
+
+		ArrayUtils.divide(max, (double) g.getNodes().length);
+		return max;
+	}
+
+	private double[] computeMaxFraction(Graph g, RoleList[] roleLists, Role role) {
+		double[] fraction = new double[this.roles.length];
+
+		int counter = 0;
+		for (Node node : g.getNodes()) {
+			if (!this.getMaxRole(node, roleLists).equals(role)) {
+				continue;
+			}
+			counter++;
+
+			for (Role r : this.roles) {
+				fraction[r.toIndex()] += this.getCount(node, roleLists, r);
+			}
+		}
+
+		ArrayUtils.divide(fraction, (double) (counter * roleLists.length));
+		return fraction;
+	}
+
+	private double[] computeMaxPerNode(Graph g, RoleList[] roleLists, Role role) {
+		ArrayList<Double> list = new ArrayList<Double>();
+		for (Node node : g.getNodes()) {
+			Role maxRole = this.getMaxRole(node, roleLists);
+			if (maxRole.equals(role)) {
+				int count = this.getCount(node, roleLists, maxRole);
+				list.add((double) count / (double) roleLists.length);
+			}
+		}
+
+		double[] fraction = ArrayUtils.toDoubleArray(list);
+		Arrays.sort(fraction);
+		ArrayUtils.reverse(fraction);
+		return fraction;
+	}
+
+	private Role getMaxRole(Node node, RoleList[] roleLists) {
+		int[] count = new int[this.roles.length];
+		for (RoleList roleList : roleLists) {
+			Role role = roleList.getRole(node.getIndex());
+			count[role.toIndex()]++;
+		}
+
+		int maxCount = count[0];
+		Role maxRole = this.roles[0];
+		for (int i = 1; i < count.length; i++) {
+			if (count[i] > maxCount) {
+				maxCount = count[i];
+				maxRole = this.roles[i];
+			}
+		}
+
+		return maxRole;
+	}
+
+	private int getCount(Node node, RoleList[] roleLists, Role role) {
+		int count = 0;
+		for (RoleList roleList : roleLists) {
+			if (roleList.getRole(node.getIndex()).equals(role)) {
+				count++;
+			}
+		}
+
+		return count;
 	}
 
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(
-				this.distribution.getDistribution(), "ROLES_DISTRIBUTION",
-				folder);
+
+		for (Role role : this.roles) {
+			success &= DataWriter.writeWithIndex(
+					this.rolesMaxPerNode[role.toIndex()],
+					"ROLES_" + this.type.toString() + "_ROLES_MAX_PER_NODE_"
+							+ role.getKey(), folder);
+			success &= DataWriter.writeWithIndex(
+					this.rolesMaxFraction[role.toIndex()],
+					"ROLES_" + this.type.toString() + "_ROLES_MAX_FRACTION_"
+							+ role.getKey(), folder);
+		}
+		success &= DataWriter.writeWithIndex(this.rolesMax, "ROLES_"
+				+ this.type.toString() + "_ROLES_MAX", folder);
+
 		return success;
 	}
 
 	@Override
 	public Single[] getSingles() {
-		return new Single[0];
+		return new Single[] {};
+	}
+
+	private ArrayList<String> dataKeys;
+
+	public String[] getDataKeys() {
+		return ArrayUtils.toStringArray(this.dataKeys);
+	}
+
+	private ArrayList<String> singleKeys;
+
+	public String[] getSingleKeys() {
+		return ArrayUtils.toStringArray(this.singleKeys);
+	}
+
+	public String[] getDataPlotKeys() {
+		return this.getDataKeys();
+	}
+
+	public String[] getSinglePlotKeys() {
+		return this.getSingleKeys();
+	}
+
+	private void addMulti(String key, String name, String filename,
+			String title, String x, String y, boolean xtics) {
+		this.dataKeys.add(key);
+
+		Config.overwrite(key + "_DATA_NAME", name);
+		Config.overwrite(key + "_DATA_FILENAME", filename);
+
+		Config.overwrite(key + "_PLOT_DATA", key);
+		Config.overwrite(key + "_PLOT_FILENAME", filename);
+		Config.overwrite(key + "_PLOT_TITLE", title);
+		Config.overwrite(key + "_PLOT_X", x);
+		Config.overwrite(key + "_PLOT_Y", y);
+
+		if (xtics) {
+			StringBuffer buff = new StringBuffer();
+			for (Role role : this.roles) {
+				if (buff.length() > 0) {
+					buff.append(", ");
+				}
+				buff.append("\"" + role.getName() + "\" " + role.toIndex());
+			}
+			Config.overwrite(key + "_PLOT_XTICS", buff.toString());
+		}
 	}
 
 }

@@ -35,11 +35,12 @@
  */
 package gtna.projects.communities;
 
+import gtna.communities.Role;
 import gtna.data.Series;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.communities.Communities;
-import gtna.metrics.communities.RolesComparison;
+import gtna.metrics.communities.Roles;
 import gtna.metrics.placement.Coverage;
 import gtna.networks.Network;
 import gtna.networks.model.placementmodels.NodeConnector;
@@ -79,7 +80,7 @@ public class RolesMetric {
 		Metric dd = new DegreeDistribution();
 		Metric cov = new Coverage();
 		Metric communities = new Communities();
-		Metric roles = new RolesComparison();
+		Metric roles = new Roles(Role.RoleType.GUIMERA);
 		Metric[] metrics = new Metric[] { communities };
 
 		int times = 10;
