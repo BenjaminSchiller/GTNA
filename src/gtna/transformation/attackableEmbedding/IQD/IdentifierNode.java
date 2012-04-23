@@ -187,8 +187,15 @@ public abstract class IdentifierNode extends IQDNode {
 	protected double[][] swap(double callerID, double[] neighborsID, int ttl, Random rand){
 		if (ttl <= 1){
 			double[][] res = new double[2][];
+//			System.out.println("Index when found " + this.getIndex());
+//			System.out.println("ID when found " + this.getID());
 			res[0] = new double[] {this.getID(), this.getIndex()};
 			res[1] = this.knownIDs;
+//			String line = "";
+//			for (int k = 0; k < this.knownIDs.length; k++){
+//				line = line + " " + this.knownIDs[k];
+//			}
+//			System.out.println("Neighbors when found " + line);
 			return res;
 		} else {
 			int[] out = this.getOutgoingEdges();

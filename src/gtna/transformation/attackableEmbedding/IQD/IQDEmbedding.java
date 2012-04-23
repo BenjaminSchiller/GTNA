@@ -182,6 +182,9 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 		for (int i = 0; i < ids.length; i++) {
 			((IQDNode) nodes[i]).setID(ids[i].getPosition());
 		}
+		for (int i = 0; i < ids.length; i++) {
+			((IQDNode) nodes[i]).updateNeighbors(rand);
+		}
 		for (int i = 0; i < this.iterations * selectionSet.length; i++) {
 			int index = rand.nextInt(selectionSet.length);
 			if (selectionSet[index].getOutDegree() > 0) {
