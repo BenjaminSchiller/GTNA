@@ -238,6 +238,11 @@ public class Plotting {
 		if (ytics != null && ytics.length() > 0) {
 			plot.addConfig("set ytics (" + ytics + ")");
 		}
+		
+		String key = Config.get(plotKey + "_PLOT_KEY");
+		if(key != null && key.length() > 0){
+			plot.setKey(key);
+		}
 
 		return Gnuplot.plot(plot, m, plotKey);
 	}
