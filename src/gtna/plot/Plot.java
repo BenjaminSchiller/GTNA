@@ -89,11 +89,12 @@ public class Plot {
 		}
 		fw.write("plot ");
 		int lw = Config.getInt("GNUPLOT_LW");
+		double offsetX = Config.getDouble("GNUPLOT_OFFSET_X");
 		for (int i = 0; i < data.length; i++) {
 			if (i > 0) {
-				fw.write(", \\\n" + data[i].getEntry(i + 1, lw));
+				fw.write(", \\\n" + data[i].getEntry(i + 1, lw, offsetX * i));
 			} else {
-				fw.write(data[i].getEntry(i + 1, lw));
+				fw.write(data[i].getEntry(i + 1, lw, offsetX * i));
 			}
 		}
 		return fw.close();
