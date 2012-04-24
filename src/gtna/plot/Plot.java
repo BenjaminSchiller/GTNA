@@ -78,11 +78,15 @@ public class Plot {
 		if (this.title != null) {
 			fw.writeln("set title \"" + this.title + "\"");
 		}
-		if (this.xLabel != null) {
+		if (this.xLabel != null && this.xLabel.length() > 0) {
 			fw.writeln("set xlabel \"" + this.xLabel + "\"");
+		} else {
+			fw.writeln("set noxtics");
 		}
-		if (this.yLabel != null) {
+		if (this.yLabel != null && this.xLabel.length() > 0) {
 			fw.writeln("set ylabel \"" + this.yLabel + "\"");
+		} else {
+			fw.writeln("set noytics");
 		}
 		for (String config : this.config) {
 			fw.writeln(config);
