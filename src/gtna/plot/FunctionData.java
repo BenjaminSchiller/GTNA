@@ -54,7 +54,7 @@ public class FunctionData extends Data {
 	}
 
 	@Override
-	public String getEntry(int lt, int lw) {
+	public String getEntry(int lt, int lw, double offsetX) {
 		StringBuffer buff = new StringBuffer();
 		buff.append(this.data + " with " + this.style);
 		buff.append(" lt " + lt + " lw " + lw);
