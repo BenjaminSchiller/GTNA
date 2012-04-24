@@ -60,7 +60,8 @@ public abstract class Data {
 
 	public abstract boolean isStyleValid();
 
-	public abstract String getEntry(int lt, int lw, double offsetX);
+	public abstract String getEntry(int lt, int lw, double offsetX,
+			double offsetY);
 
 	public String[] getConfig() {
 		return new String[0];

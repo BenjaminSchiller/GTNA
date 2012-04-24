@@ -228,17 +228,17 @@ public class Plotting {
 		} else {
 			plot.setKey(Config.get("GNUPLOT_KEY"));
 		}
-		
+
 		String xtics = Config.get(plotKey + "_PLOT_XTICS");
-		if(xtics != null && xtics.length() > 0){
+		if (xtics != null && xtics.length() > 0) {
 			plot.addConfig("set xtics (" + xtics + ")");
 		}
-		
+
 		String ytics = Config.get(plotKey + "_PLOT_YTICS");
-		if(ytics != null && ytics.length() > 0){
+		if (ytics != null && ytics.length() > 0) {
 			plot.addConfig("set ytics (" + ytics + ")");
 		}
-		
+
 		return Gnuplot.plot(plot, m, plotKey);
 	}
 
