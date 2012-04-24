@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * CommunityEmbeddingsTest.java
+ * CommunityEmbeddingsVisualization.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -36,31 +36,16 @@
 package gtna.projects.communityEmbeddings;
 
 import gtna.data.Series;
-import gtna.graph.Graph;
-import gtna.io.GraphReader;
-import gtna.io.GraphWriter;
 import gtna.metrics.Metric;
-import gtna.metrics.basic.DegreeDistribution;
-import gtna.metrics.communities.Communities;
-import gtna.metrics.routing.Routing;
+import gtna.metrics.id.IdentifierSpaceVisualzation;
 import gtna.networks.Network;
-import gtna.networks.model.ErdosRenyi;
-import gtna.networks.model.placementmodels.NodeConnector;
-import gtna.networks.model.placementmodels.Partitioner;
-import gtna.networks.model.placementmodels.PlacementModel;
-import gtna.networks.model.placementmodels.PlacementModelContainer;
-import gtna.networks.model.placementmodels.connectors.UDGConnector;
-import gtna.networks.model.placementmodels.models.CommunityPlacementModel;
-import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Data.Type;
 import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
-import gtna.routing.greedy.Greedy;
-import gtna.routing.greedy.GreedyBacktracking;
-import gtna.routing.greedyVariations.DepthFirstGreedy;
 import gtna.transformation.Transformation;
+import gtna.transformation.attackableEmbedding.lmc.LMC;
 import gtna.transformation.communities.CommunityDetectionLPA;
 import gtna.transformation.embedding.communities.CommunityEmbedding;
 import gtna.transformation.embedding.communities.SimpleCommunityEmbedding1;
@@ -71,6 +56,7 @@ import gtna.transformation.embedding.communities.partitioner.idSpace.RelativeSiz
 import gtna.transformation.embedding.communities.sorter.community.NeighborsByEdgesCommunitySorter;
 import gtna.transformation.embedding.communities.sorter.community.OriginalCommunitySorter;
 import gtna.transformation.embedding.communities.sorter.node.OriginalNodeSorter;
+import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.partition.GiantConnectedComponent;
 import gtna.transformation.partition.StrongConnectivityPartition;
@@ -84,70 +70,19 @@ import java.util.Map;
  * @author benni
  * 
  */
-public class CommunityEmbeddingsTest {
-
-	/**
-	 * @param args
-	 */
+public class CommunityEmbeddingsVisualization {
 	public static void main(String[] args) {
-		if (false) {
-
-			String filename1 = "./resources/WOT-1-BD/2005-02-25.wot.txt";
-			String filename2 = "./resources/2005-02-25.wot.txt";
-
-			Graph g = GraphReader.readOld(filename1);
-			GraphWriter.write(g, filename2);
-
-			return;
-		}
-
-		if (false) {
-
-			Network nw = new ErdosRenyi(10, 3, true, null);
-
-			Transformation cd = new CommunityDetectionLPA();
-			Transformation ce1 = new SimpleCommunityEmbedding1();
-			Transformation ce2 = new SimpleCommunityEmbedding2();
-			Transformation ce_1 = new CommunityEmbedding(
-					new OriginalCommunitySorter(),
-					new RelativeSizeIdSpacePartitioner(0.0),
-					new OriginalNodeSorter(),
-					new EqualSizeCommunityPartitioner(), 1.0, true);
-			Transformation ce_2 = new CommunityEmbedding(
-					new OriginalCommunitySorter(),
-					new EqualSizeIdSpacePartitioner(0.0),
-					new OriginalNodeSorter(),
-					new EqualSizeCommunityPartitioner(), 1.0, true);
-			Transformation ce_3 = new CommunityEmbedding(
-					new NeighborsByEdgesCommunitySorter(),
-					new EqualSizeIdSpacePartitioner(0.0),
-					new OriginalNodeSorter(),
-					new EqualSizeCommunityPartitioner(), 1.0, true);
-
-			Graph g = nw.generate();
-
-			g = cd.transform(g);
-			g = ce_3.transform(g);
-
-			System.out.println(nw.getDescription());
-
-			return;
-		}
-
 		Stats stats = new Stats();
 
-		Config.overwrite("MAIN_DATA_FOLDER", "./data/community-embedding/");
-		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/community-embedding/");
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
+		Config.overwrite("MAIN_DATA_FOLDER",
+				"./data/community-embedding-visualization/");
+		Config.overwrite("MAIN_PLOT_FOLDER",
+				"./plots/community-embedding-visualization/");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 		Config.overwrite("SERIES_GRAPH_WRITE", "false");
 
-		Metric dd = new DegreeDistribution();
-		Metric communities = new Communities();
-		Metric routing1 = new Routing(new GreedyBacktracking(100));
-		Metric routing2 = new Routing(new Greedy());
-		Metric routing3 = new Routing(new DepthFirstGreedy(100));
-		Metric[] metrics = new Metric[] { dd, communities, routing1, routing2,
-				routing3 };
+		Metric v = new IdentifierSpaceVisualzation(200);
+		Metric[] metrics = new Metric[] { v };
 
 		Transformation scp = new StrongConnectivityPartition();
 		Transformation gcc = new GiantConnectedComponent();
@@ -196,27 +131,18 @@ public class CommunityEmbeddingsTest {
 		Transformation[][] t = new Transformation[][] { t0, t1, t3, t2, t4, t5,
 				t6 };
 
-		t = new Transformation[][] { t0, t1, t3, t2, t4, t5, t6 };
-
-		// folder = "rel-orig/";
-		// t = new Transformation[][] { t1, t3 };
-		// folder = "eq-orig/";
-		// t = new Transformation[][] { t2, t4 };
-		// folder = "edge/";
-		// t = new Transformation[][] { t5, t6 };
-		// folder = "rel/";
-		// t = new Transformation[][] { t1, t3, t5 };
-		// folder = "eq/";
-		// t = new Transformation[][] { t2, t4, t6 };
-
 		String spi = "./resources/spi-2011-02.spi.txt";
 		String wot = "./resources/2005-02-25.wot.txt";
 
 		boolean GET = false;
-		int TIMES = 100;
+		int TIMES = 1;
 
 		int networkType = 3;
-		int nodes = 10000;
+		int nodes = 2000;
+
+		Config.overwrite("GNUPLOT_OFFSET_X", "1.5");
+		Config.overwrite("GNUPLOT_OFFSET_Y", "-1.5");
+		Config.overwrite("GNUPLOT_LW", "1");
 
 		Network[] nw = new Network[t.length];
 		String name = null;
@@ -241,34 +167,9 @@ public class CommunityEmbeddingsTest {
 				metrics, TIMES);
 
 		// Plotting.multi(s, metrics, "multi/");
-
-		Config.overwrite("GNUPLOT_OFFSET_X", "0.1");
-		Plotting.multi(s, metrics, name + "-" + folder, Type.confidence1,
-				Style.candlesticks);
+		Plotting.multi(s, metrics, name + "-" + folder, Type.average,
+				Style.dots);
 
 		stats.end();
-	}
-
-	private static final double xyAll = 40000;
-	private static final double xyHotspots = 40000;
-	private static final double devHotspots = 5000;
-	private static final double xyNodes = 40000;
-	private static final double devNodes = 1000;
-	private static final double radius = 1983;
-
-	private static final Partitioner partitioner = new SimplePartitioner();
-
-	private static final NodeConnector connector = new UDGConnector(radius);
-
-	public static Network nwCC(int nodes, Transformation[] t) {
-		PlacementModel p1 = new CommunityPlacementModel(xyHotspots, xyHotspots,
-				devHotspots / (xyHotspots / 2), true);
-		PlacementModel p2 = new CommunityPlacementModel(xyNodes, xyNodes,
-				devNodes / (xyNodes / 2), true);
-		Network nw = new PlacementModelContainer(nodes, nodes / 100, xyAll,
-				xyAll, p1, p2, partitioner, connector, t);
-		// return new DescriptionWrapper(nw, "Communities " + nodes + " // "
-		// + t[t.length - 1].getFolderName());
-		return nw;
 	}
 }
