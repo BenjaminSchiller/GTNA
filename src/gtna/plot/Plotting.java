@@ -243,6 +243,11 @@ public class Plotting {
 		if(key != null && key.length() > 0){
 			plot.setKey(key);
 		}
+		
+		String logscale = Config.get(plotKey + "_PLOT_LOGSCALE");
+		if(logscale != null && logscale.length() > 0){
+			plot.addConfig("set logscale " + logscale);
+		}
 
 		return Gnuplot.plot(plot, m, plotKey);
 	}
