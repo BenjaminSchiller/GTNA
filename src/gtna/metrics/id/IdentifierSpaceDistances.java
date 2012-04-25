@@ -55,16 +55,17 @@ import java.util.HashMap;
  * @author benni
  * 
  */
-public class Distances extends Metric {
+public class IdentifierSpaceDistances extends Metric {
 	private double bucketSize;
 
 	private Distribution allDistribution;
 
 	private Distribution edgesDistribution;
 
-	public Distances(double bucketSize) {
-		super("DISTANCES", new Parameter[] { new DoubleParameter("BUCKET_SIZE",
-				bucketSize) });
+	public IdentifierSpaceDistances(double bucketSize) {
+		super(
+				"IDENTIFIER_SPACE_DISTANCES",
+				new Parameter[] { new DoubleParameter("BUCKET_SIZE", bucketSize) });
 		this.bucketSize = bucketSize;
 	}
 
@@ -142,14 +143,17 @@ public class Distances extends Metric {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(
 				this.allDistribution.getDistribution(),
-				"DISTANCES_DISTANCE_DISTRIBUTION_ALL", folder);
+				"IDENTIFIER_SPACE_DISTANCES_DISTANCE_DISTRIBUTION_ALL", folder);
 		success &= DataWriter.writeWithIndex(this.allDistribution.getCdf(),
-				"DISTANCES_DISTANCE_DISTRIBUTION_ALL_CDF", folder);
+				"IDENTIFIER_SPACE_DISTANCES_DISTANCE_DISTRIBUTION_ALL_CDF",
+				folder);
 		success &= DataWriter.writeWithIndex(
 				this.edgesDistribution.getDistribution(),
-				"DISTANCES_DISTANCE_DISTRIBUTION_EDGES", folder);
+				"IDENTIFIER_SPACE_DISTANCES_DISTANCE_DISTRIBUTION_EDGES",
+				folder);
 		success &= DataWriter.writeWithIndex(this.edgesDistribution.getCdf(),
-				"DISTANCES_DISTANCE_DISTRIBUTION_EDGES_CDF", folder);
+				"IDENTIFIER_SPACE_DISTANCES_DISTANCE_DISTRIBUTION_EDGES_CDF",
+				folder);
 		return success;
 	}
 
