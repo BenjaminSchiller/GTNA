@@ -38,6 +38,7 @@ package gtna.transformation.attackableEmbedding.IQD.RegionCoverage;
 import gtna.graph.Graph;
 import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.attackableEmbedding.IQD.AttackerNode;
+import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding.IdentifierMethod;
 
 import java.util.Random;
 import java.util.Vector;
@@ -70,7 +71,11 @@ public class RegionCoverageNode extends AttackerNode {
 		for (int i = 0; i < res.length; i++){
 			Vector<Integer> numb = new Vector<Integer>(this.knownIDs.length);
 			for (int j = 0; j < this.knownIDs.length; j++){
-				dist = this.embedding.computeDistance(this.knownIDs[j], ids[i]);
+				if (ids[i] != this.knownIDs[j]){
+					   dist = this.embedding.computeDistance( ids[i], this.knownIDs[j]);
+					} else {
+						dist = this.embedding.computeDistance( ids[i], ids[(i+1)%2]);
+					}
 				r = (int) (Math.min(Math.ceil(-Math.log(Math.abs(dist))/log2),max)*Math.signum(dist));
 				if (!numb.contains(r)){
 					numb.add(r);
@@ -86,6 +91,31 @@ public class RegionCoverageNode extends AttackerNode {
 				}
 			}
 			res[i] = numb.size();
+			
+			if (this.embedding.getIdMethod() == IdentifierMethod.SWAPPING){
+				numb = new Vector<Integer>(this.swapped.length);
+				for (int j = 0; j < this.swapped.length; j++){
+					if (ids[i] != this.swapped[j]){
+						   dist = this.embedding.computeDistance( ids[(i+1)%2], this.swapped[j]);
+						} else {
+							dist = this.embedding.computeDistance( ids[(i+1)%2], ids[i]);
+					}
+					r = (int) (Math.min(Math.ceil(-Math.log(Math.abs(dist))/log2),max)*Math.signum(dist));
+					if (!numb.contains(r)){
+						numb.add(r);
+					}
+					if (this.embedding.getDistance() == Distance.SIGNED && numb.size() == 2*(max-1)){
+						break;
+					}
+					if (this.embedding.getDistance() == Distance.RING && numb.size() == (max-1)){
+						break;
+					}
+					if (this.embedding.getDistance() == Distance.CLOCKWISE && numb.size() == max){
+						break;
+					}
+				}
+				res[i] = res[i] + numb.size();
+			}
 		}
 		return res;
 	}
