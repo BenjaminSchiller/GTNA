@@ -64,6 +64,12 @@ public class ArrayUtils {
 		}
 	}
 
+	public static void divide(double[][] array, int index, double divisor) {
+		for (int i = 0; i < array.length; i++) {
+			array[i][index] /= divisor;
+		}
+	}
+
 	public static String[] toStringArray(ArrayList<String> list) {
 		String[] array = new String[list.size()];
 		for (int i = 0; i < list.size(); i++) {
