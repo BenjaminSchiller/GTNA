@@ -66,7 +66,7 @@ public class ConfidenceData1 extends Data {
 		// 10 confUp
 		// X Min 1stQuartile Median 3rdQuartile Max
 		buff.append("'" + this.data + "' using ($1 + " + offsetX + "):($9 + "
-				+ offsetY + "):$(4 + " + offsetY + "):($5 + " + offsetY
+				+ offsetY + "):($4 + " + offsetY + "):($5 + " + offsetY
 				+ "):($10 + " + offsetY + ") with " + this.style);
 		buff.append(" lt " + lt + " lw " + lw);
 		buff.append(title == null ? " notitle" : " title \"" + this.title
