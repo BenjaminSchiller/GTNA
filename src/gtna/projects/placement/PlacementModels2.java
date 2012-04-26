@@ -81,7 +81,7 @@ public class PlacementModels2 {
 				DistributionType.FIXED, DistributionType.FIXED, false);
 		PlacementModel p2 = new CirclePlacementModel(200,
 				DistributionType.FIXED, DistributionType.FIXED, false);
-		return new PlacementModelContainer(nodes, 10, xy, xy, p1, p2,
+		return new PlacementModelContainer(nodes, 10, xy, xy, xy, xy, p1, p2,
 				partitioner, connector, null);
 	}
 
@@ -90,7 +90,7 @@ public class PlacementModels2 {
 				DistributionType.FIXED, DistributionType.FIXED, false);
 		PlacementModel p2 = new CirclePlacementModel(300,
 				DistributionType.FIXED, DistributionType.FIXED, false);
-		return new PlacementModelContainer(nodes, 10, xy, xy, p1, p2,
+		return new PlacementModelContainer(nodes, 10, xy, xy, xy, xy, p1, p2,
 				partitioner, connector, null);
 	}
 
@@ -98,14 +98,14 @@ public class PlacementModels2 {
 		PlacementModel p1 = new CirclePlacementModel(800,
 				DistributionType.FIXED, DistributionType.FIXED, false);
 		PlacementModel p2 = new GridPlacementModel(400, 400, 5, 4, false);
-		return new PlacementModelContainer(nodes, 10, xy, xy, p1, p2,
+		return new PlacementModelContainer(nodes, 10, xy, xy, xy, xy, p1, p2,
 				partitioner, connector, null);
 	}
 
 	private static Network communityCommunity(int nodes) {
-		PlacementModel p1 = new CommunityPlacementModel(xy, xy, 0.4, true);
-		PlacementModel p2 = new CommunityPlacementModel(xy, xy, 0.1, true);
-		return new PlacementModelContainer(nodes, 10, xy, xy, p1, p2,
+		PlacementModel p1 = new CommunityPlacementModel(0.4 * xy, 0.4 * xy, true);
+		PlacementModel p2 = new CommunityPlacementModel(0.1 * xy, 0.1 * xy, true);
+		return new PlacementModelContainer(nodes, 10, xy, xy, xy, xy, p1, p2,
 				partitioner, connector, null);
 	}
 
@@ -145,8 +145,8 @@ public class PlacementModels2 {
 
 	private static Network singleCommunities(int nodes) {
 		PlacementModel p1 = new RandomPlacementModel(xy, xy, true);
-		PlacementModel p2 = new CommunityPlacementModel(xy, xy, 0.2, true);
-		return new PlacementModelContainer(nodes, 1, xy, xy, p1, p2,
+		PlacementModel p2 = new CommunityPlacementModel(0.2 * xy, 0.2 * xy,  true);
+		return new PlacementModelContainer(nodes, 1, xy, xy, xy, xy, p1, p2,
 				partitioner, connector, null);
 	}
 
@@ -154,7 +154,7 @@ public class PlacementModels2 {
 		PlacementModel p1 = new RandomPlacementModel(xy, xy, true);
 		PlacementModel p2 = new CirclePlacementModel(900,
 				DistributionType.FIXED, DistributionType.FIXED, true);
-		return new PlacementModelContainer(nodes, 1, xy, xy, p1, p2,
+		return new PlacementModelContainer(nodes, 1, xy, xy, xy, xy, p1, p2,
 				partitioner, connector, null);
 	}
 
@@ -163,7 +163,7 @@ public class PlacementModels2 {
 		int x = (int) Math.ceil(Math.sqrt(nodes));
 		int y = (int) Math.ceil(Math.sqrt(nodes));
 		PlacementModel p2 = new GridPlacementModel(xy, xy, x, y, false);
-		return new PlacementModelContainer(nodes, 1, xy, xy, p1, p2,
+		return new PlacementModelContainer(nodes, 1, xy, xy, xy, xy, p1, p2,
 				partitioner, connector, null);
 	}
 
@@ -172,7 +172,7 @@ public class PlacementModels2 {
 		int x = (int) Math.ceil(Math.sqrt(nodes));
 		int y = (int) Math.ceil(Math.sqrt(nodes));
 		PlacementModel p2 = new GridPlacementModel(xy, xy, x, y, false);
-		return new PlacementModelContainer(nodes, 1, xy, xy, p1, p2,
+		return new PlacementModelContainer(nodes, 1, xy, xy, xy, xy, p1, p2,
 				partitioner, new UDGConnector(150), null);
 	}
 
@@ -181,14 +181,14 @@ public class PlacementModels2 {
 		int x = (int) Math.ceil(Math.sqrt(nodes));
 		int y = (int) Math.ceil(Math.sqrt(nodes));
 		PlacementModel p2 = new GridPlacementModel(xy, xy, x, y, false);
-		return new PlacementModelContainer(nodes, 1, xy, xy, p1, p2,
+		return new PlacementModelContainer(nodes, 1, xy, xy, xy, xy, p1, p2,
 				partitioner, new UDGConnector(200), null);
 	}
 
 	private static Network singleRandom(int nodes) {
 		PlacementModel p1 = new RandomPlacementModel(xy, xy, true);
 		PlacementModel p2 = new RandomPlacementModel(xy, xy, true);
-		return new PlacementModelContainer(nodes, 1, xy, xy, p1, p2,
+		return new PlacementModelContainer(nodes, 1, xy, xy, xy, xy, p1, p2,
 				partitioner, connector, null);
 	}
 

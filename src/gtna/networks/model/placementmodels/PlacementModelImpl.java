@@ -36,6 +36,7 @@
 package gtna.networks.model.placementmodels;
 
 import gtna.util.Util;
+import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
@@ -81,8 +82,10 @@ public abstract class PlacementModelImpl implements PlacementModel {
 
 	@Override
 	public Parameter[] getConfigParameters() {
-		return Util.mergeArrays(new Parameter[] { new StringParameter("KEY",
-				key) }, getAdditionalConfigParameters());
+		return Util.mergeArrays(new Parameter[] {
+				new StringParameter("KEY", key),
+				new BooleanParameter("IN_CENTER", getInCenter()) },
+				getAdditionalConfigParameters());
 	}
 
 	/**
@@ -122,6 +125,33 @@ public abstract class PlacementModelImpl implements PlacementModel {
 	 */
 	public boolean getInCenter() {
 		return inCenter;
+	}
+
+	/**
+	 * Determines if a given point is inside the bounds defined by the given
+	 * box.
+	 * 
+	 * @param x
+	 *            The x coordinate that is to be tested.
+	 * @param y
+	 *            The y coordinate that is to be tested.
+	 * @param boxCenter
+	 *            The center of the bounding box.
+	 * @param boxWidth
+	 *            The width of the bounding box.
+	 * @param boxHeight
+	 *            The height of the bounding box.
+	 * @return True, if the given point is inside the box (boxCenter.getX() -
+	 *         boxWidth / 2, boxCenter.getY() - boxHeight / 2) and
+	 *         (boxCenter.getX() + boxWidth() / 2, boxCenter.getY() + boxHeight
+	 *         / 2).
+	 */
+	protected boolean inBounds(double x, double y, Point boxCenter,
+			double boxWidth, double boxHeight) {
+		return (x >= (boxCenter.getX() - (boxWidth / 2))
+				|| x <= boxCenter.getX() + (boxWidth / 2)
+				|| y >= boxCenter.getY() - (boxHeight / 2) || y <= (boxCenter
+				.getY() + (boxHeight / 2)));
 	}
 
 }
