@@ -48,15 +48,17 @@ import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.algorithms.ResilienceMetrics;
+import gtna.networks.Network;
+import gtna.networks.model.PositiveFeedbackPreference;
 
 /**
  * @author truong
  * 
  */
-public class NodeSortingTest {
+public class Tests {
 	public static void main(String[] args) {
 
-		NodeSortingTest.biconnectedTest();
+		Tests.PFPTest();
 
 	}
 
@@ -172,5 +174,16 @@ public class NodeSortingTest {
 		}
 		System.out.println("Max Err = " + err);
 		System.out.println("Average Err = " + (errSum / nodes.length));
+	}
+	
+	public static void PFPTest() {
+		int N = 100;
+		double p = 0.4;
+		double delta = 0.021;
+		Network nw = new PositiveFeedbackPreference(N, p, delta, null);
+		Graph g = nw.generate();
+		for (Node n : g.getNodes()) {
+			System.out.println("" + n);
+		}
 	}
 }
