@@ -35,10 +35,10 @@
  */
 package gtna.networks.model;
 
-import java.util.HashMap;
+import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Random;
-
-import gtna.graph.Edge;
+import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
@@ -58,7 +58,7 @@ public class PositiveFeedbackPreference extends Network {
 
 	// variables to algorithms
 	private double[] nodePref;
-	private HashMap<String, Boolean> edgesMap;
+	private ArrayList<Point> edgesList;
 	private double[] nodeDegree;
 
 	/**
@@ -83,15 +83,23 @@ public class PositiveFeedbackPreference extends Network {
 	 */
 	@Override
 	public Graph generate() {
-		Graph graph = new Graph(this.getDescription());
+		// Graph graph = new Graph(this.getDescription());
+		Graph graph = new Graph("test");
 		Node[] nodes = Node.init(this.getNodes(), graph);
 		nodePref = new double[nodes.length];
-		edgesMap = new HashMap<String, Boolean>();
+		edgesList = new ArrayList<Point>();
 		nodeDegree = new double[nodes.length];
 
 		Random rand = new Random();
 		for (int i = 0; i < nodes.length; i++) {
 			// TODO: generate original random graph
+			// ---Test---
+			if (i < 5) {
+				for (int j = 0; j < i; j++) {
+					this.addEdge(i, j);
+				}
+			}
+			// ---
 			if (rand.nextDouble() < p) {
 
 				// a new node is attached to "host"
@@ -124,7 +132,18 @@ public class PositiveFeedbackPreference extends Network {
 				}
 			}
 		}
-		return null;
+
+		// copy edges to graph
+		Edges edges = new Edges(nodes, 2 * edgesList.size());
+		for (Point p : edgesList) {
+			edges.add(p.x, p.y);
+			edges.add(p.y, p.x);
+		}
+
+		// return graph
+		edges.fill();
+		graph.setNodes(nodes);
+		return graph;
 	}
 
 	private void updatePreference(int nodeIndex) {
@@ -150,7 +169,7 @@ public class PositiveFeedbackPreference extends Network {
 	}
 
 	private void addEdge(int src, int dst) {
-		edgesMap.put(Edge.toString(src, dst), true);
+		edgesList.add(new Point(src, dst));
 		nodeDegree[src]++;
 		nodeDegree[dst]++;
 		updatePreference(src);
