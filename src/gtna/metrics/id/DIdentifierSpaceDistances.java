@@ -56,7 +56,7 @@ import java.util.HashMap;
  * @author benni
  * 
  */
-public class IdentifierSpaceDistances extends Metric {
+public class DIdentifierSpaceDistances extends Metric {
 	private int bins;
 
 	private double[][] nodesDistanceDistribution;
@@ -67,8 +67,8 @@ public class IdentifierSpaceDistances extends Metric {
 
 	private double[][] edgesDistanceDistributionCdf;
 
-	public IdentifierSpaceDistances(int bins) {
-		super("IDENTIFIER_SPACE_DISTANCES",
+	public DIdentifierSpaceDistances(int bins) {
+		super("D_IDENTIFIER_SPACE_DISTANCES",
 				new Parameter[] { new DoubleParameter("BINS", bins) });
 		this.bins = bins;
 
