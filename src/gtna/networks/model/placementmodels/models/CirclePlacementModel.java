@@ -113,14 +113,13 @@ public class CirclePlacementModel extends PlacementModelImpl {
 	 * Places the nodes on a circle around the center of the field.
 	 */
 	@Override
-	public Point[] place(int count, Point center, double maxX, double maxY) {
+	public Point[] place(int count, Point center, Point boxCenter, double boxWidth, double boxHeight) {
 		Random rnd = new Random();
 		Point[] ret = new Point[count];
-		int offset = 0;
+		int i = 0;
 		if (getInCenter()) {
 			ret[0] = new Point(center.getX(), center.getY());
-			offset = 1;
-			count--;
+			i = 1;
 		}
 		double gamma = (2 * Math.PI) / (double) count;
 		double alpha = 0;
@@ -128,8 +127,8 @@ public class CirclePlacementModel extends PlacementModelImpl {
 		double x, y;
 
 		int tries;
-
-		for (int i = 0; i < count; i++) {
+		
+		while(i < count) {
 			tries = 0;
 			do {
 
@@ -161,15 +160,16 @@ public class CirclePlacementModel extends PlacementModelImpl {
 				x = center.getX() + d * Math.cos(alpha);
 				y = center.getY() + d * Math.sin(alpha);
 				tries++;
-			} while ((x < 0 || x > maxX || y < 0 || y > maxY)
+			} while (!inBounds(x, y, boxCenter, boxWidth, boxHeight)
 					&& tries <= maxTries);
 			if (tries > maxTries)
 				throw new PlacementNotPossibleException("Could not place node "
 						+ i + " for settings: center=(" + center.getX() + ", "
 						+ center.getY() + "), radius=" + radius + ", F=("
-						+ maxX + ", " + maxY + "), count=" + count
+						+ boxWidth + ", " + boxHeight + "), count=" + count
 						+ ", Distribs=(" + oalpha + ", " + od + ")");
-			ret[i + offset] = new Point(x, y);
+			ret[i] = new Point(x, y);
+			i++;
 		}
 
 		return ret;

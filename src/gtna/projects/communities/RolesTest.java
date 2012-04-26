@@ -78,8 +78,8 @@ public class RolesTest {
 	public static void rolesTest() {
 		Stats stats = new Stats();
 
-		Config.overwrite("MAIN_DATA_FOLDER", "./data/roles-test/");
-		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/roles-test/");
+		Config.overwrite("MAIN_DATA_FOLDER", "D:/data/roles-test/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "D:/plots/roles-test/");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 		Config.overwrite("SERIES_GRAPH_WRITE", "false");
 
@@ -87,7 +87,7 @@ public class RolesTest {
 		Metric communities = new Communities();
 		Metric roles1 = new Roles(Role.RoleType.GUIMERA);
 		Metric roles2 = new Roles(Role.RoleType.WSN);
-		Metric[] metrics = new Metric[] { roles2 };
+		Metric[] metrics = new Metric[] { dd, roles2 };
 
 		Transformation lpa = new CommunityDetectionLPA(50);
 		Transformation dq = new CommunityDetectionDeltaQ(50);
@@ -160,8 +160,10 @@ public class RolesTest {
 
 	private static final double xyAll = 40000;
 	private static final double xyHotspots = 40000;
-	private static final double devHotspots = 5000;
 	private static final double xyNodes = 40000;
+	private static final double boxHotspots = 30000;
+	private static final double devHotspots = 5000;
+	
 	private static final double devNodes = 1000;
 	private static final double radius = 1983;
 
@@ -210,12 +212,10 @@ public class RolesTest {
 	}
 
 	private static Network nwCC(int nodes, Transformation[] t) {
-		PlacementModel p1 = new CommunityPlacementModel(xyHotspots, xyHotspots,
-				devHotspots / (xyHotspots / 2), true);
-		PlacementModel p2 = new CommunityPlacementModel(xyNodes, xyNodes,
-				devNodes / (xyNodes / 2), true);
+		PlacementModel p1 = new CommunityPlacementModel(xyHotspots, xyHotspots, true);
+		PlacementModel p2 = new CommunityPlacementModel(xyNodes, xyNodes, true);
 		Network nw = new PlacementModelContainer(nodes, nodes / 100, xyAll,
-				xyAll, p1, p2, partitioner, connector, t);
+				xyAll, boxHotspots, boxHotspots, p1, p2, partitioner, connector, t);
 		// return new DescriptionWrapper(nw, "Communities " + nodes);
 		return nw;
 	}
@@ -223,7 +223,7 @@ public class RolesTest {
 	private static Network nwR(int nodes, Transformation[] t) {
 		PlacementModel p1 = new RandomPlacementModel(xyAll, xyAll, true);
 		PlacementModel p2 = new RandomPlacementModel(xyAll, xyAll, true);
-		Network nw = new PlacementModelContainer(nodes, 1, xyAll, xyAll, p1,
+		Network nw = new PlacementModelContainer(nodes, 1, xyAll, xyAll, boxHotspots, boxHotspots, p1,
 				p2, partitioner, connector, t);
 		// return new DescriptionWrapper(nw, "Random" + nodes);
 		return nw;

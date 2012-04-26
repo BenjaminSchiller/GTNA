@@ -150,9 +150,9 @@ public class RolesMetric {
 	private static final double xy = 2000;
 
 	private static Network communityCommunity(int nodes, Transformation[] t) {
-		PlacementModel p1 = new CommunityPlacementModel(xy, xy, 0.4, true);
-		PlacementModel p2 = new CommunityPlacementModel(xy, xy, 0.1, true);
-		return new PlacementModelContainer(nodes, 10, xy, xy, p1, p2,
+		PlacementModel p1 = new CommunityPlacementModel(0.4 * xy, 0.4 * xy, true);
+		PlacementModel p2 = new CommunityPlacementModel(0.1 * xy, 0.1 * xy, true);
+		return new PlacementModelContainer(nodes, 10, xy, xy, xy, xy, p1, p2,
 				partitioner, connector, t);
 	}
 }

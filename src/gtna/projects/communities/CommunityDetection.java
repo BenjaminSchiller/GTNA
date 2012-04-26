@@ -110,26 +110,23 @@ public class CommunityDetection {
 	private static Network random(int nodes) {
 		PlacementModel p1 = new RandomPlacementModel(width, height, false);
 		PlacementModel p2 = new RandomPlacementModel(1, 1, true);
-		return new PlacementModelContainer(nodes, nodes, width, height, p1, p2,
+		return new PlacementModelContainer(nodes, nodes, width, height, 30000, 30000, p1, p2,
 				partitioner, connector, null);
 	}
 
 	private static Network community(int nodes) {
-		PlacementModel p1 = new CommunityPlacementModel(width, height, 0.5,
-				false);
-		PlacementModel p2 = new CommunityPlacementModel(width, height, 0.2,
-				false);
-		return new PlacementModelContainer(nodes, nodes / 100, width, height,
+		PlacementModel p1 = new CommunityPlacementModel(0.5 * width, 0.5 * height, false);
+		PlacementModel p2 = new CommunityPlacementModel(0.2 * width, 0.2 * height, false);
+		return new PlacementModelContainer(nodes, nodes / 100, width, height, 30000, 30000,
 				p1, p2, partitioner, connector, null);
 	}
 
 	private static Network communityNew(int nodes) {
-		PlacementModel p1 = new CommunityPlacementModel(width, height, 0.5,
+		PlacementModel p1 = new CommunityPlacementModel(0.5 * width, 0.5 * height, false);
+		PlacementModel p2 = new CommunityPlacementModel(0.2 * width, 0.2 * height,
 				false);
-		PlacementModel p2 = new CommunityPlacementModel(width, height, 0.2,
-				false);
-		return new PlacementModelContainer(nodes, nodes / 100, 2 * width,
-				2 * height, p1, p2, partitioner, connector, null);
+		return new PlacementModelContainer(nodes, nodes / 100, 2 * width, 
+				2 * height, 60000, 60000, p1, p2, partitioner, connector, null);
 	}
 
 	private static void plot(Network nw, String filename, int times,

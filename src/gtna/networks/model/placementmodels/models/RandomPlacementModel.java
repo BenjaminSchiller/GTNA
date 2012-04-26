@@ -78,7 +78,7 @@ public class RandomPlacementModel extends PlacementModelImpl {
 	 * Places the nodes uniformly in the field.
 	 */
 	@Override
-	public Point[] place(int count, Point center, double maxX, double maxY) {
+	public Point[] place(int count, Point placementCenter, Point boxCenter, double boxWidth, double boxHeight) {
 		Random rnd = new Random();
 
 		double dx = 0;
@@ -88,7 +88,7 @@ public class RandomPlacementModel extends PlacementModelImpl {
 		Point[] ret = new Point[count];
 
 		if (getInCenter()) {
-			ret[0] = new Point(center.getX(), center.getY());
+			ret[0] = new Point(placementCenter.getX(), placementCenter.getY());
 			i++;
 		}
 		int tries;
@@ -100,15 +100,13 @@ public class RandomPlacementModel extends PlacementModelImpl {
 						* (rnd.nextBoolean() ? 1.0 : -1.0);
 				double y = (this.height / 2.0)
 						* (rnd.nextBoolean() ? 1.0 : -1.0);
-				dx = center.getX() + x * (rnd.nextDouble());
-				dy = center.getY() + y * (rnd.nextDouble());
-				// dx = center.getX() + width * (rnd.nextDouble());
-				// dy = center.getY() + height * (rnd.nextDouble());
+				dx = placementCenter.getX() + x * (rnd.nextDouble());
+				dy = placementCenter.getY() + y * (rnd.nextDouble());
 				tries++;
-			} while ((dx < 0 || dx > maxX || dy < 0 || dy > maxY)
+			} while (!inBounds(dx,dy, boxCenter, boxWidth, boxHeight)
 					&& tries <= maxTries);
 
-			if ((dx < 0 || dx > maxX || dy < 0 || dy > maxY))
+			if (tries > maxTries)
 				throw new PlacementNotPossibleException("Could not place node "
 						+ i + " for settings: F=(" + width + ", " + height
 						+ "), count=" + count + ", inCenter=" + getInCenter());
