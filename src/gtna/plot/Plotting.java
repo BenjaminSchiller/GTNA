@@ -206,6 +206,12 @@ public class Plotting {
 
 	private static boolean multi(Series[] s, Metric m, String plotKey,
 			String pre, Type type, Style style) {
+		if (Config.containsKey(plotKey + "_PLOT_TYPE")
+				&& Config.containsKey(plotKey + "_PLOT_STYLE")) {
+			type = Type.valueOf(Config.get(plotKey + "_PLOT_TYPE"));
+			style = Style.valueOf(Config.get(plotKey + "_PLOT_STYLE"));
+		}
+
 		String[] dataKeys = Config.keys(plotKey + "_PLOT_DATA");
 		Data[] data = new Data[s.length * dataKeys.length];
 		int index = 0;
@@ -223,6 +229,20 @@ public class Plotting {
 		plot.setxLabel(Config.get(plotKey + "_PLOT_X"));
 		plot.setyLabel(Config.get(plotKey + "_PLOT_Y"));
 
+		if (Config.containsKey(plotKey + "_PLOT_OFFSET_X")
+				&& Config.get(plotKey + "_PLOT_OFFSET_X").length() > 0) {
+			plot.setOffsetX(Config.getDouble(plotKey + "_PLOT_OFFSET_X"));
+		}
+
+		if (Config.containsKey(plotKey + "_PLOT_OFFSET_Y")
+				&& Config.get(plotKey + "_PLOT_OFFSET_Y").length() > 0) {
+			plot.setOffsetY(Config.getDouble(plotKey + "_PLOT_OFFSET_Y"));
+		}
+
+		if (Config.containsKey(plotKey + "_PLOT_LW")) {
+			plot.setLW(Config.getInt(plotKey + "_PLOT_LW"));
+		}
+
 		if (Config.getBoolean(dataKeys[0] + "_DATA_IS_CDF")) {
 			plot.setKey(Config.get("GNUPLOT_KEY_CDF"));
 		} else {
@@ -238,14 +258,14 @@ public class Plotting {
 		if (ytics != null && ytics.length() > 0) {
 			plot.addConfig("set ytics (" + ytics + ")");
 		}
-		
+
 		String key = Config.get(plotKey + "_PLOT_KEY");
-		if(key != null && key.length() > 0){
+		if (key != null && key.length() > 0) {
 			plot.setKey(key);
 		}
-		
+
 		String logscale = Config.get(plotKey + "_PLOT_LOGSCALE");
-		if(logscale != null && logscale.length() > 0){
+		if (logscale != null && logscale.length() > 0) {
 			plot.addConfig("set logscale " + logscale);
 		}
 
