@@ -61,11 +61,20 @@ public class Plot {
 
 	private ArrayList<String> config;
 
+	private double offsetX;
+
+	private double offsetY;
+
+	private int lw;
+
 	public Plot(Data[] data, String terminal, String output) {
 		this.data = data;
 		this.terminal = terminal;
 		this.output = output;
 		this.config = new ArrayList<String>();
+		this.offsetX = Config.getDouble("GNUPLOT_OFFSET_X");
+		this.offsetY = Config.getDouble("GNUPLOT_OFFSET_Y");
+		this.lw = Config.getInt("GNUPLOT_LW");
 	}
 
 	public boolean write(String filename) {
@@ -92,15 +101,14 @@ public class Plot {
 			fw.writeln(config);
 		}
 		fw.write("plot ");
-		int lw = Config.getInt("GNUPLOT_LW");
-		double offsetX = Config.getDouble("GNUPLOT_OFFSET_X");
-		double offsetY = Config.getDouble("GNUPLOT_OFFSET_Y");
 		for (int i = 0; i < data.length; i++) {
 			if (i > 0) {
 				fw.write(", \\\n"
-						+ data[i].getEntry(i + 1, lw, offsetX * i, offsetY * i));
+						+ data[i].getEntry(i + 1, this.lw, this.offsetX * i,
+								this.offsetY * i));
 			} else {
-				fw.write(data[i].getEntry(i + 1, lw, offsetX * i, offsetY * i));
+				fw.write(data[i].getEntry(i + 1, this.lw, this.offsetX * i,
+						this.offsetY * i));
 			}
 		}
 		return fw.close();
@@ -128,5 +136,17 @@ public class Plot {
 
 	public void setyLabel(String yLabel) {
 		this.yLabel = yLabel;
+	}
+
+	public void setOffsetX(double offsetX) {
+		this.offsetX = offsetX;
+	}
+
+	public void setOffsetY(double offsetY) {
+		this.offsetY = offsetY;
+	}
+
+	public void setLW(int lw) {
+		this.lw = lw;
 	}
 }
