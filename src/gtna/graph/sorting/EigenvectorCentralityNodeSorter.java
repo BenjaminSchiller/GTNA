@@ -60,6 +60,10 @@ public class EigenvectorCentralityNodeSorter extends NodeSorter {
 		// TODO Auto-generated constructor stub
 	}
 
+	public void setNumRuns(int numRuns) {
+		this.numRuns = numRuns;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

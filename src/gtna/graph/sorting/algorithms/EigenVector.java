@@ -46,9 +46,13 @@ import gtna.graph.Node;
  */
 public class EigenVector {
 	private Graph g;
-	private int numRuns = 100;
+	private int numRuns = 1000;
 
 	// private double sumChange;
+
+	public void setNumRuns(int numRuns) {
+		this.numRuns = numRuns;
+	}
 
 	public void execute() {
 		int N = g.getNodes().length;
