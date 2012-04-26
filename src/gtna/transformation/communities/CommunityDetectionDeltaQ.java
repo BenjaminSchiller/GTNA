@@ -1,5 +1,6 @@
 package gtna.transformation.communities;
 
+import gtna.communities.CommunityList;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -12,7 +13,6 @@ import gtna.transformation.communities.matrices.MyQEMatrixInt;
 import gtna.transformation.communities.matrices.MyQEMatrixLong;
 import gtna.transformation.communities.matrices.MyQMatrixInt;
 import gtna.transformation.communities.matrices.MyQMatrixLong;
-import gtna.util.Config;
 import gtna.util.Util;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.IntParameter;
@@ -38,41 +38,52 @@ public class CommunityDetectionDeltaQ extends Transformation {
 	// two arrays are used as storage for performance purposes
 	private int[] mergesI;
 	private int[] mergesJ;
+	// maximum number of iterations
+	private int maxIterations;
+	// internal format
+	private String internalFormat;
+	// force seperated matrices for Q and E, for an undirected graph Q and E
+	// could be combined into the same matrix, setting this to true will always
+	// use different matrices
+	private boolean forceSeparated;
 
 	private static final String key = "COMMUNITY_DETECTION_DELTAQ";
 
 	/**
-	 * Standard Constructor. Does call super with the suffix for this metric,
-	 * "CDQ".
-	 * 
+	 * Convenience Constructor, forwards to CommunityDetectionDeltaQ("long",
+	 * false, 0).
 	 */
 	public CommunityDetectionDeltaQ() {
-		this(1);
-	}
-
-	public CommunityDetectionDeltaQ(int times) {
-		super(key, new Parameter[] {
-				new StringParameter("INTERNALFORMAT", Config.get(key
-						+ "_INTERNALFORMAT")),
-				new BooleanParameter("FORCESEPARATED", Config.getBoolean(key
-						+ "_FORCESEPARATED")),
-				new IntParameter("MAXITERATIONS", Config.getInt(key
-						+ "_MAXITERATIONS")) }, times);
+		this("long", false, 0);
 	}
 
 	/**
-	 * Does the work. Configuration of this method is done via the
-	 * /configs/metric.cdq.properties file. For available options refer to ___
+	 * Standard constructor for the DeltaQ community detection algorithm.
 	 * 
+	 * @param internalFormat
+	 *            The internal format that is to be used, either "int" or
+	 *            "long". Should be "long" for graphs with more than 1500 nodes.
+	 * @param forceSeparated
+	 *            Forces seperated matrices for Q- and E-Matrix. For undirected
+	 *            graphs, those two matrices could be combined into one. Should
+	 *            mostly be false.
+	 * @param maxIterations
+	 *            The maximum number of iterations.
 	 */
+	public CommunityDetectionDeltaQ(String internalFormat,
+			boolean forceSeparated, int maxIterations) {
+		super(key, new Parameter[] {
+				new StringParameter("INTERNALFORMAT", internalFormat),
+				new BooleanParameter("FORCESEPARATED", forceSeparated),
+				new IntParameter("MAXITERATIONS", maxIterations) });
+		this.forceSeparated = forceSeparated;
+		this.internalFormat = internalFormat;
+		this.maxIterations = maxIterations;
+	}
+
 	public int[] deltaQ(Graph g) {
 
 		int nodes = g.getNodes().length;
-
-		boolean forceSeparated = Config.getBoolean(this.getKey()
-				+ "_FORCESEPARATED");
-
-		String internalFormat = Config.get(this.getKey() + "_INTERNALFORMAT");
 
 		// Create the needed matrices. Note that due to generics being limited
 		// to non-primitive types, using them is not possible. It would be
@@ -102,7 +113,7 @@ public class CommunityDetectionDeltaQ extends Transformation {
 		// Initialize the algorithm
 		double mod = 0;
 		int t = 0;
-		int maxT = Config.getInt(this.getKey() + "_MAXITERATIONS");
+		int maxT = maxIterations;
 		if (maxT == 0 || maxT > nodes - 1)
 			maxT = nodes - 1;
 
@@ -219,8 +230,7 @@ public class CommunityDetectionDeltaQ extends Transformation {
 					labelCommunityMapping.get(labels[n.getIndex()]));
 		}
 
-		g.addProperty(g.getNextKey("COMMUNITIES"),
-				new gtna.communities.CommunityList(map));
+		g.addProperty(g.getNextKey("COMMUNITIES"), new CommunityList(map));
 		return g;
 	}
 }

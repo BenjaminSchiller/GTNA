@@ -89,7 +89,7 @@ public class RolesMetric {
 		Transformation wcc = new WeakConnectivityPartition();
 		Transformation gcc = new GiantConnectedComponent();
 		Transformation dq = new CommunityDetectionDeltaQ();
-		Transformation lpa = new CommunityDetectionLPA();
+		Transformation lpa = new CommunityDetectionLPA(50);
 		Transformation r = new GuimeraRolesTransformation();
 		Transformation r2 = new WsnRolesTransformation();
 

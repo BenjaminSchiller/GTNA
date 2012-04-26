@@ -90,7 +90,7 @@ public class RolesTest {
 		Metric[] metrics = new Metric[] { dd, roles2 };
 
 		Transformation lpa = new CommunityDetectionLPA(50);
-		Transformation dq = new CommunityDetectionDeltaQ(50);
+		Transformation dq = new CommunityDetectionDeltaQ();
 		Transformation r1 = new GuimeraRolesTransformation();
 		Transformation r2 = new WsnRolesTransformation();
 		Transformation[] t = new Transformation[] { lpa, r2 };
@@ -129,7 +129,7 @@ public class RolesTest {
 		Metric[] metrics = new Metric[] { dd, communities, roles, roles2 };
 
 		Transformation lpa = new CommunityDetectionLPA(3);
-		Transformation dq = new CommunityDetectionDeltaQ(4);
+		Transformation dq = new CommunityDetectionDeltaQ();
 		Transformation t_roles = new GuimeraRolesTransformation();
 		Transformation t_roles2 = new WsnRolesTransformation();
 		Transformation[] t = new Transformation[] { lpa };
