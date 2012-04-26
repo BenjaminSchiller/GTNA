@@ -37,7 +37,7 @@ package gtna.projects.communityEmbeddings;
 
 import gtna.data.Series;
 import gtna.metrics.Metric;
-import gtna.metrics.id.IdentifierSpaceVisualzation;
+import gtna.metrics.id.RingIdentifierSpaceVisualzation;
 import gtna.networks.Network;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.networks.util.ReadableFile;
@@ -81,7 +81,7 @@ public class CommunityEmbeddingsVisualization {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 		Config.overwrite("SERIES_GRAPH_WRITE", "false");
 
-		Metric v = new IdentifierSpaceVisualzation(200);
+		Metric v = new RingIdentifierSpaceVisualzation(200);
 		Metric[] metrics = new Metric[] { v };
 
 		Transformation scp = new StrongConnectivityPartition();
