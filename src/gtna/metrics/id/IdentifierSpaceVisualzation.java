@@ -47,6 +47,7 @@ import gtna.util.Statistics;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -56,13 +57,22 @@ import java.util.HashMap;
 public class IdentifierSpaceVisualzation extends Metric {
 	private int bins;
 
-	private double[][] ids;
+	private double[][] ring;
+
+	private double[][] line;
+
+	private double[][] horizontalLine;
+
+	private double[][] sorted;
 
 	public IdentifierSpaceVisualzation() {
 		super("IDENTIFIER_SPACE_VISUALIZATION");
 		this.bins = -1;
 
-		this.ids = new double[][] { new double[] { -1, -1 } };
+		this.ring = new double[][] { new double[] { -1, -1 } };
+		this.line = new double[][] { new double[] { -1, -1 } };
+		this.horizontalLine = new double[][] { new double[] { -1, -1 } };
+		this.sorted = new double[][] { new double[] { -1, -1 } };
 	}
 
 	public IdentifierSpaceVisualzation(int bins) {
@@ -70,7 +80,10 @@ public class IdentifierSpaceVisualzation extends Metric {
 				new Parameter[] { new IntParameter("BINS", bins) });
 		this.bins = bins;
 
-		this.ids = new double[][] { new double[] { -1, -1 } };
+		this.ring = new double[][] { new double[] { -1, -1 } };
+		this.line = new double[][] { new double[] { -1, -1 } };
+		this.horizontalLine = new double[][] { new double[] { -1, -1 } };
+		this.sorted = new double[][] { new double[] { -1, -1 } };
 	}
 
 	@Override
@@ -80,44 +93,116 @@ public class IdentifierSpaceVisualzation extends Metric {
 				.getModulus();
 
 		if (this.bins > 0) {
-			this.ids = this.getIDsBinned(pos, modulus, this.bins);
+			this.ring = this.getRingBinned(pos, modulus, this.bins);
+			this.line = this.getLineBinned(pos, modulus, bins);
+			this.horizontalLine = this.getHorizontalLineBinned(pos, modulus,
+					this.bins);
 		} else {
-			this.ids = this.getIDs(pos, modulus);
+			this.ring = this.getRing(pos, modulus);
+			this.line = this.getLine(pos, modulus);
+			this.horizontalLine = this.getHorizontalLine(pos, modulus);
 		}
+
+		this.sorted = this.getSorted(pos, modulus);
 	}
 
-	private double[][] getIDs(double[] pos, double modulus) {
+	private double[][] getRing(double[] pos, double modulus) {
 		double[][] ids = new double[pos.length][2];
 		for (int i = 0; i < pos.length; i++) {
-			ids[i] = this.getID(pos[i], modulus);
+			ids[i] = this.getRingId(pos[i], modulus);
 		}
 		return ids;
 	}
 
-	private double[][] getIDsBinned(double[] pos, double modulus, int bins) {
+	private double[][] getLine(double[] pos, double modulus) {
+		double[][] ids = new double[pos.length][2];
+		for (int i = 0; i < pos.length; i++) {
+			ids[i] = new double[] { pos[i] / modulus, pos[i] / modulus };
+		}
+		return ids;
+	}
+
+	private double[][] getHorizontalLine(double[] pos, double modulus) {
+		double[][] ids = new double[pos.length][2];
+		for (int i = 0; i < pos.length; i++) {
+			ids[i] = new double[] { pos[i] / modulus, 0.0 };
+		}
+		return ids;
+	}
+
+	private double[][] getSorted(double[] pos, double modulus) {
+		double[] temp = pos.clone();
+		Arrays.sort(temp);
+		double[][] ids = new double[pos.length][2];
+		for (int i = 0; i < temp.length; i++) {
+			ids[i] = new double[] { i, temp[i] };
+		}
+		return ids;
+	}
+
+	private double[][] getRingBinned(double[] pos, double modulus, int bins) {
 		double[][] pos2 = Statistics.binning(pos, 0, modulus, modulus
 				/ (double) this.bins);
 		double[][] ids = new double[pos.length][2];
+
+		int maxLength = 0;
+		for (double[] p : pos2) {
+			if (p.length > maxLength) {
+				maxLength = p.length;
+			}
+		}
+
 		int index = 0;
 		for (int i = 0; i < pos2.length; i++) {
 			for (int j = 0; j < pos2[i].length; j++) {
-				ids[index] = this.getID(pos2[i][j], modulus);
-				double stretch = 0.5 + 0.5 * ((double) j / pos2[i].length);
+				ids[index] = this.getRingId(pos2[i][j], modulus);
+				double stretch = 0.5 + 0.5 * ((double) j / maxLength);
 				ids[index][0] *= stretch;
 				ids[index][1] *= stretch;
 				index++;
 			}
 		}
+
 		return ids;
 	}
 
-	private double[] getID(double pos, double modulus) {
+	private double[][] getLineBinned(double[] pos, double modulus, int bins) {
+		double[][] ids = this.getHorizontalLineBinned(pos, modulus, bins);
+		for (int i = 0; i < ids.length; i++) {
+			ids[i][1] += ids[i][0];
+		}
+		return ids;
+	}
+
+	private double[][] getHorizontalLineBinned(double[] pos, double modulus,
+			int bins) {
+		double[][] pos2 = Statistics.binning(pos, 0, modulus, modulus
+				/ (double) this.bins);
+		double[][] ids = new double[pos.length][2];
+
+		int maxLength = 0;
+		for (double[] p : pos2) {
+			if (p.length > maxLength) {
+				maxLength = p.length;
+			}
+		}
+
+		int index = 0;
+		for (int i = 0; i < pos2.length; i++) {
+			for (int j = 0; j < pos2[i].length; j++) {
+				ids[index][0] = (double) i / (modulus * (double) bins);
+				ids[index][1] = (double) j / (double) maxLength;
+				index++;
+			}
+		}
+
+		return ids;
+	}
+
+	private double[] getRingId(double pos, double modulus) {
 		double angle = (pos / modulus) * 360;
-
-		double x = Math.sin(Math.toRadians(angle));
-		double y = Math.cos(Math.toRadians(angle));
-
-		return new double[] { x, y };
+		return new double[] { Math.sin(Math.toRadians(angle)),
+				Math.cos(Math.toRadians(angle)) };
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -135,8 +220,14 @@ public class IdentifierSpaceVisualzation extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithoutIndex(this.ids, "VISUALIZATION",
-				folder);
+		success &= DataWriter.writeWithoutIndex(this.ring,
+				"IDENTIFIER_SPACE_VISUALIZATION_RING", folder);
+		success &= DataWriter.writeWithoutIndex(this.line,
+				"IDENTIFIER_SPACE_VISUALIZATION_LINE", folder);
+		success &= DataWriter.writeWithoutIndex(this.horizontalLine,
+				"IDENTIFIER_SPACE_VISUALIZATION_HORIZONTAL_LINE", folder);
+		success &= DataWriter.writeWithoutIndex(this.sorted,
+				"IDENTIFIER_SPACE_VISUALIZATION_SORTED", folder);
 		return success;
 	}
 
