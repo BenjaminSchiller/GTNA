@@ -45,7 +45,8 @@ import gtna.id.Partition;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
-import gtna.util.Distribution;
+import gtna.util.ArrayUtils;
+import gtna.util.Statistics;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
 
@@ -56,17 +57,27 @@ import java.util.HashMap;
  * 
  */
 public class IdentifierSpaceDistances extends Metric {
-	private double bucketSize;
+	private int bins;
 
-	private Distribution allDistribution;
+	private double[][] nodesDistanceDistribution;
 
-	private Distribution edgesDistribution;
+	private double[][] nodesDistanceDistributionCdf;
 
-	public IdentifierSpaceDistances(double bucketSize) {
-		super(
-				"IDENTIFIER_SPACE_DISTANCES",
-				new Parameter[] { new DoubleParameter("BUCKET_SIZE", bucketSize) });
-		this.bucketSize = bucketSize;
+	private double[][] edgesDistanceDistribution;
+
+	private double[][] edgesDistanceDistributionCdf;
+
+	public IdentifierSpaceDistances(int bins) {
+		super("IDENTIFIER_SPACE_DISTANCES",
+				new Parameter[] { new DoubleParameter("BINS", bins) });
+		this.bins = bins;
+
+		this.nodesDistanceDistribution = new double[][] { new double[] { -1, -1 } };
+		this.nodesDistanceDistributionCdf = new double[][] { new double[] { -1,
+				-1 } };
+		this.edgesDistanceDistribution = new double[][] { new double[] { -1, -1 } };
+		this.edgesDistanceDistributionCdf = new double[][] { new double[] { -1,
+				-1 } };
 	}
 
 	@Override
@@ -75,84 +86,95 @@ public class IdentifierSpaceDistances extends Metric {
 		Partition<Double>[] partitions = ids.getPartitions();
 		Edges edges = g.getEdges();
 
-		double[] edgeDistances = this
-				.computeEdgeDistances(g, partitions, edges);
-		this.divide(edgeDistances, edges.size());
-		this.edgesDistribution = new Distribution(edgeDistances);
+		double maxDist = ids.getMaxDistance();
+		double step = maxDist / (double) this.bins;
 
-		double[] allDistances = this.computeAllDistances(g, partitions);
-		this.divide(allDistances, g.getNodes().length
-				* (g.getNodes().length - 1));
-		this.allDistribution = new Distribution(allDistances);
+		double[] nodeDistances = this.computeNodeDistances(g.getNodes(),
+				partitions);
+		double[][] nodeDistancesBinned = Statistics.binning(nodeDistances, 0,
+				maxDist, step);
+		this.nodesDistanceDistribution = new double[this.bins][2];
+		for (int i = 0; i < this.bins; i++) {
+			this.nodesDistanceDistribution[i][0] = (double) i * step;
+			this.nodesDistanceDistribution[i][1] = nodeDistancesBinned[i].length;
+		}
+		ArrayUtils.divide(this.nodesDistanceDistribution, 1,
+				nodeDistances.length);
 
-	}
+		this.nodesDistanceDistributionCdf = new double[this.nodesDistanceDistribution.length][2];
+		this.nodesDistanceDistributionCdf[0][0] = this.nodesDistanceDistribution[0][0];
+		this.nodesDistanceDistributionCdf[0][1] = this.nodesDistanceDistribution[0][1];
+		for (int i = 1; i < this.nodesDistanceDistributionCdf.length; i++) {
+			this.nodesDistanceDistributionCdf[i][0] = this.nodesDistanceDistribution[i][0];
+			this.nodesDistanceDistributionCdf[i][1] = this.nodesDistanceDistributionCdf[i - 1][1]
+					+ this.nodesDistanceDistribution[i][1];
+		}
 
-	private double[] addValue(double[] values, double value) {
-		int bucket = this.getBucket(value);
-		try {
-			values[bucket]++;
-			return values;
-		} catch (IndexOutOfBoundsException e) {
-			double[] newValues = new double[bucket + 1];
-			System.arraycopy(values, 0, newValues, 0, values.length);
-			newValues[bucket] = 1;
-			return newValues;
+		double[] edgeDistances = this.computeEdgeDistances(edges, partitions);
+		double[][] edgeDistancesBinned = Statistics.binning(edgeDistances, 0,
+				maxDist, step);
+		this.edgesDistanceDistribution = new double[this.bins][2];
+		for (int i = 0; i < this.bins; i++) {
+			this.edgesDistanceDistribution[i][0] = (double) i * step;
+			this.edgesDistanceDistribution[i][1] = edgeDistancesBinned[i].length;
+		}
+		ArrayUtils.divide(this.edgesDistanceDistribution, 1,
+				edgeDistances.length);
+
+		this.edgesDistanceDistributionCdf = new double[this.edgesDistanceDistribution.length][2];
+		this.edgesDistanceDistributionCdf[0][0] = this.edgesDistanceDistribution[0][0];
+		this.edgesDistanceDistributionCdf[0][1] = this.edgesDistanceDistribution[0][1];
+		for (int i = 1; i < this.edgesDistanceDistributionCdf.length; i++) {
+			this.edgesDistanceDistributionCdf[i][0] = this.edgesDistanceDistribution[i][0];
+			this.edgesDistanceDistributionCdf[i][1] = this.edgesDistanceDistributionCdf[i - 1][1]
+					+ this.edgesDistanceDistribution[i][1];
 		}
 	}
 
-	private int getBucket(double value) {
-		return (int) Math.ceil(value / this.bucketSize);
-	}
-
-	private void divide(double[] values, double divisor) {
-		for (int i = 0; i < values.length; i++) {
-			values[i] /= divisor;
-		}
-	}
-
-	private double[] computeAllDistances(Graph g, Partition<Double>[] partitions) {
-		double[] values = new double[1];
-		for (Node n1 : g.getNodes()) {
-			for (Node n2 : g.getNodes()) {
-				if (n1.getIndex() == n2.getIndex()) {
+	private double[] computeNodeDistances(Node[] nodes,
+			Partition<Double>[] partitions) {
+		double[] dist = new double[nodes.length * (nodes.length - 1)];
+		int index = 0;
+		for (Node src : nodes) {
+			for (Node dst : nodes) {
+				if (src.getIndex() == dst.getIndex()) {
 					continue;
 				}
-				Partition<Double> p1 = partitions[n1.getIndex()];
-				Partition<Double> p2 = partitions[n2.getIndex()];
-				double dist = p1.distance(p2.getRepresentativeID());
-				values = this.addValue(values, dist);
+				dist[index++] = partitions[src.getIndex()]
+						.distance(partitions[dst.getIndex()]
+								.getRepresentativeID());
 			}
 		}
-		return values;
+		return dist;
 	}
 
-	private double[] computeEdgeDistances(Graph g,
-			Partition<Double>[] partitions, Edges edges) {
-		double[] values = new double[1];
+	private double[] computeEdgeDistances(Edges edges,
+			Partition<Double>[] partitions) {
+		double[] dist = new double[edges.getEdges().size()];
+		int index = 0;
 		for (Edge edge : edges.getEdges()) {
-			Partition<Double> p1 = partitions[edge.getSrc()];
-			Partition<Double> p2 = partitions[edge.getDst()];
-			double dist = p1.distance(p2.getRepresentativeID());
-			values = this.addValue(values, dist);
+			dist[index++] = partitions[edge.getSrc()].distance(partitions[edge
+					.getDst()].getRepresentativeID());
 		}
-		return values;
+		return dist;
 	}
 
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(
-				this.allDistribution.getDistribution(),
-				"IDENTIFIER_SPACE_DISTANCES_DISTANCE_DISTRIBUTION_ALL", folder);
-		success &= DataWriter.writeWithIndex(this.allDistribution.getCdf(),
-				"IDENTIFIER_SPACE_DISTANCES_DISTANCE_DISTRIBUTION_ALL_CDF",
+		success &= DataWriter.writeWithoutIndex(this.nodesDistanceDistribution,
+				"IDENTIFIER_SPACE_DISTANCES_NODES_DISTANCE_DISTRIBUTION",
 				folder);
-		success &= DataWriter.writeWithIndex(
-				this.edgesDistribution.getDistribution(),
-				"IDENTIFIER_SPACE_DISTANCES_DISTANCE_DISTRIBUTION_EDGES",
+		success &= DataWriter.writeWithoutIndex(
+				this.nodesDistanceDistributionCdf,
+				"IDENTIFIER_SPACE_DISTANCES_NODES_DISTANCE_DISTRIBUTION_CDF",
 				folder);
-		success &= DataWriter.writeWithIndex(this.edgesDistribution.getCdf(),
-				"IDENTIFIER_SPACE_DISTANCES_DISTANCE_DISTRIBUTION_EDGES_CDF",
+		success &= DataWriter.writeWithoutIndex(this.edgesDistanceDistribution,
+				"IDENTIFIER_SPACE_DISTANCES_EDGES_DISTANCE_DISTRIBUTION",
+				folder);
+		success &= DataWriter.writeWithoutIndex(
+				this.edgesDistanceDistributionCdf,
+				"IDENTIFIER_SPACE_DISTANCES_EDGES_DISTANCE_DISTRIBUTION_CDF",
 				folder);
 		return success;
 	}
