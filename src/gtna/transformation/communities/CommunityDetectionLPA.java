@@ -35,11 +35,14 @@
  */
 package gtna.transformation.communities;
 
+import gtna.communities.CommunityList;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.NodeSorting;
 import gtna.transformation.Transformation;
 import gtna.util.Util;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,13 +53,24 @@ import java.util.Random;
  * 
  */
 public class CommunityDetectionLPA extends Transformation {
+	private int iterationLimitFactor;
 
-	public CommunityDetectionLPA() {
-		this(1);
-	}
-
-	public CommunityDetectionLPA(int times) {
-		super("COMMUNITY_DETECTION_LPA", times);
+	/**
+	 * Standard constructor. Only argument is the factor that determines the
+	 * maximum number of iterations that is being done. This maximum number is
+	 * calculated by multiplying the number of nodes with this factor. With a
+	 * value above 50, it should only stop infinite loopings while not affecting
+	 * normal community detection. However, even if it stops infinite loops,
+	 * depending on the number of nodes this might still take a very long time.
+	 * 
+	 * @param factor
+	 *            The maximum number of iterations is determined by factor *
+	 *            nodes.
+	 */
+	public CommunityDetectionLPA(int limitFactor) {
+		super("COMMUNITY_DETECTION_LPA", new Parameter[] { new IntParameter(
+				"LIMIT_FACTOR", limitFactor) });
+		this.iterationLimitFactor = limitFactor;
 	}
 
 	@Override
@@ -73,7 +87,7 @@ public class CommunityDetectionLPA extends Transformation {
 		}
 
 		g.addProperty(g.getNextKey("COMMUNITIES"),
-				new gtna.communities.CommunityList(map));
+				new CommunityList(map));
 		return g;
 	}
 
@@ -109,7 +123,7 @@ public class CommunityDetectionLPA extends Transformation {
 			}
 			count++;
 
-			if (count > 5000)
+			if (count > nodes.length * iterationLimitFactor)
 				finished = true;
 		}
 		return labels;

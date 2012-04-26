@@ -79,7 +79,7 @@ import java.util.Random;
 public class Resilience {
 
 	public static void main(String[] args) {
-		Transformation t_lpa = new CommunityDetectionLPA();
+		Transformation t_lpa = new CommunityDetectionLPA(50);
 		Transformation t_dq = new CommunityDetectionDeltaQ();
 		Transformation t_cc = new CommunityColors();
 		Transformation t_r = new GuimeraRolesTransformation();
@@ -144,7 +144,7 @@ public class Resilience {
 		}
 
 		Network nw = Resilience.communityNew(2000, null);
-		Transformation t_lpa = new CommunityDetectionLPA();
+		Transformation t_lpa = new CommunityDetectionLPA(50);
 		Transformation t_cc = new CommunityColors();
 		Transformation t_r = new GuimeraRolesTransformation();
 		Transformation t_r2 = new WsnRolesTransformation();
@@ -169,11 +169,11 @@ public class Resilience {
 	}
 
 	private static Network communityNew(int nodes, Transformation[] t) {
-		PlacementModel p1 = new CommunityPlacementModel(20, 20, 0.5, false);
-		PlacementModel p2 = new CommunityPlacementModel(20, 20, 0.2, false);
+		PlacementModel p1 = new CommunityPlacementModel(0.5 * 20, 0.5 * 20, false);
+		PlacementModel p2 = new CommunityPlacementModel(0.2 * 20, 0.2 * 20, false);
 		Partitioner partitioner = new SimplePartitioner();
 		NodeConnector connector = new UDGConnector(1);
-		return new PlacementModelContainer(nodes, nodes / 100, 40, 40, p1, p2,
+		return new PlacementModelContainer(nodes, nodes / 100, 40, 40, 40, 40, p1, p2,
 				partitioner, connector, t);
 	}
 
