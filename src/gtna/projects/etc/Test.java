@@ -224,7 +224,7 @@ public class Test {
 		int times = 5;
 		int nodes = 4000;
 
-		Transformation t_lpa = new CommunityDetectionLPA();
+		Transformation t_lpa = new CommunityDetectionLPA(50);
 		Transformation t_dq = new CommunityDetectionDeltaQ();
 		Transformation t_cc = new CommunityColors();
 		Transformation t_r = new GuimeraRolesTransformation();

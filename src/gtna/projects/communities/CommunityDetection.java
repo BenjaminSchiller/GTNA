@@ -135,7 +135,7 @@ public class CommunityDetection {
 			return;
 		}
 		Transformation t_dq = new CommunityDetectionDeltaQ();
-		Transformation t_lpa = new CommunityDetectionLPA();
+		Transformation t_lpa = new CommunityDetectionLPA(50);
 		Transformation t_cc = new CommunityColors();
 		for (int i = 0; i < times; i++) {
 			Gephi gephi = new Gephi();
