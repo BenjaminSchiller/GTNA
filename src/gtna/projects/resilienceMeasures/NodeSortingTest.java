@@ -38,7 +38,6 @@ package gtna.projects.resilienceMeasures;
 import java.util.HashMap;
 import java.util.Random;
 
-import org.gephi.statistics.plugin.EigenvectorCentrality;
 import org.gephi.statistics.plugin.GraphDistance;
 
 import gtna.graph.Graph;
@@ -111,7 +110,7 @@ public class NodeSortingTest {
 
 	public static void biconnectedTest() {
 		Utils u = new Utils();
-		Graph g = u.importGraphFromFile("biconnected.gml");
+		Graph g = u.importGraphFromFile("internetRouter.gml");
 
 		ResilienceMetrics rm = new ResilienceMetrics(g);
 		rm.biconnectedComponents();
@@ -122,7 +121,7 @@ public class NodeSortingTest {
 	public static void eigenVectorTest() {
 		System.out.println("Importing...");
 		Utils u = new Utils();
-		Graph g = u.importGraphFromFile("germany.gml");
+		Graph g = u.importGraphFromFile("internetRouter.gml");
 		System.out.println("Graph imported!");
 
 		// sorting
@@ -137,5 +136,41 @@ public class NodeSortingTest {
 			System.out.println(sorted[i] + " -- "
 					+ sorter.getCentrality(sorted[i]));
 		}
+	}
+
+	public static void eigenVectorCorrectnessTest() {
+		System.out.println("Importing...");
+		Utils u = new Utils();
+		Graph g = u.importGraphFromFile("internetRouter.gml");
+		System.out.println("Graph imported!");
+
+		// sorting
+		EigenvectorCentralityNodeSorter sorter = new EigenvectorCentralityNodeSorter(
+				NodeSorter.NodeSorterMode.ASC);
+		sorter.setNumRuns(65000);
+		Node[] sorted = sorter.sort(g, new Random());
+
+		EigenvectorCentralityNodeSorter sorter1 = new EigenvectorCentralityNodeSorter(
+				NodeSorter.NodeSorterMode.ASC);
+		sorter1.setNumRuns(70000);
+		Node[] sorted1 = sorter1.sort(g, new Random());
+
+		// sorted
+		Node[] nodes = g.getNodes();
+		System.out.println("-----");
+		System.out.println("Sorted:");
+
+		double err = 0;
+		double errSum = 0;
+		for (int i = 0; i < nodes.length; i++) {
+			double p = sorter.getCentrality(sorted1[i]);
+			double p1 = sorter1.getCentrality(sorted1[i]);
+			double temp = (Math.abs(p - p1)) / Math.max(p, p1) * 100;
+			System.out.println("" + temp);
+			err = Math.max(err, temp);
+			errSum += temp;
+		}
+		System.out.println("Max Err = " + err);
+		System.out.println("Average Err = " + (errSum / nodes.length));
 	}
 }
