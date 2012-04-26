@@ -163,18 +163,18 @@ public class DIdentifierSpaceDistances extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 		success &= DataWriter.writeWithoutIndex(this.nodesDistanceDistribution,
-				"IDENTIFIER_SPACE_DISTANCES_NODES_DISTANCE_DISTRIBUTION",
+				"D_IDENTIFIER_SPACE_DISTANCES_NODES_DISTANCE_DISTRIBUTION",
 				folder);
 		success &= DataWriter.writeWithoutIndex(
 				this.nodesDistanceDistributionCdf,
-				"IDENTIFIER_SPACE_DISTANCES_NODES_DISTANCE_DISTRIBUTION_CDF",
+				"D_IDENTIFIER_SPACE_DISTANCES_NODES_DISTANCE_DISTRIBUTION_CDF",
 				folder);
 		success &= DataWriter.writeWithoutIndex(this.edgesDistanceDistribution,
-				"IDENTIFIER_SPACE_DISTANCES_EDGES_DISTANCE_DISTRIBUTION",
+				"D_IDENTIFIER_SPACE_DISTANCES_EDGES_DISTANCE_DISTRIBUTION",
 				folder);
 		success &= DataWriter.writeWithoutIndex(
 				this.edgesDistanceDistributionCdf,
-				"IDENTIFIER_SPACE_DISTANCES_EDGES_DISTANCE_DISTRIBUTION_CDF",
+				"D_IDENTIFIER_SPACE_DISTANCES_EDGES_DISTANCE_DISTRIBUTION_CDF",
 				folder);
 		return success;
 	}

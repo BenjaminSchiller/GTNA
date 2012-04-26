@@ -38,7 +38,7 @@ package gtna.projects.placement;
 import gtna.data.Series;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
-import gtna.metrics.id.IdentifierSpaceDistances;
+import gtna.metrics.id.DIdentifierSpaceDistances;
 import gtna.networks.Network;
 import gtna.networks.model.placementmodels.NodeConnector;
 import gtna.networks.model.placementmodels.Partitioner;
@@ -71,7 +71,7 @@ public class DistancesTest {
 		// Config.overwrite("PLOT_EXTENSION", ".png");
 
 		Metric dd = new DegreeDistribution();
-		Metric dist = new IdentifierSpaceDistances(1);
+		Metric dist = new DIdentifierSpaceDistances(1);
 		Metric[] metrics = new Metric[] { dd, dist };
 
 		int times = 5;

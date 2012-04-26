@@ -42,6 +42,7 @@ import gtna.io.GraphWriter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.communities.Communities;
+import gtna.metrics.id.DIdentifierSpaceDistances;
 import gtna.metrics.routing.Routing;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
@@ -61,6 +62,8 @@ import gtna.routing.greedy.Greedy;
 import gtna.routing.greedy.GreedyBacktracking;
 import gtna.routing.greedyVariations.DepthFirstGreedy;
 import gtna.transformation.Transformation;
+import gtna.transformation.attackableEmbedding.lmc.LMC;
+import gtna.transformation.attackableEmbedding.swapping.Swapping;
 import gtna.transformation.communities.CommunityDetectionLPA;
 import gtna.transformation.embedding.communities.CommunityEmbedding;
 import gtna.transformation.embedding.communities.SimpleCommunityEmbedding1;
@@ -138,22 +141,28 @@ public class CommunityEmbeddingsTest {
 
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/community-embedding/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/community-embedding/");
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 		Config.overwrite("SERIES_GRAPH_WRITE", "false");
+		Config.overwrite("GNUPLOT_PRINT_ERRORS", "false");
 
 		Metric dd = new DegreeDistribution();
 		Metric communities = new Communities();
 		Metric routing1 = new Routing(new GreedyBacktracking(100));
 		Metric routing2 = new Routing(new Greedy());
 		Metric routing3 = new Routing(new DepthFirstGreedy(100));
-		Metric[] metrics = new Metric[] { dd, communities, routing1, routing2,
-				routing3 };
+		Metric idsd = new DIdentifierSpaceDistances(100);
+		Metric[] metrics = new Metric[] { dd, communities, idsd };
 
 		Transformation scp = new StrongConnectivityPartition();
 		Transformation gcc = new GiantConnectedComponent();
 		Transformation cd = new CommunityDetectionLPA();
 		// Transformation cd = new CommunityDetectionDeltaQ();
+
 		Transformation re = new RandomRingIDSpaceSimple();
+		Transformation lmc = new LMC(1000, LMC.MODE_UNRESTRICTED, 0,
+				LMC.DELTA_1_N, 0);
+		Transformation sw = new Swapping(1000);
+
 		Transformation ce1 = new SimpleCommunityEmbedding1();
 		Transformation ce2 = new SimpleCommunityEmbedding2();
 		Transformation ce_1 = new CommunityEmbedding(
@@ -175,7 +184,9 @@ public class CommunityEmbeddingsTest {
 				new EqualSizeIdSpacePartitioner(0.0), new OriginalNodeSorter(),
 				new EqualSizeCommunityPartitioner(), 1.0, true);
 
-		Transformation[] t0 = new Transformation[] { scp, gcc, cd, re };
+		Transformation[] tr = new Transformation[] { scp, gcc, cd, re };
+		Transformation[] tlmc = new Transformation[] { scp, gcc, cd, re, lmc };
+		Transformation[] tsw = new Transformation[] { scp, gcc, cd, re, sw };
 		Transformation[] t1 = new Transformation[] { scp, gcc, cd, ce1 };
 		Transformation[] t2 = new Transformation[] { scp, gcc, cd, ce2 };
 		Transformation[] t3 = new Transformation[] { scp, gcc, cd, ce_1 };
@@ -184,7 +195,9 @@ public class CommunityEmbeddingsTest {
 		Transformation[] t6 = new Transformation[] { scp, gcc, cd, ce_4 };
 
 		Map<Transformation[], String> names = new HashMap<Transformation[], String>();
-		names.put(t0, "random");
+		names.put(tr, "Random");
+		names.put(tlmc, "LMC");
+		names.put(tsw, "Swapping");
 		names.put(t1, "CE 1  - rel | orig");
 		names.put(t3, "CE 1' - rel | orig");
 		names.put(t2, "CE 2  - eq  | orig");
@@ -193,10 +206,10 @@ public class CommunityEmbeddingsTest {
 		names.put(t6, "CE 4' - eq  | edge");
 
 		String folder = "multi/";
-		Transformation[][] t = new Transformation[][] { t0, t1, t3, t2, t4, t5,
-				t6 };
+		Transformation[][] t = new Transformation[][] { tr, tlmc, tsw, t1, t3,
+				t2, t4, t5, t6 };
 
-		t = new Transformation[][] { t0, t1, t3, t2, t4, t5, t6 };
+		t = new Transformation[][] { tr, tsw, t1, t3 };
 
 		// folder = "rel-orig/";
 		// t = new Transformation[][] { t1, t3 };
@@ -212,11 +225,11 @@ public class CommunityEmbeddingsTest {
 		String spi = "./resources/spi-2011-02.spi.txt";
 		String wot = "./resources/2005-02-25.wot.txt";
 
-		boolean GET = false;
-		int TIMES = 100;
+		boolean GET = true;
+		int TIMES = 2;
 
 		int networkType = 3;
-		int nodes = 10000;
+		int nodes = 2000;
 
 		Network[] nw = new Network[t.length];
 		String name = null;
@@ -242,9 +255,10 @@ public class CommunityEmbeddingsTest {
 
 		// Plotting.multi(s, metrics, "multi/");
 
-		Config.overwrite("GNUPLOT_OFFSET_X", "0.1");
-		Plotting.multi(s, metrics, name + "-" + folder, Type.confidence1,
-				Style.candlesticks);
+		Config.overwrite("GNUPLOT_OFFSET_X", "0");
+//		Config.overwrite("IDENTIFIER_SPACE_DISTANCES_EDGES_DISTANCE_DISTRIBUTION_PLOT_LOGSCALE", "y");
+		Plotting.multi(s, metrics, name + "-" + folder, Type.average,
+				Style.linespoint);
 
 		stats.end();
 	}

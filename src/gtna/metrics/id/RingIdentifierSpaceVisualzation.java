@@ -54,7 +54,7 @@ import java.util.HashMap;
  * @author benni
  * 
  */
-public class IdentifierSpaceVisualzation extends Metric {
+public class RingIdentifierSpaceVisualzation extends Metric {
 	private int bins;
 
 	private double[][] ring;
@@ -65,8 +65,8 @@ public class IdentifierSpaceVisualzation extends Metric {
 
 	private double[][] sorted;
 
-	public IdentifierSpaceVisualzation() {
-		super("IDENTIFIER_SPACE_VISUALIZATION");
+	public RingIdentifierSpaceVisualzation() {
+		super("RING_IDENTIFIER_SPACE_VISUALIZATION");
 		this.bins = -1;
 
 		this.ring = new double[][] { new double[] { -1, -1 } };
@@ -75,8 +75,8 @@ public class IdentifierSpaceVisualzation extends Metric {
 		this.sorted = new double[][] { new double[] { -1, -1 } };
 	}
 
-	public IdentifierSpaceVisualzation(int bins) {
-		super("IDENTIFIER_SPACE_VISUALIZATION",
+	public RingIdentifierSpaceVisualzation(int bins) {
+		super("RING_IDENTIFIER_SPACE_VISUALIZATION",
 				new Parameter[] { new IntParameter("BINS", bins) });
 		this.bins = bins;
 
@@ -221,13 +221,13 @@ public class IdentifierSpaceVisualzation extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 		success &= DataWriter.writeWithoutIndex(this.ring,
-				"IDENTIFIER_SPACE_VISUALIZATION_RING", folder);
+				"RING_IDENTIFIER_SPACE_VISUALIZATION_RING", folder);
 		success &= DataWriter.writeWithoutIndex(this.line,
-				"IDENTIFIER_SPACE_VISUALIZATION_LINE", folder);
+				"RING_IDENTIFIER_SPACE_VISUALIZATION_LINE", folder);
 		success &= DataWriter.writeWithoutIndex(this.horizontalLine,
-				"IDENTIFIER_SPACE_VISUALIZATION_HORIZONTAL_LINE", folder);
+				"RING_IDENTIFIER_SPACE_VISUALIZATION_HORIZONTAL_LINE", folder);
 		success &= DataWriter.writeWithoutIndex(this.sorted,
-				"IDENTIFIER_SPACE_VISUALIZATION_SORTED", folder);
+				"RING_IDENTIFIER_SPACE_VISUALIZATION_SORTED", folder);
 		return success;
 	}
 
