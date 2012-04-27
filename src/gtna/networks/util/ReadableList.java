@@ -40,6 +40,7 @@ import gtna.io.graphReader.GtnaGraphReader;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
+import gtna.util.parameter.Parameter;
 
 /**
  * Implements a graph generator for a list of snapshots. It works like the
@@ -61,7 +62,12 @@ public class ReadableList extends Network {
 
 	public ReadableList(String name, String folder, String[] files,
 			Transformation[] t) {
-		super(ReadableList.key(name, folder), Integer.MIN_VALUE, t);
+		this(name, folder, files, new Parameter[0], t);
+	}
+
+	public ReadableList(String name, String folder, String[] files,
+			Parameter[] parameters, Transformation[] t) {
+		super(ReadableList.key(name, folder), Integer.MIN_VALUE, parameters, t);
 		this.files = files;
 		this.index = -1;
 		super.setNodes(new GtnaGraphReader().nodes(this.files[0]));

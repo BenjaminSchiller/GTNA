@@ -40,6 +40,7 @@ import gtna.io.graphReader.GtnaGraphReader;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
+import gtna.util.parameter.Parameter;
 
 /**
  * Implements a network generator that reads an existing network topology
@@ -59,8 +60,13 @@ public class ReadableFile extends Network {
 
 	public ReadableFile(String name, String folder, String filename,
 			Transformation[] t) {
-		super(ReadableFile.key(name, folder), new GtnaGraphReader()
-				.nodes(filename), t);
+		this(name, folder, filename, new Parameter[0], t);
+	}
+
+	public ReadableFile(String name, String folder, String filename,
+			Parameter[] parameters, Transformation[] t) {
+		super(ReadableFile.key(name, folder), GraphReader.nodes(filename),
+				parameters, t);
 		this.filename = filename;
 	}
 
