@@ -53,11 +53,10 @@ public class ReadableFolder extends Network {
 
 	private int index;
 
-	private String[] properties;
-
 	public ReadableFolder(String name, String folder, String srcFolder,
 			String extension, Transformation[] t) {
-		super(ReadableFolder.key(name, folder), Integer.MIN_VALUE, t);
+		super(ReadableFolder.key(name, folder), ReadableFolder
+				.getNodes(srcFolder), t);
 		File d = new File(srcFolder);
 		if (!d.exists()) {
 			this.files = new ArrayList<String>();
@@ -71,12 +70,18 @@ public class ReadableFolder extends Network {
 			}
 		}
 		this.index = -1;
-		if (this.files.size() == 0) {
-			super.setNodes(0);
-		} else {
-			super.setNodes(new GtnaGraphReader().nodes(this.files.get(0)));
+	}
+
+	private static int getNodes(String srcFolder) {
+		File d = new File(srcFolder);
+		if (!d.exists()) {
+			return 0;
 		}
-		this.properties = properties;
+		File[] f = d.listFiles();
+		if (f.length == 0) {
+			return 0;
+		}
+		return GraphReader.nodes(f[0].getAbsolutePath());
 	}
 
 	public static String key(String name, String folder) {
@@ -92,7 +97,8 @@ public class ReadableFolder extends Network {
 			return null;
 		}
 		this.index = (this.index + 1) % this.files.size();
-		Graph graph = new GtnaGraphReader().read(this.files.get(this.index));
+		Graph graph = GraphReader
+				.readWithProperties(this.files.get(this.index));
 		graph.setName(this.getDescription());
 		return graph;
 	}
