@@ -108,7 +108,7 @@ public class CommunityEmbeddingsTest {
 
 			Network nw = new ErdosRenyi(10, 3, true, null);
 
-			Transformation cd = new CommunityDetectionLPA();
+			Transformation cd = new CommunityDetectionLPA(20);
 			Transformation ce1 = new SimpleCommunityEmbedding1();
 			Transformation ce2 = new SimpleCommunityEmbedding2();
 			Transformation ce_1 = new CommunityEmbedding(
@@ -155,7 +155,7 @@ public class CommunityEmbeddingsTest {
 
 		Transformation scp = new StrongConnectivityPartition();
 		Transformation gcc = new GiantConnectedComponent();
-		Transformation cd = new CommunityDetectionLPA();
+		Transformation cd = new CommunityDetectionLPA(20);
 		// Transformation cd = new CommunityDetectionDeltaQ();
 
 		Transformation re = new RandomRingIDSpaceSimple();
@@ -256,18 +256,18 @@ public class CommunityEmbeddingsTest {
 		// Plotting.multi(s, metrics, "multi/");
 
 		Config.overwrite("GNUPLOT_OFFSET_X", "0");
-//		Config.overwrite("IDENTIFIER_SPACE_DISTANCES_EDGES_DISTANCE_DISTRIBUTION_PLOT_LOGSCALE", "y");
+		// Config.overwrite("IDENTIFIER_SPACE_DISTANCES_EDGES_DISTANCE_DISTRIBUTION_PLOT_LOGSCALE",
+		// "y");
 		Plotting.multi(s, metrics, name + "-" + folder, Type.average,
 				Style.linespoint);
 
 		stats.end();
 	}
 
-	private static final double xyAll = 40000;
-	private static final double xyHotspots = 40000;
-	private static final double devHotspots = 5000;
 	private static final double xyNodes = 40000;
-	private static final double devNodes = 1000;
+	private static final double xyHotspots = 30000;
+	private static final double devHotspots = 5000;
+	private static final double devNodes = 2000;
 	private static final double radius = 1983;
 
 	private static final Partitioner partitioner = new SimplePartitioner();
@@ -275,14 +275,13 @@ public class CommunityEmbeddingsTest {
 	private static final NodeConnector connector = new UDGConnector(radius);
 
 	public static Network nwCC(int nodes, Transformation[] t) {
-		PlacementModel p1 = new CommunityPlacementModel(xyHotspots, xyHotspots,
-				devHotspots / (xyHotspots / 2), true);
-		PlacementModel p2 = new CommunityPlacementModel(xyNodes, xyNodes,
-				devNodes / (xyNodes / 2), true);
-		Network nw = new PlacementModelContainer(nodes, nodes / 100, xyAll,
-				xyAll, p1, p2, partitioner, connector, t);
-		// return new DescriptionWrapper(nw, "Communities " + nodes + " // "
-		// + t[t.length - 1].getFolderName());
-		return nw;
+		PlacementModel p1 = new CommunityPlacementModel(devHotspots,
+				devHotspots, false);
+		PlacementModel p2 = new CommunityPlacementModel(devNodes, devNodes,
+				false);
+		Network nw = new PlacementModelContainer(nodes, nodes / 100, xyNodes,
+				xyNodes, xyHotspots, xyHotspots, p1, p2, partitioner,
+				connector, t);
+		return new DescriptionWrapper(nw, "Communities " + nodes);
 	}
 }

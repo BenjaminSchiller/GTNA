@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Test.java
+ * PlacementModelTest.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,14 +33,12 @@
  * ---------------------------------------
  *
  */
-package gtna.projects.communityEmbeddings;
+package gtna.projects.placement;
 
-import gtna.communities.Role;
 import gtna.data.Series;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
-import gtna.metrics.communities.Communities;
-import gtna.metrics.communities.Roles;
+import gtna.metrics.basic.ShortestPaths;
 import gtna.networks.Network;
 import gtna.networks.model.placementmodels.NodeConnector;
 import gtna.networks.model.placementmodels.Partitioner;
@@ -50,66 +48,35 @@ import gtna.networks.model.placementmodels.connectors.UDGConnector;
 import gtna.networks.model.placementmodels.models.CommunityPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.networks.util.DescriptionWrapper;
-import gtna.networks.util.ReadableList;
-import gtna.plot.Data.Type;
-import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
-import gtna.transformation.communities.CommunityDetectionLPA;
-import gtna.transformation.communities.WsnRolesTransformation;
-import gtna.transformation.connectors.UnitDiscGraph;
-import gtna.transformation.partition.GiantConnectedComponent;
-import gtna.transformation.partition.StrongConnectivityPartition;
 import gtna.util.Config;
 
 /**
  * @author benni
  * 
  */
-public class Test {
+public class PlacementModelTest {
+
+	/**
+	 * @param args
+	 */
 	public static void main(String[] args) {
-		Config.overwrite("MAIN_DATA_FOLDER", "./data/wsn-test/");
-		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/wsn-test/");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/placement-test/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/placement-test/");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
+		Config.overwrite("SERIES_GRAPH_WRITE", "false");
 
-		Transformation scp = new StrongConnectivityPartition();
-		Transformation gcc = new GiantConnectedComponent();
+		Transformation[] t = new Transformation[] {};
 
-		Transformation[] t1 = new Transformation[] {
-				new WsnRolesTransformation(1, 1, 2, true),
-				new UnitDiscGraph(1983) };
-		Transformation[] t2 = new Transformation[] {
-				new CommunityDetectionLPA(20),
-				new WsnRolesTransformation(1, 1, 2, true),
-				new UnitDiscGraph(1983) };
+		Network nw = PlacementModelTest.nwCC(4000, t);
 
-		int nodes = 1000;
-		String[] list = new String[] {
-				"/Users/benni/Downloads/WSN/beispiel/" + nodes + "-1-graph.txt",
-				"/Users/benni/Downloads/WSN/beispiel/" + nodes + "-2-graph.txt",
-				"/Users/benni/Downloads/WSN/beispiel/" + nodes + "-3-graph.txt" };
-		Network nw1 = new ReadableList("CC-" + nodes + "", "cc-" + nodes + "",
-				list, t1);
-		// Network nw2 = new ReadableList("CC-1000", "cc-1000", list, t2);
-		Network nw3 = Test.nwCC(nodes, t2);
+		Metric dd = new DegreeDistribution();
+		Metric sp = new ShortestPaths();
+		Metric[] metrics = new Metric[] { dd, sp };
 
-		Metric[] metrics = new Metric[] { new DegreeDistribution(),
-				new Communities(), new Roles(Role.RoleType.WSN) };
-
-		Network[] nw = new Network[] { nw1, nw3 };
-
-		boolean GET = false;
-		int TIMES = 3;
-
-		Series[] s = GET ? Series.get(nw, metrics) : Series.generate(nw,
-				metrics, TIMES);
-		Plotting.multi(s, metrics, "multi-1000/", Type.confidence1,
-				Style.candlesticks);
-
-		// Graph g = nw3.generate();
-		// Gephi gephi = new Gephi();
-		// gephi.plot(g, (IdentifierSpace) g.getProperty("ID_SPACE_0"),
-		// "./plots/blafasel-1.png");
+		Series s = Series.generate(nw, metrics, 1);
+		Plotting.multi(s, metrics, "multi/");
 	}
 
 	private static final double xyNodes = 40000;
