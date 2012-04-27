@@ -85,4 +85,46 @@ public class ArrayUtils {
 		}
 		return array;
 	}
+
+	public static int[] toIntArray(Integer[] arrayI) {
+		int[] array = new int[arrayI.length];
+		for (int i = 0; i < arrayI.length; i++) {
+			array[i] = arrayI[i];
+		}
+		return array;
+	}
+
+	public static int[] initIntArray(int length) {
+		int[] array = new int[length];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = i;
+		}
+		return array;
+	}
+
+	public static int[] initIntArray(int length, int value) {
+		int[] array = new int[length];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = value;
+		}
+		return array;
+	}
+
+	public static Integer[] initIntegerArray(int length) {
+		Integer[] array = new Integer[length];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = i;
+		}
+		return array;
+	}
+
+	public static int getMaxInt(int[] array) {
+		int max = Integer.MIN_VALUE;
+		for (int v : array) {
+			if (v > max) {
+				max = v;
+			}
+		}
+		return max;
+	}
 }
