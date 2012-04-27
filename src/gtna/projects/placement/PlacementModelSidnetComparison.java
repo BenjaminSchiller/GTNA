@@ -42,6 +42,8 @@ import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
 import gtna.metrics.communities.Communities;
 import gtna.metrics.communities.Roles;
+import gtna.metrics.connectivity.StrongConnectivity;
+import gtna.metrics.id.DIdentifierSpaceDistances;
 import gtna.networks.Network;
 import gtna.networks.model.placementmodels.NodeConnector;
 import gtna.networks.model.placementmodels.Partitioner;
@@ -84,9 +86,11 @@ public class PlacementModelSidnetComparison {
 
 		int[] N = new int[] { 1000, 2000, 3000 };
 		int times = 100;
-		boolean get = false;
+		boolean get = true;
 		Config.overwrite("GNUPLOT_OFFSET_X", "0.2");
 		Config.overwrite("GNUPLOT_LW", "1");
+		Type type = Type.confidence1;
+		Style style = Style.candlesticks;
 
 		for (int nodes : N) {
 			Transformation[] t1 = new Transformation[] {
@@ -107,11 +111,12 @@ public class PlacementModelSidnetComparison {
 			Network nw1 = new DescriptionWrapper(
 					PlacementModelSidnetComparison.nwCC(nodes, t1), "PM-"
 							+ nodes);
-			Network nw2 = new ReadableFolder("SIDnet-" + nodes
-					+ " (SIDnet LPA)", "sidnet", "./resources/sidnet/" + nodes
-					+ "/", ".txt", t2);
-			Network nw3 = new ReadableFolder("SIDnet-" + nodes + " (GTNA LPA)",
-					"sidnet", "./resources/sidnet/" + nodes + "/", ".txt", t3);
+			Network nw2 = new DescriptionWrapper(new ReadableFolder("SIDnet-"
+					+ nodes + " (GTNA LPA)", "sidnet", "./resources/sidnet/"
+					+ nodes + "/", ".txt", t3), "sidnet - gtna communities");
+			Network nw3 = new DescriptionWrapper(new ReadableFolder("SIDnet",
+					"sidnet", "./resources/sidnet/" + nodes + "/", ".txt", t2),
+					"sidnet - original communities");
 
 			Network[] nw = new Network[] { nw1, nw2, nw3 };
 
@@ -120,12 +125,14 @@ public class PlacementModelSidnetComparison {
 			Metric c = new Communities();
 			Metric r1 = new Roles(Role.RoleType.GUIMERA);
 			Metric r2 = new Roles(Role.RoleType.WSN);
-			Metric[] metrics = new Metric[] { dd, sp, c, r1, r2 };
+			Metric dist = new DIdentifierSpaceDistances(500);
+			Metric sc = new StrongConnectivity();
+			Metric[] metrics = new Metric[] { dd, sp, c, r1, r2, dist, sc };
 
 			Series[] s = get ? Series.get(nw, metrics) : Series.generate(nw,
 					metrics, times);
-			Plotting.multi(s, metrics, "multi-" + nodes + "/",
-					Type.confidence1, Style.candlesticks);
+			Plotting.multi(s, metrics, "multi-" + nodes + "-" + type + "-"
+					+ style + "/", type, style);
 		}
 
 		stats.end();
