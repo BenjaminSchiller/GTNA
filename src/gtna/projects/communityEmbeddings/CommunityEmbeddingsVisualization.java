@@ -45,7 +45,6 @@ import gtna.plot.Data.Type;
 import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
-import gtna.transformation.attackableEmbedding.lmc.LMC;
 import gtna.transformation.communities.CommunityDetectionLPA;
 import gtna.transformation.embedding.communities.CommunityEmbedding;
 import gtna.transformation.embedding.communities.SimpleCommunityEmbedding1;
@@ -56,7 +55,6 @@ import gtna.transformation.embedding.communities.partitioner.idSpace.RelativeSiz
 import gtna.transformation.embedding.communities.sorter.community.NeighborsByEdgesCommunitySorter;
 import gtna.transformation.embedding.communities.sorter.community.OriginalCommunitySorter;
 import gtna.transformation.embedding.communities.sorter.node.OriginalNodeSorter;
-import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.partition.GiantConnectedComponent;
 import gtna.transformation.partition.StrongConnectivityPartition;
@@ -86,7 +84,7 @@ public class CommunityEmbeddingsVisualization {
 
 		Transformation scp = new StrongConnectivityPartition();
 		Transformation gcc = new GiantConnectedComponent();
-		Transformation cd = new CommunityDetectionLPA();
+		Transformation cd = new CommunityDetectionLPA(20);
 		// Transformation cd = new CommunityDetectionDeltaQ();
 		Transformation re = new RandomRingIDSpaceSimple();
 		Transformation ce1 = new SimpleCommunityEmbedding1();

@@ -106,10 +106,10 @@ public class IdMetricsTest {
 				new RemoveGraphProperty(), new RandomRingIDSpaceSimple(),
 				new LMC(1000, LMC.MODE_UNRESTRICTED, 0, LMC.DELTA_1_N, 0) };
 		Transformation[] comm1 = new Transformation[] {
-				new RemoveGraphProperty(), new CommunityDetectionLPA(),
+				new RemoveGraphProperty(), new CommunityDetectionLPA(10),
 				new SimpleCommunityEmbedding1() };
 		Transformation[] comm2 = new Transformation[] {
-				new RemoveGraphProperty(), new CommunityDetectionLPA(),
+				new RemoveGraphProperty(), new CommunityDetectionLPA(10),
 				new SimpleCommunityEmbedding2() };
 		Transformation[][] t = new Transformation[][] { rand1, rand2, lmc,
 				comm1, comm2 };
@@ -139,8 +139,8 @@ public class IdMetricsTest {
 		for (int i = 0; i < t.length; i++) {
 			Network nw_ = null;
 			// nw_ = new Complete(100, t[i]);
-			 nw_ = new ErdosRenyi(2000, 20, true, t[i]);
-//			nw_ = IdMetricsTest.nwCC(nodes, t[i]);
+			nw_ = new ErdosRenyi(2000, 20, true, t[i]);
+			// nw_ = IdMetricsTest.nwCC(nodes, t[i]);
 			nw[i] = new DescriptionWrapper(nw_, names.get(t[i]));
 		}
 
@@ -151,11 +151,10 @@ public class IdMetricsTest {
 		stats.end();
 	}
 
-	private static final double xyAll = 40000;
-	private static final double xyHotspots = 40000;
-	private static final double devHotspots = 5000;
 	private static final double xyNodes = 40000;
-	private static final double devNodes = 1000;
+	private static final double xyHotspots = 30000;
+	private static final double devHotspots = 5000;
+	private static final double devNodes = 2000;
 	private static final double radius = 1983;
 
 	private static final Partitioner partitioner = new SimplePartitioner();
@@ -163,12 +162,13 @@ public class IdMetricsTest {
 	private static final NodeConnector connector = new UDGConnector(radius);
 
 	public static Network nwCC(int nodes, Transformation[] t) {
-		PlacementModel p1 = new CommunityPlacementModel(xyHotspots, xyHotspots,
-				devHotspots / (xyHotspots / 2), true);
-		PlacementModel p2 = new CommunityPlacementModel(xyNodes, xyNodes,
-				devNodes / (xyNodes / 2), true);
-		Network nw = new PlacementModelContainer(nodes, nodes / 100, xyAll,
-				xyAll, p1, p2, partitioner, connector, t);
-		return nw;
+		PlacementModel p1 = new CommunityPlacementModel(devHotspots,
+				devHotspots, false);
+		PlacementModel p2 = new CommunityPlacementModel(devNodes, devNodes,
+				false);
+		Network nw = new PlacementModelContainer(nodes, nodes / 100, xyNodes,
+				xyNodes, xyHotspots, xyHotspots, p1, p2, partitioner,
+				connector, t);
+		return new DescriptionWrapper(nw, "Communities " + nodes);
 	}
 }
