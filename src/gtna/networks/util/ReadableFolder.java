@@ -40,6 +40,7 @@ import gtna.io.graphReader.GtnaGraphReader;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
+import gtna.util.parameter.Parameter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,8 +56,13 @@ public class ReadableFolder extends Network {
 
 	public ReadableFolder(String name, String folder, String srcFolder,
 			String extension, Transformation[] t) {
-		super(ReadableFolder.key(name, folder), ReadableFolder
-				.getNodes(srcFolder), t);
+		this(name, folder, srcFolder, extension, new Parameter[0], t);
+	}
+
+	public ReadableFolder(String name, String folder, String srcFolder,
+			String extension, Parameter[] parameters, Transformation[] t) {
+		super(ReadableFolder.key(name, folder), ReadableFolder.getNodes(
+				srcFolder, extension), parameters, t);
 		File d = new File(srcFolder);
 		if (!d.exists()) {
 			this.files = new ArrayList<String>();
@@ -72,7 +78,7 @@ public class ReadableFolder extends Network {
 		this.index = -1;
 	}
 
-	private static int getNodes(String srcFolder) {
+	private static int getNodes(String srcFolder, String extension) {
 		File d = new File(srcFolder);
 		if (!d.exists()) {
 			return 0;
@@ -81,7 +87,11 @@ public class ReadableFolder extends Network {
 		if (f.length == 0) {
 			return 0;
 		}
-		return GraphReader.nodes(f[0].getAbsolutePath());
+		int index = 0;
+		while (!f[index].getName().endsWith(extension)) {
+			index++;
+		}
+		return GraphReader.nodes(f[index].getAbsolutePath());
 	}
 
 	public static String key(String name, String folder) {
