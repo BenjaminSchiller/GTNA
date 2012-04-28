@@ -226,7 +226,8 @@ public class Series {
 			}
 		}
 		if (Config.getBoolean("SERIES_GRAPH_WRITE")) {
-			GtnaGraphWriter.writeWithProperties(g, s.getGraphFilename(run));
+			new GtnaGraphWriter().writeWithProperties(g,
+					s.getGraphFilename(run));
 		}
 		StringBuffer p = new StringBuffer();
 		ArrayList<String> properties = new ArrayList<String>(g.getProperties()

@@ -97,7 +97,7 @@ public class PETGraphs {
 							+ filenameLD);
 					gLD = nwLD.generate();
 					timer.end();
-					GtnaGraphWriter.write(gLD, filenameLD);
+					new GtnaGraphWriter().write(gLD, filenameLD);
 					if (!(new File(idSpaceFilenameLD)).exists()) {
 						gLD.getProperty("ID_SPACE_0").write(idSpaceFilenameLD,
 								"ID_SPACE_0");
@@ -135,7 +135,7 @@ public class PETGraphs {
 				Graph g = t.transform(gLD);
 				timer.end();
 				f.mkdirs();
-				GtnaGraphWriter.write(g, filename);
+				new GtnaGraphWriter().write(g, filename);
 				if (!(new File(idSpaceFilename)).exists()) {
 					g.getProperty("ID_SPACE_0").write(idSpaceFilename,
 							"ID_SPACE_0");
