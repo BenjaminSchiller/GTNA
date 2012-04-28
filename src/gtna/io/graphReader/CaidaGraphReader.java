@@ -46,8 +46,8 @@ import java.util.Set;
 
 public class CaidaGraphReader extends GraphReader {
 	private static final String caidaSeparator = "	";
-	
-	public CaidaGraphReader(){
+
+	public CaidaGraphReader() {
 		super("CAIDA");
 	}
 
@@ -75,7 +75,7 @@ public class CaidaGraphReader extends GraphReader {
 		}
 		fr.close();
 
-		Graph graph = new Graph("CAIDA read from " + filename);
+		Graph graph = new Graph(this.getGraphName(filename));
 		Node[] nodes = Node.init(index, graph);
 		Edges edges = new Edges(nodes, edgeCounter);
 

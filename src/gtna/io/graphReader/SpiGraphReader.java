@@ -78,7 +78,7 @@ public class SpiGraphReader extends GraphReader {
 		}
 		fr.close();
 
-		Graph graph = new Graph("SPI read from " + filename);
+		Graph graph = new Graph(this.getGraphName(filename));
 		Node[] nodes = Node.init(index, graph);
 		Edges edges = new Edges(nodes, edgeCounter);
 
