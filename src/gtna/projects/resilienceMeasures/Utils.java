@@ -36,6 +36,9 @@
 package gtna.projects.resilienceMeasures;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 
 import org.gephi.data.attributes.api.AttributeColumn;
@@ -63,6 +66,39 @@ import gtna.graph.Graph;
  */
 public class Utils {
 	private UndirectedGraph gephi;
+
+	public static void exportToGML(Graph g, String fileName) throws IOException {
+		FileWriter outFile = new FileWriter(fileName + ".gml");
+		PrintWriter out = new PrintWriter(outFile);
+
+		out.println("graph [");
+
+		for (gtna.graph.Node n : g.getNodes()) {
+			// write node
+			out.print("node ");
+			out.println("[");
+			out.println("id " + n.getIndex());
+			out.println("]");
+
+		}
+		for (gtna.graph.Edge e : g.getEdges().getEdges()) {
+			// write edge
+			int src = e.getSrc();
+			int dst = e.getDst();
+			if (src < dst) {
+				out.print("edge ");
+				out.println("[");
+				out.println("source " + src);
+				out.println("target " + dst);
+				out.println("]");
+			}
+		}
+
+		out.println("]");
+
+		out.close();
+		outFile.close();
+	}
 
 	public Graph importGraphFromFile(String s) {
 		Graph gtnaGraph = new Graph(s);

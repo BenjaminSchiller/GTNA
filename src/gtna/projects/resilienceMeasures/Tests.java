@@ -35,6 +35,7 @@
  */
 package gtna.projects.resilienceMeasures;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -175,15 +176,31 @@ public class Tests {
 		System.out.println("Max Err = " + err);
 		System.out.println("Average Err = " + (errSum / nodes.length));
 	}
-	
+
 	public static void PFPTest() {
-		int N = 100;
+		int N = 1000;
 		double p = 0.4;
 		double delta = 0.021;
 		Network nw = new PositiveFeedbackPreference(N, p, delta, null);
+		System.out.println("generating...");
 		Graph g = nw.generate();
+		System.out.println("generated!");
+		int maxDegree = 0;
 		for (Node n : g.getNodes()) {
-			System.out.println("" + n);
+			if (maxDegree < n.getDegree()) {
+				maxDegree = n.getDegree();
+			}
+		}
+		System.out.println("==========");
+		System.out.println("Nodes = " + g.getNodes().length);
+		System.out.println("Edges = " + g.getEdges().getEdges().size() / 2);
+		System.out.println("Max Degree = " + maxDegree);
+
+		try {
+			Utils.exportToGML(g, "PFP");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Cannot export graph to file!");
 		}
 	}
 }
