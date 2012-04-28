@@ -157,7 +157,7 @@ public class WotGraphReader extends GraphReader {
 			file.close();
 
 			// prepare return graph
-			Graph graph = new Graph("WOT read from " + filename);
+			Graph graph = new Graph(this.getGraphName(filename));
 			Node[] nodes = Node.init(wotNodes.size(), graph);
 			Edges edges = new Edges(nodes, nodes.length);
 			for (WOTNode source : wotNodes) {

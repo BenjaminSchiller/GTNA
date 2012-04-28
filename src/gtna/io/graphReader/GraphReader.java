@@ -86,6 +86,10 @@ public abstract class GraphReader {
 		return this.key;
 	}
 
+	protected String getGraphName(String filename) {
+		return this.getKey() + " read from " + new File(filename).getName();
+	}
+
 	/**
 	 * reads a graph from the given file. properties are read from all files in
 	 * the same folder that start with

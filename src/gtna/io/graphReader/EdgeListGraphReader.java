@@ -51,7 +51,11 @@ public class EdgeListGraphReader extends GraphReader {
 	protected String separator;
 
 	public EdgeListGraphReader(String separator) {
-		super("EDGE_LIST");
+		this("EDGE_LIST", separator);
+	}
+
+	protected EdgeListGraphReader(String key, String separator) {
+		super(key);
 		this.separator = separator;
 	}
 
@@ -59,7 +63,7 @@ public class EdgeListGraphReader extends GraphReader {
 	public Graph read(String filename) {
 		Map<String, Integer> map = this.getIdIndexMap(filename);
 
-		Graph graph = new Graph("EDGE_LIST read from " + filename);
+		Graph graph = new Graph(this.getGraphName(filename));
 		Node[] nodes = Node.init(map.size(), graph);
 		Edges edges = new Edges(nodes, map.size());
 
