@@ -40,8 +40,8 @@ package gtna.io.networks;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.io.GraphWriter;
 import gtna.io.Output;
+import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.util.Config;
 import gtna.util.Timer;
 import gtna.util.Util;
@@ -253,7 +253,7 @@ public class WOTReader {
 
 		try {
 			Graph g = WOTReader.read(unzipped);
-			GraphWriter.write(g, filename);
+			GtnaGraphWriter.write(g, filename);
 			if (Config.getBoolean("WOT_READER_DELETE_WOT_FILE")) {
 				String deleteFolder = Config
 						.get("WOT_READER_DELETE_WOT_FOLDER");

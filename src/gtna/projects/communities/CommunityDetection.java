@@ -39,8 +39,8 @@ import gtna.communities.CommunityList;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
-import gtna.io.GraphWriter;
 import gtna.io.graphReader.GtnaGraphReader;
+import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.networks.Network;
 import gtna.networks.model.placementmodels.NodeConnector;
 import gtna.networks.model.placementmodels.Partitioner;
@@ -150,7 +150,7 @@ public class CommunityDetection {
 			String plotFilenameLPA = filename + "_LPA_" + i + ".pdf";
 
 			Graph g = nw.generate();
-			GraphWriter.writeWithProperties(g, graphFilename);
+			GtnaGraphWriter.writeWithProperties(g, graphFilename);
 
 			System.out.println(filename);
 			if (deltaQ) {

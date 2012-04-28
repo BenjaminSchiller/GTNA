@@ -33,13 +33,14 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.io;
+package gtna.io.graphWriter;
 
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
+import gtna.io.Filewriter;
 import gtna.io.graphReader.GtnaGraphReader;
 import gtna.io.networks.googlePlus.FileIndexComparator;
 import gtna.io.networks.googlePlus.FileNameFilter;
@@ -52,7 +53,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
-public class GraphWriter {
+public class GtnaGraphWriter {
 	public static boolean write(Graph graph, String filename) {
 		String sep1 = Config.get("GRAPH_WRITER_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_WRITER_SEPARATOR_2");
@@ -95,12 +96,12 @@ public class GraphWriter {
 		for (String key : graph.getProperties().keySet()) {
 			filenames.put(key, filename + del + key);
 		}
-		return GraphWriter.writeWithProperties(graph, filename, filenames);
+		return GtnaGraphWriter.writeWithProperties(graph, filename, filenames);
 	}
 
 	public static boolean writeWithProperties(Graph graph, String filename,
 			HashMap<String, String> filenames) {
-		boolean success = GraphWriter.write(graph, filename);
+		boolean success = GtnaGraphWriter.write(graph, filename);
 		for (String key : filenames.keySet()) {
 			GraphProperty property = graph.getProperty(key);
 			success &= property.write(filenames.get(key), key);
