@@ -43,9 +43,9 @@ import gtna.id.Partition;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.io.Filereader;
-import gtna.io.GraphReader;
 import gtna.io.GraphWriter;
 import gtna.io.Output;
+import gtna.io.graphReader.GtnaGraphReader;
 import gtna.io.networks.googlePlus.Crawl;
 import gtna.io.networks.googlePlus.CrawlDuration;
 import gtna.io.networks.googlePlus.FileIndexComparator;
@@ -564,7 +564,7 @@ public class GoogleP {
 	private static void writeCSV(String src, String dst) {
 		File[] files = (new File(src)).listFiles();
 		for (File f : files) {
-			Graph g = GraphReader.read(f.getAbsolutePath());
+			Graph g = GtnaGraphReader.read(f.getAbsolutePath());
 			GraphWriter.writeCSV(g, dst + f.getName().replace(".txt", ".csv"));
 		}
 	}
@@ -587,7 +587,7 @@ public class GoogleP {
 				continue;
 			}
 			System.out.println(out);
-			Graph graph = GraphReader.read(f.getAbsolutePath());
+			Graph graph = GtnaGraphReader.read(f.getAbsolutePath());
 			Gephi gephi = new Gephi();
 			gephi.plot(graph, idspace, out);
 			gephi = null;

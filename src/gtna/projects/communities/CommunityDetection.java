@@ -39,8 +39,8 @@ import gtna.communities.CommunityList;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
-import gtna.io.GraphReader;
 import gtna.io.GraphWriter;
+import gtna.io.graphReader.GtnaGraphReader;
 import gtna.networks.Network;
 import gtna.networks.model.placementmodels.NodeConnector;
 import gtna.networks.model.placementmodels.Partitioner;
@@ -154,7 +154,7 @@ public class CommunityDetection {
 
 			System.out.println(filename);
 			if (deltaQ) {
-				g = GraphReader.readWithProperties(graphFilename);
+				g = GtnaGraphReader.readWithProperties(graphFilename);
 				g = t_dq.transform(g);
 				g = t_cc.transform(g);
 				CommunityList c = (CommunityList) g.getProperty("COMMUNITIES_0");
@@ -164,7 +164,7 @@ public class CommunityDetection {
 				gephi.plot(g, ids, plotFilenameDQ);
 			}
 			if (lpa) {
-				g = GraphReader.readWithProperties(graphFilename);
+				g = GtnaGraphReader.readWithProperties(graphFilename);
 				g = t_lpa.transform(g);
 				g = t_cc.transform(g);
 				CommunityList c = (CommunityList) g.getProperty("COMMUNITIES_0");

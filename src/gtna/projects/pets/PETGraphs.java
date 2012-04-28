@@ -37,8 +37,8 @@ package gtna.projects.pets;
 
 import gtna.graph.Graph;
 import gtna.io.Filewriter;
-import gtna.io.GraphReader;
 import gtna.io.GraphWriter;
+import gtna.io.graphReader.GtnaGraphReader;
 import gtna.networks.Network;
 import gtna.projects.pets.PET.cutoffType;
 import gtna.transformation.Transformation;
@@ -105,7 +105,7 @@ public class PETGraphs {
 				} else {
 					String[] p = new String[] { idSpaceFilenameLD };
 					try {
-						gLD = GraphReader.readWithProperties(filenameLD, p);
+						gLD = GtnaGraphReader.readWithProperties(filenameLD, p);
 					} catch (Exception e) {
 						gLD = null;
 					}

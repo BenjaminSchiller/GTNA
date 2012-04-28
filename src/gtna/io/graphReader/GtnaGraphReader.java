@@ -33,18 +33,19 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.io;
+package gtna.io.graphReader;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
+import gtna.io.Filereader;
 import gtna.util.Config;
 
 import java.io.File;
 import java.io.FilenameFilter;
 
-public class GraphReader {
+public class GtnaGraphReader {
 	public static Graph read(String filename) {
 		String sep1 = Config.get("GRAPH_WRITER_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_WRITER_SEPARATOR_2");
@@ -91,7 +92,7 @@ public class GraphReader {
 		for (int i = 0; i < propertyFiles.length; i++) {
 			properties[i] = propertyFiles[i].getAbsolutePath();
 		}
-		return GraphReader.readWithProperties(filename, properties);
+		return GtnaGraphReader.readWithProperties(filename, properties);
 	}
 
 	private static class PrefixFilter implements FilenameFilter {
@@ -109,7 +110,7 @@ public class GraphReader {
 	}
 
 	public static Graph readWithProperties(String filename, String[] properties) {
-		Graph graph = GraphReader.read(filename);
+		Graph graph = GtnaGraphReader.read(filename);
 		if (graph == null) {
 			return null;
 		}
