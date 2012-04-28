@@ -74,7 +74,7 @@ public class ReadableFolder extends Network {
 		if (this.files.size() == 0) {
 			super.setNodes(0);
 		} else {
-			super.setNodes(GtnaGraphReader.nodes(this.files.get(0)));
+			super.setNodes(new GtnaGraphReader().nodes(this.files.get(0)));
 		}
 		this.properties = properties;
 	}
@@ -92,7 +92,7 @@ public class ReadableFolder extends Network {
 			return null;
 		}
 		this.index = (this.index + 1) % this.files.size();
-		Graph graph = GtnaGraphReader.read(this.files.get(this.index));
+		Graph graph = new GtnaGraphReader().read(this.files.get(this.index));
 		graph.setName(this.getDescription());
 		return graph;
 	}

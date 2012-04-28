@@ -59,7 +59,8 @@ public class ReadableFile extends Network {
 
 	public ReadableFile(String name, String folder, String filename,
 			Transformation[] t) {
-		super(ReadableFile.key(name, folder), GtnaGraphReader.nodes(filename), t);
+		super(ReadableFile.key(name, folder), new GtnaGraphReader()
+				.nodes(filename), t);
 		this.filename = filename;
 	}
 
@@ -72,7 +73,7 @@ public class ReadableFile extends Network {
 	}
 
 	public Graph generate() {
-		Graph graph = GtnaGraphReader.readWithProperties(this.filename);
+		Graph graph = new GtnaGraphReader().readWithProperties(this.filename);
 		graph.setName(this.getDescription());
 		return graph;
 	}

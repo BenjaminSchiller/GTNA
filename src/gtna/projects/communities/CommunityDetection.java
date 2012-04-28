@@ -110,22 +110,25 @@ public class CommunityDetection {
 	private static Network random(int nodes) {
 		PlacementModel p1 = new RandomPlacementModel(width, height, false);
 		PlacementModel p2 = new RandomPlacementModel(1, 1, true);
-		return new PlacementModelContainer(nodes, nodes, width, height, 30000, 30000, p1, p2,
-				partitioner, connector, null);
+		return new PlacementModelContainer(nodes, nodes, width, height, 30000,
+				30000, p1, p2, partitioner, connector, null);
 	}
 
 	private static Network community(int nodes) {
-		PlacementModel p1 = new CommunityPlacementModel(0.5 * width, 0.5 * height, false);
-		PlacementModel p2 = new CommunityPlacementModel(0.2 * width, 0.2 * height, false);
-		return new PlacementModelContainer(nodes, nodes / 100, width, height, 30000, 30000,
-				p1, p2, partitioner, connector, null);
+		PlacementModel p1 = new CommunityPlacementModel(0.5 * width,
+				0.5 * height, false);
+		PlacementModel p2 = new CommunityPlacementModel(0.2 * width,
+				0.2 * height, false);
+		return new PlacementModelContainer(nodes, nodes / 100, width, height,
+				30000, 30000, p1, p2, partitioner, connector, null);
 	}
 
 	private static Network communityNew(int nodes) {
-		PlacementModel p1 = new CommunityPlacementModel(0.5 * width, 0.5 * height, false);
-		PlacementModel p2 = new CommunityPlacementModel(0.2 * width, 0.2 * height,
-				false);
-		return new PlacementModelContainer(nodes, nodes / 100, 2 * width, 
+		PlacementModel p1 = new CommunityPlacementModel(0.5 * width,
+				0.5 * height, false);
+		PlacementModel p2 = new CommunityPlacementModel(0.2 * width,
+				0.2 * height, false);
+		return new PlacementModelContainer(nodes, nodes / 100, 2 * width,
 				2 * height, 60000, 60000, p1, p2, partitioner, connector, null);
 	}
 
@@ -154,20 +157,22 @@ public class CommunityDetection {
 
 			System.out.println(filename);
 			if (deltaQ) {
-				g = GtnaGraphReader.readWithProperties(graphFilename);
+				g = new GtnaGraphReader().readWithProperties(graphFilename);
 				g = t_dq.transform(g);
 				g = t_cc.transform(g);
-				CommunityList c = (CommunityList) g.getProperty("COMMUNITIES_0");
+				CommunityList c = (CommunityList) g
+						.getProperty("COMMUNITIES_0");
 				IdentifierSpace ids = (IdentifierSpace) g
 						.getProperty("ID_SPACE_0");
 				System.out.println("deltaQ: " + c.getCommunities().length);
 				gephi.plot(g, ids, plotFilenameDQ);
 			}
 			if (lpa) {
-				g = GtnaGraphReader.readWithProperties(graphFilename);
+				g = new GtnaGraphReader().readWithProperties(graphFilename);
 				g = t_lpa.transform(g);
 				g = t_cc.transform(g);
-				CommunityList c = (CommunityList) g.getProperty("COMMUNITIES_0");
+				CommunityList c = (CommunityList) g
+						.getProperty("COMMUNITIES_0");
 				IdentifierSpace ids = (IdentifierSpace) g
 						.getProperty("ID_SPACE_0");
 				System.out.println("LPA: " + c.getCommunities().length);

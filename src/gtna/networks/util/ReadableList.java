@@ -57,14 +57,14 @@ import gtna.util.Config;
  */
 public class ReadableList extends Network {
 	private String[] files;
-    private int index;
+	private int index;
 
 	public ReadableList(String name, String folder, String[] files,
 			Transformation[] t) {
 		super(ReadableList.key(name, folder), Integer.MIN_VALUE, t);
 		this.files = files;
 		this.index = -1;
-		super.setNodes(GtnaGraphReader.nodes(this.files[0]));
+		super.setNodes(new GtnaGraphReader().nodes(this.files[0]));
 	}
 
 	public static String key(String name, String folder) {
@@ -77,7 +77,8 @@ public class ReadableList extends Network {
 
 	public Graph generate() {
 		this.index = (this.index + 1) % this.files.length;
-		Graph graph = GtnaGraphReader.readWithProperties(this.files[this.index]);
+		Graph graph = new GtnaGraphReader()
+				.readWithProperties(this.files[this.index]);
 		graph.setName(this.getDescription());
 		return graph;
 	}

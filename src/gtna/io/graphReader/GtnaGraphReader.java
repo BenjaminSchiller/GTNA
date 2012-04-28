@@ -37,16 +37,14 @@ package gtna.io.graphReader;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.io.Filereader;
 import gtna.util.Config;
 
-import java.io.File;
-import java.io.FilenameFilter;
+public class GtnaGraphReader extends GraphReader {
 
-public class GtnaGraphReader {
-	public static Graph read(String filename) {
+	@Override
+	public Graph read(String filename) {
 		String sep1 = Config.get("GRAPH_WRITER_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_WRITER_SEPARATOR_2");
 		Filereader fr = new Filereader(filename);
@@ -75,95 +73,18 @@ public class GtnaGraphReader {
 		} catch (NumberFormatException nf) {
 			return null;
 		} catch (Exception e) {
-			// e.printStackTrace();
 			return null;
 		} finally {
 			fr.close();
 		}
 	}
 
-	public static Graph readWithProperties(String filename) {
-		File file = new File(filename);
-		File folder = file.getParentFile();
-		String del = Config.get("GRAPH_WRITER_PROPERTY_FILE_DELIMITER");
-		PrefixFilter filter = new PrefixFilter(file.getName() + del);
-		File[] propertyFiles = folder.listFiles(filter);
-		String[] properties = new String[propertyFiles.length];
-		for (int i = 0; i < propertyFiles.length; i++) {
-			properties[i] = propertyFiles[i].getAbsolutePath();
-		}
-		return GtnaGraphReader.readWithProperties(filename, properties);
-	}
-
-	private static class PrefixFilter implements FilenameFilter {
-		String prefix;
-
-		private PrefixFilter(String prefix) {
-			this.prefix = prefix;
-		}
-
-		@Override
-		public boolean accept(File dir, String name) {
-			return name.startsWith(this.prefix);
-		}
-
-	}
-
-	public static Graph readWithProperties(String filename, String[] properties) {
-		Graph graph = GtnaGraphReader.read(filename);
-		if (graph == null) {
-			return null;
-		}
-		for (String prop : properties) {
-			Filereader fr = null;
-			try {
-				fr = new Filereader(prop);
-				String className = fr.readLine();
-				GraphProperty property = (GraphProperty) ClassLoader
-						.getSystemClassLoader().loadClass(className)
-						.newInstance();
-				property.read(prop, graph);
-			} catch (InstantiationException e) {
-				// e.printStackTrace();
-				return null;
-			} catch (IllegalAccessException e) {
-				// e.printStackTrace();
-				return null;
-			} catch (ClassNotFoundException e) {
-				// e.printStackTrace();
-				return null;
-			} finally {
-				fr.close();
-			}
-		}
-		return graph;
-	}
-
-	public static int nodes(String filename) {
+	@Override
+	public int nodes(String filename) {
 		Filereader fr = new Filereader(filename);
 		fr.readLine();
-		int V = Integer.parseInt(fr.readLine());
+		int N = Integer.parseInt(fr.readLine());
 		fr.close();
-		return V;
-	}
-
-	public static Graph readOld(String filename) {
-		String delimiter = Config.get("GRAPH_WRITER_DELIMITER");
-		Filereader fr = new Filereader(filename);
-		String line = null;
-		String name = fr.readLine();
-		int V = Integer.parseInt(fr.readLine());
-		int E = Integer.parseInt(fr.readLine());
-		Graph graph = new Graph(name);
-		Node[] nodes = Node.init(V, graph);
-		Edges edges = new Edges(nodes, E);
-		while ((line = fr.readLine()) != null) {
-			String[] temp = line.split(delimiter);
-			edges.add(Integer.parseInt(temp[0]), Integer.parseInt(temp[1]));
-		}
-		edges.fill();
-		graph.setNodes(nodes);
-		fr.close();
-		return graph;
+		return N;
 	}
 }
