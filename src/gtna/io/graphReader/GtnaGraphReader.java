@@ -43,6 +43,10 @@ import gtna.util.Config;
 
 public class GtnaGraphReader extends GraphReader {
 
+	public GtnaGraphReader() {
+		super("GTNA");
+	}
+
 	@Override
 	public Graph read(String filename) {
 		String sep1 = Config.get("GRAPH_WRITER_SEPARATOR_1");

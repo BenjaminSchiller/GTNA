@@ -33,32 +33,34 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.io.networks;
+package gtna.io.graphReader;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.io.Filereader;
 
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Set;
 
-public class CAIDAReader extends Filereader {
+public class CaidaGraphReader extends GraphReader {
 	private static final String caidaSeparator = "	";
-
-	public CAIDAReader(String filename) {
-		super(filename);
+	
+	public CaidaGraphReader(){
+		super("CAIDA");
 	}
 
-	public static Graph read(String filename) {
-		Graph graph = new Graph("CAIDA read from " + filename);
-
+	@Override
+	public Graph read(String filename) {
 		Hashtable<String, Integer> ids = new Hashtable<String, Integer>();
 		int index = 0;
 		int edgeCounter = 0;
-		CAIDAReader reader1 = new CAIDAReader(filename);
+
+		Filereader fr = new Filereader(filename);
 		String line1 = null;
-		while ((line1 = reader1.readLine()) != null) {
-			String[] parts = line1.split(caidaSeparator);
+		while ((line1 = fr.readLine()) != null) {
+			String[] parts = line1.split(CaidaGraphReader.caidaSeparator);
 			if ("D".equals(parts[0])) {
 				String from = parts[1];
 				String to = parts[2];
@@ -71,23 +73,44 @@ public class CAIDAReader extends Filereader {
 			}
 			edgeCounter++;
 		}
-		reader1.close();
+		fr.close();
 
+		Graph graph = new Graph("CAIDA read from " + filename);
 		Node[] nodes = Node.init(index, graph);
 		Edges edges = new Edges(nodes, edgeCounter);
-		CAIDAReader reader = new CAIDAReader(filename);
+
+		fr = new Filereader(filename);
 		String line = null;
-		while ((line = reader.readLine()) != null) {
-			String[] parts = line.split(caidaSeparator);
+		while ((line = fr.readLine()) != null) {
+			String[] parts = line.split(CaidaGraphReader.caidaSeparator);
 			if ("D".equals(parts[0])) {
 				int fromID = ids.get(parts[1]);
 				int toID = ids.get(parts[2]);
 				edges.add(fromID, toID);
 			}
 		}
-		reader.close();
+		fr.close();
+
 		edges.fill();
 		graph.setNodes(nodes);
 		return graph;
+	}
+
+	@Override
+	public int nodes(String filename) {
+		Set<String> nodes = new HashSet<String>();
+
+		Filereader fr = new Filereader(filename);
+		String line1 = null;
+		while ((line1 = fr.readLine()) != null) {
+			String[] parts = line1.split(CaidaGraphReader.caidaSeparator);
+			if ("D".equals(parts[0])) {
+				nodes.add(parts[1]);
+				nodes.add(parts[2]);
+			}
+		}
+		fr.close();
+
+		return nodes.size();
 	}
 }

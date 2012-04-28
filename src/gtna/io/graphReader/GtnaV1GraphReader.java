@@ -47,6 +47,10 @@ import gtna.util.Config;
  */
 public class GtnaV1GraphReader extends GraphReader {
 
+	public GtnaV1GraphReader() {
+		super("GTNA_V1");
+	}
+
 	@Override
 	public Graph read(String filename) {
 		String delimiter = Config.get("GRAPH_WRITER_DELIMITER");

@@ -48,6 +48,8 @@ import java.io.FilenameFilter;
  * 
  */
 public abstract class GraphReader {
+	protected String key;
+
 	/**
 	 * reads a graph from the specified file
 	 * 
@@ -65,6 +67,24 @@ public abstract class GraphReader {
 	 * @return number of nodes in the graph
 	 */
 	public abstract int nodes(String filename);
+
+	/**
+	 * 
+	 * @param key
+	 *            key of this graph reader
+	 */
+	public GraphReader(String key) {
+		this.key = key;
+	}
+
+	/**
+	 * returns the key of this graph reader
+	 * 
+	 * @return key of this graph reader
+	 */
+	public String getKey() {
+		return this.key;
+	}
 
 	/**
 	 * reads a graph from the given file. properties are read from all files in
