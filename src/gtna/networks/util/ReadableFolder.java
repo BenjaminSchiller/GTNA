@@ -91,7 +91,7 @@ public class ReadableFolder extends Network {
 		while (!f[index].getName().endsWith(extension)) {
 			index++;
 		}
-		return GraphReader.nodes(f[index].getAbsolutePath());
+		return new GtnaGraphReader().nodes(f[index].getAbsolutePath());
 	}
 
 	public static String key(String name, String folder) {
@@ -107,8 +107,8 @@ public class ReadableFolder extends Network {
 			return null;
 		}
 		this.index = (this.index + 1) % this.files.size();
-		Graph graph = GraphReader
-				.readWithProperties(this.files.get(this.index));
+		Graph graph = new GtnaGraphReader().readWithProperties(this.files
+				.get(this.index));
 		graph.setName(this.getDescription());
 		return graph;
 	}
