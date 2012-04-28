@@ -35,7 +35,7 @@
  * 2011-05-18 : added support for downloading and reading of multiple files (BS);
  * 
  */
-package gtna.io.networks;
+package gtna.io.graphReader;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
@@ -43,7 +43,6 @@ import gtna.graph.Node;
 import gtna.io.Output;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.util.Config;
-import gtna.util.Timer;
 import gtna.util.Util;
 
 import java.io.BufferedReader;
@@ -67,106 +66,141 @@ import java.util.Vector;
  * @author Zoran Zaric <zz@zoranzaric.de>
  * 
  */
-public class WOTReader {
-	// private final static int SIGNATURE_TYPE_MASK = 0xF0000000;
+public class WotGraphReader extends GraphReader {
+
+	public WotGraphReader() {
+		super("WOT");
+	}
+
 	private final static int SIGNATURE_INDEX_MASK = 0x0FFFFFFF;
 
-	public static Graph read(String filename) throws Exception {
-		Timer timer = new Timer();
+	@Override
+	public Graph read(String filename) {
+		try {
+			RandomAccessFile file = new RandomAccessFile(new File(filename),
+					"r");
 
-		RandomAccessFile file = new RandomAccessFile(new File(filename), "r");
-
-		// seek to names
-		while (!file.readLine().startsWith("names/")) {
-		}
-
-		// read names
-		Vector<WOTNode> wotNodes = new Vector<WOTNode>();
-		int index = 0;
-		String line;
-		while (!(line = file.readLine()).startsWith("keys/")) {
-			if (!line.equals("")) {
-				WOTNode node = new WOTNode(index, line);
-				wotNodes.add(node);
-				index += 1;
+			// seek to names
+			while (!file.readLine().startsWith("names/")) {
 			}
-		}
 
-		// read keys
-		for (index = 0; index < wotNodes.size(); index++) {
-			byte[] key = new byte[4];
-			file.read(key);
-			WOTNode node = wotNodes.get(index);
-			node.key = Util.toInt(key);
-		}
-
-		// skip the "signatures/" line
-		String signaturesLine = file.readLine();
-		if (!signaturesLine.startsWith("signatures/")) {
-			// FIXME an IllegalArgumentException isn't really semantically
-			// correct
-			throw new IllegalArgumentException(
-					"A line starting with \"signatures/\" was expected.");
-		}
-
-		// read signatures
-		for (index = 0; index < wotNodes.size(); index++) {
-			WOTNode node = wotNodes.get(index);
-
-			// read how many keys are signed by this key
-			byte[] buffer = new byte[4];
-			file.read(buffer);
-			int signatureCount = Util.toInt(buffer);
-
-			// inspect all signatures
-			for (int signatureIndex = 0; signatureIndex < signatureCount; signatureIndex++) {
-				byte[] signatureBuffer = new byte[4];
-				file.read(signatureBuffer);
-
-				int signature = Util.toInt(signatureBuffer);
-
-				// get the signature type
-				// TODO do something with the signature type
-				// int signatureType = signature & SIGNATURE_TYPE_MASK;
-
-				// get the target key
-				int targetIndex = signature & SIGNATURE_INDEX_MASK;
-				if (targetIndex >= wotNodes.size()) {
-					// FIXME an IllegalArgumentException isn't really
-					// semantically correct
-					throw new IllegalArgumentException(
-							"A target index that matches a node was expected.");
+			// read names
+			Vector<WOTNode> wotNodes = new Vector<WOTNode>();
+			int index = 0;
+			String line;
+			while (!(line = file.readLine()).startsWith("keys/")) {
+				if (!line.equals("")) {
+					WOTNode node = new WOTNode(index, line);
+					wotNodes.add(node);
+					index += 1;
 				}
-
-				// retrieve the target node
-				WOTNode target = wotNodes.get(targetIndex);
-				node.signatures.add(target);
 			}
-		}
-		// skip the "debug/" line
-		String debugLine = file.readLine();
-		if (!debugLine.startsWith("debug/")) {
-			// FIXME an IllegalArgumentException isn't really semantically
-			// correct
-			throw new IllegalArgumentException(
-					"A line starting with \"debug/was expected.");
-		}
 
-		file.close();
-		timer.end();
-
-		// prepare return graph
-		Graph graph = new Graph("WOT - read from " + filename);
-		Node[] nodes = Node.init(wotNodes.size(), graph);
-		Edges edges = new Edges(nodes, nodes.length);
-		for (WOTNode source : wotNodes) {
-			for (WOTNode target : source.signatures) {
-				edges.add(source.index, target.index);
+			// read keys
+			for (index = 0; index < wotNodes.size(); index++) {
+				byte[] key = new byte[4];
+				file.read(key);
+				WOTNode node = wotNodes.get(index);
+				node.key = Util.toInt(key);
 			}
+
+			// skip the "signatures/" line
+			String signaturesLine = file.readLine();
+			if (!signaturesLine.startsWith("signatures/")) {
+				throw new IllegalArgumentException(
+						"A line starting with \"signatures/\" was expected.");
+			}
+
+			// read signatures
+			for (index = 0; index < wotNodes.size(); index++) {
+				WOTNode node = wotNodes.get(index);
+
+				// read how many keys are signed by this key
+				byte[] buffer = new byte[4];
+				file.read(buffer);
+				int signatureCount = Util.toInt(buffer);
+
+				// inspect all signatures
+				for (int signatureIndex = 0; signatureIndex < signatureCount; signatureIndex++) {
+					byte[] signatureBuffer = new byte[4];
+					file.read(signatureBuffer);
+
+					int signature = Util.toInt(signatureBuffer);
+
+					// get the signature type
+					// TODO do something with the signature type
+					// int signatureType = signature & SIGNATURE_TYPE_MASK;
+
+					// get the target key
+					int targetIndex = signature & SIGNATURE_INDEX_MASK;
+					if (targetIndex >= wotNodes.size()) {
+						// FIXME an IllegalArgumentException isn't really
+						// semantically correct
+						throw new IllegalArgumentException(
+								"A target index that matches a node was expected.");
+					}
+
+					// retrieve the target node
+					WOTNode target = wotNodes.get(targetIndex);
+					node.signatures.add(target);
+				}
+			}
+
+			// skip the "debug/" line
+			String debugLine = file.readLine();
+			if (!debugLine.startsWith("debug/")) {
+				// FIXME an IllegalArgumentException isn't really semantically
+				// correct
+				throw new IllegalArgumentException(
+						"A line starting with \"debug/was expected.");
+			}
+			file.close();
+
+			// prepare return graph
+			Graph graph = new Graph("WOT read from " + filename);
+			Node[] nodes = Node.init(wotNodes.size(), graph);
+			Edges edges = new Edges(nodes, nodes.length);
+			for (WOTNode source : wotNodes) {
+				for (WOTNode target : source.signatures) {
+					edges.add(source.index, target.index);
+				}
+			}
+			edges.fill();
+			graph.setNodes(nodes);
+
+			return graph;
+		} catch (Exception e) {
+			return null;
 		}
-		edges.fill();
-		graph.setNodes(nodes);
-		return graph;
+	}
+
+	@Override
+	public int nodes(String filename) {
+		try {
+			RandomAccessFile file = new RandomAccessFile(new File(filename),
+					"r");
+
+			// seek to names
+			while (!file.readLine().startsWith("names/")) {
+			}
+
+			// read names
+			Vector<WOTNode> wotNodes = new Vector<WOTNode>();
+			int index = 0;
+			String line;
+			while (!(line = file.readLine()).startsWith("keys/")) {
+				if (!line.equals("")) {
+					WOTNode node = new WOTNode(index, line);
+					wotNodes.add(node);
+					index += 1;
+				}
+			}
+			file.close();
+
+			return wotNodes.size();
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 
 	private static class WOTNode {
@@ -182,7 +216,7 @@ public class WOTReader {
 			this.index = index;
 			this.name = name;
 			this.key = -1;
-			this.signatures = new Vector<WOTReader.WOTNode>();
+			this.signatures = new Vector<WotGraphReader.WOTNode>();
 		}
 
 		public String toString() {
@@ -252,7 +286,7 @@ public class WOTReader {
 		}
 
 		try {
-			Graph g = WOTReader.read(unzipped);
+			Graph g = new WotGraphReader().read(unzipped);
 			GtnaGraphWriter.write(g, filename);
 			if (Config.getBoolean("WOT_READER_DELETE_WOT_FILE")) {
 				String deleteFolder = Config
