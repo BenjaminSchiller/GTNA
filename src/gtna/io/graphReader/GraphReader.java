@@ -39,9 +39,9 @@ import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.io.Filereader;
 import gtna.util.Config;
+import gtna.util.filenameFilter.PrefixFilenameFilter;
 
 import java.io.File;
-import java.io.FilenameFilter;
 
 /**
  * @author benni
@@ -104,7 +104,8 @@ public abstract class GraphReader {
 		File folder = file.getParentFile();
 
 		String del = Config.get("GRAPH_WRITER_PROPERTY_FILE_DELIMITER");
-		PrefixFilter filter = new PrefixFilter(file.getName() + del);
+		PrefixFilenameFilter filter = new PrefixFilenameFilter(file.getName()
+				+ del);
 
 		File[] propertyFiles = folder.listFiles(filter);
 		String[] properties = new String[propertyFiles.length];
@@ -150,25 +151,5 @@ public abstract class GraphReader {
 			}
 		}
 		return graph;
-	}
-
-	/**
-	 * Implements a filename filter that accepts only files with a given
-	 * filename prefix.
-	 * 
-	 * @author benni
-	 * 
-	 */
-	protected class PrefixFilter implements FilenameFilter {
-		String prefix;
-
-		private PrefixFilter(String prefix) {
-			this.prefix = prefix;
-		}
-
-		@Override
-		public boolean accept(File dir, String name) {
-			return name.startsWith(this.prefix);
-		}
 	}
 }
