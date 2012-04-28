@@ -45,13 +45,14 @@ import gtna.io.graphReader.WotGraphReader;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
-import gtna.metrics.basic.ShortestPaths;
 import gtna.networks.Network;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plotting;
 import gtna.util.Config;
 import gtna.util.filenameFilter.ExcludeHiddenFilenameFilter;
 import gtna.util.filenameFilter.PostfixFilenameFilter;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
 
 import java.io.File;
 
@@ -63,14 +64,15 @@ public class ResourcesGeneration {
 
 	public static void main(String[] args) throws Exception {
 		ResourcesGeneration.read(new CaidaGraphReader(), "caida");
-		ResourcesGeneration.read(new WotGraphReader(), "wot");
-		ResourcesGeneration.read(new SpiGraphReader(), "spi");
-		ResourcesGeneration.read(new CoauthorGraphReader(), "coauthor");
+		// ResourcesGeneration.read(new WotGraphReader(), "wot");
+		// ResourcesGeneration.read(new SpiGraphReader(), "spi");
+		// ResourcesGeneration.read(new CoauthorGraphReader(), "coauthor");
 	}
 
 	public static void read(GraphReader graphReader, String type) {
 		String srcFolder = "./resources/" + type + "/source/";
 		String dstFolder = "./resources/" + type + "/original/";
+		String evalFolder = "./resources/" + type + "/original-eval/";
 
 		if (!(new File(srcFolder)).exists()) {
 			return;
@@ -92,28 +94,34 @@ public class ResourcesGeneration {
 			new GtnaGraphWriter().write(g, dest);
 		}
 
-		ResourcesGeneration.evaluate(type, dstFolder);
+		ResourcesGeneration.evaluate(type, dstFolder, evalFolder);
 	}
 
-	public static void evaluate(String type, String folder) {
-		Config.overwrite("MAIN_DATA_FOLDER", folder + "data/");
-		Config.overwrite("MAIN_PLOT_FOLDER", folder + "plots/");
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+	public static void evaluate(String type, String graphFolder,
+			String evalFolder) {
+		Config.overwrite("MAIN_DATA_FOLDER", evalFolder + "data/");
+		Config.overwrite("MAIN_PLOT_FOLDER", evalFolder + "plots-");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 
-		File[] graphs = new File(folder).listFiles(new PostfixFilenameFilter(
-				".gtna"));
+		boolean get = false;
+
+		File[] graphs = new File(graphFolder)
+				.listFiles(new PostfixFilenameFilter(".gtna"));
 		Network[] nw = new Network[graphs.length];
 		for (int i = 0; i < graphs.length; i++) {
-			nw[i] = new ReadableFile(type + " - " + graphs[i].getName(),
-					graphs[i].getName(), graphs[i].getAbsolutePath(), null);
+			nw[i] = new ReadableFile(type + " - " + graphs[i].getName(), type,
+					graphs[i].getAbsolutePath(),
+					new Parameter[] { new IntParameter("INDEX", i) }, null);
 		}
 
 		Metric dd = new DegreeDistribution();
 		Metric[] metrics = new Metric[] { dd };
 
-		Series[] s = Series.generate(nw, metrics, 1);
+		Series[] s = get ? Series.get(nw, metrics) : Series.generate(nw,
+				metrics, 1);
 
-		Plotting.multi(s, metrics, "multi/");
+		Plotting.multi(s, metrics, "multi-");
+		Plotting.single(s, metrics, "single-");
 	}
 
 }
