@@ -564,8 +564,9 @@ public class GoogleP {
 	private static void writeCSV(String src, String dst) {
 		File[] files = (new File(src)).listFiles();
 		for (File f : files) {
-			Graph g = GtnaGraphReader.read(f.getAbsolutePath());
-			GtnaGraphWriter.writeCSV(g, dst + f.getName().replace(".txt", ".csv"));
+			Graph g = new GtnaGraphReader().read(f.getAbsolutePath());
+			GtnaGraphWriter.writeCSV(g,
+					dst + f.getName().replace(".txt", ".csv"));
 		}
 	}
 
@@ -587,7 +588,7 @@ public class GoogleP {
 				continue;
 			}
 			System.out.println(out);
-			Graph graph = GtnaGraphReader.read(f.getAbsolutePath());
+			Graph graph = new GtnaGraphReader().read(f.getAbsolutePath());
 			Gephi gephi = new Gephi();
 			gephi.plot(graph, idspace, out);
 			gephi = null;

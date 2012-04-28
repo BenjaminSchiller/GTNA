@@ -54,8 +54,8 @@ public class GraphSizeComparator implements Comparator<File> {
 
 	@Override
 	public int compare(File f1, File f2) {
-		int s1 = GtnaGraphReader.nodes(f1.getAbsolutePath());
-		int s2 = GtnaGraphReader.nodes(f2.getAbsolutePath());
+		int s1 = new GtnaGraphReader().nodes(f1.getAbsolutePath());
+		int s2 = new GtnaGraphReader().nodes(f2.getAbsolutePath());
 		int v = s1 - s2;
 		if (v == 0) {
 			return this.c2.compare(f1, f2);

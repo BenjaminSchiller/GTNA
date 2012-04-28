@@ -209,14 +209,14 @@ public class GtnaGraphWriter {
 				"-graph.txt"));
 		Arrays.sort(files, new FileIndexComparator("-", 0));
 
-		Graph init = GtnaGraphReader.read(files[0].getAbsolutePath());
+		Graph init = new GtnaGraphReader().read(files[0].getAbsolutePath());
 		int end = 0;
 
 		Edges edges = new Edges(init.getNodes(), 100000);
 		HashMap<String, Integer> edgeStart = new HashMap<String, Integer>();
 		int[] nodeStart = Util.initIntArray(init.getNodes().length, -1);
 		for (File f : files) {
-			Graph g = GtnaGraphReader.read(f.getAbsolutePath());
+			Graph g = new GtnaGraphReader().read(f.getAbsolutePath());
 			int cid = Integer.parseInt(f.getName().split("-")[0]);
 			end = cid + 1;
 			for (Node n : g.getNodes()) {

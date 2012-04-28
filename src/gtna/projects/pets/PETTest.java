@@ -124,7 +124,7 @@ public class PETTest {
 								+ filenameLD);
 						continue;
 					}
-					Graph g = GtnaGraphReader.read(filenameLD);
+					Graph g = new GtnaGraphReader().read(filenameLD);
 					if (g == null) {
 						System.out.println("ERROR LD - could not read: "
 								+ filenameLD);
@@ -143,7 +143,7 @@ public class PETTest {
 									+ filename);
 							continue;
 						}
-						Graph g = GtnaGraphReader.read(filename);
+						Graph g = new GtnaGraphReader().read(filename);
 						if (g == null) {
 							System.out.println("ERROR: could not read: "
 									+ filename);

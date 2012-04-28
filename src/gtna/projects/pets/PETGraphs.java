@@ -105,7 +105,8 @@ public class PETGraphs {
 				} else {
 					String[] p = new String[] { idSpaceFilenameLD };
 					try {
-						gLD = GtnaGraphReader.readWithProperties(filenameLD, p);
+						gLD = new GtnaGraphReader().readWithProperties(
+								filenameLD, p);
 					} catch (Exception e) {
 						gLD = null;
 					}
