@@ -33,38 +33,39 @@
  * Changes since 2011-05-17
  * ---------------------------------------
  */
-package gtna.io.networks;
+package gtna.io.graphReader;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.io.Filereader;
-import gtna.util.Timer;
 
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Set;
 
-public class SPIReader extends Filereader {
+public class SpiGraphReader extends GraphReader {
 	public static final String buddySeparator = ";";
 
 	public static final String buddyFileStart = "\"user_active_rid\"";
 
-	private SPIReader(String filename) {
-		super(filename);
+	public SpiGraphReader() {
+		super("SPI");
 	}
 
-	public static Graph read(String filename) {
-		Timer timer = new Timer();
-
+	@Override
+	public Graph read(String filename) {
 		Hashtable<String, Integer> ids = new Hashtable<String, Integer>();
 		int index = 0;
 		int edgeCounter = 0;
-		SPIReader reader1 = new SPIReader(filename);
-		String line1 = null;
-		while ((line1 = reader1.readLine()) != null) {
-			if (line1.startsWith(buddyFileStart)) {
+
+		Filereader fr = new Filereader(filename);
+		String line = null;
+		while ((line = fr.readLine()) != null) {
+			if (line.startsWith(SpiGraphReader.buddyFileStart)) {
 				continue;
 			}
-			String[] parts = line1.split(buddySeparator);
+			String[] parts = line.split(SpiGraphReader.buddySeparator);
 			String from = parts[0].replace("\"", "");
 			String to = parts[1].replace("\"", "");
 			if (!ids.containsKey(from)) {
@@ -75,29 +76,48 @@ public class SPIReader extends Filereader {
 			}
 			edgeCounter++;
 		}
-		reader1.close();
+		fr.close();
 
 		Graph graph = new Graph("SPI read from " + filename);
 		Node[] nodes = Node.init(index, graph);
 		Edges edges = new Edges(nodes, edgeCounter);
-		SPIReader reader = new SPIReader(filename);
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-			if (line.startsWith(buddyFileStart)) {
+
+		fr = new Filereader(filename);
+		line = null;
+		while ((line = fr.readLine()) != null) {
+			if (line.startsWith(SpiGraphReader.buddyFileStart)) {
 				continue;
 			}
-			String[] parts = line.split(buddySeparator);
+			String[] parts = line.split(SpiGraphReader.buddySeparator);
 			String from = parts[0].replace("\"", "");
 			String to = parts[1].replace("\"", "");
 			int fromID = ids.get(from);
 			int toID = ids.get(to);
 			edges.add(fromID, toID);
 		}
-		reader.close();
-		edges.fill();
+		fr.close();
 
-		timer.end();
+		edges.fill();
 		graph.setNodes(nodes);
 		return graph;
+	}
+
+	@Override
+	public int nodes(String filename) {
+		Set<String> nodes = new HashSet<String>();
+
+		Filereader fr = new Filereader(filename);
+		String line = null;
+		while ((line = fr.readLine()) != null) {
+			if (line.startsWith(SpiGraphReader.buddyFileStart)) {
+				continue;
+			}
+			String[] parts = line.split(SpiGraphReader.buddySeparator);
+			nodes.add(parts[0].replace("\"", ""));
+			nodes.add(parts[1].replace("\"", ""));
+		}
+		fr.close();
+
+		return nodes.size();
 	}
 }

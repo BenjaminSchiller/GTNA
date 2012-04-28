@@ -58,9 +58,9 @@ public class CaidaGraphReader extends GraphReader {
 		int edgeCounter = 0;
 
 		Filereader fr = new Filereader(filename);
-		String line1 = null;
-		while ((line1 = fr.readLine()) != null) {
-			String[] parts = line1.split(CaidaGraphReader.caidaSeparator);
+		String line = null;
+		while ((line = fr.readLine()) != null) {
+			String[] parts = line.split(CaidaGraphReader.caidaSeparator);
 			if ("D".equals(parts[0])) {
 				String from = parts[1];
 				String to = parts[2];
@@ -80,7 +80,7 @@ public class CaidaGraphReader extends GraphReader {
 		Edges edges = new Edges(nodes, edgeCounter);
 
 		fr = new Filereader(filename);
-		String line = null;
+		line = null;
 		while ((line = fr.readLine()) != null) {
 			String[] parts = line.split(CaidaGraphReader.caidaSeparator);
 			if ("D".equals(parts[0])) {
