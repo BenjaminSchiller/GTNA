@@ -65,8 +65,8 @@ public class ReadableFile extends Network {
 
 	public ReadableFile(String name, String folder, String filename,
 			Parameter[] parameters, Transformation[] t) {
-		super(ReadableFile.key(name, folder), GraphReader.nodes(filename),
-				parameters, t);
+		super(ReadableFile.key(name, folder), new GtnaGraphReader()
+				.nodes(filename), parameters, t);
 		this.filename = filename;
 	}
 

@@ -37,8 +37,8 @@ package gtna.projects.communityEmbeddings;
 
 import gtna.data.Series;
 import gtna.graph.Graph;
-import gtna.io.GraphReader;
-import gtna.io.GraphWriter;
+import gtna.io.graphReader.GtnaV1GraphReader;
+import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.communities.Communities;
@@ -98,8 +98,8 @@ public class CommunityEmbeddingsTest {
 			String filename1 = "./resources/WOT-1-BD/2005-02-25.wot.txt";
 			String filename2 = "./resources/2005-02-25.wot.txt";
 
-			Graph g = GraphReader.readOld(filename1);
-			GraphWriter.write(g, filename2);
+			Graph g = new GtnaV1GraphReader().read(filename1);
+			new GtnaGraphWriter().write(g, filename2);
 
 			return;
 		}
