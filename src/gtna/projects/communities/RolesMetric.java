@@ -58,7 +58,7 @@ import gtna.transformation.communities.CommunityDetectionDeltaQ;
 import gtna.transformation.communities.CommunityDetectionLPA;
 import gtna.transformation.communities.GuimeraRolesTransformation;
 import gtna.transformation.communities.WsnRolesTransformation;
-import gtna.transformation.partition.GiantConnectedComponent;
+import gtna.transformation.partition.LargestWeaklyConnectedComponent;
 import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.util.Config;
 
@@ -87,7 +87,7 @@ public class RolesMetric {
 		boolean generate = false;
 
 		Transformation wcc = new WeakConnectivityPartition();
-		Transformation gcc = new GiantConnectedComponent();
+		Transformation gcc = new LargestWeaklyConnectedComponent();
 		Transformation dq = new CommunityDetectionDeltaQ();
 		Transformation lpa = new CommunityDetectionLPA(50);
 		Transformation r = new GuimeraRolesTransformation();

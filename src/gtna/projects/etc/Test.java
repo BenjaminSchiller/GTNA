@@ -71,7 +71,7 @@ import gtna.transformation.communities.CommunityDetectionLPA;
 import gtna.transformation.communities.GuimeraRolesTransformation;
 import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
-import gtna.transformation.partition.GiantConnectedComponent;
+import gtna.transformation.partition.LargestWeaklyConnectedComponent;
 import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.util.Config;
 import gtna.util.parameter.BooleanParameter;
@@ -115,13 +115,16 @@ public class Test {
 		// Network[][] nw = new Network[][] { nw1, nw2, nw3, nw4 };
 
 		Transformation[] t1 = new Transformation[] {
-				new WeakConnectivityPartition(), new GiantConnectedComponent(),
+				new WeakConnectivityPartition(),
+				new LargestWeaklyConnectedComponent(),
 				new LMC(100, "mode", 1.1, "deltaMode", 1001) };
 		Transformation[] t2 = new Transformation[] {
-				new WeakConnectivityPartition(), new GiantConnectedComponent(),
+				new WeakConnectivityPartition(),
+				new LargestWeaklyConnectedComponent(),
 				new LMC(100, "mode", 1.1, "deltaMode", 1002) };
 		Transformation[] t3 = new Transformation[] {
-				new WeakConnectivityPartition(), new GiantConnectedComponent(),
+				new WeakConnectivityPartition(),
+				new LargestWeaklyConnectedComponent(),
 				new LMC(100, "mode", 1.1, "deltaMode", 1003) };
 
 		Network nw11 = new ErdosRenyi(100, 10, true, t1);
@@ -158,7 +161,8 @@ public class Test {
 						Fragmentation.Resolution.PERCENT) };
 		int times = 10;
 		Network nw = new ErdosRenyi(200, 10, true, new Transformation[] {
-				new WeakConnectivityPartition(), new GiantConnectedComponent(),
+				new WeakConnectivityPartition(),
+				new LargestWeaklyConnectedComponent(),
 				new RandomRingIDSpaceSimple(), new RandomRingIDSpaceSimple(),
 				new RandomRingIDSpaceSimple() });
 		Series s = Series.generate(nw, metrics, times);
@@ -229,7 +233,7 @@ public class Test {
 		Transformation t_cc = new CommunityColors();
 		Transformation t_r = new GuimeraRolesTransformation();
 		Transformation t_r2 = new WsnRolesTransformation();
-		Transformation t_gcc = new GiantConnectedComponent();
+		Transformation t_gcc = new LargestWeaklyConnectedComponent();
 
 		Transformation[] t1 = new Transformation[] { t_gcc, t_lpa, t_r, t_r2 };
 		Transformation[] t2 = new Transformation[] { t_gcc, t_dq, t_r, t_r2 };
@@ -255,18 +259,20 @@ public class Test {
 				new WeakFragmentation(new WsnRolesNodeSorter(
 						WsnRolesNodeSorter.HS_HB_HC_S_B_C),
 						Fragmentation.Resolution.PERCENT),
-				new Roles(Role.RoleType.GUIMERA),
-				new Roles(Role.RoleType.WSN), new Communities() };
+				new Roles(Role.RoleType.GUIMERA), new Roles(Role.RoleType.WSN),
+				new Communities() };
 		Series[] s = Series.generate(nw, metrics, times);
 		// PlotOld.multiAvg(s, "multi/", metrics);
 	}
 
 	private static Network communityNew(int nodes, Transformation[] t) {
-		PlacementModel p1 = new CommunityPlacementModel(0.5 * 20, 0.5 * 20, false);
-		PlacementModel p2 = new CommunityPlacementModel(0.2 * 20, 0.2 * 20, false);
+		PlacementModel p1 = new CommunityPlacementModel(0.5 * 20, 0.5 * 20,
+				false);
+		PlacementModel p2 = new CommunityPlacementModel(0.2 * 20, 0.2 * 20,
+				false);
 		Partitioner partitioner = new SimplePartitioner();
 		NodeConnector connector = new UDGConnector(1);
-		return new PlacementModelContainer(nodes, nodes / 100, 40, 40, 40, 40, p1, p2,
-				partitioner, connector, t);
+		return new PlacementModelContainer(nodes, nodes / 100, 40, 40, 40, 40,
+				p1, p2, partitioner, connector, t);
 	}
 }

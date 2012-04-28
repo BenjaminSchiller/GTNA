@@ -58,7 +58,8 @@ import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityDetectionLPA;
 import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.transformation.connectors.UnitDiscGraph;
-import gtna.transformation.partition.GiantConnectedComponent;
+import gtna.transformation.partition.LargestConnectedComponent;
+import gtna.transformation.partition.LargestWeaklyConnectedComponent;
 import gtna.transformation.partition.StrongConnectivityPartition;
 import gtna.util.Config;
 
@@ -73,7 +74,7 @@ public class Test {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 
 		Transformation scp = new StrongConnectivityPartition();
-		Transformation gcc = new GiantConnectedComponent();
+		Transformation gcc = new LargestWeaklyConnectedComponent();
 
 		Transformation[] t1 = new Transformation[] {
 				new WsnRolesTransformation(1, 1, 2, true),
