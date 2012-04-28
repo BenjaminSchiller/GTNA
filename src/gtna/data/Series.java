@@ -36,7 +36,7 @@
 package gtna.data;
 
 import gtna.graph.Graph;
-import gtna.io.GraphWriter;
+import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
@@ -226,7 +226,7 @@ public class Series {
 			}
 		}
 		if (Config.getBoolean("SERIES_GRAPH_WRITE")) {
-			GraphWriter.writeWithProperties(g, s.getGraphFilename(run));
+			GtnaGraphWriter.writeWithProperties(g, s.getGraphFilename(run));
 		}
 		StringBuffer p = new StringBuffer();
 		ArrayList<String> properties = new ArrayList<String>(g.getProperties()

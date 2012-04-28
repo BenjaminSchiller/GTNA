@@ -43,9 +43,9 @@ import gtna.id.Partition;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.io.Filereader;
-import gtna.io.GraphWriter;
 import gtna.io.Output;
 import gtna.io.graphReader.GtnaGraphReader;
+import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.io.networks.googlePlus.Crawl;
 import gtna.io.networks.googlePlus.CrawlDuration;
 import gtna.io.networks.googlePlus.FileIndexComparator;
@@ -555,7 +555,7 @@ public class GoogleP {
 				}
 				Graph crawledGraph = GooglePlusReader.generateGraph(crawl,
 						crawledMapping);
-				GraphWriter.write(crawledGraph, graph);
+				GtnaGraphWriter.write(crawledGraph, graph);
 				System.out.println("crawledGraph => " + graph);
 			}
 		}
@@ -565,7 +565,7 @@ public class GoogleP {
 		File[] files = (new File(src)).listFiles();
 		for (File f : files) {
 			Graph g = GtnaGraphReader.read(f.getAbsolutePath());
-			GraphWriter.writeCSV(g, dst + f.getName().replace(".txt", ".csv"));
+			GtnaGraphWriter.writeCSV(g, dst + f.getName().replace(".txt", ".csv"));
 		}
 	}
 
@@ -920,7 +920,7 @@ public class GoogleP {
 			if (!(new File(graph)).exists()) {
 				System.out.print("generating graph for " + crawl);
 				Graph g = GooglePlusReader.generateGraph(crawl, mapping);
-				GraphWriter.write(g, graph);
+				GtnaGraphWriter.write(g, graph);
 				System.out.println(" ===> " + graph);
 			}
 		}

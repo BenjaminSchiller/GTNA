@@ -37,8 +37,8 @@ package gtna.projects.pets;
 
 import gtna.graph.Graph;
 import gtna.io.Filewriter;
-import gtna.io.GraphWriter;
 import gtna.io.graphReader.GtnaGraphReader;
+import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.networks.Network;
 import gtna.projects.pets.PET.cutoffType;
 import gtna.transformation.Transformation;
@@ -97,7 +97,7 @@ public class PETGraphs {
 							+ filenameLD);
 					gLD = nwLD.generate();
 					timer.end();
-					GraphWriter.write(gLD, filenameLD);
+					GtnaGraphWriter.write(gLD, filenameLD);
 					if (!(new File(idSpaceFilenameLD)).exists()) {
 						gLD.getProperty("ID_SPACE_0").write(idSpaceFilenameLD,
 								"ID_SPACE_0");
@@ -134,7 +134,7 @@ public class PETGraphs {
 				Graph g = t.transform(gLD);
 				timer.end();
 				f.mkdirs();
-				GraphWriter.write(g, filename);
+				GtnaGraphWriter.write(g, filename);
 				if (!(new File(idSpaceFilename)).exists()) {
 					g.getProperty("ID_SPACE_0").write(idSpaceFilename,
 							"ID_SPACE_0");

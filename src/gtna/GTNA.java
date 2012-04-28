@@ -37,7 +37,7 @@ package gtna;
 
 import gtna.data.Series;
 import gtna.graph.Graph;
-import gtna.io.GraphWriter;
+import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
@@ -69,7 +69,7 @@ public class GTNA {
 	private static void example1() {
 		Network nw1 = new ErdosRenyi(100, 5, false, null);
 		Graph g = nw1.generate();
-		GraphWriter.write(g, "./data/firstExample-graph.txt");
+		GtnaGraphWriter.write(g, "./data/firstExample-graph.txt");
 	}
 
 	private static void example2() {
