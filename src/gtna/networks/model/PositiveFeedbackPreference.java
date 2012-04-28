@@ -83,6 +83,8 @@ public class PositiveFeedbackPreference extends Network {
 	 */
 	@Override
 	public Graph generate() {
+		System.out.println("p = " + this.p);
+		System.out.println("delta = " + this.delta);
 		// Graph graph = new Graph(this.getDescription());
 		Graph graph = new Graph("test");
 		Node[] nodes = Node.init(this.getNodes(), graph);
@@ -98,6 +100,7 @@ public class PositiveFeedbackPreference extends Network {
 				for (int j = 0; j < i; j++) {
 					this.addEdge(i, j);
 				}
+				continue;
 			}
 			// ---
 			if (rand.nextDouble() < p) {
@@ -107,24 +110,39 @@ public class PositiveFeedbackPreference extends Network {
 				addEdge(i, hostIndex);
 
 				// the host develops new links to two peers
-				int peer1Index = this.selectNodeUsingPref(i - 1);
-				int peer2Index = this.selectNodeUsingPref(i - 1);
-				// TODO: are peers diff from host???
+				int peer1Index = hostIndex;
+				int peer2Index = hostIndex;
+				while (peer1Index == peer2Index || peer1Index == hostIndex
+						|| peer2Index == hostIndex) {
+					peer1Index = this.selectNodeUsingPref(i - 1);
+					peer2Index = this.selectNodeUsingPref(i - 1);
+					System.out.println("host = " + hostIndex);
+					System.out.println("peer1 = " + peer1Index);
+					System.out.println("perr2 = " + peer2Index);
+				}
 				addEdge(hostIndex, peer1Index);
 				addEdge(hostIndex, peer2Index);
 
 			} else {
 
 				// a new node is attached to two hosts
-				int host1Index = this.selectNodeUsingPref(i - 1);
-				int host2Index = this.selectNodeUsingPref(i - 1);
-				// TODO: are hosts diff???
+				int host1Index = 0;
+				int host2Index = 0;
+				while (host1Index == host2Index) {
+					host1Index = this.selectNodeUsingPref(i - 1);
+					host2Index = this.selectNodeUsingPref(i - 1);
+					System.out.println("host1 = " + host1Index);
+					System.out.println("host2 = " + host2Index);
+				}
 				addEdge(i, host1Index);
 				addEdge(i, host2Index);
 
 				// one of the hosts is linked to a peer
-				int peerIndex = this.selectNodeUsingPref(i - 1);
-				// TODO: are peer diff from hosts???
+				int peerIndex = host1Index;
+				while (peerIndex == host1Index || peerIndex == host2Index) {
+					peerIndex = this.selectNodeUsingPref(i - 1);
+					System.out.println("peer = " + peerIndex);
+				}
 				if ((new Random()).nextInt(2) == 0) {
 					addEdge(host1Index, peerIndex);
 				} else {
