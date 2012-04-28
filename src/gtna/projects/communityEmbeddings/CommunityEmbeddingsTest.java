@@ -75,7 +75,7 @@ import gtna.transformation.embedding.communities.sorter.community.NeighborsByEdg
 import gtna.transformation.embedding.communities.sorter.community.OriginalCommunitySorter;
 import gtna.transformation.embedding.communities.sorter.node.OriginalNodeSorter;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
-import gtna.transformation.partition.GiantConnectedComponent;
+import gtna.transformation.partition.LargestWeaklyConnectedComponent;
 import gtna.transformation.partition.StrongConnectivityPartition;
 import gtna.util.Config;
 import gtna.util.Stats;
@@ -154,7 +154,7 @@ public class CommunityEmbeddingsTest {
 		Metric[] metrics = new Metric[] { dd, communities, idsd };
 
 		Transformation scp = new StrongConnectivityPartition();
-		Transformation gcc = new GiantConnectedComponent();
+		Transformation gcc = new LargestWeaklyConnectedComponent();
 		Transformation cd = new CommunityDetectionLPA(20);
 		// Transformation cd = new CommunityDetectionDeltaQ();
 
