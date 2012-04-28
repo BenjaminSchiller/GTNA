@@ -287,7 +287,7 @@ public class WotGraphReader extends GraphReader {
 
 		try {
 			Graph g = new WotGraphReader().read(unzipped);
-			GtnaGraphWriter.write(g, filename);
+			new GtnaGraphWriter().write(g, filename);
 			if (Config.getBoolean("WOT_READER_DELETE_WOT_FILE")) {
 				String deleteFolder = Config
 						.get("WOT_READER_DELETE_WOT_FOLDER");
