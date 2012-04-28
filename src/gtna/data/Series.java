@@ -52,10 +52,13 @@ public class Series {
 	private Network network;
 
 	private Metric[] metrics;
+	
+	private String mainDataFolder;
 
 	private Series(Network network, Metric[] metrics) {
 		this.network = network;
 		this.metrics = metrics;
+		this.mainDataFolder = Config.get("MAIN_DATA_FOLDER");
 	}
 
 	public Network getNetwork() {
@@ -79,7 +82,7 @@ public class Series {
 	}
 
 	public String getFolder() {
-		return Config.get("MAIN_DATA_FOLDER") + this.network.getFolder();
+		return this.mainDataFolder + this.network.getFolder();
 	}
 
 	public String getFolder(Metric m) {
