@@ -36,7 +36,7 @@
 package gtna.networks.util;
 
 import gtna.graph.Graph;
-import gtna.io.GraphReader;
+import gtna.io.graphReader.GtnaGraphReader;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
@@ -74,7 +74,7 @@ public class ReadableFolder extends Network {
 		if (this.files.size() == 0) {
 			super.setNodes(0);
 		} else {
-			super.setNodes(GraphReader.nodes(this.files.get(0)));
+			super.setNodes(GtnaGraphReader.nodes(this.files.get(0)));
 		}
 		this.properties = properties;
 	}
@@ -92,7 +92,7 @@ public class ReadableFolder extends Network {
 			return null;
 		}
 		this.index = (this.index + 1) % this.files.size();
-		Graph graph = GraphReader.read(this.files.get(this.index));
+		Graph graph = GtnaGraphReader.read(this.files.get(this.index));
 		graph.setName(this.getDescription());
 		return graph;
 	}

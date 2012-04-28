@@ -35,7 +35,7 @@
  */
 package gtna.io.networks.googlePlus;
 
-import gtna.io.GraphReader;
+import gtna.io.graphReader.GtnaGraphReader;
 
 import java.io.File;
 import java.util.Comparator;
@@ -54,8 +54,8 @@ public class GraphSizeComparator implements Comparator<File> {
 
 	@Override
 	public int compare(File f1, File f2) {
-		int s1 = GraphReader.nodes(f1.getAbsolutePath());
-		int s2 = GraphReader.nodes(f2.getAbsolutePath());
+		int s1 = GtnaGraphReader.nodes(f1.getAbsolutePath());
+		int s2 = GtnaGraphReader.nodes(f2.getAbsolutePath());
 		int v = s1 - s2;
 		if (v == 0) {
 			return this.c2.compare(f1, f2);

@@ -40,6 +40,7 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
+import gtna.io.graphReader.GtnaGraphReader;
 import gtna.io.networks.googlePlus.FileIndexComparator;
 import gtna.io.networks.googlePlus.FileNameFilter;
 import gtna.util.Config;
@@ -207,14 +208,14 @@ public class GraphWriter {
 				"-graph.txt"));
 		Arrays.sort(files, new FileIndexComparator("-", 0));
 
-		Graph init = GraphReader.read(files[0].getAbsolutePath());
+		Graph init = GtnaGraphReader.read(files[0].getAbsolutePath());
 		int end = 0;
 
 		Edges edges = new Edges(init.getNodes(), 100000);
 		HashMap<String, Integer> edgeStart = new HashMap<String, Integer>();
 		int[] nodeStart = Util.initIntArray(init.getNodes().length, -1);
 		for (File f : files) {
-			Graph g = GraphReader.read(f.getAbsolutePath());
+			Graph g = GtnaGraphReader.read(f.getAbsolutePath());
 			int cid = Integer.parseInt(f.getName().split("-")[0]);
 			end = cid + 1;
 			for (Node n : g.getNodes()) {
