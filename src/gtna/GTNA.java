@@ -69,7 +69,7 @@ public class GTNA {
 	private static void example1() {
 		Network nw1 = new ErdosRenyi(100, 5, false, null);
 		Graph g = nw1.generate();
-		GtnaGraphWriter.write(g, "./data/firstExample-graph.txt");
+		new GtnaGraphWriter().write(g, "./data/firstExample-graph.txt");
 	}
 
 	private static void example2() {

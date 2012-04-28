@@ -153,7 +153,7 @@ public class CommunityDetection {
 			String plotFilenameLPA = filename + "_LPA_" + i + ".pdf";
 
 			Graph g = nw.generate();
-			GtnaGraphWriter.writeWithProperties(g, graphFilename);
+			new GtnaGraphWriter().writeWithProperties(g, graphFilename);
 
 			System.out.println(filename);
 			if (deltaQ) {
