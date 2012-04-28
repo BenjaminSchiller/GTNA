@@ -58,6 +58,15 @@ public class StrongConnectivityPartition extends Transformation {
 
 	@Override
 	public Graph transform(Graph g) {
+		Partition p = this.getStrongPartition(g);
+		
+		g.addProperty(g.getNextKey("STRONG_CONNECTIVITY_PARTITION"), p);
+		g.addProperty(g.getNextKey("PARTITION"), p);
+		
+		return g;
+	}
+
+	public Partition getStrongPartition(Graph g) {
 		ArrayList<ArrayList<Integer>> components = new ArrayList<ArrayList<Integer>>();
 		int[] index = Util.initIntArray(g.getNodes().length, -1);
 		int[] lowlink = new int[g.getNodes().length];
@@ -70,11 +79,7 @@ public class StrongConnectivityPartition extends Transformation {
 			}
 		}
 
-		Partition p = new Partition(components);
-		g.addProperty(g.getNextKey("STRONG_CONNECTIVITY_PARTITION"), p);
-		g.addProperty(g.getNextKey("PARTITION"), p);
-
-		return g;
+		return new Partition(components);
 	}
 
 	private void strongConnect(int v, Graph g, int[] index, int[] lowlink,
