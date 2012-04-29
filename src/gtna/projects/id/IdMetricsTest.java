@@ -38,6 +38,7 @@ package gtna.projects.id;
 import gtna.data.Series;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.ShortestPaths;
+import gtna.metrics.id.DIdentifierSpaceDistanceProducts;
 import gtna.metrics.id.DIdentifierSpaceDistances;
 import gtna.metrics.id.PlaneIdentifierSpaceVisualization;
 import gtna.metrics.id.RingIdentifierSpaceSuccessorHopDistances;
@@ -85,7 +86,7 @@ public class IdMetricsTest {
 
 		boolean GET = false;
 		int TIMES = 1;
-		int nodes = 2000;
+		int nodes = 1000;
 
 		Metric idsd = new DIdentifierSpaceDistances(100);
 		Metric idsv1 = new RingIdentifierSpaceVisualzation(100);
@@ -94,9 +95,9 @@ public class IdMetricsTest {
 		Metric pidsv = new PlaneIdentifierSpaceVisualization();
 		Metric ridsshd = new RingIdentifierSpaceSuccessorHopDistances();
 		Metric sp = new ShortestPaths();
+		Metric didsdp = new DIdentifierSpaceDistanceProducts(1000);
 		Metric[] metrics = new Metric[] { idsd, idsv1, idsv2, idsv3 };
-		metrics = new Metric[] { pidsv };
-		metrics = new Metric[] { ridsshd, sp };
+		metrics = new Metric[] { didsdp };
 
 		Transformation[] rand1 = new Transformation[] {
 				new RemoveGraphProperty(), new RandomRingIDSpaceSimple() };
