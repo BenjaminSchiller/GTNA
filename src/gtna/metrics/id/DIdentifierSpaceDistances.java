@@ -67,6 +67,8 @@ public class DIdentifierSpaceDistances extends Metric {
 
 	private double[][] edgesDistanceDistributionCdf;
 
+	private static boolean computeNodeDistances = false;
+
 	public DIdentifierSpaceDistances(int bins) {
 		super("D_IDENTIFIER_SPACE_DISTANCES",
 				new Parameter[] { new DoubleParameter("BINS", bins) });
@@ -89,25 +91,30 @@ public class DIdentifierSpaceDistances extends Metric {
 		double maxDist = ids.getMaxDistance();
 		double step = maxDist / (double) this.bins;
 
-		double[] nodeDistances = this.computeNodeDistances(g.getNodes(),
-				partitions);
-		double[][] nodeDistancesBinned = Statistics.binning(nodeDistances, 0,
-				maxDist, step);
-		this.nodesDistanceDistribution = new double[this.bins][2];
-		for (int i = 0; i < this.bins; i++) {
-			this.nodesDistanceDistribution[i][0] = (double) i * step;
-			this.nodesDistanceDistribution[i][1] = nodeDistancesBinned[i].length;
-		}
-		ArrayUtils.divide(this.nodesDistanceDistribution, 1,
-				nodeDistances.length);
+		if (DIdentifierSpaceDistances.computeNodeDistances) {
+			double[][] nodeDistancesBinned = this.computeNodeDistancesBinned(
+					g.getNodes(), partitions, maxDist, step, this.bins);
+			this.nodesDistanceDistribution = new double[this.bins][2];
+			for (int i = 0; i < this.bins; i++) {
+				this.nodesDistanceDistribution[i][0] = (double) i * step;
+				this.nodesDistanceDistribution[i][1] = nodeDistancesBinned[i].length;
+			}
+			ArrayUtils.divide(this.nodesDistanceDistribution, 1,
+					nodeDistancesBinned.length);
 
-		this.nodesDistanceDistributionCdf = new double[this.nodesDistanceDistribution.length][2];
-		this.nodesDistanceDistributionCdf[0][0] = this.nodesDistanceDistribution[0][0];
-		this.nodesDistanceDistributionCdf[0][1] = this.nodesDistanceDistribution[0][1];
-		for (int i = 1; i < this.nodesDistanceDistributionCdf.length; i++) {
-			this.nodesDistanceDistributionCdf[i][0] = this.nodesDistanceDistribution[i][0];
-			this.nodesDistanceDistributionCdf[i][1] = this.nodesDistanceDistributionCdf[i - 1][1]
-					+ this.nodesDistanceDistribution[i][1];
+			this.nodesDistanceDistributionCdf = new double[this.nodesDistanceDistribution.length][2];
+			this.nodesDistanceDistributionCdf[0][0] = this.nodesDistanceDistribution[0][0];
+			this.nodesDistanceDistributionCdf[0][1] = this.nodesDistanceDistribution[0][1];
+			for (int i = 1; i < this.nodesDistanceDistributionCdf.length; i++) {
+				this.nodesDistanceDistributionCdf[i][0] = this.nodesDistanceDistribution[i][0];
+				this.nodesDistanceDistributionCdf[i][1] = this.nodesDistanceDistributionCdf[i - 1][1]
+						+ this.nodesDistanceDistribution[i][1];
+			}
+		} else {
+			this.nodesDistanceDistribution = new double[][] { new double[] { 0,
+					0 } };
+			this.nodesDistanceDistributionCdf = new double[][] { new double[] {
+					0, 0 } };
 		}
 
 		double[] edgeDistances = this.computeEdgeDistances(edges, partitions);
@@ -131,11 +138,13 @@ public class DIdentifierSpaceDistances extends Metric {
 		}
 	}
 
-	private double[] computeNodeDistances(Node[] nodes,
-			Partition<Double>[] partitions) {
-		double[] dist = new double[nodes.length * (nodes.length - 1)];
-		int index = 0;
+	private double[][] computeNodeDistancesBinned(Node[] nodes,
+			Partition<Double>[] partitions, double maxDist, double step,
+			int bins) {
+		double[][] binned = new double[bins][2];
 		for (Node src : nodes) {
+			int index = 0;
+			double[] dist = new double[nodes.length - 1];
 			for (Node dst : nodes) {
 				if (src.getIndex() == dst.getIndex()) {
 					continue;
@@ -144,8 +153,13 @@ public class DIdentifierSpaceDistances extends Metric {
 						.distance(partitions[dst.getIndex()]
 								.getRepresentativeID());
 			}
+			double[][] binned1 = Statistics.binning(dist, 0, maxDist, bins);
+			for (int i = 0; i < binned1.length; i++) {
+				binned[i][0] = binned1[i][0];
+				binned[i][1] += binned1[i][1];
+			}
 		}
-		return dist;
+		return binned;
 	}
 
 	private double[] computeEdgeDistances(Edges edges,
