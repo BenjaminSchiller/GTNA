@@ -52,7 +52,7 @@ public class Series {
 	private Network network;
 
 	private Metric[] metrics;
-	
+
 	private String mainDataFolder;
 
 	private Series(Network network, Metric[] metrics) {
@@ -190,7 +190,7 @@ public class Series {
 			}
 		}
 		Timer timerAggregation = new Timer("\n===> " + s.getFolder());
-		boolean success = Aggregation.aggregate(s);
+		boolean success = Aggregation.aggregate(s, times);
 		timerAggregation.end();
 		System.out.println("\n");
 		if (success) {
