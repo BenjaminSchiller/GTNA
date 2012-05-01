@@ -59,7 +59,7 @@ import gtna.networks.model.PositiveFeedbackPreference;
  */
 public class Tests {
 	public static void main(String[] args) {
-		Tests.speedTest();
+		Tests.testCCinBC();
 	}
 
 	public static void test() {
@@ -229,6 +229,28 @@ public class Tests {
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Cannot export graph to file!");
+		}
+	}
+
+	public static void testCCinBC() {
+		Utils u = new Utils();
+		Graph g = u.importGraphFromFile("germany.gml");
+
+		BetweennessCentralityNodeSorter bc = new BetweennessCentralityNodeSorter(
+				"CLOSENESS", NodeSorterMode.ASC);
+
+		Node[] sorted = bc.sort(g, new Random());
+
+		ClosenessCentralityNodeSorter cc = new ClosenessCentralityNodeSorter(
+				NodeSorterMode.ASC);
+
+		Node[] sorted1 = cc.sort(g, new Random());
+
+		System.out.println("Sorted:");
+		for (int i = 0; i < sorted.length; i++) {
+			System.out.println(sorted[i].toString() + " -- "
+					+ bc.getCentrality(sorted[i]) + " -- "
+					+ cc.getCentrality(sorted[i]));
 		}
 	}
 }

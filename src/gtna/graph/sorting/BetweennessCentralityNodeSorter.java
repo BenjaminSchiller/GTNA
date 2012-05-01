@@ -75,12 +75,19 @@ public class BetweennessCentralityNodeSorter extends NodeSorter {
 	 */
 	private double r = 0.9;
 
+	/*
+	 * This map saves the closeness centrality of the nodes
+	 */
+	private HashMap<Node, Double> ccMap = new HashMap<Node, Double>();
+
 	public BetweennessCentralityNodeSorter(String key, NodeSorterMode mode) {
 		super(key, mode);
 		if (key.equalsIgnoreCase("BETWEENNESS"))
 			map = bcMap;
 		if (key.equalsIgnoreCase("ECCENTRICITY"))
 			map = eeMap;
+		if (key.equalsIgnoreCase("CLOSENESS"))
+			map = ccMap;
 	}
 
 	/*
@@ -171,13 +178,20 @@ public class BetweennessCentralityNodeSorter extends NodeSorter {
 
 			// S returns vertices in order of non-increasing distance from s
 
-			// -----
-			// calculate effective eccentricity of s
+			// ----- calculate effective eccentricity of s
 			int rTimesNodes = (int) Math.floor(r * g.getNodes().length);
 			// distance from s to the node with index rTimesNodes
 			int distance = d.get(S.get(rTimesNodes)).intValue();
 			// put the eccentricity point to the map
 			this.eeMap.put(s, (double) distance);
+			// -----
+
+			// ----- calculate closeness centrality of s
+			double sum = 0;
+			for (Node n : S) {
+				sum += d.get(n).doubleValue();
+			}
+			this.ccMap.put(s, 1 / sum);
 			// -----
 
 			// for betweenness
