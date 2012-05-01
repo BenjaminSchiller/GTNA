@@ -77,7 +77,7 @@ public class EffectiveEccentricityNodeSorter extends NodeSorter {
 	 */
 	private void calculate() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private class DegreeAsc implements Comparator<Node> {

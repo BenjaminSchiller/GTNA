@@ -51,13 +51,8 @@ public class EigenvectorCentralityNodeSorter extends NodeSorter {
 	private HashMap<Node, Double> map = new HashMap<Node, Double>();
 	private int numRuns = 100;
 
-	/**
-	 * @param key
-	 * @param mode
-	 */
 	public EigenvectorCentralityNodeSorter(NodeSorterMode mode) {
 		super("EIGENVECTOR", mode);
-		// TODO Auto-generated constructor stub
 	}
 
 	public void setNumRuns(int numRuns) {
@@ -128,10 +123,9 @@ public class EigenvectorCentralityNodeSorter extends NodeSorter {
 				}
 				max = Math.max(max, tmp[i]);
 			}
-			// sumChange = 0;
+
 			for (int k = 0; k < N; k++) {
 				if (max != 0) {
-					// sumChange += Math.abs(centralities[k] - (tmp[k] / max));
 					centralities[k] = tmp[k] / max;
 				}
 			}
