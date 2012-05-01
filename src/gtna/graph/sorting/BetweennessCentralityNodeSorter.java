@@ -47,11 +47,17 @@ import java.util.Random;
 import java.util.Stack;
 
 /**
+ * Implement the Betweenness Centrality described by Ulrik Brandes in
+ * "A Faster Algorithm for Betweenness Centrality" (2001)
+ * 
  * @author truong
  * 
  */
 public class BetweennessCentralityNodeSorter extends NodeSorter {
 
+	/*
+	 * This map saves the centrality points of the nodes
+	 */
 	private HashMap<Node, Double> map = new HashMap<Node, Double>();
 
 	public BetweennessCentralityNodeSorter(NodeSorterMode mode) {
@@ -82,7 +88,7 @@ public class BetweennessCentralityNodeSorter extends NodeSorter {
 	private void calculate(Graph g) {
 		Node[] nodes = g.getNodes();
 
-		// initiate betweenness centrality points
+		// initiate centrality points
 		for (Node n : nodes) {
 			this.map.put(n, 0.0);
 		}
@@ -154,6 +160,7 @@ public class BetweennessCentralityNodeSorter extends NodeSorter {
 							* (1 + delta.get(w).doubleValue()));
 				}
 				if (w.getIndex() != s.getIndex()) {
+					// put the centrality point to the map
 					map.put(w, map.get(w).doubleValue()
 							+ delta.get(w).doubleValue());
 				}

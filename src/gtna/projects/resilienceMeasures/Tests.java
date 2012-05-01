@@ -45,6 +45,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.BetweennessCentralityNodeSorter;
 import gtna.graph.sorting.CentralityNodeSorter;
+import gtna.graph.sorting.ClosenessCentralityNodeSorter;
 import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
@@ -59,9 +60,7 @@ import gtna.networks.model.PositiveFeedbackPreference;
  */
 public class Tests {
 	public static void main(String[] args) {
-
-		Tests.GLPTest();
-
+		Tests.test();
 	}
 
 	public static void test() {
@@ -71,9 +70,9 @@ public class Tests {
 		System.out.println("Graph imported!");
 
 		// sorting
-		CentralityNodeSorter sorter = new CentralityNodeSorter(
+		ClosenessCentralityNodeSorter sorter = new ClosenessCentralityNodeSorter(
 				NodeSorter.NodeSorterMode.ASC);
-		sorter.setCentrality("BETWEENNESS");
+		// sorter.setCentrality("BETWEENNESS");
 		Node[] sorted = sorter.sort(g, new Random());
 
 		// sorted
@@ -86,12 +85,16 @@ public class Tests {
 
 		// print centrality from gtna and gephi
 		HashMap<Integer, Double> gephiCentrality = u
-				.gephiCentrality(GraphDistance.BETWEENNESS);
+				.gephiCentrality(GraphDistance.CLOSENESS);
 		System.out.println("GTNA Centrality:");
 		for (Node n : g.getNodes()) {
-			System.out.println("" + n.toString() + " = "
-					+ sorter.getCentrality(n) + " -- gephi: "
-					+ (gephiCentrality.get(n.getIndex())));
+			System.out.println(""
+					+ n.toString()
+					+ " = "
+					+ sorter.getCentrality(n)
+					+ " -- gephi: "
+					+ (gephiCentrality.get(n.getIndex()) * sorter
+							.getCentrality(n)));
 		}
 
 	}
@@ -206,8 +209,8 @@ public class Tests {
 	}
 
 	public static void GLPTest() {
-		int N = 1000;
-		int m0 = 20;
+		int N = 2000;
+		int m0 = 50;
 		int m = 2;
 		double p = 0.4695;
 		double beta = 0.6447;
