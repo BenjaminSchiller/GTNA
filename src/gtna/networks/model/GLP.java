@@ -73,6 +73,7 @@ public class GLP extends Network {
 				new DoubleParameter("BETA", beta) }, t);
 		this.beta = beta;
 		this.numOfAddedEdges = numOfAddedEdges;
+		// TODO: use probability to generate m
 		this.numOfStartNodes = numOfStartNode;
 		this.p = p;
 	}
@@ -97,9 +98,12 @@ public class GLP extends Network {
 		nodeDegree = new int[nodes.length];
 
 		Random randForP = new Random();
+		Random randForM = new Random();
 		int i = 1;
 
-		// System.out.println("Variables initiated");
+		// test
+		int sumOfM = 0;
+		int usedM = 0;
 
 		while (i < nodes.length) {
 			// we start with m0 nodes connected through (m0 - 1) edges
@@ -111,8 +115,22 @@ public class GLP extends Network {
 				continue;
 			}
 
-			// with probability p we add m <= m0 new links.
+			// m, the initial degree of new nodes in the GLP model, is a
+			// constant integer. However, the initial degree can be a random
+			// variable with some distribution.
+			if (randForM.nextDouble() < 0.87) {
+				this.numOfAddedEdges = 1;
+			} else {
+				this.numOfAddedEdges = 2;
+			}
+
+			// test
+			sumOfM += this.numOfAddedEdges;
+			usedM++;
+
 			Random randForNode = new Random();
+
+			// with probability p we add m <= m0 new links.
 			if (randForP.nextDouble() < p) {
 				for (int j = 0; j < numOfAddedEdges; j++) {
 					int src = this.selectNodeUsingPref(i - 1, randForNode);
@@ -134,6 +152,9 @@ public class GLP extends Network {
 				i++;
 			}
 		}
+
+		// test
+		System.out.println("m = " + (((double) sumOfM) / usedM));
 
 		// copy edges to graph
 		Edges edges = new Edges(nodes, 2 * edgesList.size());
