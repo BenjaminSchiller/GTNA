@@ -50,6 +50,7 @@ import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.algorithms.ResilienceMetrics;
 import gtna.networks.Network;
+import gtna.networks.model.GLP;
 import gtna.networks.model.PositiveFeedbackPreference;
 
 /**
@@ -59,7 +60,7 @@ import gtna.networks.model.PositiveFeedbackPreference;
 public class Tests {
 	public static void main(String[] args) {
 
-		Tests.PFPTest();
+		Tests.GLPTest();
 
 	}
 
@@ -198,6 +199,35 @@ public class Tests {
 
 		try {
 			Utils.exportToGML(g, "PFP");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Cannot export graph to file!");
+		}
+	}
+
+	public static void GLPTest() {
+		int N = 300;
+		int m0 = 5;
+		int m = 2;
+		double p = 0.4695;
+		double beta = 0.6447;
+		Network nw = new GLP(N, m0, m, p, beta, null);
+		System.out.println("generating...");
+		Graph g = nw.generate();
+		System.out.println("generated!");
+		int maxDegree = 0;
+		for (Node n : g.getNodes()) {
+			if (maxDegree < n.getDegree()) {
+				maxDegree = n.getDegree();
+			}
+		}
+		System.out.println("==========");
+		System.out.println("Nodes = " + g.getNodes().length);
+		System.out.println("Edges = " + g.getEdges().getEdges().size() / 2);
+		System.out.println("Max Degree = " + maxDegree);
+
+		try {
+			Utils.exportToGML(g, "GLP");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Cannot export graph to file!");
