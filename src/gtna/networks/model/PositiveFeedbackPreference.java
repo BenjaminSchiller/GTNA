@@ -116,9 +116,9 @@ public class PositiveFeedbackPreference extends Network {
 						|| peer2Index == hostIndex) {
 					peer1Index = this.selectNodeUsingPref(i - 1);
 					peer2Index = this.selectNodeUsingPref(i - 1);
-					System.out.println("host = " + hostIndex);
-					System.out.println("peer1 = " + peer1Index);
-					System.out.println("perr2 = " + peer2Index);
+					// System.out.println("host = " + hostIndex);
+					// System.out.println("peer1 = " + peer1Index);
+					// System.out.println("perr2 = " + peer2Index);
 				}
 				addEdge(hostIndex, peer1Index);
 				addEdge(hostIndex, peer2Index);
@@ -131,8 +131,8 @@ public class PositiveFeedbackPreference extends Network {
 				while (host1Index == host2Index) {
 					host1Index = this.selectNodeUsingPref(i - 1);
 					host2Index = this.selectNodeUsingPref(i - 1);
-					System.out.println("host1 = " + host1Index);
-					System.out.println("host2 = " + host2Index);
+					// System.out.println("host1 = " + host1Index);
+					// System.out.println("host2 = " + host2Index);
 				}
 				addEdge(i, host1Index);
 				addEdge(i, host2Index);
@@ -141,7 +141,7 @@ public class PositiveFeedbackPreference extends Network {
 				int peerIndex = host1Index;
 				while (peerIndex == host1Index || peerIndex == host2Index) {
 					peerIndex = this.selectNodeUsingPref(i - 1);
-					System.out.println("peer = " + peerIndex);
+					// System.out.println("peer = " + peerIndex);
 				}
 				if ((new Random()).nextInt(2) == 0) {
 					addEdge(host1Index, peerIndex);

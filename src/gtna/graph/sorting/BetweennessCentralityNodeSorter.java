@@ -55,6 +55,8 @@ import java.util.Stack;
  */
 public class BetweennessCentralityNodeSorter extends NodeSorter {
 
+	private Graph g;
+
 	/*
 	 * This map saves the centrality points of the nodes
 	 */
@@ -90,6 +92,22 @@ public class BetweennessCentralityNodeSorter extends NodeSorter {
 			map = ccMap;
 	}
 
+	public Node[] resort(String key, Random rand) {
+		if (key.equalsIgnoreCase("BETWEENNESS"))
+			map = bcMap;
+		if (key.equalsIgnoreCase("ECCENTRICITY"))
+			map = eeMap;
+		if (key.equalsIgnoreCase("CLOSENESS"))
+			map = ccMap;
+		Node[] sorted = this.clone(g.getNodes());
+		Arrays.sort(sorted, new DegreeAsc());
+		this.randomize(sorted, rand);
+		if (this.mode == NodeSorterMode.DESC) {
+			sorted = this.reverse(sorted);
+		}
+		return sorted;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -98,6 +116,7 @@ public class BetweennessCentralityNodeSorter extends NodeSorter {
 	 */
 	@Override
 	public Node[] sort(Graph g, Random rand) {
+		this.g = g;
 		this.calculate(g);
 		Node[] sorted = this.clone(g.getNodes());
 		Arrays.sort(sorted, new DegreeAsc());

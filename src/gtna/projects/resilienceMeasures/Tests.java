@@ -36,6 +36,7 @@
 package gtna.projects.resilienceMeasures;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -59,7 +60,7 @@ import gtna.networks.model.PositiveFeedbackPreference;
  */
 public class Tests {
 	public static void main(String[] args) {
-		Tests.testCCinBC();
+		Tests.speedTest();
 	}
 
 	public static void test() {
@@ -70,9 +71,10 @@ public class Tests {
 
 		// sorting
 		BetweennessCentralityNodeSorter sorter = new BetweennessCentralityNodeSorter(
-				"BETWEENNESS", NodeSorter.NodeSorterMode.ASC);
+				"CLOSENESS", NodeSorter.NodeSorterMode.ASC);
 		// sorter.setCentrality("BETWEENNESS");
 		Node[] sorted = sorter.sort(g, new Random());
+		sorted = sorter.resort("BETWEENNESS", new Random());
 
 		// sorted
 		System.out.println("-----");
@@ -95,8 +97,9 @@ public class Tests {
 	}
 
 	public static void speedTest() {
+		Date start = new Date();
 		Utils u = new Utils();
-		Graph g = u.importGraphFromFile("power.gml");
+		Graph g = u.importGraphFromFile("PFP.gml");
 
 		BetweennessCentralityNodeSorter bc = new BetweennessCentralityNodeSorter(
 				"BETWEENNESS", NodeSorterMode.ASC);
@@ -108,6 +111,8 @@ public class Tests {
 			System.out.println(sorted[i].toString() + " -- "
 					+ bc.getCentrality(sorted[i]));
 		}
+		long time = (new Date()).getTime() - start.getTime();
+		System.out.println("Runtime = " + time / 1000 + "second(s)");
 	}
 
 	public static void biconnectedTest() {
@@ -177,7 +182,7 @@ public class Tests {
 	}
 
 	public static void PFPTest() {
-		int N = 1000;
+		int N = 20000;
 		double p = 0.4;
 		double delta = 0.021;
 		Network nw = new PositiveFeedbackPreference(N, p, delta, null);
@@ -251,6 +256,13 @@ public class Tests {
 			System.out.println(sorted[i].toString() + " -- "
 					+ bc.getCentrality(sorted[i]) + " -- "
 					+ cc.getCentrality(sorted[i]));
+		}
+
+		System.out.println("Resort using Betweenness:");
+		sorted = bc.resort("BETWEENNESS", new Random());
+		for (int i = 0; i < sorted.length; i++) {
+			System.out.println(sorted[i].toString() + " -- "
+					+ bc.getCentrality(sorted[i]));
 		}
 	}
 }
