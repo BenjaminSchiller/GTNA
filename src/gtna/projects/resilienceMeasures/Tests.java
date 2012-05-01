@@ -44,7 +44,6 @@ import org.gephi.statistics.plugin.GraphDistance;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.BetweennessCentralityNodeSorter;
-import gtna.graph.sorting.CentralityNodeSorter;
 import gtna.graph.sorting.ClosenessCentralityNodeSorter;
 import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter;
@@ -60,7 +59,7 @@ import gtna.networks.model.PositiveFeedbackPreference;
  */
 public class Tests {
 	public static void main(String[] args) {
-		Tests.test();
+		Tests.speedTest();
 	}
 
 	public static void test() {
@@ -70,8 +69,8 @@ public class Tests {
 		System.out.println("Graph imported!");
 
 		// sorting
-		ClosenessCentralityNodeSorter sorter = new ClosenessCentralityNodeSorter(
-				NodeSorter.NodeSorterMode.ASC);
+		BetweennessCentralityNodeSorter sorter = new BetweennessCentralityNodeSorter(
+				"BETWEENNESS", NodeSorter.NodeSorterMode.ASC);
 		// sorter.setCentrality("BETWEENNESS");
 		Node[] sorted = sorter.sort(g, new Random());
 
@@ -85,26 +84,22 @@ public class Tests {
 
 		// print centrality from gtna and gephi
 		HashMap<Integer, Double> gephiCentrality = u
-				.gephiCentrality(GraphDistance.CLOSENESS);
+				.gephiCentrality(GraphDistance.BETWEENNESS);
 		System.out.println("GTNA Centrality:");
 		for (Node n : g.getNodes()) {
-			System.out.println(""
-					+ n.toString()
-					+ " = "
-					+ sorter.getCentrality(n)
-					+ " -- gephi: "
-					+ (gephiCentrality.get(n.getIndex()) * sorter
-							.getCentrality(n)));
+			System.out.println("" + n.toString() + " = "
+					+ sorter.getCentrality(n) + " -- gephi: "
+					+ (gephiCentrality.get(n.getIndex())));
 		}
 
 	}
 
 	public static void speedTest() {
 		Utils u = new Utils();
-		Graph g = u.importGraphFromFile("germany.gml");
+		Graph g = u.importGraphFromFile("power.gml");
 
 		BetweennessCentralityNodeSorter bc = new BetweennessCentralityNodeSorter(
-				NodeSorterMode.ASC);
+				"BETWEENNESS", NodeSorterMode.ASC);
 
 		Node[] sorted = bc.sort(g, new Random());
 
