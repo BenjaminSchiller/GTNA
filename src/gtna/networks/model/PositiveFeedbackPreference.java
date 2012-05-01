@@ -56,7 +56,7 @@ public class PositiveFeedbackPreference extends Network {
 	private double p;
 	private double delta;
 
-	// variables to algorithms
+	// variables for algorithm
 	private double[] nodePref;
 	private ArrayList<Point> edgesList;
 	private double[] nodeDegree;
