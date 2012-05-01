@@ -206,8 +206,8 @@ public class Tests {
 	}
 
 	public static void GLPTest() {
-		int N = 300;
-		int m0 = 5;
+		int N = 1000;
+		int m0 = 20;
 		int m = 2;
 		double p = 0.4695;
 		double beta = 0.6447;
