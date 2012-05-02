@@ -43,143 +43,159 @@ import gtna.transformation.attackableEmbedding.swapping.SwappingNode;
 import java.util.Random;
 
 /**
- * @author stef
- *
+ * @author stef IQDNode with adversarial behavior implemented
  */
 public abstract class AttackerNode extends DecisionNode {
-     private boolean isAttacker;
-     private int neighborIndex=-1;
-     public static double close = 10E-20;
-	
+	private boolean isAttacker;
+	private int neighborIndex = -1;
+	public static double close = 10E-20;
+
 	/**
 	 * @param index
 	 * @param g
 	 * @param embedding
 	 */
-	public AttackerNode(int index, Graph g, AttackerIQDEmbedding embedding, boolean isAttacker) {
+	public AttackerNode(int index, Graph g, AttackerIQDEmbedding embedding,
+			boolean isAttacker) {
 		super(index, g, embedding);
 		this.isAttacker = isAttacker;
 	}
-	
+
 	@Override
-	public void turn(Random rand){
-		if (this.isAttacker){
-			AttackerIQDEmbedding attEmbedding = (AttackerIQDEmbedding)this.embedding;
-			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.CONTRACTION){
+	public void turn(Random rand) {
+		if (this.isAttacker) {
+			AttackerIQDEmbedding attEmbedding = (AttackerIQDEmbedding) this.embedding;
+			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.CONTRACTION) {
+				// ID close to certain ID as in ask
 				this.setID(this.ask(rand, this));
 			}
-			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.DIVERGENCE){
+			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.DIVERGENCE) {
+				// random ID
 				this.setID(rand.nextDouble());
 			}
-			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.REJECTION){
+			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.REJECTION) {
+				// Id far form neighbors
 				this.setID(maxMiddle(this.knownIDs));
 			}
-			if (attEmbedding.getIdMethod() == IQDEmbedding.IdentifierMethod.SWAPPING){
+			if (attEmbedding.getIdMethod() == IQDEmbedding.IdentifierMethod.SWAPPING) {
+				// swapping behavior
 				this.swappingTurn(rand);
 			}
 		} else {
 			super.turn(rand);
 		}
 	}
-	
-	private void swappingTurn(Random rand){
-		AttackerIQDEmbedding attEmbedding = (AttackerIQDEmbedding)this.embedding;
-		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.CONTRACTION){
+
+	private void swappingTurn(Random rand) {
+		AttackerIQDEmbedding attEmbedding = (AttackerIQDEmbedding) this.embedding;
+		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.CONTRACTION) {
 			// select a random neighbor
 			if (this.neighborIndex == -1) {
 				this.neighborIndex = rand.nextInt(this.getOutDegree());
 			}
-            // select ID close to neighbor + neighbors far away
+			// select ID close to neighbor + neighbors far away
 			double id = (this.knownIDs[this.neighborIndex] + rand.nextDouble()
 					* close) % 1.0;
 			double[] neighbors = new double[this.getOutDegree()];
 			for (int i = 0; i < neighbors.length; i++) {
 				neighbors[i] = (id + 0.5 + rand.nextDouble() * close) % 1.0;
 			}
-           // select ttl
+			// select ttl
 			int ttl = rand.nextInt(TTL) + 1;
-            //send swap request
+			// send swap request
 			int[] out = this.getOutgoingEdges();
-			((IdentifierNode)this.getGraph().getNode(out[rand.nextInt(out.length)])).
-			swap(id, neighbors, ttl-1, rand); 
-			
+			((IdentifierNode) this.getGraph().getNode(
+					out[rand.nextInt(out.length)])).swap(id, neighbors,
+					ttl - 1, rand);
+
 		}
-		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.DIVERGENCE){
-			 // select ID randomly + neighbors far away
+		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.DIVERGENCE) {
+			// select ID randomly + neighbors far away
 			double id = rand.nextDouble();
 			double[] neighbors = new double[this.getOutDegree()];
 			for (int i = 0; i < neighbors.length; i++) {
 				neighbors[i] = (id + 0.5 + rand.nextDouble() * close) % 1.0;
 			}
-           // select ttl
+			// select ttl
 			int ttl = rand.nextInt(TTL) + 1;
-            //send swap request
+			// send swap request
 			int[] out = this.getOutgoingEdges();
-			((IdentifierNode)this.getGraph().getNode(out[rand.nextInt(out.length)])).
-			swap(id, neighbors, ttl-1, rand); 
+			((IdentifierNode) this.getGraph().getNode(
+					out[rand.nextInt(out.length)])).swap(id, neighbors,
+					ttl - 1, rand);
 		}
-		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.REJECTION){
-			//do nothing 
+		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.REJECTION) {
+			// do nothing
 		}
 	}
 
-	
 	/**
 	 * allows a node to lie about its ID => attacker
+	 * 
 	 * @param rand
 	 * @param node
 	 * @return
 	 */
 	@Override
-	public double ask(Random rand, Node node){
-		if (this.isAttacker){
-		AttackerIQDEmbedding attEmbedding = (AttackerIQDEmbedding)this.embedding;
-		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.CONTRACTION){
-			if (neighborIndex == -1){
-				neighborIndex = rand.nextInt(this.knownIDs.length);
+	public double ask(Random rand, Node node) {
+		if (this.isAttacker) {
+			AttackerIQDEmbedding attEmbedding = (AttackerIQDEmbedding) this.embedding;
+			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.CONTRACTION) {
+				// return ID close to certain neighbor
+				if (neighborIndex == -1) {
+					neighborIndex = rand.nextInt(this.knownIDs.length);
+				}
+				return (this.knownIDs[neighborIndex] - close
+						* rand.nextDouble()) % 1;
 			}
-			return (this.knownIDs[neighborIndex]-close*rand.nextDouble())%1;
-		}
-		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.DIVERGENCE){
-			return rand.nextDouble();
-		}
-		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.REJECTION){
-			return (((IQDNode)node).getID()-close*rand.nextDouble())%1;
-		}
-		return this.getID();
+			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.DIVERGENCE) {
+				// random ID
+				return rand.nextDouble();
+			}
+			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.REJECTION) {
+				// fix victim by giving very good ID
+				return (((IQDNode) node).getID() - close * rand.nextDouble()) % 1;
+			}
+			return this.getID();
 		} else {
 			return super.ask(rand, node);
 		}
 	}
-	
+
 	@Override
-	protected double[][] swap(double callerID, double[] neighborsID, int ttl, Random rand){
-		if (this.isAttacker){
-		double[][] res = new double[2][];
-		AttackerIQDEmbedding attEmbedding = (AttackerIQDEmbedding)this.embedding;
-		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.CONTRACTION){
-			res[0] = new double[]{this.ask(rand, this),-1};
-			res[1] = new double[this.knownIDs.length];
-			for (int i = 0; i < res[1].length; i++){
-				res[1][i] = (callerID +close*rand.nextDouble())%1;
+	protected double[][] swap(double callerID, double[] neighborsID, int ttl,
+			Random rand) {
+		if (this.isAttacker) {
+			double[][] res = new double[2][];
+			AttackerIQDEmbedding attEmbedding = (AttackerIQDEmbedding) this.embedding;
+			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.CONTRACTION) {
+				// return ID close to certain neighbor
+				// and neighbors close to victims ID
+				res[0] = new double[] { this.ask(rand, this), -1 };
+				res[1] = new double[this.knownIDs.length];
+				for (int i = 0; i < res[1].length; i++) {
+					res[1][i] = (callerID + close * rand.nextDouble()) % 1;
+				}
 			}
-		}
-		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.DIVERGENCE){
-			res[0] = new double[]{rand.nextDouble(),-1};
-			res[1] = new double[this.knownIDs.length];
-			for (int i = 0; i < res[1].length; i++){
-				res[1][i] = (callerID +close*rand.nextDouble())%1;
+			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.DIVERGENCE) {
+				// random ID and neighbors close to victim's ID
+				res[0] = new double[] { rand.nextDouble(), -1 };
+				res[1] = new double[this.knownIDs.length];
+				for (int i = 0; i < res[1].length; i++) {
+					res[1][i] = (callerID + close * rand.nextDouble()) % 1;
+				}
 			}
-		}
-		if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.REJECTION){
-			res[0] = new double[]{(maxMiddle(neighborsID) + rand.nextDouble()
-					 * close) % 1.0,-1};
-			res[1] = new double[this.knownIDs.length];
-			for (int i = 0; i < res[1].length; i++){
-				res[1][i] = (callerID +close*rand.nextDouble())%1;
+			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.REJECTION) {
+				// very bad ID
+				res[0] = new double[] {
+						(maxMiddle(neighborsID) + rand.nextDouble() * close) % 1.0,
+						-1 };
+				res[1] = new double[this.knownIDs.length];
+				for (int i = 0; i < res[1].length; i++) {
+					res[1][i] = (callerID + close * rand.nextDouble()) % 1;
+				}
 			}
-		}
-		return res;
+			return res;
 		} else {
 			return super.swap(callerID, neighborsID, ttl, rand);
 		}

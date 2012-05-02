@@ -46,7 +46,7 @@ import java.util.Random;
 
 /**
  * @author stef
- * 
+ * an IQDEmbedding that allows including malicious nodes 
  */
 public abstract class AttackerIQDEmbedding extends IQDEmbedding {
 	
@@ -121,6 +121,12 @@ public abstract class AttackerIQDEmbedding extends IQDEmbedding {
 				adjustOne, AttackerType.NONE, AttackerSelection.RANDOM, 0, parameters);
 	}
 	
+	/**
+	 * indices of attackers
+	 * @param g
+	 * @param rand
+	 * @return
+	 */
 	protected  HashSet<Integer> getAttackers(Graph g, Random rand){
 		HashSet<Integer> attackers = new HashSet<Integer>();
 		if (this.attackertype != AttackerType.NONE) {

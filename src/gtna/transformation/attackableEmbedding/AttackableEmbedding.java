@@ -77,15 +77,7 @@ public abstract class AttackableEmbedding extends Transformation {
 	}
 
 	public boolean applicable(Graph g) {
-		GraphProperty[] prop = g.getProperties("ID_SPACE");
-		if (prop.length == 0) {
-			return false;
-		}
-		if (prop[0] instanceof DIdentifierSpace) {
-			return true;
-		}
-		return false;
-		// return g.nodes[0] instanceof RingNode;
+		return true;
 	}
 
 	public Graph transform(Graph g) {
@@ -180,8 +172,8 @@ public abstract class AttackableEmbedding extends Transformation {
 	 *            PRNG
 	 * @return set of the highest degree nodes from the given list
 	 */
-	protected HashSet<Integer> selectNodesByDegreeDesc(Node[] nodes, int number,
-			Random rand) {
+	protected HashSet<Integer> selectNodesByDegreeDesc(Node[] nodes,
+			int number, Random rand) {
 		Node[] sorted = NodeSorting.degreeDesc(nodes, rand);
 		HashSet<Integer> attackers = new HashSet<Integer>();
 		for (int i = 0; i < number; i++) {
@@ -246,8 +238,8 @@ public abstract class AttackableEmbedding extends Transformation {
 		return attackers;
 	}
 
-	protected HashSet<Integer> selectNodesAroundMedian(Node[] nodes, int number,
-			Random rand, int setSize) {
+	protected HashSet<Integer> selectNodesAroundMedian(Node[] nodes,
+			int number, Random rand, int setSize) {
 		Node[] sorted = NodeSorting.degreeDesc(nodes, rand);
 		int median = sorted[sorted.length / 2].getDegree();
 		int medianStart = 0;
