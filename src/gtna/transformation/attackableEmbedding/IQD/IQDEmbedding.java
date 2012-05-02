@@ -42,8 +42,10 @@ import gtna.id.Partition;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.id.ring.RingPartitionSimple;
+import gtna.transformation.Transformation;
 import gtna.transformation.attackableEmbedding.AttackableEmbedding;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
+import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
@@ -176,7 +178,13 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 				nodes, rand);
 		g.setNodes(nodes);
 		GraphProperty[] prop = g.getProperties("ID_SPACE");
-		DIdentifierSpace idSpace = (DIdentifierSpace) prop[prop.length - 1];
+		DIdentifierSpace idSpace;
+		if (prop.length == 0){
+			Transformation idTrans = new RandomRingIDSpaceSimple();
+			g  = idTrans.transform(g);
+			prop = g.getProperties("ID_SPACE");
+		}
+		idSpace = (DIdentifierSpace) prop[prop.length - 1];
 		this.setIdspace(idSpace);
 		RingIdentifier[] ids = this.getIds();
 		for (int i = 0; i < ids.length; i++) {

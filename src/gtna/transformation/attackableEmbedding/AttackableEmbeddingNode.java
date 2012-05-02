@@ -43,59 +43,59 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
-
 /**
  * abstract Node type for round-based embeddings
+ * 
  * @author stefanieroos
- *
+ * 
  */
 
-public abstract class AttackableEmbeddingNode extends Node{
-	
-	 protected HashMap<Integer, Integer> position;
-	
-	 public double[] knownIDs;
-	
-	 public AttackableEmbeddingNode(int index, Graph g) {
-	       super(index, g);
-	 }
-	
-	 /**
+public abstract class AttackableEmbeddingNode extends Node {
+
+	protected HashMap<Integer, Integer> position;
+
+	public double[] knownIDs;
+
+	public AttackableEmbeddingNode(int index, Graph g) {
+		super(index, g);
+	}
+
+	/**
 	 * must be called after creating the outgoing edges of this node
 	 */
-	 public void initKnownIDs() {
-	 this.position = new HashMap<Integer, Integer>(this.getOutDegree());
-	 this.knownIDs = new double[this.getOutDegree()];
-	 for (int i = 0; i < this.getOutDegree(); i++) {
-	 this.position.put(this.getOutgoingEdges()[i], i);
-	 }
-	 }
-	
-	 public abstract void updateNeighbors(Random rand);
-	
-	 public abstract void turn(Random rand);
-	 
-	 
-	 /**
-	  * return value with biggest distance to values
-	  * @param values
-	  * @return
-	  */
-	 public static double maxMiddle(double[] values) {
-			 Arrays.sort(values);
-			 double max = 1 - values[values.length - 1] + values[0];
-			 int index = values.length - 1;
-			 for (int i = 0; i < values.length - 1; i++) {
-			 double a = values[i];
-			 double b = values[i + 1];
-			 double dist = b - a;
-			 if (dist > max) {
-			 max = dist;
-			 index = i;
-			 }
-			 }
-			 double middle = (values[index] + max / 2) % 1.0;
-			 return middle;
+	public void initKnownIDs() {
+		this.position = new HashMap<Integer, Integer>(this.getOutDegree());
+		this.knownIDs = new double[this.getOutDegree()];
+		for (int i = 0; i < this.getOutDegree(); i++) {
+			this.position.put(this.getOutgoingEdges()[i], i);
+		}
+	}
+
+	public abstract void updateNeighbors(Random rand);
+
+	public abstract void turn(Random rand);
+
+	/**
+	 * return value with biggest distance to values
+	 * 
+	 * @param values
+	 * @return
+	 */
+	public static double maxMiddle(double[] values) {
+		Arrays.sort(values);
+		double max = 1 - values[values.length - 1] + values[0];
+		int index = values.length - 1;
+		for (int i = 0; i < values.length - 1; i++) {
+			double a = values[i];
+			double b = values[i + 1];
+			double dist = b - a;
+			if (dist > max) {
+				max = dist;
+				index = i;
+			}
+		}
+		double middle = (values[index] + max / 2) % 1.0;
+		return middle;
 	}
 
 }
