@@ -59,24 +59,24 @@ import java.util.HashMap;
 public class DIdentifierSpaceDistances extends Metric {
 	private int bins;
 
-	private double[][] nodesDistanceDistribution;
+	// private double[][] nodesDistanceDistribution;
 
-	private double[][] nodesDistanceDistributionCdf;
+	// private double[][] nodesDistanceDistributionCdf;
 
 	private double[][] edgesDistanceDistribution;
 
 	private double[][] edgesDistanceDistributionCdf;
-
-	private static boolean computeNodeDistances = false;
 
 	public DIdentifierSpaceDistances(int bins) {
 		super("D_IDENTIFIER_SPACE_DISTANCES",
 				new Parameter[] { new DoubleParameter("BINS", bins) });
 		this.bins = bins;
 
-		this.nodesDistanceDistribution = new double[][] { new double[] { -1, -1 } };
-		this.nodesDistanceDistributionCdf = new double[][] { new double[] { -1,
-				-1 } };
+		// this.nodesDistanceDistribution = new double[][] { new double[] { -1,
+		// -1 } };
+		// this.nodesDistanceDistributionCdf = new double[][] { new double[] {
+		// -1,
+		// -1 } };
 		this.edgesDistanceDistribution = new double[][] { new double[] { -1, -1 } };
 		this.edgesDistanceDistributionCdf = new double[][] { new double[] { -1,
 				-1 } };
@@ -91,31 +91,29 @@ public class DIdentifierSpaceDistances extends Metric {
 		double maxDist = ids.getMaxDistance();
 		double step = maxDist / (double) this.bins;
 
-		if (DIdentifierSpaceDistances.computeNodeDistances) {
-			double[][] nodeDistancesBinned = this.computeNodeDistancesBinned(
-					g.getNodes(), partitions, maxDist, step, this.bins);
-			this.nodesDistanceDistribution = new double[this.bins][2];
-			for (int i = 0; i < this.bins; i++) {
-				this.nodesDistanceDistribution[i][0] = (double) i * step;
-				this.nodesDistanceDistribution[i][1] = nodeDistancesBinned[i].length;
-			}
-			ArrayUtils.divide(this.nodesDistanceDistribution, 1,
-					nodeDistancesBinned.length);
-
-			this.nodesDistanceDistributionCdf = new double[this.nodesDistanceDistribution.length][2];
-			this.nodesDistanceDistributionCdf[0][0] = this.nodesDistanceDistribution[0][0];
-			this.nodesDistanceDistributionCdf[0][1] = this.nodesDistanceDistribution[0][1];
-			for (int i = 1; i < this.nodesDistanceDistributionCdf.length; i++) {
-				this.nodesDistanceDistributionCdf[i][0] = this.nodesDistanceDistribution[i][0];
-				this.nodesDistanceDistributionCdf[i][1] = this.nodesDistanceDistributionCdf[i - 1][1]
-						+ this.nodesDistanceDistribution[i][1];
-			}
-		} else {
-			this.nodesDistanceDistribution = new double[][] { new double[] { 0,
-					0 } };
-			this.nodesDistanceDistributionCdf = new double[][] { new double[] {
-					0, 0 } };
-		}
+		// double[][] nodeDistancesBinned = this.computeNodeDistancesBinned(
+		// g.getNodes(), partitions, maxDist, step, this.bins);
+		// this.nodesDistanceDistribution = new double[this.bins][2];
+		// for (int i = 0; i < this.bins; i++) {
+		// this.nodesDistanceDistribution[i][0] = (double) i * step;
+		// this.nodesDistanceDistribution[i][1] = nodeDistancesBinned[i].length;
+		// }
+		// ArrayUtils.divide(this.nodesDistanceDistribution, 1,
+		// nodeDistancesBinned.length);
+		//
+		// this.nodesDistanceDistributionCdf = new
+		// double[this.nodesDistanceDistribution.length][2];
+		// this.nodesDistanceDistributionCdf[0][0] =
+		// this.nodesDistanceDistribution[0][0];
+		// this.nodesDistanceDistributionCdf[0][1] =
+		// this.nodesDistanceDistribution[0][1];
+		// for (int i = 1; i < this.nodesDistanceDistributionCdf.length; i++) {
+		// this.nodesDistanceDistributionCdf[i][0] =
+		// this.nodesDistanceDistribution[i][0];
+		// this.nodesDistanceDistributionCdf[i][1] =
+		// this.nodesDistanceDistributionCdf[i - 1][1]
+		// + this.nodesDistanceDistribution[i][1];
+		// }
 
 		double[] edgeDistances = this.computeEdgeDistances(edges, partitions);
 		double[][] edgeDistancesBinned = Statistics.binning(edgeDistances, 0,
@@ -176,13 +174,14 @@ public class DIdentifierSpaceDistances extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithoutIndex(this.nodesDistanceDistribution,
-				"D_IDENTIFIER_SPACE_DISTANCES_NODES_DISTANCE_DISTRIBUTION",
-				folder);
-		success &= DataWriter.writeWithoutIndex(
-				this.nodesDistanceDistributionCdf,
-				"D_IDENTIFIER_SPACE_DISTANCES_NODES_DISTANCE_DISTRIBUTION_CDF",
-				folder);
+		// success &=
+		// DataWriter.writeWithoutIndex(this.nodesDistanceDistribution,
+		// "D_IDENTIFIER_SPACE_DISTANCES_NODES_DISTANCE_DISTRIBUTION",
+		// folder);
+		// success &= DataWriter.writeWithoutIndex(
+		// this.nodesDistanceDistributionCdf,
+		// "D_IDENTIFIER_SPACE_DISTANCES_NODES_DISTANCE_DISTRIBUTION_CDF",
+		// folder);
 		success &= DataWriter.writeWithoutIndex(this.edgesDistanceDistribution,
 				"D_IDENTIFIER_SPACE_DISTANCES_EDGES_DISTANCE_DISTRIBUTION",
 				folder);
