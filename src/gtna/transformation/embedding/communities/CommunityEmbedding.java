@@ -111,10 +111,6 @@ public class CommunityEmbedding extends Transformation {
 		// compute intervals for communities
 		double[][] intervals = this.idSpacePartitioner.getIntervals(ids, g,
 				communities);
-		// for (int i = 0; i < intervals.length; i++) {
-		// System.out.println(i + ": " + intervals[i][0] + " / "
-		// + intervals[i][1] + "   @ " + communities[i].getNodes().length);
-		// }
 
 		// sort nodes (per community)
 		int[][] nodes = new int[communities.length][];
