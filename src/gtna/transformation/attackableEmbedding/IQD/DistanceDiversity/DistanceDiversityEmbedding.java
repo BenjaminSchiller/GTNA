@@ -109,7 +109,7 @@ public class DistanceDiversityEmbedding extends AttackerIQDEmbedding {
 			}
 		}
 		this.init(g, nodes);
-		this.initIds(g);
+		this.initIds();
 		return nodes;
 	}
 
