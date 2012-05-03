@@ -56,8 +56,10 @@ public class Aggregation {
 		} else if (interval == 0.99) {
 			z = 2.576;
 		}
-		// int runs = s.getRunFolders().length;
 		int runs = times;
+		if (Config.getBoolean("AGGREGATE_ALL_AVAILABLE_RUNS")) {
+			runs = s.getRunFolders().length;
+		}
 		for (Metric m : s.getMetrics()) {
 			if (!Aggregation.aggregate(s, m, z, runs)) {
 				return false;
