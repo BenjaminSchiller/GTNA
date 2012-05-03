@@ -150,7 +150,7 @@ public class KleinbergEmbedding extends AttackerIQDEmbedding {
 			}
 		}
 		this.init(g, nodes);
-		this.initIds(g);
+		this.initIds();
 		return nodes;
 	}
 

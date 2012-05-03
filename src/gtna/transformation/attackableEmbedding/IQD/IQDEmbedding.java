@@ -173,11 +173,6 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	}
 
 	public Graph transform(Graph g) {
-		Random rand = new Random();
-		AttackableEmbeddingNode[] nodes = this.generateNodes(g, rand);
-		AttackableEmbeddingNode[] selectionSet = this.generateSelectionSet(
-				nodes, rand);
-		g.setNodes(nodes);
 		GraphProperty[] prop = g.getProperties("ID_SPACE");
 		DIdentifierSpace idSpace;
 		int k = -1;
@@ -194,6 +189,12 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 		}
 		idSpace = (DIdentifierSpace) prop[k];
 		this.setIdspace(idSpace);
+		Random rand = new Random();
+		AttackableEmbeddingNode[] nodes = this.generateNodes(g, rand);
+		AttackableEmbeddingNode[] selectionSet = this.generateSelectionSet(
+				nodes, rand);
+		g.setNodes(nodes);
+		
 		RingIdentifier[] ids = this.getIds();
 		for (int i = 0; i < ids.length; i++) {
 			((IQDNode) nodes[i]).setID(ids[i].getPosition());
@@ -267,11 +268,9 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	 * 
 	 * @param g
 	 */
-	public void initIds(Graph g) {
-		GraphProperty[] gp = g.getProperties("ID_SPACE");
-		GraphProperty p = gp[gp.length - 1];
-		DIdentifierSpace idSpaceD = (DIdentifierSpace) p;
-		this.ids = new RingIdentifier[g.getNodes().length];
+	public void initIds() {
+		DIdentifierSpace idSpaceD = this.getIdspace();
+		this.ids = new RingIdentifier[idSpaceD.getPartitions().length];
 		for (int i = 0; i < ids.length; i++) {
 			ids[i] = (RingIdentifier) idSpaceD.getPartitions()[i]
 					.getRepresentativeID();
