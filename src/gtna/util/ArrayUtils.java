@@ -36,6 +36,7 @@
 package gtna.util;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * @author benni
@@ -92,6 +93,15 @@ public class ArrayUtils {
 			array[i] = arrayI[i];
 		}
 		return array;
+	}
+
+	public static void shuffle(int[] array, Random rand) {
+		for (int i = 0; i < array.length; i++) {
+			int index = rand.nextInt(array.length - i) + i;
+			int temp = array[index];
+			array[index] = array[i];
+			array[i] = temp;
+		}
 	}
 
 	public static int[] initIntArray(int length) {
