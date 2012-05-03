@@ -39,6 +39,7 @@ import java.util.Random;
 
 import gtna.id.DIdentifier;
 import gtna.id.Identifier;
+import gtna.id.md.MDIdentifierSpaceSimple.DistanceMD;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.util.MDVector;
@@ -90,8 +91,10 @@ public class MDIdentifier implements DIdentifier, Comparable<MDIdentifier> {
 		if ( this.idSpace.getDimensions() != to.getIdSpace().getDimensions() ) {
 			throw new RuntimeException("Cannot compute a distance between MDIntentifiers in spaces with unequal dimensions");
 		}
-		double squarredResult = 0;
+		
 		double temp;
+		if (this.idSpace.getDistFunc() == DistanceMD.EUCLIDEAN){
+			double squarredResult = 0;
 		for ( int i = 0; i < this.idSpace.getDimensions(); i++ ) {
 			if ( this.idSpace.isWrapAround() ) {
 				 temp = Math.min(Math.abs(this.coordinates[i]-to.getCoordinate(i)), 
@@ -102,6 +105,21 @@ public class MDIdentifier implements DIdentifier, Comparable<MDIdentifier> {
 			squarredResult += Math.pow(temp, 2);
 		}
 		return Math.sqrt(squarredResult);
+		} 
+		if (this.idSpace.getDistFunc() == DistanceMD.MANHATTAN){
+			double result = 0;
+			for ( int i = 0; i < this.idSpace.getDimensions(); i++ ) {
+				if ( this.idSpace.isWrapAround() ) {
+					 temp = Math.min(Math.abs(this.coordinates[i]-to.getCoordinate(i)), 
+							 Math.min(this.idSpace.getModulus(i)+this.coordinates[i]-to.getCoordinate(i), this.idSpace.getModulus(i)-this.coordinates[i]+to.getCoordinate(i)));
+				} else {
+					 temp = Math.abs(this.coordinates[i] - to.getCoordinate(i));
+				}
+				result += temp;
+			}
+			return result;
+		}
+		return 0.0;
 	}
 
 	@Override
