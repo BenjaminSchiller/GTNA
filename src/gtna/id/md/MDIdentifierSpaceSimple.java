@@ -50,31 +50,75 @@ import gtna.util.Config;
 
 /**
  * @author Nico
- *
+ * 
  */
 public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 	private MDPartitionSimple[] partitions;
-	
+
 	private double[] modulus;
-	
+
 	private boolean wrapAround;
-	
+
 	private double maxDistance;
+
+	private DistanceMD distFunc;
+
+	public static enum DistanceMD {
+		EUCLIDEAN, MANHATTAN
+	}
 
 	public MDIdentifierSpaceSimple() {
 		this.partitions = new MDPartitionSimple[] {};
 		this.wrapAround = true;
-		this.maxDistance = Double.MAX_VALUE;
+		this.distFunc = DistanceMD.EUCLIDEAN;
+		this.computeMaxDist();
 	}
 
 	public MDIdentifierSpaceSimple(MDPartitionSimple[] partitions,
-			double[] modulus, boolean wrapAround) {
+			double[] modulus, boolean wrapAround, DistanceMD dist) {
 		this.partitions = partitions;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
-		this.maxDistance = Double.MAX_VALUE;
+		this.distFunc = dist;
+		this.computeMaxDist();
 	}
-	
+
+	private void computeMaxDist() {
+		if (this.modulus == null) {
+			this.maxDistance = Double.MAX_VALUE;
+		} else {
+			this.maxDistance = 0;
+			if (this.wrapAround) {
+				if (this.distFunc == DistanceMD.MANHATTAN) {
+					for (int i = 0; i < modulus.length; i++) {
+						this.maxDistance = this.maxDistance + modulus[i]
+								/ (double) 2;
+					}
+				}
+				if (this.distFunc == DistanceMD.EUCLIDEAN) {
+					for (int i = 0; i < modulus.length; i++) {
+						this.maxDistance = this.maxDistance + modulus[i]
+								* modulus[i] / (double) 4;
+					}
+					this.maxDistance = Math.sqrt(this.maxDistance);
+				}
+			} else {
+				if (this.distFunc == DistanceMD.MANHATTAN) {
+					for (int i = 0; i < modulus.length; i++) {
+						this.maxDistance = this.maxDistance + modulus[i];
+					}
+				}
+				if (this.distFunc == DistanceMD.EUCLIDEAN) {
+					for (int i = 0; i < modulus.length; i++) {
+						this.maxDistance = this.maxDistance + modulus[i]
+								* modulus[i];
+					}
+					this.maxDistance = Math.sqrt(this.maxDistance);
+				}
+			}
+		}
+	}
+
 	/**
 	 * @return
 	 */
@@ -85,27 +129,27 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 	public double getModulus(int i) {
 		return this.modulus[i];
 	}
-	
+
 	public double getMaxModulus() {
 		double result = Double.MIN_VALUE;
-		for ( double x: modulus ) {
+		for (double x : modulus) {
 			result = Math.max(result, x);
 		}
 		return result;
 	}
-	
+
 	public double getMinModulus() {
 		double result = Double.MAX_VALUE;
-		for ( double x: modulus ) {
+		for (double x : modulus) {
 			result = Math.min(result, x);
 		}
 		return result;
-	}	
+	}
 
 	public int getDimensions() {
 		return modulus.length;
 	}
-	
+
 	@Override
 	public DPartition[] getPartitions() {
 		return this.partitions;
@@ -124,12 +168,12 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 	@Override
 	public Double getMaxDistance() {
 		return this.maxDistance;
-	}	
-	
+	}
+
 	@Override
 	public boolean write(String filename, String key) {
 		Filewriter fw = new Filewriter(filename);
-		
+
 		// CLASS
 		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
 		fw.writeln(this.getClass().getCanonicalName().toString());
@@ -137,7 +181,7 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 		// KEY
 		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
 		fw.writeln(key);
-		
+
 		// # DIMENSIONS
 		fw.writeComment("Dimensions");
 		fw.writeln(this.getDimensions());
@@ -177,15 +221,17 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 
 		// DIMENSIONS
 		int dimensions = Integer.parseInt(fr.readLine());
-		
+
 		// # MODULUS_Y
 		this.modulus = new double[dimensions];
-		
-		String[] modulusTemp = fr.readLine().replace("[", "").replace("]", "").split(",");
-		if ( modulusTemp.length != dimensions ) {
-			throw new RuntimeException("Error: written dimension does not match the number of written modulus values");
+
+		String[] modulusTemp = fr.readLine().replace("[", "").replace("]", "")
+				.split(",");
+		if (modulusTemp.length != dimensions) {
+			throw new RuntimeException(
+					"Error: written dimension does not match the number of written modulus values");
 		}
-		for ( int i = 0; i < dimensions; i++ ) {
+		for (int i = 0; i < dimensions; i++) {
 			this.modulus[i] = Double.parseDouble(modulusTemp[i]);
 		}
 
@@ -196,8 +242,8 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 		int partitions = Integer.parseInt(fr.readLine());
 		this.partitions = new MDPartitionSimple[partitions];
 
-			// TODO: better calculation
-		this.maxDistance = Double.MAX_VALUE;
+		// compute max distance
+		this.computeMaxDist();
 
 		// PARTITIONS
 		String line = null;
@@ -210,9 +256,17 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 		fr.close();
 
 		graph.addProperty(key, this);
-	}	
+	}
 
 	public boolean isWrapAround() {
 		return this.wrapAround;
 	}
+
+	/**
+	 * @return the distance function
+	 */
+	public DistanceMD getDistFunc() {
+		return distFunc;
+	}
+
 }
