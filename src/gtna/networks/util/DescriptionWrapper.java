@@ -38,7 +38,6 @@ package gtna.networks.util;
 
 import gtna.graph.Graph;
 import gtna.networks.Network;
-import gtna.transformation.Transformation;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.ParameterList;
 
@@ -53,7 +52,17 @@ public class DescriptionWrapper extends Network {
 	private String description;
 
 	public DescriptionWrapper(Network nw, String description) {
-		super(nw.getKey(), nw.getNodes(), nw.getTransformations());
+		this(nw, description, new Parameter[0]);
+	}
+
+	public DescriptionWrapper(Network nw, String description,
+			Parameter parameter) {
+		this(nw, description, new Parameter[] { parameter });
+	}
+
+	public DescriptionWrapper(Network nw, String description,
+			Parameter[] parameters) {
+		super(nw.getKey(), nw.getNodes(), parameters, nw.getTransformations());
 		this.nw = nw;
 		this.description = description;
 	}
