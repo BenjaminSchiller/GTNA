@@ -138,7 +138,7 @@ public abstract class AttackerNode extends DecisionNode {
 	 */
 	@Override
 	public double ask(Random rand, Node node) {
-		if (this.isAttacker) {
+		if (this.isAttacker && !((AttackerNode)node).isAttacker) {
 			AttackerIQDEmbedding attEmbedding = (AttackerIQDEmbedding) this.embedding;
 			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.CONTRACTION) {
 				// return ID close to certain neighbor
@@ -192,7 +192,7 @@ public abstract class AttackerNode extends DecisionNode {
 						-1 };
 				res[1] = new double[this.knownIDs.length];
 				for (int i = 0; i < res[1].length; i++) {
-					res[1][i] = (callerID + close * rand.nextDouble()) % 1;
+					res[1][i] = (res[0][0] + close * rand.nextDouble()) % 1;
 				}
 			}
 			return res;
@@ -200,5 +200,7 @@ public abstract class AttackerNode extends DecisionNode {
 			return super.swap(callerID, neighborsID, ttl, rand);
 		}
 	}
+	
+	
 
 }
