@@ -89,11 +89,27 @@ public class DescriptionWrapper extends Network {
 	}
 
 	public Parameter getDiffParameter(ParameterList pl2) {
-		return this.nw.getDiffParameter(pl2);
+		if (super.getParameters().length > 0) {
+			return super.getDiffParameter(pl2);
+		} else {
+			return this.nw.getDiffParameter(pl2);
+		}
 	}
 
 	public String getDiffParameterNameXY(ParameterList pl2, String xy) {
-		return this.nw.getDiffParameterNameXY(pl2, xy);
+		if (super.getParameters().length > 0) {
+			return super.getDiffParameterNameXY(pl2, xy);
+		} else {
+			return this.nw.getDiffParameterNameXY(pl2, xy);
+		}
+	}
+
+	public Parameter[] getParameters() {
+		if (super.getParameters().length > 0) {
+			return this.parameters;
+		} else {
+			return this.nw.getParameters();
+		}
 	}
 
 }
