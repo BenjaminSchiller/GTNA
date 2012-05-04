@@ -62,6 +62,10 @@ public class WsnRole extends Role {
 		}
 		return ((WsnRole) obj).type == this.type;
 	}
+	
+	public int hashCode(){
+		return this.type.toString().hashCode();
+	}
 
 	@Override
 	public String getName() {

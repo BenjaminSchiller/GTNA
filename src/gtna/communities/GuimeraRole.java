@@ -66,6 +66,10 @@ public class GuimeraRole extends Role {
 		}
 		return ((GuimeraRole) obj).type == this.type;
 	}
+	
+	public int hashCode(){
+		return this.type.toString().hashCode();
+	}
 
 	@Override
 	public String getName() {
