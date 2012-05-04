@@ -56,7 +56,7 @@ import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.GLP;
-import gtna.networks.model.PositiveFeedbackPreference;
+import gtna.networks.model.PFP;
 import gtna.plot.Plotting;
 import gtna.util.Config;
 

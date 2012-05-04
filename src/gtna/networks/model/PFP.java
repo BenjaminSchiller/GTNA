@@ -50,7 +50,7 @@ import gtna.util.parameter.Parameter;
  * @author truong
  * 
  */
-public class PositiveFeedbackPreference extends Network {
+public class PFP extends Network {
 
 	// parameter
 	private double p;
@@ -67,7 +67,7 @@ public class PositiveFeedbackPreference extends Network {
 	 * @param parameters
 	 * @param transformations
 	 */
-	public PositiveFeedbackPreference(int nodes, double probability,
+	public PFP(int nodes, double probability,
 			double delta, Transformation[] transformations) {
 		super("PFP", nodes, new Parameter[] {
 				new DoubleParameter("PROBABILITY", probability),
