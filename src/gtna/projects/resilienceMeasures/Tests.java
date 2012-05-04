@@ -47,12 +47,16 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.BetweennessCentralityNodeSorter;
 import gtna.graph.sorting.ClosenessCentralityNodeSorter;
+import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.algorithms.ResilienceMetrics;
 import gtna.metrics.DegreeDistribution;
 import gtna.metrics.Metric;
+import gtna.metrics.fragmentation.Fragmentation.Resolution;
+import gtna.metrics.fragmentation.StrongFragmentation;
+import gtna.metrics.fragmentation.WeakFragmentation;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.GLP;
@@ -66,7 +70,7 @@ import gtna.util.Config;
  */
 public class Tests {
 	public static void main(String[] args) {
-		Tests.PFPTest();
+		Tests.GLPPlotTest();
 	}
 
 	public static void test() {
@@ -192,7 +196,7 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 		System.out.println(Config.get("GNUPLOT_PATH"));
-		
+
 		int N = 20000;
 		double p = 0.4;
 		double delta = 0.021;
@@ -281,16 +285,11 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		int N = 200;
-		int m0 = 20;
-		int m = 2;
-		double p = 0.4695;
-		double beta = 0.6447;
-		Network nw = new GLP(N, m0, m, p, beta, null);
-
-		Metric dd = new DegreeDistribution();
-		Metric[] metrics = new Metric[] { dd };
-		Series s = Series.generate(nw, metrics, 5);
+		Network nw = new BarabasiAlbert(100, 4, null);
+		Metric m = new WeakFragmentation(new DegreeNodeSorter(
+				NodeSorterMode.ASC), Resolution.SINGLE);
+		Metric[] metrics = new Metric[] { m };
+		Series s = Series.generate(nw, metrics, 3);
 		Plotting.multi(s, metrics, "test/");
 	}
 }
