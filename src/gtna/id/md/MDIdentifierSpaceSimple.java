@@ -82,6 +82,15 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 		this.distFunc = dist;
 		this.computeMaxDist();
 	}
+	
+	public MDIdentifierSpaceSimple(MDPartitionSimple[] partitions,
+			double[] modulus, boolean wrapAround) {
+		this.partitions = partitions;
+		this.modulus = modulus;
+		this.wrapAround = wrapAround;
+		this.distFunc = DistanceMD.EUCLIDEAN;
+		this.computeMaxDist();
+	}
 
 	private void computeMaxDist() {
 		if (this.modulus == null) {

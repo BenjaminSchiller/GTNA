@@ -52,7 +52,7 @@ import java.util.Random;
 
 public abstract class AttackableEmbeddingNode extends Node {
 
-	protected HashMap<Integer, Integer> position;
+	//protected HashMap<Integer, Integer> position;
 
 	public double[] knownIDs;
 
@@ -64,11 +64,11 @@ public abstract class AttackableEmbeddingNode extends Node {
 	 * must be called after creating the outgoing edges of this node
 	 */
 	public void initKnownIDs() {
-		this.position = new HashMap<Integer, Integer>(this.getOutDegree());
+		//this.position = new HashMap<Integer, Integer>(this.getOutDegree());
 		this.knownIDs = new double[this.getOutDegree()];
-		for (int i = 0; i < this.getOutDegree(); i++) {
-			this.position.put(this.getOutgoingEdges()[i], i);
-		}
+//		for (int i = 0; i < this.getOutDegree(); i++) {
+//			this.position.put(this.getOutgoingEdges()[i], i);
+//		}
 	}
 
 	public abstract void updateNeighbors(Random rand);

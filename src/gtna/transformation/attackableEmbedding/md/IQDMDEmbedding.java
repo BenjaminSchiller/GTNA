@@ -44,6 +44,7 @@ import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
 import gtna.id.md.MDIdentifierSpaceSimple.DistanceMD;
 import gtna.id.md.MDPartitionSimple;
+import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingPartitionSimple;
 import gtna.transformation.Transformation;
 import gtna.transformation.attackableEmbedding.AttackableEmbedding;
@@ -64,7 +65,7 @@ import java.util.Random;
 public abstract class IQDMDEmbedding extends AttackableEmbedding {
 
 	public static enum IdentifierMethod {
-		ONERANDOM, TWORANDOM, RANDNEIGHBOR, RANDNEIGHBORMIDDLE, ALLNEIGHBOR, ALLNEIGHBORMIDDLE, SWAPPING
+		ONERANDOM, TWORANDOM, RANDNEIGHBOR, ALLNEIGHBOR,  SWAPPING
 	}
 
 	public static enum DecisionMethod {
@@ -85,8 +86,8 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 	 * @param key
 	 * @param parameters
 	 */
-	public IQDMDEmbedding(int iterations, String key, IdentifierMethod idMethod, DistanceMD distance,
-			DecisionMethod deMethod, int dimension, double epsilon,
+	public IQDMDEmbedding(int iterations, String key, IdentifierMethod idMethod, 
+			DecisionMethod deMethod, DistanceMD distance, int dimension, double epsilon,
 			boolean checkold, boolean adjustOne, Parameter[] parameters) {
 		super(iterations, key, combineParameter(iterations, idMethod, deMethod, dimension,
 				epsilon, checkold, adjustOne,distance, parameters));
@@ -151,8 +152,7 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 		if (d == DecisionMethod.METROPOLIS || d == DecisionMethod.SA
 				|| d == DecisionMethod.SATIMEDEPENDENT) {
 			if (id == IdentifierMethod.TWORANDOM
-					|| id == IdentifierMethod.ALLNEIGHBOR
-					|| id == IdentifierMethod.ALLNEIGHBORMIDDLE) {
+					|| id == IdentifierMethod.ALLNEIGHBOR) {
 				return false;
 			}
 		}
@@ -306,6 +306,14 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 
 	public DistanceMD getDistance() {
 		return this.distance;
+	}
+	/* (non-Javadoc)
+	 * @see gtna.transformation.attackableEmbedding.AttackableEmbedding#getIds()
+	 */
+	@Override
+	public RingIdentifier[] getIds() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
