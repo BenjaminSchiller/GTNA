@@ -192,14 +192,15 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 		System.out.println(Config.get("GNUPLOT_PATH"));
-		int N = 9204;
+		
+		int N = 20000;
 		double p = 0.4;
 		double delta = 0.021;
 		Network nw = new PFP(N, p, delta, null);
 		// Network nw = new BarabasiAlbert(100, 4, null);
 		Metric dd = new DegreeDistribution();
 		Metric[] metrics = new Metric[] { dd };
-		Series s = Series.generate(nw, metrics, 5);
+		Series s = Series.generate(nw, metrics, 20);
 		Plotting.multi(s, metrics, "test/");
 		/*
 		 * System.out.println("generating..."); Graph g = nw.generate();
@@ -272,5 +273,24 @@ public class Tests {
 			System.out.println(sorted[i].toString() + " -- "
 					+ bc.getCentrality(sorted[i]));
 		}
+	}
+
+	public static void GLPPlotTest() {
+
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("GNUPLOT_PATH",
+				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
+
+		int N = 200;
+		int m0 = 20;
+		int m = 2;
+		double p = 0.4695;
+		double beta = 0.6447;
+		Network nw = new GLP(N, m0, m, p, beta, null);
+
+		Metric dd = new DegreeDistribution();
+		Metric[] metrics = new Metric[] { dd };
+		Series s = Series.generate(nw, metrics, 5);
+		Plotting.multi(s, metrics, "test/");
 	}
 }
