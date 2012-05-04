@@ -42,6 +42,7 @@ import java.util.Random;
 
 import org.gephi.statistics.plugin.GraphDistance;
 
+import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.BetweennessCentralityNodeSorter;
@@ -50,9 +51,14 @@ import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.algorithms.ResilienceMetrics;
+import gtna.metrics.DegreeDistribution;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.GLP;
 import gtna.networks.model.PositiveFeedbackPreference;
+import gtna.plot.Plotting;
+import gtna.util.Config;
 
 /**
  * @author truong
@@ -60,7 +66,7 @@ import gtna.networks.model.PositiveFeedbackPreference;
  */
 public class Tests {
 	public static void main(String[] args) {
-		Tests.speedTest();
+		Tests.PFPTest();
 	}
 
 	public static void test() {
@@ -182,30 +188,32 @@ public class Tests {
 	}
 
 	public static void PFPTest() {
-		int N = 20000;
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("GNUPLOT_PATH",
+				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
+		System.out.println(Config.get("GNUPLOT_PATH"));
+		int N = 9204;
 		double p = 0.4;
 		double delta = 0.021;
-		Network nw = new PositiveFeedbackPreference(N, p, delta, null);
-		System.out.println("generating...");
-		Graph g = nw.generate();
-		System.out.println("generated!");
-		int maxDegree = 0;
-		for (Node n : g.getNodes()) {
-			if (maxDegree < n.getDegree()) {
-				maxDegree = n.getDegree();
-			}
-		}
-		System.out.println("==========");
-		System.out.println("Nodes = " + g.getNodes().length);
-		System.out.println("Edges = " + g.getEdges().getEdges().size() / 2);
-		System.out.println("Max Degree = " + maxDegree);
-
-		try {
-			Utils.exportToGML(g, "PFP");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Cannot export graph to file!");
-		}
+		// Network nw = new PositiveFeedbackPreference(N, p, delta, null);
+		Network nw = new BarabasiAlbert(100, 4, null);
+		Metric dd = new DegreeDistribution();
+		Metric[] metrics = new Metric[] { dd };
+		Series s = Series.generate(nw, metrics, 5);
+		Plotting.multi(s, metrics, "test/");
+		/*
+		 * System.out.println("generating..."); Graph g = nw.generate();
+		 * System.out.println("generated!"); int maxDegree = 0; for (Node n :
+		 * g.getNodes()) { if (maxDegree < n.getDegree()) { maxDegree =
+		 * n.getDegree(); } } System.out.println("==========");
+		 * System.out.println("Nodes = " + g.getNodes().length);
+		 * System.out.println("Edges = " + g.getEdges().getEdges().size() / 2);
+		 * System.out.println("Max Degree = " + maxDegree);
+		 * 
+		 * try { Utils.exportToGML(g, "PFP"); } catch (IOException e) {
+		 * e.printStackTrace();
+		 * System.out.println("Cannot export graph to file!"); }
+		 */
 	}
 
 	public static void GLPTest() {
