@@ -58,6 +58,8 @@ import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.networks.util.ReadableFolder;
 import gtna.plot.Plotting;
+import gtna.plot.Data.Type;
+import gtna.plot.Gnuplot.Style;
 import gtna.routing.greedy.Greedy;
 import gtna.routing.greedy.GreedyBacktracking;
 import gtna.routing.greedyVariations.DepthFirstGreedy;
@@ -70,6 +72,7 @@ import gtna.transformation.embedding.communities.CommunityEmbedding;
 import gtna.transformation.embedding.communities.partitioner.community.LmcCommunityPartitioner;
 import gtna.transformation.embedding.communities.partitioner.community.RandomCommunityPartitioner;
 import gtna.transformation.embedding.communities.partitioner.idSpace.RandomIdSpacePartitioner;
+import gtna.transformation.embedding.communities.partitioner.idSpace.RelativeSizeIdSpacePartitioner;
 import gtna.transformation.embedding.communities.sorter.community.NeighborsByEdgesCommunitySorter;
 import gtna.transformation.embedding.communities.sorter.community.RandomCommunitySorter;
 import gtna.transformation.embedding.communities.sorter.node.LmcNodeSorter;
@@ -105,7 +108,7 @@ public class CommunityEmbeddings {
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/community-embedding/");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "" + skip);
 		Config.overwrite("AGGREGATE_ALL_AVAILABLE_RUNS", "true");
-		
+
 		Config.overwrite("GNUPLOT_TERMINAL", "png");
 		Config.overwrite("PLOT_EXTENSION", ".png");
 
@@ -158,6 +161,11 @@ public class CommunityEmbeddings {
 				new NeighborsByEdgesCommunitySorter(),
 				new RandomIdSpacePartitioner(), new RandomNodeSorter(),
 				new LmcCommunityPartitioner(), 1.0, true);
+		Transformation ce5 = new CommunityEmbedding(
+				new NeighborsByEdgesCommunitySorter(),
+				new RelativeSizeIdSpacePartitioner(0.0),
+				new RandomNodeSorter(), new LmcCommunityPartitioner(), 1.0,
+				true);
 
 		Transformation[] t_r = new Transformation[] { rridss };
 		Transformation[] t_sw = new Transformation[] { rridss, sw };
@@ -167,9 +175,11 @@ public class CommunityEmbeddings {
 		Transformation[] t_ce2 = new Transformation[] { ce2 };
 		Transformation[] t_ce3 = new Transformation[] { ce3 };
 		Transformation[] t_ce4 = new Transformation[] { ce4 };
+		Transformation[] t_ce5 = new Transformation[] { ce5 };
 
 		Transformation[][] T = new Transformation[][] { t_r, t_sw, t_lmc,
-				t_ce1, t_ce2, t_ce4 };
+				t_ce1, t_ce2, t_ce4, t_ce5 };
+		T = new Transformation[][] { t_lmc, t_ce4, t_ce5 };
 
 		/*
 		 * Transformation -> name mapping
@@ -179,10 +189,11 @@ public class CommunityEmbeddings {
 		names.put(t_r, "Random");
 		names.put(t_sw, "Swapping");
 		names.put(t_lmc, "LMC");
-		names.put(t_ce1, "CE - random");
-		names.put(t_ce2, "CE - edges");
-		names.put(t_ce3, "CE - edges | lmc-order");
-		names.put(t_ce4, "CE - edges | lmc-positions");
+		names.put(t_ce1, "CE - random | R | R | R");
+		names.put(t_ce2, "CE - edges | R | R | R");
+		names.put(t_ce3, "CE - edges | R | lmc-order | R");
+		names.put(t_ce4, "CE - edges | R | R | lmc-positions");
+		names.put(t_ce5, "CE - edges | relative | R | lmc-positions");
 
 		/*
 		 * generate graphs
@@ -209,7 +220,8 @@ public class CommunityEmbeddings {
 
 			Series[] s = get ? Series.get(nw, metrics) : Series.generate(nw,
 					metrics, times);
-			Plotting.multi(s, metrics, graph[0] + "-multi/");
+			Plotting.multi(s, metrics, graph[0] + "-multi/", Type.confidence1,
+					Style.candlesticks);
 		}
 
 		stats.end();
