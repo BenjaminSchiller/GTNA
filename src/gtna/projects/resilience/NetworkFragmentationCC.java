@@ -75,7 +75,7 @@ public class NetworkFragmentationCC {
 	public static void main(String[] args) {
 		Config.overwrite("MAIN_DATA_FOLDER", "data/network-fragmentation-cc/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "plots/network-fragmentation-cc/");
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 
 		NodeSorter s1 = new DegreeNodeSorter(NodeSorterMode.DESC);
 		NodeSorter s2 = new RandomNodeSorter();
@@ -85,6 +85,10 @@ public class NetworkFragmentationCC {
 				WsnRolesNodeSorter.HS_HB_S_B_HC_C);
 		NodeSorter s5 = new WsnRolesNodeSorter(
 				WsnRolesNodeSorter.HS_S_HB_B_HC_C);
+		NodeSorter s6 = new WsnRolesNodeSorter(
+				WsnRolesNodeSorter.S_B_HS_HB_HC_C);
+		NodeSorter s7 = new WsnRolesNodeSorter(
+				WsnRolesNodeSorter.S_HS_B_HB_HC_C);
 
 		Metric dd = new DegreeDistribution();
 		Metric c = new Communities();
@@ -94,8 +98,11 @@ public class NetworkFragmentationCC {
 		Metric wf3 = new WeakFragmentation(s3, Fragmentation.Resolution.PERCENT);
 		Metric wf4 = new WeakFragmentation(s4, Fragmentation.Resolution.PERCENT);
 		Metric wf5 = new WeakFragmentation(s5, Fragmentation.Resolution.PERCENT);
+		Metric wf6 = new WeakFragmentation(s6, Fragmentation.Resolution.PERCENT);
+		Metric wf7 = new WeakFragmentation(s7, Fragmentation.Resolution.PERCENT);
 
-		Metric[] metrics = new Metric[] { dd, c, r, wf1, wf2, wf3, wf4, wf5 };
+		Metric[] metrics = new Metric[] { dd, c, r, wf1, wf2, wf3, wf4, wf5,
+				wf6, wf7 };
 
 		Transformation[] t = new Transformation[] {
 				new CommunityDetectionLPA(50), new WsnRolesTransformation() };
@@ -108,21 +115,21 @@ public class NetworkFragmentationCC {
 
 		Network[] nw = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 
-		boolean get = true;
+		boolean get = false;
 		int times = 10;
 
 		Series[] s = get ? Series.get(nw, metrics) : Series.generate(nw,
 				metrics, times);
 
-		Plotting.multi(s, metrics, "multi-avg/");
-		Plotting.multi(s, metrics, "multi-conf/", Type.confidence1,
+		Plotting.multi(s, metrics, "multi-2-avg/");
+		Plotting.multi(s, metrics, "multi-2-conf/", Type.confidence1,
 				Style.candlesticks);
 	}
 
 	private static final double xyNodes = 40000;
 	private static final double xyHotspots = 30000;
-	private static final double devHotspots = 5000;
-	private static final double devNodes = 2000;
+	private static final double devHotspots = 10000;
+	private static final double devNodes = 1000;
 	private static final double radius = 1983;
 
 	private static final Partitioner partitioner = new SimplePartitioner();

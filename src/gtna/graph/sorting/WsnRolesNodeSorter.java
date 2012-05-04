@@ -50,6 +50,7 @@ public class WsnRolesNodeSorter extends RolesNodeSorter {
 			new WsnRole(WsnRole.WsnRoleType.BRIDGE),
 			new WsnRole(WsnRole.WsnRoleType.HUB_COMMON),
 			new WsnRole(WsnRole.WsnRoleType.COMMON) };
+	
 	public static final WsnRole[] HS_HB_HC_S_B_C = new WsnRole[] {
 			new WsnRole(WsnRole.WsnRoleType.HUB_STAR),
 			new WsnRole(WsnRole.WsnRoleType.HUB_BRIDGE),
@@ -57,13 +58,30 @@ public class WsnRolesNodeSorter extends RolesNodeSorter {
 			new WsnRole(WsnRole.WsnRoleType.STAR),
 			new WsnRole(WsnRole.WsnRoleType.BRIDGE),
 			new WsnRole(WsnRole.WsnRoleType.COMMON) };
+	
 	public static final WsnRole[] HS_HB_S_B_HC_C = new WsnRole[] {
-			new WsnRole(WsnRole.WsnRoleType.HUB_STAR),
-			new WsnRole(WsnRole.WsnRoleType.HUB_BRIDGE),
-			new WsnRole(WsnRole.WsnRoleType.STAR),
-			new WsnRole(WsnRole.WsnRoleType.BRIDGE),
-			new WsnRole(WsnRole.WsnRoleType.HUB_COMMON),
-			new WsnRole(WsnRole.WsnRoleType.COMMON) };
+		new WsnRole(WsnRole.WsnRoleType.HUB_STAR),
+		new WsnRole(WsnRole.WsnRoleType.HUB_BRIDGE),
+		new WsnRole(WsnRole.WsnRoleType.STAR),
+		new WsnRole(WsnRole.WsnRoleType.BRIDGE),
+		new WsnRole(WsnRole.WsnRoleType.HUB_COMMON),
+		new WsnRole(WsnRole.WsnRoleType.COMMON) };
+
+	public static final WsnRole[] S_B_HS_HB_HC_C = new WsnRole[] {
+		new WsnRole(WsnRole.WsnRoleType.STAR),
+		new WsnRole(WsnRole.WsnRoleType.BRIDGE),
+		new WsnRole(WsnRole.WsnRoleType.HUB_STAR),
+		new WsnRole(WsnRole.WsnRoleType.HUB_BRIDGE),
+		new WsnRole(WsnRole.WsnRoleType.HUB_COMMON),
+		new WsnRole(WsnRole.WsnRoleType.COMMON) };
+
+	public static final WsnRole[] S_HS_B_HB_HC_C = new WsnRole[] {
+		new WsnRole(WsnRole.WsnRoleType.STAR),
+		new WsnRole(WsnRole.WsnRoleType.HUB_STAR),
+		new WsnRole(WsnRole.WsnRoleType.BRIDGE),
+		new WsnRole(WsnRole.WsnRoleType.HUB_BRIDGE),
+		new WsnRole(WsnRole.WsnRoleType.HUB_COMMON),
+		new WsnRole(WsnRole.WsnRoleType.COMMON) };
 
 	public WsnRolesNodeSorter(WsnRole[] order) {
 		super("WSN", order);
