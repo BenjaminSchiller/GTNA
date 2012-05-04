@@ -195,8 +195,8 @@ public class Tests {
 		int N = 9204;
 		double p = 0.4;
 		double delta = 0.021;
-		// Network nw = new PositiveFeedbackPreference(N, p, delta, null);
-		Network nw = new BarabasiAlbert(100, 4, null);
+		Network nw = new PFP(N, p, delta, null);
+		// Network nw = new BarabasiAlbert(100, 4, null);
 		Metric dd = new DegreeDistribution();
 		Metric[] metrics = new Metric[] { dd };
 		Series s = Series.generate(nw, metrics, 5);
