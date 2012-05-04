@@ -41,6 +41,7 @@ import gtna.graph.Node;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
 import gtna.transformation.attackableEmbedding.lmc.LMCNode;
 
+import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -70,6 +71,14 @@ public abstract class IQDMDNode extends AttackableEmbeddingNode {
 			this.knownIDs[i] = ((IQDMDNode) this.getGraph().getNode(out[i])).ask(
 					rand,this);
 		}
+	}
+	
+	public void initKnownIDs() {
+		//this.position = new HashMap<Integer, Integer>(this.getOutDegree());
+		this.knownIDs = new double[this.getOutDegree()][this.embedding.dimension];
+//		for (int i = 0; i < this.getOutDegree(); i++) {
+//			this.position.put(this.getOutgoingEdges()[i], i);
+//		}
 	}
 
 	/* (non-Javadoc)

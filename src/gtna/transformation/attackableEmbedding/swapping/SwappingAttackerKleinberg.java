@@ -68,8 +68,10 @@ public class SwappingAttackerKleinberg extends SwappingNode {
 	 ID
 	 */
 	 protected double ask(SwappingNode caller, Random rand) {
-	 int index = this.position.get(caller.getIndex());
-	 double id = (this.knownIDs[index] + rand.nextDouble()
+	if (caller instanceof SwappingAttackerKleinberg){
+		return super.ask(caller,rand);
+	}
+	 double id = (caller.ask(this, rand)+ rand.nextDouble()
 	 * this.swapping.delta) % 1.0;
 	 return id;
 	 }
