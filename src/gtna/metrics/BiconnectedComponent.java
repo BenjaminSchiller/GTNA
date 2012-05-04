@@ -39,7 +39,12 @@ import gtna.data.Single;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.graph.sorting.NodeSorter;
+import gtna.io.DataWriter;
 import gtna.networks.Network;
+import gtna.util.Timer;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,12 +66,16 @@ public class BiconnectedComponent extends Metric {
 	private int[] low;
 
 	private ArrayList<Node> maxComponent = new ArrayList<Node>();
+	private Timer runtime;
+	private NodeSorter sorter;
 
 	/**
 	 * @param key
 	 */
-	public BiconnectedComponent() {
-		super("BICONNECTED_COMPONENT");
+	public BiconnectedComponent(NodeSorter sorter) {
+		super("BICONNECTED_COMPONENT", new Parameter[] { new StringParameter(
+				"SORTER", sorter.getKey()) });
+		this.sorter = sorter;
 	}
 
 	/*
@@ -77,7 +86,8 @@ public class BiconnectedComponent extends Metric {
 	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		// TODO Auto-generated method stub
+		this.runtime = new Timer();
+
 		this.g = g;
 
 		count = 0;
@@ -95,6 +105,8 @@ public class BiconnectedComponent extends Metric {
 				DFSVisit(u);
 			}
 		}
+
+		this.runtime.end();
 	}
 
 	private void DFSVisit(Node u) {
@@ -158,8 +170,11 @@ public class BiconnectedComponent extends Metric {
 	 */
 	@Override
 	public boolean writeData(String folder) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean success = true;
+		success &= DataWriter.writeWithIndex(
+				new double[] { this.maxComponent.size() },
+				"BICONNECTED_COMPONENT_MAX_COMPONENT_SIZE", folder);
+		return success;
 	}
 
 	/*
@@ -169,8 +184,9 @@ public class BiconnectedComponent extends Metric {
 	 */
 	@Override
 	public Single[] getSingles() {
-		// TODO Auto-generated method stub
-		return null;
+		Single RT = new Single("BICONNECTED_COMPONENT_RUNTIME",
+				this.runtime.getRuntime());
+		return new Single[] { RT };
 	}
 
 	/*
