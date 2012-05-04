@@ -67,7 +67,7 @@ public class GLP extends Network {
 	public GLP(int nodes, int numOfStartNode, int numOfAddedEdges, double p,
 			double beta, Transformation[] t) {
 		super("GLP", nodes, new Parameter[] {
-				new IntParameter("NUMBER_OF_START_NODE", numOfStartNode),
+				new IntParameter("NUMBER_OF_START_NODES", numOfStartNode),
 				new IntParameter("NUMBER_OF_ADDED_EDGES", numOfAddedEdges),
 				new DoubleParameter("PROBABILITY", p),
 				new DoubleParameter("BETA", beta) }, t);
