@@ -62,9 +62,9 @@ public class DIdentifierSpaceDistanceProducts extends Metric {
 
 	private double[][] neighborDistanceProductDistributionCdf;
 
-	private double[][] neighborDistanceProductSqrtDistribution;
+	private double[][] neighborDistanceProductRootDistribution;
 
-	private double[][] neighborDistanceProductSqrtDistributionCdf;
+	private double[][] neighborDistanceProductRootDistributionCdf;
 
 	public DIdentifierSpaceDistanceProducts(int bins) {
 		super("D_IDENTIFIER_SPACE_DISTANCE_PRODUCTS",
@@ -75,9 +75,9 @@ public class DIdentifierSpaceDistanceProducts extends Metric {
 				-1, -1 } };
 		this.neighborDistanceProductDistributionCdf = new double[][] { new double[] {
 				-1, -1 } };
-		this.neighborDistanceProductSqrtDistribution = new double[][] { new double[] {
+		this.neighborDistanceProductRootDistribution = new double[][] { new double[] {
 				-1, -1 } };
-		this.neighborDistanceProductSqrtDistributionCdf = new double[][] { new double[] {
+		this.neighborDistanceProductRootDistributionCdf = new double[][] { new double[] {
 				-1, -1 } };
 	}
 
@@ -113,26 +113,27 @@ public class DIdentifierSpaceDistanceProducts extends Metric {
 
 		double[] prodSqrt = prod.clone();
 		for (int i = 0; i < prodSqrt.length; i++) {
-			prodSqrt[i] = Math.sqrt(prodSqrt[i]);
+			prodSqrt[i] = Math.pow(prodSqrt[i],
+					1.0 / (double) g.getNodes()[i].getOutDegree());
 		}
 		double[][] prodSqrtBinned = Statistics.binning(prodSqrt, 0, 1, step);
 
-		this.neighborDistanceProductSqrtDistribution = new double[this.bins][2];
-		this.neighborDistanceProductSqrtDistribution = new double[this.bins][2];
+		this.neighborDistanceProductRootDistribution = new double[this.bins][2];
+		this.neighborDistanceProductRootDistribution = new double[this.bins][2];
 		for (int i = 0; i < this.bins; i++) {
-			this.neighborDistanceProductSqrtDistribution[i][0] = (double) i
+			this.neighborDistanceProductRootDistribution[i][0] = (double) i
 					* step;
-			this.neighborDistanceProductSqrtDistribution[i][1] = prodSqrtBinned[i].length
+			this.neighborDistanceProductRootDistribution[i][1] = prodSqrtBinned[i].length
 					/ (double) g.getNodes().length;
 		}
 
-		this.neighborDistanceProductSqrtDistributionCdf = new double[this.bins][2];
-		this.neighborDistanceProductSqrtDistributionCdf[0][0] = this.neighborDistanceProductSqrtDistribution[0][0];
-		this.neighborDistanceProductSqrtDistributionCdf[0][1] = this.neighborDistanceProductSqrtDistribution[0][1];
-		for (int i = 1; i < this.neighborDistanceProductSqrtDistributionCdf.length; i++) {
-			this.neighborDistanceProductSqrtDistributionCdf[i][0] = this.neighborDistanceProductSqrtDistribution[i][0];
-			this.neighborDistanceProductSqrtDistributionCdf[i][1] = this.neighborDistanceProductSqrtDistributionCdf[i - 1][1]
-					+ this.neighborDistanceProductSqrtDistribution[i][1];
+		this.neighborDistanceProductRootDistributionCdf = new double[this.bins][2];
+		this.neighborDistanceProductRootDistributionCdf[0][0] = this.neighborDistanceProductRootDistribution[0][0];
+		this.neighborDistanceProductRootDistributionCdf[0][1] = this.neighborDistanceProductRootDistribution[0][1];
+		for (int i = 1; i < this.neighborDistanceProductRootDistributionCdf.length; i++) {
+			this.neighborDistanceProductRootDistributionCdf[i][0] = this.neighborDistanceProductRootDistribution[i][0];
+			this.neighborDistanceProductRootDistributionCdf[i][1] = this.neighborDistanceProductRootDistributionCdf[i - 1][1]
+					+ this.neighborDistanceProductRootDistribution[i][1];
 		}
 	}
 
@@ -148,9 +149,6 @@ public class DIdentifierSpaceDistanceProducts extends Metric {
 			for (int out : node.getOutgoingEdges()) {
 				prod[node.getIndex()] *= p.distance(partitions[out]
 						.getRepresentativeID()) / maxDist;
-			}
-			if (node.getOutDegree() > 0) {
-				prod[node.getIndex()] /= (double) node.getOutDegree();
 			}
 		}
 
@@ -172,13 +170,13 @@ public class DIdentifierSpaceDistanceProducts extends Metric {
 						folder);
 		success &= DataWriter
 				.writeWithoutIndex(
-						this.neighborDistanceProductSqrtDistribution,
-						"D_IDENTIFIER_SPACE_DISTANCE_PRODUCTS_NEIGHBORS_DISTANCE_PRODUCT_SQRT_DISTRIBUTION",
+						this.neighborDistanceProductRootDistribution,
+						"D_IDENTIFIER_SPACE_DISTANCE_PRODUCTS_NEIGHBORS_DISTANCE_PRODUCT_ROOT_DISTRIBUTION",
 						folder);
 		success &= DataWriter
 				.writeWithoutIndex(
-						this.neighborDistanceProductSqrtDistributionCdf,
-						"D_IDENTIFIER_SPACE_DISTANCE_PRODUCTS_NEIGHBORS_DISTANCE_PRODUCT_SQRT_DISTRIBUTION_CDF",
+						this.neighborDistanceProductRootDistributionCdf,
+						"D_IDENTIFIER_SPACE_DISTANCE_PRODUCTS_NEIGHBORS_DISTANCE_PRODUCT_ROOT_DISTRIBUTION_CDF",
 						folder);
 		return success;
 	}
