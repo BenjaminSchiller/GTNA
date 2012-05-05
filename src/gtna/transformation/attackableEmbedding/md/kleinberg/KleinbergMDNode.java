@@ -33,11 +33,11 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.attackableEmbedding.IQD.kleinberg;
+package gtna.transformation.attackableEmbedding.md.kleinberg;
 
 import gtna.graph.Graph;
-import gtna.transformation.attackableEmbedding.IQD.AttackerNode;
-import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
+import gtna.transformation.attackableEmbedding.md.AttackerMDNode;
+import gtna.transformation.attackableEmbedding.md.IQDMDEmbedding;
 
 import java.util.Random;
 
@@ -45,7 +45,7 @@ import java.util.Random;
  * @author stef
  *
  */
-public class KleinbergNode extends AttackerNode{
+public class KleinbergMDNode extends AttackerMDNode{
 
 	/**
 	 * @param index
@@ -53,7 +53,7 @@ public class KleinbergNode extends AttackerNode{
 	 * @param id
 	 * @param embedding
 	 */
-	public KleinbergNode(int index, Graph g,  KleinbergEmbedding embedding, boolean isAttacker) {
+	public KleinbergMDNode(int index, Graph g,  KleinbergMDEmbedding embedding, boolean isAttacker) {
 		super(index, g, embedding, isAttacker);
 	}
 
@@ -61,22 +61,22 @@ public class KleinbergNode extends AttackerNode{
 	 * @see gtna.transformation.attackableEmbedding.IQD.IQDNode#getQuality(java.util.Random, double[])
 	 */
 	@Override
-	public double[] getQuality(Random rand, double[] ids) {
+	public double[] getQuality(Random rand, double[][] ids) {
 		double[] q = new double[ids.length];
 		for (int i = 0; i < ids.length; i++){
 			q[i] = 1;
 			for (int j = 0; j < this.knownIDs.length; j++){
-				if (ids[i] != this.knownIDs[j]){
+				if (!this.equalArrays(ids[i], this.knownIDs[j])){
 					//System.out.println("OWN: " + this.knownIDs[j]);
 				q[i] = q[i]*this.embedding.computeDistance( ids[i], this.knownIDs[j]);
 				} else {
 					q[i] = q[i]*this.embedding.computeDistance( ids[i], ids[(i+1)%2]);
 				}
 			}
-			if (this.embedding.getIdMethod() == IQDEmbedding.IdentifierMethod.SWAPPING){
+			if (this.embedding.getIdMethod() == IQDMDEmbedding.IdentifierMethod.SWAPPING){
 				for (int k = 0; k < this.swapped.length; k++){
 					//System.out.println("SWAPPED " + swapped[k]);
-					if (ids[(i+1)%2] != this.swapped[k]){
+					if (!this.equalArrays(ids[(i+1)%2], swapped[k])){
 					q[i] = q[i]*this.embedding.computeDistance(ids[(i+1)%2], this.swapped[k]);
 				} else {
 					q[i] = q[i]*this.embedding.computeDistance( ids[i], ids[(i+1)%2]);
@@ -88,5 +88,7 @@ public class KleinbergNode extends AttackerNode{
 		
 		return q;
 	}
+	
+	
 
 }

@@ -192,7 +192,7 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 			for (int m = 0; m < this.dimension; m++){
 				modulus[m] = 1.0;
 			}
-			Transformation idTrans = new RandomMDIDSpaceSimple(this.dimension, modulus, true,this.distance);
+			Transformation idTrans = new RandomMDIDSpaceSimple(1, modulus, true,this.distance);
 			g  = idTrans.transform(g);
 			prop = g.getProperties("ID_SPACE");
 			k = prop.length-1;
@@ -224,8 +224,8 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 						double[] id = new double[this.dimension];
 						for (int j = 0; j < this.dimension; j++){
 						 id[j] = neighPos[j] - rand.nextDouble() * this.epsilon/(double)this.dimension;
-						if (id[i] < 0)
-							id[i]++;
+						if (id[j] < 0)
+							id[j]++;
 						}
 						node.setID(id);
 					}
@@ -238,7 +238,7 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 		for (int i = 0; i < ids.length; i++) {
 			ids[i].setCoordinates(((IQDMDNode) nodes[i]).getID());
 		}
-		Partition<Double>[] parts = new RingPartitionSimple[g.getNodes().length];
+		Partition<Double>[] parts = new MDPartitionSimple[g.getNodes().length];
 
 		for (int i = 0; i < parts.length; i++) {
 			parts[i] = new MDPartitionSimple(ids[i]);
