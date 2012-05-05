@@ -49,7 +49,7 @@ import java.util.Random;
 public class EigenvectorCentralityNodeSorter extends NodeSorter {
 
 	private HashMap<Node, Double> map = new HashMap<Node, Double>();
-	private int numRuns = 100;
+	private int numRuns = 1000;
 
 	public EigenvectorCentralityNodeSorter(NodeSorterMode mode) {
 		super("EIGENVECTOR", mode);

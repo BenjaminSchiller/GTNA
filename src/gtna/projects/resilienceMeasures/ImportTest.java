@@ -41,7 +41,7 @@ import org.gephi.statistics.plugin.GraphDistance;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.graph.sorting.BetweennessCentralityNodeSorter;
+import gtna.graph.sorting.CentralityNodeSorter;
 import gtna.graph.sorting.ClosenessCentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 
