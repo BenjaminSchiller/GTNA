@@ -52,6 +52,7 @@ import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.algorithms.ResilienceMetrics;
+import gtna.metrics.BiconnectedComponent;
 import gtna.metrics.DegreeDistribution;
 import gtna.metrics.Metric;
 import gtna.metrics.fragmentation.Fragmentation.Resolution;
@@ -285,9 +286,10 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		Network nw = new BarabasiAlbert(100, 4, null);
-		Metric m = new WeakFragmentation(new DegreeNodeSorter(
-				NodeSorterMode.ASC), Resolution.SINGLE);
+		Network nw = new BarabasiAlbert(1000, 4, null);
+		Metric m = new BiconnectedComponent(
+				new BetweennessCentralityNodeSorter("BETWEENNESS",
+						NodeSorterMode.DESC));
 		Metric[] metrics = new Metric[] { m };
 		Series s = Series.generate(nw, metrics, 3);
 		Plotting.multi(s, metrics, "test/");

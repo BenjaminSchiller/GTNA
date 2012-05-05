@@ -135,40 +135,23 @@ public class Utils {
 
 		gtna.graph.Node[] nodes = gtna.graph.Node.init(gephi.getNodeCount(),
 				gtnaGraph);
-		// import nodes
-		/*
-		 * for (Node n : gephi.getNodes()) { gtna.graph.Node node = new
-		 * gtna.graph.Node(n.getId(), gtnaGraph); nodes[n.getId() - 1] = node;
-		 * System.out.println("Node " + n.getId() + " = " +
-		 * n.getNodeData().getLabel()); }
-		 */
 
 		// import edges
 		Edges edges = new Edges(nodes, gephi.getEdgeCount() * 2);
 		for (Edge e : gephi.getEdges()) {
-			// gtna.graph.Edge edge = new
-			// gtna.graph.Edge(nodes[e.getSource().getId() - 1],
-			// nodes[e.getTarget().getId() - 1]);
-			// System.out.println("--> import edge :" + importedEdges
-			// + " gephi:  " + e.toString());
+
 			int src = e.getSource().getId() - 1;
 			int dst = e.getTarget().getId() - 1;
-			// System.out.println("src = " + src + "  dst = " + dst);
+
 			edges.add(src, dst);
 			edges.add(dst, src);
 		}
 		edges.fill();
 
 		gtnaGraph.setNodes(nodes);
-		// gtnaGraph.generateEdges();
 
 		System.out.println("Imported: " + gtnaGraph.getNodes().length
 				+ " nodes + " + gtnaGraph.getEdges().size() + " edges.");
-
-		/*
-		 * for (gtna.graph.Node n : gtnaGraph.getNodes()) {
-		 * n.generateAllEdges(); }
-		 */
 
 		return gtnaGraph;
 	}
@@ -194,7 +177,6 @@ public class Utils {
 		for (Node n : gephi.getNodes()) {
 			Double c = (Double) n.getNodeData().getAttributes()
 					.getValue(col.getId());
-			// System.out.println("" + n.getId() + " = " + c);
 			result.put(n.getId() - 1, c);
 		}
 		return result;
