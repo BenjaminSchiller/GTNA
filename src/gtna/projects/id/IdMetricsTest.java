@@ -95,8 +95,8 @@ public class IdMetricsTest {
 		Config.overwrite("GNUPLOT_PRINT_ERRORS", "false");
 		Config.overwrite("GNUPLOT_LW", "5");
 
-		IdMetricsTest.testPlane();
-		// IdMetricsTest.testRing();
+		// IdMetricsTest.testPlane();
+		IdMetricsTest.testRing();
 
 		if (true) {
 			return;
