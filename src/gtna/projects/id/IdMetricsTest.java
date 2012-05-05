@@ -41,6 +41,7 @@ import gtna.metrics.basic.ShortestPaths;
 import gtna.metrics.id.DIdentifierSpaceDistanceProducts;
 import gtna.metrics.id.DIdentifierSpaceDistances;
 import gtna.metrics.id.PlaneIdentifierSpaceVisualization;
+import gtna.metrics.id.RingIdentifierSpaceSuccessorDistances;
 import gtna.metrics.id.RingIdentifierSpaceSuccessorHopDistances;
 import gtna.metrics.id.RingIdentifierSpaceVisualzation;
 import gtna.networks.Network;
@@ -98,75 +99,6 @@ public class IdMetricsTest {
 		// IdMetricsTest.testPlane();
 		IdMetricsTest.testRing();
 
-		if (true) {
-			return;
-		}
-
-		boolean GET = false;
-		int TIMES = 1;
-		int nodes = 1000;
-
-		Metric idsd = new DIdentifierSpaceDistances(100);
-		Metric idsv1 = new RingIdentifierSpaceVisualzation(100);
-		Metric idsv2 = new RingIdentifierSpaceVisualzation(500);
-		Metric idsv3 = new RingIdentifierSpaceVisualzation();
-		Metric pidsv = new PlaneIdentifierSpaceVisualization();
-		Metric ridsshd = new RingIdentifierSpaceSuccessorHopDistances();
-		Metric sp = new ShortestPaths();
-		Metric didsdp = new DIdentifierSpaceDistanceProducts(1000);
-		Metric[] metrics = new Metric[] { idsd, idsv1, idsv2, idsv3, pidsv,
-				pidsv };
-
-		Transformation[] rand1 = new Transformation[] {
-				new RemoveGraphProperty(), new RandomRingIDSpaceSimple() };
-		Transformation[] rand2 = new Transformation[] {
-				new RemoveGraphProperty(), new RandomRingIDSpace() };
-		Transformation[] lmc = new Transformation[] {
-				new RemoveGraphProperty(), new RandomRingIDSpaceSimple(),
-				new LMC(1000, LMC.MODE_UNRESTRICTED, 0, LMC.DELTA_1_N, 0) };
-		Transformation[] comm1 = new Transformation[] {
-				new RemoveGraphProperty(), new CommunityDetectionLPA(10),
-				new SimpleCommunityEmbedding1() };
-		Transformation[] comm2 = new Transformation[] {
-				new RemoveGraphProperty(), new CommunityDetectionLPA(10),
-				new SimpleCommunityEmbedding2() };
-		Transformation[][] t = new Transformation[][] { rand1, rand2, lmc,
-				comm1, comm2 };
-
-		Transformation[] t1 = new Transformation[] { new Nothing(
-				new IntParameter("", 1)) };
-		Transformation[] t2 = new Transformation[] { new Nothing(
-				new IntParameter("", 2)) };
-		Transformation[] t3 = new Transformation[] { new Nothing(
-				new IntParameter("", 3)) };
-		Transformation[] t4 = new Transformation[] { new Nothing(
-				new IntParameter("", 4)) };
-		// t = new Transformation[][] { t1, t2, t3, t4 };
-
-		Map<Transformation[], String> names = new HashMap<Transformation[], String>();
-		names.put(rand1, "rand1");
-		names.put(rand2, "rand2");
-		names.put(lmc, "LMC");
-		names.put(comm1, "comm1");
-		names.put(comm2, "comm2");
-		names.put(t1, "T1");
-		names.put(t2, "T2");
-		names.put(t3, "T3");
-		names.put(t4, "T4");
-
-		Network[] nw = new Network[t.length];
-		for (int i = 0; i < t.length; i++) {
-			Network nw_ = null;
-			// nw_ = new Complete(100, t[i]);
-			nw_ = new ErdosRenyi(2000, 20, true, t[i]);
-			// nw_ = IdMetricsTest.nwCC(nodes, t[i]);
-			nw[i] = new DescriptionWrapper(nw_, names.get(t[i]));
-		}
-
-		Series[] s = GET ? Series.get(nw, metrics) : Series.generate(nw,
-				metrics, TIMES);
-		Plotting.multi(s, metrics, "multi/");
-
 		stats.end();
 	}
 
@@ -177,8 +109,9 @@ public class IdMetricsTest {
 		Metric idsv3 = new RingIdentifierSpaceVisualzation();
 		Metric ridsshd = new RingIdentifierSpaceSuccessorHopDistances();
 		Metric didsdp = new DIdentifierSpaceDistanceProducts(1000);
+		Metric ridssd = new RingIdentifierSpaceSuccessorDistances(100);
 		Metric[] metrics = new Metric[] { idsd, idsv1, idsv2, idsv3, ridsshd,
-				didsdp };
+				didsdp, ridssd };
 
 		Transformation[] t1 = new Transformation[] { new RemoveGraphProperty(),
 				new RandomRingIDSpaceSimple() };
