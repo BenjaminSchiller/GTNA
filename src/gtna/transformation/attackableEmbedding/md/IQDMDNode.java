@@ -53,7 +53,7 @@ public abstract class IQDMDNode extends AttackableEmbeddingNode {
     double[] id;
     protected IQDMDEmbedding embedding;
     int partnerID=-1;
-    double[][] knownIDs;
+    protected double[][] knownIDs;
 	
 	/**
 	 * @param index
@@ -123,6 +123,16 @@ public abstract class IQDMDNode extends AttackableEmbeddingNode {
 		return this.id;
 	}
 	
-	
+	protected boolean equalArrays(double[] a1, double[] a2){
+		if (a1.length != a2.length){
+			return false;
+		}
+		for (int i = 0; i < a1.length; i++){
+			if (a1[i] != a2[i]){
+				return false;
+			}
+		}
+		return true;
+	}
 
 }

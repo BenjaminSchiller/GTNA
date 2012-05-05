@@ -63,6 +63,7 @@ public class RandomMDIDSpaceSimple extends Transformation {
 	public RandomMDIDSpaceSimple() {
 		super("RANDOM_MD_ID_SPACE_SIMPLE");
 		this.realities = 1;
+		this.modulus = new double[]{1};
 	}
 
 	public RandomMDIDSpaceSimple(int realities, double[] modulus,
