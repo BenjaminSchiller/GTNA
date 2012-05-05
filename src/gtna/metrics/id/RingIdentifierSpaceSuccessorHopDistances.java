@@ -162,28 +162,4 @@ public class RingIdentifierSpaceSuccessorHopDistances extends Metric {
 				&& g.getProperty("ID_SPACE_0") instanceof RingIdentifierSpace;
 	}
 
-	private class SuccessorComparator implements Comparator<Integer> {
-		private DPartition[] partitions;
-
-		private SuccessorComparator(DPartition[] partitions) {
-			this.partitions = partitions;
-		}
-
-		@Override
-		public int compare(Integer n1, Integer n2) {
-			RingIdentifier id1 = (RingIdentifier) this.partitions[n1]
-					.getRepresentativeID();
-			RingIdentifier id2 = (RingIdentifier) this.partitions[n2]
-					.getRepresentativeID();
-			double dist = id2.getPosition() - id1.getPosition();
-			if (dist == 0) {
-				return 0;
-			} else if (dist < 0) {
-				return 1;
-			} else {
-				return -1;
-			}
-		}
-
-	}
 }
