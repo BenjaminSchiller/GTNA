@@ -66,9 +66,9 @@ public class RolesNodeSorter extends NodeSorter {
 		StringBuffer buff = new StringBuffer();
 		for (Role r : order) {
 			if (buff.length() == 0) {
-				buff.append(r.toString());
+				buff.append(r.getKey());
 			} else {
-				buff.append("-" + r.toString());
+				buff.append("-" + r.getKey());
 			}
 		}
 		return buff.toString();

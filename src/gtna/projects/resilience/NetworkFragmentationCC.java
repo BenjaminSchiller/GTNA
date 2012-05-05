@@ -75,7 +75,7 @@ public class NetworkFragmentationCC {
 	public static void main(String[] args) {
 		Config.overwrite("MAIN_DATA_FOLDER", "data/network-fragmentation-cc/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "plots/network-fragmentation-cc/");
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 
 		NodeSorter s1 = new DegreeNodeSorter(NodeSorterMode.DESC);
 		NodeSorter s2 = new RandomNodeSorter();
@@ -116,14 +116,21 @@ public class NetworkFragmentationCC {
 		Network[] nw = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 
 		boolean get = false;
-		int times = 10;
+		int times = 50;
 
 		Series[] s = get ? Series.get(nw, metrics) : Series.generate(nw,
 				metrics, times);
 
-		Plotting.multi(s, metrics, "multi-2-avg/");
-		Plotting.multi(s, metrics, "multi-2-conf/", Type.confidence1,
+		Plotting.multi(s, metrics, "multi-avg/");
+		Plotting.multi(s, metrics, "multi-conf/", Type.confidence1,
 				Style.candlesticks);
+		for (Network network : nw) {
+			Plotting.multi(Series.get(network, metrics), metrics, "multi-"
+					+ network.getNodes() + "-avg/");
+			Plotting.multi(Series.get(network, metrics), metrics, "multi-"
+					+ network.getNodes() + "-conf/", Type.confidence1,
+					Style.candlesticks);
+		}
 	}
 
 	private static final double xyNodes = 40000;
