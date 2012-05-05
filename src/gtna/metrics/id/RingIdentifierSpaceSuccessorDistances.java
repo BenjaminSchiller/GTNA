@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * IdentifierSpaceHopDistances.java
+ * RingIdentifierSpaceSuccessorDistances.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -43,25 +43,33 @@ import gtna.id.ring.RingIdentifierSpace;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
-import gtna.util.ArrayUtils;
-import gtna.util.Distribution;
+import gtna.util.Statistics;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * @author benni
  * 
  */
-public class RingIdentifierSpaceSuccessorHopDistances extends Metric {
-	private Distribution successorHopDistanceDistribution;
+public class RingIdentifierSpaceSuccessorDistances extends Metric {
 
-	public RingIdentifierSpaceSuccessorHopDistances() {
-		super("RING_IDENTIFIER_SPACE_SUCCESSOR_HOP_DISTANCES");
+	private int bins;
 
-		this.successorHopDistanceDistribution = new Distribution(
-				new double[] { -1 });
+	private double[][] successorDistanceDistribution;
+
+	private double[][] successorDistanceDistributionCdf;
+
+	public RingIdentifierSpaceSuccessorDistances(int bins) {
+		super("RING_IDENTIFIER_SPACE_SUCCESSOR_DISTANCES",
+				new Parameter[] { new IntParameter("BINS", bins) });
+		this.bins = bins;
+
+		this.successorDistanceDistribution = new double[][] { new double[] {
+				-1, -1 } };
+		this.successorDistanceDistributionCdf = new double[][] { new double[] {
+				-1, -1 } };
 	}
 
 	@Override
@@ -69,73 +77,44 @@ public class RingIdentifierSpaceSuccessorHopDistances extends Metric {
 		RingIdentifierSpace ids = (RingIdentifierSpace) g
 				.getProperty("ID_SPACE_0");
 		DPartition[] partitions = ids.getPartitions();
+		double maxDist = ids.getMaxDistance();
 
 		int[] nodesSorted = SuccessorComparator.getNodesSorted(partitions);
 
-		this.successorHopDistanceDistribution = this
-				.computeSuccessorHopDistanceDistribution(g.getNodes(),
-						nodesSorted);
+		double[] dist = this.computeSuccessorDistances(g.getNodes(),
+				nodesSorted, partitions);
+		this.successorDistanceDistribution = Statistics.binnedDistribution(
+				dist, 0, maxDist, this.bins);
+		this.successorDistanceDistributionCdf = Statistics
+				.binnedCdf(this.successorDistanceDistribution);
+
 	}
 
-	private int getSuccessor(int node, int[] nodesSorted) {
-		return nodesSorted[(node + 1) % nodesSorted.length];
-	}
+	private double[] computeSuccessorDistances(Node[] nodes, int[] nodesSorted,
+			DPartition[] partitions) {
+		double[] dist = new double[nodes.length];
 
-	private int getHopDistance(Node[] nodes, int src, int dst) {
-		int[] hop = ArrayUtils.initIntArray(nodes.length, -1);
-		hop[src] = 0;
-		Queue<Integer> queue = new LinkedList<Integer>();
-		queue.add(src);
-		while (!queue.isEmpty()) {
-			int current = queue.poll();
-			for (int out : nodes[current].getOutgoingEdges()) {
-				if (hop[out] >= 0) {
-					continue;
-				}
-				hop[out] = hop[current] + 1;
-				queue.add(out);
-				if (out == dst) {
-					return hop[out];
-				}
-			}
-		}
-		return 0;
-	}
-
-	private int[] getSuccessorHopDistances(Node[] nodes, int[] nodesSorted) {
-		int[] successorHopDistance = new int[nodes.length];
 		for (int i = 0; i < nodesSorted.length; i++) {
-			int node = nodesSorted[i];
-			int succ = this.getSuccessor(i, nodesSorted);
-			successorHopDistance[node] = this.getHopDistance(nodes, node, succ);
-		}
-		return successorHopDistance;
-	}
-
-	private Distribution computeSuccessorHopDistanceDistribution(Node[] nodes,
-			int[] nodesSorted) {
-		int[] successorHopDistances = this.getSuccessorHopDistances(nodes,
-				nodesSorted);
-		int max = ArrayUtils.getMaxInt(successorHopDistances);
-		double[] distr = new double[max + 1];
-		for (int v : successorHopDistances) {
-			distr[v]++;
+			int n = nodesSorted[i];
+			int succ = nodesSorted[(i + 1) % nodesSorted.length];
+			dist[i] = partitions[n].distance(partitions[succ]
+					.getRepresentativeID());
 		}
 
-		ArrayUtils.divide(distr, nodes.length);
-		return new Distribution(distr);
+		return dist;
 	}
 
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(
-				this.successorHopDistanceDistribution.getDistribution(),
-				"RING_IDENTIFIER_SPACE_SUCCESSOR_HOP_DISTANCES_DISTRIBUTION",
-				folder);
-		success &= DataWriter.writeWithIndex(
-				this.successorHopDistanceDistribution.getCdf(),
-				"RING_IDENTIFIER_SPACE_SUCCESSOR_HOP_DISTANCES_CDF", folder);
+		success &= DataWriter.writeWithoutIndex(
+				this.successorDistanceDistribution,
+				"RING_IDENTIFIER_SPACE_SUCCESSOR_DISTANCES_"
+						+ "SUCCESSOR_DISTANCE_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithoutIndex(
+				this.successorDistanceDistributionCdf,
+				"RING_IDENTIFIER_SPACE_SUCCESSOR_DISTANCES_"
+						+ "SUCCESSOR_DISTANCE_CDF", folder);
 		return success;
 	}
 
