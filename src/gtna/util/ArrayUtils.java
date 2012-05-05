@@ -35,6 +35,8 @@
  */
 package gtna.util;
 
+import gtna.metrics.Metric;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -91,6 +93,14 @@ public class ArrayUtils {
 		int[] array = new int[arrayI.length];
 		for (int i = 0; i < arrayI.length; i++) {
 			array[i] = arrayI[i];
+		}
+		return array;
+	}
+
+	public static Metric[] toMetricArray(ArrayList<Metric> list) {
+		Metric[] array = new Metric[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			array[i] = list.get(i);
 		}
 		return array;
 	}
