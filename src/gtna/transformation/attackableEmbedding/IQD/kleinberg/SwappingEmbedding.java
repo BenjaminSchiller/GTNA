@@ -56,31 +56,31 @@ public class SwappingEmbedding extends KleinbergEmbedding {
 	 * @param checkold
 	 * @param parameters
 	 */
-//	public SwappingEmbedding(int iterations, Distance distance, double epsilon) {
-//		super("SWAPPINGEMBEDDING", iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
-//				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
-//				false, false, new Parameter[0]);
-//	}
-//	
-//	public SwappingEmbedding(int iterations, Distance distance, double epsilon, AttackerType type, AttackerSelection selection,
-//			int attackercount) {
-//		super("SWAPPINGEMBEDDING", iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
-//				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
-//				false, false, type, selection, attackercount);
-//	}
-	
 	public SwappingEmbedding(int iterations, Distance distance, double epsilon) {
-		super(iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
+		super("SWAPPINGEMBEDDING", iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
 				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
 				false, false, new Parameter[0]);
 	}
 	
 	public SwappingEmbedding(int iterations, Distance distance, double epsilon, AttackerType type, AttackerSelection selection,
 			int attackercount) {
-		super(iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
+		super("SWAPPINGEMBEDDING", iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
 				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
 				false, false, type, selection, attackercount);
 	}
+	
+//	public SwappingEmbedding(int iterations, Distance distance, double epsilon) {
+//		super(iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
+//				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
+//				false, false, new Parameter[0]);
+//	}
+//	
+//	public SwappingEmbedding(int iterations, Distance distance, double epsilon, AttackerType type, AttackerSelection selection,
+//			int attackercount) {
+//		super(iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
+//				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
+//				false, false, type, selection, attackercount);
+//	}
 	
 	
 

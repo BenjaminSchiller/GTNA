@@ -102,13 +102,23 @@ public class SwappingNode extends AttackableEmbeddingNode {
 	 RingIdentifier id = this.swapping.getIds()[this.getIndex()]; 
 	 for (int i = 0; i < this.getOutDegree(); i++) {
 	 neighborID.setPosition(this.knownIDs[i]);
+	 if (this.knownIDs[i] != partnerID.getPosition()){
 	 before = before * id.distance(neighborID);
 	 after = after * partnerID.distance(neighborID);
+	 } else {
+		 before = before * id.distance(partnerID);
+		 after = after * partnerID.distance(id); 
+	 }
 	 }
 	 for (int i = 0; i < callerNeighborIDs.length; i++) {
 	 neighborID.setPosition(callerNeighborIDs[i]);
-	 before = before * partnerID.distance(neighborID);
-	 after = after * id.distance(neighborID);
+	 if (callerNeighborIDs[i] != id.getPosition()){
+	    before = before * partnerID.distance(neighborID);
+	    after = after * id.distance(neighborID);
+	 } else {
+		 before = before * partnerID.distance(id);
+		 after = after * id.distance(partnerID); 
+	 }
 	 }
 	 // decide if to swap
 	 if (rand.nextDouble() < before / after) {
