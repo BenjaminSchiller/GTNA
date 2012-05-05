@@ -50,10 +50,12 @@ import java.util.Stack;
  * Implement the Betweenness Centrality described by Ulrik Brandes in
  * "A Faster Algorithm for Betweenness Centrality" (2001)
  * 
+ * The Closeness Centrality and Effective Eccentricity are implicit calculated
+ * 
  * @author truong
  * 
  */
-public class BetweennessCentralityNodeSorter extends NodeSorter {
+public class CentralityNodeSorter extends NodeSorter {
 
 	private Graph g;
 
@@ -82,7 +84,7 @@ public class BetweennessCentralityNodeSorter extends NodeSorter {
 	 */
 	private HashMap<Node, Double> ccMap = new HashMap<Node, Double>();
 
-	public BetweennessCentralityNodeSorter(String key, NodeSorterMode mode) {
+	public CentralityNodeSorter(String key, NodeSorterMode mode) {
 		super(key, mode);
 		if (key.equalsIgnoreCase("BETWEENNESS"))
 			map = bcMap;

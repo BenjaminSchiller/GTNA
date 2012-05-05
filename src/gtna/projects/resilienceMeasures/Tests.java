@@ -45,12 +45,13 @@ import org.gephi.statistics.plugin.GraphDistance;
 import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.graph.sorting.BetweennessCentralityNodeSorter;
+import gtna.graph.sorting.CentralityNodeSorter;
 import gtna.graph.sorting.ClosenessCentralityNodeSorter;
 import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
+import gtna.graph.sorting.RandomNodeSorter;
 import gtna.graph.sorting.algorithms.ResilienceMetrics;
 import gtna.metrics.BiconnectedComponent;
 import gtna.metrics.DegreeDistribution;
@@ -81,8 +82,8 @@ public class Tests {
 		System.out.println("Graph imported!");
 
 		// sorting
-		BetweennessCentralityNodeSorter sorter = new BetweennessCentralityNodeSorter(
-				"CLOSENESS", NodeSorter.NodeSorterMode.ASC);
+		CentralityNodeSorter sorter = new CentralityNodeSorter("CLOSENESS",
+				NodeSorter.NodeSorterMode.ASC);
 		// sorter.setCentrality("BETWEENNESS");
 		Node[] sorted = sorter.sort(g, new Random());
 		sorted = sorter.resort("BETWEENNESS", new Random());
@@ -112,8 +113,8 @@ public class Tests {
 		Utils u = new Utils();
 		Graph g = u.importGraphFromFile("PFP.gml");
 
-		BetweennessCentralityNodeSorter bc = new BetweennessCentralityNodeSorter(
-				"BETWEENNESS", NodeSorterMode.ASC);
+		CentralityNodeSorter bc = new CentralityNodeSorter("BETWEENNESS",
+				NodeSorterMode.ASC);
 
 		Node[] sorted = bc.sort(g, new Random());
 
@@ -255,8 +256,8 @@ public class Tests {
 		Utils u = new Utils();
 		Graph g = u.importGraphFromFile("germany.gml");
 
-		BetweennessCentralityNodeSorter bc = new BetweennessCentralityNodeSorter(
-				"CLOSENESS", NodeSorterMode.ASC);
+		CentralityNodeSorter bc = new CentralityNodeSorter("CLOSENESS",
+				NodeSorterMode.ASC);
 
 		Node[] sorted = bc.sort(g, new Random());
 
@@ -286,10 +287,15 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		Network nw = new BarabasiAlbert(1000, 4, null);
+		int N = 1000;
+		int m0 = 50;
+		int M = 2;
+		double p = 0.4695;
+		double beta = 0.6447;
+		Network nw = new GLP(N, m0, M, p, beta, null);
+
 		Metric m = new BiconnectedComponent(
-				new BetweennessCentralityNodeSorter("BETWEENNESS",
-						NodeSorterMode.DESC));
+				new EigenvectorCentralityNodeSorter(NodeSorterMode.DESC));
 		Metric[] metrics = new Metric[] { m };
 		Series s = Series.generate(nw, metrics, 3);
 		Plotting.multi(s, metrics, "test/");
