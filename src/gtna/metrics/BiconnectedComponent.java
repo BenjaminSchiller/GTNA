@@ -48,6 +48,7 @@ import gtna.util.parameter.StringParameter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Stack;
 
 /**
@@ -65,7 +66,8 @@ public class BiconnectedComponent extends Metric {
 	private int[] d;
 	private int[] low;
 
-	private ArrayList<Node> maxComponent = new ArrayList<Node>();
+	private ArrayList<Node> maxComponent;
+	private double[] maxComponentSize;
 	private Timer runtime;
 	private NodeSorter sorter;
 
@@ -89,7 +91,53 @@ public class BiconnectedComponent extends Metric {
 		this.runtime = new Timer();
 
 		this.g = g;
+		this.maxComponentSize = new double[g.getNodes().length];
 
+		/*
+		 * count = 0; visited = new boolean[g.getNodes().length]; parent = new
+		 * Node[g.getNodes().length]; d = new int[g.getNodes().length]; low =
+		 * new int[g.getNodes().length]; stack = new Stack<Edge>(); for (Node u
+		 * : g.getNodes()) { visited[u.getIndex()] = false; parent[u.getIndex()]
+		 * = null; } for (Node u : g.getNodes()) { if (!visited[u.getIndex()]) {
+		 * DFSVisit(u); } }
+		 */
+
+		Random rand = new Random();
+		Node[] sorted = sorter.sort(this.g, rand);
+		for (int i = 0; i < sorted.length; i++) {
+			System.out.println("\nIter = " + i);
+			calculate();
+			this.maxComponentSize[i] = (double) this.maxComponent.size();
+			System.out.println("Size = " + this.maxComponent.size());
+			// remove node
+			// TODO:
+			/*
+			 * Node[] newNodes = new Node[this.g.getNodes().length - 1]; boolean
+			 * deleted = false; for (int j = 0; j < newNodes.length; j++) { if
+			 * (deleted) { newNodes[j] = this.g.getNode(j + 1); } else { if
+			 * (sorted[i] == this.g.getNode(j)) { deleted = true; newNodes[j] =
+			 * this.g.getNode(j + 1); } else { newNodes[j] = this.g.getNode(j);
+			 * } } }
+			 * 
+			 * this.g = new Graph("New Graph"); this.g.setNodes(newNodes);
+			 * this.g.generateEdges();
+			 */
+			Node node = sorted[i];
+			for (int index : node.getIncomingEdges()) {
+				node.removeIn(index);
+				node.removeOut(index);
+				g.getNode(index).removeIn(node.getIndex());
+				g.getNode(index).removeOut(node.getIndex());
+			}
+
+		}
+
+		this.runtime.end();
+	}
+
+	public void calculate() {
+		maxComponent = new ArrayList<Node>();
+		System.out.println("Number of Nodes = " + this.g.getNodes().length);
 		count = 0;
 		visited = new boolean[g.getNodes().length];
 		parent = new Node[g.getNodes().length];
@@ -106,7 +154,6 @@ public class BiconnectedComponent extends Metric {
 			}
 		}
 
-		this.runtime.end();
 	}
 
 	private void DFSVisit(Node u) {
@@ -150,9 +197,6 @@ public class BiconnectedComponent extends Metric {
 			}
 			// System.out.println("" + e);
 			if (e.getSrc() == u.getIndex() && e.getDst() == v.getIndex()) {
-				if (max.size() > 2) {
-					System.out.println("Size = " + max.size());
-				}
 				// System.out.println("End of this component!");
 				if (max.size() > this.maxComponent.size()) {
 					this.maxComponent = max;
@@ -171,8 +215,7 @@ public class BiconnectedComponent extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(
-				new double[] { this.maxComponent.size() },
+		success &= DataWriter.writeWithIndex(maxComponentSize,
 				"BICONNECTED_COMPONENT_MAX_COMPONENT_SIZE", folder);
 		return success;
 	}

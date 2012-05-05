@@ -200,7 +200,12 @@ public class BetweennessCentralityNodeSorter extends NodeSorter {
 			// ----- calculate effective eccentricity of s
 			int rTimesNodes = (int) Math.floor(r * g.getNodes().length);
 			// distance from s to the node with index rTimesNodes
-			int distance = d.get(S.get(rTimesNodes)).intValue();
+			int distance = Integer.MAX_VALUE;
+			try {
+				distance = d.get(S.get(rTimesNodes)).intValue();
+			} catch (IndexOutOfBoundsException e) {
+				System.out.println("Cannot not get " + r + " nodes!");
+			}
 			// put the eccentricity point to the map
 			this.eeMap.put(s, (double) distance);
 			// -----
