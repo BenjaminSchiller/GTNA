@@ -224,6 +224,7 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 		}
 		for (int i = 0; i < ids.length; i++) {
 			ids[i].setPosition(((IQDNode) nodes[i]).getID());
+			//System.out.println(ids[i].getPosition());
 		}
 		Partition<Double>[] parts = new RingPartitionSimple[g.getNodes().length];
 
