@@ -65,7 +65,7 @@ import java.util.Random;
 public abstract class IQDMDEmbedding extends AttackableEmbedding {
 
 	public static enum IdentifierMethod {
-		ONERANDOM, TWORANDOM, RANDNEIGHBOR, ALLNEIGHBOR,  SWAPPING
+		ONERANDOM, TWORANDOM, RANDNEIGHBOR, ALLNEIGHBOR, SWAPPING
 	}
 
 	public static enum DecisionMethod {
@@ -86,11 +86,12 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 	 * @param key
 	 * @param parameters
 	 */
-	public IQDMDEmbedding(int iterations, String key, IdentifierMethod idMethod, 
-			DecisionMethod deMethod, DistanceMD distance, int dimension, double epsilon,
+	public IQDMDEmbedding(int iterations, String key,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			DistanceMD distance, int dimension, double epsilon,
 			boolean checkold, boolean adjustOne, Parameter[] parameters) {
-		super(iterations, key, combineParameter(iterations, idMethod, deMethod, dimension,
-				epsilon, checkold, adjustOne,distance, parameters));
+		super(iterations, key, combineParameter(iterations, idMethod, deMethod,
+				dimension, epsilon, checkold, adjustOne, distance, parameters));
 		this.idMethod = idMethod;
 		this.deMethod = deMethod;
 		this.dimension = dimension;
@@ -116,9 +117,10 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 		return this.checkold;
 	}
 
-	private static Parameter[] combineParameter(int iter, IdentifierMethod idMethod,
-			DecisionMethod deMethod, int dimension, double epsilon,
-			boolean checkold, boolean adjustone, DistanceMD distance, Parameter[] parameters) {
+	private static Parameter[] combineParameter(int iter,
+			IdentifierMethod idMethod, DecisionMethod deMethod, int dimension,
+			double epsilon, boolean checkold, boolean adjustone,
+			DistanceMD distance, Parameter[] parameters) {
 		Parameter[] res = new Parameter[parameters.length + 7];
 		res[0] = new IntParameter("ITERATIONS", iter);
 		res[1] = new StringParameter("IDENTIFIER_METHOD", idMethod.toString());
@@ -181,21 +183,22 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 		GraphProperty[] prop = g.getProperties("ID_SPACE");
 		DIdentifierSpace idSpace;
 		int k = -1;
-		for (int i = 0; i < prop.length; i++){
+		for (int i = 0; i < prop.length; i++) {
 			if (prop[i] instanceof MDIdentifierSpaceSimple
-					&& ((MDIdentifierSpaceSimple)prop[i]).getDimensions() == this.dimension){
+					&& ((MDIdentifierSpaceSimple) prop[i]).getDimensions() == this.dimension) {
 				k = i;
 			}
 		}
-		if (k == -1){
+		if (k == -1) {
 			double[] modulus = new double[this.dimension];
-			for (int m = 0; m < this.dimension; m++){
+			for (int m = 0; m < this.dimension; m++) {
 				modulus[m] = 1.0;
 			}
-			Transformation idTrans = new RandomMDIDSpaceSimple(1, modulus, true,this.distance);
-			g  = idTrans.transform(g);
+			Transformation idTrans = new RandomMDIDSpaceSimple(1, modulus,
+					true, this.distance);
+			g = idTrans.transform(g);
 			prop = g.getProperties("ID_SPACE");
-			k = prop.length-1;
+			k = prop.length - 1;
 		}
 		idSpace = (DIdentifierSpace) prop[k];
 		this.setIdspace(idSpace);
@@ -204,7 +207,7 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 		AttackableEmbeddingNode[] selectionSet = this.generateSelectionSet(
 				nodes, rand);
 		g.setNodes(nodes);
-		
+
 		MDIdentifier[] ids = this.getIdsMD();
 		for (int i = 0; i < ids.length; i++) {
 			((IQDMDNode) nodes[i]).setID(ids[i].getCoordinates());
@@ -218,14 +221,15 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 				if (this.adjustOneDegree
 						&& selectionSet[index].getDegree() == 2) {
 					IQDMDNode node = (IQDMDNode) selectionSet[index];
-					double[] neighPos = ((IQDMDNode) nodes[node.getOutgoingEdges()[0]])
-							.getID();
+					double[] neighPos = ((IQDMDNode) nodes[node
+							.getOutgoingEdges()[0]]).getID();
 					if (Math.abs(this.computeDistance(neighPos, node.getID())) > this.epsilon) {
 						double[] id = new double[this.dimension];
-						for (int j = 0; j < this.dimension; j++){
-						 id[j] = neighPos[j] - rand.nextDouble() * this.epsilon/(double)this.dimension;
-						if (id[j] < 0)
-							id[j]++;
+						for (int j = 0; j < this.dimension; j++) {
+							id[j] = neighPos[j] - rand.nextDouble()
+									* this.epsilon / (double) this.dimension;
+							if (id[j] < 0)
+								id[j]++;
 						}
 						node.setID(id);
 					}
@@ -249,21 +253,21 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 
 	public double computeDistance(double[] a, double[] b) {
 		double temp;
-		if (this.distance == DistanceMD.EUCLIDEAN){
+		if (this.distance == DistanceMD.EUCLIDEAN) {
 			double squarredResult = 0;
-		for ( int i = 0; i < this.dimension; i++ ) {
-			temp = Math.min(Math.abs(a[i]-b[i]), 
-						 Math.min(1+a[i]-b[i], 1-a[i]+b[i]));
-			
-			squarredResult += Math.pow(temp, 2);
+			for (int i = 0; i < this.dimension; i++) {
+				temp = Math.min(Math.abs(a[i] - b[i]),
+						Math.min(1 + a[i] - b[i], 1 - a[i] + b[i]));
+
+				squarredResult += Math.pow(temp, 2);
+			}
+			return Math.sqrt(squarredResult);
 		}
-		return Math.sqrt(squarredResult);
-		} 
-		if (this.distance == DistanceMD.MANHATTAN){
+		if (this.distance == DistanceMD.MANHATTAN) {
 			double result = 0;
-			for ( int i = 0; i < this.dimension; i++ ) {
-				temp = Math.min(Math.abs(a[i]-b[i]), 
-						 Math.min(1+a[i]-b[i], 1-a[i]+b[i]));
+			for (int i = 0; i < this.dimension; i++) {
+				temp = Math.min(Math.abs(a[i] - b[i]),
+						Math.min(1 + a[i] - b[i], 1 - a[i] + b[i]));
 				result += temp;
 			}
 			return result;
@@ -285,7 +289,6 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 		}
 	}
 
-	
 	public MDIdentifier[] getIdsMD() {
 		return this.ids;
 	}
@@ -307,7 +310,10 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 	public DistanceMD getDistance() {
 		return this.distance;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.transformation.attackableEmbedding.AttackableEmbedding#getIds()
 	 */
 	@Override

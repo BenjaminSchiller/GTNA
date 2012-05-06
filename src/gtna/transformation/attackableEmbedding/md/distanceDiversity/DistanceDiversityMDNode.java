@@ -45,21 +45,26 @@ import java.util.Vector;
 
 /**
  * @author stef
- *
+ * 
  */
-public class DistanceDiversityMDNode extends AttackerMDNode{
+public class DistanceDiversityMDNode extends AttackerMDNode {
 
 	/**
 	 * @param index
 	 * @param g
 	 * @param embedding
 	 */
-	public DistanceDiversityMDNode(int index, Graph g, DistanceDiversityMDEmbedding embedding, boolean isAttacker) {
-		super(index, g, embedding,isAttacker);
+	public DistanceDiversityMDNode(int index, Graph g,
+			DistanceDiversityMDEmbedding embedding, boolean isAttacker) {
+		super(index, g, embedding, isAttacker);
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.IQD.IQDNode#getQuality(java.util.Random, double[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.attackableEmbedding.IQD.IQDNode#getQuality(java.util
+	 * .Random, double[])
 	 */
 	@Override
 	public double[] getQuality(Random rand, double[][] ids) {
@@ -67,48 +72,60 @@ public class DistanceDiversityMDNode extends AttackerMDNode{
 		double log2 = Math.log(2);
 		double dist;
 		int r;
-		int max = ((DistanceDiversityMDEmbedding)this.embedding).getMax();
-		double exp = ((DistanceDiversityMDEmbedding)this.embedding).getExponent();
-		for (int i = 0; i < res.length; i++){
+		int max = ((DistanceDiversityMDEmbedding) this.embedding).getMax();
+		double exp = ((DistanceDiversityMDEmbedding) this.embedding)
+				.getExponent();
+		for (int i = 0; i < res.length; i++) {
 			Vector<Integer> numb = new Vector<Integer>(this.knownIDs.length);
-			for (int j = 0; j < this.knownIDs.length; j++){
-				if (this.equalArrays(ids[i],this.knownIDs[j])){
-				   dist = this.embedding.computeDistance( ids[i], this.knownIDs[j]);
+			for (int j = 0; j < this.knownIDs.length; j++) {
+				if (!this.equalArrays(ids[i], this.knownIDs[j])) {
+					dist = this.embedding.computeDistance(ids[i],
+							this.knownIDs[j]);
 				} else {
-					dist = this.embedding.computeDistance( ids[i], ids[(i+1)%2]);
+					dist = this.embedding.computeDistance(ids[i],
+							ids[(i + 1) % 2]);
 				}
-				r = (int) (Math.min(Math.ceil(-Math.log(Math.abs(dist))/log2),max)*Math.signum(dist));
-				if (!numb.contains(r)){
+				r = (int) (Math.min(
+						Math.ceil(-Math.log(Math.abs(dist)) / log2), max) * Math
+						.signum(dist));
+				if (!numb.contains(r)) {
 					numb.add(r);
 				}
-				
+
 			}
-			for (int j = 0; j < numb.size(); j++){
-				for (int k = j+1; k < numb.size(); k++){
-					res[i] = res[i] + Math.pow(Math.abs(numb.get(j)-numb.get(k)),exp);
+			for (int j = 0; j < numb.size(); j++) {
+				for (int k = j + 1; k < numb.size(); k++) {
+					res[i] = res[i]
+							+ Math.pow(Math.abs(numb.get(j) - numb.get(k)), exp);
 				}
 			}
-		
-		if (this.embedding.getIdMethod() == IQDMDEmbedding.IdentifierMethod.SWAPPING){
-			numb = new Vector<Integer>(this.swapped.length);
-			for (int j = 0; j < this.swapped.length; j++){
-				if (this.equalArrays(ids[i],this.swapped[j])){
-					   dist = this.embedding.computeDistance( ids[(i+1)%2], this.swapped[j]);
+
+			if (this.embedding.getIdMethod() == IQDMDEmbedding.IdentifierMethod.SWAPPING) {
+				numb = new Vector<Integer>(this.swapped.length);
+				for (int j = 0; j < this.swapped.length; j++) {
+					if (!this.equalArrays(ids[(i + 1) % 2], this.swapped[j])) {
+						dist = this.embedding.computeDistance(ids[(i + 1) % 2],
+								this.swapped[j]);
 					} else {
-						dist = this.embedding.computeDistance( ids[(i+1)%2], ids[i]);
+						dist = this.embedding.computeDistance(ids[(i + 1) % 2],
+								ids[i]);
+					}
+					r = (int) (Math.min(
+							Math.ceil(-Math.log(Math.abs(dist)) / log2), max) * Math
+							.signum(dist));
+					if (!numb.contains(r)) {
+						numb.add(r);
+					}
+
 				}
-				r = (int) (Math.min(Math.ceil(-Math.log(Math.abs(dist))/log2),max)*Math.signum(dist));
-				if (!numb.contains(r)){
-					numb.add(r);
+				for (int j = 0; j < numb.size(); j++) {
+					for (int k = j + 1; k < numb.size(); k++) {
+						res[i] = res[i]
+								+ Math.pow(Math.abs(numb.get(j) - numb.get(k)),
+										exp);
+					}
 				}
-				
 			}
-			for (int j = 0; j < numb.size(); j++){
-				for (int k = j+1; k < numb.size(); k++){
-					res[i] = res[i] + Math.pow(Math.abs(numb.get(j)-numb.get(k)),exp);
-				}
-			}
-		}
 		}
 		return res;
 	}

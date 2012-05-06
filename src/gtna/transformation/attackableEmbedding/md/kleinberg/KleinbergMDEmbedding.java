@@ -47,7 +47,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 /**
- * @author stef
+ * @author stef trying to minimize the product of edges' length
  * 
  */
 public class KleinbergMDEmbedding extends AttackerIQDMDEmbedding {
@@ -63,33 +63,40 @@ public class KleinbergMDEmbedding extends AttackerIQDMDEmbedding {
 	 * @param parameters
 	 */
 	public KleinbergMDEmbedding(int iterations, IdentifierMethod idMethod,
-			DecisionMethod deMethod, DistanceMD distance, int dimension, double epsilon,
-			boolean checkold, boolean adjustone, Parameter[] parameters) {
-		super(iterations, "KLEINBERG_MD", idMethod, deMethod, distance, dimension, epsilon,
-				checkold, adjustone, parameters);
+			DecisionMethod deMethod, DistanceMD distance, int dimension,
+			double epsilon, boolean checkold, boolean adjustone,
+			Parameter[] parameters) {
+		super(iterations, "KLEINBERG_MD", idMethod, deMethod, distance,
+				dimension, epsilon, checkold, adjustone, parameters);
 	}
-	
+
 	public KleinbergMDEmbedding(int iterations, IdentifierMethod idMethod,
-			DecisionMethod deMethod, DistanceMD distance, int dimension, double epsilon,
-			boolean checkold, boolean adjustone, AttackerType type, AttackerSelection selection,
-		int attackercount, Parameter[] parameters) {
-		super(iterations, "KLEINBERG_MD", idMethod, deMethod, distance, dimension, epsilon,
-				checkold, adjustone, type, selection, attackercount, parameters);
+			DecisionMethod deMethod, DistanceMD distance, int dimension,
+			double epsilon, boolean checkold, boolean adjustone,
+			AttackerType type, AttackerSelection selection, int attackercount,
+			Parameter[] parameters) {
+		super(iterations, "KLEINBERG_MD", idMethod, deMethod, distance,
+				dimension, epsilon, checkold, adjustone, type, selection,
+				attackercount, parameters);
 	}
-	
-	public KleinbergMDEmbedding(String key, int iterations, IdentifierMethod idMethod,
-			DecisionMethod deMethod, DistanceMD distance, int dimension, double epsilon,
+
+	public KleinbergMDEmbedding(String key, int iterations,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			DistanceMD distance, int dimension, double epsilon,
 			boolean checkold, boolean adjustone, Parameter[] parameters) {
-		super(iterations, key, idMethod, deMethod, distance, dimension, epsilon,
-				checkold, adjustone, parameters);
+		super(iterations, key, idMethod, deMethod, distance, dimension,
+				epsilon, checkold, adjustone, parameters);
 	}
-	
-	public KleinbergMDEmbedding(String key, int iterations, IdentifierMethod idMethod,
-			DecisionMethod deMethod, DistanceMD distance, int dimension, double epsilon,
-			boolean checkold, boolean adjustone, AttackerType type, AttackerSelection selection,
-		int attackercount, Parameter[] parameters) {
-		super(iterations, key, idMethod, deMethod, distance, dimension, epsilon,
-				checkold, adjustone, type, selection, attackercount, parameters);
+
+	public KleinbergMDEmbedding(String key, int iterations,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			DistanceMD distance, int dimension, double epsilon,
+			boolean checkold, boolean adjustone, AttackerType type,
+			AttackerSelection selection, int attackercount,
+			Parameter[] parameters) {
+		super(iterations, key, idMethod, deMethod, distance, dimension,
+				epsilon, checkold, adjustone, type, selection, attackercount,
+				parameters);
 	}
 
 	/**
@@ -97,37 +104,41 @@ public class KleinbergMDEmbedding extends AttackerIQDMDEmbedding {
 	 * @param identifierMethod
 	 * @param decisionMethod
 	 * @param distance
-	 * @param epsilon 
+	 * @param epsilon
 	 * @param checkold
 	 */
 	public KleinbergMDEmbedding(int i, IdentifierMethod identifierMethod,
-			DecisionMethod decisionMethod, DistanceMD distance, int dimension, double epsilon,
-			boolean checkold, boolean adjustone) {
-		this(i, identifierMethod, decisionMethod, distance, dimension, epsilon, checkold,
-				adjustone, new Parameter[0]);
+			DecisionMethod decisionMethod, DistanceMD distance, int dimension,
+			double epsilon, boolean checkold, boolean adjustone) {
+		this(i, identifierMethod, decisionMethod, distance, dimension, epsilon,
+				checkold, adjustone, new Parameter[0]);
 	}
-	
+
 	public KleinbergMDEmbedding(int iterations, IdentifierMethod idMethod,
-			DecisionMethod deMethod, DistanceMD distance, int dimension, double epsilon,
-			boolean checkold, boolean adjustone, AttackerType type, AttackerSelection selection,
-		int attackercount) {
-		super(iterations, "KLEINBERG_MD", idMethod, deMethod, distance, dimension, epsilon,
-				checkold, adjustone, type, selection, attackercount, new Parameter[0]);
+			DecisionMethod deMethod, DistanceMD distance, int dimension,
+			double epsilon, boolean checkold, boolean adjustone,
+			AttackerType type, AttackerSelection selection, int attackercount) {
+		super(iterations, "KLEINBERG_MD", idMethod, deMethod, distance,
+				dimension, epsilon, checkold, adjustone, type, selection,
+				attackercount, new Parameter[0]);
 	}
-	
-	public KleinbergMDEmbedding(String key, int i, IdentifierMethod identifierMethod,
-			DecisionMethod decisionMethod, DistanceMD distance, int dimension, double epsilon,
+
+	public KleinbergMDEmbedding(String key, int i,
+			IdentifierMethod identifierMethod, DecisionMethod decisionMethod,
+			DistanceMD distance, int dimension, double epsilon,
 			boolean checkold, boolean adjustone) {
-		this(key,i, identifierMethod, decisionMethod, distance, dimension, epsilon, checkold,
-				adjustone, new Parameter[0]);
+		this(key, i, identifierMethod, decisionMethod, distance, dimension,
+				epsilon, checkold, adjustone, new Parameter[0]);
 	}
-	
-	public KleinbergMDEmbedding(String key, int iterations, IdentifierMethod idMethod,
-			DecisionMethod deMethod, DistanceMD distance, int dimension, double epsilon,
-			boolean checkold, boolean adjustone, AttackerType type, AttackerSelection selection,
-		int attackercount) {
-		super(iterations, key, idMethod, deMethod, distance, dimension, epsilon,
-				checkold, adjustone, type, selection, attackercount, new Parameter[0]);
+
+	public KleinbergMDEmbedding(String key, int iterations,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			DistanceMD distance, int dimension, double epsilon,
+			boolean checkold, boolean adjustone, AttackerType type,
+			AttackerSelection selection, int attackercount) {
+		super(iterations, key, idMethod, deMethod, distance, dimension,
+				epsilon, checkold, adjustone, type, selection, attackercount,
+				new Parameter[0]);
 	}
 
 	/*
@@ -143,10 +154,10 @@ public class KleinbergMDEmbedding extends AttackerIQDMDEmbedding {
 				.getNodes().length];
 		HashSet<Integer> map = this.getAttackers(g, rand);
 		for (int i = 0; i < g.getNodes().length; i++) {
-			if (map.contains(i)){
-			   nodes[i] = new KleinbergMDNode(i, g, this, true);
-			}else {
-			   nodes[i] = new KleinbergMDNode(i, g, this, false);
+			if (map.contains(i)) {
+				nodes[i] = new KleinbergMDNode(i, g, this, true);
+			} else {
+				nodes[i] = new KleinbergMDNode(i, g, this, false);
 			}
 		}
 		this.init(g, nodes);

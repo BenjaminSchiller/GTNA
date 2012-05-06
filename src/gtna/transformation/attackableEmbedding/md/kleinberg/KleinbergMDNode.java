@@ -42,10 +42,9 @@ import gtna.transformation.attackableEmbedding.md.IQDMDEmbedding;
 import java.util.Random;
 
 /**
- * @author stef
- *
+ * @author stef calculate product of edge's length
  */
-public class KleinbergMDNode extends AttackerMDNode{
+public class KleinbergMDNode extends AttackerMDNode {
 
 	/**
 	 * @param index
@@ -53,47 +52,56 @@ public class KleinbergMDNode extends AttackerMDNode{
 	 * @param id
 	 * @param embedding
 	 */
-	public KleinbergMDNode(int index, Graph g,  KleinbergMDEmbedding embedding, boolean isAttacker) {
+	public KleinbergMDNode(int index, Graph g, KleinbergMDEmbedding embedding,
+			boolean isAttacker) {
 		super(index, g, embedding, isAttacker);
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.IQD.IQDNode#getQuality(java.util.Random, double[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.attackableEmbedding.IQD.IQDNode#getQuality(java.util
+	 * .Random, double[])
 	 */
 	@Override
 	public double[] getQuality(Random rand, double[][] ids) {
 		double[] q = new double[ids.length];
-		for (int i = 0; i < ids.length; i++){
+		for (int i = 0; i < ids.length; i++) {
 			q[i] = 1;
-			for (int j = 0; j < this.knownIDs.length; j++){
-				if (!this.equalArrays(ids[i], this.knownIDs[j])){
-					//System.out.println("OWN: " + this.knownIDs[j]);
-				q[i] = q[i]*this.embedding.computeDistance( ids[i], this.knownIDs[j]);
+			for (int j = 0; j < this.knownIDs.length; j++) {
+				if (!this.equalArrays(ids[i], this.knownIDs[j])) {
+					q[i] = q[i]
+							* this.embedding.computeDistance(ids[i],
+									this.knownIDs[j]);
 				} else {
-					q[i] = q[i]*this.embedding.computeDistance( ids[i], ids[(i+1)%2]);
+					q[i] = q[i]
+							* this.embedding.computeDistance(ids[i],
+									ids[(i + 1) % 2]);
 				}
 			}
-			if (this.embedding.getIdMethod() == IQDMDEmbedding.IdentifierMethod.SWAPPING){
-				for (int k = 0; k < this.swapped.length; k++){
-					//System.out.println("SWAPPED " + swapped[k]);
-					if (!this.equalArrays(ids[(i+1)%2], swapped[k])){
-					q[i] = q[i]*this.embedding.computeDistance(ids[(i+1)%2], this.swapped[k]);
-				} else {
-					q[i] = q[i]*this.embedding.computeDistance( ids[i], ids[(i+1)%2]);
-				}
+			if (this.embedding.getIdMethod() == IQDMDEmbedding.IdentifierMethod.SWAPPING) {
+				for (int k = 0; k < this.swapped.length; k++) {
+					if (!this.equalArrays(ids[(i + 1) % 2], swapped[k])) {
+						q[i] = q[i]
+								* this.embedding.computeDistance(
+										ids[(i + 1) % 2], this.swapped[k]);
+					} else {
+						q[i] = q[i]
+								* this.embedding.computeDistance(ids[i],
+										ids[(i + 1) % 2]);
+					}
 				}
 			}
 			q[i] = Math.pow(q[i], ids[0].length);
-			if (q[i] == 0){
+			if (q[i] == 0) {
 				q[i] = Double.MAX_VALUE;
 			} else {
-				q[i] = 1/q[i];
+				q[i] = 1 / q[i];
 			}
 		}
-		
+
 		return q;
 	}
-	
-	
 
 }

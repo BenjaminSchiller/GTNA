@@ -45,21 +45,26 @@ import java.util.Vector;
 
 /**
  * @author stef
- *
+ * 
  */
-public class DistanceDiversityNode extends AttackerNode{
+public class DistanceDiversityNode extends AttackerNode {
 
 	/**
 	 * @param index
 	 * @param g
 	 * @param embedding
 	 */
-	public DistanceDiversityNode(int index, Graph g, DistanceDiversityEmbedding embedding, boolean isAttacker) {
-		super(index, g, embedding,isAttacker);
+	public DistanceDiversityNode(int index, Graph g,
+			DistanceDiversityEmbedding embedding, boolean isAttacker) {
+		super(index, g, embedding, isAttacker);
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.IQD.IQDNode#getQuality(java.util.Random, double[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.attackableEmbedding.IQD.IQDNode#getQuality(java.util
+	 * .Random, double[])
 	 */
 	@Override
 	public double[] getQuality(Random rand, double[] ids) {
@@ -67,64 +72,82 @@ public class DistanceDiversityNode extends AttackerNode{
 		double log2 = Math.log(2);
 		double dist;
 		int r;
-		int max = ((DistanceDiversityEmbedding)this.embedding).getMax();
-		double exp = ((DistanceDiversityEmbedding)this.embedding).getExponent();
-		for (int i = 0; i < res.length; i++){
+		int max = ((DistanceDiversityEmbedding) this.embedding).getMax();
+		double exp = ((DistanceDiversityEmbedding) this.embedding)
+				.getExponent();
+		for (int i = 0; i < res.length; i++) {
 			Vector<Integer> numb = new Vector<Integer>(this.knownIDs.length);
-			for (int j = 0; j < this.knownIDs.length; j++){
-				if (ids[i] != this.knownIDs[j]){
-				   dist = this.embedding.computeDistance( ids[i], this.knownIDs[j]);
+			for (int j = 0; j < this.knownIDs.length; j++) {
+				if (ids[i] != this.knownIDs[j]) {
+					dist = this.embedding.computeDistance(ids[i],
+							this.knownIDs[j]);
 				} else {
-					dist = this.embedding.computeDistance( ids[i], ids[(i+1)%2]);
+					dist = this.embedding.computeDistance(ids[i],
+							ids[(i + 1) % 2]);
 				}
-				r = (int) (Math.min(Math.ceil(-Math.log(Math.abs(dist))/log2),max)*Math.signum(dist));
-				if (!numb.contains(r)){
+				r = (int) (Math.min(
+						Math.ceil(-Math.log(Math.abs(dist)) / log2), max) * Math
+						.signum(dist));
+				if (!numb.contains(r)) {
 					numb.add(r);
 				}
-				if (this.embedding.getDistance() == Distance.SIGNED && numb.size() == 2*(max-1)){
+				if (this.embedding.getDistance() == Distance.SIGNED
+						&& numb.size() == 2 * (max - 1)) {
 					break;
 				}
-				if (this.embedding.getDistance() == Distance.RING && numb.size() == (max-1)){
+				if (this.embedding.getDistance() == Distance.RING
+						&& numb.size() == (max - 1)) {
 					break;
 				}
-				if (this.embedding.getDistance() == Distance.CLOCKWISE && numb.size() == max){
+				if (this.embedding.getDistance() == Distance.CLOCKWISE
+						&& numb.size() == max) {
 					break;
 				}
 			}
-			for (int j = 0; j < numb.size(); j++){
-				for (int k = j+1; k < numb.size(); k++){
-					res[i] = res[i] + Math.pow(Math.abs(numb.get(j)-numb.get(k)),exp);
+			for (int j = 0; j < numb.size(); j++) {
+				for (int k = j + 1; k < numb.size(); k++) {
+					res[i] = res[i]
+							+ Math.pow(Math.abs(numb.get(j) - numb.get(k)), exp);
 				}
 			}
-		
-		if (this.embedding.getIdMethod() == IdentifierMethod.SWAPPING){
-			numb = new Vector<Integer>(this.swapped.length);
-			for (int j = 0; j < this.swapped.length; j++){
-				if (ids[i] != this.swapped[j]){
-					   dist = this.embedding.computeDistance( ids[(i+1)%2], this.swapped[j]);
+
+			if (this.embedding.getIdMethod() == IdentifierMethod.SWAPPING) {
+				numb = new Vector<Integer>(this.swapped.length);
+				for (int j = 0; j < this.swapped.length; j++) {
+					if (ids[i] != this.swapped[j]) {
+						dist = this.embedding.computeDistance(ids[(i + 1) % 2],
+								this.swapped[j]);
 					} else {
-						dist = this.embedding.computeDistance( ids[(i+1)%2], ids[i]);
+						dist = this.embedding.computeDistance(ids[(i + 1) % 2],
+								ids[i]);
+					}
+					r = (int) (Math.min(
+							Math.ceil(-Math.log(Math.abs(dist)) / log2), max) * Math
+							.signum(dist));
+					if (!numb.contains(r)) {
+						numb.add(r);
+					}
+					if (this.embedding.getDistance() == Distance.SIGNED
+							&& numb.size() == 2 * (max - 1)) {
+						break;
+					}
+					if (this.embedding.getDistance() == Distance.RING
+							&& numb.size() == (max - 1)) {
+						break;
+					}
+					if (this.embedding.getDistance() == Distance.CLOCKWISE
+							&& numb.size() == max) {
+						break;
+					}
 				}
-				r = (int) (Math.min(Math.ceil(-Math.log(Math.abs(dist))/log2),max)*Math.signum(dist));
-				if (!numb.contains(r)){
-					numb.add(r);
-				}
-				if (this.embedding.getDistance() == Distance.SIGNED && numb.size() == 2*(max-1)){
-					break;
-				}
-				if (this.embedding.getDistance() == Distance.RING && numb.size() == (max-1)){
-					break;
-				}
-				if (this.embedding.getDistance() == Distance.CLOCKWISE && numb.size() == max){
-					break;
+				for (int j = 0; j < numb.size(); j++) {
+					for (int k = j + 1; k < numb.size(); k++) {
+						res[i] = res[i]
+								+ Math.pow(Math.abs(numb.get(j) - numb.get(k)),
+										exp);
+					}
 				}
 			}
-			for (int j = 0; j < numb.size(); j++){
-				for (int k = j+1; k < numb.size(); k++){
-					res[i] = res[i] + Math.pow(Math.abs(numb.get(j)-numb.get(k)),exp);
-				}
-			}
-		}
 		}
 		return res;
 	}

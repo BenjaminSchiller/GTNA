@@ -47,7 +47,7 @@ import java.util.Random;
 
 /**
  * @author stef
- *
+ * 
  */
 public abstract class AttackerIQDMDEmbedding extends IQDMDEmbedding {
 
@@ -60,7 +60,7 @@ public abstract class AttackerIQDMDEmbedding extends IQDMDEmbedding {
 	public static enum AttackerSelection {
 		RANDOM, MEDIAN, MIN, MAX
 	}
-	
+
 	private AttackerType attackertype;
 	private AttackerSelection attackerselection;
 	private int attackercount;
@@ -77,17 +77,18 @@ public abstract class AttackerIQDMDEmbedding extends IQDMDEmbedding {
 	 * @param parameters
 	 */
 	public AttackerIQDMDEmbedding(int iterations, String key,
-			IdentifierMethod idMethod, DecisionMethod deMethod, 
-			DistanceMD distance, int dimension, double epsilon, boolean checkold,
-			boolean adjustOne, AttackerType attackertype,
-			AttackerSelection attackerselection, int attackercount, Parameter[] parameters) {
-		super(iterations, key, idMethod, deMethod, distance, dimension, epsilon, checkold,
-				adjustOne,  addAttackerParams(attackertype, attackerselection, attackercount,
-						parameters));
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			DistanceMD distance, int dimension, double epsilon,
+			boolean checkold, boolean adjustOne, AttackerType attackertype,
+			AttackerSelection attackerselection, int attackercount,
+			Parameter[] parameters) {
+		super(iterations, key, idMethod, deMethod, distance, dimension,
+				epsilon, checkold, adjustOne, addAttackerParams(attackertype,
+						attackerselection, attackercount, parameters));
 		this.attackertype = attackertype;
 		this.attackerselection = attackerselection;
 		this.attackercount = attackercount;
-		
+
 	}
 
 	private static Parameter[] addAttackerParams(AttackerType type,
@@ -96,7 +97,7 @@ public abstract class AttackerIQDMDEmbedding extends IQDMDEmbedding {
 		parameter[0] = new StringParameter("ATTACKER_TYPE", type.toString());
 		parameter[1] = new StringParameter("ATTACKER_SELECTION",
 				selection.toString());
-		parameter[2] = new IntParameter("ATTACKER_COUNT",count);
+		parameter[2] = new IntParameter("ATTACKER_COUNT", count);
 		for (int i = 0; i < param.length; i++) {
 			parameter[i + 3] = param[i];
 		}
@@ -116,19 +117,21 @@ public abstract class AttackerIQDMDEmbedding extends IQDMDEmbedding {
 	 */
 	public AttackerIQDMDEmbedding(int iterations, String key,
 			IdentifierMethod idMethod, DecisionMethod deMethod,
-			DistanceMD distance, int dimension, double epsilon, boolean checkold,
-			boolean adjustOne, Parameter[] parameters) {
-		this(iterations, key, idMethod, deMethod, distance, dimension, epsilon, checkold,
-				adjustOne, AttackerType.NONE, AttackerSelection.RANDOM, 0, parameters);
+			DistanceMD distance, int dimension, double epsilon,
+			boolean checkold, boolean adjustOne, Parameter[] parameters) {
+		this(iterations, key, idMethod, deMethod, distance, dimension, epsilon,
+				checkold, adjustOne, AttackerType.NONE,
+				AttackerSelection.RANDOM, 0, parameters);
 	}
-	
+
 	/**
 	 * indices of attackers
+	 * 
 	 * @param g
 	 * @param rand
 	 * @return
 	 */
-	protected  HashSet<Integer> getAttackers(Graph g, Random rand){
+	protected HashSet<Integer> getAttackers(Graph g, Random rand) {
 		HashSet<Integer> attackers = new HashSet<Integer>();
 		if (this.attackertype != AttackerType.NONE) {
 			if (this.attackerselection == AttackerSelection.MAX) {
@@ -162,6 +165,5 @@ public abstract class AttackerIQDMDEmbedding extends IQDMDEmbedding {
 	public int getAttackercount() {
 		return this.attackercount;
 	}
-	
 
 }

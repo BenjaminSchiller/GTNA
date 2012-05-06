@@ -49,7 +49,7 @@ import java.util.Random;
 
 /**
  * @author stef
- *
+ * 
  */
 public class DistanceDiversityMDEmbedding extends AttackerIQDMDEmbedding {
 
@@ -68,22 +68,24 @@ public class DistanceDiversityMDEmbedding extends AttackerIQDMDEmbedding {
 	 */
 	public DistanceDiversityMDEmbedding(int iterations,
 			IdentifierMethod idMethod, DecisionMethod deMethod,
-			DistanceMD distance, int dimension, double epsilon, boolean checkold, boolean adjustone,
-			int max, double exp) {
-		super(iterations, "DISTANCE_DIVERSITY_MD", idMethod, deMethod, distance, dimension,
-				epsilon, checkold, adjustone, new Parameter[] {
-						new IntParameter("MAX_LOG", max),
+			DistanceMD distance, int dimension, double epsilon,
+			boolean checkold, boolean adjustone, int max, double exp) {
+		super(iterations, "DISTANCE_DIVERSITY_MD", idMethod, deMethod,
+				distance, dimension, epsilon, checkold, adjustone,
+				new Parameter[] { new IntParameter("MAX_LOG", max),
 						new DoubleParameter("EXPONENT", exp) });
 		this.max = max;
 		this.exponent = exp;
 	}
-	
+
 	public DistanceDiversityMDEmbedding(int iterations,
 			IdentifierMethod idMethod, DecisionMethod deMethod,
-			DistanceMD distance, int dimension, double epsilon, boolean checkold, boolean adjustone,
-			int max, double exp, AttackerType type, AttackerSelection selection, int attackercount) {
-		super(iterations, "DISTANCE_DIVERSITY_MD", idMethod, deMethod, distance, dimension, 
-				epsilon, checkold, adjustone, type, selection, attackercount,new Parameter[] {
+			DistanceMD distance, int dimension, double epsilon,
+			boolean checkold, boolean adjustone, int max, double exp,
+			AttackerType type, AttackerSelection selection, int attackercount) {
+		super(iterations, "DISTANCE_DIVERSITY_MD", idMethod, deMethod,
+				distance, dimension, epsilon, checkold, adjustone, type,
+				selection, attackercount, new Parameter[] {
 						new IntParameter("MAX_LOG", max),
 						new DoubleParameter("EXPONENT", exp) });
 		this.max = max;
@@ -103,8 +105,8 @@ public class DistanceDiversityMDEmbedding extends AttackerIQDMDEmbedding {
 				.getNodes().length];
 		HashSet<Integer> attackers = this.getAttackers(g, rand);
 		for (int i = 0; i < g.getNodes().length; i++) {
-			if (attackers.contains(i)){
-			  nodes[i] = new DistanceDiversityMDNode(i, g, this, true);
+			if (attackers.contains(i)) {
+				nodes[i] = new DistanceDiversityMDNode(i, g, this, true);
 			} else {
 				nodes[i] = new DistanceDiversityMDNode(i, g, this, false);
 			}
