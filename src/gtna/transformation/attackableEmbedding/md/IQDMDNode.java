@@ -1,4 +1,3 @@
-
 /* ===========================================================
  * GTNA : Graph-Theoretic Network Analyzer
  * ===========================================================
@@ -45,16 +44,16 @@ import java.util.HashMap;
 import java.util.Random;
 
 /**
- * @author stef
- *I(getIdentifier)Q(getQuality)D(getDecision)Node:
- * abstract class for a Node with a one-dimensional ID, dividing the turn phase into 3 phases
+ * @author stef I(getIdentifier)Q(getQuality)D(getDecision)Node: abstract class
+ *         for a Node with a one-dimensional ID, dividing the turn phase into 3
+ *         phases
  */
 public abstract class IQDMDNode extends AttackableEmbeddingNode {
-    double[] id;
-    protected IQDMDEmbedding embedding;
-    int partnerID=-1;
-    protected double[][] knownIDs;
-	
+	double[] id;
+	protected IQDMDEmbedding embedding;
+	int partnerID = -1;
+	protected double[][] knownIDs;
+
 	/**
 	 * @param index
 	 * @param g
@@ -64,71 +63,76 @@ public abstract class IQDMDNode extends AttackableEmbeddingNode {
 		this.embedding = embedding;
 	}
 
-
 	public void updateNeighbors(Random rand) {
 		int[] out = this.getOutgoingEdges();
 		for (int i = 0; i < out.length; i++) {
-			this.knownIDs[i] = ((IQDMDNode) this.getGraph().getNode(out[i])).ask(
-					rand,this);
+			this.knownIDs[i] = ((IQDMDNode) this.getGraph().getNode(out[i]))
+					.ask(rand, this);
 		}
 	}
-	
+
 	public void initKnownIDs() {
-		//this.position = new HashMap<Integer, Integer>(this.getOutDegree());
+		// this.position = new HashMap<Integer, Integer>(this.getOutDegree());
 		this.knownIDs = new double[this.getOutDegree()][this.embedding.dimension];
-//		for (int i = 0; i < this.getOutDegree(); i++) {
-//			this.position.put(this.getOutgoingEdges()[i], i);
-//		}
+		// for (int i = 0; i < this.getOutDegree(); i++) {
+		// this.position.put(this.getOutgoingEdges()[i], i);
+		// }
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.AttackableEmbeddingNode#turn(java.util.Random)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.attackableEmbedding.AttackableEmbeddingNode#turn(
+	 * java.util.Random)
 	 */
 	@Override
 	public void turn(Random rand) {
 		double[][] ids = this.getIdentifiers(rand);
 		double[] q = this.getQuality(rand, ids);
 		int newID = this.getDecision(rand, q);
-        if (this.partnerID != -1 && ids[newID] != this.id){
-			((IQDMDNode)this.getGraph().getNode(this.partnerID)).setID(this, this.getID());
+		if (this.partnerID != -1 && ids[newID] != this.id) {
+			((IQDMDNode) this.getGraph().getNode(this.partnerID)).setID(this,
+					this.getID());
 		}
 		this.setID(ids[newID]);
 	}
-	
+
 	public abstract double[][] getIdentifiers(Random rand);
-		
+
 	public abstract double[] getQuality(Random rand, double[][] ids);
-	
+
 	public abstract int getDecision(Random rand, double[] metrics);
-	
-	public void setID(double[] id){
+
+	public void setID(double[] id) {
 		this.id = id;
 	}
-	
-	public void setID(Node caller,double[] id){
+
+	public void setID(Node caller, double[] id) {
 		this.id = id;
 	}
-	
-	public double[] getID(){
+
+	public double[] getID() {
 		return this.id;
 	}
-	
+
 	/**
 	 * allows a node to lie about its ID => attacker
+	 * 
 	 * @param rand
 	 * @param node
 	 * @return
 	 */
-	public double[] ask(Random rand, Node node){
+	public double[] ask(Random rand, Node node) {
 		return this.id;
 	}
-	
-	protected boolean equalArrays(double[] a1, double[] a2){
-		if (a1.length != a2.length){
+
+	protected boolean equalArrays(double[] a1, double[] a2) {
+		if (a1.length != a2.length) {
 			return false;
 		}
-		for (int i = 0; i < a1.length; i++){
-			if (a1[i] != a2[i]){
+		for (int i = 0; i < a1.length; i++) {
+			if (a1[i] != a2[i]) {
 				return false;
 			}
 		}

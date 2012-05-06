@@ -43,15 +43,15 @@ import gtna.transformation.attackableEmbedding.lmc.LMCNode;
 import java.util.Random;
 
 /**
- * @author stef
- *I(getIdentifier)Q(getQuality)D(getDecision)Node:
- * abstract class for a Node with a one-dimensional ID, dividing the turn phase into 3 phases
+ * @author stef I(getIdentifier)Q(getQuality)D(getDecision)Node: abstract class
+ *         for a Node with a one-dimensional ID, dividing the turn phase into 3
+ *         phases
  */
 public abstract class IQDNode extends AttackableEmbeddingNode {
-    double id;
-    protected IQDEmbedding embedding;
-    int partnerID=-1;
-	
+	double id;
+	protected IQDEmbedding embedding;
+	int partnerID = -1;
+
 	/**
 	 * @param index
 	 * @param g
@@ -61,60 +61,63 @@ public abstract class IQDNode extends AttackableEmbeddingNode {
 		this.embedding = embedding;
 	}
 
-
 	public void updateNeighbors(Random rand) {
 		int[] out = this.getOutgoingEdges();
 		for (int i = 0; i < out.length; i++) {
 			this.knownIDs[i] = ((IQDNode) this.getGraph().getNode(out[i])).ask(
-					rand,this);
+					rand, this);
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.AttackableEmbeddingNode#turn(java.util.Random)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.attackableEmbedding.AttackableEmbeddingNode#turn(
+	 * java.util.Random)
 	 */
 	@Override
 	public void turn(Random rand) {
+		// phase 1: get Identifiers
 		double[] ids = this.getIdentifiers(rand);
+		// phase 2: compute quality
 		double[] q = this.getQuality(rand, ids);
+		// phase 3: decide on new Id and set it
 		int newID = this.getDecision(rand, q);
-        if (this.partnerID != -1 && ids[newID] != this.id){
-			((IQDNode)this.getGraph().getNode(this.partnerID)).setID(this, this.getID());
+		if (this.partnerID != -1 && ids[newID] != this.id) {
+			((IQDNode) this.getGraph().getNode(this.partnerID)).setID(this,
+					this.getID());
 		}
-//        if (newID == 0){
-//        	System.out.println("Accepted");
-//        }
 		this.setID(ids[newID]);
 	}
-	
+
 	public abstract double[] getIdentifiers(Random rand);
-		
+
 	public abstract double[] getQuality(Random rand, double[] ids);
-	
+
 	public abstract int getDecision(Random rand, double[] metrics);
-	
-	public void setID(double id){
+
+	public void setID(double id) {
 		this.id = id;
 	}
-	
-	public void setID(Node caller,double id){
+
+	public void setID(Node caller, double id) {
 		this.id = id;
 	}
-	
-	public double getID(){
+
+	public double getID() {
 		return this.id;
 	}
-	
+
 	/**
 	 * allows a node to lie about its ID => attacker
+	 * 
 	 * @param rand
 	 * @param node
 	 * @return
 	 */
-	public double ask(Random rand, Node node){
+	public double ask(Random rand, Node node) {
 		return this.id;
 	}
-	
-	
 
 }

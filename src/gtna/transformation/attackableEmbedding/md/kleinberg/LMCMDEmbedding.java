@@ -41,21 +41,25 @@ import gtna.util.parameter.Parameter;
 
 /**
  * @author stef
- *
+ * 
  */
 public class LMCMDEmbedding extends KleinbergMDEmbedding {
-	
-	public LMCMDEmbedding(int iterations, DistanceMD distance, int dimension, double epsilon) {
-	super("LMC_MD_EMBEDDING",iterations, IQDMDEmbedding.IdentifierMethod.ONERANDOM,
-			IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension, epsilon,
-			false, false, new Parameter[0]);
-}
 
-   public LMCMDEmbedding(int iterations, DistanceMD distance, int dimension, double epsilon, AttackerType type, AttackerSelection selection,
-		int attackercount) {
-	super("LMC_MD_EMBEDDING", iterations, IQDMDEmbedding.IdentifierMethod.ONERANDOM,
-			IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension, epsilon,
-			false, false, type, selection,attackercount);
-   }
+	public LMCMDEmbedding(int iterations, DistanceMD distance, int dimension,
+			double epsilon) {
+		super("LMC_MD_EMBEDDING", iterations,
+				IQDMDEmbedding.IdentifierMethod.ONERANDOM,
+				IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension,
+				epsilon, false, false, new Parameter[0]);
+	}
+
+	public LMCMDEmbedding(int iterations, DistanceMD distance, int dimension,
+			double epsilon, AttackerType type, AttackerSelection selection,
+			int attackercount) {
+		super("LMC_MD_EMBEDDING", iterations,
+				IQDMDEmbedding.IdentifierMethod.ONERANDOM,
+				IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension,
+				epsilon, false, false, type, selection, attackercount);
+	}
 
 }

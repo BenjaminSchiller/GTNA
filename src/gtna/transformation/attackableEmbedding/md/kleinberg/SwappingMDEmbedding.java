@@ -39,24 +39,27 @@ import gtna.id.md.MDIdentifierSpaceSimple.DistanceMD;
 import gtna.transformation.attackableEmbedding.md.IQDMDEmbedding;
 import gtna.util.parameter.Parameter;
 
-
 /**
  * @author stef
- *
+ * 
  */
 public class SwappingMDEmbedding extends KleinbergMDEmbedding {
-	
-	public SwappingMDEmbedding(int iterations, DistanceMD distance, int dimension, double epsilon) {
-	super("SWAPPING_MD_EMBEDDING", iterations, IQDMDEmbedding.IdentifierMethod.SWAPPING,
-			IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension, epsilon,
-			false, false, new Parameter[0]);
-}
 
-public SwappingMDEmbedding(int iterations, DistanceMD distance, int dimension, double epsilon, AttackerType type, AttackerSelection selection,
-		int attackercount) {
-	super("SWAPPING_MD_EMBEDDING", iterations, IQDMDEmbedding.IdentifierMethod.SWAPPING,
-			IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension, epsilon,
-			false, false, type, selection, attackercount);
-}
+	public SwappingMDEmbedding(int iterations, DistanceMD distance,
+			int dimension, double epsilon) {
+		super("SWAPPING_MD_EMBEDDING", iterations,
+				IQDMDEmbedding.IdentifierMethod.SWAPPING,
+				IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension,
+				epsilon, false, false, new Parameter[0]);
+	}
+
+	public SwappingMDEmbedding(int iterations, DistanceMD distance,
+			int dimension, double epsilon, AttackerType type,
+			AttackerSelection selection, int attackercount) {
+		super("SWAPPING_MD_EMBEDDING", iterations,
+				IQDMDEmbedding.IdentifierMethod.SWAPPING,
+				IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension,
+				epsilon, false, false, type, selection, attackercount);
+	}
 
 }

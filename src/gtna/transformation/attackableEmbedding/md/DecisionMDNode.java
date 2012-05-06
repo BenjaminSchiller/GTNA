@@ -42,7 +42,7 @@ import java.util.Random;
 
 /**
  * @author stef
- *
+ * 
  */
 public abstract class DecisionMDNode extends IdentifierMDNode {
 	public static double T = 1;
@@ -55,100 +55,105 @@ public abstract class DecisionMDNode extends IdentifierMDNode {
 	 * @param id
 	 * @param embedding
 	 */
-	public DecisionMDNode(int index, Graph g,  IQDMDEmbedding embedding) {
-		super(index, g,  embedding);
+	public DecisionMDNode(int index, Graph g, IQDMDEmbedding embedding) {
+		super(index, g, embedding);
 		t = 1;
 	}
 
-	
-
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.IQD.IQDNode#getDecision(java.util.Random, double[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.attackableEmbedding.IQD.IQDNode#getDecision(java.
+	 * util.Random, double[])
 	 */
 	@Override
 	public int getDecision(Random rand, double[] metrics) {
-		if (metrics.length == 1){
+		if (metrics.length == 1) {
 			return 0;
 		}
-		for (int j = 0; j < metrics.length; j++){
-			if (metrics[j] == Double.MAX_VALUE){
+		for (int j = 0; j < metrics.length; j++) {
+			if (metrics[j] == Double.MAX_VALUE) {
 				return j;
 			}
 		}
-		if (this.embedding.deMethod == IQDMDEmbedding.DecisionMethod.BESTPREFERNEW){
+		if (this.embedding.deMethod == IQDMDEmbedding.DecisionMethod.BESTPREFERNEW) {
 			int bestIndex = 0;
 			double max = metrics[0];
-			for (int i = 1; i < metrics.length; i++){
-				if (metrics[i] > max){
+			for (int i = 1; i < metrics.length; i++) {
+				if (metrics[i] > max) {
 					max = metrics[i];
 					bestIndex = i;
 				}
 			}
 			return bestIndex;
 		}
-		if (this.embedding.deMethod == IQDMDEmbedding.DecisionMethod.BESTPREFEROLD){
+		if (this.embedding.deMethod == IQDMDEmbedding.DecisionMethod.BESTPREFEROLD) {
 			int bestIndex = 0;
 			double max = metrics[0];
-			for (int i = 1; i < metrics.length; i++){
-				if (metrics[i] >= max){
+			for (int i = 1; i < metrics.length; i++) {
+				if (metrics[i] >= max) {
 					max = metrics[i];
 					bestIndex = i;
 				}
 			}
 			return bestIndex;
 		}
-		if (this.embedding.deMethod == IQDMDEmbedding.DecisionMethod.METROPOLIS){
-			if (metrics.length != 2){
-				throw new IllegalArgumentException("METROPLOIS decision not possible with more than two options");
+		if (this.embedding.deMethod == IQDMDEmbedding.DecisionMethod.METROPOLIS) {
+			if (metrics.length != 2) {
+				throw new IllegalArgumentException(
+						"METROPLOIS decision not possible with more than two options");
 			}
-			if (rand.nextDouble() < metrics[0]/metrics[1]){
+			if (rand.nextDouble() < metrics[0] / metrics[1]) {
 				return 0;
 			} else {
 				return 1;
 			}
 		}
-		if (this.embedding.deMethod == IQDMDEmbedding.DecisionMethod.SA){
-			if (metrics.length != 2){
-				throw new IllegalArgumentException("SA decision not possible with more than two options");
+		if (this.embedding.deMethod == IQDMDEmbedding.DecisionMethod.SA) {
+			if (metrics.length != 2) {
+				throw new IllegalArgumentException(
+						"SA decision not possible with more than two options");
 			}
-			if (metrics[0] > metrics[1]){
+			if (metrics[0] > metrics[1]) {
 				return 0;
 			}
-			if (rand.nextDouble() < Math.exp((metrics[0] -metrics[1])/T)){
-				return 0;
-			} else {
-				return 1;
-			}
-		}
-		if (this.embedding.deMethod == IQDMDEmbedding.DecisionMethod.SATIMEDEPENDENT){
-			if (metrics.length != 2){
-				throw new IllegalArgumentException("SA decision not possible with more than two options");
-			}
-			t = alpha*t;
-			if (metrics[0] > metrics[1]){
-				return 0;
-			}
-			if (rand.nextDouble() < Math.exp((metrics[0] -metrics[1])/t)){
+			if (rand.nextDouble() < Math.exp((metrics[0] - metrics[1]) / T)) {
 				return 0;
 			} else {
 				return 1;
 			}
 		}
-		if (this.embedding.deMethod == IQDMDEmbedding.DecisionMethod.PROPORTIONAL){
+		if (this.embedding.deMethod == IQDMDEmbedding.DecisionMethod.SATIMEDEPENDENT) {
+			if (metrics.length != 2) {
+				throw new IllegalArgumentException(
+						"SA decision not possible with more than two options");
+			}
+			t = alpha * t;
+			if (metrics[0] > metrics[1]) {
+				return 0;
+			}
+			if (rand.nextDouble() < Math.exp((metrics[0] - metrics[1]) / t)) {
+				return 0;
+			} else {
+				return 1;
+			}
+		}
+		if (this.embedding.deMethod == IQDMDEmbedding.DecisionMethod.PROPORTIONAL) {
 			double sum = 0;
-			for (int i = 0; i < metrics.length; i++){
+			for (int i = 0; i < metrics.length; i++) {
 				sum = sum + metrics[i];
 			}
-			double p = rand.nextDouble()*sum;
+			double p = rand.nextDouble() * sum;
 			double s = 0;
-			for (int j = 0; j < metrics.length; j++){
+			for (int j = 0; j < metrics.length; j++) {
 				s = s + metrics[j];
-				if (s > p){
+				if (s > p) {
 					return j;
 				}
 			}
 		}
-		
+
 		return 0;
 	}
 

@@ -46,12 +46,12 @@ import java.util.HashSet;
 import java.util.Random;
 
 /**
- * @author stef
- *
+ * @author stef embedding categories distances into buckets 2^{i-1} < b_i <= 2^i
+ *         and count number of buckets
  */
 public class RegionCoverageEmbedding extends AttackerIQDEmbedding {
 	int max;
-	
+
 	/**
 	 * @param iterations
 	 * @param key
@@ -62,52 +62,54 @@ public class RegionCoverageEmbedding extends AttackerIQDEmbedding {
 	 * @param checkold
 	 * @param parameters
 	 */
-	public RegionCoverageEmbedding(int iterations,
-			IdentifierMethod idMethod, DecisionMethod deMethod,
-			Distance distance, double epsilon, boolean checkold, boolean adjustone,
-			int max) {
-		super(iterations, "REGION_COVERAGE", idMethod, deMethod, distance, epsilon, checkold,
-				adjustone, new Parameter[] {new IntParameter("MAX_LOG", max)});
-		this.max = max;
-	}
-	/**
-	 * @param iterations
-	 * @param key
-	 * @param idMethod
-	 * @param deMethod
-	 * @param distance
-	 * @param epsilon
-	 * @param checkold
-	 * @param parameters
-	 */
-	public RegionCoverageEmbedding(int iterations,
-			IdentifierMethod idMethod, DecisionMethod deMethod,
-			Distance distance, double epsilon, boolean checkold, boolean adjustone,
-			int max, AttackerType type, AttackerSelection selection, int attackercount) {
-		super(iterations, "REGION_COVERAGE", idMethod, deMethod, distance, epsilon, checkold,
-				adjustone, type, selection, attackercount, new Parameter[] {new IntParameter("MAX_LOG", max)});
+	public RegionCoverageEmbedding(int iterations, IdentifierMethod idMethod,
+			DecisionMethod deMethod, Distance distance, double epsilon,
+			boolean checkold, boolean adjustone, int max) {
+		super(iterations, "REGION_COVERAGE", idMethod, deMethod, distance,
+				epsilon, checkold, adjustone,
+				new Parameter[] { new IntParameter("MAX_LOG", max) });
 		this.max = max;
 	}
 
-	
-	
+	/**
+	 * @param iterations
+	 * @param key
+	 * @param idMethod
+	 * @param deMethod
+	 * @param distance
+	 * @param epsilon
+	 * @param checkold
+	 * @param parameters
+	 */
+	public RegionCoverageEmbedding(int iterations, IdentifierMethod idMethod,
+			DecisionMethod deMethod, Distance distance, double epsilon,
+			boolean checkold, boolean adjustone, int max, AttackerType type,
+			AttackerSelection selection, int attackercount) {
+		super(iterations, "REGION_COVERAGE", idMethod, deMethod, distance,
+				epsilon, checkold, adjustone, type, selection, attackercount,
+				new Parameter[] { new IntParameter("MAX_LOG", max) });
+		this.max = max;
+	}
 
 	public int getMax() {
 		return this.max;
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.AttackableEmbedding#generateNodes(gtna.graph.Graph, java.util.Random)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.attackableEmbedding.AttackableEmbedding#generateNodes
+	 * (gtna.graph.Graph, java.util.Random)
 	 */
 	@Override
 	protected AttackableEmbeddingNode[] generateNodes(Graph g, Random rand) {
-		AttackableEmbeddingNode[] nodes = new AttackableEmbeddingNode[g.getNodes().length];
+		AttackableEmbeddingNode[] nodes = new AttackableEmbeddingNode[g
+				.getNodes().length];
 		HashSet<Integer> attackers = this.getAttackers(g, rand);
 		for (int i = 0; i < g.getNodes().length; i++) {
-			if (attackers.contains(i)){
-			    nodes[i] = new RegionCoverageNode(i, g, this, true);
+			if (attackers.contains(i)) {
+				nodes[i] = new RegionCoverageNode(i, g, this, true);
 			} else {
 				nodes[i] = new RegionCoverageNode(i, g, this, false);
 			}
@@ -116,7 +118,5 @@ public class RegionCoverageEmbedding extends AttackerIQDEmbedding {
 		this.initIds();
 		return nodes;
 	}
-
-	
 
 }
