@@ -70,6 +70,11 @@ public abstract class DecisionMDNode extends IdentifierMDNode {
 		if (metrics.length == 1){
 			return 0;
 		}
+		for (int j = 0; j < metrics.length; j++){
+			if (metrics[j] == Double.MAX_VALUE){
+				return j;
+			}
+		}
 		if (this.embedding.deMethod == IQDMDEmbedding.DecisionMethod.BESTPREFERNEW){
 			int bestIndex = 0;
 			double max = metrics[0];

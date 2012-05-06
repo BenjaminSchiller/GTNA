@@ -48,7 +48,7 @@ import java.util.Random;
 public abstract class AttackerMDNode extends DecisionMDNode {
 	private boolean isAttacker;
 	private int neighborIndex = -1;
-	public static double close = 10E-20;
+	public static double close = 10E-10;
 
 	/**
 	 * @param index
@@ -79,7 +79,7 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 				double[] temp = new double[this.knownIDs.length];
 				for (int i = 0; i < newID.length; i++){
 					for (int j = 0; j < temp.length; j++){
-						temp[j] = this.knownIDs[i][j];
+						temp[j] = this.knownIDs[j][i];
 					}
 					newID[i] = maxMiddle(temp);
 				}
@@ -156,7 +156,7 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 	 */
 	@Override
 	public double[] ask(Random rand, Node node) {
-		if (this.isAttacker && !((AttackerMDNode)node).isAttacker) {
+		if (this.isAttacker && (!((AttackerMDNode)node).isAttacker || node == this)) {
 			AttackerIQDMDEmbedding attEmbedding = (AttackerIQDMDEmbedding) this.embedding;
 			if (attEmbedding.getAttackertype() == AttackerIQDMDEmbedding.AttackerType.CONTRACTION) {
 				// return ID close to certain neighbor
@@ -205,9 +205,13 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 				// and neighbors close to victims ID
 				res[0] = new double[][] { this.ask(rand, this), new double[]{-1} };
 				res[1] = new double[this.knownIDs.length][this.getID().length];
+				double d = 1;
+				for (int i = 0; i < neighborsID.length; i++){
+					d = d*attEmbedding.computeDistance(callerID, neighborsID[i]);
+				}
 				for (int i = 0; i < res[1].length; i++) {
 					for (int j = 0; j < res[1][i].length; j++){
-					    res[1][i][j] = (callerID[j] + close * rand.nextDouble()) % 1;
+					    res[1][i][j] = (callerID[j] + Math.min(close,d) * rand.nextDouble()) % 1; 
 				    }
 				}
 			}
@@ -225,12 +229,22 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 			if (attEmbedding.getAttackertype() == AttackerIQDMDEmbedding.AttackerType.REJECTION) {
 				// very bad ID
 				
-				res[0] = new double[][] {this.getID(),
-						new double[]{-1} };
+//				res[0] = new double[][] {this.getID(),
+//						new double[]{-1} };
+				res[0] = new double[2][];
+				res[0][0] = new double[this.getID().length];
+				for (int j = 0; j < res[0][0].length; j++){
+					double[] vals = new double[neighborsID.length];
+					for (int i = 0; i < vals.length; i++){
+						vals[i] = neighborsID[i][j];
+					}
+					res[0][0][j] = (maxMiddle(vals) + close*rand.nextDouble()) %1;
+				}
+				res[0][1] = new double[]{-1};
 				res[1] = new double[this.knownIDs.length][this.getID().length];
 				for (int i = 0; i < res[1].length; i++) {
 					for (int j = 0; j < res[1][i].length; j++){
-					  res[1][i][j] = (res[0][0][j] + close * rand.nextDouble()) % 1;
+					  res[1][i][j] = (callerID[j] + close * rand.nextDouble()) % 1;
 					}
 				}
 			}
