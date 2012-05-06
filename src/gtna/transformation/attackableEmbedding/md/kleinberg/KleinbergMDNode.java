@@ -83,7 +83,12 @@ public class KleinbergMDNode extends AttackerMDNode{
 				}
 				}
 			}
-			q[i] = 1/q[i];
+			q[i] = Math.pow(q[i], ids[0].length);
+			if (q[i] == 0){
+				q[i] = Double.MAX_VALUE;
+			} else {
+				q[i] = 1/q[i];
+			}
 		}
 		
 		return q;

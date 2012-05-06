@@ -83,7 +83,12 @@ public class KleinbergNode extends AttackerNode{
 				}
 				}
 			}
-			q[i] = 1/q[i];
+			if (q[i] > 0){
+			   q[i] = 1/q[i];
+			} else {
+				q[i] = Double.MAX_VALUE;
+			}
+			
 		}
 		
 		return q;
