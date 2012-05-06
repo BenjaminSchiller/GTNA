@@ -45,7 +45,7 @@ import java.util.Vector;
 
 /**
  * @author stef
- *
+ * 
  */
 public class RegionCoverageNode extends AttackerNode {
 
@@ -54,12 +54,17 @@ public class RegionCoverageNode extends AttackerNode {
 	 * @param g
 	 * @param embedding
 	 */
-	public RegionCoverageNode(int index, Graph g, RegionCoverageEmbedding embedding, boolean isAttacker) {
+	public RegionCoverageNode(int index, Graph g,
+			RegionCoverageEmbedding embedding, boolean isAttacker) {
 		super(index, g, embedding, isAttacker);
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.IQD.IQDNode#getQuality(java.util.Random, double[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.attackableEmbedding.IQD.IQDNode#getQuality(java.util
+	 * .Random, double[])
 	 */
 	@Override
 	public double[] getQuality(Random rand, double[] ids) {
@@ -67,50 +72,64 @@ public class RegionCoverageNode extends AttackerNode {
 		double log2 = Math.log(2);
 		double dist;
 		int r;
-		int max = ((RegionCoverageEmbedding)this.embedding).getMax();
-		for (int i = 0; i < res.length; i++){
+		int max = ((RegionCoverageEmbedding) this.embedding).getMax();
+		for (int i = 0; i < res.length; i++) {
 			Vector<Integer> numb = new Vector<Integer>(this.knownIDs.length);
-			for (int j = 0; j < this.knownIDs.length; j++){
-				if (ids[i] != this.knownIDs[j]){
-					   dist = this.embedding.computeDistance( ids[i], this.knownIDs[j]);
-					} else {
-						dist = this.embedding.computeDistance( ids[i], ids[(i+1)%2]);
-					}
-				r = (int) (Math.min(Math.ceil(-Math.log(Math.abs(dist))/log2),max)*Math.signum(dist));
-				if (!numb.contains(r)){
+			for (int j = 0; j < this.knownIDs.length; j++) {
+				if (ids[i] != this.knownIDs[j]) {
+					dist = this.embedding.computeDistance(ids[i],
+							this.knownIDs[j]);
+				} else {
+					dist = this.embedding.computeDistance(ids[i],
+							ids[(i + 1) % 2]);
+				}
+				r = (int) (Math.min(
+						Math.ceil(-Math.log(Math.abs(dist)) / log2), max) * Math
+						.signum(dist));
+				if (!numb.contains(r)) {
 					numb.add(r);
 				}
-				if (this.embedding.getDistance() == Distance.SIGNED && numb.size() == 2*(max-1)){
+				if (this.embedding.getDistance() == Distance.SIGNED
+						&& numb.size() == 2 * (max - 1)) {
 					break;
 				}
-				if (this.embedding.getDistance() == Distance.RING && numb.size() == (max-1)){
+				if (this.embedding.getDistance() == Distance.RING
+						&& numb.size() == (max - 1)) {
 					break;
 				}
-				if (this.embedding.getDistance() == Distance.CLOCKWISE && numb.size() == max){
+				if (this.embedding.getDistance() == Distance.CLOCKWISE
+						&& numb.size() == max) {
 					break;
 				}
 			}
 			res[i] = numb.size();
-			
-			if (this.embedding.getIdMethod() == IdentifierMethod.SWAPPING){
+
+			if (this.embedding.getIdMethod() == IdentifierMethod.SWAPPING) {
 				numb = new Vector<Integer>(this.swapped.length);
-				for (int j = 0; j < this.swapped.length; j++){
-					if (ids[i] != this.swapped[j]){
-						   dist = this.embedding.computeDistance( ids[(i+1)%2], this.swapped[j]);
-						} else {
-							dist = this.embedding.computeDistance( ids[(i+1)%2], ids[i]);
+				for (int j = 0; j < this.swapped.length; j++) {
+					if (ids[i] != this.swapped[j]) {
+						dist = this.embedding.computeDistance(ids[(i + 1) % 2],
+								this.swapped[j]);
+					} else {
+						dist = this.embedding.computeDistance(ids[(i + 1) % 2],
+								ids[i]);
 					}
-					r = (int) (Math.min(Math.ceil(-Math.log(Math.abs(dist))/log2),max)*Math.signum(dist));
-					if (!numb.contains(r)){
+					r = (int) (Math.min(
+							Math.ceil(-Math.log(Math.abs(dist)) / log2), max) * Math
+							.signum(dist));
+					if (!numb.contains(r)) {
 						numb.add(r);
 					}
-					if (this.embedding.getDistance() == Distance.SIGNED && numb.size() == 2*(max-1)){
+					if (this.embedding.getDistance() == Distance.SIGNED
+							&& numb.size() == 2 * (max - 1)) {
 						break;
 					}
-					if (this.embedding.getDistance() == Distance.RING && numb.size() == (max-1)){
+					if (this.embedding.getDistance() == Distance.RING
+							&& numb.size() == (max - 1)) {
 						break;
 					}
-					if (this.embedding.getDistance() == Distance.CLOCKWISE && numb.size() == max){
+					if (this.embedding.getDistance() == Distance.CLOCKWISE
+							&& numb.size() == max) {
 						break;
 					}
 				}

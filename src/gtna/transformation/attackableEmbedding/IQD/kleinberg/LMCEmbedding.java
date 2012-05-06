@@ -55,30 +55,32 @@ public class LMCEmbedding extends KleinbergEmbedding {
 	 * @param parameters
 	 */
 	public LMCEmbedding(int iterations, Distance distance, double epsilon) {
-		super("LMCEMBEDDING",iterations, IQDEmbedding.IdentifierMethod.ONERANDOM,
+		super("LMCEMBEDDING", iterations,
+				IQDEmbedding.IdentifierMethod.ONERANDOM,
 				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
 				false, false, new Parameter[0]);
 	}
-	
-	public LMCEmbedding(int iterations, Distance distance, double epsilon, AttackerType type, AttackerSelection selection,
-			int attackercount) {
-		super("LMCEMBEDDING", iterations, IQDEmbedding.IdentifierMethod.ONERANDOM,
+
+	public LMCEmbedding(int iterations, Distance distance, double epsilon,
+			AttackerType type, AttackerSelection selection, int attackercount) {
+		super("LMCEMBEDDING", iterations,
+				IQDEmbedding.IdentifierMethod.ONERANDOM,
 				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
-				false, false, type, selection,attackercount);
+				false, false, type, selection, attackercount);
 	}
-	
-//	public LMCEmbedding(int iterations, Distance distance, double epsilon) {
-//		super(iterations, IQDEmbedding.IdentifierMethod.ONERANDOM,
-//				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
-//				false, false, new Parameter[0]);
-//	}
-//	
-//	public LMCEmbedding(int iterations, Distance distance, double epsilon, AttackerType type, AttackerSelection selection,
-//			int attackercount) {
-//		super(iterations, IQDEmbedding.IdentifierMethod.ONERANDOM,
-//				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
-//				false, false, type, selection,attackercount);
-//	}
-	
+
+	// public LMCEmbedding(int iterations, Distance distance, double epsilon) {
+	// super(iterations, IQDEmbedding.IdentifierMethod.ONERANDOM,
+	// IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
+	// false, false, new Parameter[0]);
+	// }
+	//
+	// public LMCEmbedding(int iterations, Distance distance, double epsilon,
+	// AttackerType type, AttackerSelection selection,
+	// int attackercount) {
+	// super(iterations, IQDEmbedding.IdentifierMethod.ONERANDOM,
+	// IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
+	// false, false, type, selection,attackercount);
+	// }
 
 }

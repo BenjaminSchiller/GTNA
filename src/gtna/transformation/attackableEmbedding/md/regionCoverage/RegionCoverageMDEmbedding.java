@@ -48,12 +48,12 @@ import java.util.Random;
 
 /**
  * @author stef
- *
+ * 
  */
 public class RegionCoverageMDEmbedding extends AttackerIQDMDEmbedding {
 
-int max;
-	
+	int max;
+
 	/**
 	 * @param iterations
 	 * @param key
@@ -64,52 +64,55 @@ int max;
 	 * @param checkold
 	 * @param parameters
 	 */
-	public RegionCoverageMDEmbedding(int iterations,
-			IdentifierMethod idMethod, DecisionMethod deMethod,
-			DistanceMD distance, int dim, double epsilon, boolean checkold, boolean adjustone,
-			int max) {
-		super(iterations, "REGION_COVERAGE_MD", idMethod, deMethod, distance, dim, epsilon, checkold,
-				adjustone, new Parameter[] {new IntParameter("MAX_LOG", max)});
-		this.max = max;
-	}
-	/**
-	 * @param iterations
-	 * @param key
-	 * @param idMethod
-	 * @param deMethod
-	 * @param distance
-	 * @param epsilon
-	 * @param checkold
-	 * @param parameters
-	 */
-	public RegionCoverageMDEmbedding(int iterations,
-			IdentifierMethod idMethod, DecisionMethod deMethod,
-			DistanceMD distance, int dim, double epsilon, boolean checkold, boolean adjustone,
-			int max, AttackerType type, AttackerSelection selection, int attackercount) {
-		super(iterations, "REGION_COVERAGE_MD", idMethod, deMethod, distance, dim, epsilon, checkold,
-				adjustone, type, selection, attackercount, new Parameter[] {new IntParameter("MAX_LOG", max)});
+	public RegionCoverageMDEmbedding(int iterations, IdentifierMethod idMethod,
+			DecisionMethod deMethod, DistanceMD distance, int dim,
+			double epsilon, boolean checkold, boolean adjustone, int max) {
+		super(iterations, "REGION_COVERAGE_MD", idMethod, deMethod, distance,
+				dim, epsilon, checkold, adjustone,
+				new Parameter[] { new IntParameter("MAX_LOG", max) });
 		this.max = max;
 	}
 
-	
-	
+	/**
+	 * @param iterations
+	 * @param key
+	 * @param idMethod
+	 * @param deMethod
+	 * @param distance
+	 * @param epsilon
+	 * @param checkold
+	 * @param parameters
+	 */
+	public RegionCoverageMDEmbedding(int iterations, IdentifierMethod idMethod,
+			DecisionMethod deMethod, DistanceMD distance, int dim,
+			double epsilon, boolean checkold, boolean adjustone, int max,
+			AttackerType type, AttackerSelection selection, int attackercount) {
+		super(iterations, "REGION_COVERAGE_MD", idMethod, deMethod, distance,
+				dim, epsilon, checkold, adjustone, type, selection,
+				attackercount, new Parameter[] { new IntParameter("MAX_LOG",
+						max) });
+		this.max = max;
+	}
 
 	public int getMax() {
 		return this.max;
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.AttackableEmbedding#generateNodes(gtna.graph.Graph, java.util.Random)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.attackableEmbedding.AttackableEmbedding#generateNodes
+	 * (gtna.graph.Graph, java.util.Random)
 	 */
 	@Override
 	protected AttackableEmbeddingNode[] generateNodes(Graph g, Random rand) {
-		AttackableEmbeddingNode[] nodes = new AttackableEmbeddingNode[g.getNodes().length];
+		AttackableEmbeddingNode[] nodes = new AttackableEmbeddingNode[g
+				.getNodes().length];
 		HashSet<Integer> attackers = this.getAttackers(g, rand);
 		for (int i = 0; i < g.getNodes().length; i++) {
-			if (attackers.contains(i)){
-			    nodes[i] = new RegionCoverageMDNode(i, g, this, true);
+			if (attackers.contains(i)) {
+				nodes[i] = new RegionCoverageMDNode(i, g, this, true);
 			} else {
 				nodes[i] = new RegionCoverageMDNode(i, g, this, false);
 			}

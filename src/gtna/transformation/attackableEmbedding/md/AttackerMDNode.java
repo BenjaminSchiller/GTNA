@@ -77,8 +77,8 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 				// Id far form neighbors
 				double[] newID = new double[this.getID().length];
 				double[] temp = new double[this.knownIDs.length];
-				for (int i = 0; i < newID.length; i++){
-					for (int j = 0; j < temp.length; j++){
+				for (int i = 0; i < newID.length; i++) {
+					for (int j = 0; j < temp.length; j++) {
 						temp[j] = this.knownIDs[j][i];
 					}
 					newID[i] = maxMiddle(temp);
@@ -103,14 +103,14 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 			}
 			// select ID close to neighbor + neighbors far away
 			double[] id = new double[this.getID().length];
-			for (int i = 0; i < id.length; i++){
-			   id[i] = (this.knownIDs[this.neighborIndex][i] + rand.nextDouble()
-					* close) % 1.0;
+			for (int i = 0; i < id.length; i++) {
+				id[i] = (this.knownIDs[this.neighborIndex][i] + rand
+						.nextDouble() * close) % 1.0;
 			}
 			double[][] neighbors = new double[this.getOutDegree()][id.length];
 			for (int i = 0; i < neighbors.length; i++) {
-				for (int j = 0; j < id.length; j++){
-				   neighbors[i][j] = (id[j] + 0.5 + rand.nextDouble() * close) % 1.0;
+				for (int j = 0; j < id.length; j++) {
+					neighbors[i][j] = (id[j] + 0.5 + rand.nextDouble() * close) % 1.0;
 				}
 			}
 			// select ttl
@@ -125,13 +125,13 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 		if (attEmbedding.getAttackertype() == AttackerIQDMDEmbedding.AttackerType.DIVERGENCE) {
 			// select ID randomly + neighbors far away
 			double[] id = new double[this.getID().length];
-			for (int i = 0; i < id.length; i++){
-			   id[i] = rand.nextDouble();
+			for (int i = 0; i < id.length; i++) {
+				id[i] = rand.nextDouble();
 			}
 			double[][] neighbors = new double[this.getOutDegree()][id.length];
 			for (int i = 0; i < neighbors.length; i++) {
-				for (int j = 0; j < id.length; j++){
-				   neighbors[i][j] = (id[j] + 0.5 + rand.nextDouble() * close) % 1.0;
+				for (int j = 0; j < id.length; j++) {
+					neighbors[i][j] = (id[j] + 0.5 + rand.nextDouble() * close) % 1.0;
 				}
 			}
 			// select ttl
@@ -156,7 +156,8 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 	 */
 	@Override
 	public double[] ask(Random rand, Node node) {
-		if (this.isAttacker && (!((AttackerMDNode)node).isAttacker || node == this)) {
+		if (this.isAttacker
+				&& (!((AttackerMDNode) node).isAttacker || node == this)) {
 			AttackerIQDMDEmbedding attEmbedding = (AttackerIQDMDEmbedding) this.embedding;
 			if (attEmbedding.getAttackertype() == AttackerIQDMDEmbedding.AttackerType.CONTRACTION) {
 				// return ID close to certain neighbor
@@ -164,17 +165,17 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 					neighborIndex = rand.nextInt(this.knownIDs.length);
 				}
 				double[] id = new double[this.getID().length];
-				for (int i = 0; i < id.length; i++){
-				   id[i] = (this.knownIDs[this.neighborIndex][i] + rand.nextDouble()
-						* close) % 1.0;
+				for (int i = 0; i < id.length; i++) {
+					id[i] = (this.knownIDs[this.neighborIndex][i] + rand
+							.nextDouble() * close) % 1.0;
 				}
 				return id;
 			}
 			if (attEmbedding.getAttackertype() == AttackerIQDMDEmbedding.AttackerType.DIVERGENCE) {
 				// random ID
 				double[] id = new double[this.getID().length];
-				for (int i = 0; i < id.length; i++){
-				   id[i] = rand.nextDouble();
+				for (int i = 0; i < id.length; i++) {
+					id[i] = rand.nextDouble();
 				}
 				return id;
 			}
@@ -182,9 +183,8 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 				// fix victim by giving very good ID
 				double[] id = new double[this.getID().length];
 				double[] pID = ((IQDMDNode) node).getID();
-				for (int i = 0; i < id.length; i++){
-				   id[i] = (pID[i] - rand.nextDouble()
-						* close) % 1.0;
+				for (int i = 0; i < id.length; i++) {
+					id[i] = (pID[i] - rand.nextDouble() * close) % 1.0;
 				}
 				return id;
 			}
@@ -195,56 +195,61 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 	}
 
 	@Override
-	protected double[][][] swap(double[] callerID, double[][] neighborsID, int ttl,
-			Random rand) {
+	protected double[][][] swap(double[] callerID, double[][] neighborsID,
+			int ttl, Random rand) {
 		if (this.isAttacker) {
 			double[][][] res = new double[2][][];
 			AttackerIQDMDEmbedding attEmbedding = (AttackerIQDMDEmbedding) this.embedding;
 			if (attEmbedding.getAttackertype() == AttackerIQDMDEmbedding.AttackerType.CONTRACTION) {
 				// return ID close to certain neighbor
 				// and neighbors close to victims ID
-				res[0] = new double[][] { this.ask(rand, this), new double[]{-1} };
+				res[0] = new double[][] { this.ask(rand, this),
+						new double[] { -1 } };
 				res[1] = new double[this.knownIDs.length][this.getID().length];
 				double d = 1;
-				for (int i = 0; i < neighborsID.length; i++){
-					d = d*attEmbedding.computeDistance(callerID, neighborsID[i]);
+				for (int i = 0; i < neighborsID.length; i++) {
+					d = d
+							* attEmbedding.computeDistance(callerID,
+									neighborsID[i]);
 				}
 				for (int i = 0; i < res[1].length; i++) {
-					for (int j = 0; j < res[1][i].length; j++){
-					    res[1][i][j] = (callerID[j] + Math.min(close,d) * rand.nextDouble()) % 1; 
-				    }
+					for (int j = 0; j < res[1][i].length; j++) {
+						res[1][i][j] = (callerID[j] + Math.min(close, d)
+								* rand.nextDouble()) % 1;
+					}
 				}
 			}
 			if (attEmbedding.getAttackertype() == AttackerIQDMDEmbedding.AttackerType.DIVERGENCE) {
 				// random ID and neighbors close to victim's ID
-				res[0] = new double[][] { this.ask(rand, this), new double[]{-1} };
+				res[0] = new double[][] { this.ask(rand, this),
+						new double[] { -1 } };
 				res[1] = new double[this.knownIDs.length][this.getID().length];
 				for (int i = 0; i < res[1].length; i++) {
-					for (int j = 0; j < res[1][i].length; j++){
-					    res[1][i][j] = (callerID[j] + close * rand.nextDouble()) % 1;
-				    }
+					for (int j = 0; j < res[1][i].length; j++) {
+						res[1][i][j] = (callerID[j] + close * rand.nextDouble()) % 1;
+					}
 				}
-				
+
 			}
 			if (attEmbedding.getAttackertype() == AttackerIQDMDEmbedding.AttackerType.REJECTION) {
 				// very bad ID
-				
-//				res[0] = new double[][] {this.getID(),
-//						new double[]{-1} };
+
+				// res[0] = new double[][] {this.getID(),
+				// new double[]{-1} };
 				res[0] = new double[2][];
 				res[0][0] = new double[this.getID().length];
-				for (int j = 0; j < res[0][0].length; j++){
+				for (int j = 0; j < res[0][0].length; j++) {
 					double[] vals = new double[neighborsID.length];
-					for (int i = 0; i < vals.length; i++){
+					for (int i = 0; i < vals.length; i++) {
 						vals[i] = neighborsID[i][j];
 					}
-					res[0][0][j] = (maxMiddle(vals) + close*rand.nextDouble()) %1;
+					res[0][0][j] = (maxMiddle(vals) + close * rand.nextDouble()) % 1;
 				}
-				res[0][1] = new double[]{-1};
+				res[0][1] = new double[] { -1 };
 				res[1] = new double[this.knownIDs.length][this.getID().length];
 				for (int i = 0; i < res[1].length; i++) {
-					for (int j = 0; j < res[1][i].length; j++){
-					  res[1][i][j] = (callerID[j] + close * rand.nextDouble()) % 1;
+					for (int j = 0; j < res[1][i].length; j++) {
+						res[1][i][j] = (callerID[j] + close * rand.nextDouble()) % 1;
 					}
 				}
 			}
@@ -253,7 +258,5 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 			return super.swap(callerID, neighborsID, ttl, rand);
 		}
 	}
-	
-	
 
 }

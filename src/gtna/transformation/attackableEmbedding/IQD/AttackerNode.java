@@ -43,7 +43,11 @@ import gtna.transformation.attackableEmbedding.swapping.SwappingNode;
 import java.util.Random;
 
 /**
- * @author stef IQDNode with adversarial behavior implemented
+ * @author stef 
+ *         IQDNode with adversarial behavior implemented three types:
+ *         CONTRACTION: collapse ID space into points 
+ *         DIVERGENCE: distribut random IDs
+ *         REJECTION: make neighbor reject ID
  */
 public abstract class AttackerNode extends DecisionNode {
 	private boolean isAttacker;
@@ -138,7 +142,8 @@ public abstract class AttackerNode extends DecisionNode {
 	 */
 	@Override
 	public double ask(Random rand, Node node) {
-		if (this.isAttacker && (!((AttackerNode)node).isAttacker || node == this)) {
+		if (this.isAttacker
+				&& (!((AttackerNode) node).isAttacker || node == this)) {
 			AttackerIQDEmbedding attEmbedding = (AttackerIQDEmbedding) this.embedding;
 			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.CONTRACTION) {
 				// return ID close to certain neighbor
@@ -174,11 +179,14 @@ public abstract class AttackerNode extends DecisionNode {
 				res[0] = new double[] { this.ask(rand, this), -1 };
 				res[1] = new double[this.knownIDs.length];
 				double d = 1;
-				for (int i = 0; i < neighborsID.length; i++){
-					d = d*attEmbedding.computeDistance(callerID, neighborsID[i]);
+				for (int i = 0; i < neighborsID.length; i++) {
+					d = d
+							* attEmbedding.computeDistance(callerID,
+									neighborsID[i]);
 				}
 				for (int i = 0; i < res[1].length; i++) {
-					res[1][i] = (callerID +Math.min(close, d) * rand.nextDouble()) % 1;
+					res[1][i] = (callerID + Math.min(close, d)
+							* rand.nextDouble()) % 1;
 				}
 			}
 			if (attEmbedding.getAttackertype() == AttackerIQDEmbedding.AttackerType.DIVERGENCE) {
@@ -204,7 +212,5 @@ public abstract class AttackerNode extends DecisionNode {
 			return super.swap(callerID, neighborsID, ttl, rand);
 		}
 	}
-	
-	
 
 }

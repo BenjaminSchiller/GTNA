@@ -47,8 +47,8 @@ import java.util.HashSet;
 import java.util.Random;
 
 /**
- * @author stef
- * 
+ * @author stef embedding categories distances into buckets 2^{i-1} < b_i <= 2^i
+ *         and computes sum |b_i -b_j|^r for some r and all b_i,b_j
  */
 public class DistanceDiversityEmbedding extends AttackerIQDEmbedding {
 
@@ -67,8 +67,8 @@ public class DistanceDiversityEmbedding extends AttackerIQDEmbedding {
 	 */
 	public DistanceDiversityEmbedding(int iterations,
 			IdentifierMethod idMethod, DecisionMethod deMethod,
-			Distance distance, double epsilon, boolean checkold, boolean adjustone,
-			int max, double exp) {
+			Distance distance, double epsilon, boolean checkold,
+			boolean adjustone, int max, double exp) {
 		super(iterations, "DISTANCE_DIVERSITY", idMethod, deMethod, distance,
 				epsilon, checkold, adjustone, new Parameter[] {
 						new IntParameter("MAX_LOG", max),
@@ -76,14 +76,15 @@ public class DistanceDiversityEmbedding extends AttackerIQDEmbedding {
 		this.max = max;
 		this.exponent = exp;
 	}
-	
+
 	public DistanceDiversityEmbedding(int iterations,
 			IdentifierMethod idMethod, DecisionMethod deMethod,
-			Distance distance, double epsilon, boolean checkold, boolean adjustone,
-			int max, double exp, AttackerType type, AttackerSelection selection, int attackercount) {
+			Distance distance, double epsilon, boolean checkold,
+			boolean adjustone, int max, double exp, AttackerType type,
+			AttackerSelection selection, int attackercount) {
 		super(iterations, "DISTANCE_DIVERSITY", idMethod, deMethod, distance,
-				epsilon, checkold, adjustone, type, selection, attackercount,new Parameter[] {
-						new IntParameter("MAX_LOG", max),
+				epsilon, checkold, adjustone, type, selection, attackercount,
+				new Parameter[] { new IntParameter("MAX_LOG", max),
 						new DoubleParameter("EXPONENT", exp) });
 		this.max = max;
 		this.exponent = exp;
@@ -102,8 +103,8 @@ public class DistanceDiversityEmbedding extends AttackerIQDEmbedding {
 				.getNodes().length];
 		HashSet<Integer> attackers = this.getAttackers(g, rand);
 		for (int i = 0; i < g.getNodes().length; i++) {
-			if (attackers.contains(i)){
-			  nodes[i] = new DistanceDiversityNode(i, g, this, true);
+			if (attackers.contains(i)) {
+				nodes[i] = new DistanceDiversityNode(i, g, this, true);
 			} else {
 				nodes[i] = new DistanceDiversityNode(i, g, this, false);
 			}

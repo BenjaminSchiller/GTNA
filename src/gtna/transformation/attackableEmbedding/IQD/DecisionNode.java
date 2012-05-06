@@ -40,8 +40,7 @@ import gtna.graph.Graph;
 import java.util.Random;
 
 /**
- * @author stef
- *
+ * @author stef various ways to select one ID based on its quality
  */
 public abstract class DecisionNode extends IdentifierNode {
 	public static double T = 1;
@@ -54,100 +53,113 @@ public abstract class DecisionNode extends IdentifierNode {
 	 * @param id
 	 * @param embedding
 	 */
-	public DecisionNode(int index, Graph g,  IQDEmbedding embedding) {
-		super(index, g,  embedding);
+	public DecisionNode(int index, Graph g, IQDEmbedding embedding) {
+		super(index, g, embedding);
 		t = 1;
 	}
 
-	
-
-	/* (non-Javadoc)
-	 * @see gtna.transformation.attackableEmbedding.IQD.IQDNode#getDecision(java.util.Random, double[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.attackableEmbedding.IQD.IQDNode#getDecision(java.
+	 * util.Random, double[])
 	 */
 	@Override
 	public int getDecision(Random rand, double[] metrics) {
-		if (metrics.length == 1){
+		if (metrics.length == 1) {
 			return 0;
 		}
-		for (int j = 0; j < metrics.length; j++){
-			if (metrics[j] == Double.MAX_VALUE){
+		// deal with max values
+		for (int j = 0; j < metrics.length; j++) {
+			if (metrics[j] == Double.MAX_VALUE) {
 				return j;
 			}
 		}
-		if (this.embedding.deMethod == IQDEmbedding.DecisionMethod.BESTPREFERNEW){
+		// take the best ID, preferring the new one
+		if (this.embedding.deMethod == IQDEmbedding.DecisionMethod.BESTPREFERNEW) {
 			int bestIndex = 0;
 			double max = metrics[0];
-			for (int i = 1; i < metrics.length; i++){
-				if (metrics[i] > max){
+			for (int i = 1; i < metrics.length; i++) {
+				if (metrics[i] > max) {
 					max = metrics[i];
 					bestIndex = i;
 				}
 			}
 			return bestIndex;
 		}
-		if (this.embedding.deMethod == IQDEmbedding.DecisionMethod.BESTPREFEROLD){
+		// take best ID, prefer old one
+		if (this.embedding.deMethod == IQDEmbedding.DecisionMethod.BESTPREFEROLD) {
 			int bestIndex = 0;
 			double max = metrics[0];
-			for (int i = 1; i < metrics.length; i++){
-				if (metrics[i] >= max){
+			for (int i = 1; i < metrics.length; i++) {
+				if (metrics[i] >= max) {
 					max = metrics[i];
 					bestIndex = i;
 				}
 			}
 			return bestIndex;
 		}
-		if (this.embedding.deMethod == IQDEmbedding.DecisionMethod.METROPOLIS){
-			if (metrics.length != 2){
-				throw new IllegalArgumentException("METROPLOIS decision not possible with more than two options");
+		// METROPOLIS-HASTINGS algorithm
+		if (this.embedding.deMethod == IQDEmbedding.DecisionMethod.METROPOLIS) {
+			if (metrics.length != 2) {
+				throw new IllegalArgumentException(
+						"METROPLOIS decision not possible with more than two options");
 			}
-			if (rand.nextDouble() < metrics[0]/metrics[1]){
+			if (rand.nextDouble() < metrics[0] / metrics[1]) {
 				return 0;
 			} else {
 				return 1;
 			}
 		}
-		if (this.embedding.deMethod == IQDEmbedding.DecisionMethod.SA){
-			if (metrics.length != 2){
-				throw new IllegalArgumentException("SA decision not possible with more than two options");
+		// a Simulated annealing method accepting with probability depending on
+		// exponential of ratio
+		if (this.embedding.deMethod == IQDEmbedding.DecisionMethod.SA) {
+			if (metrics.length != 2) {
+				throw new IllegalArgumentException(
+						"SA decision not possible with more than two options");
 			}
-			if (metrics[0] > metrics[1]){
+			if (metrics[0] > metrics[1]) {
 				return 0;
 			}
-			if (rand.nextDouble() < Math.exp((metrics[0] -metrics[1])/T)){
-				return 0;
-			} else {
-				return 1;
-			}
-		}
-		if (this.embedding.deMethod == IQDEmbedding.DecisionMethod.SATIMEDEPENDENT){
-			if (metrics.length != 2){
-				throw new IllegalArgumentException("SA decision not possible with more than two options");
-			}
-			t = alpha*t;
-			if (metrics[0] > metrics[1]){
-				return 0;
-			}
-			if (rand.nextDouble() < Math.exp((metrics[0] -metrics[1])/t)){
+			if (rand.nextDouble() < Math.exp((metrics[0] - metrics[1]) / T)) {
 				return 0;
 			} else {
 				return 1;
 			}
 		}
-		if (this.embedding.deMethod == IQDEmbedding.DecisionMethod.PROPORTIONAL){
+		// simulated annealing with temperature
+		if (this.embedding.deMethod == IQDEmbedding.DecisionMethod.SATIMEDEPENDENT) {
+			if (metrics.length != 2) {
+				throw new IllegalArgumentException(
+						"SA decision not possible with more than two options");
+			}
+			t = alpha * t;
+			if (metrics[0] > metrics[1]) {
+				return 0;
+			}
+			if (rand.nextDouble() < Math.exp((metrics[0] - metrics[1]) / t)) {
+				return 0;
+			} else {
+				return 1;
+			}
+		}
+		// choosing Ids proportional to their portion of sum of qualities
+		if (this.embedding.deMethod == IQDEmbedding.DecisionMethod.PROPORTIONAL) {
 			double sum = 0;
-			for (int i = 0; i < metrics.length; i++){
+			for (int i = 0; i < metrics.length; i++) {
 				sum = sum + metrics[i];
 			}
-			double p = rand.nextDouble()*sum;
+			double p = rand.nextDouble() * sum;
 			double s = 0;
-			for (int j = 0; j < metrics.length; j++){
+			for (int j = 0; j < metrics.length; j++) {
 				s = s + metrics[j];
-				if (s > p){
+				if (s > p) {
 					return j;
 				}
 			}
 		}
-		
+
 		return 0;
 	}
 
