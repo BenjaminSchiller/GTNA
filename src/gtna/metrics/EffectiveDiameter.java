@@ -39,10 +39,15 @@ import gtna.data.Single;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.graph.sorting.NodeSorter;
+import gtna.io.DataWriter;
 import gtna.networks.Network;
+import gtna.util.Timer;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -60,15 +65,21 @@ public class EffectiveDiameter extends Metric {
 	private int k;
 	private int r;
 
+	private double[] effectiveDiameters;
+	private Timer runtime;
+	private NodeSorter sorter;
+
 	/**
 	 * @param key
 	 * @param parameters
 	 */
-	public EffectiveDiameter(int k, int r) {
+	public EffectiveDiameter(int k, int r, NodeSorter sorter) {
 		super("EFFECTIVE_DIAMETER", new Parameter[] { new IntParameter("K", k),
-				new IntParameter("R", r) });
+				new IntParameter("R", r),
+				new StringParameter("SORTER", sorter.getKey()) });
 		this.k = k;
 		this.r = r;
+		this.sorter = sorter;
 	}
 
 	/*
@@ -79,54 +90,75 @@ public class EffectiveDiameter extends Metric {
 	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		// TODO: if graph is disconnected?
-		int totalNumberOfPairs = g.getNodes().length
-				* (g.getNodes().length - 1) / 2;
-		double threshold = 0.9 * totalNumberOfPairs;
-		int bitmaskLength = (int) (Math.log(g.getNodes().length) / Math.log(2) + r);
-		// TODO: using diameter
-		boolean[][][] M = new boolean[k * bitmaskLength][g.getNodes().length][g
-				.getNodes().length];
+		this.runtime = new Timer();
 
-		// FOR each node u DO
-		// M(u,0) = concatenation of k bitmasks, each with 1 bit set (according
-		// to an exponential distribution)
-		for (Node u : g.getNodes()) {
-			boolean[][] temp = new boolean[k][bitmaskLength];
-			for (int i = 0; i < k; i++) {
-				temp[i] = this.generateBitmask(bitmaskLength);
+		this.effectiveDiameters = new double[g.getNodes().length];
+		Random rand = new Random();
+		Node[] sorted = sorter.sort(g, rand);
+
+		for (int i = 0; i < sorted.length; i++) {
+			calculate(g);
+			this.effectiveDiameters[i] = this.effectiveDiameter;
+			// remove node
+			Node node = sorted[i];
+			for (int index : node.getIncomingEdges()) {
+				node.removeIn(index);
+				node.removeOut(index);
+				g.getNode(index).removeIn(node.getIndex());
+				g.getNode(index).removeOut(node.getIndex());
 			}
-			M[u.getIndex()][0] = this.concat(temp);
 		}
 
-		// FOR each distance it starting with 1 DO
-		for (int it = 1; it < g.getNodes().length; it++) {
-			// FOR each node u DO
-			for (Node u : g.getNodes()) {
-				M[u.getInDegree()][it] = M[u.getInDegree()][it - 1];
-			}
-			// FOR each edge (u,v) DO
-			for (Edge e : g.getEdges().getEdges()) {
-				int uIndex = e.getDst();
-				int vIndex = e.getDst();
-				if (uIndex > vIndex) {
-					continue;
-				}
-				M[uIndex][it] = bitwiseOR(M[uIndex][it], M[vIndex][it - 1]);
+		this.runtime.end();
+	}
+
+	public void calculate(Graph g) {
+		HashMap<String, boolean[]> M = new HashMap<String, boolean[]>();
+		int n = g.getNodes().length;
+		int length = (int) (Math.log(n) / Math.log(2) + this.r);
+		for (Node u : g.getNodes()) {
+			ArrayList<boolean[]> concat = new ArrayList<boolean[]>();
+			for (int i = 0; i < this.k; i++) {
+				concat.add(this.generateBitmask(length));
 			}
 
-			// The estimate is: SUM(all u) (2^b)/(.7731*bias)
-			int estimate = 0;
+			M.put("" + u.toString() + 0, this.concat(concat));
+		}
+
+		int it = 1;
+		while (it < g.getNodes().length) {
 			for (Node u : g.getNodes()) {
-				estimate += Math.pow(2,
-						this.lowestOrderZeroBit(M[u.getIndex()]))
-						/ (0.7731 * (1 + 0.31 / this.k));
+				M.put("" + u.toString() + it,
+						M.get("" + u.toString() + (it - 1)));
 			}
-			if (estimate >= threshold) {
+
+			for (Edge e : g.getEdges().getEdges()) {
+				int src = e.getSrc();
+				int dst = e.getDst();
+				// TODO: directed???
+				Node u = g.getNode(src);
+				Node v = g.getNode(dst);
+				M.put("" + u.toString() + it,
+						this.myOR(M.get("" + u.toString() + it),
+								M.get("" + v.toString() + (it - 1))));
+			}
+
+			// estimation
+			double sum = 0;
+			for (Node u : g.getNodes()) {
+				double b = this.getB(M.get("" + u.toString() + it), length);
+				sum += Math.pow(2, b) / (0.7731 * (1 + 0.31 / this.k));
+			}
+
+			// TODO: number of connected pairs???
+			int numOfConnectedPairs = this.numOfConnectedPair(g);
+			if (sum >= numOfConnectedPairs) {
 				this.effectiveDiameter = it;
 				return;
 			}
 		}
+
+		System.out.println("Cannot estimated!");
 	}
 
 	/*
@@ -136,8 +168,10 @@ public class EffectiveDiameter extends Metric {
 	 */
 	@Override
 	public boolean writeData(String folder) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean success = true;
+		success &= DataWriter.writeWithIndex(this.effectiveDiameters,
+				"EFFECTIVE_DIAMETER_DIAMETER", folder);
+		return success;
 	}
 
 	/*
@@ -147,8 +181,9 @@ public class EffectiveDiameter extends Metric {
 	 */
 	@Override
 	public Single[] getSingles() {
-		// TODO Auto-generated method stub
-		return null;
+		Single RT = new Single("EFFECTIVE_DIAMETER_RUNTIME",
+				this.runtime.getRuntime());
+		return new Single[] { RT };
 	}
 
 	/*
@@ -175,45 +210,76 @@ public class EffectiveDiameter extends Metric {
 		return result;
 	}
 
-	private boolean[] concat(boolean[][] masks) {
-		int totalLength = 0;
-		for (boolean[] mask : masks) {
-			totalLength += mask.length;
+	private boolean[] concat(ArrayList<boolean[]> con) {
+		int length = 0;
+		for (boolean[] m : con) {
+			length += m.length;
 		}
-		boolean[] result = new boolean[totalLength];
-		int currentIndex = 0;
-		for (boolean[] mask : masks) {
-			for (boolean bool : mask) {
-				result[currentIndex] = bool;
-				currentIndex++;
+
+		if (length == 0) {
+			return null;
+		}
+
+		int index = 0;
+		boolean[] result = new boolean[length];
+		for (boolean[] m : con) {
+			for (int j = 0; j < m.length; j++) {
+				result[index] = m[j];
+				index++;
 			}
 		}
 		return result;
 	}
 
-	/**
-	 * @param bs
-	 * @param bs2
-	 * @return
-	 */
-	private boolean[] bitwiseOR(boolean[] x, boolean[] y) {
-		boolean[] result = new boolean[x.length];
-		for (int i = 0; i < x.length; i++) {
-			result[i] = x[i] || y[i];
+	private boolean[] myOR(boolean[] a, boolean[] b) {
+		boolean[] result = new boolean[a.length];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = a[i] || b[i];
 		}
 		return result;
 	}
 
-	private int lowestOrderZeroBit(boolean[][] masks) {
-		// we calculate the sum of b1, b2,..., bk
-		int sum = 0;
-		for (int i = 0; i < masks.length; i++) {
-			for (int j = masks[i].length - 1; j >= 0; j--) {
-				if (!masks[i][j]) {
-					sum += (masks[i].length - 1) - j;
-				}
+	private double getB(boolean[] bools, int length) {
+		// TODO: lowest order zero bit? left or right???
+		ArrayList<boolean[]> temp = this.extract(bools, length);
+		int myK = temp.size();
+		if (myK != this.k) {
+			System.out.println("uncorrect k!!!");
+		}
+		int sumB = 0;
+		for (boolean[] bool : temp) {
+			sumB += this.getLowestOrderZeroBit(bool);
+		}
+		return ((double) sumB) / myK;
+	}
+
+	private ArrayList<boolean[]> extract(boolean[] bools, int length) {
+		ArrayList<boolean[]> result = new ArrayList<boolean[]>();
+		int index = 0;
+		while (index + length <= bools.length) {
+			boolean[] temp = new boolean[length];
+			for (int i = 0; i < length; i++) {
+				temp[i] = bools[index + i];
+			}
+			index += length;
+			result.add(temp);
+		}
+		return result;
+	}
+
+	private int getLowestOrderZeroBit(boolean[] bool) {
+		int result = 0;
+		while (bool[result]) {
+			result++;
+			if (result == bool.length) {
+				break;
 			}
 		}
-		return sum / masks.length;
+		return result;
+	}
+
+	private int numOfConnectedPair(Graph g) {
+		// TODO:
+		return 0;
 	}
 }

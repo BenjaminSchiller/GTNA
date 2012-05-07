@@ -55,6 +55,7 @@ import gtna.graph.sorting.RandomNodeSorter;
 import gtna.graph.sorting.algorithms.ResilienceMetrics;
 import gtna.metrics.BiconnectedComponent;
 import gtna.metrics.DegreeDistribution;
+import gtna.metrics.EffectiveDiameter;
 import gtna.metrics.Metric;
 import gtna.metrics.fragmentation.Fragmentation.Resolution;
 import gtna.metrics.fragmentation.StrongFragmentation;
@@ -287,17 +288,32 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		int N = 1000;
-		int m0 = 50;
+		int N = 10000;
+		int m0 = 3000;
 		int M = 2;
 		double p = 0.4695;
 		double beta = 0.6447;
 		Network nw = new GLP(N, m0, M, p, beta, null);
 
-		Metric m = new BiconnectedComponent(
-				new EigenvectorCentralityNodeSorter(NodeSorterMode.DESC));
+		Metric m = new DegreeDistribution();
 		Metric[] metrics = new Metric[] { m };
 		Series s = Series.generate(nw, metrics, 3);
-		Plotting.multi(s, metrics, "test/");
+		Plotting.multi(s, metrics, "GLP/");
+	}
+
+	public static void PFPPlotTest() {
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("GNUPLOT_PATH",
+				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
+
+		int N = 10000;
+		double p = 0.4;
+		double delta = 0.021;
+		Network nw = new PFP(N, p, delta, null);
+
+		Metric m = new DegreeDistribution();
+		Metric[] metrics = new Metric[] { m };
+		Series s = Series.generate(nw, metrics, 3);
+		Plotting.multi(s, metrics, "PFP/");
 	}
 }

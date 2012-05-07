@@ -37,6 +37,7 @@ package gtna.networks.model;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Random;
 
 import gtna.graph.Graph;
@@ -60,7 +61,7 @@ public class PARG extends Network {
 	// private double[] nodePref;
 	private ArrayList<Point> edgesList;
 	private double[] nodeDegree;
-	private int[] highestDegreedNode;
+	ArrayList<Integer> highestDegreedNodes;
 
 	/**
 	 * @param key
@@ -90,7 +91,7 @@ public class PARG extends Network {
 		Node[] nodes = Node.init(this.getNodes(), graph);
 		edgesList = new ArrayList<Point>();
 		nodeDegree = new double[nodes.length];
-		highestDegreedNode = new int[nCut];
+		highestDegreedNodes = new ArrayList<Integer>();
 		// nodePref = new double[nodes.length];
 
 		for (int i = 0; i < nodeDegree.length; i++) {
@@ -125,6 +126,7 @@ public class PARG extends Network {
 			// 3. the actual probability is calculated so that the expected
 			// number of link deletions is maintained at nDel
 			// TODO:
+			this.calculateHighestDegreeNodes();
 		}
 
 		return null;
@@ -168,5 +170,33 @@ public class PARG extends Network {
 			}
 		}
 		return (int) (r * maxIndex);
+	}
+
+	private void calculateHighestDegreeNodes() {
+		for (int i = 0; i < this.nodeDegree.length; i++) {
+			if (this.highestDegreedNodes.size() < this.nCut) {
+				this.highestDegreedNodes.add(i);
+			} else {
+				int temp = this.getMin(this.highestDegreedNodes);
+				if (this.nodeDegree[i] > this.highestDegreedNodes.get(temp)
+						.intValue()) {
+					this.highestDegreedNodes.remove(temp);
+					this.highestDegreedNodes.add(i);
+				}
+			}
+		}
+		if (this.highestDegreedNodes.size() != this.nCut) {
+			System.out.println("Error when chosing nCut highest degree nodes!");
+		}
+	}
+
+	private int getMin(ArrayList<Integer> list) {
+		int result = 0;
+		for (int i = 0; i < list.size(); i++) {
+			if (list.get(i) < list.get(result)) {
+				result = i;
+			}
+		}
+		return result;
 	}
 }
