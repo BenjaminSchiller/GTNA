@@ -82,23 +82,23 @@ public class RingIdentifierSpaceSuccessorDistances extends Metric {
 		int[] nodesSorted = SuccessorComparator.getNodesSorted(partitions);
 
 		double[] dist = this.computeSuccessorDistances(g.getNodes(),
-				nodesSorted, partitions);
+				nodesSorted, partitions, maxDist);
 		this.successorDistanceDistribution = Statistics.binnedDistribution(
-				dist, 0, maxDist, this.bins);
+				dist, 0, 1, this.bins);
 		this.successorDistanceDistributionCdf = Statistics
 				.binnedCdf(this.successorDistanceDistribution);
 
 	}
 
 	private double[] computeSuccessorDistances(Node[] nodes, int[] nodesSorted,
-			DPartition[] partitions) {
+			DPartition[] partitions, double maxDist) {
 		double[] dist = new double[nodes.length];
 
 		for (int i = 0; i < nodesSorted.length; i++) {
 			int n = nodesSorted[i];
 			int succ = nodesSorted[(i + 1) % nodesSorted.length];
 			dist[i] = partitions[n].distance(partitions[succ]
-					.getRepresentativeID());
+					.getRepresentativeID()) / maxDist;
 		}
 
 		return dist;
