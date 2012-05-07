@@ -40,6 +40,7 @@ import gtna.metrics.Metric;
 import gtna.metrics.basic.ShortestPaths;
 import gtna.metrics.id.DIdentifierSpaceDistanceProducts;
 import gtna.metrics.id.DIdentifierSpaceDistances;
+import gtna.metrics.id.PlaneIdentifierSpaceDistancesToCenter;
 import gtna.metrics.id.PlaneIdentifierSpaceVisualization;
 import gtna.metrics.id.RingIdentifierSpaceSuccessorDistances;
 import gtna.metrics.id.RingIdentifierSpaceSuccessorHopDistances;
@@ -96,8 +97,8 @@ public class IdMetricsTest {
 		Config.overwrite("GNUPLOT_PRINT_ERRORS", "false");
 		Config.overwrite("GNUPLOT_LW", "5");
 
-		// IdMetricsTest.testPlane();
-		IdMetricsTest.testRing();
+		IdMetricsTest.testPlane();
+		// IdMetricsTest.testRing();
 
 		stats.end();
 	}
@@ -154,8 +155,9 @@ public class IdMetricsTest {
 	}
 
 	public static void testPlane() {
+		Metric pidsd2c = new PlaneIdentifierSpaceDistancesToCenter(100);
 		Metric pidsv = new PlaneIdentifierSpaceVisualization();
-		Metric[] metrics = new Metric[] { pidsv };
+		Metric[] metrics = new Metric[] { pidsd2c, pidsv };
 
 		Transformation[] t1 = new Transformation[] { new Nothing(
 				new IntParameter("INDEX", 1)) };
@@ -165,9 +167,9 @@ public class IdMetricsTest {
 				new IntParameter("INDEX", 3)) };
 
 		Map<Transformation[], String> names = new HashMap<Transformation[], String>();
-		names.put(t1, "nw1");
-		names.put(t2, "nw2");
-		names.put(t3, "nw3");
+		names.put(t1, "Communities");
+		names.put(t2, "Random");
+		names.put(t3, "Grid-Circle");
 
 		int nodes = 2000;
 
