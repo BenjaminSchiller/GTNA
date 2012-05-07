@@ -93,15 +93,6 @@ public class BiconnectedComponent extends Metric {
 		this.g = g;
 		this.maxComponentSize = new double[g.getNodes().length];
 
-		/*
-		 * count = 0; visited = new boolean[g.getNodes().length]; parent = new
-		 * Node[g.getNodes().length]; d = new int[g.getNodes().length]; low =
-		 * new int[g.getNodes().length]; stack = new Stack<Edge>(); for (Node u
-		 * : g.getNodes()) { visited[u.getIndex()] = false; parent[u.getIndex()]
-		 * = null; } for (Node u : g.getNodes()) { if (!visited[u.getIndex()]) {
-		 * DFSVisit(u); } }
-		 */
-
 		Random rand = new Random();
 		Node[] sorted = sorter.sort(this.g, rand);
 		for (int i = 0; i < sorted.length; i++) {
@@ -110,18 +101,6 @@ public class BiconnectedComponent extends Metric {
 			this.maxComponentSize[i] = (double) this.maxComponent.size();
 			System.out.println("Size = " + this.maxComponent.size());
 			// remove node
-			// TODO:
-			/*
-			 * Node[] newNodes = new Node[this.g.getNodes().length - 1]; boolean
-			 * deleted = false; for (int j = 0; j < newNodes.length; j++) { if
-			 * (deleted) { newNodes[j] = this.g.getNode(j + 1); } else { if
-			 * (sorted[i] == this.g.getNode(j)) { deleted = true; newNodes[j] =
-			 * this.g.getNode(j + 1); } else { newNodes[j] = this.g.getNode(j);
-			 * } } }
-			 * 
-			 * this.g = new Graph("New Graph"); this.g.setNodes(newNodes);
-			 * this.g.generateEdges();
-			 */
 			Node node = sorted[i];
 			for (int index : node.getIncomingEdges()) {
 				node.removeIn(index);
