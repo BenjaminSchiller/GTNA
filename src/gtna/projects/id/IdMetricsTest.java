@@ -37,7 +37,6 @@ package gtna.projects.id;
 
 import gtna.data.Series;
 import gtna.metrics.Metric;
-import gtna.metrics.basic.ShortestPaths;
 import gtna.metrics.id.DIdentifierSpaceDistanceProducts;
 import gtna.metrics.id.DIdentifierSpaceDistances;
 import gtna.metrics.id.PlaneIdentifierSpaceDistancesToCenter;
@@ -46,17 +45,16 @@ import gtna.metrics.id.RingIdentifierSpaceSuccessorDistances;
 import gtna.metrics.id.RingIdentifierSpaceSuccessorHopDistances;
 import gtna.metrics.id.RingIdentifierSpaceVisualzation;
 import gtna.networks.Network;
-import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.placementmodels.NodeConnector;
 import gtna.networks.model.placementmodels.Partitioner;
 import gtna.networks.model.placementmodels.PlacementModel;
 import gtna.networks.model.placementmodels.PlacementModelContainer;
 import gtna.networks.model.placementmodels.connectors.UDGConnector;
 import gtna.networks.model.placementmodels.models.CirclePlacementModel;
+import gtna.networks.model.placementmodels.models.CirclePlacementModel.DistributionType;
 import gtna.networks.model.placementmodels.models.CommunityPlacementModel;
 import gtna.networks.model.placementmodels.models.GridPlacementModel;
 import gtna.networks.model.placementmodels.models.RandomPlacementModel;
-import gtna.networks.model.placementmodels.models.CirclePlacementModel.DistributionType;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.plot.Plotting;
@@ -64,14 +62,11 @@ import gtna.transformation.Transformation;
 import gtna.transformation.attackableEmbedding.lmc.LMC;
 import gtna.transformation.communities.CommunityDetectionLPA;
 import gtna.transformation.embedding.communities.CommunityEmbedding;
-import gtna.transformation.embedding.communities.SimpleCommunityEmbedding1;
-import gtna.transformation.embedding.communities.SimpleCommunityEmbedding2;
 import gtna.transformation.embedding.communities.partitioner.community.EqualSizeCommunityPartitioner;
 import gtna.transformation.embedding.communities.partitioner.idSpace.EqualSizeIdSpacePartitioner;
 import gtna.transformation.embedding.communities.partitioner.idSpace.RelativeSizeIdSpacePartitioner;
 import gtna.transformation.embedding.communities.sorter.community.RandomCommunitySorter;
 import gtna.transformation.embedding.communities.sorter.node.RandomNodeSorter;
-import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.util.Nothing;
 import gtna.transformation.util.RemoveGraphProperty;
@@ -98,21 +93,21 @@ public class IdMetricsTest {
 		Config.overwrite("GNUPLOT_LW", "5");
 
 		IdMetricsTest.testPlane();
-		// IdMetricsTest.testRing();
+		IdMetricsTest.testRing();
 
 		stats.end();
 	}
 
 	public static void testRing() {
 		Metric idsd = new DIdentifierSpaceDistances(100);
+		Metric didsdp = new DIdentifierSpaceDistanceProducts(1000);
 		Metric idsv1 = new RingIdentifierSpaceVisualzation(100);
 		Metric idsv2 = new RingIdentifierSpaceVisualzation(500);
 		Metric idsv3 = new RingIdentifierSpaceVisualzation();
 		Metric ridsshd = new RingIdentifierSpaceSuccessorHopDistances();
-		Metric didsdp = new DIdentifierSpaceDistanceProducts(1000);
 		Metric ridssd = new RingIdentifierSpaceSuccessorDistances(100);
-		Metric[] metrics = new Metric[] { idsd, idsv1, idsv2, idsv3, ridsshd,
-				didsdp, ridssd };
+		Metric[] metrics = new Metric[] { idsd, didsdp, idsv1, idsv2, idsv3,
+				ridsshd, ridssd };
 
 		Transformation[] t1 = new Transformation[] { new RemoveGraphProperty(),
 				new RandomRingIDSpaceSimple() };
@@ -155,9 +150,11 @@ public class IdMetricsTest {
 	}
 
 	public static void testPlane() {
+		Metric idsd = new DIdentifierSpaceDistances(100);
+		Metric didsdp = new DIdentifierSpaceDistanceProducts(1000);
 		Metric pidsd2c = new PlaneIdentifierSpaceDistancesToCenter(100);
 		Metric pidsv = new PlaneIdentifierSpaceVisualization();
-		Metric[] metrics = new Metric[] { pidsd2c, pidsv };
+		Metric[] metrics = new Metric[] { idsd, didsdp, pidsd2c, pidsv };
 
 		Transformation[] t1 = new Transformation[] { new Nothing(
 				new IntParameter("INDEX", 1)) };
