@@ -79,21 +79,22 @@ public class DIdentifierSpaceDistances extends Metric {
 
 		double maxDist = ids.getMaxDistance();
 
-		double[] edgeDistances = this.computeEdgeDistances(edges, partitions);
+		double[] edgeDistances = this.computeEdgeDistances(edges, partitions,
+				maxDist);
 		this.edgesDistanceDistribution = Statistics.binnedDistribution(
-				edgeDistances, 0, maxDist, this.bins);
+				edgeDistances, 0, 1, this.bins);
 		this.edgesDistanceDistributionCdf = Statistics
 				.binnedCdf(this.edgesDistanceDistribution);
 
 	}
 
 	private double[] computeEdgeDistances(Edges edges,
-			Partition<Double>[] partitions) {
+			Partition<Double>[] partitions, double maxDist) {
 		double[] dist = new double[edges.getEdges().size()];
 		int index = 0;
 		for (Edge edge : edges.getEdges()) {
 			dist[index++] = partitions[edge.getSrc()].distance(partitions[edge
-					.getDst()].getRepresentativeID());
+					.getDst()].getRepresentativeID()) / maxDist;
 		}
 		return dist;
 	}
