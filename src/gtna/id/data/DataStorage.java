@@ -54,8 +54,17 @@ public class DataStorage {
 		this.storage = new HashMap<Identifier, DataItem>();
 	}
 
+	public DataStorage(Identifier id) {
+		this();
+		this.storage.put(id, new DataItem(id));
+	}
+
 	public void add(Identifier id, DataItem data) {
 		this.storage.put(id, data);
+	}
+
+	public void add(Identifier id) {
+		this.add(id, new DataItem(id));
 	}
 
 	public void remove(Identifier id) {

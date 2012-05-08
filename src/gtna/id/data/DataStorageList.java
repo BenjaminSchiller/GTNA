@@ -38,8 +38,6 @@ package gtna.id.data;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 
-import java.util.List;
-
 /**
  * @author benni
  * 
@@ -53,15 +51,6 @@ public class DataStorageList implements GraphProperty {
 
 	public DataStorageList(DataStorage[] list) {
 		this.list = list;
-	}
-
-	public DataStorageList(List<DataStorage> list) {
-		this.list = new DataStorage[list.size()];
-		int index = 0;
-
-		for (DataStorage ds : list) {
-			this.list[index++] = ds;
-		}
 	}
 
 	public DataStorage[] getList() {
