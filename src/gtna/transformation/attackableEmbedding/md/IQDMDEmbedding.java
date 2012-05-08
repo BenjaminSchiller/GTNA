@@ -121,7 +121,7 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 			IdentifierMethod idMethod, DecisionMethod deMethod, int dimension,
 			double epsilon, boolean checkold, boolean adjustone,
 			DistanceMD distance, Parameter[] parameters) {
-		Parameter[] res = new Parameter[parameters.length + 7];
+		Parameter[] res = new Parameter[parameters.length + 8];
 		res[0] = new IntParameter("ITERATIONS", iter);
 		res[1] = new StringParameter("IDENTIFIER_METHOD", idMethod.toString());
 		res[2] = new StringParameter("DECISION_METHOD", deMethod.toString());
@@ -130,8 +130,8 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 		res[5] = new IntParameter("DIMENSION", dimension);
 		res[6] = new BooleanParameter("ADJUST_ONE", adjustone);
 		res[7] = new StringParameter("DISTANCE", distance.toString());
-		for (int i = 7; i < res.length; i++) {
-			res[i] = parameters[i - 7];
+		for (int i = 8; i < res.length; i++) {
+			res[i] = parameters[i - 8];
 		}
 		return res;
 	}
