@@ -67,7 +67,7 @@ public class DataStorageMetric extends Metric {
 
 		int max = 0;
 		for (DataStorage ds : dsl.getList()) {
-//			System.out.println("DS.size = " + ds.size());
+			// System.out.println("DS.size = " + ds.size());
 			if (ds.size() > max) {
 				max = ds.size();
 			}
@@ -96,7 +96,13 @@ public class DataStorageMetric extends Metric {
 
 	@Override
 	public Single[] getSingles() {
-		return new Single[0];
+		Single avg = new Single("DATA_STORAGE_METRIC_"
+				+ "NUMBER_OF_DATA_ITEMS_AVG",
+				this.dataItemsDistribution.getAverage());
+		Single med = new Single("DATA_STORAGE_METRIC_"
+				+ "NUMBER_OF_DATA_ITEMS_MED",
+				this.dataItemsDistribution.getMedian());
+		return new Single[] { avg, med };
 	}
 
 	@Override
