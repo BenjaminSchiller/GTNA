@@ -38,12 +38,14 @@ package gtna.transformation.id;
 import gtna.graph.Graph;
 import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
+import gtna.id.md.MDIdentifierSpaceSimple.DistanceMD;
 import gtna.id.md.MDPartitionSimple;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleArrayParameter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.Random;
 
@@ -56,21 +58,25 @@ public class RandomMDIDSpaceSimple extends Transformation {
 	private int realities;
 	private double[] modulus;
 	private boolean wrapAround;
+	private DistanceMD dist;
 
 	public RandomMDIDSpaceSimple() {
 		super("RANDOM_MD_ID_SPACE_SIMPLE");
 		this.realities = 1;
+		this.modulus = new double[]{1};
 	}
 
 	public RandomMDIDSpaceSimple(int realities, double[] modulus,
-			boolean wrapAround) {
+			boolean wrapAround, DistanceMD dist) {
 		super("RANDOM_MD_ID_SPACE_SIMPLE", new Parameter[] {
 				new IntParameter("REALITIES", realities),
 				new DoubleArrayParameter("MODULI", modulus),
-				new BooleanParameter("WRAPAROUND", wrapAround) });
+				new BooleanParameter("WRAPAROUND", wrapAround),
+				new StringParameter("DISTANCE", dist.toString())});
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
+		this.dist = dist;
 	}
 
 	@Override
@@ -80,7 +86,7 @@ public class RandomMDIDSpaceSimple extends Transformation {
 			MDPartitionSimple[] partitions = new MDPartitionSimple[graph
 					.getNodes().length];
 			MDIdentifierSpaceSimple idSpace = new MDIdentifierSpaceSimple(
-					partitions, this.modulus, this.wrapAround);
+					partitions, this.modulus, this.wrapAround, this.dist);
 			for (int i = 0; i < partitions.length; i++) {
 				partitions[i] = new MDPartitionSimple(MDIdentifier.rand(rand,
 						idSpace));

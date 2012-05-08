@@ -21,59 +21,45 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * LMCAttackerKleinberg.java
+ * LMCMDEmbedding.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: "Benjamin Schiller";
+ * Original Author: stef;
  * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
  *
  */
-package gtna.transformation.attackableEmbedding.lmc;
+package gtna.transformation.attackableEmbedding.md.kleinberg;
 
-import gtna.graph.Graph;
-import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
-
-import java.util.Random;
-
+import gtna.id.md.MDIdentifierSpaceSimple.DistanceMD;
+import gtna.transformation.attackableEmbedding.md.IQDMDEmbedding;
+import gtna.util.parameter.Parameter;
 
 /**
- * Attacker preventing nodes from adapting 
- * @author stefanieroos
- *
+ * @author stef
+ * 
  */
+public class LMCMDEmbedding extends KleinbergMDEmbedding {
 
-public class LMCAttackerKleinberg extends LMCNode{
-	
-	 public LMCAttackerKleinberg(int index, Graph g, LMC lmc) {
-	 super(index, g, lmc);
-	 }
-	
-	 /**
-	 * select ID at longest distance to any node
-	 */
-	 public void turn(Random rand) {
-	 double[] neighbors = this.knownIDs.clone();
-	 this.lmc.getIds()[this.getIndex()].setPosition(AttackableEmbeddingNode.maxMiddle(neighbors) + rand
-	 .nextDouble()* this.lmc.delta);
-	 }
-	
-	 /**
-	 * return ID close to neighbor to keep it from changing IDs
-	 */
-	 protected double ask(LMCNode caller, Random rand) {
-	 if (caller instanceof LMCAttackerKleinberg){
-		 return super.ask(caller, rand);
-	 }
-	 if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
-	    return (caller.ask(this,rand) + this.lmc.delta * (1.0 + rand.nextDouble())) % 1.0;
-	 } else {
-	    return (caller.ask(this,rand) + this.lmc.delta * rand.nextDouble()) % 1.0;
-	 }
-	 }
+	public LMCMDEmbedding(int iterations, DistanceMD distance, int dimension,
+			double epsilon) {
+		super("LMC_MD_EMBEDDING", iterations,
+				IQDMDEmbedding.IdentifierMethod.ONERANDOM,
+				IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension,
+				epsilon, false, false, new Parameter[0]);
+	}
+
+	public LMCMDEmbedding(int iterations, DistanceMD distance, int dimension,
+			double epsilon, AttackerType type, AttackerSelection selection,
+			int attackercount) {
+		super("LMC_MD_EMBEDDING", iterations,
+				IQDMDEmbedding.IdentifierMethod.ONERANDOM,
+				IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension,
+				epsilon, false, false, type, selection, attackercount);
+	}
 
 }

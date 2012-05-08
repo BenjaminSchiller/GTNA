@@ -37,13 +37,16 @@ package gtna.transformation.id;
 
 import gtna.graph.Graph;
 import gtna.id.ring.RingIdentifier;
+import gtna.id.ring.RingIdentifierSpace;
 import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.id.ring.RingPartitionSimple;
+import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.Random;
 
@@ -60,25 +63,47 @@ public class RandomRingIDSpaceSimple extends Transformation {
 	private double modulus;
 
 	private boolean wrapAround;
+	
+	private Distance distance;
 
 	public RandomRingIDSpaceSimple() {
 		super("RANDOM_RING_ID_SPACE_SIMPLE");
 		this.realities = 1;
 		this.modulus = 1.0;
 		this.wrapAround = true;
+		this.distance = RingIdentifierSpace.Distance.RING;
+	}
+	
+	public RandomRingIDSpaceSimple(Distance distance) {
+		super("RANDOM_RING_ID_SPACE_SIMPLE", new Parameter[] {
+				new StringParameter("DISTANCE", distance.toString()) });
+		this.realities = 1;
+		this.modulus = 1.0;
+		this.wrapAround = true;
+		this.distance = distance;
 	}
 
-	public RandomRingIDSpaceSimple(int realities, double modulus,
-			boolean wrapAround) {
+	public RandomRingIDSpaceSimple(int realities, double modulus, boolean wrapAround) {
 		super("RANDOM_RING_ID_SPACE_SIMPLE", new Parameter[] {
 				new IntParameter("REALITIES", realities),
 				new DoubleParameter("MODULUS", modulus),
-				new BooleanParameter("WRAP_AROUND", wrapAround)
-
-		});
+				new BooleanParameter("WRAP_AROUND", wrapAround) });
 		this.realities = realities;
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
+		this.distance = RingIdentifierSpace.Distance.RING;
+	}
+	
+	public RandomRingIDSpaceSimple(int realities, double modulus, boolean wrapAround, Distance distance) {
+		super("RANDOM_RING_ID_SPACE_SIMPLE", new Parameter[] {
+				new IntParameter("REALITIES", realities),
+				new DoubleParameter("MODULUS", modulus),
+				new BooleanParameter("WRAP_AROUND", wrapAround),
+				new StringParameter("DISTANCE", distance.toString())});
+		this.realities = realities;
+		this.modulus = modulus;
+		this.wrapAround = wrapAround;
+		this.distance = distance;
 	}
 
 	@Override
@@ -88,7 +113,7 @@ public class RandomRingIDSpaceSimple extends Transformation {
 			RingPartitionSimple[] partitions = new RingPartitionSimple[graph
 					.getNodes().length];
 			RingIdentifierSpaceSimple idSpace = new RingIdentifierSpaceSimple(
-					partitions, this.modulus, this.wrapAround);
+					partitions, this.modulus, this.wrapAround, this.distance);
 			for (int i = 0; i < partitions.length; i++) {
 				partitions[i] = new RingPartitionSimple(RingIdentifier.rand(
 						rand, idSpace));
