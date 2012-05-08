@@ -40,6 +40,8 @@ import gtna.graph.Node;
 import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
 import gtna.id.DPartition;
+import gtna.id.Identifier;
+import gtna.id.data.DataStorageList;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -58,6 +60,8 @@ public class GreedyBacktracking extends RoutingAlgorithm {
 	private DIdentifierSpace idSpace;
 
 	private DPartition[] p;
+
+	private DataStorageList dsl;
 
 	private int ttl;
 
@@ -82,11 +86,24 @@ public class GreedyBacktracking extends RoutingAlgorithm {
 				graph.getNodes(), new HashMap<Integer, Integer>());
 	}
 
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Route routeToTarget(Graph graph, int start, Identifier target,
+			Random rand) {
+		return this.route(new ArrayList<Integer>(), start,
+				(DIdentifier) target, rand, graph.getNodes(),
+				new HashMap<Integer, Integer>());
+	}
+
 	private Route route(ArrayList<Integer> route, int current,
 			DIdentifier target, Random rand, Node[] nodes,
 			HashMap<Integer, Integer> from) {
 		route.add(current);
 		if (this.idSpace.getPartitions()[current].contains(target)) {
+			return new RouteImpl(route, true);
+		}
+		if (this.dsl != null
+				&& this.dsl.getStorageForNode(current).containsId(target)) {
 			return new RouteImpl(route, true);
 		}
 		if (route.size() > ttl) {
@@ -123,6 +140,9 @@ public class GreedyBacktracking extends RoutingAlgorithm {
 	public void preprocess(Graph graph) {
 		this.idSpace = (DIdentifierSpace) graph.getProperty("ID_SPACE_0");
 		this.p = (DPartition[]) idSpace.getPartitions();
+		if (graph.hasProperty("DATA_STORAGE_0")) {
+			this.dsl = (DataStorageList) graph.getProperty("DATA_STORAGE_0");
+		}
 	}
 
 }
