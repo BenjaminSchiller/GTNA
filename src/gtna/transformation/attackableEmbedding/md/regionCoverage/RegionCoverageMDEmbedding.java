@@ -38,10 +38,10 @@ package gtna.transformation.attackableEmbedding.md.regionCoverage;
 import gtna.graph.Graph;
 import gtna.id.md.MDIdentifierSpaceSimple.DistanceMD;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
-import gtna.transformation.attackableEmbedding.IQD.RegionCoverage.RegionCoverageNode;
 import gtna.transformation.attackableEmbedding.md.AttackerIQDMDEmbedding;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -120,6 +120,38 @@ public class RegionCoverageMDEmbedding extends AttackerIQDMDEmbedding {
 		this.init(g, nodes);
 		this.initIds();
 		return nodes;
+	}
+
+	public RegionCoverageMDEmbedding(int iterations, IdentifierMethod idMethod,
+			DecisionMethod deMethod, DistanceMD distance, int dimension,
+			double epsilon, boolean checkold, boolean adjustone, int max,
+			boolean add) {
+		super(iterations, "REGION_COVERAGE_MD", idMethod, deMethod, distance,
+				dimension, epsilon, checkold, adjustone,
+				add ? new Parameter[] { new IntParameter("MAX_LOG", max) }
+						: new Parameter[] {
+								new IntParameter("ITERATIONS", iterations),
+								new IntParameter("DIMENSION", dimension),
+								new StringParameter("DISTANCE",
+										distance.toString()) }, add);
+		this.max = max;
+	}
+
+	public RegionCoverageMDEmbedding(int iterations, IdentifierMethod idMethod,
+			DecisionMethod deMethod, DistanceMD distance, int dimension,
+			double epsilon, boolean checkold, boolean adjustone, int max,
+			AttackerType type, AttackerSelection selection, int attackercount,
+			boolean add) {
+		super(iterations, "REGION_COVERAGE_MD", idMethod, deMethod, distance,
+				dimension, epsilon, checkold, adjustone, type, selection,
+				attackercount, add ? new Parameter[] { new IntParameter(
+						"MAX_LOG", max) } : new Parameter[] {
+						new IntParameter("ITERATIONS", iterations),
+						new IntParameter("DIMENSION", dimension),
+						new StringParameter("DISTANCE", distance.toString()) },
+				add);
+		this.max = max;
+
 	}
 
 }

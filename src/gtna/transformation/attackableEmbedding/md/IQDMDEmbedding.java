@@ -89,6 +89,21 @@ public abstract class IQDMDEmbedding extends AttackableEmbedding {
 	public IQDMDEmbedding(int iterations, String key,
 			IdentifierMethod idMethod, DecisionMethod deMethod,
 			DistanceMD distance, int dimension, double epsilon,
+			boolean checkold, boolean adjustOne, Parameter[] parameters, boolean add) {
+		super(iterations, key, add?combineParameter(iterations, idMethod, deMethod,
+				dimension, epsilon, checkold, adjustOne, distance, parameters):parameters);
+		this.idMethod = idMethod;
+		this.deMethod = deMethod;
+		this.dimension = dimension;
+		this.epsilon = epsilon;
+		this.checkold = checkold;
+		this.adjustOneDegree = adjustOne;
+		this.distance = distance;
+	}
+	
+	public IQDMDEmbedding(int iterations, String key,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			DistanceMD distance, int dimension, double epsilon,
 			boolean checkold, boolean adjustOne, Parameter[] parameters) {
 		super(iterations, key, combineParameter(iterations, idMethod, deMethod,
 				dimension, epsilon, checkold, adjustOne, distance, parameters));

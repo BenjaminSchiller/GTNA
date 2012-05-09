@@ -97,7 +97,7 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 	private void swappingTurn(Random rand) {
 		AttackerIQDMDEmbedding attEmbedding = (AttackerIQDMDEmbedding) this.embedding;
 		if (attEmbedding.getAttackertype() == AttackerIQDMDEmbedding.AttackerType.CONTRACTION) {
-			//System.out.println("AttackTurn ");
+			// System.out.println("AttackTurn ");
 			// select a random neighbor
 			if (this.neighborIndex == -1) {
 				this.neighborIndex = rand.nextInt(this.getOutDegree());
@@ -202,7 +202,7 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 			double[][][] res = new double[2][][];
 			AttackerIQDMDEmbedding attEmbedding = (AttackerIQDMDEmbedding) this.embedding;
 			if (attEmbedding.getAttackertype() == AttackerIQDMDEmbedding.AttackerType.CONTRACTION) {
-				//System.out.println("Attack ");
+				// System.out.println("Attack ");
 				// return ID close to certain neighbor
 				// and neighbors close to victims ID
 				res[0] = new double[][] { this.ask(rand, this),
@@ -210,16 +210,18 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 				res[1] = new double[this.knownIDs.length][this.getID().length];
 				double d = 1;
 				for (int i = 0; i < neighborsID.length; i++) {
-					d = d* attEmbedding.computeDistance(callerID,
+					d = d
+							* attEmbedding.computeDistance(callerID,
 									neighborsID[i]);
 				}
-				//System.out.println(d);
+				// System.out.println(d);
 				for (int i = 0; i < res[1].length; i++) {
 					for (int j = 0; j < res[1][i].length; j++) {
-						res[1][i][j] = (callerID[j] + Math.min(close, d)/(double)callerID.length
-								* rand.nextDouble()) % 1;
+						res[1][i][j] = (callerID[j] + Math.min(close, d)
+								/ (double) callerID.length * rand.nextDouble()) % 1;
 					}
-					//System.out.println("distance caller pretend neighbor " +  attEmbedding.computeDistance(callerID, res[1][i]));
+					// System.out.println("distance caller pretend neighbor " +
+					// attEmbedding.computeDistance(callerID, res[1][i]));
 				}
 			}
 			if (attEmbedding.getAttackertype() == AttackerIQDMDEmbedding.AttackerType.DIVERGENCE) {
@@ -229,7 +231,8 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 				res[1] = new double[this.knownIDs.length][this.getID().length];
 				for (int i = 0; i < res[1].length; i++) {
 					for (int j = 0; j < res[1][i].length; j++) {
-						res[1][i][j] = (callerID[j] + close/(double)callerID.length * rand.nextDouble()) % 1;
+						res[1][i][j] = (callerID[j] + close
+								/ (double) callerID.length * rand.nextDouble()) % 1;
 					}
 				}
 
@@ -246,7 +249,8 @@ public abstract class AttackerMDNode extends DecisionMDNode {
 					for (int i = 0; i < vals.length; i++) {
 						vals[i] = neighborsID[i][j];
 					}
-					res[0][0][j] = (maxMiddle(vals) + close/(double)callerID.length * rand.nextDouble()) % 1;
+					res[0][0][j] = (maxMiddle(vals) + close
+							/ (double) callerID.length * rand.nextDouble()) % 1;
 				}
 				res[0][1] = new double[] { -1 };
 				res[1] = new double[this.knownIDs.length][this.getID().length];
