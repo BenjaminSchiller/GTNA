@@ -76,13 +76,44 @@ public class RoutingTest {
 		Config.overwrite("MAIN_PLOT_FOLDER", "plots/routing-test/");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 
-		int ttl = 100;
-		int rw = 5;
+		int ttl = 50;
+		int rw = 6;
+		int[] R_STORAGE = new int[] { 1, 5, 10, 20, 30, 40, 50 };
+		R_STORAGE = new int[] { 1, 50 };
 		int rStorage = 10;
-		int rRouting = 10;
+		int rRouting = 1;
 
 		int times = 1;
-		int nodes = 2000;
+		int nodes = 500;
+		boolean get = true;
+
+		Transformation rrids = new RandomRingIDSpaceSimple();
+		Transformation lmc = new LMC(1000, LMC.MODE_UNRESTRICTED, 0,
+				LMC.DELTA_1_N, 0);
+		Transformation sw = new Swapping(1000);
+
+		Map<Transformation[], String> names = new HashMap<Transformation[], String>();
+
+		Transformation[][] t1 = new Transformation[R_STORAGE.length][];
+		for (int i = 0; i < R_STORAGE.length; i++) {
+			Transformation mpds = new MultiPhaseDataStorage(R_STORAGE[i],
+					new RoutingAlgorithm[] { new RandomWalk(rw),
+							new HighestDegreeNeighbor(), new Greedy() });
+			t1[i] = new Transformation[] { rrids, lmc, mpds };
+			names.put(t1[i], "MultiPhase-R-D-G " + R_STORAGE[i]);
+		}
+
+		Transformation[][] t2 = new Transformation[R_STORAGE.length][];
+		for (int i = 0; i < R_STORAGE.length; i++) {
+			Transformation mpds = new MultiPhaseDataStorage(R_STORAGE[i],
+					new RoutingAlgorithm[] { new RandomWalk(rw),
+							new HighestDegreeNeighbor(),
+							new LookaheadSimple(ttl) });
+			t2[i] = new Transformation[] { rrids, lmc, mpds };
+			names.put(t2[i], "MultiPhase-R-D-L " + R_STORAGE[i]);
+		}
+
+		Transformation[][][] t = new Transformation[][][] { t1, t2 };
 
 		Metric dd = new DegreeDistribution();
 		Metric dsm = new DataStorageMetric();
@@ -97,40 +128,40 @@ public class RoutingTest {
 		Routing r4 = new Routing(new RandomWalk(ttl));
 		Metric[] metrics = new Metric[] { dd, dsm, r1, r2, r3, r4 };
 
-		Transformation rrids = new RandomRingIDSpaceSimple();
-		Transformation lmc = new LMC(1000, LMC.MODE_UNRESTRICTED, 0,
-				LMC.DELTA_1_N, 0);
-		Transformation sw = new Swapping(1000);
+		Network[][] nw = RoutingTest.getNW(nodes, t, names);
 
-		Transformation mpds_rdg = new MultiPhaseDataStorage(rStorage,
-				new RoutingAlgorithm[] { new RandomWalk(rw),
-						new HighestDegreeNeighbor(), new Greedy() });
-		Transformation mpds_rdl = new MultiPhaseDataStorage(rStorage,
-				new RoutingAlgorithm[] { new RandomWalk(rw),
-						new HighestDegreeNeighbor(), new LookaheadSimple(ttl) });
-
-		Transformation[] t2 = new Transformation[] { rrids, lmc, mpds_rdg };
-		Transformation[] t3 = new Transformation[] { rrids, lmc, mpds_rdl };
-
-		Transformation[][] t = new Transformation[][] { t2, t3 };
-
-		Map<Transformation[], String> names = new HashMap<Transformation[], String>();
-		names.put(t2, "MultiPhase-R-D-G");
-		names.put(t3, "MultiPhase-R-D-L");
-
-		String spi = "resources/spi/_RLN_LWCC_BI/"
-				+ "0_analyze_buddy_2010.csv.gtna";
-		Network[] nw = new Network[t.length];
-		for (int i = 0; i < t.length; i++) {
-			// nw[i] = new DescriptionWrapper(new ReadableFile("SPI", "spi",
-			// spi,
-			// t[i]), names.get(t[i]));
-			nw[i] = new DescriptionWrapper(new PowerLawRandomGraph(nodes, 2.3,
-					3, Integer.MAX_VALUE, true, t[i]), names.get(t[i]));
-		}
-
-		Series[] s = Series.generate(nw, metrics, times);
+		Series[][] s = get ? Series.get(nw, metrics) : Series.generate(nw,
+				metrics, times);
 
 		Plotting.multi(s, metrics, "multi/");
+		Plotting.single(s, metrics, "single/");
+	}
+
+	public static Network getNW(int nodes, Transformation[] t,
+			Map<Transformation[], String> names) {
+		// String spi = "resources/spi/_RLN_LWCC_BI/"
+		// + "0_analyze_buddy_2010.csv.gtna";
+		// nw[i] = new DescriptionWrapper(new ReadableFile("SPI", "spi",
+		// spi, t[i]), names.get(t[i]));
+		return new DescriptionWrapper(new PowerLawRandomGraph(nodes, 2.3, 3,
+				Integer.MAX_VALUE, true, t), names.get(t));
+	}
+
+	public static Network[] getNW(int nodes, Transformation[][] t,
+			Map<Transformation[], String> names) {
+		Network[] nw = new Network[t.length];
+		for (int i = 0; i < t.length; i++) {
+			nw[i] = RoutingTest.getNW(nodes, t[i], names);
+		}
+		return nw;
+	}
+
+	public static Network[][] getNW(int nodes, Transformation[][][] t,
+			Map<Transformation[], String> names) {
+		Network[][] nw = new Network[t.length][];
+		for (int i = 0; i < t.length; i++) {
+			nw[i] = RoutingTest.getNW(nodes, t[i], names);
+		}
+		return nw;
 	}
 }
