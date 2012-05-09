@@ -46,7 +46,7 @@ import gtna.routing.RoutingAlgorithm;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
-import gtna.util.parameter.StringParameter;
+import gtna.util.parameter.ParameterListArrayParameter;
 
 import java.util.Random;
 
@@ -61,11 +61,9 @@ public class MultiPhaseDataStorage extends Transformation {
 	private RoutingAlgorithm[] phases;
 
 	public MultiPhaseDataStorage(int retries, RoutingAlgorithm[] phases) {
-		super("MULTI_PHASE_DATA_STORAGE",
-				new Parameter[] {
-						new IntParameter("RETRIES", retries),
-						new StringParameter("PHASES",
-								RoutingAlgorithm.toString(phases)) });
+		super("MULTI_PHASE_DATA_STORAGE", new Parameter[] {
+				new IntParameter("RETRIES", retries),
+				new ParameterListArrayParameter("PHASES", phases) });
 		this.retries = retries;
 		this.phases = phases;
 	}
