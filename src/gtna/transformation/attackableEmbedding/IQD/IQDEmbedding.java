@@ -96,7 +96,25 @@ public abstract class IQDEmbedding extends AttackableEmbedding {
 	 * @param adjustOne
 	 *            : adjust nodes of degree 1 to neighbor
 	 * @param parameters
+	 * @add: are the parameters added to the others in the description, or
+	 *       should the description only contain those
+	 * 
 	 */
+	public IQDEmbedding(int iterations, String key, IdentifierMethod idMethod,
+			DecisionMethod deMethod, Distance distance, double epsilon,
+			boolean checkold, boolean adjustOne, Parameter[] parameters,
+			boolean add) {
+		super(iterations, key, add ? combineParameter(iterations, idMethod,
+				deMethod, distance, epsilon, checkold, adjustOne, parameters)
+				: parameters);
+		this.idMethod = idMethod;
+		this.deMethod = deMethod;
+		this.distance = distance;
+		this.epsilon = epsilon;
+		this.checkold = checkold;
+		this.adjustOneDegree = adjustOne;
+	}
+
 	public IQDEmbedding(int iterations, String key, IdentifierMethod idMethod,
 			DecisionMethod deMethod, Distance distance, double epsilon,
 			boolean checkold, boolean adjustOne, Parameter[] parameters) {

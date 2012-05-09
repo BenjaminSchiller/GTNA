@@ -48,6 +48,7 @@ public abstract class IdentifierMDNode extends IQDMDNode {
 
 	public static int TTL = 6;
 	protected double[][] swapped;
+	protected boolean neighbor = false;
 
 	/**
 	 * @param index
@@ -94,6 +95,11 @@ public abstract class IdentifierMDNode extends IQDMDNode {
 					.swap(this.getID(), this.knownIDs, TTL, rand);
 			this.partnerID = (int) ids[0][1][0];
 			this.swapped = ids[1];
+			if (this.hasNeighbor(this.partnerID)){
+				this.neighbor = true;
+			} else {
+				this.neighbor = false;
+			}
 			return new double[][] { ids[0][0], this.getID() };
 		}
 		if (this.embedding.getIdMethod() == IQDMDEmbedding.IdentifierMethod.RANDNEIGHBOR) {

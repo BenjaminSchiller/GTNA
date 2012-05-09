@@ -89,6 +89,32 @@ public class DistanceDiversityEmbedding extends AttackerIQDEmbedding {
 		this.max = max;
 		this.exponent = exp;
 	}
+	
+	public DistanceDiversityEmbedding(int iterations,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			Distance distance, double epsilon, boolean checkold,
+			boolean adjustone, int max, double exp, boolean add) {
+		super(iterations, "DISTANCE_DIVERSITY", idMethod, deMethod, distance,
+				epsilon, checkold, adjustone, add?new Parameter[] {
+						new IntParameter("MAX_LOG", max),
+						new DoubleParameter("EXPONENT", exp)}: new Parameter[]{new IntParameter("ITERATIONS", iterations)},add);
+		this.max = max;
+		this.exponent = exp;
+	}
+
+	public DistanceDiversityEmbedding(int iterations,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			Distance distance, double epsilon, boolean checkold,
+			boolean adjustone, int max, double exp, AttackerType type,
+			AttackerSelection selection, int attackercount, boolean add) {
+		super(iterations, "DISTANCE_DIVERSITY", idMethod, deMethod, distance,
+				epsilon, checkold, adjustone, type, selection, attackercount,
+				add?new Parameter[] {
+						new IntParameter("MAX_LOG", max),
+						new DoubleParameter("EXPONENT", exp)}: new Parameter[]{new IntParameter("ITERATIONS", iterations)},add);
+		this.max = max;
+		this.exponent = exp;
+	}
 
 	/*
 	 * (non-Javadoc)

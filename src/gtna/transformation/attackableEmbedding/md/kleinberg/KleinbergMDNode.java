@@ -70,7 +70,7 @@ public class KleinbergMDNode extends AttackerMDNode {
 		for (int i = 0; i < ids.length; i++) {
 			q[i] = 1;
 			for (int j = 0; j < this.knownIDs.length; j++) {
-				if (!this.equalArrays(ids[i], this.knownIDs[j])) {
+				if (!this.equalArrays(ids[i], this.knownIDs[j]) || !this.neighbor) {
 					q[i] = q[i]
 							* this.embedding.computeDistance(ids[i],
 									this.knownIDs[j]);
@@ -82,7 +82,7 @@ public class KleinbergMDNode extends AttackerMDNode {
 			}
 			if (this.embedding.getIdMethod() == IQDMDEmbedding.IdentifierMethod.SWAPPING) {
 				for (int k = 0; k < this.swapped.length; k++) {
-					if (!this.equalArrays(ids[(i + 1) % 2], swapped[k])) {
+					if (!this.equalArrays(ids[(i + 1) % 2], swapped[k]) || !this.neighbor) {
 						q[i] = q[i]
 								* this.embedding.computeDistance(
 										ids[(i + 1) % 2], this.swapped[k]);
