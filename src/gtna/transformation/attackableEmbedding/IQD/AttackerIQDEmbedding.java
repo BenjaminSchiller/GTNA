@@ -65,6 +65,7 @@ public abstract class AttackerIQDEmbedding extends IQDEmbedding {
 	private int attackercount;
 
 	/**
+	 * see super class
 	 * @param iterations
 	 * @param key
 	 * @param idMethod
@@ -74,7 +75,22 @@ public abstract class AttackerIQDEmbedding extends IQDEmbedding {
 	 * @param checkold
 	 * @param adjustOne
 	 * @param parameters
+	 * @param add
 	 */
+	public AttackerIQDEmbedding(int iterations, String key,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			Distance distance, double epsilon, boolean checkold,
+			boolean adjustOne, AttackerType attackertype,
+			AttackerSelection attackerselection, int attackercount, Parameter[] parameters, boolean add) {
+		super(iterations, key, idMethod, deMethod, distance, epsilon, checkold,
+				adjustOne, addAttackerParams(attackertype, attackerselection, attackercount,
+						parameters), add);
+		this.attackertype = attackertype;
+		this.attackerselection = attackerselection;
+		this.attackercount = attackercount;
+		
+	}
+	
 	public AttackerIQDEmbedding(int iterations, String key,
 			IdentifierMethod idMethod, DecisionMethod deMethod,
 			Distance distance, double epsilon, boolean checkold,
@@ -88,6 +104,10 @@ public abstract class AttackerIQDEmbedding extends IQDEmbedding {
 		this.attackercount = attackercount;
 		
 	}
+	
+	
+	
+	
 
 	private static Parameter[] addAttackerParams(AttackerType type,
 			AttackerSelection selection, int count, Parameter[] param) {
@@ -117,8 +137,22 @@ public abstract class AttackerIQDEmbedding extends IQDEmbedding {
 			IdentifierMethod idMethod, DecisionMethod deMethod,
 			Distance distance, double epsilon, boolean checkold,
 			boolean adjustOne, Parameter[] parameters) {
-		this(iterations, key, idMethod, deMethod, distance, epsilon, checkold,
-				adjustOne, AttackerType.NONE, AttackerSelection.RANDOM, 0, parameters);
+		super(iterations, key, idMethod, deMethod, distance, epsilon, checkold,
+				adjustOne,  parameters);
+		this.attackertype = AttackerType.NONE;
+		this.attackerselection = AttackerSelection.RANDOM;
+		this.attackercount = 0;
+	}
+	
+	public AttackerIQDEmbedding(int iterations, String key,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			Distance distance, double epsilon, boolean checkold,
+			boolean adjustOne, Parameter[] parameters, boolean add) {
+		super(iterations, key, idMethod, deMethod, distance, epsilon, checkold,
+				adjustOne, parameters, add);
+		this.attackertype = AttackerType.NONE;
+		this.attackerselection = AttackerSelection.RANDOM;
+		this.attackercount = 0;
 	}
 	
 	/**
