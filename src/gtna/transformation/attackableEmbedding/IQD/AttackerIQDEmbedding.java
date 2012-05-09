@@ -106,9 +106,6 @@ public abstract class AttackerIQDEmbedding extends IQDEmbedding {
 	}
 	
 	
-	
-	
-
 	private static Parameter[] addAttackerParams(AttackerType type,
 			AttackerSelection selection, int count, Parameter[] param) {
 		Parameter[] parameter = new Parameter[param.length + 3];

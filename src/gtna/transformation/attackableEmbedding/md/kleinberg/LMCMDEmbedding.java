@@ -37,7 +37,9 @@ package gtna.transformation.attackableEmbedding.md.kleinberg;
 
 import gtna.id.md.MDIdentifierSpaceSimple.DistanceMD;
 import gtna.transformation.attackableEmbedding.md.IQDMDEmbedding;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
  * @author stef
@@ -45,21 +47,38 @@ import gtna.util.parameter.Parameter;
  */
 public class LMCMDEmbedding extends KleinbergMDEmbedding {
 
-	public LMCMDEmbedding(int iterations, DistanceMD distance, int dimension,
-			double epsilon) {
-		super("LMC_MD_EMBEDDING", iterations,
-				IQDMDEmbedding.IdentifierMethod.ONERANDOM,
-				IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension,
-				epsilon, false, false, new Parameter[0]);
+	public LMCMDEmbedding(int iterations, int dimension) {
+		this(iterations, dimension, DistanceMD.EUCLIDEAN);
 	}
 
-	public LMCMDEmbedding(int iterations, DistanceMD distance, int dimension,
-			double epsilon, AttackerType type, AttackerSelection selection,
-			int attackercount) {
+	public LMCMDEmbedding(int iterations, int dimension, AttackerType type,
+			AttackerSelection selection, int attackercount) {
+		this(iterations, dimension, DistanceMD.EUCLIDEAN, type, selection,attackercount);
+	}
+	
+	public LMCMDEmbedding(int iterations, int dimension, DistanceMD dist) {
 		super("LMC_MD_EMBEDDING", iterations,
 				IQDMDEmbedding.IdentifierMethod.ONERANDOM,
-				IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension,
-				epsilon, false, false, type, selection, attackercount);
+				IQDMDEmbedding.DecisionMethod.METROPOLIS, dist,
+				dimension, 1E-13, false, false,
+				new Parameter[] {new IntParameter("ITERATIONS",
+						iterations), new IntParameter("DIMENSION",
+								dimension),  new StringParameter("DISTANCE",
+										dist.toString()) },
+				false);
+	}
+
+	public LMCMDEmbedding(int iterations, int dimension, DistanceMD dist, AttackerType type,
+			AttackerSelection selection, int attackercount) {
+		super("LMC_MD_EMBEDDING", iterations,
+				IQDMDEmbedding.IdentifierMethod.ONERANDOM,
+				IQDMDEmbedding.DecisionMethod.METROPOLIS, dist,
+				dimension, 1E-13, false, false, type, selection, attackercount,
+				new Parameter[] {new IntParameter("ITERATIONS",
+						iterations), new IntParameter("DIMENSION",
+								dimension), new StringParameter("DISTANCE",
+										dist.toString()) },
+				false);
 	}
 
 }

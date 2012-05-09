@@ -134,8 +134,8 @@ public class KleinbergEmbedding extends AttackerIQDEmbedding {
 			IdentifierMethod identifierMethod, DecisionMethod decisionMethod,
 			Distance distance, double epsilon, boolean checkold,
 			boolean adjustone) {
-		this(key, i, identifierMethod, decisionMethod, distance, epsilon,
-				checkold, adjustone, new Parameter[0]);
+		super( i, key, identifierMethod, decisionMethod, distance, epsilon,
+				checkold, adjustone, new Parameter[0], false);
 	}
 
 	public KleinbergEmbedding(String key, int iterations,
