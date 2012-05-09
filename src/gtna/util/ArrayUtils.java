@@ -130,6 +130,14 @@ public class ArrayUtils {
 		return array;
 	}
 
+	public static double[] initDoubleArray(int length, double value) {
+		double[] array = new double[length];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = value;
+		}
+		return array;
+	}
+
 	public static Integer[] initIntegerArray(int length) {
 		Integer[] array = new Integer[length];
 		for (int i = 0; i < array.length; i++) {
