@@ -1,0 +1,14 @@
+%!TEX root = ../GTNA.tex
+
+\section{Components}
+\label{sec:components}
+
+\img{components}{fig:components}{Components of GTNA}{1.0}
+
+
+
+\begin{verbatim}
+Encapsulates multiple runs of the same networkIn each run:Generate network:  Graph g = nw.generate();Apply transformations:  g = t.transform(g);Compute metrics:  m.computeData(nw, g, map);Afterwards:Aggregate data of all runs (single & multi)avg, med, min, maxvar, varLow, varUpconfLow, confUpGenerate new data || get existing data
+\end{verbatim}
+
+

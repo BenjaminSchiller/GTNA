@@ -1,0 +1,16 @@
+%!TEX root = ../GTNA.tex
+
+\section{Graphs}
+\label{sec:graphs}
+
+
+
+
+\begin{lstlisting}[label={lst:graph},caption={Basic graph object}]
+public class Graph {	private String name;	private Node[] nodes;	private HashMap<String, GraphProperty> properties;...}
+\end{lstlisting}
+
+
+\begin{lstlisting}[label={lst:node},caption={Basic node object}]
+public class Node implements Comparable<Node> {	private Graph graph;	private int index;	private int[] incomingEdges;	private int[] outgoingEdges;...}
+\end{lstlisting}

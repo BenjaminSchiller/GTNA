@@ -1,0 +1,19 @@
+%!TEX root = ../GTNA.tex
+
+\section{Networks}
+\label{sec:networks}
+
+
+
+\begin{verbatim}
+Specification of graph generation, e.g.,Canonical: Complete, Ring, StarModel: ErdosRenyi, GN, GNC, GNR, Kleinberg, WattsStrogatzP2P: Can, Chord, KademliaUtil: DescriptionWrapper, ReadableFile, ReadableFolder
+\end{verbatim}
+
+
+
+\begin{lstlisting}[label={lst:network},caption={Main components of a network}]
+public abstract class Network extends ParameterList {	public Network(String key, int nodes, Transformation[] transformations) {...}	public Network(String key, int nodes, Parameter[] p,Transformation[] t) {...}	...	public abstract Graph generate();}
+\end{lstlisting}
+
+
+

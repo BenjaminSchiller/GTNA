@@ -1,0 +1,27 @@
+%!TEX root = ../GTNA.tex
+
+\section{Routing}
+\label{sec:routing}
+
+
+
+\begin{verbatim}
+Performs routing on a given graph, e.g.,Greedy, GreedyBacktrackingDepthFirstGreedy, OneWorseGreedyLookaheadMinVia, LookaheadSequential, LookaheadSimpleUsed by the routing metrics
+\end{verbatim}
+
+
+
+\begin{lstlisting}[label={lst:routing:route},caption={Route interface}]
+public interface Route {	public int[] getRoute();	public int getHops();	public boolean isSuccessful();}
+\end{lstlisting}
+
+
+
+\begin{lstlisting}[label={},caption={Basic methods of the RoutingAlgorithm}]
+public abstract class RoutingAlgorithm extends ParameterList {	public RoutingAlgorithm(String key) {...}	public RoutingAlgorithm(String key, Parameter[] parameters) {...}	public abstract boolean applicable(Graph graph);	public abstract Route routeToRandomTarget(Graph graph, int start, Random rand);	public abstract void preprocess(Graph graph);}
+\end{lstlisting}
+
+
+
+
+

@@ -1,0 +1,21 @@
+%!TEX root = ../GTNA.tex
+
+\section{Graph Properties}
+\label{sec:graph-properties}
+
+
+\begin{verbatim}
+Add certain characteristics to graph and nodesIdentifier Space(s)Node ColorsCommunities & RolesPartitionSpanning Tree
+\end{verbatim}
+
+
+\begin{lstlisting}[label={lst:graph-properties:interface},caption={GraphProperty interface}]
+public interface GraphProperty {	public boolean write(String filename, String key);	public void read(String filename, Graph graph);}
+\end{lstlisting}
+
+
+
+\begin{lstlisting}[label={lst:graph-properties:graph},caption={Graph methods for handling graph properties}]
+public class Graph {	...	public void addProperty(String key, GraphProperty property) {...}	public boolean hasProperty(String key) {...}	public GraphProperty getProperty(String key) {...}	public GraphProperty[] getProperties(String type) {...}}
+\end{lstlisting}
+

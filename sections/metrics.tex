@@ -1,0 +1,21 @@
+%!TEX root = ../GTNA.tex
+
+\section{Metrics}
+\label{sec:metrics}
+
+
+
+
+
+\begin{verbatim}
+Collection of multi- and single-scalar metrics, e.g.,ClusteringCoefficient, DegreeDistribution, RichClubConnectivityCommunities, Roles, Roles2ShortestPaths, RoutingStringFragmentation, WeakFragmentation
+\end{verbatim}
+
+
+
+\begin{lstlisting}[label={lst:metrics:metric},caption={Basic methods of Metric}]
+public abstract class Metric extends ParameterList {	public Metric(String key) {...}	public Metric(String key, Parameter[] parameters) {...}...	public abstract void computeData(Graph g, Network n, HashMap<String, Metric> m);	public abstract boolean applicable(Graph g, Network n, HashMap<String, Metric> m);	public abstract boolean writeData(String folder);	public abstract Single[] getSingles();}
+\end{lstlisting}
+
+
+

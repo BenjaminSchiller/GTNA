@@ -1,0 +1,106 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{placeins}
+\graphicspath{{images/}{./}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\usepackage{tabularx}
+\usepackage{booktabs}
+
+\usepackage[numbers]{natbib}
+\bibpunct{[}{]}{;}{n}{,}{,}
+
+\usepackage{todonotes}
+
+\usepackage{listings}
+\definecolor{lstBackground}{RGB}{245,245,245}
+\lstset{
+	language=Java,
+	backgroundcolor=\color{lstBackground},
+	basicstyle=\scriptsize,
+	mathescape=true,
+	captionpos=b,
+	frame=tlbr,
+	framesep=5pt}
+
+\newcommand{\img}[4]{
+	% #1 - source
+	% #2 - label
+	% #3 - caption
+	% #4 width, relative to \textwidth
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=#4\textwidth]{#1}
+		\caption{#3}
+		\label{#2}
+	\end{figure}
+}
+
+\newcommand{\imgs}[7]{
+	\begin{figure}[htb]
+		\begin{minipage}[b]{#7\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{#1}
+			\caption{#3}
+			\label{#2}
+		\end{minipage}
+		\hfill
+		\begin{minipage}[b]{#7\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{#4}
+			\caption{#6}
+			\label{#5}
+		\end{minipage}
+	\end{figure}
+}
+
+
+\title{\includegraphics[width=0.8\textwidth]{GTNA_Logo_RGB}$\;$\\ $\;$\\ $\;$\\ GTNA - Graph-Theoretic Network Analyzer \\ Documentation}
+\author{Benjamin Schiller}
+\date{\today}
+
+
+
+\begin{document}
+
+
+\maketitle
+
+\pagebreak
+\tableofcontents
+
+
+
+\include{sections/introduction}
+
+\include{sections/components}
+\include{sections/graphs}
+\include{sections/graph-properties}
+\include{sections/networks}
+\include{sections/transformations}
+\include{sections/metrics}
+\include{sections/identifier-spaces}
+\include{sections/routing}
+\include{sections/graph-drawing}
+\include{sections/series}
+\include{sections/parameter-list}
+\include{sections/plotting}
+\include{sections/output}
+\include{sections/configuration}
+\include{sections/examples}
+
+\appendix
+\include{sections/graph-formats}
+
+
+
+
+%\bibliographystyle{IEEEtran}
+%\bibliographystyle{plain}
+%\bibliography{references}
+
+%\include{06-appendix}
+
+\end{document}

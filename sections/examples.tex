@@ -1,0 +1,12 @@
+%!TEX root = ../GTNA.tex
+
+\section{Examples}
+\label{sec:examples}
+
+
+
+
+\begin{lstlisting}[label={lst:examples:example1},caption={Example 1}]
+Config.overwrite("MAIN_DATA_FOLDER", "./data/quick_example/");Config.overwrite("MAIN_PLOT_FOLDER", "./plots/quick_example/");Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");Config.overwrite("SERIES_GRAPH_WRITE", "true");Metric dd = new DegreeDistribution();Metric sp = new ShortestPaths();Metric wf_d = new WeakFragmentation(new DegreeNodeSorter(NodeSorterMode.DESC), Resolution.PERCENT);Metric wf_r = new WeakFragmentation(new RandomNodeSorter(), Resolution.PERCENT);Metric[] metrics = new Metric[] { dd, sp, wf_d, wf_r };int times = 10;boolean generate = false;double[] d = new double[] { 10, 15, 20, 25, 30, 35, 40, 45, 50 };Transformation[] t = new Transformation[] { new WeakConnectivityPartition(), new GiantConnectedComponent() };Network[] nw1 = ErdosRenyi.get(1000, d, true, t);Network[] nw2 = ErdosRenyi.get(2000, d, true, t);Network[] nw3 = ErdosRenyi.get(3000, d, true, t);Network[] nw4 = ErdosRenyi.get(4000, d, true, t);Network[][] nw = new Network[][] { nw1, nw2, nw3, nw4 };Series[][] s = generate ? Series.generate(nw, metrics, times) : Series.get(nw, metrics);Series[] s1 = Series.get(nw1, metrics);Plotting.single(s, metrics, "single/", Type.confidence1, Style.candlesticks);Plotting.singleBy(s, metrics, "single-edges/", dd, "EDGES");Plotting.multi(s1, metrics, "multi/", Type.average, Style.linespoint);
+\end{lstlisting}
+

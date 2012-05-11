@@ -1,8 +1,9 @@
 .DS_Store
 bin/
 
-*.pyc
+/GTNA.pdf
 
+*.pyc
 *.aux
 *.log
 *.toc
