@@ -50,9 +50,11 @@ import gtna.graph.sorting.ClosenessCentralityNodeSorter;
 import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter;
+import gtna.graph.sorting.CentralityNodeSorter.CentralityMode;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.RandomNodeSorter;
 import gtna.graph.sorting.algorithms.ResilienceMetrics;
+import gtna.io.GraphWriter;
 import gtna.metrics.BiconnectedComponent;
 import gtna.metrics.DegreeDistribution;
 import gtna.metrics.EffectiveDiameter;
@@ -62,8 +64,11 @@ import gtna.metrics.fragmentation.StrongFragmentation;
 import gtna.metrics.fragmentation.WeakFragmentation;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
+import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GLP;
 import gtna.networks.model.PFP;
+import gtna.networks.model.PFP1;
+import gtna.networks.util.ReadableFile;
 import gtna.plot.Plotting;
 import gtna.util.Config;
 
@@ -73,7 +78,11 @@ import gtna.util.Config;
  */
 public class Tests {
 	public static void main(String[] args) {
-		Tests.GLPPlotTest();
+		/*
+		 * Utils u = new Utils(); Graph g = u.importGraphFromFile("Erdos.gml");
+		 * GraphWriter.write(g, "Erdos.gtna");
+		 */
+		Tests.read();
 	}
 
 	public static void test() {
@@ -83,8 +92,8 @@ public class Tests {
 		System.out.println("Graph imported!");
 
 		// sorting
-		CentralityNodeSorter sorter = new CentralityNodeSorter("CLOSENESS",
-				NodeSorter.NodeSorterMode.ASC);
+		CentralityNodeSorter sorter = new CentralityNodeSorter(
+				CentralityMode.CLOSENESS, NodeSorter.NodeSorterMode.ASC);
 		// sorter.setCentrality("BETWEENNESS");
 		Node[] sorted = sorter.sort(g, new Random());
 		sorted = sorter.resort("BETWEENNESS", new Random());
@@ -114,8 +123,8 @@ public class Tests {
 		Utils u = new Utils();
 		Graph g = u.importGraphFromFile("PFP.gml");
 
-		CentralityNodeSorter bc = new CentralityNodeSorter("BETWEENNESS",
-				NodeSorterMode.ASC);
+		CentralityNodeSorter bc = new CentralityNodeSorter(
+				CentralityMode.BETWEENNESS, NodeSorterMode.ASC);
 
 		Node[] sorted = bc.sort(g, new Random());
 
@@ -195,38 +204,65 @@ public class Tests {
 	}
 
 	public static void PFPTest() {
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
-		Config.overwrite("GNUPLOT_PATH",
-				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
-		System.out.println(Config.get("GNUPLOT_PATH"));
-
-		int N = 20000;
+		int N = 1000;
+		int startNodes = 15;
 		double p = 0.4;
 		double delta = 0.021;
-		Network nw = new PFP(N, p, delta, null);
-		// Network nw = new BarabasiAlbert(100, 4, null);
-		Metric dd = new DegreeDistribution();
-		Metric[] metrics = new Metric[] { dd };
-		Series s = Series.generate(nw, metrics, 20);
-		Plotting.multi(s, metrics, "test/");
-		/*
-		 * System.out.println("generating..."); Graph g = nw.generate();
-		 * System.out.println("generated!"); int maxDegree = 0; for (Node n :
-		 * g.getNodes()) { if (maxDegree < n.getDegree()) { maxDegree =
-		 * n.getDegree(); } } System.out.println("==========");
-		 * System.out.println("Nodes = " + g.getNodes().length);
-		 * System.out.println("Edges = " + g.getEdges().getEdges().size() / 2);
-		 * System.out.println("Max Degree = " + maxDegree);
-		 * 
-		 * try { Utils.exportToGML(g, "PFP"); } catch (IOException e) {
-		 * e.printStackTrace();
-		 * System.out.println("Cannot export graph to file!"); }
-		 */
+		Network nw = new PFP1(N, startNodes, p, delta, null);
+
+		System.out.println("generating...");
+		Graph g = nw.generate();
+		System.out.println("generated!");
+		int maxDegree = 0;
+		for (Node n : g.getNodes()) {
+			if (maxDegree < n.getDegree()) {
+				maxDegree = n.getDegree();
+			}
+		}
+		System.out.println("==========");
+		System.out.println("Nodes = " + g.getNodes().length);
+		System.out.println("Edges = " + g.getEdges().getEdges().size() / 2);
+		System.out.println("Max Degree = " + maxDegree / 2);
+
+		try {
+			Utils.exportToGML(g, "PFP");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Cannot export graph to file!");
+		}
+
+	}
+
+	public static void Erdos() {
+		int N = 20;
+		Network nw = new ErdosRenyi(N, 6, true, null);
+
+		System.out.println("generating...");
+		Graph g = nw.generate();
+		System.out.println("generated!");
+		int maxDegree = 0;
+		for (Node n : g.getNodes()) {
+			if (maxDegree < n.getDegree()) {
+				maxDegree = n.getDegree();
+			}
+		}
+		System.out.println("==========");
+		System.out.println("Nodes = " + g.getNodes().length);
+		System.out.println("Edges = " + g.getEdges().getEdges().size() / 2);
+		System.out.println("Max Degree = " + maxDegree / 2);
+
+		try {
+			Utils.exportToGML(g, "Erdos");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Cannot export graph to file!");
+		}
+
 	}
 
 	public static void GLPTest() {
 		int N = 2000;
-		int m0 = 50;
+		int m0 = 100;
 		int m = 2;
 		double p = 0.4695;
 		double beta = 0.6447;
@@ -257,8 +293,8 @@ public class Tests {
 		Utils u = new Utils();
 		Graph g = u.importGraphFromFile("germany.gml");
 
-		CentralityNodeSorter bc = new CentralityNodeSorter("CLOSENESS",
-				NodeSorterMode.ASC);
+		CentralityNodeSorter bc = new CentralityNodeSorter(
+				CentralityMode.CLOSENESS, NodeSorterMode.ASC);
 
 		Node[] sorted = bc.sort(g, new Random());
 
@@ -288,8 +324,8 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		int N = 10000;
-		int m0 = 3000;
+		int N = 20000;
+		int m0 = 100;
 		int M = 2;
 		double p = 0.4695;
 		double beta = 0.6447;
@@ -306,14 +342,52 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		int N = 10000;
+		int N = 9204;
+		int startNodes = 20;
 		double p = 0.4;
 		double delta = 0.021;
-		Network nw = new PFP(N, p, delta, null);
+		Network nw = new PFP1(N, startNodes, p, delta, null);
+
+		Network caida = new ReadableFile("CAIDA", "CAIDA", "2012.gtna", null);
+
+		Network[] networks = new Network[] { nw };
 
 		Metric m = new DegreeDistribution();
 		Metric[] metrics = new Metric[] { m };
-		Series s = Series.generate(nw, metrics, 3);
-		Plotting.multi(s, metrics, "PFP/");
+		Series[] s = Series.generate(networks, metrics, 100);
+		Plotting.multi(s, metrics, "CAIDA_TEST/");
+
 	}
+
+	public static void effectiveDiameter() {
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("GNUPLOT_PATH",
+				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
+
+		// Network nw = new ReadableFile("ERDOS", "", "Erdos.gtna", null);
+
+		Network nw = new ErdosRenyi(1000, 6, true, null);
+		Network[] networks = new Network[] { nw };
+
+		Metric m = new EffectiveDiameter(128, 7, new RandomNodeSorter());
+		Metric[] metrics = new Metric[] { m };
+		Series[] s = Series.generate(networks, metrics, 1);
+		Plotting.multi(s, metrics, "EFFECTIVE_DIAMETER/");
+	}
+
+	public static void read() {
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("GNUPLOT_PATH",
+				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
+
+		Network nw = new ReadableFile("ERDOS", "ERDOS", "Erdos.gtna", null);
+
+		Network[] networks = new Network[] { nw };
+
+		Metric m = new DegreeDistribution();
+		Metric[] metrics = new Metric[] { m };
+		Series[] s = Series.generate(networks, metrics, 1);
+		Plotting.multi(s, metrics, "EFFECTIVE_DIAMETER/");
+	}
+
 }

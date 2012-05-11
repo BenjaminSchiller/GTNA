@@ -38,12 +38,16 @@ package gtna.networks.model;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
+
+import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
+import gtna.networks.canonical.Complete;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 /**
@@ -55,6 +59,7 @@ public class PFP extends Network {
 	// parameter
 	private double p;
 	private double delta;
+	private int numOfStartNodes;
 
 	// variables for algorithm
 	private double[] nodePref;
@@ -67,13 +72,16 @@ public class PFP extends Network {
 	 * @param parameters
 	 * @param transformations
 	 */
-	public PFP(int nodes, double probability,
+	public PFP(int nodes, int numOfStartNodes, double probability,
 			double delta, Transformation[] transformations) {
 		super("PFP", nodes, new Parameter[] {
 				new DoubleParameter("PROBABILITY", probability),
-				new DoubleParameter("DELTA", delta) }, transformations);
+				new DoubleParameter("DELTA", delta),
+				new IntParameter("NUMBER_OF_START_NODES", numOfStartNodes) },
+				transformations);
 		this.p = probability;
 		this.delta = delta;
+		this.numOfStartNodes = numOfStartNodes;
 	}
 
 	/*
@@ -93,15 +101,23 @@ public class PFP extends Network {
 		nodeDegree = new double[nodes.length];
 
 		Random rand = new Random();
-		for (int i = 0; i < nodes.length; i++) {
+
+		// original random graph
+		Complete ba = new Complete(this.numOfStartNodes, null);
+		Graph g = ba.generate();
+		for (Edge e : g.getEdges().getEdges()) {
+			int src = e.getSrc();
+			int dst = e.getDst();
+			this.addEdge(src, dst);
+		}
+
+		for (int i = this.numOfStartNodes; i < nodes.length; i++) {
 			// TODO: generate original random graph
 			// ---Test---
-			if (i < 5) {
-				for (int j = 0; j < i; j++) {
-					this.addEdge(i, j);
-				}
-				continue;
-			}
+			/*
+			 * if (i < this.numOfStartNodes) { for (int j = 0; j < i; j++) {
+			 * this.addEdge(i, j); } continue; }
+			 */
 			// ---
 			if (rand.nextDouble() < p) {
 
@@ -111,10 +127,11 @@ public class PFP extends Network {
 
 				// the host develops new links to two peers
 				int peer1Index = hostIndex;
-				int peer2Index = hostIndex;
-				while (peer1Index == peer2Index || peer1Index == hostIndex
-						|| peer2Index == hostIndex) {
+				while (peer1Index == hostIndex) {
 					peer1Index = this.selectNodeUsingPref(i - 1);
+				}
+				int peer2Index = hostIndex;
+				while (peer2Index == peer1Index || peer2Index == hostIndex) {
 					peer2Index = this.selectNodeUsingPref(i - 1);
 					// System.out.println("host = " + hostIndex);
 					// System.out.println("peer1 = " + peer1Index);
@@ -126,10 +143,9 @@ public class PFP extends Network {
 			} else {
 
 				// a new node is attached to two hosts
-				int host1Index = 0;
-				int host2Index = 0;
+				int host1Index = this.selectNodeUsingPref(i - 1);
+				int host2Index = host1Index;
 				while (host1Index == host2Index) {
-					host1Index = this.selectNodeUsingPref(i - 1);
 					host2Index = this.selectNodeUsingPref(i - 1);
 					// System.out.println("host1 = " + host1Index);
 					// System.out.println("host2 = " + host2Index);
@@ -166,15 +182,17 @@ public class PFP extends Network {
 
 	private void updatePreference(int nodeIndex) {
 		double degree = (double) (nodeDegree[nodeIndex]);
-		nodePref[nodeIndex] = 1 + delta * Math.log(degree);
+		nodePref[nodeIndex] = Math.pow(degree, 1 + delta * Math.log(degree));
 	}
+
+	private Random refRand = new Random();
 
 	private int selectNodeUsingPref(int maxIndex) {
 		double prefSum = 0;
 		for (int i = 0; i <= maxIndex; i++) {
 			prefSum += nodePref[i];
 		}
-		double r = (new Random()).nextDouble();
+		double r = refRand.nextDouble();
 		double threshold = r * prefSum;
 		double sum = 0;
 		for (int i = 0; i <= maxIndex; i++) {
@@ -187,6 +205,10 @@ public class PFP extends Network {
 	}
 
 	private void addEdge(int src, int dst) {
+		for (Point p : this.edgesList) {
+			if ((p.x == src && p.y == dst) || (p.x == dst && p.y == src))
+				return;
+		}
 		edgesList.add(new Point(src, dst));
 		nodeDegree[src]++;
 		nodeDegree[dst]++;
