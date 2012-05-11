@@ -57,6 +57,23 @@ import java.util.Stack;
  */
 public class CentralityNodeSorter extends NodeSorter {
 
+	public enum CentralityMode {
+		BETWEENNESS, CLOSENESS, ECCENTRICITY;
+
+		@Override
+		public String toString() {
+			switch (this) {
+			case BETWEENNESS:
+				return "BETWEENNESS";
+			case CLOSENESS:
+				return "CLOSENESS";
+			case ECCENTRICITY:
+				return "ECCENTRICITY";
+			}
+			return null;
+		}
+	}
+
 	private Graph g;
 
 	/*
@@ -84,14 +101,23 @@ public class CentralityNodeSorter extends NodeSorter {
 	 */
 	private HashMap<Node, Double> ccMap = new HashMap<Node, Double>();
 
-	public CentralityNodeSorter(String key, NodeSorterMode mode) {
-		super(key, mode);
-		if (key.equalsIgnoreCase("BETWEENNESS"))
+	public CentralityNodeSorter(CentralityMode c, NodeSorterMode mode) {
+		// super(key, mode);
+		super(c.toString(), mode);
+		switch (c) {
+		case BETWEENNESS:
 			map = bcMap;
-		if (key.equalsIgnoreCase("ECCENTRICITY"))
-			map = eeMap;
-		if (key.equalsIgnoreCase("CLOSENESS"))
+			break;
+		case CLOSENESS:
 			map = ccMap;
+			break;
+		case ECCENTRICITY:
+			map = eeMap;
+			break;
+		default:
+			System.out.println("Invalid Centrality Mode!");
+			break;
+		}
 	}
 
 	public Node[] resort(String key, Random rand) {
