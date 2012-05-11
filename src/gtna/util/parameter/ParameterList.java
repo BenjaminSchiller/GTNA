@@ -80,7 +80,11 @@ public class ParameterList {
 		for (Parameter p : this.parameters) {
 			buff.append("-" + p.getValue());
 		}
-		return buff.toString();
+		String folderName = buff.toString();
+		if (folderName.length() > 255) {
+			return Integer.toString(folderName.hashCode());
+		}
+		return folderName;
 	}
 
 	public String getFolder() {
@@ -215,18 +219,23 @@ public class ParameterList {
 		if (pl2.getParameters().length != this.parameters.length) {
 			return null;
 		}
+		Parameter backup = null;
 		for (int i = 0; i < this.parameters.length; i++) {
 			Parameter p1 = this.parameters[i];
 			Parameter p2 = pl2.getParameters()[i];
 			if (!p1.getKey().equals(p2.getKey())) {
 				return null;
 			}
+			if (p1.getKey().equals("NODES")) {
+				backup = p1;
+				continue;
+			}
 			if (!p1.getValue().equals(p2.getValue())
 					&& (p1 instanceof DoubleParameter || p1 instanceof IntParameter)) {
 				return p1;
 			}
 		}
-		return null;
+		return backup;
 	}
 
 	public String getDiffParameterNameXY(ParameterList pl2, String xy) {
@@ -284,6 +293,24 @@ public class ParameterList {
 				return "N";
 			} else {
 				return "Nodes";
+			}
+		}
+		if (p.getKey().equals("TIMES")) {
+			if (xy.endsWith("_LONG")) {
+				return "Times";
+			} else if (xy.endsWith("_SHORT")) {
+				return "T";
+			} else {
+				return "Times";
+			}
+		}
+		if (p.getKey().equals("INDEX")) {
+			if (xy.endsWith("_LONG")) {
+				return "Index";
+			} else if (xy.endsWith("_SHORT")) {
+				return "I";
+			} else {
+				return "Index";
 			}
 		}
 		return Config.get(this.key + "_" + p.getKey() + xy);

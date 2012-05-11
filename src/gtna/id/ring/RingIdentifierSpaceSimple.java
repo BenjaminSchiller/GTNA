@@ -60,6 +60,7 @@ public class RingIdentifierSpaceSimple extends RingIdentifierSpace implements
 		this.modulus = Double.MAX_VALUE;
 		this.wrapAround = false;
 		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
+		this.distance = RingIdentifierSpace.Distance.RING;
 	}
 
 	public RingIdentifierSpaceSimple(RingPartitionSimple[] partitions,
@@ -68,6 +69,16 @@ public class RingIdentifierSpaceSimple extends RingIdentifierSpace implements
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
 		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
+		this.distance = RingIdentifierSpace.Distance.RING;
+	}
+	
+	public RingIdentifierSpaceSimple(RingPartitionSimple[] partitions,
+			double modulus, boolean wrapAround, Distance distance) {
+		this.partitions = partitions;
+		this.modulus = modulus;
+		this.wrapAround = wrapAround;
+		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
+		this.distance = distance;
 	}
 
 	@Override

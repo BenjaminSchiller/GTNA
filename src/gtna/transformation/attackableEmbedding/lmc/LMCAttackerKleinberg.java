@@ -66,14 +66,13 @@ public class LMCAttackerKleinberg extends LMCNode{
 	 * return ID close to neighbor to keep it from changing IDs
 	 */
 	 protected double ask(LMCNode caller, Random rand) {
-		 if (this.position == null){
-			 System.out.println("null");
-		 }
-	 int index = this.position.get(caller.getIndex());
+	 if (caller instanceof LMCAttackerKleinberg){
+		 return super.ask(caller, rand);
+	 }
 	 if (LMC.MODE_RESTRICTED.equals(this.lmc.mode)) {
-	    return (this.knownIDs[index] + this.lmc.delta * (1.0 + rand.nextDouble())) % 1.0;
+	    return (caller.ask(this,rand) + this.lmc.delta * (1.0 + rand.nextDouble())) % 1.0;
 	 } else {
-	    return (this.knownIDs[index] + this.lmc.delta * rand.nextDouble()) % 1.0;
+	    return (caller.ask(this,rand) + this.lmc.delta * rand.nextDouble()) % 1.0;
 	 }
 	 }
 

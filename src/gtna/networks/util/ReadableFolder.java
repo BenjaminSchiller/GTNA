@@ -36,10 +36,11 @@
 package gtna.networks.util;
 
 import gtna.graph.Graph;
-import gtna.io.GraphReader;
+import gtna.io.graphReader.GtnaGraphReader;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
+import gtna.util.parameter.Parameter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -53,11 +54,15 @@ public class ReadableFolder extends Network {
 
 	private int index;
 
-	private String[] properties;
-
 	public ReadableFolder(String name, String folder, String srcFolder,
 			String extension, Transformation[] t) {
-		super(ReadableFolder.key(name, folder), Integer.MIN_VALUE, t);
+		this(name, folder, srcFolder, extension, new Parameter[0], t);
+	}
+
+	public ReadableFolder(String name, String folder, String srcFolder,
+			String extension, Parameter[] parameters, Transformation[] t) {
+		super(ReadableFolder.key(name, folder), ReadableFolder.getNodes(
+				srcFolder, extension), parameters, t);
 		File d = new File(srcFolder);
 		if (!d.exists()) {
 			this.files = new ArrayList<String>();
@@ -71,16 +76,28 @@ public class ReadableFolder extends Network {
 			}
 		}
 		this.index = -1;
-		if (this.files.size() == 0) {
-			super.setNodes(0);
-		} else {
-			super.setNodes(GraphReader.nodes(this.files.get(0)));
+	}
+
+	private static int getNodes(String srcFolder, String extension) {
+		File d = new File(srcFolder);
+		if (!d.exists()) {
+			return 0;
 		}
-		this.properties = properties;
+		File[] f = d.listFiles();
+		if (f.length == 0) {
+			return 0;
+		}
+		int index = 0;
+		while (!f[index].getName().endsWith(extension)) {
+			index++;
+		}
+		return new GtnaGraphReader().nodes(f[index].getAbsolutePath());
 	}
 
 	public static String key(String name, String folder) {
 		Config.overwrite("READABLE_FOLDER_" + folder + "_NAME", name);
+		Config.overwrite("READABLE_FOLDER_" + folder + "_NAME_SHORT", name);
+		Config.overwrite("READABLE_FOLDER_" + folder + "_NAME_LONG", name);
 		Config.overwrite("READABLE_FOLDER_" + folder + "_FOLDER", folder);
 		return "READABLE_FOLDER_" + folder;
 	}
@@ -90,7 +107,8 @@ public class ReadableFolder extends Network {
 			return null;
 		}
 		this.index = (this.index + 1) % this.files.size();
-		Graph graph = GraphReader.read(this.files.get(this.index));
+		Graph graph = new GtnaGraphReader().readWithProperties(this.files
+				.get(this.index));
 		graph.setName(this.getDescription());
 		return graph;
 	}

@@ -48,13 +48,13 @@ import java.util.Vector;
 public class Config {
 	private static Properties properties;
 
-	private static HashMap<String, String> override;
+	private static HashMap<String, String> overwrite;
 
 	private static String defaultConfigFolder = "./config/";
 
 	public static String get(String key) {
 		String temp = null;
-		if (override != null && (temp = override.get(key)) != null) {
+		if (overwrite != null && (temp = overwrite.get(key)) != null) {
 			return temp;
 		}
 		if (properties == null) {
@@ -95,6 +95,16 @@ public class Config {
 		return Float.parseFloat(get(key));
 	}
 
+	public static void appendToList(String key, String value) {
+		String oldValue = Config.get(key);
+		if (oldValue == null || oldValue.length() == 0) {
+			Config.overwrite(key, value);
+		} else {
+			Config.overwrite(key,
+					oldValue + Config.get("CONFIG_LIST_SEPARATOR") + value);
+		}
+	}
+
 	public static void overwrite(String key, String value) {
 		try {
 			if (properties == null) {
@@ -104,23 +114,23 @@ public class Config {
 					e.printStackTrace();
 				}
 			}
-			override.put(key, value);
+			overwrite.put(key, value);
 		} catch (NullPointerException e) {
-			override = new HashMap<String, String>();
-			override.put(key, value);
+			overwrite = new HashMap<String, String>();
+			overwrite.put(key, value);
 		}
 	}
 
 	public static void reset(String key) {
-		if (override != null) {
-			if (override.containsKey(key)) {
-				override.remove(key);
+		if (overwrite != null) {
+			if (overwrite.containsKey(key)) {
+				overwrite.remove(key);
 			}
 		}
 	}
 
 	public static void resetAll() {
-		override = new HashMap<String, String>();
+		overwrite = new HashMap<String, String>();
 	}
 
 	public static void addFile(String file) throws IOException {
@@ -140,7 +150,7 @@ public class Config {
 
 	public static void initWithFiles(String[] file) throws IOException {
 		properties = null;
-		override = null;
+		overwrite = null;
 		for (int i = 0; i < file.length; i++) {
 			addFile(file[i]);
 		}

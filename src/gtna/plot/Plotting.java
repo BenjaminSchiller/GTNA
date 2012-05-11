@@ -41,6 +41,7 @@ import gtna.data.SingleList;
 import gtna.metrics.Metric;
 import gtna.plot.Data.Type;
 import gtna.plot.Gnuplot.Style;
+import gtna.util.ArrayUtils;
 import gtna.util.Config;
 import gtna.util.Timer;
 import gtna.util.parameter.DoubleParameter;
@@ -49,6 +50,10 @@ import gtna.util.parameter.Parameter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author benni
@@ -56,6 +61,25 @@ import java.util.ArrayList;
  */
 public class Plotting {
 
+	/**
+	 * Generate plots for all single-scalar metric in the given list. As x value
+	 * int the plots, the first differing configuration parameter in the
+	 * networks' configuration is used. No plots are generated in case the
+	 * network cannot be compared.
+	 * 
+	 * @param s
+	 *            list of series to be plotted
+	 * @param metrics
+	 *            list of metric to be plotted
+	 * @param folder
+	 *            main destination folder for the plots (subfolders for each
+	 *            metric will be generated)
+	 * @param type
+	 *            data type to be used
+	 * @param style
+	 *            gnuplot style to be used
+	 * @return true, if all plots are generated successfully; false otherwise
+	 */
 	public static boolean single(Series[][] s, Metric[] metrics, String folder,
 			Type type, Style style) {
 		Timer timer = new Timer("single (" + s.length + "|" + s[0].length
@@ -63,10 +87,10 @@ public class Plotting {
 		double[][] x = new double[s.length][];
 		ArrayList<String> labels = new ArrayList<String>();
 		for (int i = 0; i < s.length; i++) {
-			String diff = s[i][0].getNetwork()
-					.getDiffParameter(s[i][1 % s[i].length].getNetwork())
-					.getKey();
-			if (diff == null) {
+			Parameter diffP = s[i][0].getNetwork().getDiffParameter(
+					s[i][1 % s[i].length].getNetwork());
+			if (diffP == null || diffP.getKey() == null) {
+				System.err.println("no diff param found");
 				return false;
 			}
 			String label = s[i][0].getNetwork().getDiffParameterName(
@@ -83,6 +107,7 @@ public class Plotting {
 				} else if (p instanceof DoubleParameter) {
 					x[i][j] = ((DoubleParameter) p).getDoubleValue();
 				} else {
+					System.err.println("diff param not of type int or long");
 					return false;
 				}
 			}
@@ -101,6 +126,30 @@ public class Plotting {
 		return success;
 	}
 
+	/**
+	 * Generate plots for all single-scalar metric in the given list. Instead of
+	 * using the differing networks' parameter as x value, the specified
+	 * single-scalar metric from the given metric is used.
+	 * 
+	 * @param s
+	 *            list of series to be plotted
+	 * @param metrics
+	 *            list of metrics to be plotted
+	 * @param folder
+	 *            main destination folder for the plots (subfolders for each
+	 *            metric will be generated)
+	 * @param metricX
+	 *            the metric holding the single-scalar metric to be used as
+	 *            value on the x-axis
+	 * @param keyX
+	 *            key of the single-scalar metric to be used as value on the
+	 *            x-axis
+	 * @param type
+	 *            data type to be used
+	 * @param style
+	 *            gnuplot style to be used
+	 * @return true, if all plots are generated successfully; false otherwise
+	 */
 	public static boolean singleBy(Series[][] s, Metric[] metrics,
 			String folder, Metric metricX, String keyX, Type type, Style style) {
 		Timer timer = new Timer("single (" + s.length + "|" + s[0].length
@@ -135,43 +184,68 @@ public class Plotting {
 		}
 		boolean subfolders = Config.getBoolean("PLOT_SUBFOLDERS");
 		boolean success = true;
+
 		for (Metric m : metrics) {
 			for (String key : m.getSinglePlotKeys()) {
 				String pre = Config.get("MAIN_PLOT_FOLDER") + folder
 						+ (subfolders ? m.getFolder() : m.getFolderName());
 				(new File(pre)).mkdirs();
-				success &= Plotting.singleMetric(s, m, key, pre, type, style,
-						x, xLabel);
+				success &= Plotting.singleMetric(s, new Metric[] { m }, key,
+						pre, type, style, x, xLabel);
 			}
 		}
+
+		Metric[][] grouped = Plotting.groupMetrics(metrics);
+		for (Metric[] group : grouped) {
+			for (String key : group[0].getSinglePlotKeys()) {
+				String pre = Config.get("MAIN_PLOT_FOLDER")
+						+ folder
+						+ group[0].getKey()
+						+ Config.get("PLOT_GROUPED_KEYWORD")
+						+ (subfolders ? Config
+								.get("FILESYSTEM_FOLDER_DELIMITER") : "");
+				(new File(pre)).mkdirs();
+				success &= Plotting.singleMetric(s, group, key, pre, type,
+						style, x, xLabel);
+			}
+		}
+
 		return success;
 	}
 
-	private static boolean singleMetric(Series[][] s, Metric m, String plotKey,
-			String pre, Type type, Style style, double[][] x, String xLabel) {
+	private static boolean singleMetric(Series[][] s, Metric[] metrics,
+			String plotKey, String pre, Type type, Style style, double[][] x,
+			String xLabel) {
 		String[] dataKeys = Config.keys(plotKey + "_PLOT_DATA");
-		Data[] data = new Data[s.length * dataKeys.length];
+		Data[] data = new Data[s.length * dataKeys.length * metrics.length];
 		int index = 0;
 		for (int i = 0; i < s.length; i++) {
 			for (String key : dataKeys) {
-				double[][] d = new double[s[i].length][];
-				for (int j = 0; j < s[i].length; j++) {
-					SingleList sl = SingleList.read(m,
-							s[i][j].getSinglesFilename(m));
-					Single single = sl.get(key);
-					d[j] = new double[single.getData().length + 1];
-					d[j][0] = x[i][j];
-					for (int k = 0; k < single.getData().length; k++) {
-						d[j][k + 1] = single.getData()[k];
+				for (Metric metric : metrics) {
+					double[][] d = new double[s[i].length][];
+					for (int j = 0; j < s[i].length; j++) {
+						SingleList sl = SingleList.read(metric,
+								s[i][j].getSinglesFilename(metric));
+						Single single = sl.get(key);
+						d[j] = new double[single.getData().length + 1];
+						d[j][0] = x[i][j];
+						for (int k = 0; k < single.getData().length; k++) {
+							d[j][k + 1] = single.getData()[k];
+						}
 					}
+					String filename = Gnuplot.writeTempData(metric, plotKey,
+							index, d);
+					if (filename == null) {
+						return false;
+					}
+					String title = s[i][0].getNetwork()
+							.getDiffDescriptionShort(
+									s[i][1 % s[i].length].getNetwork());
+					if (metrics.length > 1) {
+						title = metric.getDescriptionShort() + " - " + title;
+					}
+					data[index++] = Data.get(filename, style, title, type);
 				}
-				String filename = Gnuplot.writeTempData(m, plotKey, index, d);
-				if (filename == null) {
-					return false;
-				}
-				String title = s[i][0].getNetwork().getDiffDescriptionShort(
-						s[i][1 % s[i].length].getNetwork());
-				data[index++] = Data.get(filename, style, title, type);
 			}
 		}
 		String terminal = Config.get("GNUPLOT_TERMINAL");
@@ -182,36 +256,99 @@ public class Plotting {
 		plot.setxLabel(xLabel);
 		plot.setyLabel(Config.get(plotKey + "_PLOT_Y"));
 
-		return Gnuplot.plot(plot, m, plotKey);
+		return Gnuplot.plot(plot, metrics, plotKey);
 	}
 
+	/**
+	 * Generates plots for all multi-scalar metrics in the given list.
+	 * 
+	 * @param s
+	 *            list of series to be plotted
+	 * @param metrics
+	 *            list of metrics to be plotted
+	 * @param folder
+	 *            main destination folder for the plots (subfolders for each
+	 *            metric will be generated)
+	 * @param type
+	 *            data type to be used
+	 * @param style
+	 *            gnuplot style to be used
+	 * @return true, if all plots are generated successfully; false otherwise
+	 */
 	public static boolean multi(Series[] s, Metric[] metrics, String folder,
 			Type type, Style style) {
 		Timer timer = new Timer("multi (" + s.length + ") " + type + " / "
 				+ style);
 		boolean subfolders = Config.getBoolean("PLOT_SUBFOLDERS");
 		boolean success = true;
+
 		for (Metric m : metrics) {
 			for (String key : m.getDataPlotKeys()) {
 				String pre = Config.get("MAIN_PLOT_FOLDER") + folder
 						+ (subfolders ? m.getFolder() : m.getFolderName());
 				(new File(pre)).mkdirs();
-				success &= Plotting.multi(s, m, key, pre, type, style);
+				success &= Plotting.multiMetric(s, new Metric[] { m }, key,
+						pre, type, style);
 			}
 		}
+
+		Metric[][] grouped = Plotting.groupMetrics(metrics);
+		for (Metric[] group : grouped) {
+			for (String key : group[0].getDataPlotKeys()) {
+				String pre = Config.get("MAIN_PLOT_FOLDER")
+						+ folder
+						+ group[0].getKey()
+						+ Config.get("PLOT_GROUPED_KEYWORD")
+						+ (subfolders ? Config
+								.get("FILESYSTEM_FOLDER_DELIMITER") : "");
+				(new File(pre)).mkdirs();
+				success &= Plotting
+						.multiMetric(s, group, key, pre, type, style);
+			}
+		}
+
 		timer.end();
 		return success;
 	}
 
-	private static boolean multi(Series[] s, Metric m, String plotKey,
-			String pre, Type type, Style style) {
+	private static boolean multiMetric(Series[] s, Metric[] metrics,
+			String plotKey, String pre, Type type, Style style) {
+		if (Config.containsKey(plotKey + "_PLOT_TYPE")
+				&& Config.containsKey(plotKey + "_PLOT_STYLE")) {
+			type = Type.valueOf(Config.get(plotKey + "_PLOT_TYPE"));
+			style = Style.valueOf(Config.get(plotKey + "_PLOT_STYLE"));
+		}
+
 		String[] dataKeys = Config.keys(plotKey + "_PLOT_DATA");
-		Data[] data = new Data[s.length * dataKeys.length];
+		Data[] data = new Data[s.length * dataKeys.length * metrics.length];
 		int index = 0;
-		for (Series S : s) {
-			for (String key : dataKeys) {
-				data[index++] = Data.get(S.getMultiFilename(m, key), style, S
-						.getNetwork().getDescriptionShort(), type);
+		if (Config.getBoolean("PLOT_GROUPED_SERIES_FIRST")) {
+			for (Metric metric : metrics) {
+				for (Series S : s) {
+					for (String key : dataKeys) {
+						String name = S.getNetwork().getDescriptionShort();
+						if (metrics.length > 1) {
+							name = metric.getDescriptionShort() + " - " + name;
+						}
+						data[index++] = Data.get(
+								S.getMultiFilename(metric, key), style, name,
+								type);
+					}
+				}
+			}
+		} else {
+			for (Series S : s) {
+				for (String key : dataKeys) {
+					for (Metric metric : metrics) {
+						String name = S.getNetwork().getDescriptionShort();
+						if (metrics.length > 1) {
+							name = metric.getDescriptionShort() + " - " + name;
+						}
+						data[index++] = Data.get(
+								S.getMultiFilename(metric, key), style, name,
+								type);
+					}
+				}
 			}
 		}
 		String terminal = Config.get("GNUPLOT_TERMINAL");
@@ -222,12 +359,79 @@ public class Plotting {
 		plot.setxLabel(Config.get(plotKey + "_PLOT_X"));
 		plot.setyLabel(Config.get(plotKey + "_PLOT_Y"));
 
+		if (Config.containsKey(plotKey + "_PLOT_OFFSET_X")
+				&& Config.get(plotKey + "_PLOT_OFFSET_X").length() > 0) {
+			plot.setOffsetX(Config.getDouble(plotKey + "_PLOT_OFFSET_X"));
+		}
+
+		if (Config.containsKey(plotKey + "_PLOT_OFFSET_Y")
+				&& Config.get(plotKey + "_PLOT_OFFSET_Y").length() > 0) {
+			plot.setOffsetY(Config.getDouble(plotKey + "_PLOT_OFFSET_Y"));
+		}
+
+		if (Config.containsKey(plotKey + "_PLOT_LW")) {
+			plot.setLW(Config.getInt(plotKey + "_PLOT_LW"));
+		}
+
 		if (Config.getBoolean(dataKeys[0] + "_DATA_IS_CDF")) {
 			plot.setKey(Config.get("GNUPLOT_KEY_CDF"));
 		} else {
 			plot.setKey(Config.get("GNUPLOT_KEY"));
 		}
-		return Gnuplot.plot(plot, m, plotKey);
+
+		String xtics = Config.get(plotKey + "_PLOT_XTICS");
+		if (xtics != null && xtics.length() > 0) {
+			plot.addConfig("set xtics (" + xtics + ")");
+		}
+
+		String ytics = Config.get(plotKey + "_PLOT_YTICS");
+		if (ytics != null && ytics.length() > 0) {
+			plot.addConfig("set ytics (" + ytics + ")");
+		}
+
+		String key = Config.get(plotKey + "_PLOT_KEY");
+		if (key != null && key.length() > 0) {
+			plot.setKey(key);
+		}
+
+		String logscale = Config.get(plotKey + "_PLOT_LOGSCALE");
+		if (logscale != null && logscale.length() > 0) {
+			plot.addConfig("set logscale " + logscale);
+		}
+
+		return Gnuplot.plot(plot, metrics, plotKey);
+	}
+
+	private static Metric[][] groupMetrics(Metric[] metrics) {
+		Map<String, ArrayList<Metric>> map = new HashMap<String, ArrayList<Metric>>();
+		for (Metric m : metrics) {
+			if (map.containsKey(m.getKey())) {
+				map.get(m.getKey()).add(m);
+			} else {
+				ArrayList<Metric> list = new ArrayList<Metric>();
+				list.add(m);
+				map.put(m.getKey(), list);
+			}
+		}
+
+		Set<String> remove = new HashSet<String>();
+		for (String key : map.keySet()) {
+			if (map.get(key).size() < 2) {
+				remove.add(key);
+			}
+		}
+
+		for (String key : remove) {
+			map.remove(key);
+		}
+
+		Metric[][] grouped = new Metric[map.size()][];
+		int index = 0;
+		for (ArrayList<Metric> list : map.values()) {
+			grouped[index++] = ArrayUtils.toMetricArray(list);
+		}
+
+		return grouped;
 	}
 
 	public static boolean single(Series s, Metric[] metrics, String folder) {

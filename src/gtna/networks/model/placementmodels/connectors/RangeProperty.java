@@ -37,46 +37,111 @@ package gtna.networks.model.placementmodels.connectors;
 
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
-import gtna.id.plane.PlaneIdentifier;
+import gtna.io.Filereader;
+import gtna.io.Filewriter;
+import gtna.util.Config;
 
 /**
- * @author Flipp
- *
+ * The <code>RangeProperty</code> contains the radii of the disks of the disk
+ * graph used to connect the nodes. Note that depending on the actual connector
+ * that is setting this property, this might not be a correct assumption. Ranges
+ * are stored for each node individually, there is a convenience constructor
+ * <code>RangeProperty(double range, int nodes)</code> for cases in which the
+ * range is the same for every node.
+ * 
+ * 
+ * @author Philipp Neubrand
+ * 
  */
 public class RangeProperty implements GraphProperty {
-	private double range;
-	
+	private double[] ranges;
 
 	/**
-	 * @param range1
+	 * Convenience constructor, assumes that the range is the same for all the
+	 * <code>count</code> nodes.
+	 * 
+	 * 
+	 * @param range
+	 *            The range for every node.
+	 * @param count
+	 *            The count for every node.
 	 */
-	public RangeProperty(double range1) {
-		range = range1; 
+	public RangeProperty(double range, int count) {
+		ranges = new double[count];
+		for (int i = 0; i < count; i++)
+			ranges[i] = range;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.graph.GraphProperty#read(java.lang.String, gtna.graph.Graph)
+	/**
+	 * Standard constructor, stores the supplied ranges.
+	 * 
+	 * @param ranges
+	 *            The ranges of the nodes.
 	 */
+	public RangeProperty(double[] ranges) {
+		this.ranges = ranges;
+	}
+
 	@Override
 	public void read(String filename, Graph graph) {
-		// TODO Auto-generated method stub
+		Filereader fr = new Filereader(filename);
+
+		// CLASS
+		fr.readLine();
+
+		// KEYS
+		String key = fr.readLine();
+
+		// # OF COMMUNITIES
+		int nodes = Integer.parseInt(fr.readLine());
+		this.ranges = new double[nodes];
+
+		// COMMUNITIES
+		String line = null;
+		int index = 0;
+		while ((line = fr.readLine()) != null) {
+			this.ranges[index++] = Double.parseDouble(line);
+		}
+
+		fr.close();
+
+		graph.addProperty(key, this);
 
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.graph.GraphProperty#write(java.lang.String, java.lang.String)
-	 */
 	@Override
 	public boolean write(String filename, String key) {
-		// TODO Auto-generated method stub
-		return false;
+		Filewriter fw = new Filewriter(filename);
+
+		// CLASS
+		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
+		fw.writeln(this.getClass().getCanonicalName().toString());
+
+		// KEYS
+		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
+		fw.writeln(key);
+
+		// # OF COMMUNITIES
+		fw.writeComment("# Nodes");
+		fw.writeln(this.ranges.length);
+
+		fw.writeln();
+
+		// LIST OF COMMUNITIES
+		for (double d : this.ranges) {
+			fw.writeln(d);
+		}
+
+		return fw.close();
 	}
 
 	/**
-	 * @return
+	 * Getter for the ranges.
+	 * 
+	 * @return The ranges.
 	 */
-	public double getRange() {
-		return range;
+	public double[] getRanges() {
+		return ranges;
 	}
 
 }

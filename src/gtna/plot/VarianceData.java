@@ -53,7 +53,7 @@ public class VarianceData extends Data {
 	}
 
 	@Override
-	public String getEntry(int lt, int lw) {
+	public String getEntry(int lt, int lw, double offsetX, double offsetY) {
 		StringBuffer buff = new StringBuffer();
 		// 2 avg
 		// 3 med
@@ -64,8 +64,9 @@ public class VarianceData extends Data {
 		// 8 varUp
 		// 9 confLow
 		// 10 confUp
-		buff.append("'" + this.data + "' using 1:2:($2-$7):($2+$8) with "
-				+ this.style);
+		buff.append("'" + this.data + "' using ($1 + " + offsetX + "):($2 + "
+				+ offsetY + "):($2 - $7 + " + offsetY + "):($2 + $8 + "
+				+ offsetY + ") with " + this.style);
 		buff.append(" lt " + lt + " lw " + lw);
 		buff.append(title == null ? " notitle" : " title \"" + this.title
 				+ "\"");

@@ -35,7 +35,7 @@
  */
 package gtna.transformation.id;
 
-import gtna.communities.Communities;
+import gtna.communities.CommunityList;
 import gtna.communities.Community;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
@@ -86,7 +86,7 @@ public class RandomRingIDSpaceSimpleCommunities extends Transformation {
 		Random rand = new Random();
 		GraphProperty[] gps = g.getProperties("COMMUNITIES");
 		for (GraphProperty gp : gps) {
-			Communities cs = (Communities) gp;
+			CommunityList cs = (CommunityList) gp;
 			RingPartitionSimple[] partitions = new RingPartitionSimple[g
 					.getNodes().length];
 			RingIdentifierSpaceSimple idSpace = new RingIdentifierSpaceSimple(

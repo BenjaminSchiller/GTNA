@@ -38,8 +38,8 @@ package gtna.networks.util;
 
 import gtna.graph.Graph;
 import gtna.networks.Network;
-import gtna.routing.RoutingAlgorithm;
-import gtna.transformation.Transformation;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.ParameterList;
 
 /**
  * @author "Benjamin Schiller"
@@ -52,149 +52,64 @@ public class DescriptionWrapper extends Network {
 	private String description;
 
 	public DescriptionWrapper(Network nw, String description) {
-		super("", -1, new Transformation[0]);
+		this(nw, description, new Parameter[0]);
+	}
+
+	public DescriptionWrapper(Network nw, String description,
+			Parameter parameter) {
+		this(nw, description, new Parameter[] { parameter });
+	}
+
+	public DescriptionWrapper(Network nw, String description,
+			Parameter[] parameters) {
+		super(nw.getKey(), nw.getNodes(), parameters, nw.getTransformations());
 		this.nw = nw;
 		this.description = description;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.networks.Network#generate()
-	 */
 	@Override
 	public Graph generate() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.nw.generate();
 	}
 
-	// public String compareName(Network nw, String key) {
-	// return this.nw.compareName(nw, key);
-	// }
-	//
-	// public String compareName(Network nw) {
-	// return this.nw.compareName(nw);
-	// }
-	//
-	// public String compareNameLong(Network nw) {
-	// return this.nw.compareNameLong(nw);
-	// }
-	//
-	// public String compareNameShort(Network nw) {
-	// return this.nw.compareNameShort(nw);
-	// }
-	//
-	// public String compareValue(Network nw) {
-	// return this.nw.compareValue(nw);
-	// }
-	//
-	// public String[] configKeys() {
-	// return this.nw.configKeys();
-	// }
-	//
-	// public String[] configValues() {
-	// return this.nw.configValues();
-	// }
-	//
-	// public String description() {
-	// return this.description;
-	// }
-	//
-	// public String description(Network compare) {
-	// return this.description;
-	// // return this.nw.description(compare);
-	// }
-	//
-	// public String description(Network compare1, Network compare2) {
-	// return this.description;
-	// // return this.nw.description(compare1, compare2);
-	// }
-	//
-	// public String description(String key) {
-	// return this.description;
-	// }
-	//
-	// public String description(String key, Network compare) {
-	// return this.description;
-	// // return this.nw.description(key, compare);
-	// }
-	//
-	// public String description(String key, Network compare1, Network compare2)
-	// {
-	// return this.description;
-	// // return this.nw.description(key, compare1, compare2);
-	// }
-	//
-	// public int edges() {
-	// return this.nw.edges();
-	// }
-	//
-	// public String folder() {
-	// return this.nw.folder();
-	// }
-	//
-	// public Graph generate() {
-	// return this.nw.generate();
-	// }
-	//
-	// public double getConnectivity() {
-	// return this.nw.getConnectivity();
-	// }
-	//
-	// public double getRoutingSuccess() {
-	// return this.nw.getRoutingSuccess();
-	// }
-	//
-	// public boolean isConnected() {
-	// return this.nw.isConnected();
-	// }
-	//
-	// public boolean isRoutingFailure() {
-	// return this.nw.isRoutingFailure();
-	// }
-	//
-	// public String key() {
-	// return this.nw.key();
-	// }
-	//
-	// public String name() {
-	// return this.nw.name();
-	// }
-	//
-	// public int nodes() {
-	// return this.nw.nodes();
-	// }
-	//
-	// public RoutingAlgorithm routingAlgorithm() {
-	// return this.nw.routingAlgorithm();
-	// }
-	//
-	// public void setConnected(boolean connected) {
-	// this.nw.setConnected(connected);
-	// }
-	//
-	// public void setConnectivity(double connectivity) {
-	// this.nw.setConnectivity(connectivity);
-	// }
-	//
-	// public void setEdges(int edges) {
-	// this.nw.setEdges(edges);
-	// }
-	//
-	// public void setNodes(int nodes) {
-	// this.nw.setNodes(nodes);
-	// }
-	//
-	// public void setRoutingFailure(boolean routingFailure) {
-	// this.nw.setRoutingFailure(routingFailure);
-	// }
-	//
-	// public void setRoutingSuccess(double routingSuccess) {
-	// this.nw.setRoutingSuccess(routingSuccess);
-	// }
-	//
-	// public Transformation[] transformations() {
-	// return this.nw.transformations();
-	// }
+	public String getFolderName() {
+		return this.nw.getFolderName();
+	}
+
+	public String getDescription(String keyX) {
+		return this.description;
+	}
+
+	public String getDescriptionLong(String keyX) {
+		return this.description;
+	}
+
+	public String getDescriptionShort(String keyX) {
+		return this.description;
+	}
+
+	public Parameter getDiffParameter(ParameterList pl2) {
+		if (super.getParameters().length > 0) {
+			return super.getDiffParameter(pl2);
+		} else {
+			return this.nw.getDiffParameter(pl2);
+		}
+	}
+
+	public String getDiffParameterNameXY(ParameterList pl2, String xy) {
+		if (super.getParameters().length > 0) {
+			return super.getDiffParameterNameXY(pl2, xy);
+		} else {
+			return this.nw.getDiffParameterNameXY(pl2, xy);
+		}
+	}
+
+	public Parameter[] getParameters() {
+		if (super.getParameters().length > 0) {
+			return this.parameters;
+		} else {
+			return this.nw.getParameters();
+		}
+	}
 
 }

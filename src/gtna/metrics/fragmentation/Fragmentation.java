@@ -93,6 +93,8 @@ public abstract class Fragmentation extends Metric {
 
 	private double[] largestComponentSize;
 
+	private double[] largestComponentSizeFraction;
+
 	private double criticalPoint;
 
 	private Timer runtime;
@@ -107,6 +109,7 @@ public abstract class Fragmentation extends Metric {
 		this.isolatedComponentSizeMin = new double[excludeFirst.length];
 		this.numberOfIsolatedComponents = new double[excludeFirst.length];
 		this.largestComponentSize = new double[excludeFirst.length];
+		this.largestComponentSizeFraction = new double[excludeFirst.length];
 		this.criticalPoint = g.getNodes().length;
 		Random rand = new Random();
 		Node[] sorted = this.sorter.sort(g, rand);
@@ -116,6 +119,9 @@ public abstract class Fragmentation extends Metric {
 
 			this.numberOfIsolatedComponents[i] = p.getComponents().length - 1;
 			this.largestComponentSize[i] = p.getLargestComponent().length;
+			this.largestComponentSizeFraction[i] = (double) p
+					.getLargestComponent().length
+					/ (double) g.getNodes().length;
 
 			if (this.numberOfIsolatedComponents[i] == 0) {
 				this.isolatedComponentSizeAvg[i] = 0;
@@ -189,6 +195,8 @@ public abstract class Fragmentation extends Metric {
 				"FRAGMENTATION_NUMBER_OF_ISOLATED_COMPONENTS", folder);
 		success &= DataWriter.writeWithIndex(this.largestComponentSize,
 				"FRAGMENTATION_LARGEST_COMPONENT_SIZE", folder);
+		success &= DataWriter.writeWithIndex(this.largestComponentSizeFraction,
+				"FRAGMENTATION_LARGEST_COMPONENT_SIZE_FRACTION", folder);
 		return success;
 	}
 

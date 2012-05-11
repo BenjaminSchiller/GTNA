@@ -36,7 +36,7 @@
 package gtna.io.networks.googlePlus;
 
 import gtna.graph.Graph;
-import gtna.io.GraphReader;
+import gtna.io.graphReader.GtnaGraphReader;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.IntParameter;
@@ -53,7 +53,7 @@ public class GooglePlus extends Network {
 	private int cid;
 
 	public GooglePlus(String filename, int cid, Transformation[] t) {
-		super("GOOGLE_PLUS", GraphReader.nodes(filename),
+		super("GOOGLE_PLUS", new GtnaGraphReader().nodes(filename),
 				new Parameter[] { new IntParameter("CID", cid) }, t);
 		this.filename = filename;
 		this.cid = cid;
@@ -61,7 +61,7 @@ public class GooglePlus extends Network {
 
 	@Override
 	public Graph generate() {
-		return GraphReader.read(this.filename);
+		return new GtnaGraphReader().read(this.filename);
 	}
 
 }

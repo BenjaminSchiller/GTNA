@@ -36,6 +36,9 @@
 package gtna.networks.model.placementmodels;
 
 import gtna.util.Util;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
  * 
@@ -54,10 +57,9 @@ import gtna.util.Util;
  */
 public abstract class PlacementModelImpl implements PlacementModel {
 	private String key;
-	private String[] additionalConfigKeys;
-	private String[] additionalConfigValues;
 	protected final int maxTries = 100;
 	private boolean inCenter;
+	private Parameter[] additionalConfigParams;
 
 	/**
 	 * Getter for the key of the particular <code>PlacementModel</code>.
@@ -78,51 +80,32 @@ public abstract class PlacementModelImpl implements PlacementModel {
 		this.key = key;
 	}
 
-	/**
-	 * Getter for the configuration keys. Returns "KEY", "IN_CENTER" as well as
-	 * any additional configuration keys set by
-	 * <code>setAdditionalConfigKeys()</code>.
-	 * 
-	 * @return A string array containing all the configuration keys.
-	 */
-	public String[] getConfigKeys() {
-		return Util.mergeArrays(new String[] { "KEY", "IN_CENTER" },
-				additionalConfigKeys);
+	@Override
+	public Parameter[] getConfigParameters() {
+		return Util.mergeArrays(new Parameter[] {
+				new StringParameter("KEY", key),
+				new BooleanParameter("IN_CENTER", getInCenter()) },
+				getAdditionalConfigParameters());
 	}
 
 	/**
-	 * Setter for the additional configuration keys. Those will be returned in
-	 * addition to "KEY", "IN_CENTER" by <code>getConfigKeys()</code>.
+	 * Getter for the additional configuration parameters.
 	 * 
-	 * @param arr
-	 *            The new additional configuration keys.
+	 * @return An array containing the additional configuration parameters.
 	 */
-	public void setAdditionalConfigKeys(String[] arr) {
-		additionalConfigKeys = arr;
+	protected Parameter[] getAdditionalConfigParameters() {
+		return additionalConfigParams;
 	}
 
 	/**
-	 * Setter for the additional configuration values. Those will be returned in
-	 * addition to the key, the width and the height by
-	 * <code>getConfigValues()</code>.
+	 * Setter for the additional configuration parameters, those will be
+	 * returned in addition to the key of the PlacementModel.
 	 * 
-	 * @param arr
-	 *            The new additional configuration values.
+	 * @param parameters
+	 *            The additional parameters.
 	 */
-	public void setAdditionalConfigValues(String[] arr) {
-		additionalConfigValues = arr;
-	}
-
-	/**
-	 * Getter for the configuration values. Returns key and inCenter as well as
-	 * any additional configuration keys set by
-	 * <code>setAdditionalConfigValues()</code>.
-	 * 
-	 * @return A string array containing all the configuration values.
-	 */
-	public String[] getConfigValues() {
-		return Util.mergeArrays(new String[] { getKey(),
-				Boolean.toString(getInCenter()) }, additionalConfigValues);
+	protected void setAdditionalConfigParameters(Parameter[] params) {
+		additionalConfigParams = params;
 	}
 
 	/**
@@ -142,6 +125,33 @@ public abstract class PlacementModelImpl implements PlacementModel {
 	 */
 	public boolean getInCenter() {
 		return inCenter;
+	}
+
+	/**
+	 * Determines if a given point is inside the bounds defined by the given
+	 * box.
+	 * 
+	 * @param x
+	 *            The x coordinate that is to be tested.
+	 * @param y
+	 *            The y coordinate that is to be tested.
+	 * @param boxCenter
+	 *            The center of the bounding box.
+	 * @param boxWidth
+	 *            The width of the bounding box.
+	 * @param boxHeight
+	 *            The height of the bounding box.
+	 * @return True, if the given point is inside the box (boxCenter.getX() -
+	 *         boxWidth / 2, boxCenter.getY() - boxHeight / 2) and
+	 *         (boxCenter.getX() + boxWidth() / 2, boxCenter.getY() + boxHeight
+	 *         / 2).
+	 */
+	protected boolean inBounds(double x, double y, Point boxCenter,
+			double boxWidth, double boxHeight) {
+		return (x >= (boxCenter.getX() - (boxWidth / 2))
+				|| x <= boxCenter.getX() + (boxWidth / 2)
+				|| y >= boxCenter.getY() - (boxHeight / 2) || y <= (boxCenter
+				.getY() + (boxHeight / 2)));
 	}
 
 }

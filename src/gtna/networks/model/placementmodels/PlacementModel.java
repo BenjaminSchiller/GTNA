@@ -35,6 +35,8 @@
  */
 package gtna.networks.model.placementmodels;
 
+import gtna.util.parameter.Parameter;
+
 /**
  * A <code>PlacementModel</code> is a way to determine a number of positions in
  * a two-dimensional coordinate system. These positions can then be used to
@@ -55,33 +57,33 @@ public interface PlacementModel {
 	public String getKey();
 
 	/**
-	 * Getter for all the configuration values.
 	 * 
-	 * @return A string array containing all the configuration values.
-	 */
-	public String[] getConfigValues();
-
-	/**
-	 * Getter for all the configuration keys.
-	 * 
-	 * @return A string array containing all the configuration values.
-	 */
-	public String[] getConfigKeys();
-
-	/**
-	 * 
-	 * Finds and returns <code>number</code> positions.
+	 * Finds and returns <code>number</code> positions. All positions are
+	 * guaranteed to be within the rectangle between (boxCenter.getX() -
+	 * boxWidth / 2, boxCenter.getY() - boxHeight / 2) and (boxCenter.getX() +
+	 * boxWidth() / 2, boxCenter.getY() + boxHeight / 2). If not enough nodes
+	 * can be placed within those constraints, an Exception is thrown.
 	 * 
 	 * @param count
 	 *            The number of positions to find.
-	 * @param center
+	 * @param placementCenter
 	 *            The center relative to which every node should be placed.
-	 * @param maxX
-	 *            The maximum X value
-	 * @param maxY
-	 *            The maximum Y value
+	 * @param boxCenter
+	 *            The center of the bounding box.
+	 * @param boxWidth
+	 *            The width of the bounding box.
+	 * @param boxHeight
+	 *            The height of the bounding box.
 	 * @return An array with size <code>count</code> containing the positions.
 	 */
-	Point[] place(int count, Point center, double maxX, double maxY);
+	Point[] place(int count, Point placementCenter, Point boxCenter,
+			double boxWidth, double boxHeight);
+
+	/**
+	 * Getter for the configuration Parameters.
+	 * 
+	 * @return An array containing all the configuration parameters.
+	 */
+	public Parameter[] getConfigParameters();
 
 }

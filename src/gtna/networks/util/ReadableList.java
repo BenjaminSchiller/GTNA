@@ -36,10 +36,11 @@
 package gtna.networks.util;
 
 import gtna.graph.Graph;
-import gtna.io.GraphReader;
+import gtna.io.graphReader.GtnaGraphReader;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
+import gtna.util.parameter.Parameter;
 
 /**
  * Implements a graph generator for a list of snapshots. It works like the
@@ -57,26 +58,33 @@ import gtna.util.Config;
  */
 public class ReadableList extends Network {
 	private String[] files;
-
 	private int index;
 
 	public ReadableList(String name, String folder, String[] files,
 			Transformation[] t) {
-		super(ReadableList.key(name, folder), Integer.MIN_VALUE, t);
+		this(name, folder, files, new Parameter[0], t);
+	}
+
+	public ReadableList(String name, String folder, String[] files,
+			Parameter[] parameters, Transformation[] t) {
+		super(ReadableList.key(name, folder), Integer.MIN_VALUE, parameters, t);
 		this.files = files;
 		this.index = -1;
-		super.setNodes(GraphReader.nodes(this.files[0]));
+		super.setNodes(new GtnaGraphReader().nodes(this.files[0]));
 	}
 
 	public static String key(String name, String folder) {
 		Config.overwrite("READABLE_LIST_" + folder + "_NAME", name);
+		Config.overwrite("READABLE_LIST_" + folder + "_NAME_SHORT", name);
+		Config.overwrite("READABLE_LIST_" + folder + "_NAME_LONG", name);
 		Config.overwrite("READABLE_LIST_" + folder + "_FOLDER", folder);
 		return "READABLE_LIST_" + folder;
 	}
 
 	public Graph generate() {
 		this.index = (this.index + 1) % this.files.length;
-		Graph graph = GraphReader.readWithProperties(this.files[this.index]);
+		Graph graph = new GtnaGraphReader()
+				.readWithProperties(this.files[this.index]);
 		graph.setName(this.getDescription());
 		return graph;
 	}

@@ -54,9 +54,10 @@ public class MaximumData extends Data {
 	}
 
 	@Override
-	public String getEntry(int lt, int lw) {
+	public String getEntry(int lt, int lw, double offsetX, double offsetY) {
 		StringBuffer buff = new StringBuffer();
-		buff.append("'" + this.data + "' using 1:5 with " + this.style);
+		buff.append("'" + this.data + "' using ($1 + " + offsetX + "):($5 + "
+				+ offsetY + ") with " + this.style);
 		buff.append(" lt " + lt + " lw " + lw);
 		buff.append(title == null ? " notitle" : " title \"" + this.title
 				+ "\"");

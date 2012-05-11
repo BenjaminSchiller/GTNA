@@ -55,9 +55,15 @@ public class Gnuplot {
 		lines, dots, points, linespoint, impulses, steps, boxes, candlesticks, yerrorbars
 	}
 
-	private static String getScriptName(Metric m, String plotKey) {
-		return Config.get("TEMP_FOLDER") + m.getFolderName() + "." + plotKey
-				+ ".gnuplot.txt";
+	private static String getScriptName(Metric[] m, String plotKey) {
+		if (m.length > 1) {
+			return Config.get("TEMP_FOLDER") + m[0].getKey()
+					+ Config.get("PLOT_GROUPED_KEYWORD") + "." + plotKey
+					+ ".gnuplot.txt";
+		} else {
+			return Config.get("TEMP_FOLDER") + m[0].getFolderName() + "."
+					+ plotKey + ".gnuplot.txt";
+		}
 	}
 
 	private static String getDataName(Metric m, String plotKey, int index) {
@@ -74,7 +80,7 @@ public class Gnuplot {
 		return filename;
 	}
 
-	public static boolean plot(Plot plot, Metric m, String plotKey) {
+	public static boolean plot(Plot plot, Metric[] m, String plotKey) {
 		String filename = Gnuplot.getScriptName(m, plotKey);
 		String config = null;
 		int index = 0;

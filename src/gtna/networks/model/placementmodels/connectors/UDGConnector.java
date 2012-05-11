@@ -38,6 +38,8 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.networks.model.placementmodels.NodeConnectorImpl;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.Parameter;
 
 /**
  * Connects nodes based on their distance. If the distance is below
@@ -60,8 +62,7 @@ public class UDGConnector extends NodeConnectorImpl {
 	public UDGConnector(double range) {
 		this.range = range;
 		setKey("UDG");
-		setAdditionalConfigKeys(new String[] { "RANGE" });
-		setAdditionalConfigValues(new String[] { Double.toString(range) });
+		setAdditionalConfigParameters(new Parameter[] { new DoubleParameter("RANGE", range) });
 	}
 
 	/**
@@ -84,7 +85,7 @@ public class UDGConnector extends NodeConnectorImpl {
 			}
 		}
 		
-		g.addProperty("RANGE_0", new RangeProperty(range));
+		g.addProperty("RANGE_0", new RangeProperty(range, nodes.length));
 
 		edges.fill();
 

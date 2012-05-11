@@ -53,7 +53,7 @@ public class ConfidenceData2 extends Data {
 	}
 
 	@Override
-	public String getEntry(int lt, int lw) {
+	public String getEntry(int lt, int lw, double offsetX, double offsetY) {
 		StringBuffer buff = new StringBuffer();
 		// 2 avg
 		// 3 med
@@ -65,21 +65,26 @@ public class ConfidenceData2 extends Data {
 		// 9 confLow
 		// 10 confUp
 		// X Min 1stQuartile Median 3rdQuartile Max
-		buff.append("'" + this.data + "' using 1:9:4:5:10 with " + this.style);
+		buff.append("'" + this.data + "' using ($1 + " + offsetX + "):($9 + "
+				+ offsetY + "):($4 + " + offsetY + "):($5 + " + offsetY
+				+ "):($10 + " + offsetY + ") with " + this.style);
 		buff.append(" lt " + lt + " lw " + lw);
 		buff.append(title == null ? " notitle" : " title \"" + this.title
 				+ "\"");
 		buff.append(",\\\n");
-		buff.append("'' using 1:3:3:3:3 with " + this.style + " lt -1 lw " + lw
+		buff.append("'' using ($1 + " + offsetX + "):($3 + " + offsetY
+				+ "):($3 + " + offsetY + "):($3 + " + offsetY + "):($3 + "
+				+ offsetY + ") with " + this.style + " lt -1 lw " + lw
 				+ " notitle");
 		buff.append(",\\\n");
-		buff.append("'' using 1:2 with " + Style.lines + " lt " + lt + " lw "
-				+ lw + " notitle");
+		buff.append("'' using ($1 + " + offsetX + "):($2 + " + offsetY
+				+ ") with " + Style.lines + " lt " + lt + " lw " + lw
+				+ " notitle");
 		return buff.toString();
 	}
-	
-	public String[] getConfig(){
-		return new String[]{"set style fill empty", "set boxwidth 0.2"};
+
+	public String[] getConfig() {
+		return new String[] { "set style fill empty", "set boxwidth 0.2" };
 	}
 
 }

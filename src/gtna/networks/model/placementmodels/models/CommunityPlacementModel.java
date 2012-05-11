@@ -38,6 +38,8 @@ package gtna.networks.model.placementmodels.models;
 import gtna.networks.model.placementmodels.PlacementModelImpl;
 import gtna.networks.model.placementmodels.PlacementNotPossibleException;
 import gtna.networks.model.placementmodels.Point;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.Random;
 
@@ -49,7 +51,6 @@ import java.util.Random;
  * 
  */
 public class CommunityPlacementModel extends PlacementModelImpl {
-	private double sigma;
 	private double height;
 	private double width;
 
@@ -70,16 +71,15 @@ public class CommunityPlacementModel extends PlacementModelImpl {
 	 * @param inCenter
 	 *            If a node should be placed in the center of the model.
 	 */
-	public CommunityPlacementModel(double width, double height, double sigma,
-			boolean inCenter) {
-		this.sigma = sigma;
+	public CommunityPlacementModel(double width, double height, boolean inCenter) {
 		setInCenter(inCenter);
 		this.width = width;
 		this.height = height;
 		setKey("COMMUNITY");
 
-		setAdditionalConfigKeys(new String[] { "SIGMA", "WIDTH", "HEIGHT" });
-		setAdditionalConfigValues(new String[] { Double.toString(sigma), Double.toString(width), Double.toString(height) });
+		setAdditionalConfigParameters(new Parameter[] {
+				new DoubleParameter("WIDTH", width),
+				new DoubleParameter("HEIGHT", height) });
 	}
 
 	/**
@@ -87,14 +87,15 @@ public class CommunityPlacementModel extends PlacementModelImpl {
 	 * <code>PlacementModel</code> with variance <code>sigma</code>.
 	 */
 	@Override
-	public Point[] place(int count, Point center, double maxX, double maxY) {
+	public Point[] place(int count, Point center, Point boxCenter,
+			double boxWidth, double boxHeight) {
 		Random rnd = new Random();
 
 		Point[] ret = new Point[count];
 
 		int i = 0;
-		double dx = 0;
-		double dy = 0;
+		double x = 0;
+		double y = 0;
 		int tries;
 
 		if (getInCenter()) {
@@ -106,18 +107,20 @@ public class CommunityPlacementModel extends PlacementModelImpl {
 
 			tries = 0;
 			do {
-				dx = center.getX() + rnd.nextGaussian() * sigma * width;
-				dy = center.getY() + rnd.nextGaussian() * sigma * height;
+				x = center.getX() + rnd.nextGaussian() * width;
+				y = center.getY() + rnd.nextGaussian() * height;
 				tries++;
-			} while ((dx < 0 || dx > maxX || dy < 0 || dy > maxY)
+			} while (!inBounds(x, y, boxCenter, boxWidth, boxHeight)
 					&& tries <= maxTries);
 			if (tries > maxTries)
 				throw new PlacementNotPossibleException("Could not place node "
-						+ i + " for settings: F=(" + width + ", "
-						+ height + "), count=" + count + ", sigma="
-						+ sigma + ", inCenter=" + getInCenter());
+						+ i + " for settings: center=(" + center.getX() + ","
+						+ center.getY() + ") width=" + width + " height="
+						+ height + " ((" + boxCenter.getX() + ","
+						+ boxCenter.getY() + ")," + boxWidth + "," + boxHeight
+						+ "), count=" + count + ", inCenter=" + getInCenter());
 
-			ret[i] = new Point(dx, dy);
+			ret[i] = new Point(x, y);
 
 			i++;
 		}

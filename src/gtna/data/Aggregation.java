@@ -48,7 +48,7 @@ import java.util.Arrays;
  * 
  */
 public class Aggregation {
-	public static boolean aggregate(Series s) {
+	public static boolean aggregate(Series s, int times) {
 		double interval = Config.getDouble("CONFIDENCE_INTERVAL");
 		double z = 1.96;
 		if (interval == 0.95) {
@@ -56,7 +56,10 @@ public class Aggregation {
 		} else if (interval == 0.99) {
 			z = 2.576;
 		}
-		int runs = s.getRunFolders().length;
+		int runs = times;
+		if (Config.getBoolean("AGGREGATE_ALL_AVAILABLE_RUNS")) {
+			runs = s.getRunFolders().length;
+		}
 		for (Metric m : s.getMetrics()) {
 			if (!Aggregation.aggregate(s, m, z, runs)) {
 				return false;

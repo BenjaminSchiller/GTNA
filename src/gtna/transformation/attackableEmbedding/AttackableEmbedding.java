@@ -77,15 +77,7 @@ public abstract class AttackableEmbedding extends Transformation {
 	}
 
 	public boolean applicable(Graph g) {
-		GraphProperty[] prop = g.getProperties("ID_SPACE");
-		if (prop.length == 0) {
-			return false;
-		}
-		if (prop[0] instanceof DIdentifierSpace) {
-			return true;
-		}
-		return false;
-		// return g.nodes[0] instanceof RingNode;
+		return true;
 	}
 
 	public Graph transform(Graph g) {
@@ -159,12 +151,12 @@ public abstract class AttackableEmbedding extends Transformation {
 	 *            PRNG
 	 * @return set of unique nodes selected uniformly at random
 	 */
-	protected HashSet<Node> selectNodesRandomly(Node[] nodes, int number,
+	protected HashSet<Integer> selectNodesRandomly(Node[] nodes, int number,
 			Random rand) {
-		HashSet<Node> attackers = new HashSet<Node>();
+		HashSet<Integer> attackers = new HashSet<Integer>();
 		while (attackers.size() < number) {
 			int index = rand.nextInt(nodes.length);
-			attackers.add(nodes[index]);
+			attackers.add(index);
 		}
 		return attackers;
 	}
@@ -180,12 +172,12 @@ public abstract class AttackableEmbedding extends Transformation {
 	 *            PRNG
 	 * @return set of the highest degree nodes from the given list
 	 */
-	protected HashSet<Node> selectNodesByDegreeDesc(Node[] nodes, int number,
-			Random rand) {
+	protected HashSet<Integer> selectNodesByDegreeDesc(Node[] nodes,
+			int number, Random rand) {
 		Node[] sorted = NodeSorting.degreeDesc(nodes, rand);
-		HashSet<Node> attackers = new HashSet<Node>();
+		HashSet<Integer> attackers = new HashSet<Integer>();
 		for (int i = 0; i < number; i++) {
-			attackers.add(sorted[i]);
+			attackers.add(sorted[i].getIndex());
 		}
 		return attackers;
 	}
@@ -201,12 +193,12 @@ public abstract class AttackableEmbedding extends Transformation {
 	 *            PRNG
 	 * @return set of lowest degree nodes from the given list
 	 */
-	protected HashSet<Node> selectNodesByDegreeAsc(Node[] nodes, int number,
+	protected HashSet<Integer> selectNodesByDegreeAsc(Node[] nodes, int number,
 			Random rand) {
 		Node[] sorted = NodeSorting.degreeDesc(nodes, rand);
-		HashSet<Node> attackers = new HashSet<Node>();
+		HashSet<Integer> attackers = new HashSet<Integer>();
 		for (int i = 0; i < number; i++) {
-			attackers.add(sorted[sorted.length - i - 1]);
+			attackers.add(sorted[sorted.length - i - 1].getIndex());
 		}
 		return attackers;
 	}
@@ -228,7 +220,7 @@ public abstract class AttackableEmbedding extends Transformation {
 	 * @return set of nodes within the bounds of the given minimum and maximum
 	 *         degree
 	 */
-	protected HashSet<Node> selectNodesByDegree(Node[] nodes, int number,
+	protected HashSet<Integer> selectNodesByDegree(Node[] nodes, int number,
 			Random rand, int min, int max) {
 		ArrayList<Node> potential = new ArrayList<Node>();
 		for (int i = 0; i < nodes.length; i++) {
@@ -237,17 +229,17 @@ public abstract class AttackableEmbedding extends Transformation {
 				potential.add(nodes[i]);
 			}
 		}
-		HashSet<Node> attackers = new HashSet<Node>();
+		HashSet<Integer> attackers = new HashSet<Integer>();
 		number = Math.min(number, potential.size());
 		while (attackers.size() < number) {
 			int index = rand.nextInt(potential.size());
-			attackers.add(potential.get(index));
+			attackers.add(potential.get(index).getIndex());
 		}
 		return attackers;
 	}
 
-	protected HashSet<Node> selectNodesAroundMedian(Node[] nodes, int number,
-			Random rand, int setSize) {
+	protected HashSet<Integer> selectNodesAroundMedian(Node[] nodes,
+			int number, Random rand, int setSize) {
 		Node[] sorted = NodeSorting.degreeDesc(nodes, rand);
 		int median = sorted[sorted.length / 2].getDegree();
 		int medianStart = 0;
@@ -273,11 +265,11 @@ public abstract class AttackableEmbedding extends Transformation {
 		for (int i = startIndex; i < endIndex; i++) {
 			potential.add(sorted[i]);
 		}
-		HashSet<Node> attackers = new HashSet<Node>();
+		HashSet<Integer> attackers = new HashSet<Integer>();
 		number = Math.min(number, setSize);
 		while (attackers.size() < number) {
 			int index = rand.nextInt(potential.size());
-			attackers.add(potential.get(index));
+			attackers.add(potential.get(index).getIndex());
 		}
 		return attackers;
 	}

@@ -36,7 +36,7 @@
 package gtna.projects.pets;
 
 import gtna.graph.Graph;
-import gtna.io.GraphReader;
+import gtna.io.graphReader.GtnaGraphReader;
 import gtna.networks.Network;
 import gtna.networks.model.smallWorld.ScaleFreeUndirected;
 import gtna.projects.pets.PET.cutoffType;
@@ -124,7 +124,7 @@ public class PETTest {
 								+ filenameLD);
 						continue;
 					}
-					Graph g = GraphReader.read(filenameLD);
+					Graph g = new GtnaGraphReader().read(filenameLD);
 					if (g == null) {
 						System.out.println("ERROR LD - could not read: "
 								+ filenameLD);
@@ -143,7 +143,7 @@ public class PETTest {
 									+ filename);
 							continue;
 						}
-						Graph g = GraphReader.read(filename);
+						Graph g = new GtnaGraphReader().read(filename);
 						if (g == null) {
 							System.out.println("ERROR: could not read: "
 									+ filename);

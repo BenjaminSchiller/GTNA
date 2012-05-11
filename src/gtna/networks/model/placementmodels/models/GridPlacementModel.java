@@ -38,6 +38,9 @@ package gtna.networks.model.placementmodels.models;
 import gtna.networks.model.placementmodels.PlacementModelImpl;
 import gtna.networks.model.placementmodels.PlacementNotPossibleException;
 import gtna.networks.model.placementmodels.Point;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
 
 /**
  * Places the nodes in a grid with <code>rows</code> rows and <code>cols</code>
@@ -78,11 +81,10 @@ public class GridPlacementModel extends PlacementModelImpl {
 		this.height = height;
 		setInCenter(inCenter);
 		setKey("GRID");
-		setAdditionalConfigKeys(new String[] { "COLS", "ROWS", "WIDTH",
-				"HEIGHT" });
-		setAdditionalConfigValues(new String[] { Integer.toString(cols),
-				Integer.toString(rows), Double.toString(width),
-				Double.toString(height) });
+		setAdditionalConfigParameters(new Parameter[] {
+				new IntParameter("COLS", cols), new IntParameter("ROWS", rows),
+				new DoubleParameter("WIDTH", width),
+				new DoubleParameter("HEIGHT", height) });
 	}
 
 	/**
@@ -95,7 +97,8 @@ public class GridPlacementModel extends PlacementModelImpl {
 	 * <code>PlacementNotPossibleException</code> is thrown.
 	 */
 	@Override
-	public Point[] place(int count, Point center, double maxX, double maxY) {
+	public Point[] place(int count, Point center, Point boxCenter,
+			double boxWidth, double boxHeight) {
 		if (getInCenter() && count > ((rows * cols) + 1) || !getInCenter()
 				&& count > ((rows * cols)))
 			throw new PlacementNotPossibleException("Can not place " + count
@@ -103,22 +106,25 @@ public class GridPlacementModel extends PlacementModelImpl {
 					+ cols + " cols.");
 
 		Point[] ret = new Point[count];
-		double xoffset = width / cols;
-		double yoffset = height / rows;
-		Point p;
-		for (int i = 0; i < count; i++) {
-			p = new Point(center.getX() + (i % cols) * xoffset + xoffset / 2
-					- width / 2, center.getY() - height / 2
-					+ (Math.floor(i / cols)) * yoffset + yoffset / 2);
+		double xPerRow = width / cols;
+		double yPerRow = height / rows;
+		double x;
+		double y;
+		int i = 0;
+		while (i < count) {
+			x = center.getX() - width / 2 + xPerRow / 2 + xPerRow * (i % cols);
+			y = center.getY() - height / 2 + yPerRow / 2 + yPerRow
+					* Math.floor(i / cols);
 			// if it happens once, it will keep happening since there is no
 			// random element involved in placing the node, so we throw an
 			// exception without trying it again
-			if (p.getX() < 0 || p.getX() > maxX || p.getY() < 0
-					|| p.getY() > maxY)
+			if (!inBounds(x, y, boxCenter, boxWidth, boxHeight))
 				throw new PlacementNotPossibleException("Could not place node "
 						+ i + " for settings: F=(" + width + ", " + height
 						+ "), count=" + count + ", inCenter=" + getInCenter());
-			ret[i] = p;
+			ret[i] = new Point(x, y);
+
+			i++;
 
 		}
 

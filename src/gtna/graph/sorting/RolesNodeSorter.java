@@ -35,8 +35,8 @@
  */
 package gtna.graph.sorting;
 
-import gtna.communities.Roles;
-import gtna.communities.Roles.Role;
+import gtna.communities.Role;
+import gtna.communities.RoleList;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 
@@ -50,17 +50,15 @@ import java.util.Random;
  * 
  */
 public class RolesNodeSorter extends NodeSorter {
-	private Roles roles;
+	protected String key;
 
-	private Role[] order;
+	protected Role[] order;
 
-	public static final Role[] GH_CH_PH_SC_P_UP_KN = new Role[] {
-			Role.GLOBAL_HUB, Role.CONNECTOR_HUB, Role.PROVINCIAL_HUB,
-			Role.SATELLITE_CONNECTOR, Role.PERIPHERAL, Role.ULTRA_PERIPHERAL,
-			Role.KINLESS_NODE };
+	protected RoleList roles;
 
-	public RolesNodeSorter(Role[] order) {
-		super("ROLES_" + RolesNodeSorter.toString(order));
+	public RolesNodeSorter(String key, Role[] order) {
+		super("ROLES_" + key + "_" + RolesNodeSorter.toString(order));
+		this.key = key;
 		this.order = order;
 	}
 
@@ -68,9 +66,9 @@ public class RolesNodeSorter extends NodeSorter {
 		StringBuffer buff = new StringBuffer();
 		for (Role r : order) {
 			if (buff.length() == 0) {
-				buff.append(Roles.toString(r));
+				buff.append(r.getKey());
 			} else {
-				buff.append("-" + Roles.toString(r));
+				buff.append("-" + r.getKey());
 			}
 		}
 		return buff.toString();
@@ -79,7 +77,7 @@ public class RolesNodeSorter extends NodeSorter {
 	@Override
 	public Node[] sort(Graph g, Random rand) {
 		Node[] sorted = this.clone(g.getNodes());
-		this.roles = (Roles) g.getProperty("ROLES_0");
+		this.roles = (RoleList) g.getProperty("ROLES_WSN_0");
 
 		RolesAsc asc = new RolesAsc(this.order, this.roles);
 		Arrays.sort(sorted, asc);
@@ -89,27 +87,27 @@ public class RolesNodeSorter extends NodeSorter {
 	}
 
 	@Override
-	protected boolean isPropertyEqual(Node n1, Node n2) {
-		return this.roles.getRoleOfNode(n1.getIndex()) == this.roles
-				.getRoleOfNode(n2.getIndex());
+	public boolean applicable(Graph g) {
+		return g.hasProperty("ROLES_" + this.key + "_0");
 	}
 
 	@Override
-	public boolean applicable(Graph g) {
-		return g.hasProperty("ROLES_0");
+	protected boolean isPropertyEqual(Node n1, Node n2) {
+		return this.roles.getRole(n1.getIndex()) == this.roles.getRole(n2
+				.getIndex());
 	}
 
 	private static class RolesAsc implements Comparator<Node> {
 		private HashMap<Role, Integer> map;
 
-		private Roles roles;
+		private RoleList roles;
 
-		private RolesAsc(HashMap<Role, Integer> map, Roles roles) {
+		private RolesAsc(HashMap<Role, Integer> map, RoleList roles) {
 			this.map = map;
 			this.roles = roles;
 		}
 
-		private RolesAsc(Role[] order, Roles roles) {
+		private RolesAsc(Role[] order, RoleList roles) {
 			this(RolesAsc.generateMap(order), roles);
 		}
 
@@ -122,10 +120,9 @@ public class RolesNodeSorter extends NodeSorter {
 		}
 
 		public int compare(Node n1, Node n2) {
-			Role r1 = this.roles.getRoleOfNode(n1.getIndex());
-			Role r2 = this.roles.getRoleOfNode(n2.getIndex());
+			Role r1 = this.roles.getRole(n1.getIndex());
+			Role r2 = this.roles.getRole(n2.getIndex());
 			return this.map.get(r1) - this.map.get(r2);
 		}
 	}
-
 }

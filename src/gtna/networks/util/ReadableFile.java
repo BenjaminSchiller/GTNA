@@ -36,10 +36,11 @@
 package gtna.networks.util;
 
 import gtna.graph.Graph;
-import gtna.io.GraphReader;
+import gtna.io.graphReader.GtnaGraphReader;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
+import gtna.util.parameter.Parameter;
 
 /**
  * Implements a network generator that reads an existing network topology
@@ -59,18 +60,28 @@ public class ReadableFile extends Network {
 
 	public ReadableFile(String name, String folder, String filename,
 			Transformation[] t) {
-		super(ReadableFile.key(name, folder), GraphReader.nodes(filename), t);
+		this(name, folder, filename, new Parameter[0], t);
+	}
+
+	public ReadableFile(String name, String folder, String filename,
+			Parameter[] parameters, Transformation[] t) {
+		super(ReadableFile.key(name, folder), new GtnaGraphReader()
+				.nodes(filename), parameters, t);
 		this.filename = filename;
 	}
 
 	public static String key(String name, String folder) {
 		Config.overwrite("READABLE_FILE_" + folder + "_NAME", name);
+		Config.overwrite("READABLE_FILE_" + folder + "_NAME_SHORT", name);
+		Config.overwrite("READABLE_FILE_" + folder + "_NAME_LONG", name);
 		Config.overwrite("READABLE_FILE_" + folder + "_FOLDER", folder);
+		Config.overwrite("READABLE_FILE_" + folder + "_NAME_SHORT", folder);
+		Config.overwrite("READABLE_FILE_" + folder + "_NAME_LONG", folder);
 		return "READABLE_FILE_" + folder;
 	}
 
 	public Graph generate() {
-		Graph graph = GraphReader.readWithProperties(this.filename);
+		Graph graph = new GtnaGraphReader().readWithProperties(this.filename);
 		graph.setName(this.getDescription());
 		return graph;
 	}
