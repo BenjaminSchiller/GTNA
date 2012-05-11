@@ -78,10 +78,12 @@ import gtna.util.Config;
  */
 public class Tests {
 	public static void main(String[] args) {
+
 		/*
 		 * Utils u = new Utils(); Graph g = u.importGraphFromFile("Erdos.gml");
 		 * GraphWriter.write(g, "Erdos.gtna");
 		 */
+
 		Tests.read();
 	}
 
