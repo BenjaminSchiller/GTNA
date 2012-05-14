@@ -66,7 +66,7 @@ import gtna.routing.greedyVariations.DepthFirstGreedy;
 import gtna.transformation.Transformation;
 import gtna.transformation.attackableEmbedding.lmc.LMC;
 import gtna.transformation.attackableEmbedding.swapping.Swapping;
-import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CDLPA;
 import gtna.transformation.edges.Bidirectional;
 import gtna.transformation.embedding.communities.CommunityEmbedding;
 import gtna.transformation.embedding.communities.partitioner.community.LmcCommunityPartitioner;
@@ -292,7 +292,7 @@ public class CommunityEmbeddings {
 		Transformation rgp = new RemoveGraphProperty();
 		Transformation bi = new Bidirectional();
 		Transformation lwcc = new LargestWeaklyConnectedComponent();
-		Transformation cd = new CommunityDetectionLPA(50);
+		Transformation cd = new CDLPA(50);
 
 		for (int i = 0; i < times; i++) {
 			String dst = dstFolder + i + ".gtna";

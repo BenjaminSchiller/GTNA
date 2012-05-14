@@ -49,7 +49,7 @@ import gtna.networks.model.ErdosRenyi;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
-import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CDLPA;
 import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.util.Config;
 
@@ -76,7 +76,7 @@ public class PlottingTest {
 		Metric[] metrics = new Metric[] { dd, wf1, wf2 };
 
 		Transformation[] t = new Transformation[] {
-				new CommunityDetectionLPA(50), new WsnRolesTransformation() };
+				new CDLPA(50), new WsnRolesTransformation() };
 
 		Network nw1 = new DescriptionWrapper(new ErdosRenyi(1000, 10, true, t),
 				"ER 1000");

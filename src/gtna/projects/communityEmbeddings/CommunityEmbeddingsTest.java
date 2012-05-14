@@ -64,7 +64,7 @@ import gtna.routing.greedyVariations.DepthFirstGreedy;
 import gtna.transformation.Transformation;
 import gtna.transformation.attackableEmbedding.lmc.LMC;
 import gtna.transformation.attackableEmbedding.swapping.Swapping;
-import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CDLPA;
 import gtna.transformation.embedding.communities.CommunityEmbedding;
 import gtna.transformation.embedding.communities.SimpleCommunityEmbedding1;
 import gtna.transformation.embedding.communities.SimpleCommunityEmbedding2;
@@ -108,7 +108,7 @@ public class CommunityEmbeddingsTest {
 
 			Network nw = new ErdosRenyi(10, 3, true, null);
 
-			Transformation cd = new CommunityDetectionLPA(20);
+			Transformation cd = new CDLPA(20);
 			Transformation ce1 = new SimpleCommunityEmbedding1();
 			Transformation ce2 = new SimpleCommunityEmbedding2();
 			Transformation ce_1 = new CommunityEmbedding(
@@ -155,7 +155,7 @@ public class CommunityEmbeddingsTest {
 
 		Transformation scp = new StrongConnectivityPartition();
 		Transformation gcc = new LargestWeaklyConnectedComponent();
-		Transformation cd = new CommunityDetectionLPA(20);
+		Transformation cd = new CDLPA(20);
 		// Transformation cd = new CommunityDetectionDeltaQ();
 
 		Transformation re = new RandomRingIDSpaceSimple();

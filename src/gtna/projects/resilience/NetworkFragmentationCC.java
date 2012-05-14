@@ -61,7 +61,7 @@ import gtna.plot.Plotting;
 import gtna.plot.Data.Type;
 import gtna.plot.Gnuplot.Style;
 import gtna.transformation.Transformation;
-import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CDLPA;
 import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.util.Config;
 import gtna.util.parameter.IntParameter;
@@ -105,7 +105,7 @@ public class NetworkFragmentationCC {
 				wf6, wf7 };
 
 		Transformation[] t = new Transformation[] {
-				new CommunityDetectionLPA(50), new WsnRolesTransformation() };
+				new CDLPA(50), new WsnRolesTransformation() };
 
 		Network nw1 = NetworkFragmentationCC.nwCC(1000, t);
 		Network nw2 = NetworkFragmentationCC.nwCC(2000, t);
