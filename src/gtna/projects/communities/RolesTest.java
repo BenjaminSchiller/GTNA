@@ -53,8 +53,8 @@ import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
-import gtna.transformation.communities.CommunityDetectionDeltaQ;
-import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CDDeltaQ;
+import gtna.transformation.communities.CDLPA;
 import gtna.transformation.communities.GuimeraRolesTransformation;
 import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.util.Config;
@@ -89,8 +89,8 @@ public class RolesTest {
 		Metric roles2 = new Roles(Role.RoleType.WSN);
 		Metric[] metrics = new Metric[] { dd, roles2 };
 
-		Transformation lpa = new CommunityDetectionLPA(50);
-		Transformation dq = new CommunityDetectionDeltaQ();
+		Transformation lpa = new CDLPA(50);
+		Transformation dq = new CDDeltaQ();
 		Transformation r1 = new GuimeraRolesTransformation();
 		Transformation r2 = new WsnRolesTransformation();
 		Transformation[] t = new Transformation[] { lpa, r2 };
@@ -128,8 +128,8 @@ public class RolesTest {
 		Metric roles2 = new Roles(Role.RoleType.WSN);
 		Metric[] metrics = new Metric[] { dd, communities, roles, roles2 };
 
-		Transformation lpa = new CommunityDetectionLPA(3);
-		Transformation dq = new CommunityDetectionDeltaQ();
+		Transformation lpa = new CDLPA(3);
+		Transformation dq = new CDDeltaQ();
 		Transformation t_roles = new GuimeraRolesTransformation();
 		Transformation t_roles2 = new WsnRolesTransformation();
 		Transformation[] t = new Transformation[] { lpa };

@@ -35,7 +35,6 @@
  */
 package gtna.transformation.communities;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import gtna.graph.Edge;
@@ -61,6 +60,7 @@ public class Community {
 
 	/**
 	 * @param i
+	 * @param akt 
 	 * @param g
 	 */
 	public Community(int i, Graph g, CommunityList coms, NodeWeights nw, EdgeWeights ew) {
@@ -95,32 +95,35 @@ public class Community {
 	}
 
 	/**
-	 * @param i
+	 * @param akt2
 	 */
-	public void removeNode(int i) {
-		Node n = g.getNode(i);
+	public void removeNode(Node akt2) {
 		int t;
 		if(nw != null)
-			internalEdges -= nw.getWeight(i);
+			internalEdges -= nw.getWeight(akt2.getIndex());
 		
-		for(Edge akt : n.getEdges()){
-			if(akt.getSrc() == i)
+		for(Edge akt : akt2.getEdges()){
+			if(akt.getSrc() == akt2.getIndex())
 				t = akt.getDst();
 			else
 				t = akt.getSrc();
 			
-			if(coms.getCommunityByNode(t).getIndex() == this.getIndex()){
+			if(coms.getCommunityByNode(g.getNode(t)).getIndex() == this.getIndex()){
 				internalEdges -= (ew != null)?ew.getWeight(akt):1;
 			}
 			else
 				externalEdges -= (ew != null)?ew.getWeight(akt):1;
 		}
-		nodes.remove(i);
+		
+		nodes.remove(akt2.getIndex());
+		
+		
 		
 	}
 	
 	public void setNode(Node node){
 		nodes.put(node.getIndex(), node);
+		coms.setCommunity(node, this);
 		if(nw != null)
 			internalEdges += nw.getWeight(node.getIndex());
 			
@@ -137,20 +140,24 @@ public class Community {
 		if(nw != null)
 			internalEdges += nw.getWeight(node.getIndex());
 		
+		nodes.put(node.getIndex(), node);
+		coms.setCommunity(node, this);
+		
 		for(Edge akt : node.getEdges()){
 			if(akt.getSrc() == node.getIndex())
 				t = akt.getDst();
 			else
 				t = akt.getSrc();
 			
-			if(coms.getCommunityByNode(t).getIndex() == this.getIndex()){
+			
+			if(coms.getCommunityByNode(g.getNode(t)).getIndex() == this.getIndex()){
 				internalEdges += (ew != null)?ew.getWeight(akt):1;
 			}
 			else
 				externalEdges += (ew != null)?ew.getWeight(akt):1;
 		}
 		
-		nodes.put(node.getIndex(), node);
+		
 		
 	}
 

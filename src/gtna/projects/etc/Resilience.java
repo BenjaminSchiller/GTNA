@@ -62,8 +62,8 @@ import gtna.networks.util.DescriptionWrapper;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityColors;
-import gtna.transformation.communities.CommunityDetectionDeltaQ;
-import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CDDeltaQ;
+import gtna.transformation.communities.CDLPA;
 import gtna.transformation.communities.GuimeraRolesTransformation;
 import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.transformation.partition.LargestWeaklyConnectedComponent;
@@ -79,8 +79,8 @@ import java.util.Random;
 public class Resilience {
 
 	public static void main(String[] args) {
-		Transformation t_lpa = new CommunityDetectionLPA(50);
-		Transformation t_dq = new CommunityDetectionDeltaQ();
+		Transformation t_lpa = new CDLPA(50);
+		Transformation t_dq = new CDDeltaQ();
 		Transformation t_cc = new CommunityColors();
 		Transformation t_r = new GuimeraRolesTransformation();
 		Transformation t_r2 = new WsnRolesTransformation();
@@ -144,7 +144,7 @@ public class Resilience {
 		}
 
 		Network nw = Resilience.communityNew(2000, null);
-		Transformation t_lpa = new CommunityDetectionLPA(50);
+		Transformation t_lpa = new CDLPA(50);
 		Transformation t_cc = new CommunityColors();
 		Transformation t_r = new GuimeraRolesTransformation();
 		Transformation t_r2 = new WsnRolesTransformation();

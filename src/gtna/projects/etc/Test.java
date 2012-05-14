@@ -66,8 +66,8 @@ import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.attackableEmbedding.lmc.LMC;
 import gtna.transformation.communities.CommunityColors;
-import gtna.transformation.communities.CommunityDetectionDeltaQ;
-import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CDDeltaQ;
+import gtna.transformation.communities.CDLPA;
 import gtna.transformation.communities.GuimeraRolesTransformation;
 import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
@@ -228,8 +228,8 @@ public class Test {
 		int times = 5;
 		int nodes = 4000;
 
-		Transformation t_lpa = new CommunityDetectionLPA(50);
-		Transformation t_dq = new CommunityDetectionDeltaQ();
+		Transformation t_lpa = new CDLPA(50);
+		Transformation t_dq = new CDDeltaQ();
 		Transformation t_cc = new CommunityColors();
 		Transformation t_r = new GuimeraRolesTransformation();
 		Transformation t_r2 = new WsnRolesTransformation();

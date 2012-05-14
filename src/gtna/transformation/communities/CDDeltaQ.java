@@ -32,7 +32,7 @@ import java.util.HashMap;
  * @author Philipp Neubrand
  * 
  */
-public class CommunityDetectionDeltaQ extends Transformation {
+public class CDDeltaQ extends Transformation {
 	// storage for the trace of the algorithm
 	// stores which communities are merged in each step
 	// two arrays are used as storage for performance purposes
@@ -47,13 +47,13 @@ public class CommunityDetectionDeltaQ extends Transformation {
 	// use different matrices
 	private boolean forceSeparated;
 
-	private static final String key = "COMMUNITY_DETECTION_DELTAQ";
+	private static final String key = "CD_DELTAQ";
 
 	/**
 	 * Convenience Constructor, forwards to CommunityDetectionDeltaQ("long",
 	 * false, 0).
 	 */
-	public CommunityDetectionDeltaQ() {
+	public CDDeltaQ() {
 		this("long", false, 0);
 	}
 
@@ -70,7 +70,7 @@ public class CommunityDetectionDeltaQ extends Transformation {
 	 * @param maxIterations
 	 *            The maximum number of iterations.
 	 */
-	public CommunityDetectionDeltaQ(String internalFormat,
+	public CDDeltaQ(String internalFormat,
 			boolean forceSeparated, int maxIterations) {
 		super(key, new Parameter[] {
 				new StringParameter("INTERNALFORMAT", internalFormat),

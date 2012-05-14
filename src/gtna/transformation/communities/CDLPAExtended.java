@@ -14,15 +14,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-public class CommunityDetectionLPAExtended extends Transformation {
+public class CDLPAExtended extends Transformation {
 
-	public static final String key = "COMMUNITY_DETECTION_LPAEXTENDED";
+	public static final String key = "CD_LPAEXTENDED";
 	private double d;
 	private double m;
 	private NodeCharacteristic nc;
 	private EdgeWeight ew;
 
-	public CommunityDetectionLPAExtended(double d, double m, NodeCharacteristic nc, EdgeWeight ew) {
+	public CDLPAExtended(double d, double m, NodeCharacteristic nc, EdgeWeight ew) {
 		super(key, new Parameter[] {
 				new DoubleParameter("D", d),
 				new DoubleParameter("M", m),

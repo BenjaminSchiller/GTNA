@@ -52,7 +52,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class CommunityDetectionLPA extends Transformation {
+public class CDLPA extends Transformation {
 	private int iterationLimitFactor;
 
 	/**
@@ -67,8 +67,8 @@ public class CommunityDetectionLPA extends Transformation {
 	 *            The maximum number of iterations is determined by factor *
 	 *            nodes.
 	 */
-	public CommunityDetectionLPA(int limitFactor) {
-		super("COMMUNITY_DETECTION_LPA", new Parameter[] { new IntParameter(
+	public CDLPA(int limitFactor) {
+		super("CD_LPA", new Parameter[] { new IntParameter(
 				"LIMIT_FACTOR", limitFactor) });
 		this.iterationLimitFactor = limitFactor;
 	}

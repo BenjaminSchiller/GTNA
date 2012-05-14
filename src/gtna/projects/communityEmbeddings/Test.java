@@ -55,7 +55,7 @@ import gtna.plot.Data.Type;
 import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
-import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CDLPA;
 import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.transformation.connectors.UnitDiscGraph;
 import gtna.transformation.partition.LargestConnectedComponent;
@@ -80,7 +80,7 @@ public class Test {
 				new WsnRolesTransformation(1, 1, 2, true),
 				new UnitDiscGraph(1983) };
 		Transformation[] t2 = new Transformation[] {
-				new CommunityDetectionLPA(20),
+				new CDLPA(20),
 				new WsnRolesTransformation(1, 1, 2, true),
 				new UnitDiscGraph(1983) };
 
