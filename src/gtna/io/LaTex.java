@@ -45,10 +45,10 @@ import gtna.util.parameter.Parameter;
 
 import java.io.File;
 
-public class Latex {
+public class LaTex {
 	public static boolean writeTables(Series s, Metric[] metrics,
 			String folder, String filename) {
-		return Latex.writeTables(new Series[][] { new Series[] { s } },
+		return LaTex.writeTables(new Series[][] { new Series[] { s } },
 				metrics, folder, filename);
 	}
 
@@ -58,7 +58,7 @@ public class Latex {
 		for (int i = 0; i < s.length; i++) {
 			s_[i] = new Series[] { s[i] };
 		}
-		return Latex.writeTables(s_, metrics, folder, filename);
+		return LaTex.writeTables(s_, metrics, folder, filename);
 	}
 
 	public static boolean writeTables(Series[][] s, Metric[] metrics,
@@ -75,14 +75,14 @@ public class Latex {
 		/*
 		 * write latex file
 		 */
-		Latex.writeHeader(fw, title, author);
+		LaTex.writeHeader(fw, title, author);
 		for (Metric metric : metrics) {
 			fw.writeln("\\section{" + metric.getDescriptionLong() + "}");
 			for (String key : metric.getSingleKeys()) {
-				fw.writeln(Latex.getLaTeXTable(s, metric, key));
+				fw.writeln(LaTex.getLaTeXTable(s, metric, key));
 			}
 		}
-		Latex.writeFooter(fw);
+		LaTex.writeFooter(fw);
 
 		/*
 		 * generate file from latex
@@ -156,7 +156,7 @@ public class Latex {
 		}
 
 		double[][] entries = ArrayUtils.initDoubleArray(s.length,
-				Latex.getMaxLengthArray(s).length, Table.EMPTY_VALUE);
+				LaTex.getMaxLengthArray(s).length, Table.EMPTY_VALUE);
 		for (int i = 0; i < s.length; i++) {
 			for (int j = 0; j < s[i].length; j++) {
 				entries[i][j] = s[i][j].getSingle(metric, key).getValue();
@@ -194,13 +194,13 @@ public class Latex {
 	}
 
 	private static Parameter getDiffParameterX(Series[][] s) {
-		Parameter diff = Latex.getDiffParameter(Latex.getMaxLengthArray(s));
+		Parameter diff = LaTex.getDiffParameter(LaTex.getMaxLengthArray(s));
 		if (diff == null) {
 			return null;
 		}
 
 		for (Series[] s1 : s) {
-			Parameter diff2 = Latex.getDiffParameter(s1);
+			Parameter diff2 = LaTex.getDiffParameter(s1);
 			if (!diff.getKey().equals(diff2.getKey())) {
 				return null;
 			}

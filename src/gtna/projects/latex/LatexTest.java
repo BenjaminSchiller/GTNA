@@ -36,7 +36,7 @@
 package gtna.projects.latex;
 
 import gtna.data.Series;
-import gtna.io.Latex;
+import gtna.io.LaTex;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.networks.Network;
@@ -65,6 +65,6 @@ public class LatexTest {
 
 		Series[][] s = Series.generate(nw, metrics, 2);
 
-		Latex.writeTables(s, metrics, "./data/", "blafasel");
+		LaTex.writeTables(s, metrics, "./data/", "blafasel");
 	}
 }
