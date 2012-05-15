@@ -135,50 +135,67 @@ public abstract class Network extends ParameterList {
 	}
 
 	public Parameter getDiffParameter(ParameterList pl2) {
+		/*
+		 * differing network types
+		 */
 		if (!pl2.getKey().equals(this.key)) {
+			System.err.println("cannot compare networks of different types");
 			return null;
 		}
+
+		/*
+		 * parameters
+		 */
 		if (pl2.getParameters().length != this.parameters.length) {
+			System.err
+					.println("cannot compare networks with different number of parameters");
 			return null;
 		}
-		Network nw = (Network) pl2;
-		Parameter p1 = super.getDiffParameter(nw);
-		if (p1 != null) {
+
+		Network nw2 = (Network) pl2;
+		Parameter p1 = super.getDiffParameter(nw2);
+		if (p1 != null && !p1.getKey().equals("NODES")) {
 			return p1;
 		}
-		if (this.transformations.length != nw.getTransformations().length) {
-			System.err.println("cannot compare networks with different number of transformations");
+
+		/*
+		 * transformations
+		 */
+		if (this.transformations.length != nw2.getTransformations().length) {
+			System.err
+					.println("cannot compare networks with different number of transformations");
 			return null;
 		}
+
 		for (int i = 0; i < this.transformations.length; i++) {
-			Parameter p2 = this.transformations[i].getDiffParameter(nw
+			Parameter p2 = this.transformations[i].getDiffParameter(nw2
 					.getTransformations()[i]);
 			if (p2 != null) {
 				return p2;
 			}
 		}
-		return null;
+
+		// return differing parameter NODES or null
+		return p1;
 	}
 
 	public String getDiffParameterNameXY(ParameterList pl2, String xy) {
-		if (!pl2.getKey().equals(this.key)) {
+		Parameter p = this.getDiffParameter(pl2);
+		if (p == null) {
 			return null;
 		}
-		if (pl2.getParameters().length != this.parameters.length) {
-			return null;
+		String name = this.getParameterNameXY(p, xy);
+		if(name != null){
+			return name;
 		}
-		Network nw = (Network) pl2;
-		Parameter p1 = super.getDiffParameter(nw);
-		if (p1 != null) {
-			return this.getParameterNameXY(p1, xy);
-		}
-		for (int i = 0; i < this.transformations.length; i++) {
-			Parameter p2 = this.transformations[i].getDiffParameter(nw
-					.getTransformations()[i]);
-			if (p2 != null) {
-				return this.transformations[i].getParameterNameXY(p2, xy);
+		
+		for(Transformation t : this.transformations){
+			name = t.getParameterNameXY(p, xy);
+			if(name != null){
+				return name;
 			}
 		}
+		
 		return null;
 	}
 }

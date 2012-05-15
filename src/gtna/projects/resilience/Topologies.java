@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * StorageList.java
+ * Topologies.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,48 +33,42 @@
  * ---------------------------------------
  *
  */
-package gtna.id.storage;
+package gtna.projects.resilience;
 
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
-
-import java.util.ArrayList;
+import gtna.io.graphWriter.GtnaGraphWriter;
+import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
+import gtna.networks.model.randomGraphs.PowerLawRandomGraph;
 
 /**
  * @author benni
  * 
  */
-public class StorageList implements GraphProperty {
-	private Storage[] storageList;
+public class Topologies {
 
-	public StorageList(Storage[] storage) {
-		this.storageList = storage;
-	}
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		double d_avg = 4.3;
+		// caida: 12k - 20k
 
-	public StorageList(ArrayList<Storage> list) {
-		this.storageList = new Storage[list.size()];
-		for (int i = 0; i < list.size(); i++) {
-			this.storageList[i] = list.get(i);
+		int[] nodes = new int[] { 500, 1000, 2000, 4000, 6000, 8000, 10000,
+				12000, 14000, 16000, 18000, 20000 };
+		for (int node : nodes) {
+			Network er1 = new ErdosRenyi(node, d_avg, true, null);
+			Network er2 = new ErdosRenyi(node, d_avg, false, null);
+			Network pl1 = new PowerLawRandomGraph(node, 2.3, 1,
+					Integer.MAX_VALUE, false, null);
+			Network pl2 = new PowerLawRandomGraph(node, 2.3, 1,
+					Integer.MAX_VALUE, true, null);
+			Network[] nw = new Network[] { er1, er2, pl1, pl2 };
+			for (Network network : nw) {
+				Graph g = network.generate();
+				(new GtnaGraphWriter()).write(g,
+						"temp/_networks/" + network.getFolderName() + ".gtna");
+			}
 		}
-	}
-
-	public Storage[] getStorageList() {
-		return this.storageList;
-	}
-
-	public Storage get(int index) {
-		return this.storageList[index];
-	}
-
-	@Override
-	public boolean write(String filename, String key) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void read(String filename, Graph graph) {
-		// TODO Auto-generated method stub
-
 	}
 }

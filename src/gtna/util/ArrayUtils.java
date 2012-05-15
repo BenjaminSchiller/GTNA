@@ -146,6 +146,25 @@ public class ArrayUtils {
 		return array;
 	}
 
+	public static double[] initDoubleArray(int length, double value) {
+		double[] array = new double[length];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = value;
+		}
+		return array;
+	}
+
+	public static double[][] initDoubleArray(int yLength, int xLength,
+			double value) {
+		double[][] array = new double[yLength][xLength];
+		for (int i = 0; i < array.length; i++) {
+			for (int j = 0; j < array[i].length; j++) {
+				array[i][j] = value;
+			}
+		}
+		return array;
+	}
+
 	public static int getMaxInt(int[] array) {
 		int max = Integer.MIN_VALUE;
 		for (int v : array) {

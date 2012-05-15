@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Greedy.java
+ * RandomWalk.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,14 +33,13 @@
  * ---------------------------------------
  *
  */
-package gtna.routing.greedy;
+package gtna.routing.random;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.DIdentifier;
-import gtna.id.DIdentifierSpace;
-import gtna.id.DPartition;
 import gtna.id.Identifier;
+import gtna.id.IdentifierSpace;
+import gtna.id.Partition;
 import gtna.id.data.DataStorageList;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
@@ -49,97 +48,79 @@ import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 /**
  * @author benni
  * 
  */
-public class GreedyBacktracking extends RoutingAlgorithm {
-	private DIdentifierSpace idSpace;
-
-	private DPartition[] p;
-
-	private DataStorageList dsl;
+@SuppressWarnings({ "rawtypes", "unchecked" })
+public class RandomWalk extends RoutingAlgorithm {
 
 	private int ttl;
 
-	public GreedyBacktracking() {
-		super("GREEDY_BACKTRACKING");
-		this.ttl = Integer.MAX_VALUE;
-	}
+	private IdentifierSpace ids;
 
-	public GreedyBacktracking(int ttl) {
-		super("GREEDY_BACKTRACKING", new Parameter[] { new IntParameter("TTL",
-				ttl) });
+	private Partition[] p;
+
+	private DataStorageList dsl;
+
+	public RandomWalk(int ttl) {
+		super("RANDOM_WALK", new Parameter[] { new IntParameter("TTL", ttl) });
 		this.ttl = ttl;
 	}
 
 	@Override
 	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
-		DIdentifier target = (DIdentifier) this.idSpace.randomID(rand);
+		Identifier target = (Identifier) this.ids.randomID(rand);
 		while (this.p[start].contains(target)) {
-			target = (DIdentifier) this.idSpace.randomID(rand);
+			target = (Identifier) this.ids.randomID(rand);
 		}
-		return this.route(new ArrayList<Integer>(), start, target, rand,
-				graph.getNodes(), new HashMap<Integer, Integer>());
+		return this.routeToTarget(graph, start, target, rand);
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public Route routeToTarget(Graph graph, int start, Identifier target,
 			Random rand) {
-		return this.route(new ArrayList<Integer>(), start,
-				(DIdentifier) target, rand, graph.getNodes(),
-				new HashMap<Integer, Integer>());
+		return this.route(new ArrayList<Integer>(), start, target, rand,
+				graph.getNodes());
 	}
 
 	private Route route(ArrayList<Integer> route, int current,
-			DIdentifier target, Random rand, Node[] nodes,
-			HashMap<Integer, Integer> from) {
+			Identifier target, Random rand, Node[] nodes) {
 		route.add(current);
-		if (this.idSpace.getPartitions()[current].contains(target)) {
+		if (route.size() > 1 && this.p[current].contains(target)) {
 			return new RouteImpl(route, true);
 		}
-		if (this.dsl != null
+		if (route.size() > 1 && this.dsl != null
 				&& this.dsl.getStorageForNode(current).containsId(target)) {
 			return new RouteImpl(route, true);
 		}
-		if (route.size() > ttl) {
+		if (route.size() > this.ttl) {
 			return new RouteImpl(route, false);
 		}
-		double currentDist = this.idSpace.getPartitions()[current]
-				.distance(target);
-		double minDist = this.idSpace.getMaxDistance();
-		int minNode = -1;
-		for (int out : nodes[current].getOutgoingEdges()) {
-			double dist = this.p[out].distance(target);
-			if (dist < minDist && dist < currentDist && !from.containsKey(out)) {
-				minDist = dist;
-				minNode = out;
-			}
-		}
-		if (minNode == -1 && from.containsKey(current)) {
-			return this.route(route, from.get(current), target, rand, nodes,
-					from);
-		} else if (minNode == -1) {
+
+		if (nodes[current].getOutDegree() == 0) {
 			return new RouteImpl(route, false);
 		}
-		from.put(minNode, current);
-		return this.route(route, minNode, target, rand, nodes, from);
+
+		int nextIndex = rand.nextInt(nodes[current].getOutDegree());
+		int nextHop = nodes[current].getOutgoingEdges()[nextIndex];
+
+		return this.route(route, nextHop, target, rand, nodes);
+
 	}
 
 	@Override
 	public boolean applicable(Graph graph) {
 		return graph.hasProperty("ID_SPACE_0")
-				&& graph.getProperty("ID_SPACE_0") instanceof DIdentifierSpace;
+				&& graph.getProperty("ID_SPACE_0") instanceof IdentifierSpace;
 	}
 
 	@Override
 	public void preprocess(Graph graph) {
-		this.idSpace = (DIdentifierSpace) graph.getProperty("ID_SPACE_0");
-		this.p = (DPartition[]) idSpace.getPartitions();
+		this.ids = (IdentifierSpace) graph.getProperty("ID_SPACE_0");
+		this.p = this.ids.getPartitions();
 		if (graph.hasProperty("DATA_STORAGE_0")) {
 			this.dsl = (DataStorageList) graph.getProperty("DATA_STORAGE_0");
 		}

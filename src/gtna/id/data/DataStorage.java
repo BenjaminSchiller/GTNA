@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Storage.java
+ * DataStorage.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,11 +33,13 @@
  * ---------------------------------------
  *
  */
-package gtna.id.storage;
+package gtna.id.data;
 
 import gtna.id.Identifier;
 
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -45,18 +47,43 @@ import java.util.Set;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class Storage {
-	private Set<Identifier> keys;
+public class DataStorage {
+	private Map<Identifier, DataItem> storage;
 
-	public Storage() {
-		this.keys = new HashSet<Identifier>();
+	public DataStorage() {
+		this.storage = new HashMap<Identifier, DataItem>();
 	}
 
-	public boolean contains(Identifier id) {
-		return this.keys.contains(id);
+	public DataStorage(Identifier id) {
+		this();
+		this.storage.put(id, new DataItem(id));
 	}
-	
-	public void add(Identifier id){
-		this.keys.add(id);
+
+	public void add(Identifier id, DataItem data) {
+		this.storage.put(id, data);
+	}
+
+	public void add(Identifier id) {
+		this.add(id, new DataItem(id));
+	}
+
+	public void remove(Identifier id) {
+		this.storage.remove(id);
+	}
+
+	public boolean containsId(Identifier id) {
+		return this.storage.containsKey(id);
+	}
+
+	public int size() {
+		return this.storage.size();
+	}
+
+	public Set<Identifier> getIdentifiers() {
+		return this.storage.keySet();
+	}
+
+	public Collection<DataItem> getDataItems() {
+		return this.storage.values();
 	}
 }

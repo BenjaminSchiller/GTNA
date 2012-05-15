@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Greedy.java
+ * MultiPhaseRouting.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,115 +33,130 @@
  * ---------------------------------------
  *
  */
-package gtna.routing.greedy;
+package gtna.routing.multiPhase;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.DIdentifier;
-import gtna.id.DIdentifierSpace;
-import gtna.id.DPartition;
 import gtna.id.Identifier;
+import gtna.id.IdentifierSpace;
+import gtna.id.Partition;
 import gtna.id.data.DataStorageList;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 /**
  * @author benni
  * 
  */
-public class GreedyBacktracking extends RoutingAlgorithm {
-	private DIdentifierSpace idSpace;
+@SuppressWarnings({ "rawtypes", "unchecked" })
+public class MultiPhaseRouting extends RoutingAlgorithm {
 
-	private DPartition[] p;
+	private int retries;
+
+	private RoutingAlgorithm[] phases;
+
+	private IdentifierSpace ids;
+
+	private Partition[] p;
 
 	private DataStorageList dsl;
 
-	private int ttl;
-
-	public GreedyBacktracking() {
-		super("GREEDY_BACKTRACKING");
-		this.ttl = Integer.MAX_VALUE;
+	public MultiPhaseRouting(RoutingAlgorithm[] phases) {
+		super("MULTI_PHASE_ROUTING", new Parameter[] { new StringParameter(
+				"PHASES", RoutingAlgorithm.toString(phases)) });
+		this.retries = 1;
+		this.phases = phases;
 	}
 
-	public GreedyBacktracking(int ttl) {
-		super("GREEDY_BACKTRACKING", new Parameter[] { new IntParameter("TTL",
-				ttl) });
-		this.ttl = ttl;
+	public MultiPhaseRouting(int retries, RoutingAlgorithm[] phases) {
+		super("MULTI_PHASE_ROUTING",
+				new Parameter[] {
+						new IntParameter("RETRIES", retries),
+						new StringParameter("PHASES",
+								RoutingAlgorithm.toString(phases)) });
+		this.retries = retries;
+		this.phases = phases;
 	}
 
 	@Override
 	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
-		DIdentifier target = (DIdentifier) this.idSpace.randomID(rand);
+		Identifier target = (Identifier) this.ids.randomID(rand);
 		while (this.p[start].contains(target)) {
-			target = (DIdentifier) this.idSpace.randomID(rand);
+			target = (Identifier) this.ids.randomID(rand);
 		}
-		return this.route(new ArrayList<Integer>(), start, target, rand,
-				graph.getNodes(), new HashMap<Integer, Integer>());
+		return this.routeToTarget(graph, start, target, rand);
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public Route routeToTarget(Graph graph, int start, Identifier target,
 			Random rand) {
-		return this.route(new ArrayList<Integer>(), start,
-				(DIdentifier) target, rand, graph.getNodes(),
-				new HashMap<Integer, Integer>());
+		return this.route(graph, start, target, rand, graph.getNodes());
 	}
 
-	private Route route(ArrayList<Integer> route, int current,
-			DIdentifier target, Random rand, Node[] nodes,
-			HashMap<Integer, Integer> from) {
-		route.add(current);
-		if (this.idSpace.getPartitions()[current].contains(target)) {
+	private Route route(Graph g, int start, Identifier target, Random rand,
+			Node[] nodes) {
+		ArrayList<Integer> route = new ArrayList<Integer>();
+		route.add(start);
+
+		if (this.p[start].contains(target)) {
 			return new RouteImpl(route, true);
 		}
 		if (this.dsl != null
-				&& this.dsl.getStorageForNode(current).containsId(target)) {
+				&& this.dsl.getStorageForNode(start).containsId(target)) {
 			return new RouteImpl(route, true);
 		}
-		if (route.size() > ttl) {
-			return new RouteImpl(route, false);
-		}
-		double currentDist = this.idSpace.getPartitions()[current]
-				.distance(target);
-		double minDist = this.idSpace.getMaxDistance();
-		int minNode = -1;
-		for (int out : nodes[current].getOutgoingEdges()) {
-			double dist = this.p[out].distance(target);
-			if (dist < minDist && dist < currentDist && !from.containsKey(out)) {
-				minDist = dist;
-				minNode = out;
+
+		route.add(start);
+
+		for (int run = 0; run < this.retries; run++) {
+
+			int current = start;
+			for (RoutingAlgorithm phase : this.phases) {
+				Route r = phase.routeToTarget(g, current, target, rand);
+
+				for (int i = 1; i < r.getRoute().length; i++) {
+					route.add(r.getRoute()[i]);
+				}
+
+				if (r.isSuccessful()) {
+					return new RouteImpl(route, true);
+				}
 			}
+
 		}
-		if (minNode == -1 && from.containsKey(current)) {
-			return this.route(route, from.get(current), target, rand, nodes,
-					from);
-		} else if (minNode == -1) {
-			return new RouteImpl(route, false);
-		}
-		from.put(minNode, current);
-		return this.route(route, minNode, target, rand, nodes, from);
+
+		return new RouteImpl(route, false);
 	}
 
 	@Override
 	public boolean applicable(Graph graph) {
-		return graph.hasProperty("ID_SPACE_0")
-				&& graph.getProperty("ID_SPACE_0") instanceof DIdentifierSpace;
+		if (!graph.hasProperty("ID_SPACE_0")) {
+			return false;
+		}
+		for (RoutingAlgorithm phase : this.phases) {
+			if (!phase.applicable(graph)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
 	public void preprocess(Graph graph) {
-		this.idSpace = (DIdentifierSpace) graph.getProperty("ID_SPACE_0");
-		this.p = (DPartition[]) idSpace.getPartitions();
+		this.ids = (IdentifierSpace) graph.getProperty("ID_SPACE_0");
+		this.p = this.ids.getPartitions();
 		if (graph.hasProperty("DATA_STORAGE_0")) {
 			this.dsl = (DataStorageList) graph.getProperty("DATA_STORAGE_0");
+		}
+		for (RoutingAlgorithm phase : this.phases) {
+			phase.preprocess(graph);
 		}
 	}
 

@@ -44,6 +44,8 @@ import gtna.id.BIPartition;
 import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
 import gtna.id.DPartition;
+import gtna.id.Identifier;
+import gtna.id.data.DataStorageList;
 import gtna.routing.Route;
 import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
@@ -68,6 +70,8 @@ public abstract class GreedyTemplate extends RoutingAlgorithm {
 	BIIdentifierSpace idSpaceBI;
 
 	BIPartition[] pBI;
+
+	private DataStorageList dsl;
 
 	private int ttl;
 
@@ -106,6 +110,22 @@ public abstract class GreedyTemplate extends RoutingAlgorithm {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Route routeToTarget(Graph graph, int start, Identifier target,
+			Random rand) {
+		this.setSets(graph.getNodes().length);
+		if (this.idSpaceBI != null) {
+			return this.routeBI(new ArrayList<Integer>(), start,
+					(BIIdentifier) target, rand, graph.getNodes());
+		} else if (this.idSpaceD != null) {
+			return this.routeD(new ArrayList<Integer>(), start,
+					(DIdentifier) target, rand, graph.getNodes());
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * the route request
 	 * 
@@ -138,6 +158,10 @@ public abstract class GreedyTemplate extends RoutingAlgorithm {
 			BIIdentifier target, Random rand, Node[] nodes) {
 		route.add(current);
 		if (this.idSpaceBI.getPartitions()[current].contains(target)) {
+			return new RouteImpl(route, true);
+		}
+		if (this.dsl != null
+				&& this.dsl.getStorageForNode(current).containsId(target)) {
 			return new RouteImpl(route, true);
 		}
 		if (route.size() > this.ttl) {
@@ -184,6 +208,10 @@ public abstract class GreedyTemplate extends RoutingAlgorithm {
 		if (this.idSpaceD.getPartitions()[current].contains(target)) {
 			return new RouteImpl(route, true);
 		}
+		if (this.dsl != null
+				&& this.dsl.getStorageForNode(current).containsId(target)) {
+			return new RouteImpl(route, true);
+		}
 		if (route.size() > this.ttl) {
 			return new RouteImpl(route, false);
 		}
@@ -219,6 +247,9 @@ public abstract class GreedyTemplate extends RoutingAlgorithm {
 			this.pD = null;
 			this.idSpaceBI = null;
 			this.pBI = null;
+		}
+		if (graph.hasProperty("DATA_STORAGE_0")) {
+			this.dsl = (DataStorageList) graph.getProperty("DATA_STORAGE_0");
 		}
 	}
 
