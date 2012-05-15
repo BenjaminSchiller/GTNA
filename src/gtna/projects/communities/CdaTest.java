@@ -37,7 +37,6 @@ package gtna.projects.communities;
 
 import gtna.data.Series;
 import gtna.metrics.Metric;
-import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.communities.Communities;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
@@ -45,8 +44,8 @@ import gtna.networks.model.randomGraphs.PowerLawRandomGraph;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
-import gtna.transformation.communities.CommunityDetectionFastUnfolding;
-import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CDFastUnfolding;
+import gtna.transformation.communities.CDLPA;
 import gtna.util.Config;
 import gtna.util.Stats;
 
@@ -65,13 +64,12 @@ public class CdaTest {
 		Metric c = new Communities();
 		Metric[] metrics = new Metric[] { c };
 
-		Transformation[] t1 = new Transformation[] { new CommunityDetectionLPA(
-				50) };
-		Transformation[] t2 = new Transformation[] { new CommunityDetectionFastUnfolding() };
+		Transformation[] t1 = new Transformation[] { new CDLPA(50) };
+		Transformation[] t2 = new Transformation[] { new CDFastUnfolding() };
 
 		Transformation[][] t = new Transformation[][] { t1, t2 };
 
-		int[] nodes = new int[] { 500, 600, 700, 800 };			
+		int[] nodes = new int[] { 500, 600, 700, 800 };
 
 		Network[][] nw = new Network[t.length * 2][nodes.length];
 		int index = 0;
