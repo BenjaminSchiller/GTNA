@@ -36,6 +36,7 @@
 package gtna.projects.resilienceMeasures;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
@@ -54,11 +55,10 @@ import gtna.graph.sorting.CentralityNodeSorter.CentralityMode;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.RandomNodeSorter;
 import gtna.graph.sorting.algorithms.ResilienceMetrics;
-import gtna.io.GraphWriter;
 import gtna.metrics.BiconnectedComponent;
-import gtna.metrics.DegreeDistribution;
 import gtna.metrics.EffectiveDiameter;
 import gtna.metrics.Metric;
+import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.fragmentation.Fragmentation.Resolution;
 import gtna.metrics.fragmentation.StrongFragmentation;
 import gtna.metrics.fragmentation.WeakFragmentation;
@@ -84,7 +84,7 @@ public class Tests {
 		 * GraphWriter.write(g, "Erdos.gtna");
 		 */
 
-		Tests.read();
+		Tests.effectiveDiameter();
 	}
 
 	public static void test() {
@@ -368,10 +368,10 @@ public class Tests {
 
 		// Network nw = new ReadableFile("ERDOS", "", "Erdos.gtna", null);
 
-		Network nw = new ErdosRenyi(1000, 6, true, null);
+		Network nw = new ErdosRenyi(100, 6, true, null);
 		Network[] networks = new Network[] { nw };
 
-		Metric m = new EffectiveDiameter(128, 7, new RandomNodeSorter());
+		Metric m = new EffectiveDiameter(128, 7, new RandomNodeSorter(), true);
 		Metric[] metrics = new Metric[] { m };
 		Series[] s = Series.generate(networks, metrics, 1);
 		Plotting.multi(s, metrics, "EFFECTIVE_DIAMETER/");
@@ -382,7 +382,7 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		Network nw = new ReadableFile("ERDOS", "ERDOS", "Erdos.gtna", null);
+		Network nw = new ReadableFile("ERDOS", "TEST", "Erdos.gtna", null);
 
 		Network[] networks = new Network[] { nw };
 
@@ -390,6 +390,45 @@ public class Tests {
 		Metric[] metrics = new Metric[] { m };
 		Series[] s = Series.generate(networks, metrics, 1);
 		Plotting.multi(s, metrics, "EFFECTIVE_DIAMETER/");
+	}
+
+	public static void getB() {
+		boolean[] bools = new boolean[] { false, true, false, false, true,
+				false, false, true, false };
+		int length = 3;
+		// TODO: lowest order zero bit? left or right???
+		ArrayList<boolean[]> temp = Tests.extract(bools, length);
+		int myK = temp.size();
+		int sumB = 0;
+		for (boolean[] bool : temp) {
+			sumB += Tests.getLowestOrderZeroBit(bool);
+		}
+		System.out.println("" + ((double) sumB) / myK);
+	}
+
+	private static ArrayList<boolean[]> extract(boolean[] bools, int length) {
+		ArrayList<boolean[]> result = new ArrayList<boolean[]>();
+		int index = 0;
+		while (index + length <= bools.length) {
+			boolean[] temp = new boolean[length];
+			for (int i = 0; i < length; i++) {
+				temp[i] = bools[index + i];
+			}
+			index += length;
+			result.add(temp);
+		}
+		return result;
+	}
+
+	private static int getLowestOrderZeroBit(boolean[] bool) {
+		int result = 0;
+		while (bool[bool.length - 1 - result]) {
+			result++;
+			if (result == bool.length) {
+				break;
+			}
+		}
+		return result;
 	}
 
 }

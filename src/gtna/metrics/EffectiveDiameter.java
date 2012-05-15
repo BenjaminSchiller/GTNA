@@ -36,7 +36,6 @@
 package gtna.metrics;
 
 import gtna.data.Single;
-import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.partition.Partition;
@@ -45,6 +44,7 @@ import gtna.io.DataWriter;
 import gtna.networks.Network;
 import gtna.transformation.partition.WeakConnectivityPartition;
 import gtna.util.Timer;
+import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
@@ -70,6 +70,7 @@ public class EffectiveDiameter extends Metric {
 	private double[] effectiveDiameters;
 	private Timer runtime;
 	private NodeSorter sorter;
+	private boolean approximate;
 
 	private boolean isBroken;
 
@@ -77,13 +78,16 @@ public class EffectiveDiameter extends Metric {
 	 * @param key
 	 * @param parameters
 	 */
-	public EffectiveDiameter(int k, int r, NodeSorter sorter) {
+	public EffectiveDiameter(int k, int r, NodeSorter sorter,
+			boolean approximate) {
 		super("EFFECTIVE_DIAMETER", new Parameter[] { new IntParameter("K", k),
 				new IntParameter("R", r),
-				new StringParameter("SORTER", sorter.getKey()) });
+				new StringParameter("SORTER", sorter.getKey()),
+				new BooleanParameter("APPROXIMATE", approximate) });
 		this.k = k;
 		this.r = r;
 		this.sorter = sorter;
+		this.approximate = approximate;
 	}
 
 	/*
@@ -102,12 +106,21 @@ public class EffectiveDiameter extends Metric {
 
 		this.isBroken = false;
 		for (int i = 0; i < sorted.length; i++) {
-			// TODO:
 			if (this.isBroken) {
 				this.effectiveDiameters[i] = this.effectiveDiameters[i - 1];
 				continue;
 			}
-			myCalculate(g);
+
+			if (this.stop) {
+				this.effectiveDiameter = 0;
+			} else {
+				if (this.approximate) {
+					this.approxmiateCalculate(g);
+				} else {
+					calculate(g);
+				}
+			}
+
 			this.effectiveDiameters[i] = this.effectiveDiameter;
 			// remove node
 			Node node = sorted[i];
@@ -128,10 +141,12 @@ public class EffectiveDiameter extends Metric {
 		this.runtime.end();
 	}
 
-	public void calculate(Graph g) {
-		HashMap<String, boolean[]> M = new HashMap<String, boolean[]>();
+	public void approxmiateCalculate(Graph g) {
 		int n = g.getNodes().length;
 		int length = (int) (Math.log(n) / Math.log(2) + this.r);
+
+		boolean[][] M0 = new boolean[n][length];
+		boolean[][] M1 = new boolean[n][length];
 		for (Node u : g.getNodes()) {
 			ArrayList<boolean[]> concat = new ArrayList<boolean[]>();
 			for (int i = 0; i < this.k; i++) {
@@ -139,43 +154,44 @@ public class EffectiveDiameter extends Metric {
 				concat.add(this.generateBitmask(length));
 			}
 
-			M.put(this.toKey(u, 0), this.concat(concat));
+			M0[u.getIndex()] = this.concat(concat);
 		}
 
 		System.out.println("Initialized");
 
 		int it = 1;
 		int numOfConnectedPairs = this.numOfConnectedPair(g);
+		System.out.println("Total Pairs = " + numOfConnectedPairs);
 		while (it < g.getNodes().length) {
-			System.out.println("it = " + it);
+			// System.out.println("it = " + it);
 			for (Node u : g.getNodes()) {
-				M.put(this.toKey(u, it), M.get(this.toKey(u, it - 1)));
+				M1[u.getIndex()] = M0[u.getIndex()];
 			}
 
-			for (Edge e : g.getEdges().getEdges()) {
-				int src = e.getSrc();
-				int dst = e.getDst();
-				// TODO: directed???
-				Node u = g.getNode(src);
-				Node v = g.getNode(dst);
-				M.put(this.toKey(u, it),
-						this.myOR(M.get(this.toKey(u, it)),
-								M.get(this.toKey(v, it - 1))));
+			for (Node u : g.getNodes()) {
+				for (int index : u.getOutgoingEdges()) {
+					Node v = g.getNode(index);
+					M1[u.getIndex()] = this.myOR(M1[u.getIndex()],
+							M0[v.getIndex()]);
+				}
 			}
 
 			// estimation
 			double sum = 0;
 			for (Node u : g.getNodes()) {
-				double b = this.getB(M.get(this.toKey(u, it)), length);
+				double b = this.getB(M1[u.getIndex()], length);
+				// System.out.println("" + b);
 				double bias = 1.0 + 0.31 / this.k;
 				sum += Math.pow(2, b) / (0.7731 * bias);
 			}
 
-			if (sum >= 0.9 * numOfConnectedPairs) {
+			if (sum / 2 >= 0.9 * numOfConnectedPairs) {
 				this.effectiveDiameter = it;
+				System.out.println("Estimated");
 				return;
 			}
 			it++;
+			M0 = M1;
 		}
 
 		System.out.println("Cannot estimated!");
@@ -218,33 +234,23 @@ public class EffectiveDiameter extends Metric {
 	}
 
 	private Random generateRand = new Random();
-	private double lambda = 1;
 
 	private boolean[] generateBitmask(int length) {
 		boolean[] result = new boolean[length];
-		double[] probs = new double[length];
-		double probSum = 0;
-		for (int i = 0; i < length; i++) {
-			probs[i] = lambda * Math.exp(-lambda * i);
-			probSum += probs[i];
-		}
+
 		double r = generateRand.nextDouble();
-		double threshold = r * probSum;
-		int index = 0;
-		double sum = 0;
-		for (int i = 0; i < length; i++) {
-			sum += probs[i];
-			if (sum >= threshold) {
-				index = i;
-				break;
-			}
+
+		int index = (int) Math.ceil(length
+				- Math.log((1 - r) * Math.pow(2, length) + r) / Math.log(2)) - 1;
+		if (index >= length) {
+			System.out.println("index=" + index + " -- length=" + length);
+			System.exit(0);
 		}
 
 		for (int i = 0; i < length; i++) {
 			result[i] = false;
 		}
 
-		// TODO: from left to right or inverse?
 		result[index] = true;
 
 		return result;
@@ -280,8 +286,8 @@ public class EffectiveDiameter extends Metric {
 	}
 
 	private double getB(boolean[] bools, int length) {
-		// TODO: lowest order zero bit? left or right???
 		ArrayList<boolean[]> temp = this.extract(bools, length);
+
 		int myK = temp.size();
 		if (myK != this.k) {
 			System.out.println("uncorrect k!!!");
@@ -309,7 +315,7 @@ public class EffectiveDiameter extends Metric {
 
 	private int getLowestOrderZeroBit(boolean[] bool) {
 		int result = 0;
-		while (bool[bool.length - 1 - result]) {
+		while (bool[result]) {
 			result++;
 			if (result == bool.length) {
 				break;
@@ -318,12 +324,9 @@ public class EffectiveDiameter extends Metric {
 		return result;
 	}
 
+	private boolean stop = false;
+
 	private int numOfConnectedPair(Graph g) {
-		/*
-		 * WeakConnectivityPartition wp = new WeakConnectivityPartition(); g =
-		 * wp.transform(g); Partition p = (Partition) g
-		 * .getProperty("WEAK_CONNECTIVITY_PARTITION_0");
-		 */
 		Partition p = WeakConnectivityPartition.getWeakPartition(g,
 				new boolean[g.getNodes().length]);
 		int[][] components = p.getComponents();
@@ -331,18 +334,16 @@ public class EffectiveDiameter extends Metric {
 		int sumOfConnectedPairs = 0;
 		for (int i = 0; i < numOfComp; i++) {
 			int size = components[i].length;
-			// TODO: directed???
-			sumOfConnectedPairs += size * (size - 1);
+			sumOfConnectedPairs += size * (size - 1) / 2;
+		}
+		if (sumOfConnectedPairs == 0) {
+			stop = true;
 		}
 		return sumOfConnectedPairs;
 	}
 
-	private String toKey(Node u, int n) {
-		return "" + u.getIndex() + " " + n;
-	}
-
 	// Test
-	private void myCalculate(Graph g) {
+	private void calculate(Graph g) {
 		int totalPairs = this.numOfConnectedPair(g);
 
 		Node[] nodes = g.getNodes();
@@ -371,9 +372,9 @@ public class EffectiveDiameter extends Metric {
 				outside.put(n, newOut);
 				numOfPairs += neighbors.get(n).size() - 1;
 			}
-			if (numOfPairs >= 0.9 * totalPairs) {
+			if (numOfPairs / 2 >= 0.9 * totalPairs) {
 				this.effectiveDiameter = i;
-				System.out.println("" + i);
+				System.out.println("Found: " + i);
 				return;
 			}
 		}
