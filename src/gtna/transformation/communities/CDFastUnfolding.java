@@ -35,9 +35,7 @@
  */
 package gtna.transformation.communities;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import gtna.graph.Edge;
 import gtna.graph.EdgeWeights;
@@ -51,13 +49,13 @@ import gtna.transformation.Transformation;
  * @author Flipp
  * 
  */
-public class CommunityDetectionFastUnfolding extends Transformation{
+public class CDFastUnfolding extends Transformation{
 
 	/**
 	 * @param key
 	 */
-	public CommunityDetectionFastUnfolding() {
-		super("COMMUNITY_DETECTION_FAST_UNFOLDING");
+	public CDFastUnfolding() {
+		super("CD_FAST_UNFOLDING");
 	}
 
 	private double edges;
@@ -90,11 +88,11 @@ public class CommunityDetectionFastUnfolding extends Transformation{
 		CommunityList coms = new CommunityList();
 		EdgeWeights ews = (EdgeWeights) g.getProperty("ew");
 		NodeWeights nws = (NodeWeights) g.getProperty("nw");
-		int nodes = g.getNodes().length;
 		Community temp;
-		for (int i = 0; i < nodes; i++) {
-			temp = new Community(i, g, coms, nws, ews);
-			temp.setNode(g.getNode(i));
+		Node[] nodes = g.getNodes();
+		for (Node akt : nodes) {
+			temp = new Community(akt.getIndex(), g, coms, nws, ews);
+			temp.setNode(akt);
 			coms.add(temp);
 
 		}
@@ -109,17 +107,19 @@ public class CommunityDetectionFastUnfolding extends Transformation{
 		while (!finished) {
 
 			finished = true;
-			for (int i = 0; i < nodes; i++) {
-				mv = getBestMove(i, coms, g, ews);
+			for (Node akt : g.getNodes()) {
+				mv = getBestMove(akt, coms, g, ews);
 				if (mv.getModDelta() > 0) {
 
-					tempC = coms.getCommunityByNode(i);
-					tempC.removeNode(i);
+					tempC = coms.getCommunityByNode(akt);
+					tempC.removeNode(akt);
 					if(tempC.getNodes().length == 0)
 						coms.removeCom(tempC);
-					coms.getCommunityByID(mv.getNewCom()).addNode(g.getNode(i));
 					
-					System.out.println("Moving #"+i+":" + tempC.getIndex()+"->" +mv.getNewCom()+"("+mv.getModDelta()+")###" + coms.getCommunityByNode(i).getIndex());
+					System.out.println("Moving #"+akt.getIndex()+":" + tempC.getIndex()+"->" +mv.getNewCom()+"("+mv.getModDelta()+")");
+					coms.getCommunityByID(mv.getNewCom()).addNode(akt);
+					
+					
 					changed = true;
 					finished = false;
 				}
@@ -144,8 +144,8 @@ public class CommunityDetectionFastUnfolding extends Transformation{
 		
 		int[][] edgetemp = new int[distinct][distinct];
 		for (Edge akt : g.getEdges().getEdges()) {
-			edgetemp[coms.getCommunityByNode(akt.getSrc()).getIndex()][coms
-					.getCommunityByNode(akt.getDst()).getIndex()] += (ew == null) ? 1 : ew
+			edgetemp[coms.getCommunityByNode(g.getNode(akt.getSrc())).getIndex()][coms
+					.getCommunityByNode(g.getNode(akt.getDst())).getIndex()] += (ew == null) ? 1 : ew
 					.getWeight(akt);
 		}
 		
@@ -188,32 +188,33 @@ public class CommunityDetectionFastUnfolding extends Transformation{
 	}
 
 	/**
-	 * @param i
+	 * @param aktNode
 	 * @param coms
 	 * @param g
 	 * @param nws
 	 * @return
 	 */
-	private MoveValue getBestMove(int i, CommunityList coms, Graph g,
+	private MoveValue getBestMove(Node aktNode, CommunityList coms, Graph g,
 			EdgeWeights ew) {
-		Community ownc = coms.getCommunityByNode(i);
+		Community ownc = coms.getCommunityByNode(aktNode);
 		Community c;
 		double v1;
+		int index = aktNode.getIndex();
 		MoveValue ret = new MoveValue();
 		ret.setOldCom(ownc.getIndex());
 		ret.setModDelta(-Double.MAX_VALUE);
 
-		for (Edge akt : g.getNode(i).getEdges()) {
-			if (akt.getSrc() == i)
-				c = coms.getCommunityByNode(akt.getDst());
+		for (Edge akt : aktNode.getEdges()) {
+			if (akt.getSrc() == index)
+				c = coms.getCommunityByNode(g.getNode(akt.getDst()));
 			else
-				c = coms.getCommunityByNode(akt.getSrc());
+				c = coms.getCommunityByNode(g.getNode(akt.getSrc()));
 			if(c.getIndex() == ownc.getIndex())
 				continue;
 			
-			v1 = calcDeltaAddc(g.getNode(i), c, coms, g, ew);
+			v1 = calcDeltaAddc(aktNode, c, coms, g, ew);
 			if(!(ownc.getNodes().length == 1))
-				v1 -= calcDeltaRemove(g.getNode(i), c, coms, g, ew);
+				v1 -= calcDeltaRemove(aktNode, c, coms, g, ew);
 			
 			
 
@@ -236,11 +237,11 @@ public class CommunityDetectionFastUnfolding extends Transformation{
 	 */
 	private double calcDeltaRemove(Node i, Community c, CommunityList coms,
 			Graph g, EdgeWeights ew) {
-		double nodeToCom = getSumWeightsNodeToCom(i, c, coms, ew);
+		double nodeToCom = getSumWeightsNodeToCom(i, c, coms, ew, g);
 		double sumIn = c.getInternalEdges() - nodeToCom;
 		double sumNode = getSumWeight(i, ew);
 		double sumOut = c.getExternalEdges() - (sumNode - nodeToCom) + sumIn;
-		return (((sumIn + getSumWeightsNodeToCom(i, c, coms, ew)) / (2 * edges)) - Math
+		return (((sumIn + getSumWeightsNodeToCom(i, c, coms, ew, g)) / (2 * edges)) - Math
 				.pow(((sumOut + sumNode) / (2 * edges)), 2))
 				- ((sumIn / (2 * edges)) - Math.pow(sumOut / (2 * edges), 2) - Math
 						.pow(sumNode / ( 2 * edges), 2));
@@ -261,7 +262,7 @@ public class CommunityDetectionFastUnfolding extends Transformation{
 		double sumOut = c.getExternalEdges() + sumIn;
 		double sumNode = getSumWeight(i, ew);
 		
-		return (((sumIn + getSumWeightsNodeToCom(i, c, coms, ew)) / (2 * edges)) - Math
+		return (((sumIn + getSumWeightsNodeToCom(i, c, coms, ew, g)) / (2 * edges)) - Math
 				.pow(((sumOut + sumNode) / (2 * edges)), 2))
 				- ((sumIn / (2 * edges)) - Math.pow(sumOut / (2 * edges), 2) - Math
 						.pow(sumNode / ( 2 * edges), 2));
@@ -274,14 +275,14 @@ public class CommunityDetectionFastUnfolding extends Transformation{
 	 * @return
 	 */
 	private double getSumWeightsNodeToCom(Node i, Community c,
-			CommunityList coms, EdgeWeights ew) {
+			CommunityList coms, EdgeWeights ew, Graph g) {
 		int temp;
 		double ret = 0;
 		for (Edge akt : i.getEdges()) {
 			if (akt.getSrc() == i.getIndex())
-				temp = coms.getCommunityByNode(akt.getDst()).getIndex();
+				temp = coms.getCommunityByNode(g.getNode(akt.getDst())).getIndex();
 			else
-				temp = coms.getCommunityByNode(akt.getSrc()).getIndex();
+				temp = coms.getCommunityByNode(g.getNode(akt.getSrc())).getIndex();
 
 			if (temp == c.getIndex())
 				ret += (ew == null) ? 1 : ew.getWeight(akt);

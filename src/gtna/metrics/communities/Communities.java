@@ -98,6 +98,7 @@ public class Communities extends Metric {
 
 		this.modularity = this.calculateModularity(g, communities);
 		this.communityCount = communities.getCommunities().length;
+		
 	}
 
 	/**
@@ -208,6 +209,8 @@ public class Communities extends Metric {
 	 */
 	private double calculateModularity(Graph g,
 			CommunityList communities) {
+		
+
 		double E = g.getEdges().size();
 		double Q = 0;
 		for (Community c : communities.getCommunities()) {
@@ -229,6 +232,7 @@ public class Communities extends Metric {
 					}
 				}
 			}
+
 			Q += IC / E - Math.pow((IC + OC) / E, 2);
 		}
 		return Q;

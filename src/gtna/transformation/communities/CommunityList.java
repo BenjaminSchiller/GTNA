@@ -37,7 +37,6 @@ package gtna.transformation.communities;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import gtna.graph.Node;
 
 /**
@@ -47,6 +46,7 @@ import gtna.graph.Node;
 public class CommunityList {
 
 	private HashMap<Integer, Community> comsByID = new HashMap<Integer, Community>();
+	private HashMap<Node, Community> comsByNode = new HashMap<Node, Community>();
 
 	/**
 	 * @return
@@ -56,20 +56,11 @@ public class CommunityList {
 	}
 
 	/**
-	 * @param i
+	 * @param aktNode
 	 * @return
 	 */
-	public Community getCommunityByNode(int i) {
-		Community ret = null;
-		for (Community akt : getCommunities()) {
-
-			for (Node a : akt.getNodes()) {
-				if (i == a.getIndex())
-					ret = akt;
-			}
-		}
-		return ret;
-	}
+	public Community getCommunityByNode(Node aktNode) {
+		return comsByNode.get(aktNode);	}
 
 	/**
 	 * @param newCom
@@ -84,7 +75,6 @@ public class CommunityList {
 	 */
 	public void add(Community community) {
 		comsByID.put(community.getIndex(), community);
-
 	}
 
 	/**
@@ -108,6 +98,15 @@ public class CommunityList {
 			i++;
 		}
 		comsByID = n;
+	}
+
+	/**
+	 * @param node
+	 * @param community
+	 */
+	public void setCommunity(Node node, Community community) {
+		comsByNode.put(node,community);
+		
 	}
 
 }

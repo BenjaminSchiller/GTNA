@@ -54,8 +54,8 @@ import gtna.plot.Data.Type;
 import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
-import gtna.transformation.communities.CommunityDetectionDeltaQ;
-import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CDDeltaQ;
+import gtna.transformation.communities.CDLPA;
 import gtna.transformation.communities.GuimeraRolesTransformation;
 import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.transformation.partition.LargestWeaklyConnectedComponent;
@@ -88,8 +88,8 @@ public class RolesMetric {
 
 		Transformation wcc = new WeakConnectivityPartition();
 		Transformation gcc = new LargestWeaklyConnectedComponent();
-		Transformation dq = new CommunityDetectionDeltaQ();
-		Transformation lpa = new CommunityDetectionLPA(50);
+		Transformation dq = new CDDeltaQ();
+		Transformation lpa = new CDLPA(50);
 		Transformation r = new GuimeraRolesTransformation();
 		Transformation r2 = new WsnRolesTransformation();
 
