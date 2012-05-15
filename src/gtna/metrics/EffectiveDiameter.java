@@ -63,7 +63,7 @@ import java.util.Random;
  */
 public class EffectiveDiameter extends Metric {
 
-	private int effectiveDiameter;
+	private int effectiveDiameter = 0;
 	private int k;
 	private int r;
 
@@ -162,7 +162,11 @@ public class EffectiveDiameter extends Metric {
 		int it = 1;
 		int numOfConnectedPairs = this.numOfConnectedPair(g);
 		System.out.println("Total Pairs = " + numOfConnectedPairs);
-		while (it < g.getNodes().length) {
+		int maxLoop = g.getNodes().length;
+		if (this.effectiveDiameter != 0) {
+			maxLoop = 2 * this.effectiveDiameter;
+		}
+		while (it < maxLoop) {
 			// System.out.println("it = " + it);
 			for (Node u : g.getNodes()) {
 				M1[u.getIndex()] = M0[u.getIndex()];
@@ -240,9 +244,10 @@ public class EffectiveDiameter extends Metric {
 
 		double r = generateRand.nextDouble();
 
-		int index = (int) Math.ceil(length
-				- Math.log((1 - r) * Math.pow(2, length) + r) / Math.log(2)) - 1;
-		if (index >= length) {
+		int temp = 1 << length;
+		int index = (int) (Math.log(temp / (temp - r * (temp - 1))) / Math
+				.log(2));
+		if (index >= length || index < 0) {
 			System.out.println("index=" + index + " -- length=" + length);
 			System.exit(0);
 		}
