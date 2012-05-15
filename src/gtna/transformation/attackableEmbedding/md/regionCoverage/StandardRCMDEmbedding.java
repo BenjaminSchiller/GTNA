@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * LMCEmbeddding.java
+ * StandardRCMDEmbedding.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,44 +33,40 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.attackableEmbedding.IQD.kleinberg;
+package gtna.transformation.attackableEmbedding.md.regionCoverage;
 
-import gtna.id.ring.RingIdentifierSpace.Distance;
-import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
-import gtna.util.parameter.IntParameter;
-import gtna.util.parameter.Parameter;
+import gtna.id.md.MDIdentifierSpaceSimple.DistanceMD;
 
 /**
  * @author stef
  * 
  */
-public class LMCEmbedding extends KleinbergEmbedding {
+public class StandardRCMDEmbedding extends RegionCoverageMDEmbedding {
 
-	/**
-	 * @param iterations
-	 * @param idMethod
-	 * @param deMethod
-	 * @param distance
-	 * @param epsilon
-	 * @param checkold
-	 * @param parameters
-	 */
-
-	
-	public LMCEmbedding(int iterations) {
-		super( "LMCEMBEDDING", iterations, IQDEmbedding.IdentifierMethod.ONERANDOM,
-				IQDEmbedding.DecisionMethod.METROPOLIS, Distance.RING, 1E-13,
-				false, false, new Parameter[]{new IntParameter("ITERATIONS", iterations)});
+	public StandardRCMDEmbedding(int iterations, int dimension) {
+		super(iterations, IdentifierMethod.ONERANDOM,
+				DecisionMethod.BESTPREFEROLD, DistanceMD.EUCLIDEAN, dimension,
+				1E-13, false, true, 20, false);
 	}
 
-	public LMCEmbedding(int iterations, 
-			AttackerType type, AttackerSelection selection, int attackercount) {
-		super("LMCEMBEDDING", iterations,
-				IQDEmbedding.IdentifierMethod.ONERANDOM,
-				IQDEmbedding.DecisionMethod.METROPOLIS, Distance.RING, 1E-13,
-				false, false, type, selection, attackercount, new Parameter[]{new IntParameter("ITERATIONS", iterations)});
+	public StandardRCMDEmbedding(int iterations, int dimensions,
+			AttackerType type, AttackerSelection selection, int count) {
+		super(iterations, IdentifierMethod.ONERANDOM,
+				DecisionMethod.BESTPREFEROLD, DistanceMD.EUCLIDEAN, dimensions,
+				1E-13, false, true, 20, type, selection, count, false);
+	}
+	
+	public StandardRCMDEmbedding(int iterations, int dimension, DistanceMD dist) {
+		super(iterations, IdentifierMethod.ONERANDOM,
+				DecisionMethod.BESTPREFEROLD, dist, dimension,
+				1E-13, false, true, 20, false);
 	}
 
-	
+	public StandardRCMDEmbedding(int iterations, int dimensions, DistanceMD dist,
+			AttackerType type, AttackerSelection selection, int count) {
+		super(iterations, IdentifierMethod.ONERANDOM,
+				DecisionMethod.BESTPREFEROLD, dist, dimensions,
+				1E-13, false, true, 20, type, selection, count, false);
+	}
 
 }

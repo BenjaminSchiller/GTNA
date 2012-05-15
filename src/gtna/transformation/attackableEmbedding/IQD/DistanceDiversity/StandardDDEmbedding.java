@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * LMCEmbeddding.java
+ * StandardDDEmbedding.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,10 +33,9 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.attackableEmbedding.IQD.kleinberg;
+package gtna.transformation.attackableEmbedding.IQD.DistanceDiversity;
 
 import gtna.id.ring.RingIdentifierSpace.Distance;
-import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
@@ -44,33 +43,19 @@ import gtna.util.parameter.Parameter;
  * @author stef
  * 
  */
-public class LMCEmbedding extends KleinbergEmbedding {
+public class StandardDDEmbedding extends DistanceDiversityEmbedding {
 
-	/**
-	 * @param iterations
-	 * @param idMethod
-	 * @param deMethod
-	 * @param distance
-	 * @param epsilon
-	 * @param checkold
-	 * @param parameters
-	 */
-
-	
-	public LMCEmbedding(int iterations) {
-		super( "LMCEMBEDDING", iterations, IQDEmbedding.IdentifierMethod.ONERANDOM,
-				IQDEmbedding.DecisionMethod.METROPOLIS, Distance.RING, 1E-13,
-				false, false, new Parameter[]{new IntParameter("ITERATIONS", iterations)});
+	public StandardDDEmbedding(int iterations) {
+		super(iterations, IdentifierMethod.ONERANDOM,
+				DecisionMethod.BESTPREFEROLD, Distance.RING, 1E-13, false,
+				true, 20, 0.5, false);
 	}
 
-	public LMCEmbedding(int iterations, 
-			AttackerType type, AttackerSelection selection, int attackercount) {
-		super("LMCEMBEDDING", iterations,
-				IQDEmbedding.IdentifierMethod.ONERANDOM,
-				IQDEmbedding.DecisionMethod.METROPOLIS, Distance.RING, 1E-13,
-				false, false, type, selection, attackercount, new Parameter[]{new IntParameter("ITERATIONS", iterations)});
+	public StandardDDEmbedding(int iterations, AttackerType type,
+			AttackerSelection selection, int count) {
+		super(iterations, IdentifierMethod.ONERANDOM,
+				DecisionMethod.BESTPREFEROLD, Distance.RING, 1E-13, false,
+				true,  20, 0.5, type, selection, count, false);
 	}
-
-	
 
 }

@@ -39,6 +39,11 @@ import gtna.graph.Graph;
 import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
 import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding;
+import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding.AttackerSelection;
+import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding.AttackerType;
+import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding.DecisionMethod;
+import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding.IdentifierMethod;
+import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
@@ -117,6 +122,29 @@ public class RegionCoverageEmbedding extends AttackerIQDEmbedding {
 		this.init(g, nodes);
 		this.initIds();
 		return nodes;
+	}
+	
+	public RegionCoverageEmbedding(int iterations,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			Distance distance, double epsilon, boolean checkold,
+			boolean adjustone, int max,  boolean add) {
+		super(iterations, "REGION_COVERAGE", idMethod, deMethod, distance,
+				epsilon, checkold, adjustone, add?new Parameter[] {
+						new IntParameter("MAX_LOG", max)}: new Parameter[]{new IntParameter("ITERATIONS", iterations)},add);
+		this.max = max;
+	}
+
+	public RegionCoverageEmbedding(int iterations,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			Distance distance, double epsilon, boolean checkold,
+			boolean adjustone, int max,  AttackerType type,
+			AttackerSelection selection, int attackercount, boolean add) {
+		super(iterations, "REGION_COVERAGE", idMethod, deMethod, distance,
+				epsilon, checkold, adjustone, type, selection, attackercount,
+				add?new Parameter[] {
+						new IntParameter("MAX_LOG", max)}: new Parameter[]{new IntParameter("ITERATIONS", iterations)},add);
+		this.max = max;
+		
 	}
 
 }

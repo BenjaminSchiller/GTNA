@@ -37,8 +37,7 @@ package gtna.transformation.attackableEmbedding.IQD.kleinberg;
 
 import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
-import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding.AttackerSelection;
-import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding.AttackerType;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 /**
@@ -56,34 +55,18 @@ public class SwappingEmbedding extends KleinbergEmbedding {
 	 * @param checkold
 	 * @param parameters
 	 */
-	public SwappingEmbedding(int iterations, Distance distance, double epsilon) {
-		super("SWAPPINGEMBEDDING", iterations,
-				IQDEmbedding.IdentifierMethod.SWAPPING,
-				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
-				false, false, new Parameter[0]);
+	public SwappingEmbedding(int iterations) {
+		super( "SWAPPINGEMBEDDING", iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
+				IQDEmbedding.DecisionMethod.METROPOLIS, Distance.RING, 1E-13,
+				false, false, new Parameter[]{new IntParameter("ITERATIONS", iterations)});
 	}
 
-	public SwappingEmbedding(int iterations, Distance distance, double epsilon,
+	public SwappingEmbedding(int iterations, 
 			AttackerType type, AttackerSelection selection, int attackercount) {
 		super("SWAPPINGEMBEDDING", iterations,
 				IQDEmbedding.IdentifierMethod.SWAPPING,
-				IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
-				false, false, type, selection, attackercount);
+				IQDEmbedding.DecisionMethod.METROPOLIS, Distance.RING, 1E-13,
+				false, false, type, selection, attackercount, new Parameter[]{new IntParameter("ITERATIONS", iterations)});
 	}
-
-	// public SwappingEmbedding(int iterations, Distance distance, double
-	// epsilon) {
-	// super(iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
-	// IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
-	// false, false, new Parameter[0]);
-	// }
-	//
-	// public SwappingEmbedding(int iterations, Distance distance, double
-	// epsilon, AttackerType type, AttackerSelection selection,
-	// int attackercount) {
-	// super(iterations, IQDEmbedding.IdentifierMethod.SWAPPING,
-	// IQDEmbedding.DecisionMethod.METROPOLIS, distance, epsilon,
-	// false, false, type, selection, attackercount);
-	// }
 
 }
