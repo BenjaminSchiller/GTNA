@@ -37,6 +37,7 @@ package gtna.id.plane;
 
 import gtna.id.DIdentifier;
 import gtna.id.Identifier;
+import gtna.id.ring.RingIdentifier;
 
 import java.util.Random;
 
@@ -44,14 +45,16 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class PlaneIdentifier implements DIdentifier, Comparable<PlaneIdentifier> {
+public class PlaneIdentifier implements DIdentifier,
+		Comparable<PlaneIdentifier> {
 	private double x;
 
 	private double y;
 
 	private PlaneIdentifierSpaceSimple idSpace;
 
-	public PlaneIdentifier(double x, double y, PlaneIdentifierSpaceSimple idSpace) {
+	public PlaneIdentifier(double x, double y,
+			PlaneIdentifierSpaceSimple idSpace) {
 		this.x = x % idSpace.getModulusX();
 		this.y = y % idSpace.getModulusY();
 		this.idSpace = idSpace;
@@ -76,16 +79,22 @@ public class PlaneIdentifier implements DIdentifier, Comparable<PlaneIdentifier>
 	public Double distance(Identifier<Double> id) {
 		PlaneIdentifier to = (PlaneIdentifier) id;
 		if (this.idSpace.isWrapAround()) {
-//			double dx = Math.abs(this.x - to.getX())
-//					% (this.idSpace.getModulusX() / 2.0);
-//			double dy = Math.abs(this.y - to.getY())
-//					% (this.idSpace.getModulusY() / 2.0);
-			double dx = Math.min(Math.abs(this.x - to.getX()), 
-					             Math.min(this.getIdSpace().getModulusX()+ this.x - to.getX(), 
-					            		  this.getIdSpace().getModulusX()- this.x + to.getX()));
-			double dy = Math.min(Math.abs(this.y - to.getY()), 
-		             Math.min(this.getIdSpace().getModulusY()+ this.y - to.getY(), 
-		            		  this.getIdSpace().getModulusY()- this.y + to.getY()));
+			// double dx = Math.abs(this.x - to.getX())
+			// % (this.idSpace.getModulusX() / 2.0);
+			// double dy = Math.abs(this.y - to.getY())
+			// % (this.idSpace.getModulusY() / 2.0);
+			double dx = Math.min(
+					Math.abs(this.x - to.getX()),
+					Math.min(
+							this.getIdSpace().getModulusX() + this.x
+									- to.getX(), this.getIdSpace()
+									.getModulusX() - this.x + to.getX()));
+			double dy = Math.min(
+					Math.abs(this.y - to.getY()),
+					Math.min(
+							this.getIdSpace().getModulusY() + this.y
+									- to.getY(), this.getIdSpace()
+									.getModulusY() - this.y + to.getY()));
 			return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 		} else {
 			double dx = this.x - to.getX();
@@ -100,7 +109,8 @@ public class PlaneIdentifier implements DIdentifier, Comparable<PlaneIdentifier>
 				&& this.y == ((PlaneIdentifier) id).getY();
 	}
 
-	public static PlaneIdentifier rand(Random rand, PlaneIdentifierSpaceSimple idSpace) {
+	public static PlaneIdentifier rand(Random rand,
+			PlaneIdentifierSpaceSimple idSpace) {
 		return new PlaneIdentifier(rand.nextDouble() * idSpace.getModulusX(),
 				rand.nextDouble() * idSpace.getModulusY(), idSpace);
 	}
@@ -120,14 +130,16 @@ public class PlaneIdentifier implements DIdentifier, Comparable<PlaneIdentifier>
 	}
 
 	/**
-	 * @param x the x to set
+	 * @param x
+	 *            the x to set
 	 */
 	public void setX(double x) {
 		this.x = x;
 	}
 
 	/**
-	 * @param y the y to set
+	 * @param y
+	 *            the y to set
 	 */
 	public void setY(double y) {
 		this.y = y;
@@ -144,6 +156,20 @@ public class PlaneIdentifier implements DIdentifier, Comparable<PlaneIdentifier>
 	public int compareTo(PlaneIdentifier o) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof PlaneIdentifier)) {
+			return false;
+		}
+		PlaneIdentifier id = (PlaneIdentifier) obj;
+		return id.getX() == this.x && id.getY() == this.y;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.toString().hashCode();
 	}
 
 }

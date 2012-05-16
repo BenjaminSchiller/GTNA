@@ -88,6 +88,7 @@ public abstract class IQDNode extends AttackableEmbeddingNode {
 			((IQDNode) this.getGraph().getNode(this.partnerID)).setID(this,
 					this.getID());
 		}
+		
 		this.setID(ids[newID]);
 	}
 

@@ -39,6 +39,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
 import gtna.transformation.attackableEmbedding.lmc.LMCNode;
+import gtna.transformation.attackableEmbedding.md.AttackerIQDMDEmbedding.AttackerType;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -91,10 +92,15 @@ public abstract class IQDMDNode extends AttackableEmbeddingNode {
 		double[][] ids = this.getIdentifiers(rand);
 		double[] q = this.getQuality(rand, ids);
 		int newID = this.getDecision(rand, q);
+		//if (((AttackerIQDMDEmbedding)this.embedding).getAttackertype() != AttackerType.NONE)
+		  // System.out.println(q[0] + " " + q[1]);
 		if (this.partnerID != -1 && ids[newID] != this.id) {
 			((IQDMDNode) this.getGraph().getNode(this.partnerID)).setID(this,
 					this.getID());
 		}
+//		if (newID == 0 && this.partnerID == -1){
+//			System.out.println("Accept");
+//		}
 		this.setID(ids[newID]);
 	}
 

@@ -36,8 +36,14 @@
 package gtna.transformation.attackableEmbedding.md.kleinberg;
 
 import gtna.id.md.MDIdentifierSpaceSimple.DistanceMD;
+import gtna.id.ring.RingIdentifierSpace.Distance;
+import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding;
+import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding.AttackerSelection;
+import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding.AttackerType;
 import gtna.transformation.attackableEmbedding.md.IQDMDEmbedding;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
  * @author stef
@@ -45,21 +51,38 @@ import gtna.util.parameter.Parameter;
  */
 public class SwappingMDEmbedding extends KleinbergMDEmbedding {
 
-	public SwappingMDEmbedding(int iterations, DistanceMD distance,
-			int dimension, double epsilon) {
-		super("SWAPPING_MD_EMBEDDING", iterations,
-				IQDMDEmbedding.IdentifierMethod.SWAPPING,
-				IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension,
-				epsilon, false, false, new Parameter[0]);
+	public SwappingMDEmbedding(int iterations, int dimension) {
+		this(iterations, dimension, DistanceMD.EUCLIDEAN);
 	}
 
-	public SwappingMDEmbedding(int iterations, DistanceMD distance,
-			int dimension, double epsilon, AttackerType type,
+	public SwappingMDEmbedding(int iterations, int dimension, AttackerType type,
+			AttackerSelection selection, int attackercount) {
+		this(iterations, dimension, DistanceMD.EUCLIDEAN, type, selection,attackercount);
+	}
+	
+	public SwappingMDEmbedding(int iterations, int dimension, DistanceMD dist) {
+		super("SWAPPING_MD_EMBEDDING", iterations,
+				IQDMDEmbedding.IdentifierMethod.SWAPPING,
+				IQDMDEmbedding.DecisionMethod.METROPOLIS, dist,
+				dimension, 1E-13, false, false,
+				new Parameter[] {new IntParameter("ITERATIONS",
+						iterations), new IntParameter("DIMENSION",
+								dimension),  new StringParameter("DISTANCE",
+										dist.toString()) },
+				false);
+	}
+
+	public SwappingMDEmbedding(int iterations, int dimension, DistanceMD dist, AttackerType type,
 			AttackerSelection selection, int attackercount) {
 		super("SWAPPING_MD_EMBEDDING", iterations,
 				IQDMDEmbedding.IdentifierMethod.SWAPPING,
-				IQDMDEmbedding.DecisionMethod.METROPOLIS, distance, dimension,
-				epsilon, false, false, type, selection, attackercount);
+				IQDMDEmbedding.DecisionMethod.METROPOLIS, dist,
+				dimension, 1E-13, false, false, type, selection, attackercount,
+				new Parameter[] {new IntParameter("ITERATIONS",
+						iterations), new IntParameter("DIMENSION",
+								dimension), new StringParameter("DISTANCE",
+										dist.toString()) },
+				false);
 	}
 
 }

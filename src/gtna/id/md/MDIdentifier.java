@@ -35,85 +35,100 @@
  */
 package gtna.id.md;
 
-import java.util.Random;
-
 import gtna.id.DIdentifier;
 import gtna.id.Identifier;
 import gtna.id.md.MDIdentifierSpaceSimple.DistanceMD;
-import gtna.id.plane.PlaneIdentifier;
-import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.util.MDVector;
+
+import java.util.Random;
 
 /**
  * @author Nico
- *
+ * 
  */
 public class MDIdentifier implements DIdentifier, Comparable<MDIdentifier> {
 	private double[] coordinates;
-	
+
 	private MDIdentifierSpaceSimple idSpace;
 
 	public MDIdentifier(double[] coordinates, MDIdentifierSpaceSimple idSpace) {
 		this.coordinates = coordinates;
-		for ( int i = 0; i < this.coordinates.length; i++ ) {
-			this.coordinates[i] = this.coordinates[i] % idSpace.getModulus(i); 
+		for (int i = 0; i < this.coordinates.length; i++) {
+			this.coordinates[i] = this.coordinates[i] % idSpace.getModulus(i);
 		}
 		this.idSpace = idSpace;
 	}
-	
+
 	public MDIdentifier(String string, MDIdentifierSpaceSimple idSpace) {
 		String[] temp = string.replace("(", "").replace(")", "").split("/");
-		
+
 		this.coordinates = new double[temp.length];
-		for ( int i = 0; i < temp.length; i++ ) {
-			this.coordinates[i] = Double.parseDouble(temp[i]) % idSpace.getModulus(i);
+		for (int i = 0; i < temp.length; i++) {
+			this.coordinates[i] = Double.parseDouble(temp[i])
+					% idSpace.getModulus(i);
 		}
 		this.idSpace = idSpace;
 	}
-	
+
 	public MDIdentifier(String string) {
 		this(string, null);
 	}
 
 	public String toString() {
 		StringBuilder temp = new StringBuilder("(");
-		if ( coordinates.length >= 0 ) temp.append(coordinates[0]);
-		for ( int i = 1; i < coordinates.length; i++ ) {
+		if (coordinates.length >= 0)
+			temp.append(coordinates[0]);
+		for (int i = 1; i < coordinates.length; i++) {
 			temp.append("/" + coordinates[i]);
 		}
 		temp.append(")");
 		return temp.toString();
 	}
-	
+
 	@Override
 	public Double distance(Identifier<Double> id) {
 		MDIdentifier to = (MDIdentifier) id;
-		if ( this.idSpace.getDimensions() != to.getIdSpace().getDimensions() ) {
-			throw new RuntimeException("Cannot compute a distance between MDIntentifiers in spaces with unequal dimensions");
+		if (this.idSpace.getDimensions() != to.getIdSpace().getDimensions()) {
+			throw new RuntimeException(
+					"Cannot compute a distance between MDIntentifiers in spaces with unequal dimensions");
 		}
-		
+
 		double temp;
-		if (this.idSpace.getDistFunc() == DistanceMD.EUCLIDEAN){
+		if (this.idSpace.getDistFunc() == DistanceMD.EUCLIDEAN) {
 			double squarredResult = 0;
-		for ( int i = 0; i < this.idSpace.getDimensions(); i++ ) {
-			if ( this.idSpace.isWrapAround() ) {
-				 temp = Math.min(Math.abs(this.coordinates[i]-to.getCoordinate(i)), 
-						 Math.min(this.idSpace.getModulus(i)+this.coordinates[i]-to.getCoordinate(i), this.idSpace.getModulus(i)-this.coordinates[i]+to.getCoordinate(i)));
-			} else {
-				 temp = Math.abs(this.coordinates[i] - to.getCoordinate(i));
-			}
-			squarredResult += Math.pow(temp, 2);
-		}
-		return Math.sqrt(squarredResult);
-		} 
-		if (this.idSpace.getDistFunc() == DistanceMD.MANHATTAN){
-			double result = 0;
-			for ( int i = 0; i < this.idSpace.getDimensions(); i++ ) {
-				if ( this.idSpace.isWrapAround() ) {
-					 temp = Math.min(Math.abs(this.coordinates[i]-to.getCoordinate(i)), 
-							 Math.min(this.idSpace.getModulus(i)+this.coordinates[i]-to.getCoordinate(i), this.idSpace.getModulus(i)-this.coordinates[i]+to.getCoordinate(i)));
+			for (int i = 0; i < this.idSpace.getDimensions(); i++) {
+				if (this.idSpace.isWrapAround()) {
+					temp = Math
+							.min(Math.abs(this.coordinates[i]
+									- to.getCoordinate(i)), Math.min(
+									this.idSpace.getModulus(i)
+											+ this.coordinates[i]
+											- to.getCoordinate(i),
+									this.idSpace.getModulus(i)
+											- this.coordinates[i]
+											+ to.getCoordinate(i)));
 				} else {
-					 temp = Math.abs(this.coordinates[i] - to.getCoordinate(i));
+					temp = Math.abs(this.coordinates[i] - to.getCoordinate(i));
+				}
+				squarredResult += Math.pow(temp, 2);
+			}
+			return Math.sqrt(squarredResult);
+		}
+		if (this.idSpace.getDistFunc() == DistanceMD.MANHATTAN) {
+			double result = 0;
+			for (int i = 0; i < this.idSpace.getDimensions(); i++) {
+				if (this.idSpace.isWrapAround()) {
+					temp = Math
+							.min(Math.abs(this.coordinates[i]
+									- to.getCoordinate(i)), Math.min(
+									this.idSpace.getModulus(i)
+											+ this.coordinates[i]
+											- to.getCoordinate(i),
+									this.idSpace.getModulus(i)
+											- this.coordinates[i]
+											+ to.getCoordinate(i)));
+				} else {
+					temp = Math.abs(this.coordinates[i] - to.getCoordinate(i));
 				}
 				result += temp;
 			}
@@ -124,37 +139,41 @@ public class MDIdentifier implements DIdentifier, Comparable<MDIdentifier> {
 
 	@Override
 	public boolean equals(Identifier<Double> id) {
-		return ( this.toString().equals( id.toString() ) );
+		return (this.toString().equals(id.toString()));
 	}
-	
+
 	public static MDIdentifier rand(Random rand, MDIdentifierSpaceSimple idSpace) {
 		double[] newCoordinates = new double[idSpace.getDimensions()];
-		for ( int i = 0; i < newCoordinates.length; i++ ) {
+		for (int i = 0; i < newCoordinates.length; i++) {
 			newCoordinates[i] = rand.nextDouble() * idSpace.getModulus(i);
 		}
 		return new MDIdentifier(newCoordinates, idSpace);
 	}
-	
-	public double getCoordinate ( int i ) {
+
+	public double getCoordinate(int i) {
 		return this.coordinates[i];
 	}
 
 	public double[] getCoordinates() {
 		return this.coordinates.clone();
 	}
-	
-	public void setCoordinates ( double[] newPos ) {
-		if ( newPos.length != coordinates.length ) throw new RuntimeException("Please respect our dimensions!");
-		for ( int i = 0; i < newPos.length; i++ ) {
-//			if ( newPos[i] < 0 ) newPos[i] = 0;
-//			if ( newPos[i] > this.idSpace.getModulus(i) ) newPos[i] = this.idSpace.getModulus(i); 
-			if ( newPos[i] < 0 || newPos[i] > this.idSpace.getModulus(i) ) {
-				throw new RuntimeException("Corrupt new coordinate " + newPos[i] + ", should be between 0 and " + this.idSpace.getModulus(i));
+
+	public void setCoordinates(double[] newPos) {
+		if (newPos.length != coordinates.length)
+			throw new RuntimeException("Please respect our dimensions!");
+		for (int i = 0; i < newPos.length; i++) {
+			// if ( newPos[i] < 0 ) newPos[i] = 0;
+			// if ( newPos[i] > this.idSpace.getModulus(i) ) newPos[i] =
+			// this.idSpace.getModulus(i);
+			if (newPos[i] < 0 || newPos[i] > this.idSpace.getModulus(i)) {
+				throw new RuntimeException("Corrupt new coordinate "
+						+ newPos[i] + ", should be between 0 and "
+						+ this.idSpace.getModulus(i));
 			}
 		}
 		this.coordinates = newPos.clone();
 	}
-	
+
 	public MDIdentifierSpaceSimple getIdSpace() {
 		return this.idSpace;
 	}
@@ -163,8 +182,30 @@ public class MDIdentifier implements DIdentifier, Comparable<MDIdentifier> {
 	public int compareTo(MDIdentifier o) {
 		return 0;
 	}
-	
+
 	public MDVector toMDVector() {
 		return new MDVector(this);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof MDIdentifier)) {
+			return false;
+		}
+		MDIdentifier id = (MDIdentifier) obj;
+		if (id.getCoordinates().length != this.coordinates.length) {
+			return false;
+		}
+		for (int i = 0; i < this.coordinates.length; i++) {
+			if (this.coordinates[i] != id.getCoordinate(i)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.toString().hashCode();
 	}
 }

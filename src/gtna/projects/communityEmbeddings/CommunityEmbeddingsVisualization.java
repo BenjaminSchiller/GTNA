@@ -45,7 +45,7 @@ import gtna.plot.Data.Type;
 import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
-import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CDLPA;
 import gtna.transformation.embedding.communities.CommunityEmbedding;
 import gtna.transformation.embedding.communities.SimpleCommunityEmbedding1;
 import gtna.transformation.embedding.communities.SimpleCommunityEmbedding2;
@@ -85,7 +85,7 @@ public class CommunityEmbeddingsVisualization {
 
 		Transformation scp = new StrongConnectivityPartition();
 		Transformation gcc = new LargestWeaklyConnectedComponent();
-		Transformation cd = new CommunityDetectionLPA(20);
+		Transformation cd = new CDLPA(20);
 		// Transformation cd = new CommunityDetectionDeltaQ();
 		Transformation re = new RandomRingIDSpaceSimple();
 		Transformation ce1 = new SimpleCommunityEmbedding1();

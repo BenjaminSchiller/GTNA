@@ -75,4 +75,14 @@ public class RouteImpl implements Route {
 	public boolean isSuccessful() {
 		return this.successful;
 	}
+
+	@Override
+	public int getFirstNode() {
+		return this.route[0];
+	}
+
+	@Override
+	public int getLastNode() {
+		return this.route[this.route.length - 1];
+	}
 }

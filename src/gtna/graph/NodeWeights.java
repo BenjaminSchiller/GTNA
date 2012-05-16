@@ -48,8 +48,8 @@ public class NodeWeights implements GraphProperty {
 
 	private double[] weights;
 
-	public NodeWeights() {
-		this.weights = new double[0];
+	public NodeWeights(int nodes) {
+		this.weights = new double[nodes];
 	}
 
 	public NodeWeights(double[] weights) {

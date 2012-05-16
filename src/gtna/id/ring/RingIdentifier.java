@@ -90,9 +90,11 @@ public class RingIdentifier implements DIdentifier, Comparable<RingIdentifier> {
 	private double getRingDistance(Identifier<Double> id){
 		double dest = ((RingIdentifier) id).getPosition();
 		if (this.idSpace.isWrapAround()) {
-			return Math.min(Math.abs(this.position - dest), 
-		             Math.min(this.getIdSpace().getModulus()+ this.position - dest, 
-		            		  this.getIdSpace().getModulus()- this.position + dest));
+			return Math.min(
+					Math.abs(this.position - dest),
+					Math.min(this.getIdSpace().getModulus() + this.position
+							- dest, this.getIdSpace().getModulus()
+							- this.position + dest));
 		} else {
 			return Math.abs(dest - this.position);
 		}
@@ -134,6 +136,19 @@ public class RingIdentifier implements DIdentifier, Comparable<RingIdentifier> {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof RingIdentifier)) {
+			return false;
+		}
+		return ((RingIdentifier) obj).getPosition() == this.position;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.toString().hashCode();
+	}
+
+	@Override
 	public int compareTo(RingIdentifier id) {
 		if (id.getPosition() < this.position) {
 			return 1;
@@ -145,7 +160,8 @@ public class RingIdentifier implements DIdentifier, Comparable<RingIdentifier> {
 	}
 
 	public static RingIdentifier rand(Random rand, RingIdentifierSpace idSpace) {
-		return new RingIdentifier(rand.nextDouble() * idSpace.getModulus(), idSpace);
+		return new RingIdentifier(rand.nextDouble() * idSpace.getModulus(),
+				idSpace);
 	}
 
 	/**
@@ -156,7 +172,8 @@ public class RingIdentifier implements DIdentifier, Comparable<RingIdentifier> {
 	}
 
 	/**
-	 * @param position the position to set
+	 * @param position
+	 *            the position to set
 	 */
 	public void setPosition(double position) {
 		this.position = position;

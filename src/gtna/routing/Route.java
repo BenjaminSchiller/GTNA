@@ -49,4 +49,8 @@ public interface Route {
 	public int getHops();
 
 	public boolean isSuccessful();
+	
+	public int getFirstNode();
+	
+	public int getLastNode();
 }

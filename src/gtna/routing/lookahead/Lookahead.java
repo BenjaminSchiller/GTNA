@@ -42,6 +42,7 @@ import gtna.id.DPartition;
 import gtna.id.Identifier;
 import gtna.id.IdentifierSpace;
 import gtna.id.Partition;
+import gtna.id.data.DataStorageList;
 import gtna.id.lookahead.LookaheadElement;
 import gtna.id.lookahead.LookaheadList;
 import gtna.id.lookahead.LookaheadLists;
@@ -72,6 +73,8 @@ public abstract class Lookahead extends RoutingAlgorithm {
 
 	protected LookaheadLists lists;
 
+	private DataStorageList dsl;
+
 	protected enum ViaSelection {
 		sequential, minVia
 	};
@@ -98,11 +101,22 @@ public abstract class Lookahead extends RoutingAlgorithm {
 				graph.getNodes(), new HashSet<Integer>());
 	}
 
+	@Override
+	public Route routeToTarget(Graph graph, int start, Identifier target,
+			Random rand) {
+		return this.route(new ArrayList<Integer>(), start, target, rand,
+				graph.getNodes(), new HashSet<Integer>());
+	}
+
 	private Route route(ArrayList<Integer> route, int current,
 			Identifier target, Random rand, Node[] nodes, HashSet<Integer> seen) {
 		route.add(current);
 		seen.add(current);
 		if (this.idSpace.getPartitions()[current].contains(target)) {
+			return new RouteImpl(route, true);
+		}
+		if (this.dsl != null
+				&& this.dsl.getStorageForNode(current).containsId(target)) {
 			return new RouteImpl(route, true);
 		}
 		if (route.size() > this.ttl) {
@@ -227,5 +241,8 @@ public abstract class Lookahead extends RoutingAlgorithm {
 		this.idSpace = (IdentifierSpace) graph.getProperty("ID_SPACE_0");
 		this.p = (Partition[]) this.idSpace.getPartitions();
 		this.lists = (LookaheadLists) graph.getProperty("LOOKAHEAD_LIST_0");
+		if (graph.hasProperty("DATA_STORAGE_0")) {
+			this.dsl = (DataStorageList) graph.getProperty("DATA_STORAGE_0");
+		}
 	}
 }

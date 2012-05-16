@@ -52,8 +52,8 @@ import gtna.networks.model.placementmodels.models.RandomPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.transformation.Transformation;
 import gtna.transformation.communities.CommunityColors;
-import gtna.transformation.communities.CommunityDetectionDeltaQ;
-import gtna.transformation.communities.CommunityDetectionLPA;
+import gtna.transformation.communities.CDDeltaQ;
+import gtna.transformation.communities.CDLPA;
 import gtna.util.Config;
 import gtna.util.Stats;
 
@@ -137,8 +137,8 @@ public class CommunityDetection {
 		if (!deltaQ && !lpa) {
 			return;
 		}
-		Transformation t_dq = new CommunityDetectionDeltaQ();
-		Transformation t_lpa = new CommunityDetectionLPA(50);
+		Transformation t_dq = new CDDeltaQ();
+		Transformation t_lpa = new CDLPA(50);
 		Transformation t_cc = new CommunityColors();
 		for (int i = 0; i < times; i++) {
 			Gephi gephi = new Gephi();

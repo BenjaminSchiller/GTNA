@@ -37,10 +37,9 @@ package gtna.transformation.attackableEmbedding.md.kleinberg;
 
 import gtna.graph.Graph;
 import gtna.id.md.MDIdentifierSpaceSimple.DistanceMD;
-import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
-import gtna.transformation.attackableEmbedding.IQD.kleinberg.KleinbergNode;
 import gtna.transformation.attackableEmbedding.md.AttackerIQDMDEmbedding;
+import gtna.transformation.attackableEmbedding.md.IQDMDEmbedding;
 import gtna.util.parameter.Parameter;
 
 import java.util.HashSet;
@@ -89,6 +88,15 @@ public class KleinbergMDEmbedding extends AttackerIQDMDEmbedding {
 	}
 
 	public KleinbergMDEmbedding(String key, int iterations,
+			IQDMDEmbedding.IdentifierMethod onerandom,
+			IQDMDEmbedding.DecisionMethod metropolis, DistanceMD distance,
+			int dimension, double epsilon, boolean checkold, boolean adjustone,
+			Parameter[] parameters, boolean add) {
+		super(iterations, key, onerandom, metropolis, distance, dimension,
+				epsilon, checkold, adjustone, parameters, add);
+	}
+
+	public KleinbergMDEmbedding(String key, int iterations,
 			IdentifierMethod idMethod, DecisionMethod deMethod,
 			DistanceMD distance, int dimension, double epsilon,
 			boolean checkold, boolean adjustone, AttackerType type,
@@ -97,6 +105,17 @@ public class KleinbergMDEmbedding extends AttackerIQDMDEmbedding {
 		super(iterations, key, idMethod, deMethod, distance, dimension,
 				epsilon, checkold, adjustone, type, selection, attackercount,
 				parameters);
+	}
+
+	public KleinbergMDEmbedding(String key, int iterations,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			DistanceMD distance, int dimension, double epsilon,
+			boolean checkold, boolean adjustone, AttackerType type,
+			AttackerSelection selection, int attackercount,
+			Parameter[] parameters, boolean add) {
+		super(iterations, key, idMethod, deMethod, distance, dimension,
+				epsilon, checkold, adjustone, type, selection, attackercount,
+				parameters, add);
 	}
 
 	/**
@@ -139,6 +158,16 @@ public class KleinbergMDEmbedding extends AttackerIQDMDEmbedding {
 		super(iterations, key, idMethod, deMethod, distance, dimension,
 				epsilon, checkold, adjustone, type, selection, attackercount,
 				new Parameter[0]);
+	}
+
+	public KleinbergMDEmbedding(String key, int iterations,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			DistanceMD distance, int dimension, double epsilon,
+			boolean checkold, boolean adjustone, AttackerType type,
+			AttackerSelection selection, int attackercount, boolean add) {
+		super(iterations, key, idMethod, deMethod, distance, dimension,
+				epsilon, checkold, adjustone, type, selection, attackercount,
+				new Parameter[0], add);
 	}
 
 	/*

@@ -37,340 +37,187 @@ package gtna.io;
 
 import gtna.data.Series;
 import gtna.metrics.Metric;
+import gtna.util.ArrayUtils;
 import gtna.util.Config;
+import gtna.util.Execute;
+import gtna.util.Timer;
+import gtna.util.parameter.Parameter;
 
-import java.text.DecimalFormat;
+import java.io.File;
 
 public class LaTex {
-	/**
-	 * PLOTS
-	 */
-
-	public static void writeDataPlots(String filename, String folder,
-			Series[] s, Metric[] metrics) {
-		String nwDescription = s[0].getNetwork().getDiffDescriptionShort(
-				s[1 % s.length].getNetwork());
-		writePlot(filename, folder, nwDescription,
-				Config.allKeys("_DATA_PLOTS", metrics), metrics);
+	public static boolean writeTables(Series s, Metric[] metrics,
+			String folder, String filename) {
+		return LaTex.writeTables(new Series[][] { new Series[] { s } },
+				metrics, folder, filename);
 	}
 
-	public static void writeSinglePlots(String filename, String folder,
-			Series[][] s, Metric[] metrics) {
-		String nwDescription = s[0][0].getNetwork().getDiffDescriptionShort(
+	public static boolean writeTables(Series[] s, Metric[] metrics,
+			String folder, String filename) {
+		Series[][] s_ = new Series[s.length][];
+		for (int i = 0; i < s.length; i++) {
+			s_[i] = new Series[] { s[i] };
+		}
+		return LaTex.writeTables(s_, metrics, folder, filename);
+	}
+
+	public static boolean writeTables(Series[][] s, Metric[] metrics,
+			String folder, String filename) {
+		Timer timer = new Timer("writing table => " + folder + filename);
+
+		String texFilename = folder + filename + Config.get("LATEX_EXTENSION");
+		Filewriter fw = new Filewriter(texFilename);
+
+		String title = "Single-scalar Values for " + s.length + "x"
+				+ s[0].length + " Series";
+		String author = "GTNA";
+
+		/*
+		 * write latex file
+		 */
+		LaTex.writeHeader(fw, title, author);
+		for (Metric metric : metrics) {
+			fw.writeln("\\section{" + metric.getDescriptionLong() + "}");
+			for (String key : metric.getSingleKeys()) {
+				fw.writeln(LaTex.getLaTeXTable(s, metric, key));
+			}
+		}
+		LaTex.writeFooter(fw);
+
+		/*
+		 * generate file from latex
+		 */
+		boolean success = fw.close();
+		String cmd = Config.get("LATEX_PATH") + " --jobname=" + folder
+				+ filename + " -enable-write18 " + folder + filename
+				+ Config.get("LATEX_EXTENSION");
+		success &= Execute.exec(cmd, true);
+
+		/*
+		 * delete auxiliary files
+		 */
+		String[] aux = Config.keys("LATEX_AUXILIARY_EXTENSIONS");
+		for (String extension : aux) {
+			String fn = folder + filename + extension;
+			if ((new File(fn)).exists()) {
+				success &= (new File(fn)).delete();
+			}
+		}
+
+		timer.end();
+
+		return success;
+	}
+
+	private static void writeHeader(Filewriter fw, String title, String author) {
+		fw.writeln("\\documentclass[11pt]{amsart}");
+		fw.writeln("\\usepackage{epstopdf}");
+		fw.writeln("\\usepackage{tabularx}");
+		fw.writeln("\\usepackage{multirow}");
+		fw.writeln("\\usepackage{booktabs}");
+
+		fw.writeln("\\title{" + title + "}");
+		fw.writeln("\\author{" + author + "}");
+		fw.writeln("\\date{\\today}");
+		fw.writeln("\\begin{document}");
+		fw.writeln("\\maketitle");
+	}
+
+	private static void writeFooter(Filewriter fw) {
+		fw.writeln("\\end{document}");
+	}
+
+	public static String getLaTeXTable(Series[][] s, Metric metric, String key) {
+		String xLabel = s[0][0].getNetwork().getDiffParameterNameShort(
 				s[0][1 % s[0].length].getNetwork());
-		writePlot(filename, folder, nwDescription,
-				Config.allKeys("_SINGLES_PLOTS", metrics), metrics);
-	}
+		String yLabel = s[0][0].getNetwork().getDiffParameterNameShort(
+				s[1 % s.length][0].getNetwork());
 
-	private static void writePlot(String filename, String folder,
-			String nwDescription, String[][] keys, Metric[] metrics) {
-		Filewriter fw = new Filewriter(filename);
-		fw.writeln("\\subsection{" + nwDescription
-				+ Config.get("LATEX_PLOTS_APPENDIX") + "}");
-		int counter = 0;
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].length == 0) {
-				continue;
-			}
-			counter = 0;
-			fw.writeln("\\subsubsection*{" + metrics[i].getName() + "}");
-			for (int j = 0; j < keys[i].length; j++) {
-				writePlot(fw, folder, nwDescription, keys[i][j]);
-				counter++;
-				if ((counter % 2) == 0 && counter != keys[i].length) {
-					fw.writeln("\\newline");
-				}
-			}
-			// if ((counter % 2) != 0) {
-			// fw.writeln("\\newline");
-			// }
-		}
-		fw.close();
-	}
-
-	private static void writePlot(Filewriter fw, String folder,
-			String nwDescription, String plotKey) {
-		String filename = Config.get(plotKey + "_PLOT_FILENAME");
-		String ext = Config.get("PLOT_EXTENSION");
-		String file = folder + filename + ext;
-		// String label = folder.replace(
-		// Config.get("FILESYSTEM_FOLDER_DELIMITER"), "-")
-		// + plotKey;
-		// String caption = nwDescription + " - "
-		// + Config.get(plotKey + "_PLOT_TITLE");
-		fw.writeln("\\includegraphics[width=0.49\\textwidth]{" + file + "}");
-	}
-
-	/**
-	 * TABLES for Series[]
-	 */
-
-	public static void writeSingleTables(Series[] s, String filename,
-			String folder, Metric[] metrics) {
-		// TODO reimplement
-		// int decimals = Config.getInt("LATEX_TABLE_DECIMALS");
-		// String[][] keys = Config.allKeys("_TABLE_KEYS", metrics);
-		// Filewriter fw = new Filewriter(filename);
-		// String name = s[0].getNetwork().diffDescriptionShort(
-		// s[1 % s.length].getNetwork());
-		// fw.writeln("\\subsection{" + name +
-		// Config.get("LATEX_TABLE_APPENDIX")
-		// + "}");
-		// boolean first = true;
-		// for (int i = 0; i < keys.length; i++) {
-		// if (keys[i].length == 0) {
-		// continue;
-		// }
-		// String[][] table = new String[s.length + 1][keys[i].length + 1];
-		// table[0][0] = s[0].getNetwork().diffParameterName(
-		// s[1 % s.length].getNetwork());
-		// for (int j = 0; j < keys[i].length; j++) {
-		// table[0][j + 1] = makeIndex(keys[i][j]);
-		// }
-		// for (int j = 0; j < s.length; j++) {
-		// table[j + 1][0] = ""
-		// + s[j].getNetwork().diffParameterValue(
-		// s[(j + 1) % s.length].getNetwork());
-		// }
-		// for (int j = 0; j < keys[i].length; j++) {
-		// for (int k = 0; k < s.length; k++) {
-		// table[k + 1][j + 1] = formatNumber(s[k].avgSingles()
-		// .getValue(keys[i][j]), decimals);
-		// }
-		// }
-		// fw.writeln("\n");
-		// if (!first) {
-		// fw.writeln("\\vspace{1em}");
-		// }
-		// first = false;
-		// writeTable(fw, table, null, metrics[i].getName());
-		// fw.writeln("\n");
-		// fw.writeln("\\vspace{1em}");
-		// writeTable(fw, invert(table), null, metrics[i].getName());
-		// String fn = folder + metrics[i].getKey()
-		// + Config.get("LATEX_EXTENSION");
-		// Filewriter fw2 = new Filewriter(fn);
-		// writeTable(fw2, table, null, null);
-		// fw2.writeln("\n");
-		// fw2.writeln("\\vspace{1em}");
-		// writeTable(fw2, invert(table), null, null);
-		// fw2.close();
-		// }
-		// fw.close();
-	}
-
-	/**
-	 * TABLES for Series[][]
-	 */
-
-	public static void writeSingleTables(Series[][] s, String filename,
-			String folder, Metric[] metrics) {
-		// TODO reimplement
-		// for (int i = 1; i < s.length; i++) {
-		// if (s[i].length != s[0].length) {
-		// return;
-		// }
-		// }
-		// int decimals = Config.getInt("LATEX_TABLE_DECIMALS");
-		// String[][] keys = Config.allKeys("_TABLE_KEYS", metrics);
-		// Filewriter fw = new Filewriter(filename);
-		// String x = s[0][0].getNetwork().diffDescriptionShort(
-		// s[0][1 % s[0].length].getNetwork());
-		// String y = s[0][0].getNetwork().diffDescriptionShort(
-		// s[1 % s.length][0].getNetwork());
-		// String name = s[0][0].getNetwork().diffDescriptionShort(
-		// s[0][1 % s[0].length].getNetwork());
-		// fw.writeln("\\subsection{" + name +
-		// Config.get("LATEX_TABLE_APPENDIX")
-		// + "}");
-		// boolean first = true;
-		// String[][] table = new String[s.length + 1][s[0].length + 1];
-		// table[0][0] = y + " $\\backslash$ " + x;
-		// for (int i = 0; i < s[0].length; i++) {
-		// table[0][i + 1] = ""
-		// + s[0][i].getNetwork().diffParameterValue(
-		// s[0][(i + 1) % s[0].length].getNetwork());
-		// }
-		// for (int i = 0; i < s.length; i++) {
-		// table[i + 1][0] = ""
-		// + s[i][0].getNetwork().diffParameterValue(
-		// s[(i + 1) % s.length][0].getNetwork());
-		// }
-		// for (int i = 0; i < keys.length; i++) {
-		// for (int j = 0; j < keys[i].length; j++) {
-		// String key = keys[i][j];
-		// for (int k = 0; k < s.length; k++) {
-		// for (int l = 0; l < s[k].length; l++) {
-		// double value = s[k][l].avgSingles().getValue(key);
-		// table[k + 1][l + 1] = formatNumber(value, decimals);
-		// }
-		// }
-		// fw.writeln("\n\n");
-		// if (!first) {
-		// fw.writeln("\\vspace{1em}");
-		// }
-		// first = false;
-		// writeTable(fw, table, "label", makeIndex(key));
-		// fw.writeln("\n");
-		// fw.writeln("\\vspace{1em}");
-		// writeTable(fw, invert(table), "label", makeIndex(key));
-		// String fn = folder + keys[i][j] + Config.get("LATEX_EXTENSION");
-		// Filewriter fw2 = new Filewriter(fn);
-		// writeTable(fw2, table, null, null);
-		// fw2.writeln("\n");
-		// fw2.writeln("\\vspace{1em}");
-		// writeTable(fw2, invert(table), null, null);
-		// fw2.close();
-		// }
-		// }
-		// fw.close();
-	}
-
-	/**
-	 * TABLES util
-	 */
-	public static String[][] invert(String[][] table) {
-		String[][] inverted = new String[table[0].length][table.length];
-		for (int i = 0; i < table.length; i++) {
-			for (int j = 0; j < table[i].length; j++) {
-				inverted[j][i] = table[i][j];
+		String[] xLabels = new String[s[0].length];
+		for (int i = 0; i < s[0].length; i++) {
+			Parameter p = s[0][i].getNetwork().getDiffParameter(
+					s[0][(i + 1) % s[0].length].getNetwork());
+			if (p != null) {
+				xLabels[i] = p.getValue();
+			} else {
+				xLabels[i] = s[0][i].getNetwork().getDescriptionShort();
 			}
 		}
-		return inverted;
+
+		String[] yLabels = new String[s.length];
+		for (int i = 0; i < s.length; i++) {
+			Parameter p = s[i][0].getNetwork().getDiffParameter(
+					s[(i + 1) % s.length][0].getNetwork());
+			if (p != null) {
+				yLabels[i] = p.getValue();
+			} else {
+				yLabels[i] = "";
+			}
+		}
+
+		double[][] entries = ArrayUtils.initDoubleArray(s.length,
+				LaTex.getMaxLengthArray(s).length, Table.EMPTY_VALUE);
+		for (int i = 0; i < s.length; i++) {
+			for (int j = 0; j < s[i].length; j++) {
+				entries[i][j] = s[i][j].getSingle(metric, key).getValue();
+			}
+		}
+
+		String caption = Config.get(key + "_SINGLE_NAME");
+		String label = key.replace("_", "-");
+		Table table = new Table(entries, caption, label, xLabel, xLabels,
+				yLabel, yLabels);
+
+		return table.toLaTex();
 	}
 
-	private static void writeTable(Filewriter fw, String[][] table,
-			String label, String caption) {
-		if (Config.getBoolean("LATEX_TABLE_USE_BOOKTABS")) {
-			fw.writeln("\\scriptsize");
-			if (caption != null) {
-				fw.writeln("\\subsubsection*{" + caption + "}");
-			}
-			fw.write("\\begin{tabular}{l");
-			// fw.write("\\begin{tabular*}{\\textwidth}{l");
-			for (int i = 1; i < table[0].length; i++) {
-				fw.write("r");
-			}
-			fw.writeln("}");
-			fw.writeln("\\toprule");
-			for (int i = 0; i < table.length; i++) {
-				for (int j = 0; j < table[i].length; j++) {
-					if (j > 0) {
-						fw.write(" & ");
-					}
-					if (i == 0 || j == 0) {
-						fw.write("\\textbf{" + table[i][j] + "}");
-					} else {
-						fw.write(table[i][j]);
-					}
-				}
-				fw.writeln("\\\\");
-				if (i == 0) {
-					fw.writeln("\\midrule");
-				}
-			}
-			fw.writeln("\\bottomrule");
-			fw.writeln("\\end{tabular}");
-			// fw.writeln("\\end{tabular*}");
-			fw.writeln("\\normalsize");
-		} else {
-			fw.writeln("\\scriptsize");
-			// fw.writeln("\\begin{table*}[!ht]");
-			// fw.writeln("\\center");
-			if (caption != null) {
-				fw.writeln("\\subsubsection*{" + caption + "}");
-			}
-			fw.write("\\begin{tabular}{|l|");
-			for (int i = 1; i < table[0].length; i++) {
-				fw.write("r|");
-			}
-			fw.writeln("}");
-			fw.writeln("\\hline");
-			for (int i = 0; i < table.length; i++) {
-				for (int j = 0; j < table[i].length; j++) {
-					if (j > 0) {
-						fw.write(" & ");
-					}
-					if (i == 0 || j == 0) {
-						fw.write("\\textbf{" + table[i][j] + "}");
-					} else {
-						fw.write(table[i][j]);
-					}
-				}
-				fw.writeln("\\\\ \\hline");
-			}
-			fw.writeln("\\end{tabular}");
-			// fw.writeln("\\label{" + label + "}");
-			// fw.writeln("\\caption{" + caption + "}");
-			// fw.writeln("\\end{table*}");
-			fw.writeln("\\normalsize");
+	private static Parameter getDiffParameter(Series[] s) {
+		if (s.length <= 1) {
+			return null;
 		}
+
+		Parameter diff = s[0].getNetwork().getDiffParameter(s[1].getNetwork());
+
+		if (diff == null) {
+			return null;
+		}
+
+		for (int i = 1; i < s.length; i++) {
+			Parameter diff2 = s[i].getNetwork().getDiffParameter(
+					s[(i + 1) % s.length].getNetwork());
+			if (diff2 == null || !diff.getKey().equals(diff2.getKey())) {
+				return null;
+			}
+		}
+
+		return diff;
 	}
 
-	private static String makeIndex(String name) {
-		if (!name.contains("_")) {
-			return name;
+	private static Parameter getDiffParameterX(Series[][] s) {
+		Parameter diff = LaTex.getDiffParameter(LaTex.getMaxLengthArray(s));
+		if (diff == null) {
+			return null;
 		}
-		name = name.replaceFirst("_", "%%%");
-		name = name.replace("_", "\\_");
-		name = name.replace("%%%", "$_{") + "}$";
-		return name;
+
+		for (Series[] s1 : s) {
+			Parameter diff2 = LaTex.getDiffParameter(s1);
+			if (!diff.getKey().equals(diff2.getKey())) {
+				return null;
+			}
+		}
+
+		return diff;
 	}
 
-	private static final DecimalFormat showAllDigitsFormat = new DecimalFormat(
-			"0.0#####################################");
-
-	public static String formatNumber(double d, int decimalPlaces) {
-
-		if (decimalPlaces < 0) {
-			throw new IllegalArgumentException(
-					"Cannot have negative decimal places.");
-		}
-
-		if (decimalPlaces == 0) {
-			long rounded = Math.round(d);
-			return addCommas(rounded + "");
-		} else {
-			long rounded = Math.round(d * Math.pow(10, decimalPlaces));
-			d = rounded;
-			for (int i = 0; i < decimalPlaces; i++) {
-				d /= 10.0d;
-			}
-			String s = showAllDigitsFormat.format(d);
-			int decimalIndex = 0;
-			if (s.contains(".")) {
-				decimalIndex = s.indexOf('.');
-			} else if (s.contains(",")) {
-				decimalIndex = s.indexOf(',');
-			}
-
-			String leftSide = s.substring(0, decimalIndex);
-			String rightSide = s.substring(decimalIndex + 1);
-
-			leftSide = addCommas(leftSide);
-			if (decimalPlaces < rightSide.length()) {
-				rightSide = rightSide.substring(0, decimalPlaces);
-			} else if (decimalPlaces > rightSide.length()) {
-				StringBuilder sb = new StringBuilder(rightSide);
-				for (int i = 0; i < decimalPlaces - rightSide.length(); i++) {
-					sb.append('0');
-				}
-				rightSide = sb.toString();
-			}
-
-			return leftSide + "." + rightSide;
-		}
-
-	}
-
-	private static String addCommas(String s) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = s.length() - 1; i >= 0; i--) {
-			sb.insert(0, s.charAt(i));
-			if (i > 0 && (s.length() - i) % 3 == 0) {
-				sb.insert(0, ',');
+	private static Series[] getMaxLengthArray(Series[][] s) {
+		Series[] s1 = null;
+		int max = 0;
+		for (Series[] S : s) {
+			if (S.length > max) {
+				max = S.length;
+				s1 = S;
 			}
 		}
-		return sb.toString();
+		return s1;
 	}
 }

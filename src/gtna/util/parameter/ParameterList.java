@@ -213,10 +213,21 @@ public class ParameterList {
 	}
 
 	public Parameter getDiffParameter(ParameterList pl2) {
+		/*
+		 * differing type
+		 */
 		if (!pl2.getKey().equals(this.key)) {
+			System.err
+					.println("cannot compare parameter lists of different types");
 			return null;
 		}
+
+		/*
+		 * parameters
+		 */
 		if (pl2.getParameters().length != this.parameters.length) {
+			System.err
+					.println("cannot compare parameter lists with different number of parameters");
 			return null;
 		}
 		Parameter backup = null;
@@ -227,12 +238,45 @@ public class ParameterList {
 				return null;
 			}
 			if (p1.getKey().equals("NODES")) {
+				// use parameter NODES only if no other difference is found
 				backup = p1;
 				continue;
 			}
-			if (!p1.getValue().equals(p2.getValue())
-					&& (p1 instanceof DoubleParameter || p1 instanceof IntParameter)) {
-				return p1;
+			if (!p1.getValue().equals(p2.getValue())) {
+				if (p1 instanceof IntParameter) {
+					// different in parameter
+					return p1;
+				} else if (p1 instanceof DoubleParameter) {
+					// different double parameter
+					return p1;
+				} else if (p1 instanceof ParameterListParameter
+						&& p2 instanceof ParameterListParameter) {
+					// different parameterList parameter
+					ParameterList plp1 = ((ParameterListParameter) p1)
+							.getParameterListValue();
+					ParameterList plp2 = ((ParameterListParameter) p2)
+							.getParameterListValue();
+					Parameter p = plp1.getDiffParameter(plp2);
+					if (p != null) {
+						return p;
+					}
+				} else if (p1 instanceof ParameterListArrayParameter
+						&& p2 instanceof ParameterListArrayParameter) {
+					// different parameterListArray parameter
+					ParameterList[] pla1 = ((ParameterListArrayParameter) p1)
+							.getParameterListArrayValue();
+					ParameterList[] pla2 = ((ParameterListArrayParameter) p2)
+							.getParameterListArrayValue();
+					if (pla1.length != pla2.length) {
+						continue;
+					}
+					for (int j = 0; j < pla1.length; i++) {
+						Parameter p = pla1[j].getDiffParameter(pla2[j]);
+						if (p != null) {
+							return p;
+						}
+					}
+				}
 			}
 		}
 		return backup;
@@ -314,5 +358,16 @@ public class ParameterList {
 			}
 		}
 		return Config.get(this.key + "_" + p.getKey() + xy);
+	}
+
+	public static String toString(ParameterList[] array) {
+		StringBuffer buff = new StringBuffer();
+		for (ParameterList pl : array) {
+			if (buff.length() > 0) {
+				buff.append("--");
+			}
+			buff.append(pl.getFolderName());
+		}
+		return buff.toString();
 	}
 }

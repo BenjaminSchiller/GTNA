@@ -36,6 +36,7 @@
 package gtna.routing;
 
 import gtna.graph.Graph;
+import gtna.id.Identifier;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.ParameterList;
 
@@ -77,6 +78,22 @@ public abstract class RoutingAlgorithm extends ParameterList {
 			Random rand);
 
 	/**
+	 * The given source attempts to route towards the destination specified by
+	 * the target identifier.
+	 * 
+	 * @param graph
+	 *            network graph
+	 * @param start
+	 *            node from which the routing should start
+	 * @param target
+	 *            target identifier to be routed towards
+	 * @return Path object containing information about the routing attempt
+	 */
+	@SuppressWarnings("rawtypes")
+	public abstract Route routeToTarget(Graph graph, int start,
+			Identifier target, Random rand);
+
+	/**
 	 * Checks if this routing algorithm can be applied to the given network
 	 * represented by the set of nodes.
 	 * 
@@ -95,5 +112,16 @@ public abstract class RoutingAlgorithm extends ParameterList {
 	 *            list of all nodes contained in the network
 	 */
 	public abstract void preprocess(Graph graph);
+
+	public static String toString(RoutingAlgorithm[] phases) {
+		StringBuffer buff = new StringBuffer();
+		for (RoutingAlgorithm phase : phases) {
+			if (buff.length() > 0) {
+				buff.append("--");
+			}
+			buff.append(phase.getFolderName());
+		}
+		return buff.toString();
+	}
 
 }

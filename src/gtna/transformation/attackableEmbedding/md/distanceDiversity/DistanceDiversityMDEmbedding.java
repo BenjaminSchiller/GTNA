@@ -37,12 +37,18 @@ package gtna.transformation.attackableEmbedding.md.distanceDiversity;
 
 import gtna.graph.Graph;
 import gtna.id.md.MDIdentifierSpaceSimple.DistanceMD;
+import gtna.id.ring.RingIdentifierSpace.Distance;
 import gtna.transformation.attackableEmbedding.AttackableEmbeddingNode;
+import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding.AttackerSelection;
+import gtna.transformation.attackableEmbedding.IQD.AttackerIQDEmbedding.AttackerType;
 import gtna.transformation.attackableEmbedding.IQD.DistanceDiversity.DistanceDiversityNode;
+import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding.DecisionMethod;
+import gtna.transformation.attackableEmbedding.IQD.IQDEmbedding.IdentifierMethod;
 import gtna.transformation.attackableEmbedding.md.AttackerIQDMDEmbedding;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -88,6 +94,44 @@ public class DistanceDiversityMDEmbedding extends AttackerIQDMDEmbedding {
 				selection, attackercount, new Parameter[] {
 						new IntParameter("MAX_LOG", max),
 						new DoubleParameter("EXPONENT", exp) });
+		this.max = max;
+		this.exponent = exp;
+	}
+
+	public DistanceDiversityMDEmbedding(int iterations,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			DistanceMD distance, int dimension, double epsilon,
+			boolean checkold, boolean adjustone, int max, double exp,
+			boolean add) {
+		super(iterations, "DISTANCE_DIVERSITY_MD", idMethod, deMethod,
+				distance, dimension, epsilon, checkold, adjustone,
+				add ? new Parameter[] { new IntParameter("MAX_LOG", max),
+						new DoubleParameter("EXPONENT", exp) }
+						: new Parameter[] {
+								new IntParameter("ITERATIONS", iterations),
+								new IntParameter("DIMENSION", dimension),
+								new StringParameter("DISTANCE",
+										distance.toString()) }, add);
+		this.max = max;
+		this.exponent = exp;
+	}
+
+	public DistanceDiversityMDEmbedding(int iterations,
+			IdentifierMethod idMethod, DecisionMethod deMethod,
+			DistanceMD distance, int dimension, double epsilon,
+			boolean checkold, boolean adjustone, int max, double exp,
+			AttackerType type, AttackerSelection selection, int attackercount,
+			boolean add) {
+		super(iterations, "DISTANCE_DIVERSITY_MD", idMethod, deMethod,
+				distance, dimension, epsilon, checkold, adjustone, type,
+				selection, attackercount, add ? new Parameter[] {
+						new IntParameter("MAX_LOG", max),
+						new DoubleParameter("EXPONENT", exp) }
+						: new Parameter[] {
+								new IntParameter("ITERATIONS", iterations),
+								new IntParameter("DIMENSION", dimension),
+								new StringParameter("DISTANCE",
+										distance.toString()) }, add);
 		this.max = max;
 		this.exponent = exp;
 	}

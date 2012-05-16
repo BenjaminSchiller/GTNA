@@ -1,17 +1,12 @@
 # GTNA
-data
-plots
-temp
-resources
-src/gtna/GTNA2.java
-#src/gtna/IDSorting.java
-bin
-
-# Exceptions
-!src/gtna/data
+/data
+/plots
+/temp
+/resources
+/bin
 
 # deploy
-deploy*
+/deploy*
 
 # etc
 etc/configKeys.txt

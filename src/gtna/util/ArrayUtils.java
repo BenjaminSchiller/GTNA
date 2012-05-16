@@ -130,6 +130,14 @@ public class ArrayUtils {
 		return array;
 	}
 
+	public static Integer[] initIntegerArray(int length) {
+		Integer[] array = new Integer[length];
+		for (int i = 0; i < array.length; i++) {
+			array[i] = i;
+		}
+		return array;
+	}
+
 	public static double[] initDoubleArray(int length, double value) {
 		double[] array = new double[length];
 		for (int i = 0; i < array.length; i++) {
@@ -138,10 +146,13 @@ public class ArrayUtils {
 		return array;
 	}
 
-	public static Integer[] initIntegerArray(int length) {
-		Integer[] array = new Integer[length];
+	public static double[][] initDoubleArray(int yLength, int xLength,
+			double value) {
+		double[][] array = new double[yLength][xLength];
 		for (int i = 0; i < array.length; i++) {
-			array[i] = i;
+			for (int j = 0; j < array[i].length; j++) {
+				array[i][j] = value;
+			}
 		}
 		return array;
 	}
