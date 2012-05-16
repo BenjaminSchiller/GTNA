@@ -47,7 +47,7 @@ import gtna.metrics.basic.DegreeDistribution;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GLP;
-import gtna.networks.model.PFP1;
+import gtna.networks.model.PFP;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plotting;
 import gtna.util.Config;
@@ -88,7 +88,7 @@ public class Test2 {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		Network nw = new PFP1(1000, 10, 0.4, 0.021, null);
+		Network nw = new PFP(1000, 10, 0.4, 0.021, null);
 		Network[] networks = new Network[] { nw };
 
 		Metric m = new EffectiveDiameter(128, 7, new CentralityNodeSorter(

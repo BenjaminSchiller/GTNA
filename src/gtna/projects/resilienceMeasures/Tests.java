@@ -67,7 +67,7 @@ import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GLP;
 import gtna.networks.model.PFP;
-import gtna.networks.model.PFP1;
+import gtna.networks.model.PFP;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plotting;
 import gtna.util.Config;
@@ -210,7 +210,7 @@ public class Tests {
 		int startNodes = 15;
 		double p = 0.4;
 		double delta = 0.021;
-		Network nw = new PFP1(N, startNodes, p, delta, null);
+		Network nw = new PFP(N, startNodes, p, delta, null);
 
 		System.out.println("generating...");
 		Graph g = nw.generate();
@@ -348,7 +348,7 @@ public class Tests {
 		int startNodes = 20;
 		double p = 0.4;
 		double delta = 0.021;
-		Network nw = new PFP1(N, startNodes, p, delta, null);
+		Network nw = new PFP(N, startNodes, p, delta, null);
 
 		Network caida = new ReadableFile("CAIDA", "CAIDA", "2012.gtna", null);
 
