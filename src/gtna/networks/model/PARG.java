@@ -56,6 +56,7 @@ public class PARG extends Network {
 	private int nAdd;
 	private int nDel;
 	private int nCut;
+	private int numStartNode;
 
 	// variables to algorithms
 	// private double[] nodePref;
@@ -70,13 +71,15 @@ public class PARG extends Network {
 	 * @param transformations
 	 */
 
-	public PARG(int nodes, int nAdd, int nDel, int nCut, Transformation[] t) {
-		super("PARG", nodes,
-				new Parameter[] { new IntParameter("nAdd", nAdd),
-						new IntParameter("nDel", nDel),
-						new IntParameter("nCut", nCut) }, t);
+	public PARG(int nodes, int numStartNode, int nAdd, int nDel, int nCut,
+			Transformation[] t) {
+		super("PARG", nodes, new Parameter[] { new IntParameter("NADD", nAdd),
+				new IntParameter("NDEL", nDel), new IntParameter("NCUT", nCut),
+				new IntParameter("START_NODES", numStartNode) }, t);
 		this.nAdd = nAdd;
 		this.nDel = nDel;
+		this.nCut = nCut;
+		this.numStartNode = numStartNode;
 	}
 
 	/*
@@ -94,25 +97,24 @@ public class PARG extends Network {
 		highestDegreedNodes = new ArrayList<Integer>();
 		// nodePref = new double[nodes.length];
 
-		for (int i = 0; i < nodeDegree.length; i++) {
-			// TODO: generate original random graph
-			// ---Test---
-			if (i < 5) {
-				for (int j = 0; j < i; j++) {
-					this.addEdge(i, j);
-				}
-				continue;
+		// TODO: generate original random graph
+		// ---Test---
+		for (int i = 0; i < this.numStartNode; i++) {
+			for (int j = 0; j < i; j++) {
+				this.addEdge(i, j);
 			}
-			// ---
+			continue;
+		}
+		// ---
 
-			Random rand = new Random();
+		for (int i = this.numStartNode; i < nodeDegree.length; i++) {
 
 			// at each time step a new node is added to the network. The new
 			// node stochastically makes nAdd number of links with existing
 			// nodes
 			for (int j = 0; j < nAdd; j++) {
 				// TODO: are they diff???
-				int node = this.selectNodeUsingPref(i - 1, rand);
+				int node = this.selectNodeUsingPref(i - 1);
 				this.addEdge(i, node);
 			}
 
@@ -155,12 +157,14 @@ public class PARG extends Network {
 	 * Math.log(degree); }
 	 */
 
-	private int selectNodeUsingPref(int maxIndex, Random rand) {
+	private Random selectNodeRand = new Random();
+
+	private int selectNodeUsingPref(int maxIndex) {
 		double prefSum = 0;
 		for (int i = 0; i <= maxIndex; i++) {
 			prefSum += nodeDegree[i];
 		}
-		double r = rand.nextDouble();
+		double r = selectNodeRand.nextDouble();
 		double threshold = r * prefSum;
 		double sum = 0;
 		for (int i = 0; i <= maxIndex; i++) {

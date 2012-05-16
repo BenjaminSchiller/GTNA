@@ -40,6 +40,8 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.partition.Partition;
 import gtna.graph.sorting.NodeSorter;
+import gtna.graph.sorting.algorithms.GraphSPall;
+import gtna.graph.sorting.algorithms.GraphSPallFloyd;
 import gtna.io.DataWriter;
 import gtna.networks.Network;
 import gtna.transformation.partition.WeakConnectivityPartition;
@@ -117,7 +119,7 @@ public class EffectiveDiameter extends Metric {
 				if (this.approximate) {
 					this.approxmiateCalculate(g);
 				} else {
-					calculate(g);
+					this.calculate(g);
 				}
 			}
 
@@ -385,5 +387,28 @@ public class EffectiveDiameter extends Metric {
 		}
 		System.out.println("Cannot reach 90% number of pairs");
 		this.isBroken = true;
+	}
+
+	private void calculate1(Graph g) {
+		GraphSPallFloyd allpairs = new GraphSPallFloyd(g);
+		int sumOfPairs = this.numOfConnectedPair(g);
+		System.out.println("Total Pair: " + sumOfPairs);
+		for (int distance = 1; distance < g.getNodes().length; distance++) {
+			double sum = 0;
+			int N = g.getNodes().length;
+			for (int i = 0; i < N - 1; i++) {
+				for (int j = i + 1; j < N; j++) {
+					if (allpairs.dist(i, j) <= distance)
+						sum++;
+				}
+			}
+			if (sum >= 0.9 * ((double) sumOfPairs)) {
+				this.effectiveDiameter = distance;
+				System.out.println("Found: " + distance);
+				return;
+			}
+
+		}
+		System.out.println("Cannot reach 90% number of pairs!");
 	}
 }

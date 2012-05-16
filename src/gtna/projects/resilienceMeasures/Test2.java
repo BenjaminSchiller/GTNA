@@ -36,13 +36,17 @@
 package gtna.projects.resilienceMeasures;
 
 import gtna.data.Series;
+import gtna.graph.sorting.CentralityNodeSorter;
 import gtna.graph.sorting.DegreeNodeSorter;
+import gtna.graph.sorting.CentralityNodeSorter.CentralityMode;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
+import gtna.metrics.BiconnectedComponent;
 import gtna.metrics.EffectiveDiameter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
+import gtna.networks.model.GLP;
 import gtna.networks.model.PFP1;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plotting;
@@ -54,7 +58,7 @@ import gtna.util.Config;
  */
 public class Test2 {
 	public static void main(String[] args) {
-		Test2.effectiveDiameter();
+		Test2.readFileTest();
 	}
 
 	public static void readFileTest() {
@@ -64,13 +68,19 @@ public class Test2 {
 
 		String graphFile = ".\\caida2007.gtna";
 		Network nw1 = new ReadableFile("CAIDA", "CAIDA", graphFile, null);
-		Network[] networks = new Network[] { nw1 };
+		int N = 12160;
+		int m0 = 100;
+		int m = 2;
+		double p = 0.4695;
+		double beta = 0.6447;
+		Network nw2 = new GLP(N, m0, m, p, beta, null);
+		Network[] networks = new Network[] { nw1, nw2 };
 
-		Metric m = new DegreeDistribution();
-		Metric[] metrics = new Metric[] { m };
+		Metric metric = new DegreeDistribution();
+		Metric[] metrics = new Metric[] { metric };
 
-		Series[] s = Series.generate(networks, metrics, 3);
-		Plotting.multi(s, metrics, "readFileTest/");
+		Series[] s = Series.generate(networks, metrics, 20);
+		Plotting.multi(s, metrics, "compare/");
 	}
 
 	public static void effectiveDiameter() {
@@ -81,8 +91,8 @@ public class Test2 {
 		Network nw = new PFP1(1000, 10, 0.4, 0.021, null);
 		Network[] networks = new Network[] { nw };
 
-		Metric m = new EffectiveDiameter(128, 7, new DegreeNodeSorter(
-				NodeSorterMode.DESC), true);
+		Metric m = new EffectiveDiameter(128, 7, new CentralityNodeSorter(
+				CentralityMode.BETWEENNESS, NodeSorterMode.DESC), false);
 		Metric[] metrics = new Metric[] { m };
 
 		Series[] s = Series.generate(networks, metrics, 1);
