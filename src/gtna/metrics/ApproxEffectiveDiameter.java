@@ -63,7 +63,7 @@ import java.util.Random;
  * @author truong
  * 
  */
-public class EffectiveDiameter extends Metric {
+public class ApproxEffectiveDiameter extends Metric {
 
 	private int effectiveDiameter = 0;
 	private int k;
@@ -72,7 +72,6 @@ public class EffectiveDiameter extends Metric {
 	private double[] effectiveDiameters;
 	private Timer runtime;
 	private NodeSorter sorter;
-	private boolean approximate;
 
 	private boolean isBroken;
 
@@ -80,16 +79,13 @@ public class EffectiveDiameter extends Metric {
 	 * @param key
 	 * @param parameters
 	 */
-	public EffectiveDiameter(int k, int r, NodeSorter sorter,
-			boolean approximate) {
-		super("EFFECTIVE_DIAMETER", new Parameter[] { new IntParameter("K", k),
-				new IntParameter("R", r),
-				new StringParameter("SORTER", sorter.getKey()),
-				new BooleanParameter("APPROXIMATE", approximate) });
+	public ApproxEffectiveDiameter(int k, int r, NodeSorter sorter) {
+		super("APPROX_EFFECTIVE_DIAMETER", new Parameter[] {
+				new IntParameter("K", k), new IntParameter("R", r),
+				new StringParameter("SORTER", sorter.getKey()) });
 		this.k = k;
 		this.r = r;
 		this.sorter = sorter;
-		this.approximate = approximate;
 	}
 
 	/*
@@ -116,11 +112,7 @@ public class EffectiveDiameter extends Metric {
 			if (this.stop) {
 				this.effectiveDiameter = 0;
 			} else {
-				if (this.approximate) {
-					this.approxmiateCalculate(g);
-				} else {
-					this.calculate(g);
-				}
+				this.approxmiateCalculate(g);
 			}
 
 			this.effectiveDiameters[i] = this.effectiveDiameter;
@@ -212,7 +204,7 @@ public class EffectiveDiameter extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(this.effectiveDiameters,
-				"EFFECTIVE_DIAMETER_DIAMETER", folder);
+				"APPROX_EFFECTIVE_DIAMETER_DIAMETER", folder);
 		return success;
 	}
 
@@ -223,7 +215,7 @@ public class EffectiveDiameter extends Metric {
 	 */
 	@Override
 	public Single[] getSingles() {
-		Single RT = new Single("EFFECTIVE_DIAMETER_RUNTIME",
+		Single RT = new Single("APPROX_EFFECTIVE_DIAMETER_RUNTIME",
 				this.runtime.getRuntime());
 		return new Single[] { RT };
 	}
@@ -347,68 +339,5 @@ public class EffectiveDiameter extends Metric {
 			stop = true;
 		}
 		return sumOfConnectedPairs;
-	}
-
-	// Test
-	private void calculate(Graph g) {
-		int totalPairs = this.numOfConnectedPair(g);
-
-		Node[] nodes = g.getNodes();
-		HashMap<Node, HashMap<String, Node>> neighbors = new HashMap<Node, HashMap<String, Node>>();
-		HashMap<Node, HashMap<String, Node>> outside = new HashMap<Node, HashMap<String, Node>>();
-		for (Node n : nodes) {
-			HashMap<String, Node> neigh = new HashMap<String, Node>();
-			HashMap<String, Node> out = new HashMap<String, Node>();
-			neigh.put("" + n.getIndex(), n);
-			out.put("" + n.getIndex(), n);
-			neighbors.put(n, neigh);
-			outside.put(n, out);
-		}
-		for (int i = 1; i < nodes.length; i++) {
-			int numOfPairs = 0;
-			for (Node n : nodes) {
-				HashMap<String, Node> newOut = new HashMap<String, Node>();
-				for (Node out : outside.get(n).values()) {
-					int[] neighsOfOut = out.getIncomingEdges();
-					for (int index : neighsOfOut) {
-						neighbors.get(n).put("" + nodes[index].toString(),
-								nodes[index]);
-						newOut.put("" + nodes[index].getIndex(), nodes[index]);
-					}
-				}
-				outside.put(n, newOut);
-				numOfPairs += neighbors.get(n).size() - 1;
-			}
-			if (numOfPairs / 2 >= 0.9 * totalPairs) {
-				this.effectiveDiameter = i;
-				System.out.println("Found: " + i);
-				return;
-			}
-		}
-		System.out.println("Cannot reach 90% number of pairs");
-		this.isBroken = true;
-	}
-
-	private void calculate1(Graph g) {
-		GraphSPallFloyd allpairs = new GraphSPallFloyd(g);
-		int sumOfPairs = this.numOfConnectedPair(g);
-		System.out.println("Total Pair: " + sumOfPairs);
-		for (int distance = 1; distance < g.getNodes().length; distance++) {
-			double sum = 0;
-			int N = g.getNodes().length;
-			for (int i = 0; i < N - 1; i++) {
-				for (int j = i + 1; j < N; j++) {
-					if (allpairs.dist(i, j) <= distance)
-						sum++;
-				}
-			}
-			if (sum >= 0.9 * ((double) sumOfPairs)) {
-				this.effectiveDiameter = distance;
-				System.out.println("Found: " + distance);
-				return;
-			}
-
-		}
-		System.out.println("Cannot reach 90% number of pairs!");
 	}
 }

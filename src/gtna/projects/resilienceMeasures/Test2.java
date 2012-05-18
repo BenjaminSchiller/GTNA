@@ -36,12 +36,17 @@
 package gtna.projects.resilienceMeasures;
 
 import gtna.data.Series;
+import gtna.graph.Graph;
 import gtna.graph.sorting.CentralityNodeSorter;
 import gtna.graph.sorting.DegreeNodeSorter;
+import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.CentralityNodeSorter.CentralityMode;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
+import gtna.graph.sorting.algorithms.GraphSPall;
+import gtna.graph.sorting.algorithms.GraphSPallFloyd;
 import gtna.metrics.BiconnectedComponent;
-import gtna.metrics.EffectiveDiameter;
+import gtna.metrics.ApproxEffectiveDiameter;
+import gtna.metrics.ExactEffectiveDiameter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.networks.Network;
@@ -58,7 +63,7 @@ import gtna.util.Config;
  */
 public class Test2 {
 	public static void main(String[] args) {
-		Test2.readFileTest();
+		Test2.effectiveDiameter();
 	}
 
 	public static void readFileTest() {
@@ -69,11 +74,8 @@ public class Test2 {
 		String graphFile = ".\\caida2007.gtna";
 		Network nw1 = new ReadableFile("CAIDA", "CAIDA", graphFile, null);
 		int N = 12160;
-		int m0 = 100;
-		int m = 2;
-		double p = 0.4695;
-		double beta = 0.6447;
-		Network nw2 = new GLP(N, m0, m, p, beta, null);
+
+		Network nw2 = new PFP(N, 20, 0.4, 0.021, null);
 		Network[] networks = new Network[] { nw1, nw2 };
 
 		Metric metric = new DegreeDistribution();
@@ -88,14 +90,24 @@ public class Test2 {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		Network nw = new PFP(1000, 10, 0.4, 0.021, null);
+		Network nw = new PFP(10000, 10, 0.4, 0.021, null);
 		Network[] networks = new Network[] { nw };
 
-		Metric m = new EffectiveDiameter(128, 7, new CentralityNodeSorter(
-				CentralityMode.BETWEENNESS, NodeSorterMode.DESC), false);
-		Metric[] metrics = new Metric[] { m };
+		NodeSorter sorter = new DegreeNodeSorter(NodeSorterMode.DESC);
+		Metric m1 = new ApproxEffectiveDiameter(128, 7, sorter);
+		Metric m2 = new ExactEffectiveDiameter(sorter);
+		Metric[] metrics = new Metric[] { m1 };
 
 		Series[] s = Series.generate(networks, metrics, 1);
 		Plotting.multi(s, metrics, "effectiveDiameter/");
+
+	}
+
+	public static void allPairsTest() {
+		Network nw = new PFP(100, 10, 0.4, 0.021, null);
+		Graph g = nw.generate();
+		GraphSPallFloyd allpairs = new GraphSPallFloyd(g);
+		System.out.println("" + allpairs.dist(1, 90));
+		System.out.println("" + allpairs.dist(90, 1));
 	}
 }

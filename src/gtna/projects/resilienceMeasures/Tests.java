@@ -56,7 +56,7 @@ import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.RandomNodeSorter;
 import gtna.graph.sorting.algorithms.ResilienceMetrics;
 import gtna.metrics.BiconnectedComponent;
-import gtna.metrics.EffectiveDiameter;
+import gtna.metrics.ApproxEffectiveDiameter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.fragmentation.Fragmentation.Resolution;
@@ -84,7 +84,7 @@ public class Tests {
 		 * GraphWriter.write(g, "Erdos.gtna");
 		 */
 
-		Tests.effectiveDiameter();
+		Tests.PFPPlotTest();
 	}
 
 	public static void test() {
@@ -206,8 +206,8 @@ public class Tests {
 	}
 
 	public static void PFPTest() {
-		int N = 1000;
-		int startNodes = 15;
+		int N = 9204;
+		int startNodes = 20;
 		double p = 0.4;
 		double delta = 0.021;
 		Network nw = new PFP(N, startNodes, p, delta, null);
@@ -221,10 +221,6 @@ public class Tests {
 				maxDegree = n.getDegree();
 			}
 		}
-		System.out.println("==========");
-		System.out.println("Nodes = " + g.getNodes().length);
-		System.out.println("Edges = " + g.getEdges().getEdges().size() / 2);
-		System.out.println("Max Degree = " + maxDegree / 2);
 
 		try {
 			Utils.exportToGML(g, "PFP");
@@ -350,14 +346,12 @@ public class Tests {
 		double delta = 0.021;
 		Network nw = new PFP(N, startNodes, p, delta, null);
 
-		Network caida = new ReadableFile("CAIDA", "CAIDA", "2012.gtna", null);
-
 		Network[] networks = new Network[] { nw };
 
 		Metric m = new DegreeDistribution();
 		Metric[] metrics = new Metric[] { m };
 		Series[] s = Series.generate(networks, metrics, 100);
-		Plotting.multi(s, metrics, "CAIDA_TEST/");
+		Plotting.multi(s, metrics, "PFP/");
 
 	}
 
@@ -371,7 +365,7 @@ public class Tests {
 		Network nw = new ErdosRenyi(100, 6, true, null);
 		Network[] networks = new Network[] { nw };
 
-		Metric m = new EffectiveDiameter(128, 7, new RandomNodeSorter(), true);
+		Metric m = new ApproxEffectiveDiameter(128, 7, new RandomNodeSorter());
 		Metric[] metrics = new Metric[] { m };
 		Series[] s = Series.generate(networks, metrics, 1);
 		Plotting.multi(s, metrics, "EFFECTIVE_DIAMETER/");

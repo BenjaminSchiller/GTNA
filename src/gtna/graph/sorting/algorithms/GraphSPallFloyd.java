@@ -43,7 +43,7 @@ import gtna.graph.Graph;
  * 
  */
 public class GraphSPallFloyd extends GraphSPall {
-	private Edge[][] p;
+	private String[][] p;
 	private int[][] d;
 	public final int INF = Integer.MAX_VALUE / 2;
 
@@ -53,7 +53,7 @@ public class GraphSPallFloyd extends GraphSPall {
 	public GraphSPallFloyd(Graph g) {
 		super(g);
 		int V = g.getNodes().length;
-		p = new Edge[V][V];
+		p = new String[V][V];
 		d = new int[V][V];
 
 		for (int s = 0; s < V; s++) {
@@ -64,8 +64,8 @@ public class GraphSPallFloyd extends GraphSPall {
 
 		for (int s = 0; s < V; s++) {
 			for (int t = 0; t < V; t++) {
-				if (g.getEdges().contains(s, t)) {
-					p[s][t] = g.getEdges().getEdge(s, t);
+				if (g.getNode(s).hasOut(t)) {
+					p[s][t] = "" + s + "->" + t;
 					d[s][t] = 1;
 				}
 			}
@@ -95,31 +95,29 @@ public class GraphSPallFloyd extends GraphSPall {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see gtna.graph.sorting.algorithms.GraphSPall#path(int, int)
-	 */
-	@Override
-	public Edge path(int src, int dst) {
-		return p[src][dst];
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.graph.sorting.algorithms.GraphSPall#pathR(int, int)
-	 */
-	@Override
-	public Edge pathR(int src, int dst) {
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see gtna.graph.sorting.algorithms.GraphSPall#dist(int, int)
 	 */
 	@Override
 	public int dist(int src, int dst) {
 		return d[src][dst];
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.graph.sorting.algorithms.GraphSPall#path(int, int)
+	 */
+	@Override
+	public Edge path(int src, int dst) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.graph.sorting.algorithms.GraphSPall#pathR(int, int)
+	 */
+	@Override
+	public Edge pathR(int src, int dst) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -69,7 +69,7 @@ public class PFP extends Network {
 
 	public PFP(int nodes, int numOfStartNodes, double probability,
 			double delta, Transformation[] transformations) {
-		super("PFP1", nodes, new Parameter[] {
+		super("PFP", nodes, new Parameter[] {
 				new DoubleParameter("PROBABILITY", probability),
 				new DoubleParameter("DELTA", delta),
 				new IntParameter("NUMBER_OF_START_NODES", numOfStartNodes) },
@@ -97,7 +97,7 @@ public class PFP extends Network {
 		}
 
 		// original random graph
-		Network ba = new ErdosRenyi(this.numOfStartNodes, 3, true, null);
+		Network ba = new ErdosRenyi(this.numOfStartNodes, 6, true, null);
 		Graph g = ba.generate();
 		for (Edge e : g.getEdges().getEdges()) {
 			int src = e.getSrc();
