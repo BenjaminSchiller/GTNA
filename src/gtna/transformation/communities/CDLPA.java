@@ -49,6 +49,14 @@ import java.util.HashMap;
 import java.util.Random;
 
 /**
+ * The CDLPA class encapsulates the community detection algorithm based on label
+ * propagation, originally introduced by Usha Nandini Raghavan, Réka Albert, and
+ * Soundar Kumara in "Near linear time algorithm to detect community structures
+ * in large-scale networks" (Phys. Rev. E, vol. 76, no. 3, pp. 036106, Sep
+ * 2007). The basic idea is that every node has its community label and
+ * exchanges this information with all its neighbors. In every step, every node
+ * assumes the label that most of its neighbors have.
+ * 
  * @author benni
  * 
  */
@@ -68,8 +76,8 @@ public class CDLPA extends Transformation {
 	 *            nodes.
 	 */
 	public CDLPA(int limitFactor) {
-		super("CD_LPA", new Parameter[] { new IntParameter(
-				"LIMIT_FACTOR", limitFactor) });
+		super("CD_LPA", new Parameter[] { new IntParameter("LIMIT_FACTOR",
+				limitFactor) });
 		this.iterationLimitFactor = limitFactor;
 	}
 
@@ -86,8 +94,7 @@ public class CDLPA extends Transformation {
 					labelCommunityMapping.get(labels[n.getIndex()]));
 		}
 
-		g.addProperty(g.getNextKey("COMMUNITIES"),
-				new CommunityList(map));
+		g.addProperty(g.getNextKey("COMMUNITIES"), new CommunityList(map));
 		return g;
 	}
 

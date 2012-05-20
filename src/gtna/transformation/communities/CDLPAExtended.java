@@ -14,6 +14,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+/**
+ * This class encapsulates the community detection algorithm called
+ * "extended Label Propagation Algorithm", originally introduced by Ian X. Y.
+ * Leung, Pan Hui, Pietro Lio, and Jon Crowcroft in "Towards real-time
+ * community detection in large networks" (Physical Review E, vol. 79, no. 6,
+ * pp. 066107+, June 2009). The basic idea is the same as with the basic label
+ * propagation algorithms, every node has information about its own community
+ * and exchanges this information with its neighbours. In extension to the basic
+ * algorithm, a score is stored and passed along to all neighbours. The
+ * community with the highest score is then adopted by a node and the score is
+ * adjusted according to certain parameters.
+ * 
+ * @author Philipp Neubrand
+ * 
+ */
 public class CDLPAExtended extends Transformation {
 
 	public static final String key = "CD_LPAEXTENDED";
@@ -22,12 +37,42 @@ public class CDLPAExtended extends Transformation {
 	private NodeCharacteristic nc;
 	private EdgeWeight ew;
 
-	public CDLPAExtended(double d, double m, NodeCharacteristic nc, EdgeWeight ew) {
-		super(key, new Parameter[] {
-				new DoubleParameter("D", d),
+	/**
+	 * Standard constructor for the CDLPAExtended class. The supplied arguments
+	 * are used when determining whether or not to adapt a label. The formula
+	 * used is "s * nc(node)^m * ew(edge)", where "s" is the score of the label
+	 * of the node it is originating from, "node" is that node and "edge" is the
+	 * edge between that node and the currently active node. The
+	 * "NodeCharacteristic" is basically a node weight, the original authors use
+	 * the degree of a node. The "EdgeWeight" is a standard edge weight,
+	 * assigning every edge a value. For unweighted graphs this is the same for
+	 * all the nodes. "m" controls how the node weight is factored into the
+	 * equation. It should usually be positive and >= 1, however its exact
+	 * behaviour has not really been explored.
+	 * 
+	 * "d" is substracted from the score of a label once it "moves" to another
+	 * node. Every label starts with a score of 1 and labels won't spread from a
+	 * node once they have a negative value for that node (assuming positive
+	 * edgeweights and nodeweights). This essentially means that d controls how
+	 * far a community can spread: (1/d)+1 hops.
+	 * 
+	 * @param d
+	 *            Substracted of the score every time a label propagates,
+	 *            controling the maximum number of hops a community can spread
+	 *            (1/d) + 1 hops.
+	 * @param m
+	 *            The exponent for the node characteristic.
+	 * @param nc
+	 *            The nodecharacteristic.
+	 * @param ew
+	 *            The edgeweight.
+	 */
+	public CDLPAExtended(double d, double m, NodeCharacteristic nc,
+			EdgeWeight ew) {
+		super(key, new Parameter[] { new DoubleParameter("D", d),
 				new DoubleParameter("M", m),
 				new StringParameter("NODE_CHARACTERISTIC", nc.getKey()),
-				new StringParameter("EDGE_WEIGHT", ew.getKey())});
+				new StringParameter("EDGE_WEIGHT", ew.getKey()) });
 
 		this.d = d;
 		this.m = m;
@@ -37,45 +82,47 @@ public class CDLPAExtended extends Transformation {
 
 	public static abstract class EdgeWeight {
 		private String key;
+
 		public abstract double getWeight(Node src, Node dst);
-		
-		public EdgeWeight(String key){
+
+		public EdgeWeight(String key) {
 			this.key = key;
 		}
 
-		public String getKey(){
+		public String getKey() {
 			return key;
 		}
 	}
 
 	public static abstract class NodeCharacteristic {
 		private String key;
+
 		public abstract double getCharacteristic(Node node);
 
-		public String getKey(){
+		public String getKey() {
 			return key;
 		}
-		
-		public NodeCharacteristic(String key){
+
+		public NodeCharacteristic(String key) {
 			this.key = key;
 		}
 	}
 
 	public static class DefaultEdgeWeight extends EdgeWeight {
-		public DefaultEdgeWeight(){
+		public DefaultEdgeWeight() {
 			super("DEFAULT");
 		}
-		
+
 		public double getWeight(Node src, Node dst) {
 			return 0.5;
 		}
 	}
 
 	public static class DefaultNodeCharacteristic extends NodeCharacteristic {
-		public DefaultNodeCharacteristic(){
+		public DefaultNodeCharacteristic() {
 			super("DEFAULT");
 		}
-		
+
 		public double getCharacteristic(Node node) {
 			return node.getOutDegree();
 		}
@@ -162,8 +209,7 @@ public class CDLPAExtended extends Transformation {
 					labelCommunityMapping.get(labels[n.getIndex()]));
 		}
 
-		g.addProperty(g.getNextKey("COMMUNITIES"),
-				new CommunityList(map));
+		g.addProperty(g.getNextKey("COMMUNITIES"), new CommunityList(map));
 		return g;
 	}
 }

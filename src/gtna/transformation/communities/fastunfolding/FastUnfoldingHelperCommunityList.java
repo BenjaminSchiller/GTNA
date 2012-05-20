@@ -33,65 +33,50 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.communities;
+package gtna.transformation.communities.fastunfolding;
 
 import java.util.Collection;
 import java.util.HashMap;
 import gtna.graph.Node;
 
 /**
- * @author Flipp
+ * Helper class for the FastUnfolding community detection algorithm, is pretty
+ * similar to gtna.communities.CommunityList but provides additional
+ * functionality.
+ * 
+ * @author Philipp Neubrand
  * 
  */
-public class CommunityList {
+public class FastUnfoldingHelperCommunityList {
 
-	private HashMap<Integer, Community> comsByID = new HashMap<Integer, Community>();
-	private HashMap<Node, Community> comsByNode = new HashMap<Node, Community>();
+	private HashMap<Integer, FastUnfoldingHelperCommunity> comsByID = new HashMap<Integer, FastUnfoldingHelperCommunity>();
+	private HashMap<Node, FastUnfoldingHelperCommunity> comsByNode = new HashMap<Node, FastUnfoldingHelperCommunity>();
 
-	/**
-	 * @return
-	 */
-	public Collection<Community> getCommunities() {
+	public Collection<FastUnfoldingHelperCommunity> getCommunities() {
 		return comsByID.values();
 	}
 
-	/**
-	 * @param aktNode
-	 * @return
-	 */
-	public Community getCommunityByNode(Node aktNode) {
-		return comsByNode.get(aktNode);	}
+	public FastUnfoldingHelperCommunity getCommunityByNode(Node aktNode) {
+		return comsByNode.get(aktNode);
+	}
 
-	/**
-	 * @param newCom
-	 * @return
-	 */
-	public Community getCommunityByID(int newCom) {
+	public FastUnfoldingHelperCommunity getCommunityByID(int newCom) {
 		return comsByID.get(newCom);
 	}
 
-	/**
-	 * @param community
-	 */
-	public void add(Community community) {
+	public void add(FastUnfoldingHelperCommunity community) {
 		comsByID.put(community.getIndex(), community);
 	}
 
-	/**
-	 * @param tempC
-	 */
-	public void removeCom(Community tempC) {
+	public void removeCom(FastUnfoldingHelperCommunity tempC) {
 		comsByID.remove(tempC.getIndex());
 
 	}
 
-	/**
-	 * 
-	 */
 	public void normalizeIDs() {
-		HashMap<Integer, Community> n = new HashMap<Integer, Community>();
+		HashMap<Integer, FastUnfoldingHelperCommunity> n = new HashMap<Integer, FastUnfoldingHelperCommunity>();
 		int i = 0;
-		for (Community akt : comsByID.values()) {
+		for (FastUnfoldingHelperCommunity akt : comsByID.values()) {
 
 			n.put(i, akt);
 			akt.setID(i);
@@ -100,13 +85,9 @@ public class CommunityList {
 		comsByID = n;
 	}
 
-	/**
-	 * @param node
-	 * @param community
-	 */
-	public void setCommunity(Node node, Community community) {
-		comsByNode.put(node,community);
-		
+	public void setCommunity(Node node, FastUnfoldingHelperCommunity community) {
+		comsByNode.put(node, community);
+
 	}
 
 }

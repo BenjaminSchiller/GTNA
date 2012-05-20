@@ -33,11 +33,17 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.communities;
+package gtna.transformation.communities.fastunfolding;
 
 /**
- * @author Flipp
- *
+ * Helper Class for the FastUnfolding community detection algorithm,
+ * encapsulates information about a move of a node from one community to the
+ * other. Contains the ID of the old and the new community as well as the change
+ * in modularity for the move.
+ * 
+ * 
+ * @author Philipp Neubrand
+ * 
  */
 public class MoveValue {
 
@@ -45,46 +51,31 @@ public class MoveValue {
 	private int oldCom;
 	private double modDelta;
 
-	/**
-	 * @return
-	 */
 	public double getModDelta() {
 		return modDelta;
 	}
 
-	/**
-	 * @return
-	 */
 	public int getNewCom() {
 		return newCom;
 	}
 
-	/**
-	 * @param index
-	 */
 	public void setOldCom(int index) {
 		this.oldCom = index;
-		
+
 	}
-	
-	public int getOldCom(){
+
+	public int getOldCom() {
 		return oldCom;
 	}
 
-	/**
-	 * @param d
-	 */
 	public void setModDelta(double d) {
 		this.modDelta = d;
-		
+
 	}
 
-	/**
-	 * @param index
-	 */
 	public void setNewCom(int index) {
 		this.newCom = index;
-		
+
 	}
 
 }

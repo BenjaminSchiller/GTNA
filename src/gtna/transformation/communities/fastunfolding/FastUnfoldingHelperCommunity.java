@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.communities;
+package gtna.transformation.communities.fastunfolding;
 
 import java.util.HashMap;
 
@@ -44,26 +44,29 @@ import gtna.graph.Node;
 import gtna.graph.NodeWeights;
 
 /**
- * @author Flipp
- *
+ * Helper class for the FastUnfolding community detection algorithm, is pretty
+ * similar to gtna.communities.Community but provides additional functionality
+ * by maintaining the number of internal and external edges at every point in
+ * the process of creating the community. This means additional calculations in
+ * the removeNode and addNode methods.
+ * 
+ * @author Philipp Neubrand
+ * 
  */
-public class Community {
+public class FastUnfoldingHelperCommunity {
 
 	private int id;
 	private Graph g;
 	private double internalEdges = 0;
 	private HashMap<Integer, Node> nodes;
-	private CommunityList coms;
+	private FastUnfoldingHelperCommunityList coms;
 	private double externalEdges = 0;
 	private NodeWeights nw;
 	private EdgeWeights ew;
 
-	/**
-	 * @param i
-	 * @param akt 
-	 * @param g
-	 */
-	public Community(int i, Graph g, CommunityList coms, NodeWeights nw, EdgeWeights ew) {
+	public FastUnfoldingHelperCommunity(int i, Graph g,
+			FastUnfoldingHelperCommunityList coms, NodeWeights nw,
+			EdgeWeights ew) {
 		id = i;
 		this.nw = nw;
 		this.ew = ew;
@@ -72,108 +75,79 @@ public class Community {
 		nodes = new HashMap<Integer, Node>();
 	}
 
-	/**
-	 * @return
-	 */
 	public int getIndex() {
 		return id;
 	}
 
-	/**
-	 * @return
-	 */
 	public double getInternalEdges() {
 		return internalEdges;
 	}
 
-
-	/**
-	 * @return
-	 */
 	public Node[] getNodes() {
 		return nodes.values().toArray(new Node[nodes.size()]);
 	}
 
-	/**
-	 * @param akt2
-	 */
 	public void removeNode(Node akt2) {
 		int t;
-		if(nw != null)
+		if (nw != null)
 			internalEdges -= nw.getWeight(akt2.getIndex());
-		
-		for(Edge akt : akt2.getEdges()){
-			if(akt.getSrc() == akt2.getIndex())
+
+		for (Edge akt : akt2.getEdges()) {
+			if (akt.getSrc() == akt2.getIndex())
 				t = akt.getDst();
 			else
 				t = akt.getSrc();
-			
-			if(coms.getCommunityByNode(g.getNode(t)).getIndex() == this.getIndex()){
-				internalEdges -= (ew != null)?ew.getWeight(akt):1;
-			}
-			else
-				externalEdges -= (ew != null)?ew.getWeight(akt):1;
+
+			if (coms.getCommunityByNode(g.getNode(t)).getIndex() == this
+					.getIndex()) {
+				internalEdges -= (ew != null) ? ew.getWeight(akt) : 1;
+			} else
+				externalEdges -= (ew != null) ? ew.getWeight(akt) : 1;
 		}
-		
+
 		nodes.remove(akt2.getIndex());
-		
-		
-		
-	}
-	
-	public void setNode(Node node){
-		nodes.put(node.getIndex(), node);
-		coms.setCommunity(node, this);
-		if(nw != null)
-			internalEdges += nw.getWeight(node.getIndex());
-			
-		for(Edge akt : node.getEdges())
-			externalEdges += (ew != null)?ew.getWeight(akt):1;
-			
+
 	}
 
-	/**
-	 * @param node
-	 */
+	public void setNode(Node node) {
+		nodes.put(node.getIndex(), node);
+		coms.setCommunity(node, this);
+		if (nw != null)
+			internalEdges += nw.getWeight(node.getIndex());
+
+		for (Edge akt : node.getEdges())
+			externalEdges += (ew != null) ? ew.getWeight(akt) : 1;
+
+	}
+
 	public void addNode(Node node) {
 		int t;
-		if(nw != null)
+		if (nw != null)
 			internalEdges += nw.getWeight(node.getIndex());
-		
+
 		nodes.put(node.getIndex(), node);
 		coms.setCommunity(node, this);
-		
-		for(Edge akt : node.getEdges()){
-			if(akt.getSrc() == node.getIndex())
+
+		for (Edge akt : node.getEdges()) {
+			if (akt.getSrc() == node.getIndex())
 				t = akt.getDst();
 			else
 				t = akt.getSrc();
-			
-			
-			if(coms.getCommunityByNode(g.getNode(t)).getIndex() == this.getIndex()){
-				internalEdges += (ew != null)?ew.getWeight(akt):1;
-			}
-			else
-				externalEdges += (ew != null)?ew.getWeight(akt):1;
+
+			if (coms.getCommunityByNode(g.getNode(t)).getIndex() == this
+					.getIndex()) {
+				internalEdges += (ew != null) ? ew.getWeight(akt) : 1;
+			} else
+				externalEdges += (ew != null) ? ew.getWeight(akt) : 1;
 		}
-		
-		
-		
+
 	}
 
-	/**
-	 * @return
-	 */
 	public double getExternalEdges() {
 		return externalEdges;
 	}
 
-	/**
-	 * @param i
-	 */
 	public void setID(int i) {
 		id = i;
 	}
 }
-
-

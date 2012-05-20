@@ -26,8 +26,11 @@ import java.util.HashMap;
  * Encapsulates the community detection algorithm based on improving the
  * modularity in each step, described in
  * "Fast algorithm for detecting community structure in networks" by M. E. J.
- * Newman. The algorithm is implemented as a metric, so it can be used on any
- * graph loaded into the GTNA framework.
+ * Newman. The basic idea is that, starting with a network with every node in
+ * its own community, the algorithm determines the (regarding modularity) best
+ * possible join of two communities until only one community remains. It then
+ * chooses the community partition with the highest modularity value that was
+ * created on the way.
  * 
  * @author Philipp Neubrand
  * 
@@ -70,8 +73,8 @@ public class CDDeltaQ extends Transformation {
 	 * @param maxIterations
 	 *            The maximum number of iterations.
 	 */
-	public CDDeltaQ(String internalFormat,
-			boolean forceSeparated, int maxIterations) {
+	public CDDeltaQ(String internalFormat, boolean forceSeparated,
+			int maxIterations) {
 		super(key, new Parameter[] {
 				new StringParameter("INTERNALFORMAT", internalFormat),
 				new BooleanParameter("FORCESEPARATED", forceSeparated),
@@ -81,8 +84,7 @@ public class CDDeltaQ extends Transformation {
 		this.maxIterations = maxIterations;
 	}
 
-	public int[] deltaQ(Graph g) {
-
+	private int[] deltaQ(Graph g) {
 		int nodes = g.getNodes().length;
 
 		// Create the needed matrices. Note that due to generics being limited
