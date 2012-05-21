@@ -44,7 +44,6 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
-import gtna.networks.canonical.Complete;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;

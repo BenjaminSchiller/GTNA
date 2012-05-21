@@ -84,7 +84,7 @@ public class Tests {
 		 * GraphWriter.write(g, "Erdos.gtna");
 		 */
 
-		Tests.PFPPlotTest();
+		Tests.GLPTest();
 	}
 
 	public static void test() {
@@ -261,7 +261,7 @@ public class Tests {
 
 	public static void GLPTest() {
 		int N = 2000;
-		int m0 = 100;
+		int m0 = 20;
 		int m = 2;
 		double p = 0.4695;
 		double beta = 0.6447;
@@ -323,9 +323,9 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		int N = 20000;
-		int m0 = 100;
-		int M = 2;
+		int N = 10000;
+		int m0 = 10;
+		int M = 2; // do not impact the model
 		double p = 0.4695;
 		double beta = 0.6447;
 		Network nw = new GLP(N, m0, M, p, beta, null);

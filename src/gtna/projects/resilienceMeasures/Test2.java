@@ -68,7 +68,7 @@ import gtna.util.Config;
 public class Test2 {
 	public static void main(String[] args) {
 		for (int i = 0; i < 1; i++) {
-			Test2.PFPTest();
+			Test2.GLPTest();
 		}
 	}
 
@@ -175,5 +175,47 @@ public class Test2 {
 		System.out.println("Max BC = " + maxBC);
 		System.out.println("Max Degree = " + maxDegree);
 		System.out.println("Rich Club = " + richClub);
+	}
+
+	public static void GLPTest() {
+		int N = 8613;
+		int m0 = 5;
+		int M = 2; // do not impact the model
+		double p = 0.4695;
+		double beta = 0.6447;
+		Network nw = new GLP(N, m0, M, p, beta, null);
+
+		Graph g = nw.generate();
+
+		System.out.println("Calculate Centrality...");
+
+		CentralityNodeSorter sorter = new CentralityNodeSorter(
+				CentralityMode.BETWEENNESS, NodeSorterMode.DESC);
+		sorter.sort(g, new Random());
+
+		// characteristic path length
+		double characteristicLength = sorter.getCharacteristicPathLength();
+
+		// Rich-club connectivity
+		int r = (int) (0.01 * N);
+		DegreeNodeSorter degreeSorter = new DegreeNodeSorter(
+				NodeSorterMode.DESC);
+		Node[] order = degreeSorter.sort(g, new Random());
+		double richClub = 0;
+		for (int i = 0; i < r - 1; i++) {
+			for (int j = i; j < r; j++) {
+				Node u = order[i];
+				Node v = order[j];
+				if (u.isConnectedTo(v))
+					richClub++;
+			}
+		}
+		richClub = richClub / (r * (r - 1) / 2);
+
+		System.out.println("Characteristic Path Length = "
+				+ characteristicLength);
+		System.out.println("Rich Club = " + richClub);
+		System.out.println("Nodes = " + g.getNodes().length);
+		System.out.println("Edges = " + g.getEdges().getEdges().size());
 	}
 }
