@@ -35,6 +35,7 @@
  */
 package gtna.graph.sorting;
 
+import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 
@@ -101,6 +102,11 @@ public class CentralityNodeSorter extends NodeSorter {
 	 */
 	private HashMap<Node, Double> ccMap = new HashMap<Node, Double>();
 
+	/*
+	 * This map saves the distances
+	 */
+	private double distances;
+
 	public CentralityNodeSorter(CentralityMode c, NodeSorterMode mode) {
 		// super(key, mode);
 		super(c.toString(), mode);
@@ -144,6 +150,9 @@ public class CentralityNodeSorter extends NodeSorter {
 	 */
 	@Override
 	public Node[] sort(Graph g, Random rand) {
+		// distances
+		this.distances = 0;
+
 		this.g = g;
 		this.calculate(g);
 		Node[] sorted = this.clone(g.getNodes());
@@ -241,6 +250,9 @@ public class CentralityNodeSorter extends NodeSorter {
 			// ----- calculate closeness centrality of s
 			double sum = 0;
 			for (Node n : S) {
+				// ----- 
+				this.distances += d.get(n).intValue();
+				// -----
 				sum += d.get(n).doubleValue();
 			}
 			this.ccMap.put(s, 1 / sum);
@@ -304,6 +316,10 @@ public class CentralityNodeSorter extends NodeSorter {
 
 	public double getCentrality(Node n) {
 		return map.get(n);
+	}
+
+	public double getSumOfDistance() {
+		return this.distances;
 	}
 
 }

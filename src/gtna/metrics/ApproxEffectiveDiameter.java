@@ -185,7 +185,7 @@ public class ApproxEffectiveDiameter extends Metric {
 
 			if (sum / 2 >= 0.9 * numOfConnectedPairs) {
 				this.effectiveDiameter = it;
-				System.out.println("Estimated");
+				System.out.println("Found: " + it);
 				return;
 			}
 			it++;

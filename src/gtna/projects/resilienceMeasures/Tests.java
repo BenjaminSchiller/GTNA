@@ -208,9 +208,10 @@ public class Tests {
 	public static void PFPTest() {
 		int N = 9204;
 		int startNodes = 20;
-		double p = 0.4;
+		double p = 0.3;
+		double q = 0.1;
 		double delta = 0.021;
-		Network nw = new PFP(N, startNodes, p, delta, null);
+		Network nw = new PFP(N, startNodes, p, q, delta, null);
 
 		System.out.println("generating...");
 		Graph g = nw.generate();
@@ -340,17 +341,18 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		int N = 9204;
+		int N = 11122;
 		int startNodes = 20;
-		double p = 0.4;
-		double delta = 0.021;
-		Network nw = new PFP(N, startNodes, p, delta, null);
+		double p = 0.3;
+		double q = 0.1;
+		double delta = 0.020846;
+		Network nw = new PFP(N, startNodes, p, q, delta, null);
 
 		Network[] networks = new Network[] { nw };
 
 		Metric m = new DegreeDistribution();
 		Metric[] metrics = new Metric[] { m };
-		Series[] s = Series.generate(networks, metrics, 100);
+		Series[] s = Series.generate(networks, metrics, 10);
 		Plotting.multi(s, metrics, "PFP/");
 
 	}

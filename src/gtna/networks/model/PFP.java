@@ -44,6 +44,7 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.networks.Network;
+import gtna.networks.canonical.Complete;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
@@ -57,6 +58,7 @@ public class PFP extends Network {
 
 	// parameter
 	private double p;
+	private double q;
 	private double delta;
 	private int numOfStartNodes;
 
@@ -67,14 +69,16 @@ public class PFP extends Network {
 	private Random pRand = new Random();
 	private Random prefRand = new Random();
 
-	public PFP(int nodes, int numOfStartNodes, double probability,
-			double delta, Transformation[] transformations) {
+	public PFP(int nodes, int numOfStartNodes, double probabilityP,
+			double probabilityQ, double delta, Transformation[] transformations) {
 		super("PFP", nodes, new Parameter[] {
-				new DoubleParameter("PROBABILITY", probability),
+				new DoubleParameter("PROBABILITY_P", probabilityP),
+				new DoubleParameter("PROBABILITY_Q", probabilityQ),
 				new DoubleParameter("DELTA", delta),
 				new IntParameter("NUMBER_OF_START_NODES", numOfStartNodes) },
 				transformations);
-		this.p = probability;
+		this.p = probabilityP;
+		this.q = probabilityQ;
 		this.delta = delta;
 		this.numOfStartNodes = numOfStartNodes;
 	}
@@ -97,7 +101,7 @@ public class PFP extends Network {
 		}
 
 		// original random graph
-		Network ba = new ErdosRenyi(this.numOfStartNodes, 6, true, null);
+		Network ba = new BarabasiAlbert(this.numOfStartNodes, 3, null);
 		Graph g = ba.generate();
 		for (Edge e : g.getEdges().getEdges()) {
 			int src = e.getSrc();
@@ -108,33 +112,56 @@ public class PFP extends Network {
 
 		// graph growths
 		for (int i = this.numOfStartNodes; i < nodes.length; i++) {
-			if (pRand.nextDouble() < this.p) {
+			double randVal = pRand.nextDouble();
+			int maxIter = 100;
+			int temp;
+			if (randVal < this.p) {
 				// 1. strategy with probability p
 				int hostIndex = this.chooseNode(i - 1);
-				int peer1Index = hostIndex;
-				while (peer1Index == hostIndex
-						|| this.hasEdge(hostIndex, peer1Index)) {
-					peer1Index = this.chooseNode(i - 1);
-				}
-				int peer2Index = hostIndex;
-				while (peer2Index == hostIndex || peer2Index == peer1Index
-						|| this.hasEdge(hostIndex, peer2Index)) {
-					peer2Index = this.chooseNode(i - 1);
+				int peerIndex = hostIndex;
+				temp = 0;
+				while ((peerIndex == hostIndex || this.hasEdge(hostIndex,
+						peerIndex)) && temp < maxIter) {
+					peerIndex = this.chooseNode(i - 1);
+					temp++;
 				}
 				this.addEdge(i, hostIndex);
-				this.addEdge(hostIndex, peer1Index);
+				this.addEdge(hostIndex, peerIndex);
+			} else if (randVal < this.p + this.q) {
+				// 2. strategy with probability q
+				int hostIndex = this.chooseNode(i - 1);
+				int peer1Index = hostIndex;
+				temp = 0;
+				while ((peer1Index == hostIndex || this.hasEdge(hostIndex,
+						peer1Index)) && temp < maxIter) {
+					peer1Index = this.chooseNode(i - 1);
+					temp++;
+				}
+				int peer2Index = peer1Index;
+				temp = 0;
+				while ((peer2Index == peer1Index || peer2Index == hostIndex || this
+						.hasEdge(hostIndex, peer2Index)) && temp < maxIter) {
+					peer2Index = this.chooseNode(i - 1);
+					temp++;
+				}
+				this.addEdge(i, hostIndex);
 				this.addEdge(hostIndex, peer2Index);
+				this.addEdge(hostIndex, peer1Index);
 			} else {
-				// 2. strategy with probability (1 - p)
+				// 3. strategy with probability (1 - p - q)
 				int host1Index = this.chooseNode(i - 1);
 				int host2Index = host1Index;
-				while (host2Index == host1Index) {
+				temp = 0;
+				while (host2Index == host1Index && temp < maxIter) {
 					host2Index = this.chooseNode(i - 1);
+					temp++;
 				}
 				int peerIndex = host1Index;
-				while (peerIndex == host1Index
-						|| this.hasEdge(host1Index, peerIndex)) {
+				temp = 0;
+				while ((peerIndex == host1Index || peerIndex == host2Index || this
+						.hasEdge(peerIndex, host1Index)) && temp < maxIter) {
 					peerIndex = this.chooseNode(i - 1);
+					temp++;
 				}
 				this.addEdge(i, host1Index);
 				this.addEdge(i, host2Index);

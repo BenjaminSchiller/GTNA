@@ -35,13 +35,17 @@
  */
 package gtna.projects.resilienceMeasures;
 
+import java.util.Random;
+
 import gtna.data.Series;
 import gtna.graph.Graph;
+import gtna.graph.Node;
 import gtna.graph.sorting.CentralityNodeSorter;
 import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.CentralityNodeSorter.CentralityMode;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
+import gtna.graph.sorting.NodeSorting;
 import gtna.graph.sorting.algorithms.GraphSPall;
 import gtna.graph.sorting.algorithms.GraphSPallFloyd;
 import gtna.metrics.BiconnectedComponent;
@@ -63,7 +67,9 @@ import gtna.util.Config;
  */
 public class Test2 {
 	public static void main(String[] args) {
-		Test2.effectiveDiameter();
+		for (int i = 0; i < 1; i++) {
+			Test2.PFPTest();
+		}
 	}
 
 	public static void readFileTest() {
@@ -75,7 +81,7 @@ public class Test2 {
 		Network nw1 = new ReadableFile("CAIDA", "CAIDA", graphFile, null);
 		int N = 12160;
 
-		Network nw2 = new PFP(N, 20, 0.4, 0.021, null);
+		Network nw2 = new PFP(N, 20, 0.3, 0.1, 0.021, null);
 		Network[] networks = new Network[] { nw1, nw2 };
 
 		Metric metric = new DegreeDistribution();
@@ -90,7 +96,7 @@ public class Test2 {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		Network nw = new PFP(10000, 10, 0.4, 0.021, null);
+		Network nw = new PFP(1000, 20, 0.3, 0.1, 0.021, null);
 		Network[] networks = new Network[] { nw };
 
 		NodeSorter sorter = new DegreeNodeSorter(NodeSorterMode.DESC);
@@ -104,10 +110,70 @@ public class Test2 {
 	}
 
 	public static void allPairsTest() {
-		Network nw = new PFP(100, 10, 0.4, 0.021, null);
+		Network nw = new PFP(100, 10, 0.3, 0.1, 0.021, null);
 		Graph g = nw.generate();
 		GraphSPallFloyd allpairs = new GraphSPallFloyd(g);
 		System.out.println("" + allpairs.dist(1, 90));
 		System.out.println("" + allpairs.dist(90, 1));
+	}
+
+	public static void PFPTest() {
+		int N = 11122;
+		int startNodes = 20;
+		double p = 0.3;
+		double q = 0.1;
+		double delta = 0.020846;
+		Network nw = new PFP(N, startNodes, p, q, delta, null);
+
+		Graph g = nw.generate();
+
+		System.out.println("Calculate Centrality...");
+
+		CentralityNodeSorter sorter = new CentralityNodeSorter(
+				CentralityMode.BETWEENNESS, NodeSorterMode.DESC);
+		sorter.sort(g, new Random());
+
+		double averageBC = 0;
+		double maxBC = 0;
+		int maxDegree = 0;
+
+		for (Node node : g.getNodes()) {
+			double c = sorter.getCentrality(node) / N;
+			averageBC += c;
+			if (maxBC < c)
+				maxBC = c;
+			if (maxDegree < node.getDegree()) {
+				maxDegree = node.getDegree();
+			}
+		}
+
+		averageBC = averageBC / N;
+
+		// characteristic path length
+		double characteristicLength = sorter.getSumOfDistance() / (N * (N - 1));
+
+		// Rich-club connectivity
+		int r = (int) (0.01 * N);
+		DegreeNodeSorter degreeSorter = new DegreeNodeSorter(
+				NodeSorterMode.DESC);
+		Node[] order = degreeSorter.sort(g, new Random());
+		double richClub = 0;
+		for (int i = 0; i < r - 1; i++) {
+			for (int j = i; j < r; j++) {
+				Node u = order[i];
+				Node v = order[j];
+				if (u.isConnectedTo(v))
+					richClub++;
+			}
+		}
+		richClub = richClub / (r * (r - 1) / 2);
+
+		System.out.println("Characteristic Path Length = "
+				+ characteristicLength);
+		System.out.println("Average BC* = "
+				+ (averageBC + characteristicLength));
+		System.out.println("Max BC = " + maxBC);
+		System.out.println("Max Degree = " + maxDegree);
+		System.out.println("Rich Club = " + richClub);
 	}
 }
