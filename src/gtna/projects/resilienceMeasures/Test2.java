@@ -35,6 +35,7 @@
  */
 package gtna.projects.resilienceMeasures;
 
+import java.io.IOException;
 import java.util.Random;
 
 import gtna.data.Series;
@@ -56,6 +57,7 @@ import gtna.metrics.basic.DegreeDistribution;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GLP;
+import gtna.networks.model.PARG;
 import gtna.networks.model.PFP;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plotting;
@@ -68,7 +70,7 @@ import gtna.util.Config;
 public class Test2 {
 	public static void main(String[] args) {
 		for (int i = 0; i < 1; i++) {
-			Test2.GLPTest();
+			Test2.PARGTest();
 		}
 	}
 
@@ -217,5 +219,66 @@ public class Test2 {
 		System.out.println("Rich Club = " + richClub);
 		System.out.println("Nodes = " + g.getNodes().length);
 		System.out.println("Edges = " + g.getEdges().getEdges().size());
+	}
+
+	public static void PARGTest() {
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("GNUPLOT_PATH",
+				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
+
+		int N = 1000;
+		int startNodes = 100;
+		double N_add = 0.006;
+		double N_del = 4.8;
+		double N_cut = 0.2;
+
+		Network nw = new PARG(N, startNodes, N_add, N_del, N_cut, null);
+		Graph g = nw.generate();
+		System.out.println("Edges = " + g.getEdges().getEdges().size());
+
+		int maxDegree = 0;
+		for (Node n : g.getNodes()) {
+			if (maxDegree < n.getDegree())
+				maxDegree = n.getDegree();
+		}
+		System.out.println("Max Degree = " + maxDegree);
+
+		// Rich-club connectivity
+		int r = (int) (0.01 * N);
+		DegreeNodeSorter degreeSorter = new DegreeNodeSorter(
+				NodeSorterMode.DESC);
+		Node[] order = degreeSorter.sort(g, new Random());
+		double richClub = 0;
+		for (int i = 0; i < r - 1; i++) {
+			for (int j = i; j < r; j++) {
+				Node u = order[i];
+				Node v = order[j];
+				if (u.isConnectedTo(v))
+					richClub++;
+			}
+		}
+		richClub = richClub / (r * (r - 1) / 2);
+		System.out.println("1% = " + richClub);
+
+		r = (int) (0.02 * N);
+		richClub = 0;
+		for (int i = 0; i < r - 1; i++) {
+			for (int j = i; j < r; j++) {
+				Node u = order[i];
+				Node v = order[j];
+				if (u.isConnectedTo(v))
+					richClub++;
+			}
+		}
+		richClub = richClub / (r * (r - 1) / 2);
+		System.out.println("2% = " + richClub);
+		
+		try {
+			Utils.exportToGML(g, "PARG");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Cannot export graph to file!");
+		}
+
 	}
 }
