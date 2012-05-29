@@ -57,25 +57,28 @@ public class GLP extends Network {
 	// parameters
 	private int numOfStartNodes;
 	private double p;
-	private int numOfAddedEdges;
+	private double numOfAddedEdges;
 	private double beta;
 
 	// variables for algorithm
 	private int[] nodeDegree;
 	private HashMap<String, Point> edgesList;
+	private double mThreshold;
+	private int low;
+	private int high;
 
-	public GLP(int nodes, int numOfStartNode, int numOfAddedEdges, double p,
+	public GLP(int nodes, int numOfStartNode, double numOfAddedEdges, double p,
 			double beta, Transformation[] t) {
 		super("GLP", nodes, new Parameter[] {
 				new IntParameter("NUMBER_OF_START_NODES", numOfStartNode),
-				new IntParameter("NUMBER_OF_ADDED_EDGES", numOfAddedEdges),
+				new DoubleParameter("NUMBER_OF_ADDED_EDGES", numOfAddedEdges),
 				new DoubleParameter("PROBABILITY", p),
 				new DoubleParameter("BETA", beta) }, t);
 		this.beta = beta;
 		this.numOfAddedEdges = numOfAddedEdges;
-		// TODO: use probability to generate m
 		this.numOfStartNodes = numOfStartNode;
 		this.p = p;
+		this.calculateMThreshold();
 	}
 
 	/*
@@ -85,6 +88,7 @@ public class GLP extends Network {
 	 */
 	@Override
 	public Graph generate() {
+		// init
 		Graph graph = new Graph(this.getDescription());
 		Node[] nodes = Node.init(this.getNodes(), graph);
 		edgesList = new HashMap<String, Point>();
@@ -122,10 +126,10 @@ public class GLP extends Network {
 			// m, the initial degree of new nodes in the GLP model, is a
 			// constant integer. However, the initial degree can be a random
 			// variable with some distribution.
-			if (randForM.nextDouble() < 0.87) {
-				this.numOfAddedEdges = 1;
+			if (randForM.nextDouble() < this.mThreshold) {
+				this.numOfAddedEdges = this.low;
 			} else {
-				this.numOfAddedEdges = 2;
+				this.numOfAddedEdges = this.high;
 			}
 
 			// test
@@ -165,7 +169,7 @@ public class GLP extends Network {
 		System.out.println("m = " + (((double) sumOfM) / usedM));
 
 		// copy edges to graph
-		Edges edges = new Edges(nodes, 2 * edgesList.size());
+		Edges edges = new Edges(nodes, edgesList.size());
 		for (Point p : edgesList.values()) {
 			edges.add(p.x, p.y);
 			edges.add(p.y, p.x);
@@ -175,6 +179,16 @@ public class GLP extends Network {
 		edges.fill();
 		graph.setNodes(nodes);
 		return graph;
+	}
+
+	/**
+	 * 
+	 */
+	private void calculateMThreshold() {
+		this.low = (int) Math.ceil(this.numOfAddedEdges);
+		this.high = (int) Math.floor(this.numOfAddedEdges);
+		this.mThreshold = ((double) (this.high - this.numOfAddedEdges))
+				/ (this.high - this.low);
 	}
 
 	/**

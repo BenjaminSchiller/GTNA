@@ -107,6 +107,7 @@ public class PARG extends Network {
 		this.nDel = nDel;
 		this.nCut = nCut;
 		this.numStartNode = numStartNode;
+		this.calculateParameter();
 	}
 
 	/*
@@ -125,17 +126,13 @@ public class PARG extends Network {
 		}
 		highestDegreedNodes = new ArrayList<Integer>();
 
-		this.calculateParameter();
 		int maxIter = 100;
 		int temp;
 
 		// generate original random graph
-		Network nw = new BarabasiAlbert(this.numStartNode, 3, null);
-		Graph startGraph = nw.generate();
-		for (Edge e : startGraph.getEdges().getEdges()) {
-			int src = e.getSrc();
-			int dst = e.getDst();
-			this.addEdge(src, dst);
+		for (int i = 1; i < this.numStartNode; i++) {
+			int previous = (new Random()).nextInt(i);
+			this.addEdge(i, previous);
 		}
 		// ---
 
@@ -287,7 +284,6 @@ public class PARG extends Network {
 		for (int j = 0; j < i + 1; j++) {
 			sum += j + 1;
 			if (sum >= threshold) {
-				System.out.println("Degree = " + this.nodeDegree[sorted[j]]);
 				return sorted[j];
 			}
 		}
@@ -327,12 +323,6 @@ public class PARG extends Network {
 		this.edgesList.remove(this.edge(src, dst));
 		this.edgesList.remove(this.edge(dst, src));
 	}
-
-	/*
-	 * private void updatePreference(int nodeIndex) { double degree = (double)
-	 * (nodeDegree[nodeIndex]); nodePref[nodeIndex] = 1 + delta *
-	 * Math.log(degree); }
-	 */
 
 	private Random selectNodeRand = new Random();
 

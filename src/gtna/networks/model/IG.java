@@ -39,7 +39,6 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.util.Random;
 
-import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -90,14 +89,12 @@ public class IG extends Network {
 
 		// original random graph
 		/*
-		Network nw = new BarabasiAlbert(this.numOfStartNodes, 3, null);
-		Graph startGraph = nw.generate();
-		for (Edge e : startGraph.getEdges().getEdges()) {
-			int src = e.getSrc();
-			int dst = e.getDst();
-			this.addEdge(src, dst);
-		}*/
-		
+		 * Network nw = new BarabasiAlbert(this.numOfStartNodes, 3, null); Graph
+		 * startGraph = nw.generate(); for (Edge e :
+		 * startGraph.getEdges().getEdges()) { int src = e.getSrc(); int dst =
+		 * e.getDst(); this.addEdge(src, dst); }
+		 */
+
 		for (int i = 1; i < this.numOfStartNodes; i++) {
 			int temp = (new Random()).nextInt(i);
 			this.addEdge(i, temp);

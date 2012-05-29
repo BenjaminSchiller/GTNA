@@ -208,16 +208,15 @@ public class Tests {
 	}
 
 	public static void export() {
-		int N = 1000;
+		int N = 100;
 		int startNodes = 10;
-		double p = 0.4;
-		Network nw = new IG(N, startNodes, p, null);
+		Network nw = new GLP(N, startNodes, 1.13, .4695, 0.6447, null);
 
 		System.out.println("generating...");
 		Graph g = nw.generate();
 		System.out.println("generated!");
 		try {
-			Utils.exportToGML(g, "IG");
+			Utils.exportToGML(g, "GLP");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Cannot export graph to file!");
