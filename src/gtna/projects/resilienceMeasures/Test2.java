@@ -57,6 +57,7 @@ import gtna.metrics.basic.DegreeDistribution;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GLP;
+import gtna.networks.model.IG;
 import gtna.networks.model.PARG;
 import gtna.networks.model.PFP;
 import gtna.networks.util.ReadableFile;
@@ -70,7 +71,7 @@ import gtna.util.Config;
 public class Test2 {
 	public static void main(String[] args) {
 		for (int i = 0; i < 1; i++) {
-			Test2.PARGTest();
+			Test2.IGTest();
 		}
 	}
 
@@ -104,7 +105,7 @@ public class Test2 {
 		NodeSorter sorter = new DegreeNodeSorter(NodeSorterMode.DESC);
 		Metric m1 = new ApproxEffectiveDiameter(128, 7, sorter);
 		Metric m2 = new ExactEffectiveDiameter(sorter);
-		Metric[] metrics = new Metric[] { m1 };
+		Metric[] metrics = new Metric[] { m2 };
 
 		Series[] s = Series.generate(networks, metrics, 1);
 		Plotting.multi(s, metrics, "effectiveDiameter/");
@@ -272,7 +273,7 @@ public class Test2 {
 		}
 		richClub = richClub / (r * (r - 1) / 2);
 		System.out.println("2% = " + richClub);
-		
+
 		try {
 			Utils.exportToGML(g, "PARG");
 		} catch (IOException e) {
@@ -280,5 +281,23 @@ public class Test2 {
 			System.out.println("Cannot export graph to file!");
 		}
 
+	}
+
+	public static void IGTest() {
+
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("GNUPLOT_PATH",
+				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
+
+		int N = 11461;
+		int startNodes = 10;
+		double p = 0.4;
+		Network nw = new IG(N, startNodes, p, null);
+
+		Metric m = new DegreeDistribution();
+		Metric[] metrics = new Metric[] { m };
+
+		Series s = Series.generate(nw, metrics, 5);
+		Plotting.multi(s, metrics, "\\IG/");
 	}
 }

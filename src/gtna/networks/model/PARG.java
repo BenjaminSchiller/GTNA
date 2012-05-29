@@ -76,7 +76,6 @@ public class PARG extends Network {
 	double nDelProb;
 	double nDelCheck = 0;
 	int nDelIter = 0;
-	
 
 	private int nAddUsed;
 	Random nAddRandom = new Random();
@@ -85,7 +84,6 @@ public class PARG extends Network {
 	double nAddProb;
 	double nAddCheck = 0;
 	int nAddIter = 0;
-	
 
 	ArrayList<Integer> highestDegreedNodes;
 	Random delRandom = new Random();
@@ -220,9 +218,11 @@ public class PARG extends Network {
 				}
 			}
 		}
-		
-		System.out.println("NADD : " + this.nAddIter + " -- " + (this.nAddCheck / nAddIter));
-		System.out.println("NDEL : " + this.nDelIter + " -- " + (this.nDelCheck / nDelIter));
+
+		System.out.println("NADD : " + this.nAddIter + " -- "
+				+ (this.nAddCheck / nAddIter));
+		System.out.println("NDEL : " + this.nDelIter + " -- "
+				+ (this.nDelCheck / nDelIter));
 
 		// copy generated edges to graph
 		Edges edges = new Edges(nodes, this.edgesList.size());
@@ -287,6 +287,7 @@ public class PARG extends Network {
 		for (int j = 0; j < i + 1; j++) {
 			sum += j + 1;
 			if (sum >= threshold) {
+				System.out.println("Degree = " + this.nodeDegree[sorted[j]]);
 				return sorted[j];
 			}
 		}

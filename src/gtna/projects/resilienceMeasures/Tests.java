@@ -66,6 +66,8 @@ import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GLP;
+import gtna.networks.model.IG;
+import gtna.networks.model.PARG;
 import gtna.networks.model.PFP;
 import gtna.networks.model.PFP;
 import gtna.networks.util.ReadableFile;
@@ -84,7 +86,7 @@ public class Tests {
 		 * GraphWriter.write(g, "Erdos.gtna");
 		 */
 
-		Tests.GLPTest();
+		Tests.export();
 	}
 
 	public static void test() {
@@ -205,26 +207,17 @@ public class Tests {
 		System.out.println("Average Err = " + (errSum / nodes.length));
 	}
 
-	public static void PFPTest() {
-		int N = 9204;
-		int startNodes = 20;
-		double p = 0.3;
-		double q = 0.1;
-		double delta = 0.021;
-		Network nw = new PFP(N, startNodes, p, q, delta, null);
+	public static void export() {
+		int N = 1000;
+		int startNodes = 10;
+		double p = 0.4;
+		Network nw = new IG(N, startNodes, p, null);
 
 		System.out.println("generating...");
 		Graph g = nw.generate();
 		System.out.println("generated!");
-		int maxDegree = 0;
-		for (Node n : g.getNodes()) {
-			if (maxDegree < n.getDegree()) {
-				maxDegree = n.getDegree();
-			}
-		}
-
 		try {
-			Utils.exportToGML(g, "PFP");
+			Utils.exportToGML(g, "IG");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Cannot export graph to file!");
@@ -233,7 +226,7 @@ public class Tests {
 	}
 
 	public static void Erdos() {
-		int N = 20;
+		int N = 100;
 		Network nw = new ErdosRenyi(N, 6, true, null);
 
 		System.out.println("generating...");
@@ -341,19 +334,23 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		int N = 11122;
-		int startNodes = 20;
-		double p = 0.3;
-		double q = 0.1;
-		double delta = 0.020846;
-		Network nw = new PFP(N, startNodes, p, q, delta, null);
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("GNUPLOT_PATH",
+				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
+		int N = 1000;
+		int startNodes = 100;
+		double N_add = 0.006;
+		double N_del = 4.8;
+		double N_cut = 0.2;
+
+		Network nw = new PARG(N, startNodes, N_add, N_del, N_cut, null);
 		Network[] networks = new Network[] { nw };
 
 		Metric m = new DegreeDistribution();
 		Metric[] metrics = new Metric[] { m };
-		Series[] s = Series.generate(networks, metrics, 10);
-		Plotting.multi(s, metrics, "PFP/");
+		Series[] s = Series.generate(networks, metrics, 1);
+		Plotting.multi(s, metrics, "PARG/");
 
 	}
 

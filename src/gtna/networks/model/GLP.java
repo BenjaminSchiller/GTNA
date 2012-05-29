@@ -36,11 +36,9 @@
 package gtna.networks.model;
 
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
