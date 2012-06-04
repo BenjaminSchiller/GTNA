@@ -72,7 +72,7 @@ import gtna.util.Config;
 public class Test2 {
 	public static void main(String[] args) {
 		for (int i = 0; i < 1; i++) {
-			Test2.PARGTest();
+			Test2.compareTest();
 		}
 	}
 
@@ -301,18 +301,19 @@ public class Test2 {
 		Series s = Series.generate(nw, metrics, 5);
 		Plotting.multi(s, metrics, "\\IG/");
 	}
-	
+
 	public static void compareTest() {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
-		
+
 		// String graphFile = ".\\caida2012.gtna";
 		// Network nw = new PFP(100, 10, 0.3, 0.1, 0.020846, null);
 		// Network nw = new GLP(12160, 10, 1.13, 0.4695, 0.6447, null);
-		Network nw = new IG(12160, 10, 0.4, null);
-		
-		Metric m = new DegreeDistribution();
+		Network nw = new IG(5000, 10, 0.4, null);
+
+		Metric m = new BiconnectedComponent(new CentralityNodeSorter(
+				CentralityMode.BETWEENNESS, NodeSorterMode.DESC));
 		Metric[] metrics = new Metric[] { m };
 
 		Series s = Series.generate(nw, metrics, 1);
