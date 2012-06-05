@@ -44,6 +44,7 @@ import gtna.graph.sorting.CentralityNodeSorter.CentralityMode;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.algorithms.GraphSPall;
 import gtna.graph.sorting.algorithms.GraphSPallFloyd;
+import gtna.metrics.AverageShortestPathLength;
 import gtna.metrics.BiconnectedComponent;
 import gtna.metrics.ApproxEffectiveDiameter;
 import gtna.metrics.ExactEffectiveDiameter;
@@ -63,22 +64,23 @@ import gtna.util.Config;
  */
 public class Test2 {
 	public static void main(String[] args) {
-		Test2.effectiveDiameter();
+		Test2.ASPLTest();
 	}
 
 	public static void readFileTest() {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
-		Config.overwrite("GNUPLOT_PATH",
-				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
+		// Config.overwrite("GNUPLOT_PATH",
+		// "C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		String graphFile = ".\\caida2007.gtna";
+		String graphFile = "./caida2007.gtna";
 		Network nw1 = new ReadableFile("CAIDA", "CAIDA", graphFile, null);
 		int N = 12160;
 
 		Network nw2 = new PFP(N, 20, 0.4, 0.021, null);
 		Network[] networks = new Network[] { nw1, nw2 };
 
-		Metric metric = new DegreeDistribution();
+		Metric metric = new BiconnectedComponent(new DegreeNodeSorter(
+				NodeSorterMode.DESC));
 		Metric[] metrics = new Metric[] { metric };
 
 		Series[] s = Series.generate(networks, metrics, 20);
@@ -109,5 +111,17 @@ public class Test2 {
 		GraphSPallFloyd allpairs = new GraphSPallFloyd(g);
 		System.out.println("" + allpairs.dist(1, 90));
 		System.out.println("" + allpairs.dist(90, 1));
+	}
+
+	public static void ASPLTest() {
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Network nw = new PFP(10000, 10, 0.4, 0.021, null);
+		Network[] networks = new Network[] { nw };
+		NodeSorter sorter = new DegreeNodeSorter(NodeSorterMode.DESC);
+		Metric m = new AverageShortestPathLength(sorter);
+		Metric[] metrics = new Metric[] { m };
+
+		Series[] s = Series.generate(networks, metrics, 1);
+		Plotting.multi(s, metrics, "ASPL/");
 	}
 }
