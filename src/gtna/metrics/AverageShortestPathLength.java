@@ -59,16 +59,26 @@ public class AverageShortestPathLength extends Metric {
 
 	private double[] ASPL;
 	private double[] AISPL;
+	private double[] diameters;
 
 	private NodeSorter sorter;
 	private boolean[] exclude;
+	private int excluded;
 	private Timer runtime;
 
-	public AverageShortestPathLength(NodeSorter sorter) {
+	private boolean stop;
+	private Resolution resolution;
+
+	public static enum Resolution {
+		SINGLE, PERCENT
+	}
+
+	public AverageShortestPathLength(NodeSorter sorter, Resolution resolution) {
 		super(
 				"AVERAGE_SHORTEST_PATH_LENGTH",
 				new Parameter[] { new StringParameter("SORTER", sorter.getKey()) });
 		this.sorter = sorter;
+		this.resolution = resolution;
 	}
 
 	/*
@@ -81,30 +91,75 @@ public class AverageShortestPathLength extends Metric {
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		this.runtime = new Timer();
 
-		this.ASPL = new double[g.getNodes().length];
-		this.AISPL = new double[g.getNodes().length];
+		int length;
+		if (this.resolution == Resolution.SINGLE) {
+			length = g.getNodes().length;
+		} else {
+			length = 100;
+		}
+		this.ASPL = new double[length];
+		this.AISPL = new double[length];
+		this.diameters = new double[length];
+
+		this.stop = false;
 
 		this.exclude = new boolean[g.getNodes().length];
 		for (int i = 0; i < this.exclude.length; i++) {
 			this.exclude[i] = false;
 		}
+		this.excluded = 0;
 
 		Node[] sorted = this.sorter.sort(g, new Random());
+		int numOfRound;
+		if (this.resolution == Resolution.SINGLE) {
+			numOfRound = sorted.length;
+		} else {
+			numOfRound = 100;
+		}
 
-		for (int i = 0; i < sorted.length; i++) {
+		for (int i = 0; i < numOfRound; i++) {
 			System.out.println("Round " + i);
 			this.compute(g, i);
 
-			int excludeIndex = sorted[i].getIndex();
-			this.exclude[excludeIndex] = true;
+			// int excludeIndex = sorted[i].getIndex();
+			// this.exclude[excludeIndex] = true;
+			this.excludeNodes(sorted, i);
 		}
 
 		this.runtime.end();
 	}
 
+	private void excludeNodes(Node[] sorted, int round) {
+		if (this.resolution == Resolution.SINGLE) {
+			int excludeIndex = sorted[round].getIndex();
+			this.exclude[excludeIndex] = true;
+			this.excluded++;
+			return;
+		}
+
+		// PERCENT
+		// (round - 1)% of nodes
+		int percent = (int) (((double) round / 100 * sorted.length));
+		percent = Math.max(0, percent);
+
+		int newPercent = (int) (((double) (round + 1)) / 100 * sorted.length);
+
+		for (int i = percent; i < newPercent; i++) {
+			int excludeIndex = sorted[i].getIndex();
+			this.exclude[excludeIndex] = true;
+			this.excluded++;
+		}
+	}
+
 	private void compute(Graph g, int index) {
+		if (stop) {
+			this.AISPL[index] = 0;
+			this.ASPL[index] = 0;
+			return;
+		}
 		double ASPLsum = 0;
 		double AISPLsum = 0;
+		int diameter = 0;
 		int found = 0;
 		Node[] nodes = g.getNodes();
 
@@ -131,7 +186,8 @@ public class AverageShortestPathLength extends Metric {
 					queue.add(outIndex);
 					found++;
 					ASPLsum += spl[outIndex];
-					AISPLsum += 1 / spl[outIndex];
+					AISPLsum += ((double) 1) / spl[outIndex];
+					diameter = Math.max(diameter, spl[outIndex]);
 				}
 			}
 		}
@@ -139,10 +195,18 @@ public class AverageShortestPathLength extends Metric {
 		System.out.println("found " + found);
 		if (found > 0) {
 			this.ASPL[index] = ASPLsum / found;
-			this.AISPL[index] = 1.0 / (AISPLsum / found);
+			// this.AISPL[index] = AISPLsum / found;
+			// System.out.println("AISPLsum = " + AISPLsum);
+			// System.out.println("AISPL average = " + (AISPLsum / found));
+			int numNodes = nodes.length - this.excluded;
+			int totalPairs = numNodes * (numNodes - 1); // 2 ways
+			this.AISPL[index] = ((double) totalPairs) / AISPLsum;
+			this.diameters[index] = diameter;
 		} else {
 			this.ASPL[index] = 0;
 			this.AISPL[index] = 0;
+			this.diameters[index] = 0;
+			this.stop = true;
 		}
 
 	}
@@ -159,6 +223,8 @@ public class AverageShortestPathLength extends Metric {
 				"AVERAGE_SHORTEST_PATH_LENGTH_ASPL", folder);
 		success &= DataWriter.writeWithIndex(this.AISPL,
 				"AVERAGE_SHORTEST_PATH_LENGTH_AISPL", folder);
+		success &= DataWriter.writeWithIndex(this.diameters,
+				"AVERAGE_SHORTEST_PATH_LENGTH_DIAMETER", folder);
 		return success;
 	}
 

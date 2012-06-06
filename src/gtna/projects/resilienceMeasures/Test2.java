@@ -45,6 +45,7 @@ import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.algorithms.GraphSPall;
 import gtna.graph.sorting.algorithms.GraphSPallFloyd;
 import gtna.metrics.AverageShortestPathLength;
+import gtna.metrics.AverageShortestPathLength.Resolution;
 import gtna.metrics.BiconnectedComponent;
 import gtna.metrics.ApproxEffectiveDiameter;
 import gtna.metrics.ExactEffectiveDiameter;
@@ -115,10 +116,10 @@ public class Test2 {
 
 	public static void ASPLTest() {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
-		Network nw = new PFP(10000, 10, 0.4, 0.021, null);
+		Network nw = new PFP(20000, 10, 0.4, 0.021, null);
 		Network[] networks = new Network[] { nw };
 		NodeSorter sorter = new DegreeNodeSorter(NodeSorterMode.DESC);
-		Metric m = new AverageShortestPathLength(sorter);
+		Metric m = new AverageShortestPathLength(sorter, Resolution.PERCENT);
 		Metric[] metrics = new Metric[] { m };
 
 		Series[] s = Series.generate(networks, metrics, 1);
