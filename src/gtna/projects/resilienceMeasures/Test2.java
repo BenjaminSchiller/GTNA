@@ -42,6 +42,7 @@ import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.CentralityNodeSorter.CentralityMode;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
+import gtna.graph.sorting.RandomNodeSorter;
 import gtna.graph.sorting.algorithms.GraphSPall;
 import gtna.graph.sorting.algorithms.GraphSPallFloyd;
 import gtna.metrics.AverageShortestPathLength;
@@ -119,10 +120,10 @@ public class Test2 {
 		Network nw = new PFP(20000, 10, 0.4, 0.021, null);
 		Network[] networks = new Network[] { nw };
 		NodeSorter sorter = new DegreeNodeSorter(NodeSorterMode.DESC);
-		Metric m = new AverageShortestPathLength(sorter, Resolution.PERCENT);
+		Metric m = new AverageShortestPathLength(sorter, Resolution.SINGLE);
 		Metric[] metrics = new Metric[] { m };
 
 		Series[] s = Series.generate(networks, metrics, 1);
-		Plotting.multi(s, metrics, "ASPL/");
+		Plotting.multi(s, metrics, "ASPL-CC/");
 	}
 }

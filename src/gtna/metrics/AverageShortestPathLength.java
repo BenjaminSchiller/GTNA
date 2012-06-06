@@ -200,7 +200,7 @@ public class AverageShortestPathLength extends Metric {
 			// System.out.println("AISPL average = " + (AISPLsum / found));
 			int numNodes = nodes.length - this.excluded;
 			int totalPairs = numNodes * (numNodes - 1); // 2 ways
-			this.AISPL[index] = ((double) totalPairs) / AISPLsum;
+			this.AISPL[index] = AISPLsum / totalPairs;
 			this.diameters[index] = diameter;
 		} else {
 			this.ASPL[index] = 0;
