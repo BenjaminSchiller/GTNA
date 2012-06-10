@@ -35,6 +35,7 @@
  */
 package gtna.graph.sorting;
 
+import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 
@@ -101,6 +102,13 @@ public class CentralityNodeSorter extends NodeSorter {
 	 */
 	private HashMap<Node, Double> ccMap = new HashMap<Node, Double>();
 
+	/*
+	 * This map saves the distances
+	 */
+	private double distances;
+
+	private double[] averageDistancesPerNode;
+
 	public CentralityNodeSorter(CentralityMode c, NodeSorterMode mode) {
 		// super(key, mode);
 		super(c.toString(), mode);
@@ -144,6 +152,13 @@ public class CentralityNodeSorter extends NodeSorter {
 	 */
 	@Override
 	public Node[] sort(Graph g, Random rand) {
+		// distances
+		this.distances = 0;
+		this.averageDistancesPerNode = new double[g.getNodes().length];
+		for (int i = 0; i < this.averageDistancesPerNode.length; i++) {
+			this.averageDistancesPerNode[i] = 0;
+		}
+
 		this.g = g;
 		this.calculate(g);
 		Node[] sorted = this.clone(g.getNodes());
@@ -241,8 +256,16 @@ public class CentralityNodeSorter extends NodeSorter {
 			// ----- calculate closeness centrality of s
 			double sum = 0;
 			for (Node n : S) {
+				// -----
+				this.distances += d.get(n).intValue();
+				this.averageDistancesPerNode[s.getIndex()] += d.get(n)
+						.doubleValue();
+				// -----
 				sum += d.get(n).doubleValue();
 			}
+			this.averageDistancesPerNode[s.getIndex()] = this.averageDistancesPerNode[s
+					.getIndex()] / (g.getNodes().length - 1);
+
 			this.ccMap.put(s, 1 / sum);
 			// -----
 
@@ -304,6 +327,18 @@ public class CentralityNodeSorter extends NodeSorter {
 
 	public double getCentrality(Node n) {
 		return map.get(n);
+	}
+
+	public double getSumOfDistance() {
+		// according to PFP
+		return this.distances;
+	}
+
+	public double getCharacteristicPathLength() {
+		// according to GLP
+		Arrays.sort(averageDistancesPerNode);
+		int index = (int) (this.averageDistancesPerNode.length / 2);
+		return this.averageDistancesPerNode[index];
 	}
 
 }

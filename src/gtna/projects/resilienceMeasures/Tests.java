@@ -66,6 +66,8 @@ import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GLP;
+import gtna.networks.model.IG;
+import gtna.networks.model.PARG;
 import gtna.networks.model.PFP;
 import gtna.networks.model.PFP;
 import gtna.networks.util.ReadableFile;
@@ -84,7 +86,7 @@ public class Tests {
 		 * GraphWriter.write(g, "Erdos.gtna");
 		 */
 
-		Tests.PFPPlotTest();
+		Tests.export();
 	}
 
 	public static void test() {
@@ -205,25 +207,16 @@ public class Tests {
 		System.out.println("Average Err = " + (errSum / nodes.length));
 	}
 
-	public static void PFPTest() {
-		int N = 9204;
-		int startNodes = 20;
-		double p = 0.4;
-		double delta = 0.021;
-		Network nw = new PFP(N, startNodes, p, delta, null);
+	public static void export() {
+		int N = 100;
+		int startNodes = 10;
+		Network nw = new GLP(N, startNodes, 1.13, .4695, 0.6447, null);
 
 		System.out.println("generating...");
 		Graph g = nw.generate();
 		System.out.println("generated!");
-		int maxDegree = 0;
-		for (Node n : g.getNodes()) {
-			if (maxDegree < n.getDegree()) {
-				maxDegree = n.getDegree();
-			}
-		}
-
 		try {
-			Utils.exportToGML(g, "PFP");
+			Utils.exportToGML(g, "GLP");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Cannot export graph to file!");
@@ -232,7 +225,7 @@ public class Tests {
 	}
 
 	public static void Erdos() {
-		int N = 20;
+		int N = 100;
 		Network nw = new ErdosRenyi(N, 6, true, null);
 
 		System.out.println("generating...");
@@ -260,7 +253,7 @@ public class Tests {
 
 	public static void GLPTest() {
 		int N = 2000;
-		int m0 = 100;
+		int m0 = 20;
 		int m = 2;
 		double p = 0.4695;
 		double beta = 0.6447;
@@ -322,9 +315,9 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		int N = 20000;
-		int m0 = 100;
-		int M = 2;
+		int N = 10000;
+		int m0 = 10;
+		int M = 2; // do not impact the model
 		double p = 0.4695;
 		double beta = 0.6447;
 		Network nw = new GLP(N, m0, M, p, beta, null);
@@ -340,18 +333,23 @@ public class Tests {
 		Config.overwrite("GNUPLOT_PATH",
 				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
-		int N = 9204;
-		int startNodes = 20;
-		double p = 0.4;
-		double delta = 0.021;
-		Network nw = new PFP(N, startNodes, p, delta, null);
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("GNUPLOT_PATH",
+				"C:\\Program Files (x86)\\gnuplot\\bin\\gnuplot.exe");
 
+		int N = 1000;
+		int startNodes = 100;
+		double N_add = 0.006;
+		double N_del = 4.8;
+		double N_cut = 0.2;
+
+		Network nw = new PARG(N, startNodes, N_add, N_del, N_cut, null);
 		Network[] networks = new Network[] { nw };
 
 		Metric m = new DegreeDistribution();
 		Metric[] metrics = new Metric[] { m };
-		Series[] s = Series.generate(networks, metrics, 100);
-		Plotting.multi(s, metrics, "PFP/");
+		Series[] s = Series.generate(networks, metrics, 1);
+		Plotting.multi(s, metrics, "PARG/");
 
 	}
 

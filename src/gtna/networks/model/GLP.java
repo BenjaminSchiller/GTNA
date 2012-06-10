@@ -36,7 +36,7 @@
 package gtna.networks.model;
 
 import java.awt.Point;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import gtna.graph.Edges;
@@ -57,25 +57,28 @@ public class GLP extends Network {
 	// parameters
 	private int numOfStartNodes;
 	private double p;
-	private int numOfAddedEdges;
+	private double numOfAddedEdges;
 	private double beta;
 
 	// variables for algorithm
 	private int[] nodeDegree;
-	private ArrayList<Point> edgesList;
+	private HashMap<String, Point> edgesList;
+	private double mThreshold;
+	private int low;
+	private int high;
 
-	public GLP(int nodes, int numOfStartNode, int numOfAddedEdges, double p,
+	public GLP(int nodes, int numOfStartNode, double numOfAddedEdges, double p,
 			double beta, Transformation[] t) {
 		super("GLP", nodes, new Parameter[] {
 				new IntParameter("NUMBER_OF_START_NODES", numOfStartNode),
-				new IntParameter("NUMBER_OF_ADDED_EDGES", numOfAddedEdges),
+				new DoubleParameter("NUMBER_OF_ADDED_EDGES", numOfAddedEdges),
 				new DoubleParameter("PROBABILITY", p),
 				new DoubleParameter("BETA", beta) }, t);
 		this.beta = beta;
 		this.numOfAddedEdges = numOfAddedEdges;
-		// TODO: use probability to generate m
 		this.numOfStartNodes = numOfStartNode;
 		this.p = p;
+		this.calculateMThreshold();
 	}
 
 	/*
@@ -85,58 +88,64 @@ public class GLP extends Network {
 	 */
 	@Override
 	public Graph generate() {
-		System.out.println("m0 = " + numOfStartNodes);
-		System.out.println("p = " + p);
-		System.out.println("m = " + numOfAddedEdges);
-		System.out.println("beta = " + beta);
-
-		// Graph graph = new Graph(this.getDescription());
-		Graph graph = new Graph("test");
+		// init
+		Graph graph = new Graph(this.getDescription());
 		Node[] nodes = Node.init(this.getNodes(), graph);
-		// nodePref = new double[nodes.length];
-		edgesList = new ArrayList<Point>();
+		edgesList = new HashMap<String, Point>();
 		nodeDegree = new int[nodes.length];
+		int maxIter = 100;
+		int temp;
 
 		Random randForP = new Random();
 		Random randForM = new Random();
-		int i = 1;
+		Random randForNode = new Random();
 
 		// test
 		int sumOfM = 0;
 		int usedM = 0;
 
+		/*
+		 * Network ba = new BarabasiAlbert(this.numOfStartNodes, 3, null); Graph
+		 * startGraph = ba.generate(); for (Edge e :
+		 * startGraph.getEdges().getEdges()) { int src = e.getSrc(); int dst =
+		 * e.getDst(); this.addEdge(src, dst); }
+		 */
+		/*
+		 * for (int i = 1; i < this.numOfStartNodes; i++) { this.addEdge(i, i -
+		 * 1); }
+		 */
+		for (int i = 1; i < this.numOfStartNodes; i++) {
+			int dst = (new Random()).nextInt(i);
+			this.addEdge(i, dst);
+		}
+
+		int i = this.numOfStartNodes;
 		while (i < nodes.length) {
 			// we start with m0 nodes connected through (m0 - 1) edges
-			if (i < numOfStartNodes) {
-				// select a node randomly from 0 to (i - 1)
-				int nodeIndex = (new Random()).nextInt(i);
-				addEdge(i, nodeIndex);
-				i++;
-				continue;
-			}
 
 			// m, the initial degree of new nodes in the GLP model, is a
 			// constant integer. However, the initial degree can be a random
 			// variable with some distribution.
-			if (randForM.nextDouble() < 0.87) {
-				this.numOfAddedEdges = 1;
+			if (randForM.nextDouble() < this.mThreshold) {
+				this.numOfAddedEdges = this.low;
 			} else {
-				this.numOfAddedEdges = 2;
+				this.numOfAddedEdges = this.high;
 			}
 
 			// test
 			sumOfM += this.numOfAddedEdges;
 			usedM++;
 
-			Random randForNode = new Random();
-
 			// with probability p we add m <= m0 new links.
 			if (randForP.nextDouble() < p) {
 				for (int j = 0; j < numOfAddedEdges; j++) {
 					int src = this.selectNodeUsingPref(i - 1, randForNode);
 					int dst = src;
-					while (dst == src) {
+					temp = 0;
+					while ((dst == src || this.hasEdge(src, dst))
+							&& temp < maxIter) {
 						dst = this.selectNodeUsingPref(i - 1, randForNode);
+						temp++;
 					}
 					addEdge(src, dst);
 				}
@@ -145,8 +154,11 @@ public class GLP extends Network {
 			// new links
 			else {
 				for (int j = 0; j < numOfAddedEdges; j++) {
-					int dst = this.selectNodeUsingPref(i - 1, randForNode);
-					// TODO: is it already used???
+					int dst = i;
+					temp = 0;
+					while ((dst == i || this.hasEdge(i, dst)) && temp < maxIter) {
+						dst = this.selectNodeUsingPref(i - 1, randForNode);
+					}
 					addEdge(i, dst);
 				}
 				i++;
@@ -157,8 +169,8 @@ public class GLP extends Network {
 		System.out.println("m = " + (((double) sumOfM) / usedM));
 
 		// copy edges to graph
-		Edges edges = new Edges(nodes, 2 * edgesList.size());
-		for (Point p : edgesList) {
+		Edges edges = new Edges(nodes, edgesList.size());
+		for (Point p : edgesList.values()) {
 			edges.add(p.x, p.y);
 			edges.add(p.y, p.x);
 		}
@@ -170,15 +182,44 @@ public class GLP extends Network {
 	}
 
 	/**
+	 * 
+	 */
+	private void calculateMThreshold() {
+		this.low = (int) Math.ceil(this.numOfAddedEdges);
+		this.high = (int) Math.floor(this.numOfAddedEdges);
+		this.mThreshold = ((double) (this.high - this.numOfAddedEdges))
+				/ (this.high - this.low);
+	}
+
+	/**
 	 * @param i
 	 * @param nodeIndex
 	 */
 	private void addEdge(int src, int dst) {
-		edgesList.add(new Point(src, dst));
-		nodeDegree[src]++;
-		nodeDegree[dst]++;
-		// updatePreference(src);
-		// updatePreference(dst);
+		if (src == dst) {
+			System.out.println("src = dst");
+			return;
+		}
+		if (this.hasEdge(src, dst)) {
+			// System.out.println("Edge is already existed");
+			return;
+		}
+		this.edgesList.put(this.edge(src, dst), new Point(src, dst));
+		this.edgesList.put(this.edge(dst, src), new Point(dst, src));
+		this.nodeDegree[src]++;
+		this.nodeDegree[dst]++;
+	}
+
+	private String edge(int src, int dst) {
+		return "from " + src + " to " + dst;
+	}
+
+	private boolean hasEdge(int src, int dst) {
+		if (this.edgesList.containsKey(this.edge(src, dst)))
+			return true;
+		if (this.edgesList.containsKey(this.edge(dst, src)))
+			return true;
+		return false;
 	}
 
 	private int selectNodeUsingPref(int maxIndex, Random rand) {
@@ -190,11 +231,12 @@ public class GLP extends Network {
 		double threshold = r * prefSum;
 		double sum = 0;
 		for (int i = 0; i <= maxIndex; i++) {
-			sum += nodeDegree[i];
+			sum += nodeDegree[i] - this.beta;
 			if (sum >= threshold) {
 				return i;
 			}
 		}
+		System.out.println("ERROR: While choosing node using preferences!");
 		return (int) (r * maxIndex);
 	}
 

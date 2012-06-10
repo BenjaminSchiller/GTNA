@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * PFP1.java
+ * IG.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -39,7 +39,6 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.util.Random;
 
-import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -53,32 +52,22 @@ import gtna.util.parameter.Parameter;
  * @author truong
  * 
  */
-public class PFP extends Network {
+public class IG extends Network {
 
-	// parameter
+	// parameters
 	private double p;
-	private double q;
-	private double delta;
 	private int numOfStartNodes;
 
-	// variables for algorithm
-	private double[] nodePref;
+	// variables
 	private HashMap<String, Point> edgesList;
 	private int[] nodeDegree;
-	private Random pRand = new Random();
-	private Random prefRand = new Random();
 
-	public PFP(int nodes, int numOfStartNodes, double probabilityP,
-			double probabilityQ, double delta, Transformation[] transformations) {
-		super("PFP", nodes, new Parameter[] {
-				new DoubleParameter("PROBABILITY_P", probabilityP),
-				new DoubleParameter("PROBABILITY_Q", probabilityQ),
-				new DoubleParameter("DELTA", delta),
-				new IntParameter("NUMBER_OF_START_NODES", numOfStartNodes) },
-				transformations);
-		this.p = probabilityP;
-		this.q = probabilityQ;
-		this.delta = delta;
+	public IG(int nodes, int numOfStartNodes, double probability,
+			Transformation[] transformations) {
+		super("IG", nodes, new Parameter[] {
+				new IntParameter("NUMBER_OF_START_NODES", numOfStartNodes),
+				new DoubleParameter("PROBABILITY", probability) }, null);
+		this.p = probability;
 		this.numOfStartNodes = numOfStartNodes;
 	}
 
@@ -92,42 +81,39 @@ public class PFP extends Network {
 		// init
 		Graph graph = new Graph(this.getDescription());
 		Node[] nodes = Node.init(this.getNodes(), graph);
-		nodePref = new double[nodes.length];
-		edgesList = new HashMap<String, Point>();
-		nodeDegree = new int[nodes.length];
+		this.edgesList = new HashMap<String, Point>();
+		this.nodeDegree = new int[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
 			this.nodeDegree[i] = 0;
 		}
 
 		// original random graph
-		Network ba = new BarabasiAlbert(this.numOfStartNodes, 3, null);
-		Graph g = ba.generate();
-		for (Edge e : g.getEdges().getEdges()) {
-			int src = e.getSrc();
-			int dst = e.getDst();
-			this.addEdge(src, dst);
-		}
-		System.out.println("Start graph generated");
+		/*
+		 * Network nw = new BarabasiAlbert(this.numOfStartNodes, 3, null); Graph
+		 * startGraph = nw.generate(); for (Edge e :
+		 * startGraph.getEdges().getEdges()) { int src = e.getSrc(); int dst =
+		 * e.getDst(); this.addEdge(src, dst); }
+		 */
 
+		for (int i = 1; i < this.numOfStartNodes; i++) {
+			int temp = (new Random()).nextInt(i);
+			this.addEdge(i, temp);
+		}
+		for (int i = 0; i < this.numOfStartNodes; i++) {
+			if (this.nodeDegree[i] < 1) {
+				System.out.println("Node " + i
+						+ " is not connected in start graph");
+			}
+		}
+		System.out.println("Start Graph generated!");
+
+		Random rand = new Random();
+		int temp;
+		int maxIter = 100;
 		// graph growths
 		for (int i = this.numOfStartNodes; i < nodes.length; i++) {
-			double randVal = pRand.nextDouble();
-			int maxIter = 100;
-			int temp;
-			if (randVal < this.p) {
-				// 1. strategy with probability p
-				int hostIndex = this.chooseNode(i - 1);
-				int peerIndex = hostIndex;
-				temp = 0;
-				while ((peerIndex == hostIndex || this.hasEdge(hostIndex,
-						peerIndex)) && temp < maxIter) {
-					peerIndex = this.chooseNode(i - 1);
-					temp++;
-				}
-				this.addEdge(i, hostIndex);
-				this.addEdge(hostIndex, peerIndex);
-			} else if (randVal < this.p + this.q) {
-				// 2. strategy with probability q
+			if (rand.nextDouble() < this.p) {
+				// with probability p
 				int hostIndex = this.chooseNode(i - 1);
 				int peer1Index = hostIndex;
 				temp = 0;
@@ -147,7 +133,7 @@ public class PFP extends Network {
 				this.addEdge(hostIndex, peer2Index);
 				this.addEdge(hostIndex, peer1Index);
 			} else {
-				// 3. strategy with probability (1 - p - q)
+				// with probability (1 - p)
 				int host1Index = this.chooseNode(i - 1);
 				int host2Index = host1Index;
 				temp = 0;
@@ -180,6 +166,36 @@ public class PFP extends Network {
 		return graph;
 	}
 
+	/**
+	 * @param i
+	 * @return
+	 */
+	private Random chooseNodeRand = new Random();
+
+	private int chooseNode(int maxIndex) {
+		int degreeSum = 0;
+		for (int i = 0; i <= maxIndex; i++) {
+			degreeSum += this.nodeDegree[i];
+		}
+		double r = this.chooseNodeRand.nextDouble();
+		double threshold = r * degreeSum;
+
+		int sum = 0;
+		for (int i = 0; i <= maxIndex; i++) {
+			sum += this.nodeDegree[i];
+			if (sum >= threshold) {
+				return i;
+			}
+		}
+
+		System.out.println("Cannot choose node using degree!");
+		return Integer.MAX_VALUE;
+	}
+
+	/**
+	 * @param src
+	 * @param dst
+	 */
 	private void addEdge(int src, int dst) {
 		if (src == dst) {
 			System.out.println("src = dst");
@@ -193,14 +209,13 @@ public class PFP extends Network {
 		this.edgesList.put(this.edge(dst, src), new Point(dst, src));
 		this.nodeDegree[src]++;
 		this.nodeDegree[dst]++;
-		this.updatePref(src);
-		this.updatePref(dst);
 	}
 
-	private String edge(int src, int dst) {
-		return "from " + src + " to " + dst;
-	}
-
+	/**
+	 * @param src
+	 * @param dst
+	 * @return
+	 */
 	private boolean hasEdge(int src, int dst) {
 		if (this.edgesList.containsKey(this.edge(src, dst)))
 			return true;
@@ -209,31 +224,13 @@ public class PFP extends Network {
 		return false;
 	}
 
-	private void updatePref(int index) {
-		int k = this.nodeDegree[index];
-		this.nodePref[index] = Math.pow((double) k,
-				1 + this.delta * Math.log((double) k));
-	}
-
-	private int chooseNode(int maxIndex) {
-		double prefSum = 0;
-		for (int i = 0; i <= maxIndex; i++) {
-			prefSum += this.nodePref[i];
-		}
-
-		double r = prefRand.nextDouble();
-		double randSum = r * prefSum;
-
-		double sum = 0;
-		for (int i = 0; i <= maxIndex; i++) {
-			sum += this.nodePref[i];
-			if (sum >= randSum) {
-				return i;
-			}
-		}
-
-		System.out.println("Cannot choose node using preference");
-		return Integer.MAX_VALUE;
+	/**
+	 * @param src
+	 * @param dst
+	 * @return
+	 */
+	private String edge(int src, int dst) {
+		return "from " + src + " to " + dst;
 	}
 
 }
