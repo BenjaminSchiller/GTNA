@@ -42,9 +42,11 @@ import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.RandomNodeSorter;
+import gtna.metrics.AverageShortestPathLength;
 import gtna.metrics.BiconnectedComponent;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
+import gtna.metrics.basic.ShortestPaths;
 import gtna.metrics.fragmentation.Fragmentation.Resolution;
 import gtna.metrics.fragmentation.WeakFragmentation;
 import gtna.networks.Network;
@@ -63,12 +65,15 @@ public class Caida {
 	 */
 	public static void main(String[] args) {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/Fragmentation/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/Fragmentation/");
 		String caidaFile = "./" + args[0] + ".gtna";
 		String folder = "" + args[1] + "/";
 		Network nw = new ReadableFile("CAIDA", "CAIDA", caidaFile, null);
 		Network[] networks = new Network[] { nw };
-		Metric metric = new BiconnectedComponent(new CentralityNodeSorter(
-				CentralityMode.CLOSENESS, NodeSorterMode.DESC));
+		Metric metric = new WeakFragmentation(new CentralityNodeSorter(
+				CentralityMode.CLOSENESS, NodeSorterMode.DESC),
+				Resolution.SINGLE);
 		Metric[] metrics = new Metric[] { metric };
 
 		Series[] s = Series.generate(networks, metrics, 1);

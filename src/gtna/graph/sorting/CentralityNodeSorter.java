@@ -35,7 +35,6 @@
  */
 package gtna.graph.sorting;
 
-import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 
