@@ -4,6 +4,7 @@
 /temp
 /resources
 /bin
+/src/gtna/projects/Test.java
 
 # deploy
 /deploy*
