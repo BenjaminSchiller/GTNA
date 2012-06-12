@@ -77,7 +77,7 @@ public class RolesNodeSorter extends NodeSorter {
 	@Override
 	public Node[] sort(Graph g, Random rand) {
 		Node[] sorted = this.clone(g.getNodes());
-		this.roles = (RoleList) g.getProperty("ROLES_WSN_0");
+		this.roles = (RoleList) g.getProperty("ROLES_" + this.key + "_0");
 
 		RolesAsc asc = new RolesAsc(this.order, this.roles);
 		Arrays.sort(sorted, asc);
