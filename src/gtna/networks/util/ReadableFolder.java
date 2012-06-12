@@ -36,6 +36,7 @@
 package gtna.networks.util;
 
 import gtna.graph.Graph;
+import gtna.io.filenameFilter.SuffixFilenameFilter;
 import gtna.io.graphReader.GtnaGraphReader;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
@@ -43,55 +44,57 @@ import gtna.util.Config;
 import gtna.util.parameter.Parameter;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @author "Benjamin Schiller"
  * 
  */
 public class ReadableFolder extends Network {
-	private ArrayList<String> files;
+	private File[] files;
 
 	private int index;
 
 	public ReadableFolder(String name, String folder, String srcFolder,
-			String extension, Transformation[] t) {
-		this(name, folder, srcFolder, extension, new Parameter[0], t);
+			String suffix, Transformation[] t) {
+		this(name, folder, srcFolder, suffix, new Parameter[0], t);
 	}
 
 	public ReadableFolder(String name, String folder, String srcFolder,
-			String extension, Parameter[] parameters, Transformation[] t) {
+			String suffix, Parameter[] parameters, Transformation[] t) {
 		super(ReadableFolder.key(name, folder), ReadableFolder.getNodes(
-				srcFolder, extension), parameters, t);
+				srcFolder, suffix), parameters, t);
 		File d = new File(srcFolder);
 		if (!d.exists()) {
-			this.files = new ArrayList<String>();
+			this.files = new File[0];
 		} else {
-			File[] f = d.listFiles();
-			this.files = new ArrayList<String>();
-			for (int i = 0; i < f.length; i++) {
-				if (f[i].getName().endsWith(extension)) {
-					this.files.add(f[i].getAbsolutePath());
-				}
-			}
+			this.files = d.listFiles(new SuffixFilenameFilter(suffix));
+			Arrays.sort(this.files);
 		}
-		this.index = -1;
+		this.index = 0;
 	}
 
-	private static int getNodes(String srcFolder, String extension) {
+	public Graph generate() {
+		if (this.files.length == 0) {
+			return null;
+		}
+		Graph graph = new GtnaGraphReader()
+				.readWithProperties(this.files[this.index].getAbsolutePath());
+		graph.setName(this.getDescription());
+		this.incIndex();
+		return graph;
+	}
+
+	private static int getNodes(String srcFolder, String suffix) {
 		File d = new File(srcFolder);
 		if (!d.exists()) {
 			return 0;
 		}
-		File[] f = d.listFiles();
+		File[] f = d.listFiles(new SuffixFilenameFilter(suffix));
 		if (f.length == 0) {
 			return 0;
 		}
-		int index = 0;
-		while (!f[index].getName().endsWith(extension)) {
-			index++;
-		}
-		return new GtnaGraphReader().nodes(f[index].getAbsolutePath());
+		return new GtnaGraphReader().nodes(f[0].getAbsolutePath());
 	}
 
 	public static String key(String name, String folder) {
@@ -102,18 +105,11 @@ public class ReadableFolder extends Network {
 		return "READABLE_FOLDER_" + folder;
 	}
 
-	public Graph generate() {
-		if (this.files.size() == 0) {
-			return null;
-		}
-		this.index = (this.index + 1) % this.files.size();
-		Graph graph = new GtnaGraphReader().readWithProperties(this.files
-				.get(this.index));
-		graph.setName(this.getDescription());
-		return graph;
+	public void incIndex() {
+		this.index = (this.index + 1) % this.files.length;
 	}
 
-	public ArrayList<String> getFiles() {
+	public File[] getFiles() {
 		return this.files;
 	}
 }
