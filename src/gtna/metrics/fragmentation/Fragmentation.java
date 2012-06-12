@@ -110,7 +110,7 @@ public abstract class Fragmentation extends Metric {
 		this.numberOfIsolatedComponents = new double[excludeFirst.length];
 		this.largestComponentSize = new double[excludeFirst.length];
 		this.largestComponentSizeFraction = new double[excludeFirst.length];
-		this.criticalPoint = g.getNodes().length;
+		this.criticalPoint = 1.0;
 		Random rand = new Random();
 		Node[] sorted = this.sorter.sort(g, rand);
 		for (int i = 0; i < excludeFirst.length; i++) {
@@ -139,7 +139,7 @@ public abstract class Fragmentation extends Metric {
 			}
 
 			if (this.largestComponentSize[i] < 0.5 * (g.getNodes().length - excludeFirst[i])
-					&& excludeFirst[i] < this.criticalPoint) {
+					&& (double) excludeFirst[i] / (double) g.getNodes().length < this.criticalPoint) {
 				this.criticalPoint = (double) excludeFirst[i]
 						/ (double) g.getNodes().length;
 			}
