@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * ExtensionFilenameFilter.java
+ * PostfixFilenameFilter.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,18 +33,20 @@
  * ---------------------------------------
  *
  */
-package gtna.io.filenameFilter;
+package gtna.util.filenameFilter;
 
 import java.io.File;
 import java.io.FilenameFilter;
 
 /**
+ * Implements a filename filter that accepts only files with a given filename
+ * postfix.
+ * 
  * @author benni
  * 
  */
 public class SuffixFilenameFilter implements FilenameFilter {
-
-	private String suffix;
+	String suffix;
 
 	public SuffixFilenameFilter(String suffix) {
 		this.suffix = suffix;
@@ -54,5 +56,4 @@ public class SuffixFilenameFilter implements FilenameFilter {
 	public boolean accept(File dir, String name) {
 		return name.endsWith(this.suffix);
 	}
-
 }

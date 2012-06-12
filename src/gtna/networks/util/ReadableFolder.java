@@ -36,11 +36,11 @@
 package gtna.networks.util;
 
 import gtna.graph.Graph;
-import gtna.io.filenameFilter.SuffixFilenameFilter;
 import gtna.io.graphReader.GtnaGraphReader;
 import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
+import gtna.util.filenameFilter.SuffixFilenameFilter;
 import gtna.util.parameter.Parameter;
 
 import java.io.File;

@@ -56,7 +56,7 @@ import gtna.transformation.partition.LargestWeaklyConnectedComponent;
 import gtna.transformation.remove.RemoveLargestNode;
 import gtna.util.Config;
 import gtna.util.filenameFilter.ExcludeHiddenFilenameFilter;
-import gtna.util.filenameFilter.PostfixFilenameFilter;
+import gtna.util.filenameFilter.SuffixFilenameFilter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
@@ -133,7 +133,7 @@ public class ResourcesGeneration {
 		Config.overwrite("MAIN_PLOT_FOLDER", folder + "evaluation-plots/");
 
 		File[] originalGraphs = new File(originalFolder)
-				.listFiles(new PostfixFilenameFilter(".gtna"));
+				.listFiles(new SuffixFilenameFilter(".gtna"));
 		Network[][] nw = new Network[T.length + 1][originalGraphs.length];
 		for (int j = 0; j < originalGraphs.length; j++) {
 			nw[0][j] = new ReadableFile(type, type,
@@ -183,7 +183,7 @@ public class ResourcesGeneration {
 	public static void generateTransformed(String type, String originalFolder,
 			String transformedFolder, Transformation[] t) {
 		File[] originalGraphs = new File(originalFolder)
-				.listFiles(new PostfixFilenameFilter(".gtna"));
+				.listFiles(new SuffixFilenameFilter(".gtna"));
 		for (File originalGraph : originalGraphs) {
 			String transformed = transformedFolder + originalGraph.getName();
 			if ((new File(transformed)).exists()) {
