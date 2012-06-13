@@ -42,6 +42,8 @@ import java.util.Stack;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
 
 /**
  * @author Flipp
@@ -49,8 +51,12 @@ import gtna.transformation.Transformation;
  */
 public class CDRandomWalk extends Transformation {
 	
-	public CDRandomWalk(){
-		super("CD_RANDOMWALK");
+	private int n;
+
+	public CDRandomWalk(int n){
+		super("CD_RANDOMWALK", new Parameter[]{new IntParameter("N", n)});
+		this.n = n;
+		
 		
 	}
 	
@@ -172,6 +178,7 @@ public class CDRandomWalk extends Transformation {
 		Node next;
 		RWCommunity aktCom;
 		System.out.println("Starting Random Walk");
+		int count = 0;
 		while(!finished){
 			System.out.print(".");
 			aktNode = s;
@@ -189,8 +196,8 @@ public class CDRandomWalk extends Transformation {
 				}while(ignore.containsKey(next));
 				aktNode = next;
 			}
-			
-			finished = ret.contains(aktCom);
+			count++;
+			finished = ret.contains(aktCom) && count < n;
 			
 			ret.add(aktCom);
 		}
