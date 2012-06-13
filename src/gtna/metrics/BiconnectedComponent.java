@@ -151,7 +151,7 @@ public class BiconnectedComponent extends Metric {
 				}
 				low[u.getIndex()] = Math.min(low[u.getIndex()],
 						low[v.getIndex()]);
-			} else if ((parent[u.getInDegree()] != v)
+			} else if ((parent[u.getIndex()] != v)
 					&& (d[v.getIndex()] < d[u.getIndex()])) {
 				// (u,v) is a back edge from u to its ancestor v
 				stack.push(g.getEdges().getEdge(u.getIndex(), v.getIndex()));
