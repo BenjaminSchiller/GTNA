@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * BiconnectedComponent.java
+ * BiconnectedComponent2.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -36,7 +36,6 @@
 package gtna.metrics;
 
 import gtna.data.Single;
-import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.sorting.NodeSorter;
@@ -46,6 +45,7 @@ import gtna.util.Timer;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -57,27 +57,34 @@ import java.util.Stack;
  */
 public class BiconnectedComponent extends Metric {
 
-	// variables for algorithm
-	private Graph g;
+	private Timer runtime;
+	private double[][] maxBicomponentSize;
+
+	private NodeSorter sorter;
+	private boolean[] excludedNode;
+	private double mixedPercent;
+	/*
+	 * nodes 0 -> (mixed - 1): single deleted. nodes mixed -> (N - 1):
+	 * percentage deleted
+	 */
+	private int mixed;
+	private int numberOfRound;
+	private int excluded;
+
+	// variables for the biconnected component size algorithm
+	private ArrayList<Node> maxComponent;
+	private int count;
 	private boolean[] visited;
 	private Node[] parent;
-	private Stack<Edge> stack;
-	private int count;
 	private int[] d;
 	private int[] low;
+	private Stack<Point> stack;
 
-	private ArrayList<Node> maxComponent;
-	private double[] maxComponentSize;
-	private Timer runtime;
-	private NodeSorter sorter;
-
-	/**
-	 * @param key
-	 */
-	public BiconnectedComponent(NodeSorter sorter) {
+	public BiconnectedComponent(NodeSorter sorter, double mixedPercent) {
 		super("BICONNECTED_COMPONENT", new Parameter[] { new StringParameter(
 				"SORTER", sorter.getKey()) });
 		this.sorter = sorter;
+		this.mixedPercent = mixedPercent;
 	}
 
 	/*
@@ -90,100 +97,131 @@ public class BiconnectedComponent extends Metric {
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		this.runtime = new Timer();
 
-		this.g = g;
-		this.maxComponentSize = new double[g.getNodes().length];
+		// init variables
+		int N = g.getNodes().length;
+		this.mixed = (int) (this.mixedPercent * N);
+		this.excludedNode = new boolean[N];
+		for (int i = 0; i < N; i++) {
+			this.excludedNode[i] = false;
+		}
+		this.excluded = 0;
+		this.numberOfRound = mixed + 100;
+		this.maxBicomponentSize = new double[numberOfRound][2];
 
-		Random rand = new Random();
-		Node[] sorted = sorter.sort(this.g, rand);
-		for (int i = 0; i < sorted.length; i++) {
-			System.out.println("\nIter = " + i);
-			calculate();
-			this.maxComponentSize[i] = (double) this.maxComponent.size();
+		Node[] sorted = this.sorter.sort(g, new Random());
+		for (int i = 0; i < numberOfRound; i++) {
+			// compute
+			this.computeBiconnectedSize(g);
+			this.maxBicomponentSize[i][0] = this.excluded;
 			System.out.println("Size = " + this.maxComponent.size());
-			// remove node
-			Node node = sorted[i];
-			for (int index : node.getIncomingEdges()) {
-				node.removeIn(index);
-				node.removeOut(index);
-				g.getNode(index).removeIn(node.getIndex());
-				g.getNode(index).removeOut(node.getIndex());
-			}
+			this.maxBicomponentSize[i][1] = (double) this.maxComponent.size();
 
+			// exclude node(s)
+			if (i < mixed) {
+				System.out.println("Remove: " + i);
+				this.excludeNode(i, sorted);
+			} else {
+				int percent = i - this.mixed + 1;
+				int next = this.mixed - 1 + (percent * (N - this.mixed)) / 100;
+				System.out.println("The last excluded Node = "
+						+ (this.excluded - 1));
+				System.out.println("Remove until = " + (next - 1));
+				for (int j = this.excluded; j < next; j++) {
+					this.excludeNode(j, sorted);
+				}
+			}
 		}
 
 		this.runtime.end();
 	}
 
-	public void calculate() {
-		maxComponent = new ArrayList<Node>();
-		System.out.println("Number of Nodes = " + this.g.getNodes().length);
-		count = 0;
-		visited = new boolean[g.getNodes().length];
-		parent = new Node[g.getNodes().length];
-		d = new int[g.getNodes().length];
-		low = new int[g.getNodes().length];
-		stack = new Stack<Edge>();
-		for (Node u : g.getNodes()) {
-			visited[u.getIndex()] = false;
-			parent[u.getIndex()] = null;
+	private void computeBiconnectedSize(Graph g) {
+		// TODO:
+		// int N = g.getNodes().length - this.excluded;
+		this.maxComponent = new ArrayList<Node>();
+		this.count = 0;
+		this.stack = new Stack<Point>();
+
+		this.visited = new boolean[g.getNodes().length];
+		this.parent = new Node[g.getNodes().length];
+		this.d = new int[g.getNodes().length];
+		this.low = new int[g.getNodes().length];
+
+		for (int i = 0; i < g.getNodes().length; i++) {
+			if (this.excludedNode[i]) {
+				continue;
+			}
+			Node u = g.getNode(i);
+			this.visited[u.getIndex()] = false;
+			this.parent[u.getIndex()] = null;
 		}
-		for (Node u : g.getNodes()) {
-			if (!visited[u.getIndex()]) {
-				DFSVisit(u);
+		for (int i = 0; i < g.getNodes().length; i++) {
+			if (this.excludedNode[i]) {
+				continue;
+			}
+			Node u = g.getNode(i);
+			if (!this.visited[u.getIndex()]) {
+				this.DFSvisit(g, u);
 			}
 		}
-
 	}
 
-	private void DFSVisit(Node u) {
-		visited[u.getIndex()] = true;
-		count++;
-		d[u.getIndex()] = count;
-		low[u.getIndex()] = d[u.getIndex()];
+	private void DFSvisit(Graph g, Node u) {
+		this.visited[u.getIndex()] = true;
+		this.count++;
+		this.d[u.getIndex()] = count;
+		this.low[u.getIndex()] = count;
 		for (int index : u.getOutgoingEdges()) {
+			if (this.excludedNode[index]) {
+				continue;
+			}
 			Node v = g.getNode(index);
-			if (!visited[v.getIndex()]) {
-				stack.push(g.getEdges().getEdge(u.getIndex(), v.getIndex()));
-				parent[v.getIndex()] = u;
-				DFSVisit(v);
-				if (low[v.getIndex()] >= d[u.getIndex()]) {
-					outputComp(u, v);
+			if (!this.visited[v.getIndex()]) {
+				this.stack.push(new Point(u.getIndex(), v.getIndex()));
+				this.parent[v.getIndex()] = u;
+				this.DFSvisit(g, v);
+				if (this.low[v.getIndex()] >= this.d[u.getIndex()]) {
+					this.output(g, u, v);
 				}
-				low[u.getIndex()] = Math.min(low[u.getIndex()],
-						low[v.getIndex()]);
-			} else if ((parent[u.getIndex()] != v)
-					&& (d[v.getIndex()] < d[u.getIndex()])) {
-				// (u,v) is a back edge from u to its ancestor v
-				stack.push(g.getEdges().getEdge(u.getIndex(), v.getIndex()));
-				low[u.getIndex()] = Math
-						.min(low[u.getIndex()], d[v.getIndex()]);
+				this.low[u.getIndex()] = Math.min(this.low[u.getIndex()],
+						this.low[v.getIndex()]);
+			} else if ((this.parent[u.getIndex()] != v)
+					&& (this.d[v.getIndex()] < this.d[u.getIndex()])) {
+				this.stack.push(new Point(u.getIndex(), v.getIndex()));
+				this.low[u.getIndex()] = Math.min(this.low[u.getIndex()],
+						this.d[v.getIndex()]);
 			}
 		}
 	}
 
-	private void outputComp(Node u, Node v) {
+	private void output(Graph g, Node u, Node v) {
 		ArrayList<Node> max = new ArrayList<Node>();
-		// System.out.println("New Biconnected Component Found");
-		while (!stack.isEmpty()) {
-			Edge e = stack.pop();
-			Node src = g.getNode(e.getSrc());
-			Node dst = g.getNode(e.getDst());
+		while (!this.stack.isEmpty()) {
+			Point e = stack.pop();
+			Node src = g.getNode(e.x);
+			Node dst = g.getNode(e.y);
 			if (!max.contains(src)) {
 				max.add(src);
 			}
 			if (!max.contains(dst)) {
 				max.add(dst);
 			}
-			// System.out.println("" + e);
-			if (e.getSrc() == u.getIndex() && e.getDst() == v.getIndex()) {
-				// System.out.println("End of this component!");
+
+			if (src == u && dst == v) {
 				if (max.size() > this.maxComponent.size()) {
 					this.maxComponent = max;
 				}
 				return;
 			}
 		}
-		System.out.println("It can have errors!!!");
+		System.out
+				.println("Maybe we have an error when computing biconnected!");
+	}
+
+	private void excludeNode(int index, Node[] sorted) {
+		Node nodeToExclude = sorted[index];
+		this.excludedNode[nodeToExclude.getIndex()] = true;
+		this.excluded++;
 	}
 
 	/*
@@ -194,7 +232,7 @@ public class BiconnectedComponent extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(maxComponentSize,
+		success &= DataWriter.writeWithoutIndex(this.maxBicomponentSize,
 				"BICONNECTED_COMPONENT_MAX_COMPONENT_SIZE", folder);
 		return success;
 	}

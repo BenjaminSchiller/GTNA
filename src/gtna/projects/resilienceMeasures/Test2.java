@@ -41,6 +41,7 @@ import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.RandomNodeSorter;
 import gtna.metrics.AverageShortestPathLength;
 import gtna.metrics.AverageShortestPathLength.Resolution;
+import gtna.metrics.BiconnectedComponent;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
@@ -58,7 +59,7 @@ public class Test2 {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Test2.mixedTest();
+		Test2.biconnected();
 	}
 
 	public static void mixedTest() {
@@ -74,6 +75,20 @@ public class Test2 {
 		Series[] series = Series.generate(networks, metrics, 1);
 
 		Plotting.multi(series, metrics, "./MIXEDTEST/");
+	}
+
+	public static void biconnected() {
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		// Network nw = new BarabasiAlbert(10000, 4, null);
+		Network nw = new ReadableFile("CAIDA", "CAIDA", "./caida2007.gtna",
+				null);
+		Network[] networks = new Network[] { nw };
+		Metric m = new BiconnectedComponent(new RandomNodeSorter(), 0.5);
+		Metric[] metrics = new Metric[] { m };
+
+		Series[] series = Series.generate(networks, metrics, 1);
+
+		Plotting.multi(series, metrics, "./BICONNECTED/");
 	}
 
 }
