@@ -45,15 +45,15 @@ import java.io.FilenameFilter;
  * @author benni
  * 
  */
-public class PostfixFilenameFilter implements FilenameFilter {
-	String postfix;
+public class SuffixFilenameFilter implements FilenameFilter {
+	String suffix;
 
-	public PostfixFilenameFilter(String postfix) {
-		this.postfix = postfix;
+	public SuffixFilenameFilter(String suffix) {
+		this.suffix = suffix;
 	}
 
 	@Override
 	public boolean accept(File dir, String name) {
-		return name.endsWith(this.postfix);
+		return name.endsWith(this.suffix);
 	}
 }

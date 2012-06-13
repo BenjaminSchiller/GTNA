@@ -39,6 +39,7 @@ import gtna.graph.Graph;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.networks.util.ReadableFolder;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
 import gtna.util.Timer;
@@ -206,6 +207,9 @@ public class Series {
 		File folder = new File(s.getSeriesFolderRun(run));
 		if (folder.exists() && Config.getBoolean("SKIP_EXISTING_DATA_FOLDERS")) {
 			System.out.println("skipping");
+			if (s.getNetwork() instanceof ReadableFolder) {
+				((ReadableFolder) s.getNetwork()).incIndex();
+			}
 			return true;
 		}
 		Timer timer = new Timer("G: " + s.getNetwork().getDescriptionShort());

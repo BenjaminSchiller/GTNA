@@ -112,6 +112,7 @@ public class SingleList {
 				list.add(new Single(temp[0], Double.parseDouble(temp[1])));
 			}
 		}
+		fr.close();
 		return new SingleList(metric, list);
 	}
 

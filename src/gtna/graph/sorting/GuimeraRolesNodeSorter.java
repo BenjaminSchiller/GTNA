@@ -52,6 +52,60 @@ public class GuimeraRolesNodeSorter extends RolesNodeSorter {
 			new GuimeraRole(GuimeraRole.GuimeraRoleType.ULTRA_PERIPHERAL),
 			new GuimeraRole(GuimeraRole.GuimeraRoleType.KINLESS_NODE) };
 
+	public static final GuimeraRole[] UP_P_SC = new GuimeraRole[] {
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.ULTRA_PERIPHERAL),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.PERIPHERAL),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.SATELLITE_CONNECTOR),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.GLOBAL_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.CONNECTOR_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.PROVINCIAL_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.KINLESS_NODE) };
+
+	public static final GuimeraRole[] UP_SC_P = new GuimeraRole[] {
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.ULTRA_PERIPHERAL),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.SATELLITE_CONNECTOR),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.PERIPHERAL),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.GLOBAL_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.CONNECTOR_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.PROVINCIAL_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.KINLESS_NODE) };
+
+	public static final GuimeraRole[] P_UP_SC = new GuimeraRole[] {
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.PERIPHERAL),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.ULTRA_PERIPHERAL),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.SATELLITE_CONNECTOR),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.GLOBAL_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.CONNECTOR_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.PROVINCIAL_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.KINLESS_NODE) };
+
+	public static final GuimeraRole[] P_SC_UP = new GuimeraRole[] {
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.PERIPHERAL),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.SATELLITE_CONNECTOR),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.ULTRA_PERIPHERAL),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.GLOBAL_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.CONNECTOR_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.PROVINCIAL_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.KINLESS_NODE) };
+
+	public static final GuimeraRole[] SC_UP_P = new GuimeraRole[] {
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.SATELLITE_CONNECTOR),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.ULTRA_PERIPHERAL),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.PERIPHERAL),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.GLOBAL_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.CONNECTOR_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.PROVINCIAL_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.KINLESS_NODE) };
+
+	public static final GuimeraRole[] SC_P_UP = new GuimeraRole[] {
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.SATELLITE_CONNECTOR),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.PERIPHERAL),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.ULTRA_PERIPHERAL),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.GLOBAL_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.CONNECTOR_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.PROVINCIAL_HUB),
+			new GuimeraRole(GuimeraRole.GuimeraRoleType.KINLESS_NODE) };
+
 	public GuimeraRolesNodeSorter(GuimeraRole[] order) {
 		super("GUIMERA", order);
 	}
