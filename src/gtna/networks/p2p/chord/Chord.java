@@ -150,7 +150,6 @@ public class Chord extends Network {
 		}
 		edges.fill();
 
-		graph.getTimer().end();
 		return graph;
 	}
 

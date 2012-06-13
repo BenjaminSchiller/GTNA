@@ -45,8 +45,6 @@ public class Graph {
 
 	private Node[] nodes;
 
-	private Timer timer;
-
 	private HashMap<String, GraphProperty> properties;
 
 	/**
@@ -57,7 +55,6 @@ public class Graph {
 	 */
 	public Graph(String name) {
 		this.name = name;
-		this.timer = new Timer();
 		this.properties = new HashMap<String, GraphProperty>();
 	}
 
@@ -161,21 +158,6 @@ public class Graph {
 	}
 
 	/**
-	 * @return the timer
-	 */
-	public Timer getTimer() {
-		return this.timer;
-	}
-
-	/**
-	 * @param timer
-	 *            the timer to set
-	 */
-	public void setTimer(Timer timer) {
-		this.timer = timer;
-	}
-
-	/**
 	 * @return the nodes
 	 */
 	public Node[] getNodes() {
@@ -190,7 +172,6 @@ public class Graph {
 	 */
 	public void setNodes(Node[] nodes) {
 		this.nodes = nodes;
-		this.timer.end();
 	}
 
 	/**
