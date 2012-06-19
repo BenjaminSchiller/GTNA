@@ -110,33 +110,38 @@ public class Routing extends Metric {
 		Random rand = new Random();
 		this.routes = new Route[graph.getNodes().length * this.routesPerNode];
 		int index = 0;
-		for (Node start : graph.getNodes()) {
-			for (int i = 0; i < this.routesPerNode; i++) {
-				this.routes[index++] = ra.routeToRandomTarget(graph,
-						start.getIndex(), rand);
+
+		int parallel = Config.getInt("PARALLEL_ROUTINGS");
+		if (parallel > 1) {
+			for (Node start : graph.getNodes()) {
+				for (int i = 0; i < this.routesPerNode; i++) {
+					this.routes[index++] = ra.routeToRandomTarget(graph,
+							start.getIndex(), rand);
+				}
 			}
-		}
-		RoutingThread[] threads = new RoutingThread[Config
-				.getInt("PARALLEL_ROUTINGS")];
-		for (int i = 0; i < threads.length; i++) {
-			int start = graph.getNodes().length / threads.length * i;
-			int end = graph.getNodes().length / threads.length * (i + 1) - 1;
-			if (i == threads.length - 1) {
-				end = graph.getNodes().length - 1;
+		} else {
+			RoutingThread[] threads = new RoutingThread[parallel];
+			for (int i = 0; i < threads.length; i++) {
+				int start = graph.getNodes().length / threads.length * i;
+				int end = graph.getNodes().length / threads.length * (i + 1)
+						- 1;
+				if (i == threads.length - 1) {
+					end = graph.getNodes().length - 1;
+				}
+				threads[i] = new RoutingThread(start, end, this.routesPerNode,
+						graph, ra, rand);
+				threads[i].start();
 			}
-			threads[i] = new RoutingThread(start, end, this.routesPerNode,
-					graph, ra, rand);
-			threads[i].start();
-		}
-		index = 0;
-		for (RoutingThread t : threads) {
-			try {
-				t.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			for (Route r : t.getRoutes()) {
-				this.routes[index++] = r;
+			index = 0;
+			for (RoutingThread t : threads) {
+				try {
+					t.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				for (Route r : t.getRoutes()) {
+					this.routes[index++] = r;
+				}
 			}
 		}
 
