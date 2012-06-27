@@ -42,7 +42,6 @@ import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.RandomNodeSorter;
-import gtna.metrics.AverageShortestPathLength;
 import gtna.metrics.BiconnectedComponent;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
@@ -52,6 +51,7 @@ import gtna.metrics.fragmentation.WeakFragmentation;
 import gtna.networks.Network;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plotting;
+import gtna.trash.AverageShortestPathLength;
 import gtna.util.Config;
 
 /**

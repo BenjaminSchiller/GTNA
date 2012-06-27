@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * AverageShortestPathLength.java
+ * ASPL.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -55,34 +55,28 @@ import java.util.Random;
  * @author truong
  * 
  */
-public class AverageShortestPathLength extends Metric {
+public class ASPL extends Metric {
 
 	private double[][] ASPL;
 	private double[][] AISPL;
-	private double[][] diameters;
+	private double[][] diameter;
 
 	private NodeSorter sorter;
-	private boolean[] exclude;
-	private int excluded;
-	private Timer runtime;
-
-	private boolean stop;
-	private Resolution resolution;
-	private double mixedPoint;
+	private double mixedPercent;
 	private int mixed;
+	private int numberOfRound;
+	private int excluded;
 
-	public static enum Resolution {
-		SINGLE, PERCENT, MIXED
-	}
+	private boolean[] excludedNode;
+	private Timer runtime;
+	private boolean stop;
 
-	public AverageShortestPathLength(NodeSorter sorter, Resolution resolution,
-			double mixedPoint) {
+	public ASPL(NodeSorter sorter, double mixedPercent) {
 		super(
 				"AVERAGE_SHORTEST_PATH_LENGTH",
 				new Parameter[] { new StringParameter("SORTER", sorter.getKey()) });
+		this.mixedPercent = mixedPercent;
 		this.sorter = sorter;
-		this.resolution = resolution;
-		this.mixedPoint = mixedPoint;
 	}
 
 	/*
@@ -95,103 +89,65 @@ public class AverageShortestPathLength extends Metric {
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		this.runtime = new Timer();
 
-		this.mixed = (int) (this.mixedPoint * g.getNodes().length);
-		System.out.println("Mixed = " + this.mixed);
-		int length;
-		if (this.resolution == Resolution.SINGLE) {
-			length = g.getNodes().length;
-		} else if (this.resolution == Resolution.PERCENT) {
-			length = 100;
-		} else {
-			length = this.mixed + 100;
+		// init
+		int N = g.getNodes().length;
+		this.mixed = (int) (this.mixedPercent * N);
+		this.excludedNode = new boolean[N];
+		for (int i = 0; i < N; i++) {
+			this.excludedNode[i] = false;
 		}
-
-		this.ASPL = new double[length][2];
-		this.AISPL = new double[length][2];
-		this.diameters = new double[length][2];
-
 		this.stop = false;
-
-		this.exclude = new boolean[g.getNodes().length];
-		for (int i = 0; i < this.exclude.length; i++) {
-			this.exclude[i] = false;
-		}
 		this.excluded = 0;
+		this.numberOfRound = this.mixed + 100;
+		this.numberOfRound = Math.min(this.numberOfRound, N);
+		this.ASPL = new double[numberOfRound][2];
+		this.AISPL = new double[numberOfRound][2];
+		this.diameter = new double[numberOfRound][2];
 
+		// compute
 		Node[] sorted = this.sorter.sort(g, new Random());
-
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < this.numberOfRound; i++) {
 			this.compute(g, i);
 
-			// int excludeIndex = sorted[i].getIndex();
-			// this.exclude[excludeIndex] = true;
-			this.excludeNodes(sorted, i);
+			// exclude nodes
+			if (i < mixed) {
+				System.out.println("Remove: " + i);
+				this.excludeNode(i, sorted);
+			} else {
+				int percent = i - this.mixed + 1;
+				System.out.println("Remove: " + percent + " %");
+				int next = this.mixed - 1 + (percent * (N - this.mixed)) / 100;
+				System.out.println("The last excluded Node = "
+						+ (this.excluded - 1));
+				System.out.println("Remove until = " + (next - 1));
+				for (int j = this.excluded; j < next; j++) {
+					this.excludeNode(j, sorted);
+				}
+			}
 		}
 
 		this.runtime.end();
 	}
 
-	private void excludeNodes(Node[] sorted, int round) {
-		if (this.resolution == Resolution.SINGLE) {
-			int excludeIndex = sorted[round].getIndex();
-			this.exclude[excludeIndex] = true;
-			this.excluded++;
-			System.out.println("Removed until " + (this.excluded - 1));
-		} else if (this.resolution == Resolution.PERCENT) {
-
-			// PERCENT
-			// (round - 1)% of nodes
-			int newPercent = (int) (((double) (round + 1)) / 100 * sorted.length);
-
-			for (int i = this.excluded; i < newPercent; i++) {
-				int excludeIndex = sorted[i].getIndex();
-				this.exclude[excludeIndex] = true;
-				this.excluded++;
-			}
-			System.out.println("Remove from " + this.excluded + " to "
-					+ (newPercent - 1));
-		} else {
-			if (round < this.mixed) {
-				int excludeIndex = sorted[round].getIndex();
-				this.exclude[excludeIndex] = true;
-				this.excluded++;
-				System.out.println("Removed until " + (this.excluded - 1));
-			} else {
-				int percent = round - this.mixed + 1;
-				System.out.println("" + percent + "%");
-
-				int nextRemoved = this.mixed - 1
-						+ (percent * (sorted.length - this.mixed + 1)) / 100;
-				System.out.println("Removed until " + (this.excluded - 1));
-				System.out.println("Next Removed = " + nextRemoved);
-				for (int i = this.excluded; i < nextRemoved; i++) {
-					int excludeIndex = sorted[i].getIndex();
-					this.exclude[excludeIndex] = true;
-					this.excluded++;
-				}
-				System.out.println("Removed until " + (this.excluded - 1));
-			}
-		}
-	}
-
 	private void compute(Graph g, int index) {
-		if (stop) {
-			this.AISPL[index][0] = this.excluded;
+		if (this.stop) {
 			this.ASPL[index][0] = this.excluded;
-			this.diameters[index][0] = this.excluded;
-			this.AISPL[index][1] = 0;
 			this.ASPL[index][1] = 0;
-			this.diameters[index][1] = 0;
+			this.AISPL[index][0] = this.excluded;
+			this.AISPL[index][1] = 0;
+			this.diameter[index][0] = this.excluded;
+			this.diameter[index][1] = 0;
+			System.out.println("Nothing to compute!");
 			return;
 		}
 		double ASPLsum = 0;
 		double AISPLsum = 0;
-		int diameter = 0;
+		double diameter = 0;
 		int found = 0;
 		Node[] nodes = g.getNodes();
 
 		for (int i = 0; i < nodes.length; i++) {
-			if (this.exclude[i]) {
+			if (this.excludedNode[i]) {
 				continue;
 			}
 			// single source shortest path
@@ -203,7 +159,7 @@ public class AverageShortestPathLength extends Metric {
 			while (!queue.isEmpty()) {
 				Node current = nodes[queue.poll()];
 				for (int outIndex : current.getOutgoingEdges()) {
-					if (this.exclude[outIndex]) {
+					if (this.excludedNode[outIndex]) {
 						continue;
 					}
 					if (spl[outIndex] != -1) {
@@ -213,35 +169,41 @@ public class AverageShortestPathLength extends Metric {
 					queue.add(outIndex);
 					found++;
 					ASPLsum += spl[outIndex];
-					AISPLsum += ((double) 1) / spl[outIndex];
+					AISPLsum += 1.0 / spl[outIndex];
 					diameter = Math.max(diameter, spl[outIndex]);
 				}
 			}
 		}
-
-		System.out.println("found " + found);
+		System.out.println("found = " + found);
 		if (found > 0) {
 			this.ASPL[index][0] = this.excluded;
 			this.ASPL[index][1] = ASPLsum / found;
-			// this.AISPL[index] = AISPLsum / found;
-			// System.out.println("AISPLsum = " + AISPLsum);
-			// System.out.println("AISPL average = " + (AISPLsum / found));
+
 			int numNodes = nodes.length - this.excluded;
 			int totalPairs = numNodes * (numNodes - 1); // 2 ways
 			this.AISPL[index][0] = this.excluded;
 			this.AISPL[index][1] = AISPLsum / totalPairs;
-			this.diameters[index][0] = this.excluded;
-			this.diameters[index][1] = diameter;
+
+			this.diameter[index][0] = this.excluded;
+			this.diameter[index][1] = diameter;
 		} else {
-			this.AISPL[index][0] = this.excluded;
 			this.ASPL[index][0] = this.excluded;
-			this.diameters[index][0] = this.excluded;
-			this.AISPL[index][1] = 0;
+			this.AISPL[index][0] = this.excluded;
+			this.diameter[index][0] = this.excluded;
+
 			this.ASPL[index][1] = 0;
-			this.diameters[index][1] = 0;
+			this.AISPL[index][1] = 0;
+			this.diameter[index][1] = 0;
+
 			this.stop = true;
 		}
+	}
 
+	private void excludeNode(int index, Node[] sorted) {
+		Node nodeToExclude = sorted[index];
+		this.excludedNode[nodeToExclude.getIndex()] = true;
+		this.excluded++;
+		System.out.println("Node " + nodeToExclude.getIndex() + " was deleted");
 	}
 
 	/*
@@ -256,7 +218,7 @@ public class AverageShortestPathLength extends Metric {
 				"AVERAGE_SHORTEST_PATH_LENGTH_ASPL", folder);
 		success &= DataWriter.writeWithoutIndex(this.AISPL,
 				"AVERAGE_SHORTEST_PATH_LENGTH_AISPL", folder);
-		success &= DataWriter.writeWithoutIndex(this.diameters,
+		success &= DataWriter.writeWithoutIndex(this.diameter,
 				"AVERAGE_SHORTEST_PATH_LENGTH_DIAMETER", folder);
 		return success;
 	}

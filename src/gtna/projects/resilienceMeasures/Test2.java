@@ -36,17 +36,24 @@
 package gtna.projects.resilienceMeasures;
 
 import gtna.data.Series;
+import gtna.graph.Graph;
 import gtna.graph.sorting.DegreeNodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
 import gtna.graph.sorting.RandomNodeSorter;
-import gtna.metrics.AverageShortestPathLength;
-import gtna.metrics.AverageShortestPathLength.Resolution;
+import gtna.io.graphReader.GtnaGraphReader;
+import gtna.io.graphWriter.GraphWriter;
+import gtna.io.graphWriter.GtnaGraphWriter;
+import gtna.metrics.ASPL;
 import gtna.metrics.BiconnectedComponent;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
+import gtna.networks.model.IG;
+import gtna.networks.model.PFP;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plotting;
+import gtna.trash.AverageShortestPathLength;
+import gtna.trash.AverageShortestPathLength.Resolution;
 import gtna.util.Config;
 
 /**
@@ -59,7 +66,7 @@ public class Test2 {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Test2.biconnected();
+		Test2.biconnectedCorrectnessTest();
 	}
 
 	public static void mixedTest() {
@@ -83,12 +90,43 @@ public class Test2 {
 		Network nw = new ReadableFile("CAIDA", "CAIDA", "./caida2007.gtna",
 				null);
 		Network[] networks = new Network[] { nw };
-		Metric m = new BiconnectedComponent(new RandomNodeSorter(), 0.5);
+		Metric m = new BiconnectedComponent(new RandomNodeSorter(), 0.4);
 		Metric[] metrics = new Metric[] { m };
 
 		Series[] series = Series.generate(networks, metrics, 1);
 
 		Plotting.multi(series, metrics, "./BICONNECTED/");
+	}
+
+	public static void createGtnaGraph() {
+		Network nw = new BarabasiAlbert(15, 4, null);
+		Graph g = nw.generate();
+		GraphWriter writer = new GtnaGraphWriter();
+		writer.write(g, "graph.gtna");
+		System.out.println("Graph was created");
+	}
+
+	public static void biconnectedCorrectnessTest() {
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Network nw = new IG(1000, 10, 0.4, null);
+		Network[] networks = new Network[] { nw };
+		Metric m = new BiconnectedComponent(new DegreeNodeSorter(
+				NodeSorterMode.DESC), 0.2);
+		Metric[] metrics = new Metric[] { m };
+		Series[] series = Series.generate(networks, metrics, 1);
+		Plotting.multi(series, metrics, "./GRAPH/");
+	}
+
+	public static void ASPLtest() {
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Network nw = new IG(1000, 10, 0.4, null);
+		Network[] networks = new Network[] { nw };
+		Metric m = new ASPL(new DegreeNodeSorter(NodeSorterMode.DESC), 1.0);
+		// Metric m = new AverageShortestPathLength(new DegreeNodeSorter(
+		// NodeSorterMode.DESC), Resolution.SINGLE, 0);
+		Metric[] metrics = new Metric[] { m };
+		Series[] series = Series.generate(networks, metrics, 1);
+		Plotting.multi(series, metrics, "./GRAPH/");
 	}
 
 }

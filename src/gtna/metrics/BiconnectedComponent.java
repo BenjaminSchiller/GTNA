@@ -105,6 +105,7 @@ public class BiconnectedComponent extends Metric {
 			this.excludedNode[i] = false;
 		}
 		this.excluded = 0;
+		// TODO: when mixed < N - 100!
 		this.numberOfRound = mixed + 100;
 		this.maxBicomponentSize = new double[numberOfRound][2];
 
@@ -222,6 +223,7 @@ public class BiconnectedComponent extends Metric {
 		Node nodeToExclude = sorted[index];
 		this.excludedNode[nodeToExclude.getIndex()] = true;
 		this.excluded++;
+		System.out.println("Node " + nodeToExclude.getIndex() + " was deleted");
 	}
 
 	/*
