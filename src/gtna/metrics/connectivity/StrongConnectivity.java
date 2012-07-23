@@ -36,7 +36,7 @@ y * GTNA : Graph-Theoretic Network Analyzer
 package gtna.metrics.connectivity;
 
 import gtna.graph.Graph;
-import gtna.transformation.Transformation;
+import gtna.graph.partition.Partition;
 import gtna.transformation.partition.StrongConnectivityPartition;
 
 /**
@@ -46,13 +46,12 @@ import gtna.transformation.partition.StrongConnectivityPartition;
 public class StrongConnectivity extends Partitioning {
 
 	public StrongConnectivity() {
-		super("STRONG_CONNECTIVITY", "STRONG_CONNECTIVITY_PARTITION");
+		super("STRONG_CONNECTIVITY");
 	}
 
 	@Override
-	protected Graph addProperty(Graph g) {
-		Transformation t = new StrongConnectivityPartition();
-		return t.transform(g);
+	protected Partition getPartition(Graph g) {
+		return StrongConnectivityPartition.getStrongPartition(g);
 	}
 
 }

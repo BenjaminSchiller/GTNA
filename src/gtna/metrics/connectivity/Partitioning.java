@@ -58,13 +58,10 @@ public abstract class Partitioning extends Metric {
 
 	private double[] componentsFraction;
 
-	private String property;
-
 	private Timer runtime;
 
-	public Partitioning(String key, String property) {
+	public Partitioning(String key) {
 		super(key);
-		this.property = property;
 	}
 
 	@Override
@@ -74,11 +71,8 @@ public abstract class Partitioning extends Metric {
 
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		if (!g.hasProperty(this.property + "_0")) {
-			g = this.addProperty(g);
-		}
 		this.runtime = new Timer();
-		Partition p = (Partition) g.getProperty(this.property + "_0");
+		Partition p = this.getPartition(g);
 		this.largestComponent = p.getComponents()[0].length;
 		this.largestComponentFraction = this.largestComponent
 				/ (double) g.getNodes().length;
@@ -114,6 +108,6 @@ public abstract class Partitioning extends Metric {
 				runtime };
 	}
 
-	protected abstract Graph addProperty(Graph g);
+	protected abstract Partition getPartition(Graph g);
 
 }
