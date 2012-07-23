@@ -54,56 +54,57 @@ public class StrongConnectivityPartition extends Transformation {
 		super("STRONG_CONNECTIVITY_PARTITION");
 	}
 
-	private int index;
+	private static int index;
 
 	@Override
 	public Graph transform(Graph g) {
-		Partition p = this.getStrongPartition(g);
-		
+		Partition p = getStrongPartition(g);
+
 		g.addProperty(g.getNextKey("STRONG_CONNECTIVITY_PARTITION"), p);
 		g.addProperty(g.getNextKey("PARTITION"), p);
-		
+
 		return g;
 	}
 
-	public Partition getStrongPartition(Graph g) {
+	public static Partition getStrongPartition(Graph g) {
 		ArrayList<ArrayList<Integer>> components = new ArrayList<ArrayList<Integer>>();
-		int[] index = Util.initIntArray(g.getNodes().length, -1);
+		int[] indexes = Util.initIntArray(g.getNodes().length, -1);
 		int[] lowlink = new int[g.getNodes().length];
 		Stack<Integer> S = new Stack<Integer>();
-		this.index = 0;
+		index = 0;
 
 		for (int v = 0; v < g.getNodes().length; v++) {
-			if (index[v] == -1) {
-				this.strongConnect(v, g, index, lowlink, S, components);
+			if (indexes[v] == -1) {
+				strongConnect(v, g, indexes, lowlink, S, components);
 			}
 		}
 
 		return new Partition(components);
 	}
 
-	private void strongConnect(int v, Graph g, int[] index, int[] lowlink,
-			Stack<Integer> S, ArrayList<ArrayList<Integer>> components) {
+	private static void strongConnect(int v, Graph g, int[] indexes,
+			int[] lowlink, Stack<Integer> S,
+			ArrayList<ArrayList<Integer>> components) {
 		// Set the depth index for v to the smallest unused index
-		index[v] = this.index;
-		lowlink[v] = this.index;
-		this.index++;
+		indexes[v] = index;
+		lowlink[v] = index;
+		index++;
 		S.push(v);
 
 		// Consider successors of v
 		for (int w : g.getNode(v).getOutgoingEdges()) {
-			if (index[w] == -1) {
+			if (indexes[w] == -1) {
 				// Successor w has not yet been visited; recurse on it
-				this.strongConnect(w, g, index, lowlink, S, components);
+				strongConnect(w, g, indexes, lowlink, S, components);
 				lowlink[v] = Math.min(lowlink[v], lowlink[w]);
 			} else if (S.contains(w)) {
 				// Successor w is in stack S and hence in the current SCC
-				lowlink[v] = Math.min(lowlink[v], index[w]);
+				lowlink[v] = Math.min(lowlink[v], indexes[w]);
 			}
 		}
 
 		// If v is a root node, pop the stack and generate an SCC
-		if (lowlink[v] == index[v]) {
+		if (lowlink[v] == indexes[v]) {
 			ArrayList<Integer> newComponent = new ArrayList<Integer>();
 			int w = -1;
 			while (w != v) {
