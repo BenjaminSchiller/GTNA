@@ -39,93 +39,110 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
-
+import gtna.communities.Community;
+import gtna.communities.CommunityList;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
+import gtna.util.Util;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
  * @author Flipp
- *
+ * 
  */
 public class CDExpandingShells extends Transformation {
-	
-	private double alpha;
 
-	public CDExpandingShells(double alpha){
-		super("CD_EXPSHELLS", new Parameter[]{new DoubleParameter("ALPHA", alpha)});
+	private static final int MULTI_PASS = 1;
+	private static final int SINGLE_PASS = 2;
+	private double alpha;
+	private NodePicker np;
+	private SimilarityMeasure sm;
+	private SimilarityMeasureContainer smc;
+	private int mode;
+
+	public CDExpandingShells(double alpha, NodePicker np) {
+		super("CD_EXPSHELLS", Util.mergeArrays(new Parameter[] { new DoubleParameter("ALPHA",
+				alpha), new StringParameter("MODE", "SINGLE")}, np.getParameterArray()));
 		this.alpha = alpha;
+		this.np = np;
+		this.mode = CDExpandingShells.SINGLE_PASS;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.Transformation#transform(gtna.graph.Graph)
-	 */
+	public CDExpandingShells(double alpha, SimilarityMeasure sm) {
+		super("CD_EXPSHELLS", Util.mergeArrays(new Parameter[] { new DoubleParameter("ALPHA",
+				alpha), new StringParameter("MODE", "MULTI")}, sm.getParameterArray()));
+		this.alpha = alpha;
+		this.mode = CDExpandingShells.MULTI_PASS;
+		this.sm = sm;
+	}
+
 	@Override
 	public Graph transform(Graph g) {
-		if(!applicable(g))
+		if (!applicable(g))
 			return g;
+
+		this.smc = new SimilarityMeasureContainer(sm, g.getNodes().length);
+		CommunityList cl = null;
 		
-		
-		Stack<Node> s = new Stack<Node>();
-		for(Node akt : g.getNodes())
-			s.add(akt);
-		
-		Node akt;
-		ArrayList<Integer> t;
-		ArrayList<gtna.communities.Community> ct = new ArrayList<gtna.communities.Community>();
-		int index = 0;
-		HashMap<Node, Boolean> ignore = new HashMap<Node, Boolean>();
-		while(!s.empty()){
-			akt = s.pop();
-			t = getCommunityAroundNode(akt, g, ignore);
-			for(int aktN : t){
-				ignore.put(g.getNode(aktN), true);
-				s.remove(g.getNode(aktN));
+		if (mode == CDExpandingShells.SINGLE_PASS) {
+			np.addAll(g.getNodes());
+
+			Node akt;
+			Community c;
+			ArrayList<Community> ct = new ArrayList<Community>();
+			int index = 0;
+			HashMap<Integer, Boolean> ignore = new HashMap<Integer, Boolean>();
+			while (!np.empty()) {
+				akt = np.pop();
+				c = getCommunityAroundNode(akt, g, ignore, index);
+				for (int aktN : c.getNodes()) {
+					ignore.put(aktN, true);
+					np.remove(aktN);
+				}
+
+				ct.add(c);
+				index++;
+
 			}
 			
-			ct.add(new gtna.communities.Community(index, t));
-			index++;
+			cl = new CommunityList(ct);
 			
+		} else if (mode == CDExpandingShells.MULTI_PASS) {
+			for(Node akt : g.getNodes()){
+				smc.addCommunityAroundNode(akt, getCommunityAroundNode(akt, g, null, 0));
+			}
 			
+			cl = smc.getCommunityList();
+
 		}
-		System.out.println(ct.size());
-		g.addProperty(g.getNextKey("COMMUNITIES"), new gtna.communities.CommunityList(ct));
 		
+		g.addProperty(g.getNextKey("COMMUNITIES"), cl);
+
 		return g;
 	}
 
-	/**
-	 * @param akt
-	 * @param g
-	 * @param ignore
-	 * @return
-	 */
-	private ArrayList<Integer> getCommunityAroundNode(Node akt, Graph g,
-			HashMap<Node, Boolean> ignore) {
-		
-		
+	private Community getCommunityAroundNode(Node akt, Graph g,
+			HashMap<Integer, Boolean> ignore, int id) {
+
 		ArrayList<Integer> sphere = new ArrayList<Integer>();
 		sphere.add(akt.getIndex());
 		double curr = akt.getDegree();
 		double last;
-		
-		do{
+		do {
 			last = curr;
-			
+
 			sphere = expandSphere(sphere, g, ignore);
-			
+
 			curr = calcEmergingDegree(sphere, g);
-			
-			
-			
-			
-		}while(curr/last > alpha );
-		
+
+		} while (curr / last > alpha);
+
 		System.out.println("Found com with " + sphere.size());
-		return sphere;
-		
+		return new Community(id, sphere);
+
 	}
 
 	/**
@@ -135,13 +152,13 @@ public class CDExpandingShells extends Transformation {
 	 */
 	private double calcEmergingDegree(ArrayList<Integer> sphere, Graph g) {
 		int count = 0;
-		for(int akt : sphere){
-			for(int akt2 : g.getNode(akt).getOutgoingEdges()){
-				if(contains(sphere, akt2))
+		for (int akt : sphere) {
+			for (int akt2 : g.getNode(akt).getOutgoingEdges()) {
+				if (contains(sphere, akt2))
 					count++;
 			}
 		}
-		
+
 		return count;
 	}
 
@@ -152,45 +169,38 @@ public class CDExpandingShells extends Transformation {
 	 */
 	private boolean contains(ArrayList<Integer> sphere, int akt2) {
 		boolean ret = false;
-		for(int akt : sphere)
-			if(akt == akt2)
+		for (int akt : sphere)
+			if (akt == akt2)
 				ret = true;
-		
+
 		return ret;
-	}	
+	}
 
 	/**
 	 * @param sphere
 	 * @param g
 	 * @param ignore
-	 * @return 
-	 */
-	private ArrayList<Integer> expandSphere(ArrayList<Integer> sphere, Graph g,
-			HashMap<Node, Boolean> ignore) {
-		ArrayList<Integer> ret = new ArrayList<Integer>();
-		for(int akt : sphere){
-			if(!contains(ret, akt) && !contains(ignore, g.getNode(akt)))
-				ret.add(akt);
-			
-			for(int akt2 : g.getNode(akt).getOutgoingEdges())
-				if(!contains(ret, akt2) && !contains(ignore, g.getNode(akt)))
-					ret.add(akt2);
-		}
-		
-		return ret;
-		
-	}
-
-	/**
-	 * @param ignore
-	 * @param akt
 	 * @return
 	 */
-	private boolean contains(HashMap<Node, Boolean> ignore, Node n) {
-		return ignore.containsKey(n);
-	}
+	private ArrayList<Integer> expandSphere(ArrayList<Integer> sphere, Graph g,
+			HashMap<Integer, Boolean> ignore) {
+		ArrayList<Integer> ret = new ArrayList<Integer>();
+		for (int akt : sphere) {
+			if ((!contains(ret, akt)) && (ignore == null || !ignore.containsKey(akt)))
+				ret.add(akt);
 
-	/* (non-Javadoc)
+			for (int akt2 : g.getNode(akt).getOutgoingEdges())
+				if ((!contains(ret, akt2)) && (ignore == null || !ignore.containsKey(akt)))
+					ret.add(akt2);
+		}
+
+		return ret;
+
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.transformation.Transformation#applicable(gtna.graph.Graph)
 	 */
 	@Override

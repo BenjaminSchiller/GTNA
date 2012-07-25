@@ -37,13 +37,14 @@ package gtna.transformation.communities;
 
 import java.util.ArrayList;
 
-import gtna.graph.Node;
+import gtna.communities.Community;
+import gtna.communities.CommunityList;
 
 /**
  * @author Flipp
  *
  */
-public class RWCommunityList {
+public class RWCommunityList extends CommunityList {
 	ArrayList<RWCommunity> cs = new ArrayList<RWCommunity>();
 
 	/**
@@ -57,8 +58,8 @@ public class RWCommunityList {
 	 * 
 	 */
 	public void sortCommunities() {
+
 		RWCommunity temp;
-		System.out.println("Sorting");
 		for(int i = cs.size(); i > 1; i--){
 			for(int j = 0; j < i-1; j++){
 				if(cs.get(j).computeGamma() < cs.get(j+1).computeGamma()){
@@ -69,6 +70,7 @@ public class RWCommunityList {
 					
 			}
 		}
+
 		
 		
 	}
@@ -77,14 +79,16 @@ public class RWCommunityList {
 	 * 
 	 */
 	public void removeEmptyCommunities() {
+
 		ArrayList<RWCommunity> ncs = new ArrayList<RWCommunity>();
 		for(RWCommunity akt : cs){
 			if(akt.getNodes().length > 0)
 				ncs.add(akt);
 		}
-		if(ncs.size() < cs.size())
-			System.out.println("Removed " + (cs.size() - ncs.size()) );
+//		if(ncs.size() < cs.size())
+//			System.out.println("Removed " + (cs.size() - ncs.size()) );
 		cs = ncs;
+
 		
 	}
 
@@ -101,6 +105,16 @@ public class RWCommunityList {
 		
 		return ret;
 	}
+	
+	public Community getCommunityOfNode(int node){
+		Community ret = null;
+		for(RWCommunity akt : cs){
+			if(akt.contains(node))
+				ret = akt;
+		}
+		
+		return ret;
+	}
 
 	/**
 	 * @param aktCom
@@ -113,10 +127,10 @@ public class RWCommunityList {
 	 * @param a
 	 * @return
 	 */
-	public boolean containsNode(Node a) {
+	public boolean containsNode(int node) {
 		boolean c = false;
 		for(RWCommunity akt : cs){
-			if(akt.contains(a))
+			if(akt.contains(node))
 				c = true;
 		}
 		

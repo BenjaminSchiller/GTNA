@@ -41,10 +41,20 @@ import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
+import gtna.metrics.communities.Communities;
 import gtna.networks.Network;
+import gtna.networks.canonical.Ring;
 import gtna.networks.model.ErdosRenyi;
+import gtna.networks.model.placementmodels.PlacementModelContainer;
+import gtna.networks.model.placementmodels.models.GridPlacementModel;
 import gtna.plot.Plotting;
+import gtna.projects.placement.PlacementModelTest;
 import gtna.transformation.Transformation;
+import gtna.transformation.communities.AndXorSimilarityMeasure;
+import gtna.transformation.communities.CDExpandingShells;
+import gtna.transformation.communities.CDFastUnfolding;
+import gtna.transformation.communities.CDRandomWalk;
+import gtna.transformation.communities.RandomNodePicker;
 import gtna.transformation.edges.Bidirectional;
 import gtna.transformation.id.RandomRingIDSpace;
 import gtna.util.Config;
@@ -164,14 +174,17 @@ public class GTNA {
 	}
 
 	private static void example7() {
-		Config.overwrite("MAIN_DATA_FOLDER", "./data/example7/");
-		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/example7/");
+		Config.overwrite("MAIN_DATA_FOLDER", "D:/data/example7/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "D:/plots/example7/");
 		// Config.overwrite("METRICS", "SHORTEST_PATHS");
-		Metric[] metrics = new Metric[] { new ShortestPaths() };
-
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
-		Network nw1 = new ErdosRenyi(100, 5, false, null);
-		Series s1 = Series.generate(nw1, metrics, 5);
-		Series s2 = Series.generate(nw1, metrics, 10);
+//		Transformation[] t = new Transformation[]{new CDExpandingShells(3, new AndXorSimilarityMeasure())};
+		Transformation[] t = new Transformation[]{new CDRandomWalk(20, new RandomNodePicker())};
+		Metric[] metrics = new Metric[] { new DegreeDistribution(), new Communities() }; 
+		Network nw2 = new Ring(30, t);
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Network nw1 = PlacementModelTest.nwCC(100, t);
+		Series s1 = Series.generate(nw1, metrics, 1);
+		Series s2 = Series.generate(nw2, metrics, 1);
+//		Series s2 = Series.generate(nw1, metrics, 10);
 	}
 }

@@ -35,8 +35,9 @@
  */
 package gtna.transformation.communities.fastunfolding;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
+import gtna.communities.Community;
 import gtna.graph.Edge;
 import gtna.graph.EdgeWeights;
 import gtna.graph.Graph;
@@ -53,38 +54,36 @@ import gtna.graph.NodeWeights;
  * @author Philipp Neubrand
  * 
  */
-public class FastUnfoldingHelperCommunity {
-
-	private int id;
+public class FastUnfoldingHelperCommunity extends Community {
 	private Graph g;
 	private double internalEdges = 0;
-	private HashMap<Integer, Node> nodes;
+	private ArrayList<Integer> nodes;
 	private FastUnfoldingHelperCommunityList coms;
 	private double externalEdges = 0;
 	private NodeWeights nw;
 	private EdgeWeights ew;
 
-	public FastUnfoldingHelperCommunity(int i, Graph g,
+	public FastUnfoldingHelperCommunity(int id, Graph g,
 			FastUnfoldingHelperCommunityList coms, NodeWeights nw,
 			EdgeWeights ew) {
-		id = i;
+		super(id);
 		this.nw = nw;
 		this.ew = ew;
 		this.g = g;
 		this.coms = coms;
-		nodes = new HashMap<Integer, Node>();
+		nodes = new ArrayList<Integer>();
 	}
-
-	public int getIndex() {
-		return id;
-	}
-
+	
 	public double getInternalEdges() {
 		return internalEdges;
 	}
 
-	public Node[] getNodes() {
-		return nodes.values().toArray(new Node[nodes.size()]);
+	public int[] getNodes() {
+		int[] ret = new int[nodes.size()];
+		for(int i = 0; i < ret.length; i++)
+			ret[i] = nodes.get(i);
+		
+		return ret;
 	}
 
 	public void removeNode(Node akt2) {
@@ -98,7 +97,7 @@ public class FastUnfoldingHelperCommunity {
 			else
 				t = akt.getSrc();
 
-			if (coms.getCommunityByNode(g.getNode(t)).getIndex() == this
+			if (coms.getCommunityOfNode(t).getIndex() == this
 					.getIndex()) {
 				internalEdges -= (ew != null) ? ew.getWeight(akt) : 1;
 			} else
@@ -109,32 +108,21 @@ public class FastUnfoldingHelperCommunity {
 
 	}
 
-	public void setNode(Node node) {
-		nodes.put(node.getIndex(), node);
-		coms.setCommunity(node, this);
-		if (nw != null)
-			internalEdges += nw.getWeight(node.getIndex());
-
-		for (Edge akt : node.getEdges())
-			externalEdges += (ew != null) ? ew.getWeight(akt) : 1;
-
-	}
-
-	public void addNode(Node node) {
+	public void addNode(int node) {
 		int t;
 		if (nw != null)
-			internalEdges += nw.getWeight(node.getIndex());
+			internalEdges += nw.getWeight(node);
 
-		nodes.put(node.getIndex(), node);
+		nodes.add(node);
 		coms.setCommunity(node, this);
 
-		for (Edge akt : node.getEdges()) {
-			if (akt.getSrc() == node.getIndex())
+		for (Edge akt : g.getNode(node).getEdges()) {
+			if (akt.getSrc() == node)
 				t = akt.getDst();
 			else
 				t = akt.getSrc();
 
-			if (coms.getCommunityByNode(g.getNode(t)).getIndex() == this
+			if (coms.getCommunityOfNode(t).getIndex() == this
 					.getIndex()) {
 				internalEdges += (ew != null) ? ew.getWeight(akt) : 1;
 			} else
@@ -148,6 +136,6 @@ public class FastUnfoldingHelperCommunity {
 	}
 
 	public void setID(int i) {
-		id = i;
+		index = i;
 	}
 }

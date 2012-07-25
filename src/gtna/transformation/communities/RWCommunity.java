@@ -37,8 +37,8 @@ package gtna.transformation.communities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.SortedSet;
 
+import gtna.communities.Community;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 
@@ -46,32 +46,37 @@ import gtna.graph.Node;
  * @author Flipp
  *
  */
-public class RWCommunity {
-	private ArrayList<Node> vertices;
+public class RWCommunity extends Community {
+	private ArrayList<Integer> vertices;
 	private double gamma;
 	private HashMap<Integer, Boolean> c_buffer = new HashMap<Integer, Boolean>();
 	private Graph g;
-	private HashMap<Node, Double> gammas;
+	private HashMap<Integer, Double> gammas;
 	
 	
-	public RWCommunity(Graph g){
+	public RWCommunity(int index, Graph g){
+		super(index);
 		this.g = g;
-		vertices = new ArrayList<Node>();
-		gammas = new HashMap<Node, Double>();
+		vertices = new ArrayList<Integer>();
+		gammas = new HashMap<Integer, Double>();
 	}
 
 	/**
 	 * @return
 	 */
-	public Node[] getNodes() {
-		return vertices.toArray(new Node[vertices.size()]);
+	public int[] getNodes() {
+		// need to convert by hand because Integer[] != int[]
+		int[] ret = new int[vertices.size()];
+		for(int i = 0; i < vertices.size(); i++)
+			ret[i] = vertices.get(i);
+		return ret;
 	}
 
 	/**
 	 * 
 	 */
 	public void sortVertices() {
-		Node temp;
+		Integer temp;
 		for(int i = vertices.size(); i > 1; i--){
 			for(int j = 0; j < i-1; j++){
 				if(getGamma(vertices.get(j)) < getGamma(vertices.get(j+1))){
@@ -91,7 +96,7 @@ public class RWCommunity {
 	 */
 	public double computeGamma() {
 		double t = 0;
-		for(Node akt : vertices){
+		for(int akt : vertices){
 			t += getGamma(akt);
 		}
 		
@@ -103,8 +108,9 @@ public class RWCommunity {
 	/**
 	 * @param aktNode
 	 */
-	public double calculateGamma(Node aktNode) {
+	public double calculateGamma(int node) {
 		double in = 0;
+		Node aktNode = g.getNode(node);
 		for(int akt : aktNode.getOutgoingEdges()){
 			if(contains(akt))
 				in++;
@@ -116,57 +122,45 @@ public class RWCommunity {
 	}
 
 	/**
-	 * @param akt
-	 * @return
-	 */
-	private boolean contains(int akt) {
-		return contains(g.getNode(akt));
-	}
-
-	/**
 	 * @param aktNode
 	 * @return
 	 */
-	public boolean contains(Node aktNode) {
-		boolean in = false;
-		for(Node akt : vertices)
-			if(akt.equals(aktNode))
-				in = true;
+	public boolean contains(int node) {
+		return(c_buffer.containsKey(node));
 		
-		return in;
 	}
 
 	/**
 	 * @param aktNode
 	 */
-	public void add(Node aktNode) {
+	public void add(int aktNode) {
 		vertices.add(aktNode);
-		c_buffer.put(aktNode.getIndex(), true);
+		c_buffer.put(aktNode, true);
 	}
 
 	/**
 	 * @param akt
 	 * @return
 	 */
-	public double getGamma(Node akt) {
+	public double getGamma(int node) {
 		
-		double erg = calculateGamma(akt);
-		gammas.put(akt, erg);
+		double erg = calculateGamma(node);
+		gammas.put(node, erg);
 		return erg;
 	}
 
 	/**
 	 * @param akt
 	 */
-	public void remove(Node akt) {
-		c_buffer.remove(akt.getIndex());
+	public void remove(Integer akt) {
+		c_buffer.remove(akt);
 		vertices.remove(akt);
 	}
 	
 	public boolean equals(RWCommunity c){
 		boolean eq = true;
-		for(Node akt : vertices){
-			if(!c.contains(akt.getIndex()))
+		for(int akt : vertices){
+			if(!c.contains(akt))
 				eq = false;
 		}
 		

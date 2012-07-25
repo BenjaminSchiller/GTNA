@@ -37,8 +37,9 @@ package gtna.transformation.communities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Stack;
 
+import gtna.communities.Community;
+import gtna.communities.CommunityList;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
@@ -47,73 +48,94 @@ import gtna.util.parameter.Parameter;
 
 /**
  * @author Flipp
- *
+ * 
+ * http://www.cise.ufl.edu/~gsthakur/docs/detection_local.pdf
+ * 
  */
 public class CDRandomWalk extends Transformation {
-	
-	private int n;
 
-	public CDRandomWalk(int n){
-		super("CD_RANDOMWALK", new Parameter[]{new IntParameter("N", n)});
+	private static final int MULTI_PASS = 1;
+	private static final int SINGLE_PASS = 2;
+	private int n;
+	private int mode;
+	private NodePicker picker;
+	private SimilarityMeasureContainer matrix;
+	private SimilarityMeasure t;
+
+	public CDRandomWalk(int n, NodePicker picker) {
+		super("CD_RANDOMWALK", new Parameter[] { new IntParameter("N", n) });
 		this.n = n;
-		
-		
+		mode = CDRandomWalk.SINGLE_PASS;
+		this.picker = picker;
 	}
-	
-	
-	private RWCommunity getCommunityAroundNode(Node s, Graph g, HashMap<Node, Boolean> ignore){
+
+	public CDRandomWalk(int n, SimilarityMeasure t) {
+		super("CD_RANDOMWALK", new Parameter[] { new IntParameter("N", n) });
+		this.t = t;
+		this.n = n;
+		mode = CDRandomWalk.MULTI_PASS;
+	}
+
+	private RWCommunity getCommunityAroundNode(Node s, Graph g,
+			HashMap<Integer, Boolean> ignore) {
+		
 		RWCommunityList cl = randomWalk(s, g, ignore);
+		
 		addUnpicked(cl, s, g, ignore);
-		for(RWCommunity akt : cl.getCommunities()){
-			for(Node aktNode : akt.getNodes()){
+		
+		for (RWCommunity akt : cl.getCommunities()) {
+			for (int aktNode : akt.getNodes()) {
 				akt.calculateGamma(aktNode);
 			}
-			
+
 			akt.sortVertices();
 			akt.computeGamma();
 		}
-		
+
 		cl.sortCommunities();
-		
+
 		boolean changed = true;
-		System.out.println("Exchanging nodes...");
-		while(changed){
+		while (changed) {
 			changed = false;
-			for(int i = 0; i < cl.getCommunities().length-1; i++){
-				if(doExchange(cl.getCommunities()[i], cl.getCommunities()[i+1])){
+			
+			for (int i = 0; i < cl.getCommunities().length - 1; i++) {
+				if (doExchange(cl.getCommunities()[i],
+						cl.getCommunities()[i + 1])) {
 					changed = true;
 				}
 			}
 			
 			
 			cl.removeEmptyCommunities();
-			
+
 			cl.sortCommunities();
 		}
-		System.out.println();
-		System.out.println("Resulted in " + cl.getCommunities().length);
 		
+
+
 		return cl.getCommunities()[0];
-		
-		
+
 	}
 
 	/**
 	 * @param cl
 	 * @param s
 	 * @param g
-	 * @param ignore 
+	 * @param ignore
 	 */
-	private void addUnpicked(RWCommunityList cl, Node s, Graph g, HashMap<Node, Boolean> ignore) {
-		RWCommunity nw = new RWCommunity(g);
-		for(Node a : g.getNodes()){
-			if(!cl.containsNode(a) && !ignore.containsKey(a))
-				nw.add(a);
-		}
+	private void addUnpicked(RWCommunityList cl, Node s, Graph g,
+			HashMap<Integer, Boolean> ignore) {
 		
+		RWCommunity nw = new RWCommunity(
+				cl.getCommunities()[cl.getCommunities().length-1].getIndex() + 1,
+				g);
+		for (Node a : g.getNodes()) {
+			if (!cl.containsNode(a.getIndex()) && (ignore == null || !ignore.containsKey(a)))
+				nw.add(a.getIndex());
+		}
+
 		cl.add(nw);
 	}
-
 
 	/**
 	 * @param community
@@ -121,23 +143,25 @@ public class CDRandomWalk extends Transformation {
 	 * @return
 	 */
 	private boolean doExchange(RWCommunity c1, RWCommunity c2) {
-		
+
 		boolean changed = false;
 		double temp;
-		Node[] n1 = c1.getNodes();
-		Node[] n2 = c2.getNodes();
-		for(Node akt : n1){
-			if(c2.contains(akt))
+		int[] n1 = c1.getNodes();
+		int[] n2 = c2.getNodes();
+		for (int akt : n1) {
+			if (c2.contains(akt))
 				continue;
-			
-			for(Node akt2 : n2){
-				if(c1.contains(akt2))
+
+			for (int akt2 : n2) {
+				if (c1.contains(akt2))
 					continue;
-				
-				if(c1.getGamma(akt) >= c2.getGamma(akt2)){
+
+				if (c1.getGamma(akt) >= c2.getGamma(akt2)) {
 					temp = c1.getGamma(akt);
-					if(temp > c2.calculateGamma(akt) && !c2.contains(akt)){
-						System.out.println(akt.getIndex() + "=>" + c2.hashCode() + ":" + "old:" + temp + "new:" +c2.calculateGamma(akt));
+					if (temp > c2.calculateGamma(akt) && !c2.contains(akt)) {
+//						System.out.println(akt + "=>" + c2.hashCode() + ":"
+//								+ "old:" + temp + "new:"
+//								+ c2.calculateGamma(akt));
 						c2.add(akt);
 						c1.remove(akt);
 						c1.computeGamma();
@@ -145,16 +169,17 @@ public class CDRandomWalk extends Transformation {
 						changed = true;
 						continue;
 					}
-				}
-				else {
+				} else {
 					temp = c2.getGamma(akt2);
-					if(temp > c1.calculateGamma(akt2) && !c1.contains(akt2)){
-						System.out.println(akt2.getIndex() + "=>" + c1.hashCode() + ":" + "old:" + temp + "new:" +c1.calculateGamma(akt2));
+					if (temp > c1.calculateGamma(akt2) && !c1.contains(akt2)) {
+//						System.out.println(akt2 + "=>" + c1.hashCode() + ":"
+//								+ "old:" + temp + "new:"
+//								+ c1.calculateGamma(akt2));
 						c1.add(akt2);
 						c2.remove(akt2);
 						c1.computeGamma();
 						c2.computeGamma();
-						changed =  true;
+						changed = true;
 						continue;
 					}
 				}
@@ -164,114 +189,117 @@ public class CDRandomWalk extends Transformation {
 		return changed;
 	}
 
-
 	/**
 	 * @param s
 	 * @param g
 	 * @return
 	 */
-	private RWCommunityList randomWalk(Node s, Graph g, HashMap<Node, Boolean> ignore) {
+	private RWCommunityList randomWalk(Node s, Graph g,
+			HashMap<Integer, Boolean> ignore) {
 		RWCommunityList ret = new RWCommunityList();
 		boolean finished = false;
-				
+
 		Node aktNode;
 		Node next;
 		RWCommunity aktCom;
-		System.out.println("Starting Random Walk");
 		int count = 0;
-		while(!finished){
-			System.out.print(".");
+		int id = 0;
+		while (!finished) {
 			aktNode = s;
-			aktCom = new RWCommunity(g);
-			while(true){
-				if(aktCom.contains(aktNode))
+			aktCom = new RWCommunity(id, g);
+			id++;
+			while (true) {
+				if (aktCom.contains(aktNode.getIndex()))
 					break;
-				
-				aktCom.add(aktNode);
-				if(!hasPickableNeighbors(aktNode, g, ignore))
+
+				aktCom.add(aktNode.getIndex());
+				if (!hasPickableNeighbors(aktNode, g, ignore))
 					break;
-				
-				do{
-					next = g.getNode(aktNode.getOutgoingEdges()[(int) Math.floor(Math.random() * aktNode.getOutDegree())]);
-				}while(ignore.containsKey(next));
+
+				do {
+					next = g.getNode(aktNode.getOutgoingEdges()[(int) Math
+							.floor(Math.random() * aktNode.getOutDegree())]);
+				} while (!(ignore == null) && ignore.containsKey(next));
 				aktNode = next;
 			}
 			count++;
-			finished = ret.contains(aktCom) && count < n;
-			
+			finished = ret.contains(aktCom) || count > n;
+
 			ret.add(aktCom);
 		}
-		System.out.println();
-		System.out.println("Found " + ret.getCommunities().length);
-		
 		return ret;
 	}
-
 
 	/**
 	 * @param aktNode
-	 * @param ignore 
-	 * @param g 
+	 * @param ignore
+	 * @param g
 	 * @return
 	 */
-	private boolean hasPickableNeighbors(Node aktNode, Graph g, HashMap<Node, Boolean> ignore) {
+	private boolean hasPickableNeighbors(Node aktNode, Graph g,
+			HashMap<Integer, Boolean> ignore) {
 		boolean ret = false;
-		for(int akt : aktNode.getOutgoingEdges()){
-			if(!ignore.containsKey(g.getNode(akt)))
+		for (int akt : aktNode.getOutgoingEdges()) {
+			if (ignore == null || !ignore.containsKey(g.getNode(akt)))
 				ret = true;
 		}
-		
+
 		return ret;
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.transformation.Transformation#transform(gtna.graph.Graph)
 	 */
 	@Override
 	public Graph transform(Graph g) {
-		if(!applicable(g))
+		if (!applicable(g))
 			return g;
-		
-		Stack<Node> s = new Stack<Node>();
-		for(Node akt : g.getNodes())
-			s.add(akt);
-		
-		gtna.communities.Community temp;
-		ArrayList<gtna.communities.Community> t = new ArrayList<gtna.communities.Community>();
-		RWCommunity c;
-		
-		Node n;
-		int index = 0;
-		int index2 = 0;
-		HashMap<Node, Boolean> ignore = new HashMap<Node, Boolean>();
-		
-		int[] nodes;
-		while(!s.empty()){
-			System.out.println("Remaining nodes: " + s.size());
-			n = s.pop();
-			c = this.getCommunityAroundNode(n, g, ignore);
-			nodes = new int[c.getNodes().length];
-			index = 0;
-			
-			for(Node akt : c.getNodes()){
-				s.remove(akt);
-				ignore.put(akt, true);
-				nodes[index] = akt.getIndex();
-				index++;
+
+		matrix = new SimilarityMeasureContainer(t, g.getNodes().length);
+		CommunityList cl = null;
+
+		if (mode == CDRandomWalk.SINGLE_PASS) {
+			picker.addAll(g.getNodes());
+
+			ArrayList<Community> t = new ArrayList<Community>();
+			RWCommunity c;
+
+			Node n;
+			HashMap<Integer, Boolean> ignore = new HashMap<Integer, Boolean>();
+
+			while (!picker.empty()) {
+				n = picker.pop();
+				
+				c = this.getCommunityAroundNode(n, g, ignore);
+				
+				for (int akt : c.getNodes()) {
+					picker.remove(akt);
+					ignore.put(akt, true);
+				}
+				
+				t.add(c);
 			}
-			temp = new gtna.communities.Community(index2, nodes);
-			index2++;
-			t.add(temp);
+			
+
+			cl = new CommunityList(t);
+		} else if (mode == CDRandomWalk.MULTI_PASS) {
+			RWCommunity c;
+			for (Node akt : g.getNodes()) {
+				c = this.getCommunityAroundNode(akt, g, null);
+				matrix.addCommunityAroundNode(akt, c);
+			}
+
+			cl = matrix.getCommunityList();
 		}
-		
-		g.addProperty(g.getNextKey("COMMUNITIES"), new gtna.communities.CommunityList(t));
-		
-		
+		g.addProperty(g.getNextKey("COMMUNITIES"), cl);
 		return g;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.transformation.Transformation#applicable(gtna.graph.Graph)
 	 */
 	@Override

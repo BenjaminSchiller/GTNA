@@ -136,7 +136,7 @@ public class CDFastUnfolding extends Transformation {
 		for (Node akt : nodes) {
 			temp = new FastUnfoldingHelperCommunity(akt.getIndex(), g, coms,
 					nws, ews);
-			temp.setNode(akt);
+			temp.addNode(akt.getIndex());
 			coms.add(temp);
 
 		}
@@ -157,14 +157,15 @@ public class CDFastUnfolding extends Transformation {
 				if (mv.getModDelta() > 0) {
 					// if best possible move is an improvement then do it
 
-					temp = coms.getCommunityByNode(akt);
+					temp = coms.getCommunityOfNode(akt.getIndex());
 					temp.removeNode(akt);
 					// if the old community is empty, remove it
 					if (temp.getNodes().length == 0)
 						coms.removeCom(temp);
 
 					// add the node to the new community
-					coms.getCommunityByID(mv.getNewCom()).addNode(akt);
+					coms.getCommunityByID(mv.getNewCom()).addNode(
+							akt.getIndex());
 
 					// something changed and we are not finished
 					changed = true;
@@ -181,7 +182,7 @@ public class CDFastUnfolding extends Transformation {
 		// something changed and so we have to recurse, preparing the needed
 		// objects
 		Graph n = new Graph("temp");
-		int distinct = coms.getCommunities().size();
+		int distinct = coms.getCommunities().length;
 		Node[] n2 = new Node[distinct];
 		NodeWeights newNW = new NodeWeights(distinct);
 		EdgeWeights newEW = new EdgeWeights(distinct);
@@ -198,9 +199,8 @@ public class CDFastUnfolding extends Transformation {
 		// fixed
 		int[][] edgetemp = new int[distinct][distinct];
 		for (Edge akt : g.getEdges().getEdges()) {
-			edgetemp[coms.getCommunityByNode(g.getNode(akt.getSrc()))
-					.getIndex()][coms.getCommunityByNode(
-					g.getNode(akt.getDst())).getIndex()] += (newEW == null) ? 1
+			edgetemp[coms.getCommunityOfNode(akt.getSrc()).getIndex()][coms
+					.getCommunityOfNode(akt.getDst()).getIndex()] += (newEW == null) ? 1
 					: newEW.getWeight(akt);
 		}
 
@@ -224,9 +224,9 @@ public class CDFastUnfolding extends Transformation {
 							edgetemp[akt.getIndex()][akt2.getIndex()]);
 				}
 			}
-			for (Node k : akt.getNodes()) {
+			for (int k : akt.getNodes()) {
 				for (int j = 0; j < mastercoms.length; j++) {
-					if (mastercoms[j] == k.getIndex())
+					if (mastercoms[j] == k)
 						mcnew[j] = akt.getIndex();
 				}
 			}
@@ -244,7 +244,8 @@ public class CDFastUnfolding extends Transformation {
 
 	private MoveValue getBestMove(Node aktNode,
 			FastUnfoldingHelperCommunityList coms, Graph g, EdgeWeights ew) {
-		FastUnfoldingHelperCommunity ownc = coms.getCommunityByNode(aktNode);
+		FastUnfoldingHelperCommunity ownc = coms.getCommunityOfNode(aktNode
+				.getIndex());
 		FastUnfoldingHelperCommunity c;
 		double v1;
 		int index = aktNode.getIndex();
@@ -254,9 +255,9 @@ public class CDFastUnfolding extends Transformation {
 
 		for (Edge akt : aktNode.getEdges()) {
 			if (akt.getSrc() == index)
-				c = coms.getCommunityByNode(g.getNode(akt.getDst()));
+				c = coms.getCommunityOfNode(akt.getDst());
 			else
-				c = coms.getCommunityByNode(g.getNode(akt.getSrc()));
+				c = coms.getCommunityOfNode(akt.getSrc());
 			if (c.getIndex() == ownc.getIndex())
 				continue;
 
@@ -312,11 +313,9 @@ public class CDFastUnfolding extends Transformation {
 		double ret = 0;
 		for (Edge akt : i.getEdges()) {
 			if (akt.getSrc() == i.getIndex())
-				temp = coms.getCommunityByNode(g.getNode(akt.getDst()))
-						.getIndex();
+				temp = coms.getCommunityOfNode(akt.getDst()).getIndex();
 			else
-				temp = coms.getCommunityByNode(g.getNode(akt.getSrc()))
-						.getIndex();
+				temp = coms.getCommunityOfNode(akt.getSrc()).getIndex();
 
 			if (temp == c.getIndex())
 				ret += (ew == null) ? 1 : ew.getWeight(akt);

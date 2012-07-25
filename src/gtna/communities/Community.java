@@ -44,7 +44,7 @@ import java.util.ArrayList;
  * 
  */
 public class Community {
-	private int index;
+	protected int index;
 
 	private int[] nodes;
 
@@ -59,6 +59,10 @@ public class Community {
 	public Community(int index, int[] nodes) {
 		this.index = index;
 		this.nodes = nodes;
+	}
+	
+	public Community(int index){
+		this.index = index;
 	}
 
 	public Community(String string) {
@@ -111,4 +115,5 @@ public class Community {
     public int size(){
         return getNodes().length;
     }
+
 }

@@ -35,9 +35,9 @@
  */
 package gtna.transformation.communities.fastunfolding;
 
-import java.util.Collection;
 import java.util.HashMap;
-import gtna.graph.Node;
+
+import gtna.communities.CommunityList;
 
 /**
  * Helper class for the FastUnfolding community detection algorithm, is pretty
@@ -47,16 +47,16 @@ import gtna.graph.Node;
  * @author Philipp Neubrand
  * 
  */
-public class FastUnfoldingHelperCommunityList {
+public class FastUnfoldingHelperCommunityList extends CommunityList {
 
 	private HashMap<Integer, FastUnfoldingHelperCommunity> comsByID = new HashMap<Integer, FastUnfoldingHelperCommunity>();
-	private HashMap<Node, FastUnfoldingHelperCommunity> comsByNode = new HashMap<Node, FastUnfoldingHelperCommunity>();
+	private HashMap<Integer, FastUnfoldingHelperCommunity> comsByNode = new HashMap<Integer, FastUnfoldingHelperCommunity>();
 
-	public Collection<FastUnfoldingHelperCommunity> getCommunities() {
-		return comsByID.values();
+	public FastUnfoldingHelperCommunity[] getCommunities() {
+		return comsByID.values().toArray(new FastUnfoldingHelperCommunity[comsByID.size()]);
 	}
 
-	public FastUnfoldingHelperCommunity getCommunityByNode(Node aktNode) {
+	public FastUnfoldingHelperCommunity getCommunityOfNode(int aktNode) {
 		return comsByNode.get(aktNode);
 	}
 
@@ -85,7 +85,7 @@ public class FastUnfoldingHelperCommunityList {
 		comsByID = n;
 	}
 
-	public void setCommunity(Node node, FastUnfoldingHelperCommunity community) {
+	public void setCommunity(int node, FastUnfoldingHelperCommunity community) {
 		comsByNode.put(node, community);
 
 	}
