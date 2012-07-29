@@ -40,14 +40,29 @@ import gtna.util.Config;
 import java.util.ArrayList;
 
 /**
- * @author benni
+ * A <code>Community</code> is basically a cluster of nodes with an ID. A
+ * <code>Community</code> object can not be changed after creation,
+ * <code>ChangeableCommunity</code> allows alteration after creation.
+ * 
+ * @author Benjamin Schiller
  * 
  */
 public class Community {
+	// the index of the community
 	protected int index;
-
+	// the nodes in this community
 	private int[] nodes;
 
+	/**
+	 * Standard Constructor for a <code>Community</code>, supplied are the ID
+	 * and an <code>ArrayList<Integer></code> containing the nodes of the
+	 * community.
+	 * 
+	 * @param index
+	 *            The ID of this community.
+	 * @param nodes
+	 *            The list of nodes of this community.
+	 */
 	public Community(int index, ArrayList<Integer> nodes) {
 		this.index = index;
 		this.nodes = new int[nodes.size()];
@@ -56,15 +71,27 @@ public class Community {
 		}
 	}
 
+	/**
+	 * Standard Constructor for a <code>Community</code>, supplied are the ID
+	 * and an <code>int[]</code> containing the nodes of this community.
+	 * 
+	 * @param index
+	 *            The ID of this community.
+	 * @param nodes
+	 *            The nodes of this community.
+	 */
 	public Community(int index, int[] nodes) {
 		this.index = index;
 		this.nodes = nodes;
 	}
 
-	public Community(int index) {
-		this.index = index;
-	}
-
+	/**
+	 * Constructor to create a <code>Community</code> from the String that is
+	 * returned by <code>getString()</code>.
+	 * 
+	 * @param string
+	 *            The string from which to create the Community.
+	 */
 	public Community(String string) {
 		String sep1 = Config.get("GRAPH_PROPERTY_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_PROPERTY_SEPARATOR_2");
@@ -82,12 +109,15 @@ public class Community {
 	}
 
 	/**
-	 * Dummy empty constructor to be able to create empty communities from
+	 * Dummy empty constructors to be able to create empty communities from
 	 * within extending classes.
 	 * 
 	 */
+	protected Community(int index) {
+		this.index = index;
+	}
+
 	protected Community() {
-		
 	}
 
 	public String toString() {
@@ -105,33 +135,48 @@ public class Community {
 	}
 
 	/**
-	 * @return the nodes
+	 * Getter for the nodes of this Community.
+	 * 
+	 * @return The nodes of this Community.
 	 */
 	public int[] getNodes() {
 		return this.nodes;
 	}
 
 	/**
-	 * @return the index
+	 * Getter for the ID of this Community.
+	 * 
+	 * @return The ID of this Community.
 	 */
 	public int getIndex() {
 		return this.index;
 	}
 
 	/**
-	 * @return community size
+	 * Getter for the size of this Community.
+	 * 
+	 * @return The Community size.
 	 */
 	public int size() {
 		return getNodes().length;
 	}
-	
-	public boolean contains(int node){
+
+	/**
+	 * Checks whether or not the node with the supplied ID is in this Community
+	 * or not.
+	 * 
+	 * @param node
+	 *            The node that is to be checked.
+	 * @return <code>true</code> if the node is in this Community,
+	 *         <code>false</code> else.
+	 */
+	public boolean contains(int node) {
 		boolean ret = false;
-		for(int akt : nodes){
-			if(node == akt)
+		for (int akt : nodes) {
+			if (node == akt)
 				ret = true;
 		}
-		
+
 		return ret;
 	}
 

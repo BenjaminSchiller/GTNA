@@ -39,7 +39,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * @author Flipp
+ * A <code>CBufferingCommunity</code> is a <code>ChangeableCommunity</code> that
+ * has an additional buffer to speed up the <code>contains(int node)</code>
+ * function by a rather big factor.
+ * 
+ * @author Philipp Neubrand
  * 
  */
 public class CBufferingCommunity extends ChangeableCommunity {
@@ -57,6 +61,16 @@ public class CBufferingCommunity extends ChangeableCommunity {
 		cBuffer.remove(node);
 	}
 
+	/**
+	 * Standard Constructor for a <code>CBufferingCommunity</code>, supplied are
+	 * the ID and an <code>ArrayList<Integer></code> containing the nodes of the
+	 * community.
+	 * 
+	 * @param index
+	 *            The ID of this community.
+	 * @param nodes
+	 *            The list of nodes of this community.
+	 */
 	public CBufferingCommunity(int index, ArrayList<Integer> nodes) {
 		super(index, nodes);
 		for (int akt : nodes) {
@@ -64,6 +78,15 @@ public class CBufferingCommunity extends ChangeableCommunity {
 		}
 	}
 
+	/**
+	 * Standard Constructor for a <code>CBufferingCommunity</code>, supplied are
+	 * the ID and an <code>int[]</code> containing the nodes of this community.
+	 * 
+	 * @param index
+	 *            The ID of this community.
+	 * @param nodes
+	 *            The nodes of this community.
+	 */
 	public CBufferingCommunity(int index, int[] nodes) {
 		super(index, nodes);
 		for (int akt : nodes) {
@@ -71,19 +94,34 @@ public class CBufferingCommunity extends ChangeableCommunity {
 		}
 	}
 
+	/**
+	 * Standard Constructor for an empty <code>ChangeableCommunity</code> with
+	 * only an ID.
+	 * 
+	 * @param index
+	 *            The ID of this Community.
+	 */
 	public CBufferingCommunity(int index) {
 		super(index);
 	}
 
+	/**
+	 * Constructor to create a <code>ChangeableCommunity</code> from the String
+	 * that is returned by <code>getString()</code>.
+	 * 
+	 * @param string
+	 *            The string from which to create the Community.
+	 */
 	public CBufferingCommunity(String string) {
 		super(string);
-		for(int akt : nodes){
+		for (int akt : nodes) {
 			cBuffer.put(akt, akt);
 		}
 	}
-	
-	public boolean contains(int i){
-		return cBuffer.containsKey(i);
+
+	public boolean contains(int node) {
+		// Instead of iterating through all the nodes, we just check the buffer
+		return cBuffer.containsKey(node);
 	}
 
 }

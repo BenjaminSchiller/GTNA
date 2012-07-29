@@ -43,11 +43,9 @@ import gtna.graph.Graph;
 import gtna.graph.NodeWeights;
 
 /**
- * Helper class for the FastUnfolding community detection algorithm, is pretty
- * similar to gtna.communities.Community but provides additional functionality
- * by maintaining the number of internal and external edges at every point in
- * the process of creating the community. This means additional calculations in
- * the removeNode and addNode methods.
+ * An <code>EdgeCountingCommunity</code> is a <code>ChangeableCommunity</code>
+ * that keeps track of the internal and external edges of each
+ * <code>Community</code>.
  * 
  * @author Philipp Neubrand
  * 
@@ -60,9 +58,17 @@ public class EdgeCountingCommunity extends ChangeableCommunity {
 	private NodeWeights nw;
 	private EdgeWeights ew;
 
+	/**
+	 * 
+	 * @param id
+	 * @param g
+	 * @param coms
+	 * @param nw
+	 * @param ew
+	 */
 	public EdgeCountingCommunity(int id, Graph g,
-			FastUnfoldingHelperCommunityList<EdgeCountingCommunity> coms, NodeWeights nw,
-			EdgeWeights ew) {
+			ChangeableCommunityList<EdgeCountingCommunity> coms,
+			NodeWeights nw, EdgeWeights ew) {
 		super(id);
 		this.nw = nw;
 		this.ew = ew;
@@ -70,7 +76,12 @@ public class EdgeCountingCommunity extends ChangeableCommunity {
 		this.coms = coms;
 		nodes = new ArrayList<Integer>();
 	}
-	
+
+	/**
+	 * Getter for the number of internal edges.
+	 * 
+	 * @return The number of internal edges of this Community.
+	 */
 	public double getInternalEdges() {
 		return internalEdges;
 	}
@@ -87,8 +98,7 @@ public class EdgeCountingCommunity extends ChangeableCommunity {
 			else
 				t = akt.getSrc();
 
-			if (coms.getCommunityOfNode(t).getIndex() == this
-					.getIndex()) {
+			if (coms.getCommunityOfNode(t).getIndex() == this.getIndex()) {
 				internalEdges -= (ew != null) ? ew.getWeight(akt) : 1;
 			} else
 				externalEdges -= (ew != null) ? ew.getWeight(akt) : 1;
@@ -109,8 +119,7 @@ public class EdgeCountingCommunity extends ChangeableCommunity {
 			else
 				t = akt.getSrc();
 
-			if (coms.getCommunityOfNode(t).getIndex() == this
-					.getIndex()) {
+			if (coms.getCommunityOfNode(t).getIndex() == this.getIndex()) {
 				internalEdges += (ew != null) ? ew.getWeight(akt) : 1;
 			} else
 				externalEdges += (ew != null) ? ew.getWeight(akt) : 1;
@@ -118,6 +127,11 @@ public class EdgeCountingCommunity extends ChangeableCommunity {
 
 	}
 
+	/**
+	 * Getter for the number of external edges.
+	 * 
+	 * @return The number of external edges of this Community.
+	 */
 	public double getExternalEdges() {
 		return externalEdges;
 	}

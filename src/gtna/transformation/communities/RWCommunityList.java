@@ -48,7 +48,7 @@ public class RWCommunityList<T extends RWCommunity> extends OverlappingCommunity
 		T temp;
 		for(int i = communities.size(); i > 1; i--){
 			for(int j = 0; j < i-1; j++){
-				if(communities.get(j).computeGamma() < communities.get(j+1).computeGamma()){
+				if(communities.get(j).getCommunityRank() < communities.get(j+1).getCommunityRank()){
 					temp = communities.get(j);
 					communities.set(j, communities.get(j+1));
 					communities.set(j+1, temp);

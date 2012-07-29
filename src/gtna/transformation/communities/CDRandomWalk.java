@@ -50,7 +50,7 @@ import gtna.util.parameter.Parameter;
  * @author Flipp
  * 
  * http://www.cise.ufl.edu/~gsthakur/docs/detection_local.pdf
- * 
+ * // änderungen: 2.0 weg, -1 weg
  */
 public class CDRandomWalk extends Transformation {
 
@@ -61,16 +61,19 @@ public class CDRandomWalk extends Transformation {
 	private NodePicker picker;
 	private SimilarityMeasureContainer matrix;
 	private SimilarityMeasure t;
+	private boolean useNewFormula;
 
-	public CDRandomWalk(int n, NodePicker picker) {
+	public CDRandomWalk(int n, boolean useNewFormula, NodePicker picker) {
 		super("CD_RANDOMWALK", new Parameter[] { new IntParameter("N", n) });
+		this.useNewFormula = useNewFormula;
 		this.n = n;
 		mode = CDRandomWalk.SINGLE_PASS;
 		this.picker = picker;
 	}
 
-	public CDRandomWalk(int n, SimilarityMeasure t) {
+	public CDRandomWalk(int n, boolean useNewFormula, SimilarityMeasure t) {
 		super("CD_RANDOMWALK", new Parameter[] { new IntParameter("N", n) });
+		this.useNewFormula = useNewFormula;
 		this.t = t;
 		this.n = n;
 		mode = CDRandomWalk.MULTI_PASS;
@@ -85,11 +88,11 @@ public class CDRandomWalk extends Transformation {
 		
 		for (RWCommunity akt : cl.getCommunities()) {
 			for (int aktNode : akt.getNodes()) {
-				akt.calculateGamma(aktNode);
+				akt.getNodeRank(aktNode);
 			}
 
-			akt.sortVertices();
-			akt.computeGamma();
+			akt.sortNodes();
+			akt.getCommunityRank();
 		}
 
 		cl.sortCommunities();
@@ -128,7 +131,7 @@ public class CDRandomWalk extends Transformation {
 		
 		RWCommunity nw = new RWCommunity(
 				cl.getCommunities()[cl.getCommunities().length-1].getIndex() + 1,
-				g);
+				g, useNewFormula);
 		for (Node a : g.getNodes()) {
 			if (!cl.containsNode(a.getIndex()) && (ignore == null || !ignore.containsKey(a)))
 				nw.addNode(a.getIndex());
@@ -156,29 +159,29 @@ public class CDRandomWalk extends Transformation {
 				if (c1.contains(akt2))
 					continue;
 
-				if (c1.getGamma(akt) >= c2.getGamma(akt2)) {
-					temp = c1.getGamma(akt);
-					if (temp > c2.calculateGamma(akt) && !c2.contains(akt)) {
+				if (c1.getNodeRank(akt) >= c2.getNodeRank(akt2)) {
+					temp = c1.getNodeRank(akt);
+					if (temp > c2.getNodeRank(akt) && !c2.contains(akt)) {
 //						System.out.println(akt + "=>" + c2.hashCode() + ":"
 //								+ "old:" + temp + "new:"
 //								+ c2.calculateGamma(akt));
 						c2.addNode(akt);
 						c1.removeNode(akt);
-						c1.computeGamma();
-						c2.computeGamma();
+						c1.getCommunityRank();
+						c2.getCommunityRank();
 						changed = true;
 						continue;
 					}
 				} else {
-					temp = c2.getGamma(akt2);
-					if (temp > c1.calculateGamma(akt2) && !c1.contains(akt2)) {
+					temp = c2.getNodeRank(akt2);
+					if (temp > c1.getNodeRank(akt2) && !c1.contains(akt2)) {
 //						System.out.println(akt2 + "=>" + c1.hashCode() + ":"
 //								+ "old:" + temp + "new:"
 //								+ c1.calculateGamma(akt2));
 						c1.addNode(akt2);
 						c2.removeNode(akt2);
-						c1.computeGamma();
-						c2.computeGamma();
+						c1.getCommunityRank();
+						c2.getCommunityRank();
 						changed = true;
 						continue;
 					}
@@ -206,7 +209,7 @@ public class CDRandomWalk extends Transformation {
 		int id = 0;
 		while (!finished) {
 			aktNode = s;
-			aktCom = new RWCommunity(id, g);
+			aktCom = new RWCommunity(id, g, useNewFormula);
 			id++;
 			while (true) {
 				if (aktCom.contains(aktNode.getIndex()))
