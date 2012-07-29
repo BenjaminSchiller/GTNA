@@ -45,7 +45,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * @author benni
+ * A <code>CommunityList</code> is a list of <code>Community</code> objects. The
+ * convention is that every node can only be part in one of the communities,
+ * however for performance reasons there is no code checking this. If
+ * overlapping communities are needed, the class
+ * <code>OverlappingCommunityList</code> should be used instead.
+ * 
+ * After creation the <code>CommunityList</code> can not be altered. If changes
+ * after creation are needed, <code>ChangeableCommunityList</code> should be
+ * used.
+ * 
+ * @author Benjamin Schiller
  * 
  */
 public class CommunityList implements GraphProperty {
@@ -53,11 +63,22 @@ public class CommunityList implements GraphProperty {
 
 	private int[] communityOfNode;
 
-	public CommunityList() {
-		this.communities = new Community[] {};
-		this.communityOfNode = new int[] {};
+	/**
+	 * Dummy constructor to be able to create empty <code>CommunityList</code>
+	 * objects from within extending classes.
+	 */
+	protected CommunityList() {
+
 	}
 
+	/**
+	 * Standard constructor for a <code>CommunityList</code> from a
+	 * <code>HashMap<Integer, Integer></code> containing a mapping from node
+	 * indices to normalized community indices.
+	 * 
+	 * @param map
+	 *            The mapping of node indices to community indices.
+	 */
 	public CommunityList(HashMap<Integer, Integer> map) {
 		this(CommunityList.compute(map));
 	}
@@ -84,6 +105,14 @@ public class CommunityList implements GraphProperty {
 		return c;
 	}
 
+	/**
+	 * Standard constructor for a <code>CommunityList</code> from an
+	 * <code>ArrayList<Community></code> containing all the communities for the
+	 * list.
+	 * 
+	 * @param communities
+	 *            The communities for this <code>CommunityList</code>.
+	 */
 	public CommunityList(ArrayList<Community> communities) {
 		this.communities = new Community[communities.size()];
 		for (int i = 0; i < communities.size(); i++) {
@@ -92,6 +121,13 @@ public class CommunityList implements GraphProperty {
 		this.computeCommunityOfNodes();
 	}
 
+	/**
+	 * Standard constructor for a <code>CommunityList/code> from a
+	 * <code>Community[]</code> containing all the communities for the list.
+	 * 
+	 * @param communities
+	 *            The communities for this <code>CommunityList</code>.
+	 */
 	public CommunityList(Community[] communities) {
 		this.communities = communities;
 		this.computeCommunityOfNodes();
@@ -110,13 +146,26 @@ public class CommunityList implements GraphProperty {
 		}
 	}
 
-    public Community[] getCommunities(){
-        return communities;
-    }
+	/**
+	 * Getter for the communities of this <code>CommunityList</code>.
+	 * 
+	 * @return A <code>Community[]</code> containing all the communities of this
+	 *         <code>CommunityList</code>.
+	 */
+	public Community[] getCommunities() {
+		return communities;
+	}
 
-    public Community getCommunityOfNode(int nodeIndex){
-        return communities[communityOfNode[nodeIndex]];
-    }
+	/**
+	 * Getter for the <code>Community</code> of the supplied node.
+	 * 
+	 * @param node
+	 *            The index of the node to be looked up.
+	 * @return The <code>Community</code> of the supplied node.
+	 */
+	public Community getCommunityOfNode(int node) {
+		return communities[communityOfNode[node]];
+	}
 
 	@Override
 	public boolean write(String filename, String key) {

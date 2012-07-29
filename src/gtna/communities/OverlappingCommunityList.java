@@ -41,7 +41,7 @@ import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 
 /**
- * @author Flipp
+ * @author Philipp Neubrand
  *
  */
 public class OverlappingCommunityList<T extends Community> implements GraphProperty {

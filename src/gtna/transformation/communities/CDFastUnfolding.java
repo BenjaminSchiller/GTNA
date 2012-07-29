@@ -38,7 +38,7 @@ package gtna.transformation.communities;
 import java.util.HashMap;
 
 import gtna.communities.EdgeCountingCommunity;
-import gtna.communities.FastUnfoldingHelperCommunityList;
+import gtna.communities.NormalizableCommunityList;
 import gtna.graph.Edge;
 import gtna.graph.EdgeWeights;
 import gtna.graph.Edges;
@@ -130,7 +130,7 @@ public class CDFastUnfolding extends Transformation {
 			NodeWeights nws) {
 
 		// Initialize the communitylist and the communities
-		FastUnfoldingHelperCommunityList<EdgeCountingCommunity> coms = new FastUnfoldingHelperCommunityList<EdgeCountingCommunity>();
+		NormalizableCommunityList<EdgeCountingCommunity> coms = new NormalizableCommunityList<EdgeCountingCommunity>();
 		EdgeCountingCommunity temp;
 		Node[] nodes = g.getNodes();
 		for (Node akt : nodes) {
@@ -243,7 +243,7 @@ public class CDFastUnfolding extends Transformation {
 	}
 
 	private MoveValue getBestMove(Node aktNode,
-			FastUnfoldingHelperCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew) {
+			NormalizableCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew) {
 		EdgeCountingCommunity ownc = coms.getCommunityOfNode(aktNode
 				.getIndex());
 		EdgeCountingCommunity c;
@@ -276,7 +276,7 @@ public class CDFastUnfolding extends Transformation {
 	}
 
 	private double calcDeltaRemove(Node i, EdgeCountingCommunity c,
-			FastUnfoldingHelperCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew) {
+			NormalizableCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew) {
 		double nodeToCom = getSumWeightsNodeToCom(i, c, coms, ew, g);
 		double sumIn = c.getInternalEdges() - nodeToCom;
 		double sumNode = getSumWeight(i, ew);
@@ -288,7 +288,7 @@ public class CDFastUnfolding extends Transformation {
 	}
 
 	private double calcDeltaAddc(Node i, EdgeCountingCommunity c,
-			FastUnfoldingHelperCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew) {
+			NormalizableCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew) {
 		double sumIn = c.getInternalEdges();
 		double sumOut = c.getExternalEdges() + sumIn;
 		double sumNode = getSumWeight(i, ew);
@@ -308,7 +308,7 @@ public class CDFastUnfolding extends Transformation {
 
 	private double getSumWeightsNodeToCom(Node i,
 			EdgeCountingCommunity c,
-			FastUnfoldingHelperCommunityList<EdgeCountingCommunity> coms, EdgeWeights ew, Graph g) {
+			NormalizableCommunityList<EdgeCountingCommunity> coms, EdgeWeights ew, Graph g) {
 		int temp;
 		double ret = 0;
 		for (Edge akt : i.getEdges()) {

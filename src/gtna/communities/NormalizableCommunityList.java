@@ -38,36 +38,68 @@ package gtna.communities;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
 /**
- * Helper class for the FastUnfolding community detection algorithm, is pretty
- * similar to gtna.communities.CommunityList but provides additional
- * functionality.
+ * A <code>NormalizableCommunityList</code> is a
+ * <code>ChangeableCommunityList</code> that can normalize the IDs of the
+ * communities it contains. Normalized community IDs are between 0 and (n - 1)
+ * where.
+ * 
+ * This could theoretically be done in the <code>ChangeableCommunityList</code>
+ * class, but normalizing is only possible with at least
+ * <code>ChangeableCommunity</code>. So in order to not limit the use of
+ * <code>ChangableCommunity</code> it is an extra class.
  * 
  * @author Philipp Neubrand
  * 
  */
-public class FastUnfoldingHelperCommunityList<T extends ChangeableCommunity> extends ChangeableCommunityList<T> {
-	
-	public FastUnfoldingHelperCommunityList(){
-	  super();	
+public class NormalizableCommunityList<T extends ChangeableCommunity> extends
+		ChangeableCommunityList<T> {
+
+	/**
+	 * Standard constructor, creates an empty
+	 * <code>NormalizableCommunityList</code>.
+	 */
+	public NormalizableCommunityList() {
+		super();
 	}
-	
-	public FastUnfoldingHelperCommunityList(ArrayList<T> communities) {
+
+	/**
+	 * Standard constructor for a <code>NormalizableCommunityList</code>,
+	 * supplied is an <code>ArrayList<T></code> containing the communities of
+	 * the list.
+	 * 
+	 * @param communities
+	 *            The communities of the list.
+	 */
+	public NormalizableCommunityList(ArrayList<T> communities) {
 		super(communities);
 	}
 
-	public FastUnfoldingHelperCommunityList(T[] communities) {
+	/**
+	 * Standard constructor for a <code>NormalizableCommunityList</code>,
+	 * supplied is an <code>T[]</code> containing the communities of the list.
+	 * 
+	 * @param communities
+	 *            The communities of the list.
+	 */
+	public NormalizableCommunityList(T[] communities) {
 		super(communities);
 	}
 
+	/**
+	 * Normalizes the IDs of the communities, making sure the IDs are between 0
+	 * and (size() - 1).
+	 */
 	public void normalizeIDs() {
 		HashMap<Integer, T> n = new HashMap<Integer, T>();
+		nodeBuffer = new HashMap<Integer, T>();
 		int i = 0;
 		for (T akt : communities.values()) {
 
 			n.put(i, akt);
 			akt.setIndex(i);
+			for (int aktNode : akt.getNodes())
+				nodeBuffer.put(aktNode, akt);
 			i++;
 		}
 		communities = n;

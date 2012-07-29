@@ -178,7 +178,7 @@ public class GTNA {
 		Config.overwrite("MAIN_PLOT_FOLDER", "D:/plots/example7/");
 		// Config.overwrite("METRICS", "SHORTEST_PATHS");
 //		Transformation[] t = new Transformation[]{new CDExpandingShells(3, new AndXorSimilarityMeasure())};
-		Transformation[] t = new Transformation[]{new CDRandomWalk(20, new RandomNodePicker())};
+		Transformation[] t = new Transformation[]{new CDRandomWalk(20, true, new RandomNodePicker())};
 		Metric[] metrics = new Metric[] { new DegreeDistribution(), new Communities() }; 
 		Network nw2 = new Ring(30, t);
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
