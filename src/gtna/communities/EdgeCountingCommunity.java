@@ -33,15 +33,13 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.communities.fastunfolding;
+package gtna.communities;
 
 import java.util.ArrayList;
 
-import gtna.communities.Community;
 import gtna.graph.Edge;
 import gtna.graph.EdgeWeights;
 import gtna.graph.Graph;
-import gtna.graph.Node;
 import gtna.graph.NodeWeights;
 
 /**
@@ -54,17 +52,16 @@ import gtna.graph.NodeWeights;
  * @author Philipp Neubrand
  * 
  */
-public class FastUnfoldingHelperCommunity extends Community {
+public class EdgeCountingCommunity extends ChangeableCommunity {
 	private Graph g;
 	private double internalEdges = 0;
-	private ArrayList<Integer> nodes;
-	private FastUnfoldingHelperCommunityList coms;
+	private ChangeableCommunityList<EdgeCountingCommunity> coms;
 	private double externalEdges = 0;
 	private NodeWeights nw;
 	private EdgeWeights ew;
 
-	public FastUnfoldingHelperCommunity(int id, Graph g,
-			FastUnfoldingHelperCommunityList coms, NodeWeights nw,
+	public EdgeCountingCommunity(int id, Graph g,
+			FastUnfoldingHelperCommunityList<EdgeCountingCommunity> coms, NodeWeights nw,
 			EdgeWeights ew) {
 		super(id);
 		this.nw = nw;
@@ -78,21 +75,14 @@ public class FastUnfoldingHelperCommunity extends Community {
 		return internalEdges;
 	}
 
-	public int[] getNodes() {
-		int[] ret = new int[nodes.size()];
-		for(int i = 0; i < ret.length; i++)
-			ret[i] = nodes.get(i);
-		
-		return ret;
-	}
-
-	public void removeNode(Node akt2) {
+	public void removeNode(int node) {
+		super.removeNode(node);
 		int t;
 		if (nw != null)
-			internalEdges -= nw.getWeight(akt2.getIndex());
+			internalEdges -= nw.getWeight(node);
 
-		for (Edge akt : akt2.getEdges()) {
-			if (akt.getSrc() == akt2.getIndex())
+		for (Edge akt : g.getNode(node).getEdges()) {
+			if (akt.getSrc() == node)
 				t = akt.getDst();
 			else
 				t = akt.getSrc();
@@ -103,17 +93,14 @@ public class FastUnfoldingHelperCommunity extends Community {
 			} else
 				externalEdges -= (ew != null) ? ew.getWeight(akt) : 1;
 		}
-
-		nodes.remove(akt2.getIndex());
-
 	}
 
 	public void addNode(int node) {
 		int t;
+		super.addNode(node);
 		if (nw != null)
 			internalEdges += nw.getWeight(node);
 
-		nodes.add(node);
 		coms.setCommunity(node, this);
 
 		for (Edge akt : g.getNode(node).getEdges()) {
@@ -133,9 +120,5 @@ public class FastUnfoldingHelperCommunity extends Community {
 
 	public double getExternalEdges() {
 		return externalEdges;
-	}
-
-	public void setID(int i) {
-		index = i;
 	}
 }

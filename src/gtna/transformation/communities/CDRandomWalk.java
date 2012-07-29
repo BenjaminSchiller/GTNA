@@ -79,7 +79,7 @@ public class CDRandomWalk extends Transformation {
 	private RWCommunity getCommunityAroundNode(Node s, Graph g,
 			HashMap<Integer, Boolean> ignore) {
 		
-		RWCommunityList cl = randomWalk(s, g, ignore);
+		RWCommunityList<RWCommunity> cl = randomWalk(s, g, ignore);
 		
 		addUnpicked(cl, s, g, ignore);
 		
@@ -123,7 +123,7 @@ public class CDRandomWalk extends Transformation {
 	 * @param g
 	 * @param ignore
 	 */
-	private void addUnpicked(RWCommunityList cl, Node s, Graph g,
+	private void addUnpicked(RWCommunityList<RWCommunity> cl, Node s, Graph g,
 			HashMap<Integer, Boolean> ignore) {
 		
 		RWCommunity nw = new RWCommunity(
@@ -131,10 +131,10 @@ public class CDRandomWalk extends Transformation {
 				g);
 		for (Node a : g.getNodes()) {
 			if (!cl.containsNode(a.getIndex()) && (ignore == null || !ignore.containsKey(a)))
-				nw.add(a.getIndex());
+				nw.addNode(a.getIndex());
 		}
 
-		cl.add(nw);
+		cl.addCommunity(nw);
 	}
 
 	/**
@@ -162,8 +162,8 @@ public class CDRandomWalk extends Transformation {
 //						System.out.println(akt + "=>" + c2.hashCode() + ":"
 //								+ "old:" + temp + "new:"
 //								+ c2.calculateGamma(akt));
-						c2.add(akt);
-						c1.remove(akt);
+						c2.addNode(akt);
+						c1.removeNode(akt);
 						c1.computeGamma();
 						c2.computeGamma();
 						changed = true;
@@ -175,8 +175,8 @@ public class CDRandomWalk extends Transformation {
 //						System.out.println(akt2 + "=>" + c1.hashCode() + ":"
 //								+ "old:" + temp + "new:"
 //								+ c1.calculateGamma(akt2));
-						c1.add(akt2);
-						c2.remove(akt2);
+						c1.addNode(akt2);
+						c2.removeNode(akt2);
 						c1.computeGamma();
 						c2.computeGamma();
 						changed = true;
@@ -194,9 +194,9 @@ public class CDRandomWalk extends Transformation {
 	 * @param g
 	 * @return
 	 */
-	private RWCommunityList randomWalk(Node s, Graph g,
+	private RWCommunityList<RWCommunity> randomWalk(Node s, Graph g,
 			HashMap<Integer, Boolean> ignore) {
-		RWCommunityList ret = new RWCommunityList();
+		RWCommunityList<RWCommunity> ret = new RWCommunityList<RWCommunity>();
 		boolean finished = false;
 
 		Node aktNode;
@@ -212,7 +212,7 @@ public class CDRandomWalk extends Transformation {
 				if (aktCom.contains(aktNode.getIndex()))
 					break;
 
-				aktCom.add(aktNode.getIndex());
+				aktCom.addNode(aktNode.getIndex());
 				if (!hasPickableNeighbors(aktNode, g, ignore))
 					break;
 
@@ -225,17 +225,12 @@ public class CDRandomWalk extends Transformation {
 			count++;
 			finished = ret.contains(aktCom) || count > n;
 
-			ret.add(aktCom);
+			ret.addCommunity(aktCom);
 		}
 		return ret;
 	}
 
-	/**
-	 * @param aktNode
-	 * @param ignore
-	 * @param g
-	 * @return
-	 */
+
 	private boolean hasPickableNeighbors(Node aktNode, Graph g,
 			HashMap<Integer, Boolean> ignore) {
 		boolean ret = false;
@@ -247,11 +242,7 @@ public class CDRandomWalk extends Transformation {
 		return ret;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.transformation.Transformation#transform(gtna.graph.Graph)
-	 */
+
 	@Override
 	public Graph transform(Graph g) {
 		if (!applicable(g))
@@ -297,11 +288,6 @@ public class CDRandomWalk extends Transformation {
 		return g;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.transformation.Transformation#applicable(gtna.graph.Graph)
-	 */
 	@Override
 	public boolean applicable(Graph g) {
 		return true;

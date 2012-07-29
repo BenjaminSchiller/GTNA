@@ -37,6 +37,8 @@ package gtna.transformation.communities;
 
 import java.util.HashMap;
 
+import gtna.communities.EdgeCountingCommunity;
+import gtna.communities.FastUnfoldingHelperCommunityList;
 import gtna.graph.Edge;
 import gtna.graph.EdgeWeights;
 import gtna.graph.Edges;
@@ -44,8 +46,6 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.NodeWeights;
 import gtna.transformation.Transformation;
-import gtna.transformation.communities.fastunfolding.FastUnfoldingHelperCommunity;
-import gtna.transformation.communities.fastunfolding.FastUnfoldingHelperCommunityList;
 import gtna.transformation.communities.fastunfolding.MoveValue;
 
 /**
@@ -130,14 +130,14 @@ public class CDFastUnfolding extends Transformation {
 			NodeWeights nws) {
 
 		// Initialize the communitylist and the communities
-		FastUnfoldingHelperCommunityList coms = new FastUnfoldingHelperCommunityList();
-		FastUnfoldingHelperCommunity temp;
+		FastUnfoldingHelperCommunityList<EdgeCountingCommunity> coms = new FastUnfoldingHelperCommunityList<EdgeCountingCommunity>();
+		EdgeCountingCommunity temp;
 		Node[] nodes = g.getNodes();
 		for (Node akt : nodes) {
-			temp = new FastUnfoldingHelperCommunity(akt.getIndex(), g, coms,
+			temp = new EdgeCountingCommunity(akt.getIndex(), g, coms,
 					nws, ews);
 			temp.addNode(akt.getIndex());
-			coms.add(temp);
+			coms.addCommunity(temp);
 
 		}
 
@@ -158,10 +158,10 @@ public class CDFastUnfolding extends Transformation {
 					// if best possible move is an improvement then do it
 
 					temp = coms.getCommunityOfNode(akt.getIndex());
-					temp.removeNode(akt);
+					temp.removeNode(akt.getIndex());
 					// if the old community is empty, remove it
 					if (temp.getNodes().length == 0)
-						coms.removeCom(temp);
+						coms.removeCommunity(temp);
 
 					// add the node to the new community
 					coms.getCommunityByID(mv.getNewCom()).addNode(
@@ -208,12 +208,12 @@ public class CDFastUnfolding extends Transformation {
 
 		// combine the nodes to communities and update the master community
 		// mapping
-		for (FastUnfoldingHelperCommunity akt : coms.getCommunities()) {
+		for (EdgeCountingCommunity akt : coms.getCommunities()) {
 
 			n2[akt.getIndex()] = new Node(akt.getIndex(), n);
 
 			newNW.setWeight(akt.getIndex(), akt.getInternalEdges());
-			for (FastUnfoldingHelperCommunity akt2 : coms.getCommunities()) {
+			for (EdgeCountingCommunity akt2 : coms.getCommunities()) {
 				if (akt.equals(akt2))
 					continue;
 
@@ -243,10 +243,10 @@ public class CDFastUnfolding extends Transformation {
 	}
 
 	private MoveValue getBestMove(Node aktNode,
-			FastUnfoldingHelperCommunityList coms, Graph g, EdgeWeights ew) {
-		FastUnfoldingHelperCommunity ownc = coms.getCommunityOfNode(aktNode
+			FastUnfoldingHelperCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew) {
+		EdgeCountingCommunity ownc = coms.getCommunityOfNode(aktNode
 				.getIndex());
-		FastUnfoldingHelperCommunity c;
+		EdgeCountingCommunity c;
 		double v1;
 		int index = aktNode.getIndex();
 		MoveValue ret = new MoveValue();
@@ -275,8 +275,8 @@ public class CDFastUnfolding extends Transformation {
 		return ret;
 	}
 
-	private double calcDeltaRemove(Node i, FastUnfoldingHelperCommunity c,
-			FastUnfoldingHelperCommunityList coms, Graph g, EdgeWeights ew) {
+	private double calcDeltaRemove(Node i, EdgeCountingCommunity c,
+			FastUnfoldingHelperCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew) {
 		double nodeToCom = getSumWeightsNodeToCom(i, c, coms, ew, g);
 		double sumIn = c.getInternalEdges() - nodeToCom;
 		double sumNode = getSumWeight(i, ew);
@@ -287,8 +287,8 @@ public class CDFastUnfolding extends Transformation {
 
 	}
 
-	private double calcDeltaAddc(Node i, FastUnfoldingHelperCommunity c,
-			FastUnfoldingHelperCommunityList coms, Graph g, EdgeWeights ew) {
+	private double calcDeltaAddc(Node i, EdgeCountingCommunity c,
+			FastUnfoldingHelperCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew) {
 		double sumIn = c.getInternalEdges();
 		double sumOut = c.getExternalEdges() + sumIn;
 		double sumNode = getSumWeight(i, ew);
@@ -307,8 +307,8 @@ public class CDFastUnfolding extends Transformation {
 	}
 
 	private double getSumWeightsNodeToCom(Node i,
-			FastUnfoldingHelperCommunity c,
-			FastUnfoldingHelperCommunityList coms, EdgeWeights ew, Graph g) {
+			EdgeCountingCommunity c,
+			FastUnfoldingHelperCommunityList<EdgeCountingCommunity> coms, EdgeWeights ew, Graph g) {
 		int temp;
 		double ret = 0;
 		for (Edge akt : i.getEdges()) {

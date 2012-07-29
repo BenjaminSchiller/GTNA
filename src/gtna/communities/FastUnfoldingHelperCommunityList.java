@@ -33,11 +33,11 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.communities.fastunfolding;
+package gtna.communities;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-import gtna.communities.CommunityList;
 
 /**
  * Helper class for the FastUnfolding community detection algorithm, is pretty
@@ -47,47 +47,30 @@ import gtna.communities.CommunityList;
  * @author Philipp Neubrand
  * 
  */
-public class FastUnfoldingHelperCommunityList extends CommunityList {
-
-	private HashMap<Integer, FastUnfoldingHelperCommunity> comsByID = new HashMap<Integer, FastUnfoldingHelperCommunity>();
-	private HashMap<Integer, FastUnfoldingHelperCommunity> comsByNode = new HashMap<Integer, FastUnfoldingHelperCommunity>();
-
-	public FastUnfoldingHelperCommunity[] getCommunities() {
-		return comsByID.values().toArray(new FastUnfoldingHelperCommunity[comsByID.size()]);
+public class FastUnfoldingHelperCommunityList<T extends ChangeableCommunity> extends ChangeableCommunityList<T> {
+	
+	public FastUnfoldingHelperCommunityList(){
+	  super();	
+	}
+	
+	public FastUnfoldingHelperCommunityList(ArrayList<T> communities) {
+		super(communities);
 	}
 
-	public FastUnfoldingHelperCommunity getCommunityOfNode(int aktNode) {
-		return comsByNode.get(aktNode);
-	}
-
-	public FastUnfoldingHelperCommunity getCommunityByID(int newCom) {
-		return comsByID.get(newCom);
-	}
-
-	public void add(FastUnfoldingHelperCommunity community) {
-		comsByID.put(community.getIndex(), community);
-	}
-
-	public void removeCom(FastUnfoldingHelperCommunity tempC) {
-		comsByID.remove(tempC.getIndex());
-
+	public FastUnfoldingHelperCommunityList(T[] communities) {
+		super(communities);
 	}
 
 	public void normalizeIDs() {
-		HashMap<Integer, FastUnfoldingHelperCommunity> n = new HashMap<Integer, FastUnfoldingHelperCommunity>();
+		HashMap<Integer, T> n = new HashMap<Integer, T>();
 		int i = 0;
-		for (FastUnfoldingHelperCommunity akt : comsByID.values()) {
+		for (T akt : communities.values()) {
 
 			n.put(i, akt);
-			akt.setID(i);
+			akt.setIndex(i);
 			i++;
 		}
-		comsByID = n;
-	}
-
-	public void setCommunity(int node, FastUnfoldingHelperCommunity community) {
-		comsByNode.put(node, community);
-
+		communities = n;
 	}
 
 }

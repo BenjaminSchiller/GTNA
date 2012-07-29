@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * CommunityList.java
+ * CBufferingCommunity.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,29 +33,57 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.communities;
+package gtna.communities;
 
-import gtna.communities.OverlappingCommunityList;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Flipp
- *
+ * 
  */
-public class RWCommunityList<T extends RWCommunity> extends OverlappingCommunityList<T> {
+public class CBufferingCommunity extends ChangeableCommunity {
+	private HashMap<Integer, Integer> cBuffer = new HashMap<Integer, Integer>();
 
+	@Override
+	public void addNode(int add) {
+		super.addNode(add);
+		cBuffer.put(add, add);
+	}
 
-	public void sortCommunities() {
-		T temp;
-		for(int i = communities.size(); i > 1; i--){
-			for(int j = 0; j < i-1; j++){
-				if(communities.get(j).computeGamma() < communities.get(j+1).computeGamma()){
-					temp = communities.get(j);
-					communities.set(j, communities.get(j+1));
-					communities.set(j+1, temp);
-				}
-					
-			}
+	@Override
+	public void removeNode(int node) {
+		super.removeNode(node);
+		cBuffer.remove(node);
+	}
+
+	public CBufferingCommunity(int index, ArrayList<Integer> nodes) {
+		super(index, nodes);
+		for (int akt : nodes) {
+			cBuffer.put(akt, akt);
 		}
+	}
+
+	public CBufferingCommunity(int index, int[] nodes) {
+		super(index, nodes);
+		for (int akt : nodes) {
+			cBuffer.put(akt, akt);
+		}
+	}
+
+	public CBufferingCommunity(int index) {
+		super(index);
+	}
+
+	public CBufferingCommunity(String string) {
+		super(string);
+		for(int akt : nodes){
+			cBuffer.put(akt, akt);
+		}
+	}
+	
+	public boolean contains(int i){
+		return cBuffer.containsKey(i);
 	}
 
 }

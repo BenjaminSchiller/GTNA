@@ -37,7 +37,6 @@ package gtna.transformation.communities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Stack;
 
 import gtna.communities.Community;
 import gtna.communities.CommunityList;

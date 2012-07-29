@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * CommunityList.java
+ * overlappingCommunityList.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,29 +33,75 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.communities;
+package gtna.communities;
 
-import gtna.communities.OverlappingCommunityList;
+import java.util.ArrayList;
+
+import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
 
 /**
  * @author Flipp
  *
  */
-public class RWCommunityList<T extends RWCommunity> extends OverlappingCommunityList<T> {
+public class OverlappingCommunityList<T extends Community> implements GraphProperty {
+	protected ArrayList<T> communities = new ArrayList<T>();
+	
+	public void removeEmptyCommunities() {
 
-
-	public void sortCommunities() {
-		T temp;
-		for(int i = communities.size(); i > 1; i--){
-			for(int j = 0; j < i-1; j++){
-				if(communities.get(j).computeGamma() < communities.get(j+1).computeGamma()){
-					temp = communities.get(j);
-					communities.set(j, communities.get(j+1));
-					communities.set(j+1, temp);
-				}
-					
-			}
+		ArrayList<T> ncs = new ArrayList<T>();
+		for(T akt : communities){
+			if(akt.getNodes().length > 0)
+				ncs.add(akt);
 		}
+
+		communities = ncs;
+	}
+	
+	public boolean contains(T aktCom) {
+		boolean ret = false;
+		for(T akt : communities){
+			if(aktCom.equals(akt))
+				ret = true;
+		}
+		
+		return ret;
+	}
+	
+	public boolean containsNode(int node) {
+		boolean c = false;
+		for(T akt : communities){
+			if(akt.contains(node))
+				c = true;
+		}
+		
+		return c;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public T[] getCommunities(){
+		return (T[]) communities.toArray(new Object[communities.size()]);
+	}
+	
+	/**
+	 * @param aktCom
+	 */
+	public void addCommunity(T aktCom) {
+		communities.add(aktCom);
+	}
+
+
+	@Override
+	public boolean write(String filename, String key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public void read(String filename, Graph graph) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -21,12 +21,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Community.java
+ * ChangeableCommunity.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: benni;
+ * Original Author: Flipp;
  * Contributors:    -;
  *
  * Changes since 2011-05-17
@@ -40,89 +40,105 @@ import gtna.util.Config;
 import java.util.ArrayList;
 
 /**
- * @author benni
- * 
+ * @author Flipp
+ *
  */
-public class Community {
-	protected int index;
+public class ChangeableCommunity extends Community {
+	protected ArrayList<Integer> nodes = new ArrayList<Integer>();
 
-	private int[] nodes;
-
-	public Community(int index, ArrayList<Integer> nodes) {
-		this.index = index;
-		this.nodes = new int[nodes.size()];
-		for (int i = 0; i < nodes.size(); i++) {
-			this.nodes[i] = nodes.get(i);
-		}
-	}
-
-	public Community(int index, int[] nodes) {
-		this.index = index;
-		this.nodes = nodes;
-	}
-
-	public Community(int index) {
-		this.index = index;
-	}
-
-	public Community(String string) {
-		String sep1 = Config.get("GRAPH_PROPERTY_SEPARATOR_1");
-		String sep2 = Config.get("GRAPH_PROPERTY_SEPARATOR_2");
-		String[] temp1 = string.split(sep1);
-		this.index = Integer.parseInt(temp1[0]);
-		if (temp1.length < 2 || temp1[1].length() == 0) {
-			this.nodes = new int[0];
-		} else {
-			String[] temp2 = temp1[1].split(sep2);
-			this.nodes = new int[temp2.length];
-			for (int i = 0; i < temp2.length; i++) {
-				this.nodes[i] = Integer.parseInt(temp2[i]);
-			}
-		}
-	}
-
-	/**
-	 * Dummy empty constructor to be able to create empty communities from
-	 * within extending classes.
-	 * 
-	 */
-	protected Community() {
-		
-	}
-
+	@Override
 	public String toString() {
 		String sep1 = Config.get("GRAPH_PROPERTY_SEPARATOR_1");
 		String sep2 = Config.get("GRAPH_PROPERTY_SEPARATOR_2");
 		StringBuffer buff = new StringBuffer(this.index + sep1);
-		if (this.nodes.length == 0) {
+		if (this.nodes.size() == 0) {
 			return buff.toString();
 		}
-		buff.append(this.nodes[0]);
-		for (int i = 1; i < this.nodes.length; i++) {
-			buff.append(sep2 + this.nodes[i]);
+		
+		int i = 0;
+		for (int akt : nodes) {
+			if(i != 0)
+				buff.append(sep2);
+			buff.append(akt);
+			i++;
 		}
 		return buff.toString();
 	}
 
 	/**
-	 * @return the nodes
+	 * @param index
+	 * @param nodes
 	 */
+	public ChangeableCommunity(int index, ArrayList<Integer> nodes) {
+		super(index);
+		for(Integer akt : nodes){
+			this.nodes.add(akt);
+		}
+	}
+
+	/**
+	 * @param index
+	 * @param nodes
+	 */
+	public ChangeableCommunity(int index, int[] nodes) {
+		super(index);
+		for(int akt : nodes){
+			this.nodes.add(akt);
+		}
+	}
+
+	/**
+	 * @param index
+	 */
+	public ChangeableCommunity(int index) {
+		super(index);
+	}
+
+	/**
+	 * @param string
+	 */
+	public ChangeableCommunity(String string) {
+		super();
+		String sep1 = Config.get("GRAPH_PROPERTY_SEPARATOR_1");
+		String sep2 = Config.get("GRAPH_PROPERTY_SEPARATOR_2");
+		String[] temp1 = string.split(sep1);
+		this.index = Integer.parseInt(temp1[0]);
+		int tempInt = 0;
+		if (temp1.length < 2 || temp1[1].length() == 0) {
+			
+		} else {
+			String[] temp2 = temp1[1].split(sep2);
+			
+			for (int i = 0; i < temp2.length; i++) {
+				tempInt = Integer.parseInt(temp2[i]);
+				nodes.add(tempInt);
+			}
+		}
+	}
+
+	@Override
 	public int[] getNodes() {
-		return this.nodes;
+		int[] ret = new int[nodes.size()];
+		int i = 0;
+		for(int akt : nodes){
+			ret[i] = akt;
+			i++;
+		}
+		
+		return ret;		
 	}
 
-	/**
-	 * @return the index
-	 */
-	public int getIndex() {
-		return this.index;
-	}
-
-	/**
-	 * @return community size
-	 */
+	@Override
 	public int size() {
-		return getNodes().length;
+		return nodes.size();
+	}
+	
+	public void addNode(int add){
+		nodes.add(add);
+	}
+	
+	public void removeNode(int node){
+		nodes.remove(node);
 	}
 	
 	public boolean contains(int node){
@@ -134,5 +150,10 @@ public class Community {
 		
 		return ret;
 	}
+	
+	public void setIndex(int id){
+		index = id;
+	}
+	
 
 }
