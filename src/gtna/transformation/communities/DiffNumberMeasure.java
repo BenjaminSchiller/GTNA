@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * SimilarityMeasure.java
+ * DiffNumberMeasure.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -39,46 +39,37 @@ import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
 /**
- * @author Flipp
- *
+ * The <code>DiffNumberMeasure</code> calculates the difference between two
+ * <code>int[]</code> as the number of differences between their components.
+ * This similarity measure was used in the the paper
+ * "A Local Method for Detecting Communities"
+ * http://arxiv.org/pdf/cond-mat/0412482.pdf
+ * 
+ * @author Philipp Neubrand
+ * 
  */
-public class AndXorSimilarityMeasure implements SimilarityMeasure {
+public class DiffNumberMeasure implements SimilarityMeasure {
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.communities.SimilarityMeasure#minValue()
-	 */
 	@Override
 	public double minValue() {
-		return -1;
+		return Integer.MAX_VALUE;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.communities.SimilarityMeasure#calcSimilarity(int[], int[])
-	 */
 	@Override
-	public double calcSimilarity(int[] is, int[] is2) {
-		double and = 0;
-		double xor = 0;
-		for(int i = 0; i < is.length; i++){
-			if(is[i] == is2[i] && is[i] == 1){
-				and++;
-			}
-			else if(is[i] != is2[i]){
-				xor++;
-			}
+	public double calcSimilarity(int[] arr1, int[] arr2) {
+		int val1 = 0;
+		for (int i = 0; i < arr1.length; i++) {
+			if (arr1[i] == arr2[i])
+				val1++;
 		}
-		if(xor == 0 && and == 0)
-			return 0;
-		
-		return and / (and + xor); 
+
+		return arr1.length - val1;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.communities.SimilarityMeasure#getParameterArray()
-	 */
 	@Override
 	public Parameter[] getParameterArray() {
-		return new StringParameter[]{new StringParameter("SM_KEY", "AND/XOR")}; 
+		return new Parameter[] { new StringParameter("SM_KEY",
+				"DiffNumberMeasure") };
 	}
 
 }

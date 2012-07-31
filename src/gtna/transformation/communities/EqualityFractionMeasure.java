@@ -36,41 +36,46 @@
 package gtna.transformation.communities;
 
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
- * A <code>SimilarityMeasure</code> is a way to calculate the similarity between
- * two <code>int[]</code>. This class is used to calculate the similarities
- * between the detected communities of two nodes.
+ * The <code>EqualityFractionMeasure</code> calculates the similarity of the two
+ * <code>int[]</code> by (AND / (AND + XOR)).
  * 
  * @author Philipp Neubrand
  * 
  */
-public interface SimilarityMeasure {
+public class EqualityFractionMeasure implements SimilarityMeasure {
+
+	@Override
+	public double minValue() {
+		return 0;
+	}
 
 	/**
-	 * Returns the minimal value for this similarity measure.
-	 * 
-	 * @return The minimal value.
+	 * Calculates the similarity of the two arrays as (AND / (AND * XOR)).
 	 */
-	public double minValue();
+	@Override
+	public double calcSimilarity(int[] arr1, int[] arr2) {
+		double and = 0;
+		double xor = 0;
+		for (int i = 0; i < arr1.length; i++) {
+			if (arr1[i] == arr2[i] && arr1[i] == 1) {
+				and++;
+			} else if (arr1[i] != arr2[i]) {
+				xor++;
+			}
+		}
+		if (xor == 0 && and == 0)
+			return 0;
 
-	/**
-	 * Calculates the similarity between the two supplied int arrays.
-	 * 
-	 * @param arr1
-	 *            The first array.
-	 * @param arr2
-	 *            The second array.
-	 * @return The similarity between those two arrays.
-	 */
-	public double calcSimilarity(int[] arr1, int[] arr2);
+		return and / (and + xor);
+	}
 
-	/**
-	 * Returns a <code>Parameter[]</code> containing the configuration
-	 * parameters.
-	 * 
-	 * @return A <code>Parameter[]</code> of the configuration parameters.
-	 */
-	public Parameter[] getParameterArray();
+	@Override
+	public Parameter[] getParameterArray() {
+		return new StringParameter[] { new StringParameter("SM_KEY",
+				"EFMeasure") };
+	}
 
 }

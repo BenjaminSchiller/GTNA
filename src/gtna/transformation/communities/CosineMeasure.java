@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * SimilarityMeasure.java
+ * CosineSimilarityMeasure.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -36,41 +36,44 @@
 package gtna.transformation.communities;
 
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
- * A <code>SimilarityMeasure</code> is a way to calculate the similarity between
- * two <code>int[]</code>. This class is used to calculate the similarities
- * between the detected communities of two nodes.
+ * The <code>CosineMeasure</code> calculates the similarity of the two
+ * <code>int[]</code> by calculating the cosine similarity, as defined for
+ * example here: http://en.wikipedia.org/wiki/Cosine_similarity
+ * 
+ * The basic idea is that the arrays are assumed to be Vectors and the angle
+ * between them reflects the similarity.
  * 
  * @author Philipp Neubrand
  * 
  */
-public interface SimilarityMeasure {
+public class CosineMeasure implements SimilarityMeasure {
 
-	/**
-	 * Returns the minimal value for this similarity measure.
-	 * 
-	 * @return The minimal value.
-	 */
-	public double minValue();
 
-	/**
-	 * Calculates the similarity between the two supplied int arrays.
-	 * 
-	 * @param arr1
-	 *            The first array.
-	 * @param arr2
-	 *            The second array.
-	 * @return The similarity between those two arrays.
-	 */
-	public double calcSimilarity(int[] arr1, int[] arr2);
+	@Override
+	public double minValue() {
+		return -1;
+	}
 
-	/**
-	 * Returns a <code>Parameter[]</code> containing the configuration
-	 * parameters.
-	 * 
-	 * @return A <code>Parameter[]</code> of the configuration parameters.
-	 */
-	public Parameter[] getParameterArray();
+	@Override
+	public double calcSimilarity(int[] arr1, int[] arr2) {
+		double val1 = 0;
+		double val2 = 0;
+		double val3 = 0;
+		for(int i = 0; i < arr1.length; i++){
+			val1 += arr1[i] * arr2[i];
+			val2 += arr1[i] * arr1[i];
+			val3 += arr2[i] * arr2[i];
+		}
+		
+		return val1 / (Math.sqrt(val2) * Math.sqrt(val3));
+	}
+
+	@Override
+	public Parameter[] getParameterArray() {
+		return new Parameter[]{new StringParameter("SM_KEY", "CosMeasure")};
+	}
 
 }
