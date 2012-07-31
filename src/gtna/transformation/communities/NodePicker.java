@@ -39,39 +39,59 @@ import gtna.graph.Node;
 import gtna.util.parameter.Parameter;
 
 /**
- * @author Flipp
- *
+ * A <code>NodePicker</code> is basically a container that gets filled with
+ * nodes and then gradually returns them in a specific order.
+ * 
+ * @author Philipp Neubrand
+ * 
  */
 public interface NodePicker {
 
 	/**
+	 * Adds the supplied nodes to this NodePicker.
+	 * 
 	 * @param nodes
+	 *            The nodes to be added.
 	 */
-	public abstract void addAll(Node[] nodes);
+	public void addAll(Node[] nodes);
 
 	/**
-	 * @return
+	 * Checks whether or not this NodePicker still has nodes.
+	 * 
+	 * @return <code>true</code> if no nodes are left, <code>false</code>
+	 *         otherwise.
 	 */
-	public abstract boolean empty();
+	public boolean empty();
 
 	/**
-	 * @return
+	 * Getter for the next node.
+	 * 
+	 * @return The next node.
 	 */
-	public abstract Node pop();
+	public Node pop();
 
 	/**
+	 * Removes the supplied node from this NodePicker.
+	 * 
 	 * @param akt
+	 *            The node to be removed.
 	 */
-	public abstract void remove(int akt);
+	public void remove(int akt);
 
 	/**
-	 * @return
+	 * Getter for the <code>Parameter[]</code> containing the configuration
+	 * parameters for the NodePicker.
+	 * 
+	 * @return A <code>Parameter[]</code> containing the configuration
+	 *         parameters.
 	 */
-	public abstract Parameter[] getParameterArray();
+	public Parameter[] getParameterArray();
 
 	/**
-	 * @return
+	 * Getter for the number of nodes remaining in this NodePicker.
+	 * 
+	 * @return The number of nodes in this NodePicker.
 	 */
-	public abstract int size();
+	public int size();
 
 }

@@ -42,62 +42,46 @@ import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
 /**
- * @author Flipp
- *
+ * A <code>RandomNodePicker</code> returns the nodes in random order.
+ * 
+ * @author Philipp Neubrand
+ * 
  */
 public class RandomNodePicker implements NodePicker {
 	HashMap<Integer, Node> data;
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.communities.NodePicker#addAll(gtna.graph.Node[])
-	 */
 	@Override
 	public void addAll(Node[] nodes) {
 		data = new HashMap<Integer, Node>();
-		for(Node akt : nodes){
+		for (Node akt : nodes) {
 			data.put(akt.getIndex(), akt);
 		}
-		
+
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.communities.NodePicker#empty()
-	 */
 	@Override
 	public boolean empty() {
 		return (data.size() == 0);
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.communities.NodePicker#pop()
-	 */
 	@Override
 	public Node pop() {
 		int id = (int) (Math.random() * data.size());
-		Node ret =data.values().toArray(new Node[data.size()])[id];
+		Node ret = data.values().toArray(new Node[data.size()])[id];
 		data.remove(ret.getIndex());
 		return ret;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.communities.NodePicker#remove(int)
-	 */
 	@Override
 	public void remove(int akt) {
 		data.remove(akt);
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.communities.NodePicker#getParameterArray()
-	 */
 	@Override
 	public Parameter[] getParameterArray() {
-		return new Parameter[]{new StringParameter("NP_NAME", "Random")};
+		return new Parameter[] { new StringParameter("NP_NAME", "Random") };
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.communities.NodePicker#size()
-	 */
 	@Override
 	public int size() {
 		return data.size();
