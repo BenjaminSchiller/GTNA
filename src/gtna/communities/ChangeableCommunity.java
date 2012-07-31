@@ -154,7 +154,7 @@ public class ChangeableCommunity extends Community {
 	 *            The node that is to be removed.
 	 */
 	public void removeNode(int node) {
-		nodes.remove(node);
+		nodes.remove((Integer) node);
 	}
 
 	public boolean contains(int node) {

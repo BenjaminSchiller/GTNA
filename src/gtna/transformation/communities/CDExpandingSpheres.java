@@ -190,10 +190,26 @@ public class CDExpandingSpheres extends Transformation {
 			sphere = expandSphere(sphere, g, ignore);
 
 			curr = calcEmergingDegree(sphere, g);
-
-		} while (curr / last >= alpha);
+		} while (curr / last >= alpha && !containsAll(sphere, ignore, g));
 		return new Community(id, sphere);
 
+	}
+
+	/**
+	 * @param sphere
+	 * @param ignore
+	 * @param g
+	 * @return
+	 */
+	private boolean containsAll(ArrayList<Integer> sphere,
+			HashMap<Integer, Boolean> ignore, Graph g) {
+		boolean ret = true;
+		for(Node akt : g.getNodes()){
+			if(!(sphere.contains(akt.getIndex()) || (ignore != null && ignore.containsKey(akt.getIndex()))))
+				ret = false;
+		}
+		
+		return ret;
 	}
 
 	private double calcEmergingDegree(ArrayList<Integer> sphere, Graph g) {

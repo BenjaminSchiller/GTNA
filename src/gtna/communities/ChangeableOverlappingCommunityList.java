@@ -38,6 +38,7 @@ package gtna.communities;
 import gtna.io.Filewriter;
 import gtna.util.Config;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -105,7 +106,8 @@ public class ChangeableOverlappingCommunityList<T extends Community> extends
 	@SuppressWarnings("unchecked")
 	@Override
 	public T[] getCommunities() {
-		return (T[]) communities.toArray(new Object[communities.size()]);
+		T[] array = (T[]) Array.newInstance( communities.get(0).getClass(), communities.size() );
+		return (T[]) communities.toArray(array);
 	}
 
 	@Override

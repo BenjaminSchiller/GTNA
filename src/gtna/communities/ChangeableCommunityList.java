@@ -35,6 +35,7 @@
  */
 package gtna.communities;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import gtna.io.Filewriter;
@@ -106,13 +107,13 @@ public class ChangeableCommunityList<T extends Community> extends CommunityList 
 	@SuppressWarnings("unchecked")
 	@Override
 	public T[] getCommunities() {
-		return (T[]) communities.values().toArray(
-				new Object[communities.size()]);
+		T[] array = (T[]) Array.newInstance( communities.get(0).getClass(), communities.size() );
+		return (T[]) communities.values().toArray(array);
 	}
 
 	@Override
 	public T getCommunityOfNode(int nodeIndex) {
-		return nodeBuffer.get(nodeIndex);
+		return nodeBuffer.get((Integer) nodeIndex);
 	}
 
 	@Override

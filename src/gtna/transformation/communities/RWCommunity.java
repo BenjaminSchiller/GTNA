@@ -138,7 +138,7 @@ public class RWCommunity extends CBufferingCommunity {
 	 * @return The rank of the supplied node.
 	 */
 	public double getNodeRank(int node) {
-		if (!recalculateRanks)
+		if (!recalculateRanks && nodeRanks.containsKey(node))
 			return nodeRanks.get(node);
 
 		double nr = 0;
@@ -160,7 +160,7 @@ public class RWCommunity extends CBufferingCommunity {
 			if (in == 0)
 				nr = aktNode.getDegree();
 			else
-				nr = (aktNode.getDegree()) / (in * in);
+				nr = ((double) aktNode.getDegree()) / (in * in);
 		}
 
 		nodeRanks.put(node, nr);

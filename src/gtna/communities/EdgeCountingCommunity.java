@@ -118,8 +118,8 @@ public class EdgeCountingCommunity extends ChangeableCommunity {
 				t = akt.getDst();
 			else
 				t = akt.getSrc();
-
-			if (coms.getCommunityOfNode(t).getIndex() == this.getIndex()) {
+			
+			if (coms.getCommunityOfNode(t) != null && coms.getCommunityOfNode(t).getIndex() == this.getIndex()) {
 				internalEdges += (ew != null) ? ew.getWeight(akt) : 1;
 			} else
 				externalEdges += (ew != null) ? ew.getWeight(akt) : 1;

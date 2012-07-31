@@ -113,7 +113,7 @@ public class SimilarityMeasureContainer {
 					val = sims[i][j];
 				}
 				
-				if(val > maxValue){
+				if(val >= maxValue){
 					mostSimilarNode = j;
 					maxValue = val;
 				}
