@@ -51,7 +51,7 @@ import gtna.plot.Plotting;
 import gtna.projects.placement.PlacementModelTest;
 import gtna.transformation.Transformation;
 import gtna.transformation.communities.EqualityFractionMeasure;
-import gtna.transformation.communities.CDExpandingShells;
+import gtna.transformation.communities.CDExpandingSpheres;
 import gtna.transformation.communities.CDFastUnfolding;
 import gtna.transformation.communities.CDRandomWalk;
 import gtna.transformation.communities.RandomNodePicker;

@@ -44,17 +44,18 @@ import gtna.util.parameter.StringParameter;
  * example here: http://en.wikipedia.org/wiki/Cosine_similarity
  * 
  * The basic idea is that the arrays are assumed to be Vectors and the angle
- * between them reflects the similarity.
+ * between them reflects the similarity. Other then the normal definition, an
+ * offset of 1 is added to the value, so that it is between 0 and 2 instead of
+ * -1 and 1.
  * 
  * @author Philipp Neubrand
  * 
  */
 public class CosineMeasure implements SimilarityMeasure {
 
-
 	@Override
 	public double minValue() {
-		return -1;
+		return 0;
 	}
 
 	@Override
@@ -62,18 +63,23 @@ public class CosineMeasure implements SimilarityMeasure {
 		double val1 = 0;
 		double val2 = 0;
 		double val3 = 0;
-		for(int i = 0; i < arr1.length; i++){
+		for (int i = 0; i < arr1.length; i++) {
 			val1 += arr1[i] * arr2[i];
 			val2 += arr1[i] * arr1[i];
 			val3 += arr2[i] * arr2[i];
 		}
-		
-		return val1 / (Math.sqrt(val2) * Math.sqrt(val3));
+
+		return (val1 / (Math.sqrt(val2) * Math.sqrt(val3))) + 1;
 	}
 
 	@Override
 	public Parameter[] getParameterArray() {
-		return new Parameter[]{new StringParameter("SM_KEY", "CosMeasure")};
+		return new Parameter[] { new StringParameter("SM_KEY", "CosMeasure") };
+	}
+
+	@Override
+	public double getMaxValue(int[] arr1, int[] arr2) {
+		return 2;
 	}
 
 }

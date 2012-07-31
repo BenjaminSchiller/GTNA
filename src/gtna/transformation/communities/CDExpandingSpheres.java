@@ -49,32 +49,86 @@ import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
 /**
- * @author Flipp
+ * Encapsulates the community detection algorithm based on Expanding Spheres,
+ * introduced by James P. Bagrow and Erik M. Bollt in
+ * "A Local Method for Detecting Communities" (2008,
+ * http://arxiv.org/pdf/cond-mat/0412482.pdf).
+ * 
+ * The basic idea is that starting with one node the neighbours of the community
+ * are added to the community in every step, like an expanding sphere. This is
+ * done until the "newExternalEdges / OldExternalEdges < alpha", where alpha is
+ * a configuration value for the algorithm.
+ * 
+ * As the algorithm only detects a community for one starting node but we are
+ * interested in detecting the community structure of the whole graph, the
+ * algorithm had to be extended to do this. There are two different operation
+ * modes: SINGLE_PASS and MULTI_PASS that are activated depending on the
+ * constructor that is used.
+ * 
+ * SINGLE_PASS: Activated by passing a <code>NodePicker</code> object in the
+ * constructor, this mode will cause the algorithm to touch every node exactly
+ * one time. This is done by starting with a node determined by the
+ * <code>NodePicker</code> and then ignoring all the nodes that are already in a
+ * community. This is repeated until every node has a community.
+ * 
+ * MULTI_PASS: Activated by passing a <code>SimilarityMeasureContainer</code>
+ * object in the constructor, this will cause the algorithm to run with every
+ * node in the graph as the starting node. The communities detected around the
+ * nodes are then compared using the supplied SimilarityMeasure within the
+ * SimilarityMeasureContainer, and the two most similar nodes are assumed to be
+ * in the same community.
+ * 
+ * @author Philipp Neubrand
  * 
  */
-public class CDExpandingShells extends Transformation {
+public class CDExpandingSpheres extends Transformation {
 
 	private static final int MULTI_PASS = 1;
 	private static final int SINGLE_PASS = 2;
 	private double alpha;
 	private NodePicker np;
-	private SimilarityMeasure sm;
-	private SimilarityMeasureContainer smc;
+	private SimilarityMeasureContainer sm;
 	private int mode;
 
-	public CDExpandingShells(double alpha, NodePicker np) {
-		super("CD_EXPSHELLS", Util.mergeArrays(new Parameter[] { new DoubleParameter("ALPHA",
-				alpha), new StringParameter("MODE", "SINGLE")}, np.getParameterArray()));
+	/**
+	 * Creates a new CDExpandingSpheres algorithm in SINGLE_PASS mode, using the
+	 * supplied node picker to determine which node to start from in each step.
+	 * 
+	 * @param alpha
+	 *            The ratio of newExternalEdges / oldExternalEdges below which
+	 *            to stop the expansion.
+	 * @param np
+	 *            The nodepicker that determines the next starting node.
+	 */
+	public CDExpandingSpheres(double alpha, NodePicker np) {
+		super("CD_EXPSHELLS", Util
+				.mergeArrays(new Parameter[] {
+						new DoubleParameter("ALPHA", alpha),
+						new StringParameter("MODE", "SINGLE") },
+						np.getParameterArray()));
 		this.alpha = alpha;
 		this.np = np;
-		this.mode = CDExpandingShells.SINGLE_PASS;
+		this.mode = CDExpandingSpheres.SINGLE_PASS;
 	}
 
-	public CDExpandingShells(double alpha, SimilarityMeasure sm) {
-		super("CD_EXPSHELLS", Util.mergeArrays(new Parameter[] { new DoubleParameter("ALPHA",
-				alpha), new StringParameter("MODE", "MULTI")}, sm.getParameterArray()));
+	/**
+	 * Creates a new CDExpandingSpheres algorithm in MULTI_PASS mode, using the
+	 * supplied SimilarityMeasureContainer to compare the nodes after the
+	 * algorithm was run for all of them.
+	 * 
+	 * @param alpha
+	 *            The ratio of newExternalEdges / oldExternalEdges below which
+	 *            to stop the expansion.
+	 * @param sm
+	 *            The SimilarityMeasureContainer that is used to compare the
+	 *            nodes.
+	 */
+	public CDExpandingSpheres(double alpha, SimilarityMeasureContainer sm) {
+		super("CD_EXPSHELLS", Util.mergeArrays(new Parameter[] {
+				new DoubleParameter("ALPHA", alpha),
+				new StringParameter("MODE", "MULTI") }, sm.getParameterArray()));
 		this.alpha = alpha;
-		this.mode = CDExpandingShells.MULTI_PASS;
+		this.mode = CDExpandingSpheres.MULTI_PASS;
 		this.sm = sm;
 	}
 
@@ -83,10 +137,9 @@ public class CDExpandingShells extends Transformation {
 		if (!applicable(g))
 			return g;
 
-		this.smc = new SimilarityMeasureContainer(sm, g.getNodes().length);
 		CommunityList cl = null;
-		
-		if (mode == CDExpandingShells.SINGLE_PASS) {
+
+		if (mode == CDExpandingSpheres.SINGLE_PASS) {
 			np.addAll(g.getNodes());
 
 			Node akt;
@@ -106,18 +159,19 @@ public class CDExpandingShells extends Transformation {
 				index++;
 
 			}
-			
+
 			cl = new CommunityList(ct);
-			
-		} else if (mode == CDExpandingShells.MULTI_PASS) {
-			for(Node akt : g.getNodes()){
-				smc.addCommunityAroundNode(akt, getCommunityAroundNode(akt, g, null, 0));
+
+		} else if (mode == CDExpandingSpheres.MULTI_PASS) {
+			for (Node akt : g.getNodes()) {
+				sm.addCommunityAroundNode(akt,
+						getCommunityAroundNode(akt, g, null, 0));
 			}
-			
-			cl = smc.getCommunityList();
+
+			cl = sm.getCommunityList();
 
 		}
-		
+
 		g.addProperty(g.getNextKey("COMMUNITIES"), cl);
 
 		return g;
@@ -137,18 +191,11 @@ public class CDExpandingShells extends Transformation {
 
 			curr = calcEmergingDegree(sphere, g);
 
-		} while (curr / last > alpha);
-
-		System.out.println("Found com with " + sphere.size());
+		} while (curr / last >= alpha);
 		return new Community(id, sphere);
 
 	}
 
-	/**
-	 * @param sphere
-	 * @param g
-	 * @return
-	 */
 	private double calcEmergingDegree(ArrayList<Integer> sphere, Graph g) {
 		int count = 0;
 		for (int akt : sphere) {
@@ -161,11 +208,6 @@ public class CDExpandingShells extends Transformation {
 		return count;
 	}
 
-	/**
-	 * @param sphere
-	 * @param akt2
-	 * @return
-	 */
 	private boolean contains(ArrayList<Integer> sphere, int akt2) {
 		boolean ret = false;
 		for (int akt : sphere)
@@ -175,33 +217,24 @@ public class CDExpandingShells extends Transformation {
 		return ret;
 	}
 
-	/**
-	 * @param sphere
-	 * @param g
-	 * @param ignore
-	 * @return
-	 */
 	private ArrayList<Integer> expandSphere(ArrayList<Integer> sphere, Graph g,
 			HashMap<Integer, Boolean> ignore) {
 		ArrayList<Integer> ret = new ArrayList<Integer>();
 		for (int akt : sphere) {
-			if ((!contains(ret, akt)) && (ignore == null || !ignore.containsKey(akt)))
+			if ((!contains(ret, akt))
+					&& (ignore == null || !ignore.containsKey(akt)))
 				ret.add(akt);
 
 			for (int akt2 : g.getNode(akt).getOutgoingEdges())
-				if ((!contains(ret, akt2)) && (ignore == null || !ignore.containsKey(akt)))
+				if ((!contains(ret, akt2))
+						&& (ignore == null || !ignore.containsKey(akt)))
 					ret.add(akt2);
 		}
 
 		return ret;
 
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.transformation.Transformation#applicable(gtna.graph.Graph)
-	 */
+
 	@Override
 	public boolean applicable(Graph g) {
 		return true;

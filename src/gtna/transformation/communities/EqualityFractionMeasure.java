@@ -78,4 +78,9 @@ public class EqualityFractionMeasure implements SimilarityMeasure {
 				"EFMeasure") };
 	}
 
+	@Override
+	public double getMaxValue(int[] arr1, int[] arr2) {
+		return 1;
+	}
+
 }

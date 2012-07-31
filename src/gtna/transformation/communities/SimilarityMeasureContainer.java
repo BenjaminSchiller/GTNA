@@ -41,21 +41,26 @@ import java.util.HashMap;
 import gtna.communities.Community;
 import gtna.communities.CommunityList;
 import gtna.graph.Node;
+import gtna.util.Util;
+import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
 
 /**
- * @author Flipp
+ * 
+ * 
+ * @author Philipp Neubrand
  *
  */
 public class SimilarityMeasureContainer {
 	
 	int[][] data;
 	private SimilarityMeasure simMeasure;
+	private double threshold;
 	
-	public SimilarityMeasureContainer(SimilarityMeasure simMeasure, int n){
+	public SimilarityMeasureContainer(SimilarityMeasure simMeasure, double threshold){
 		
 		this.simMeasure = simMeasure;
-		data = new int[n][n];
+		this.threshold = threshold;
 	}
 	
 
@@ -64,6 +69,9 @@ public class SimilarityMeasureContainer {
 	 * @param c
 	 */
 	public void addCommunityAroundNode(Node akt, Community c) {
+		if(data == null)
+			data = new int[c.getNodes().length][c.getNodes().length];
+		
 		for(int i : c.getNodes()){
 			data[akt.getIndex()][i] = 1;
 		}
@@ -110,6 +118,9 @@ public class SimilarityMeasureContainer {
 					maxValue = val;
 				}
 			}
+			if(maxValue < threshold * simMeasure.getMaxValue(data[i], data[mostSimilarNode]))
+				continue;
+			
 			for(int j = 0; j < i; j++){
 				if(coms.get(j) == coms.get(i)){
 					coms.get(mostSimilarNode).addAll(coms.get(j));
@@ -146,7 +157,7 @@ public class SimilarityMeasureContainer {
 	 * @return
 	 */
 	public Parameter[] getParameterArray() {
-		return simMeasure.getParameterArray();
+		return Util.mergeArrays(new Parameter[]{new DoubleParameter("THRESHOLD", threshold)}, simMeasure.getParameterArray());
 	}
 
 }

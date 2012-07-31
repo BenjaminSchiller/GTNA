@@ -73,4 +73,16 @@ public interface SimilarityMeasure {
 	 */
 	public Parameter[] getParameterArray();
 
+	/**
+	 * Returns the maximal possible value for the similarity between the two
+	 * arrays.
+	 * 
+	 * @param arr1
+	 *            The first array.
+	 * @param arr2
+	 *            The second array.
+	 * @return Maximum possible similarity between the two arrays.
+	 */
+	double getMaxValue(int[] arr1, int[] arr2);
+
 }

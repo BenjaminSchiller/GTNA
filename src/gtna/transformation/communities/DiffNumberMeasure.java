@@ -72,4 +72,9 @@ public class DiffNumberMeasure implements SimilarityMeasure {
 				"DiffNumberMeasure") };
 	}
 
+	@Override
+	public double getMaxValue(int[] arr1, int[] arr2) {
+		return arr1.length;
+	}
+
 }
