@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * ChangeableCommunityList.java
+ * ChangeableOverlappingCommunityList.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -35,31 +35,25 @@
  */
 package gtna.communities;
 
+import gtna.graph.Graph;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import gtna.graph.Graph;
-
 /**
- * A <code>ChangeableCommunityList</code> is a <code>CommunityList</code> that
- * can be altered after creation. The class is generic so that it can be
- * "specialized" for different <code>Community</code> classes. If a
- * <code>ChangeableCommunityList</code> with different <code>Community</code>
- * classes is needed, the List can still be created with <code>Community</code>
- * as the generic class.
- * 
  * @author Philipp Neubrand
  * 
  */
-public class ChangeableCommunityList<T extends Community> extends CommunityList {
-	protected HashMap<Integer, T> communities = new HashMap<Integer, T>();
-	protected HashMap<Integer, T> nodeBuffer = new HashMap<Integer, T>();
+public class ChangeableOverlappingCommunityList<T extends Community> extends
+		OverlappingCommunityList {
+	protected ArrayList<T> communities = new ArrayList<T>();
+	protected HashMap<Integer, ArrayList<Community>> nodeBuffer = new HashMap<Integer, ArrayList<Community>>();
 
 	/**
 	 * Standard constructor, creates an empty
-	 * <code>ChangeableCommunityList</code>.
+	 * <code>ChangeableOverlappingCommunityList</code>.
 	 */
-	public ChangeableCommunityList() {
+	public ChangeableOverlappingCommunityList() {
 
 	}
 
@@ -70,13 +64,24 @@ public class ChangeableCommunityList<T extends Community> extends CommunityList 
 	 * @param communities
 	 *            The communities of the list.
 	 */
-	public ChangeableCommunityList(ArrayList<T> communities) {
+	public ChangeableOverlappingCommunityList(ArrayList<T> communities) {
 		super();
 		for (T akt : communities) {
-			this.communities.put(akt.getIndex(), akt);
+			this.communities.add(akt);
 		}
-		
+
 		this.computeCommunityOfNodes();
+	}
+
+	protected void computeCommunityOfNodes() {
+		for (T akt : communities) {
+			for (int node : akt.getNodes()) {
+				if (!nodeBuffer.containsKey(node))
+					nodeBuffer.put(node, new ArrayList<Community>());
+
+				nodeBuffer.get(node).add(akt);
+			}
+		}
 	}
 
 	/**
@@ -86,32 +91,24 @@ public class ChangeableCommunityList<T extends Community> extends CommunityList 
 	 * @param communities
 	 *            The communities of the list.
 	 */
-	public ChangeableCommunityList(T[] communities) {
+	public ChangeableOverlappingCommunityList(T[] communities) {
 		super();
 		for (T akt : communities) {
-			this.communities.put(akt.getIndex(), akt);
+			this.communities.add(akt);
 		}
-		
+
 		this.computeCommunityOfNodes();
-	}
-	
-	protected void computeCommunityOfNodes(){
-		for(T akt : communities.values()){
-			for(int node : akt.getNodes())
-				nodeBuffer.put(node, akt);
-		}
 	}
 
 	// The cast is save as only Ts can be added to the list
 	@SuppressWarnings("unchecked")
 	@Override
 	public T[] getCommunities() {
-		return (T[]) communities.values().toArray(
-				new Object[communities.size()]);
+		return (T[]) communities.toArray(new Object[communities.size()]);
 	}
 
 	@Override
-	public T getCommunityOfNode(int nodeIndex) {
+	public ArrayList<Community> getCommunityOfNode(int nodeIndex) {
 		return nodeBuffer.get(nodeIndex);
 	}
 
@@ -126,53 +123,30 @@ public class ChangeableCommunityList<T extends Community> extends CommunityList 
 	}
 
 	/**
-	 * Adds a community of type <T> to this list.
+	 * Adds the supplied community to the community list.
 	 * 
 	 * @param com
 	 *            The community to be added.
 	 */
 	public void addCommunity(T com) {
-		communities.put(com.getIndex(), com);
-		for (int akt : com.getNodes())
-			nodeBuffer.put(akt, com);
-
+		communities.add(com);
+		for (int node : com.getNodes()) {
+			if (!nodeBuffer.containsKey(node))
+				nodeBuffer.put(node, new ArrayList<Community>());
+			nodeBuffer.get(node).add(com);
+		}
 	}
 
 	/**
-	 * Removes the community from the list.
+	 * Removes the supplied community from the list.
 	 * 
 	 * @param com
-	 *            The community to be removed.
+	 *            The community that is to be removed.
 	 */
 	public void removeCommunity(T com) {
 		communities.remove(com);
-		for (int akt : com.getNodes())
-			nodeBuffer.remove(akt);
-
+		for (int node : com.getNodes()) {
+			nodeBuffer.get(node).remove(com);
+		}
 	}
-
-	/**
-	 * Getter for the community with the supplied ID.
-	 * 
-	 * @param id
-	 *            The ID that is to be looked up.
-	 * @return The community with the supplied ID.
-	 */
-	public T getCommunityByID(int id) {
-		return communities.get(id);
-	}
-
-	/**
-	 * Sets the community mapping of the supplied node to the supplied
-	 * community.
-	 * 
-	 * @param node
-	 *            The node that is to be set.
-	 * @param community
-	 *            The community of the node.
-	 */
-	public void setCommunity(int node, T community) {
-		nodeBuffer.put(node, community);
-	}
-
 }

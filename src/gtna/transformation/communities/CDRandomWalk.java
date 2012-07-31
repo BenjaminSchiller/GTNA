@@ -47,7 +47,7 @@ import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 /**
- * @author Flipp
+ * @author Philipp Neubrand
  * 
  * http://www.cise.ufl.edu/~gsthakur/docs/detection_local.pdf
  * // änderungen: 2.0 weg, -1 weg

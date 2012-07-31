@@ -35,27 +35,91 @@
  */
 package gtna.transformation.communities;
 
-import gtna.communities.OverlappingCommunityList;
+import java.util.ArrayList;
+
+import gtna.communities.ChangeableOverlappingCommunityList;
+import gtna.communities.Community;
 
 /**
- * @author Flipp
- *
+ * A <code>RWCommunityList</code> is a
+ * <code>ChangeableOverlappingCommunityList</code> with some additional
+ * functionality needed by the <code>CDRandomWalk</code> community detection
+ * algorithm.
+ * 
+ * @author Philipp Neubrand
+ * 
  */
-public class RWCommunityList<T extends RWCommunity> extends OverlappingCommunityList<T> {
+public class RWCommunityList<T extends RWCommunity> extends
+		ChangeableOverlappingCommunityList<T> {
 
+	/**
+	 * Removes empty communities from the community list.
+	 */
+	public void removeEmptyCommunities() {
+		ArrayList<T> ncs = new ArrayList<T>();
+		for (T akt : communities) {
+			if (akt.getNodes().length > 0)
+				ncs.add(akt);
+		}
 
+		communities = ncs;
+	}
+
+	/**
+	 * Sorts the communities according to their community rank.
+	 */
 	public void sortCommunities() {
 		T temp;
-		for(int i = communities.size(); i > 1; i--){
-			for(int j = 0; j < i-1; j++){
-				if(communities.get(j).getCommunityRank() < communities.get(j+1).getCommunityRank()){
+		for (int i = communities.size(); i > 1; i--) {
+			for (int j = 0; j < i - 1; j++) {
+				if (communities.get(j).getCommunityRank() < communities.get(
+						j + 1).getCommunityRank()) {
 					temp = communities.get(j);
-					communities.set(j, communities.get(j+1));
-					communities.set(j+1, temp);
+					communities.set(j, communities.get(j + 1));
+					communities.set(j + 1, temp);
 				}
-					
+
 			}
 		}
+	}
+
+	/**
+	 * Checks whether or not a node is part of any of the communities.
+	 * 
+	 * @param node
+	 *            The node that should be checked.
+	 * @return <code>true</code> if the node is part of any community,
+	 *         <code>false</code> else.
+	 */
+	public boolean containsNode(int node) {
+		boolean c = false;
+		for (Community akt : communities) {
+			if (akt.contains(node)) {
+				c = true;
+				break;
+			}
+		}
+
+		return c;
+	}
+
+	/**
+	 * Checks whether or not a community is part of this
+	 * <code>OverlappingCommunityList</code>.
+	 * 
+	 * @param aktCom
+	 *            The community that is to be checked.
+	 * @return <code>true</code> if the community is part of this list,
+	 *         <code>false</code> otherwise.
+	 */
+	public boolean contains(Community com) {
+		boolean ret = false;
+		for (Community akt : communities) {
+			if (com.equals(akt))
+				ret = true;
+		}
+
+		return ret;
 	}
 
 }
