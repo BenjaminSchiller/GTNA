@@ -337,7 +337,7 @@ public class CDRandomWalk extends Transformation {
 			RWCommunity c;
 			for (Node akt : g.getNodes()) {
 				c = this.getCommunityAroundNode(akt, g, null);
-				matrix.addCommunityAroundNode(akt, c);
+				matrix.addCommunityOfNode(akt, c);
 			}
 
 			cl = matrix.getCommunityList();

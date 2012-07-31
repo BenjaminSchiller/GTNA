@@ -164,7 +164,7 @@ public class CDExpandingSpheres extends Transformation {
 
 		} else if (mode == CDExpandingSpheres.MULTI_PASS) {
 			for (Node akt : g.getNodes()) {
-				sm.addCommunityAroundNode(akt,
+				sm.addCommunityOfNode(akt,
 						getCommunityAroundNode(akt, g, null, 0));
 			}
 
