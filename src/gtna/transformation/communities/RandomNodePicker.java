@@ -79,7 +79,7 @@ public class RandomNodePicker implements NodePicker {
 
 	@Override
 	public Parameter[] getParameterArray() {
-		return new Parameter[] { new StringParameter("NP_NAME", "Random") };
+		return new Parameter[] { new StringParameter("NP_KEY", "Random") };
 	}
 
 	@Override

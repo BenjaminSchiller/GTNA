@@ -37,8 +37,8 @@ package gtna.communities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import gtna.graph.Graph;
+import gtna.io.Filewriter;
+import gtna.util.Config;
 
 /**
  * A <code>ChangeableCommunityList</code> is a <code>CommunityList</code> that
@@ -117,12 +117,28 @@ public class ChangeableCommunityList<T extends Community> extends CommunityList 
 
 	@Override
 	public boolean write(String filename, String key) {
-		return false;
-	}
+		Filewriter fw = new Filewriter(filename);
 
-	@Override
-	public void read(String filename, Graph graph) {
+		// CLASS
+		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
+		fw.writeln(CommunityList.class.getClass().getCanonicalName().toString());
 
+		// KEYS
+		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
+		fw.writeln(key);
+
+		// # OF COMMUNITIES
+		fw.writeComment("Communities");
+		fw.writeln(this.communities.size());
+
+		fw.writeln();
+
+		// LIST OF COMMUNITIES
+		for (Community community : this.communities.values()) {
+			fw.writeln(community.toString());
+		}
+
+		return fw.close();
 	}
 
 	/**

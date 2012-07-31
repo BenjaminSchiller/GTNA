@@ -35,7 +35,8 @@
  */
 package gtna.communities;
 
-import gtna.graph.Graph;
+import gtna.io.Filewriter;
+import gtna.util.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -114,12 +115,28 @@ public class ChangeableOverlappingCommunityList<T extends Community> extends
 
 	@Override
 	public boolean write(String filename, String key) {
-		return false;
-	}
+		Filewriter fw = new Filewriter(filename);
 
-	@Override
-	public void read(String filename, Graph graph) {
+		// CLASS
+		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
+		fw.writeln(OverlappingCommunityList.class.getClass().getCanonicalName().toString());
 
+		// KEYS
+		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
+		fw.writeln(key);
+
+		// # OF COMMUNITIES
+		fw.writeComment("Communities");
+		fw.writeln(this.communities.size());
+
+		fw.writeln();
+
+		// LIST OF COMMUNITIES
+		for (Community community : this.communities) {
+			fw.writeln(community.toString());
+		}
+
+		return fw.close();
 	}
 
 	/**

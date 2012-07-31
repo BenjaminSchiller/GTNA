@@ -101,7 +101,7 @@ public class CDExpandingSpheres extends Transformation {
 	 *            The nodepicker that determines the next starting node.
 	 */
 	public CDExpandingSpheres(double alpha, NodePicker np) {
-		super("CD_EXPSHELLS", Util
+		super("CD_EXPSPHERES", Util
 				.mergeArrays(new Parameter[] {
 						new DoubleParameter("ALPHA", alpha),
 						new StringParameter("MODE", "SINGLE") },
@@ -124,7 +124,7 @@ public class CDExpandingSpheres extends Transformation {
 	 *            nodes.
 	 */
 	public CDExpandingSpheres(double alpha, SimilarityMeasureContainer sm) {
-		super("CD_EXPSHELLS", Util.mergeArrays(new Parameter[] {
+		super("CD_EXPSPHERES", Util.mergeArrays(new Parameter[] {
 				new DoubleParameter("ALPHA", alpha),
 				new StringParameter("MODE", "MULTI") }, sm.getParameterArray()));
 		this.alpha = alpha;

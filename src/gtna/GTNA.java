@@ -50,6 +50,7 @@ import gtna.networks.model.placementmodels.models.GridPlacementModel;
 import gtna.plot.Plotting;
 import gtna.projects.placement.PlacementModelTest;
 import gtna.transformation.Transformation;
+import gtna.transformation.communities.CDAConfigurationFactory;
 import gtna.transformation.communities.EqualityFractionMeasure;
 import gtna.transformation.communities.CDExpandingSpheres;
 import gtna.transformation.communities.CDFastUnfolding;
@@ -176,15 +177,13 @@ public class GTNA {
 	private static void example7() {
 		Config.overwrite("MAIN_DATA_FOLDER", "D:/data/example7/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "D:/plots/example7/");
-		// Config.overwrite("METRICS", "SHORTEST_PATHS");
-//		Transformation[] t = new Transformation[]{new CDExpandingShells(3, new AndXorSimilarityMeasure())};
-		Transformation[] t = new Transformation[]{new CDRandomWalk(20, true, new RandomNodePicker())};
-		Metric[] metrics = new Metric[] { new DegreeDistribution(), new Communities() }; 
-		Network nw2 = new Ring(30, t);
+
+		Transformation[] t = CDAConfigurationFactory.getConfigArray();
+		Metric[] metrics = new Metric[] { new DegreeDistribution() }; 
+		Network nw = new Ring(30, t);
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
-		Network nw1 = PlacementModelTest.nwCC(100, t);
-		Series s1 = Series.generate(nw1, metrics, 1);
-		Series s2 = Series.generate(nw2, metrics, 1);
-//		Series s2 = Series.generate(nw1, metrics, 10);
+		
+		Series s1 = Series.generate(nw, metrics, 1);
+
 	}
 }

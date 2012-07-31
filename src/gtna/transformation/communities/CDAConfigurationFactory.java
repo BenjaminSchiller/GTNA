@@ -79,8 +79,9 @@ public class CDAConfigurationFactory {
 		
 		Transformation[] ret = new Transformation[1 + 2
 				+ (expShellAlphas.length * nps.length)
-				+ (expShellAlphas.length * smcs.length) + nps.length * 2 * rwcs.length + smcs.length * 2 * rwcs.length];
+				+ (expShellAlphas.length * smcs.length) + nps.length * 2 * rwcs.length + smcs.length * 2 * rwcs.length + 1];
 
+		System.out.println(ret.length);
 		ret[0] = new CDDeltaQ("long", true, 0);
 		ret[1] = new CDLPA(1);
 		ret[2] = new CDLPA(10);
