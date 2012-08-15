@@ -46,6 +46,7 @@ import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.ASPL;
 import gtna.metrics.BiconnectedComponent;
 import gtna.metrics.Metric;
+import gtna.metrics.basic.DegreeDistribution;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.IG;
@@ -66,7 +67,7 @@ public class Test2 {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Test2.biconnectedCorrectnessTest();
+		Test2.BATest();
 	}
 
 	public static void mixedTest() {
@@ -127,6 +128,17 @@ public class Test2 {
 		Metric[] metrics = new Metric[] { m };
 		Series[] series = Series.generate(networks, metrics, 1);
 		Plotting.multi(series, metrics, "./GRAPH/");
+	}
+
+	public static void BATest() {
+		Network network = new BarabasiAlbert(10000, 2, null);
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/BATest/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/BATest/");
+		Metric metric = new DegreeDistribution();
+		Metric[] metrics = new Metric[] { metric };
+		Series series = Series.generate(network, metrics, 100);
+		Plotting.multi(series, metrics, "BATest/");
 	}
 
 }

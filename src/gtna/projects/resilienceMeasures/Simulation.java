@@ -48,7 +48,6 @@ import gtna.metrics.Metric;
 import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.connectivity.RichClubConnectivity;
-import gtna.metrics.connectivity.WeakConnectivity;
 import gtna.metrics.fragmentation.Fragmentation.Resolution;
 import gtna.metrics.fragmentation.WeakFragmentation;
 import gtna.networks.Network;
@@ -68,8 +67,8 @@ public class Simulation {
 	 */
 	public static void main(String[] args) {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
-		Config.overwrite("MAIN_DATA_FOLDER", "./data/EffectiveDiameterDegree/");
-		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/EffectiveDiameterDegree/");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/DegreeDistribution/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/DegreeDistribution/");
 		String n = args[0];
 		String[] ss = new String[] { n + "2007", n + "2008", n + "2009",
 				n + "2010", n + "2011", n + "2012" };
@@ -77,10 +76,9 @@ public class Simulation {
 			System.out.println("=====" + s + "=====");
 			Network nw = new ReadableFolder(s, s, "./graphs/" + s + "/", "",
 					null);
-			Metric metric = new EffectiveDiameter(new DegreeNodeSorter(
-					NodeSorterMode.DESC), 0.2);
+			Metric metric = new DegreeDistribution();
 			Metric[] metrics = new Metric[] { metric };
-			Series series = Series.generate(nw, metrics, 20);
+			Series series = Series.generate(nw, metrics, 100);
 			Plotting.multi(series, metrics, s + "/");
 		}
 	}
