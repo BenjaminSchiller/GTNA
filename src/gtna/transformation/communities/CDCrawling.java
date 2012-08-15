@@ -105,16 +105,16 @@ public class CDCrawling extends Transformation {
 		if (!applicable(g))
 			return g;
 		
+		
+		
 		CommunityList cl = null;
-		HashMap<Integer, Integer> temp;
+		HashMap<Integer, Integer> temp = null;
 		if(mode == CDCrawling.ORIGINAL){
 			temp = getCommunityAroundNode(g.getNode(startingNode), g, null, false);
 			cl = new CommunityList(temp);
 			
 		} else if(mode == CDCrawling.SINGLE_PASS){
 			np.addAll(g.getNodes());
-
-			Community c;
 
 			Node n;
 			HashMap<Integer, Boolean> ignore = new HashMap<Integer, Boolean>();
@@ -135,7 +135,7 @@ public class CDCrawling extends Transformation {
 			cl = new CommunityList(temp);
 			
 		} else if(mode == CDCrawling.MULTI_PASS){
-			Community c;
+			smc.setSize(g.getNodes().length);
 			for (Node akt : g.getNodes()) {
 				temp = this.getCommunityAroundNode(akt, g, null, true);
 				smc.addCommunityOfNode(akt, temp);

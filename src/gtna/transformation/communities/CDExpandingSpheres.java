@@ -87,7 +87,7 @@ public class CDExpandingSpheres extends Transformation {
 	private static final int SINGLE_PASS = 2;
 	private double alpha;
 	private NodePicker np;
-	private SimilarityMeasureContainer sm;
+	private SimilarityMeasureContainer smc;
 	private int mode;
 
 	/**
@@ -129,7 +129,7 @@ public class CDExpandingSpheres extends Transformation {
 				new StringParameter("MODE", "MULTI") }, sm.getParameterArray()));
 		this.alpha = alpha;
 		this.mode = CDExpandingSpheres.MULTI_PASS;
-		this.sm = sm;
+		this.smc = sm;
 	}
 
 	@Override
@@ -163,12 +163,13 @@ public class CDExpandingSpheres extends Transformation {
 			cl = new CommunityList(ct);
 
 		} else if (mode == CDExpandingSpheres.MULTI_PASS) {
+			smc.setSize(g.getNodes().length);
 			for (Node akt : g.getNodes()) {
-				sm.addCommunityOfNode(akt,
+				smc.addCommunityOfNode(akt,
 						getCommunityAroundNode(akt, g, null, 0));
 			}
 
-			cl = sm.getCommunityList();
+			cl = smc.getCommunityList();
 
 		}
 

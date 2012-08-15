@@ -110,7 +110,7 @@ public class CDRandomWalk extends Transformation {
 	private int n;
 	private int mode;
 	private NodePicker picker;
-	private SimilarityMeasureContainer matrix;
+	private SimilarityMeasureContainer smc;
 
 	private boolean useNewFormula;
 
@@ -151,7 +151,7 @@ public class CDRandomWalk extends Transformation {
 		super("CD_RANDOMWALK", Util.mergeArrays(new Parameter[] { new IntParameter("N",
 				maxRandomWalks),  new BooleanParameter("NEW_FORMULA", useNewFormula) }, smc.getParameterArray()));
 		this.useNewFormula = useNewFormula;
-		this.matrix = smc;
+		this.smc = smc;
 		this.n = maxRandomWalks;
 		mode = CDRandomWalk.MULTI_PASS;
 	}
@@ -334,13 +334,14 @@ public class CDRandomWalk extends Transformation {
 
 			cl = new CommunityList(t);
 		} else if (mode == CDRandomWalk.MULTI_PASS) {
+			smc.setSize(g.getNodes().length);
 			RWCommunity c;
 			for (Node akt : g.getNodes()) {
 				c = this.getCommunityAroundNode(akt, g, null);
-				matrix.addCommunityOfNode(akt, c);
+				smc.addCommunityOfNode(akt, c);
 			}
 
-			cl = matrix.getCommunityList();
+			cl = smc.getCommunityList();
 		}
 		g.addProperty(g.getNextKey("COMMUNITIES"), cl);
 		return g;

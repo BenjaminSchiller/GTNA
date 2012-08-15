@@ -82,6 +82,16 @@ public class SimilarityMeasureContainer {
 	}
 
 	/**
+	 * Setter for the size of the graph of this SMC.
+	 * 
+	 * @param size
+	 *            The number of nodes of the graph.
+	 */
+	public void setSize(int size) {
+		data = new int[size][size];
+	}
+
+	/**
 	 * Adds the supplied community for the supplied node to the data.
 	 * 
 	 * @param node
@@ -90,13 +100,24 @@ public class SimilarityMeasureContainer {
 	 *            The community that is to be added.
 	 */
 	public void addCommunityOfNode(Node node, Community com) {
-		if (data == null)
-			data = new int[com.getNodes().length][com.getNodes().length];
-
 		for (int i : com.getNodes()) {
 			data[node.getIndex()][i] = 1;
 		}
+	}
+	
 
+	/**
+	 * Adds the supplied community for the supplied node to the data.
+	 * 
+	 * @param node
+	 *            The node for which the community was calculated.
+	 * @param com
+	 *            The community that is to be added.
+	 */
+	public void addCommunityOfNode(Node node, HashMap<Integer, Integer> com) {
+		for(int akt : com.keySet())
+			data[node.getIndex()][akt] = 1;
+		
 	}
 
 	/**
@@ -185,5 +206,4 @@ public class SimilarityMeasureContainer {
 		return Util.mergeArrays(new Parameter[] { new DoubleParameter(
 				"THRESHOLD", threshold) }, simMeasure.getParameterArray());
 	}
-
 }
