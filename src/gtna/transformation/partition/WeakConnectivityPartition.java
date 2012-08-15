@@ -68,7 +68,7 @@ public class WeakConnectivityPartition extends Transformation {
 		return true;
 	}
 
-	public Partition getWeakPartition(Graph g) {
+	public static Partition getWeakPartition(Graph g) {
 		return WeakConnectivityPartition.getWeakPartition(g,
 				new boolean[g.getNodes().length]);
 	}

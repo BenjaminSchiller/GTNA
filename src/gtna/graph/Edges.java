@@ -76,6 +76,9 @@ public class Edges {
 		if (this.map.containsKey(edge.toString())) {
 			return false;
 		}
+		if (edge.getSrc() == edge.getDst()) {
+			return false;
+		}
 		this.edges.add(edge);
 		this.map.put(edge.toString(), edge);
 		this.inDegree[edge.getDst()]++;
@@ -85,6 +88,9 @@ public class Edges {
 
 	public boolean add(int src, int dst) {
 		if (this.map.containsKey(Edge.toString(src, dst))) {
+			return false;
+		}
+		if (src == dst) {
 			return false;
 		}
 		Edge edge = new Edge(src, dst);

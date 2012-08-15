@@ -170,8 +170,31 @@ public class Series {
 		return s;
 	}
 
+	/**
+	 * Generates $times runs for the given network (0 to ($times-1)).
+	 * 
+	 * @param nw
+	 * @param metrics
+	 * @param times
+	 * @return
+	 */
 	public static Series generate(Network nw, Metric[] metrics, int times) {
-		System.out.println("series (" + times + ") for "
+		return Series.generate(nw, metrics, 0, times - 1);
+	}
+
+	/**
+	 * Generates ($endRun - $startRun + 1) runs for the given network ($startRun
+	 * to $endRun). In case $startRun > 0, the generated data is not aggregated!
+	 * 
+	 * @param nw
+	 * @param metrics
+	 * @param startRun
+	 * @param endRun
+	 * @return
+	 */
+	public static Series generate(Network nw, Metric[] metrics, int startRun,
+			int endRun) {
+		System.out.println("series (" + startRun + " - " + endRun + ") for "
 				+ nw.getDescriptionShort());
 		Series s = new Series(nw, metrics);
 		File folder = new File(s.getFolder());
@@ -184,14 +207,27 @@ public class Series {
 				folder.mkdirs();
 			}
 		}
-		for (int run = 0; run < times; run++) {
+
+		if (s.getNetwork() instanceof ReadableFolder) {
+			for (int run = 0; run < startRun; run++) {
+				((ReadableFolder) s.getNetwork()).incIndex();
+			}
+		}
+
+		for (int run = startRun; run <= endRun; run++) {
 			if (!Series.generateRun(s, run)) {
 				System.err.println("error in run " + run);
 				return null;
 			}
 		}
+
+		if (startRun != 0) {
+			System.out.println("\n");
+			return s;
+		}
+
 		Timer timerAggregation = new Timer("\n===> " + s.getFolder());
-		boolean success = Aggregation.aggregate(s, times);
+		boolean success = Aggregation.aggregate(s, endRun + 1);
 		timerAggregation.end();
 		System.out.println("\n");
 		if (success) {

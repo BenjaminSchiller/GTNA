@@ -36,7 +36,7 @@
 package gtna.metrics.connectivity;
 
 import gtna.graph.Graph;
-import gtna.transformation.Transformation;
+import gtna.graph.partition.Partition;
 import gtna.transformation.partition.WeakConnectivityPartition;
 
 /**
@@ -46,13 +46,12 @@ import gtna.transformation.partition.WeakConnectivityPartition;
 public class WeakConnectivity extends Partitioning {
 
 	public WeakConnectivity() {
-		super("WEAK_CONNECTIVITY", "WEAK_CONNECTIVITY_PARTITION");
+		super("WEAK_CONNECTIVITY");
 	}
 
 	@Override
-	protected Graph addProperty(Graph g) {
-		Transformation t = new WeakConnectivityPartition();
-		return t.transform(g);
+	protected Partition getPartition(Graph g) {
+		return WeakConnectivityPartition.getWeakPartition(g);
 	}
 
 }
