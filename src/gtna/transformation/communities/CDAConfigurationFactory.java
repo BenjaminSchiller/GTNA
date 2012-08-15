@@ -137,7 +137,7 @@ public class CDAConfigurationFactory {
 			for(double delta : minDeltas){
 				ret[j] = new CDCrawling(delta, np, CDCrawling.ORIGINAL);
 				ret[j+1] = new CDCrawling(delta, np, CDCrawling.SINGLE_PASS);
-				j++;
+				j = j + 2;
 			}
 		}
 		
