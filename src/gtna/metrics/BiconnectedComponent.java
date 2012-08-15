@@ -114,19 +114,19 @@ public class BiconnectedComponent extends Metric {
 			// compute
 			this.computeBiconnectedSize(g);
 			this.maxBicomponentSize[i][0] = this.excluded;
-			System.out.println("Size = " + this.maxComponent.size());
+			// System.out.println("Size = " + this.maxComponent.size());
 			this.maxBicomponentSize[i][1] = (double) this.maxComponent.size();
 
 			// exclude node(s)
 			if (i < mixed) {
-				System.out.println("Remove: " + i);
+				// System.out.println("Remove: " + i);
 				this.excludeNode(i, sorted);
 			} else {
 				int percent = i - this.mixed + 1;
 				int next = this.mixed - 1 + (percent * (N - this.mixed)) / 100;
-				System.out.println("The last excluded Node = "
-						+ (this.excluded - 1));
-				System.out.println("Remove until = " + (next - 1));
+				// System.out.println("The last excluded Node = "
+				// + (this.excluded - 1));
+				// System.out.println("Remove until = " + (next - 1));
 				for (int j = this.excluded; j < next; j++) {
 					this.excludeNode(j, sorted);
 				}
@@ -223,7 +223,8 @@ public class BiconnectedComponent extends Metric {
 		Node nodeToExclude = sorted[index];
 		this.excludedNode[nodeToExclude.getIndex()] = true;
 		this.excluded++;
-		System.out.println("Node " + nodeToExclude.getIndex() + " was deleted");
+		// System.out.println("Node " + nodeToExclude.getIndex() +
+		// " was deleted");
 	}
 
 	/*

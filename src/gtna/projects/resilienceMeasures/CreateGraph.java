@@ -66,7 +66,7 @@ public class CreateGraph {
 		Network network;
 		switch (nw) {
 		case 0:
-			network = new BarabasiAlbert(N, 4, null);
+			network = new BarabasiAlbert(N, 2, null);
 			break;
 		case 1:
 			network = new IG(N, 10, 0.4, null);

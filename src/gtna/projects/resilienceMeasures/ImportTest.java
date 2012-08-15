@@ -52,24 +52,6 @@ import gtna.graph.sorting.NodeSorter;
 public class ImportTest {
 	public static void main(String[] args) {
 		Utils u = new Utils();
-		Graph g = u.importGraphFromFile("germany.gml");
-
-		// print centrality from gephi
-
-		// sorting
-		NodeSorter sorter = new ClosenessCentralityNodeSorter(
-				NodeSorter.NodeSorterMode.ASC);
-		sorter.sort(g, new Random());
-
-		// print centrality from gtna
-		System.out.println("GTNA Centrality:");
-		for (Node n : g.getNodes()) {
-			System.out
-					.println(""
-							+ n.toString()
-							+ " = "
-							+ ((ClosenessCentralityNodeSorter) sorter)
-									.getCentrality(n));
-		}
+		Graph g = u.importGraphFromFile("graph.gml");
 	}
 }
