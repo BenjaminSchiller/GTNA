@@ -37,18 +37,13 @@ package gtna.transformation.communities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 
-import gtna.communities.Community;
 import gtna.communities.CommunityList;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.util.Util;
-import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
@@ -64,30 +59,35 @@ public class CDCrawling extends Transformation {
 	private static final int SINGLE_PASS = 1;
 	private static final int ORIGINAL = 0;
 	private int mode;
-	private int startingNode;
 	private NodePicker np;
 	private SimilarityMeasureContainer smc;
 	private double minDelta;
 
-	public CDCrawling(double minDelta, int startingNode) {
-		super("CD_CRAWLING", new Parameter[] {
+	public CDCrawling(double minDelta, NodePicker np, int mode) {
+		super("CD_CRAWLING", Util.mergeArrays(new Parameter[] {
 				new DoubleParameter("MINDELTA", minDelta),
-				new StringParameter("MODE", "Original"), new IntParameter("STARTINGNODE", startingNode) });
-		this.mode = CDCrawling.ORIGINAL;
-		this.startingNode = startingNode;
+				new StringParameter("MODE", getModeString(mode)) },
+				np.getParameterArray()));
+		if(mode != CDCrawling.ORIGINAL && mode != CDCrawling.SINGLE_PASS && mode != CDCrawling.MULTI_PASS)
+			throw new IllegalArgumentException("Invalid mode");
+		
+		this.mode = mode;
+		this.np = np;
 		this.minDelta = minDelta;
 
 	}
 
-	public CDCrawling(double minDelta, NodePicker np) {
-		super("CD_CRAWLING", Util.mergeArrays(new Parameter[] {
-				new DoubleParameter("MINDELTA", minDelta),
-				new StringParameter("MODE", "SINGLE_PASS") },
-				np.getParameterArray()));
-		this.mode = CDCrawling.SINGLE_PASS;
-		this.np = np;
-		this.minDelta = minDelta;
-
+	/**
+	 * @param mode2
+	 * @return
+	 */
+	private static String getModeString(int mode) {
+		if(mode == CDCrawling.ORIGINAL)
+			return "ORIGINAL";
+		else if(mode == CDCrawling.SINGLE_PASS)
+			return "SINGLE_PASS";
+		else
+			return "MULTI_PASS";
 	}
 
 	public CDCrawling(double minDelta, SimilarityMeasureContainer smc) {
@@ -110,7 +110,8 @@ public class CDCrawling extends Transformation {
 		CommunityList cl = null;
 		HashMap<Integer, Integer> temp = null;
 		if(mode == CDCrawling.ORIGINAL){
-			temp = getCommunityAroundNode(g.getNode(startingNode), g, null, false);
+			np.addAll(g.getNodes());
+			temp = getCommunityAroundNode(np.pop(), g, null, false);
 			cl = new CommunityList(temp);
 			
 		} else if(mode == CDCrawling.SINGLE_PASS){
@@ -178,7 +179,7 @@ public class CDCrawling extends Transformation {
 			double oldScore = 0;
 			minScore = Double.MAX_VALUE;
 			for(Node akt : refs.keySet()){
-				if(ignore.containsKey(akt) || visited.contains(akt))
+				if((ignore != null && ignore.containsKey(akt)) || visited.contains(akt))
 					continue;
 				
 				score = ((double) refs.get(akt)) /akt.getDegree();
@@ -203,7 +204,7 @@ public class CDCrawling extends Transformation {
 				else{
 					neighbor = g.getNode(akt.getDst());
 				}
-				if(ignore.containsKey(neighbor) || visited.contains(neighbor))
+				if((ignore != null && ignore.containsKey(neighbor)) || visited.contains(neighbor))
 					continue;
 				
 				if(refs.containsKey(neighbor))
