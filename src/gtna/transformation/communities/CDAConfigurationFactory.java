@@ -48,7 +48,6 @@ import gtna.transformation.Transformation;
  */
 public class CDAConfigurationFactory {
 
-
 	public static Transformation[] getConfigArray() {
 
 		// Different NodePickers
@@ -56,12 +55,12 @@ public class CDAConfigurationFactory {
 
 		// different THresholds for the SimilarityMeasures
 		double[] th = new double[] { 0.01, 0.1, 0.25, 0.5, 0.9 };
-		
+
 		// different similarity measures
 		SimilarityMeasure[] sms = new SimilarityMeasure[] {
 				new EqualityFractionMeasure(), new CosineMeasure(),
 				new DiffNumberMeasure() };
-		
+
 		SimilarityMeasureContainer[] smcs = new SimilarityMeasureContainer[th.length
 				* sms.length];
 		int i = 0;
@@ -71,21 +70,31 @@ public class CDAConfigurationFactory {
 				i++;
 			}
 		}
-		
-		int[] rwcs = new int[]{5, 10, 20, 50};
 
-		// Different alpha values for CDExpandingSHells, 1.9 was used by the original authors for Karate
+		int[] rwcs = new int[] { 5, 10, 20, 50 };
+
+		// Different alpha values for CDExpandingSHells, 1.9 was used by the
+		// original authors for Karate
 		double[] expShellAlphas = new double[] { 0.5, 0.8, 0.9, 1, 1.9, 5 };
-		
+
+		// different minDelta values for CDCrawling
+		double[] minDeltas = new double[] { 0, 0.5, 1, 2, 5, 10 };
+
 		Transformation[] ret = new Transformation[1 + 2
 				+ (expShellAlphas.length * nps.length)
-				+ (expShellAlphas.length * smcs.length) + nps.length * 2 * rwcs.length + smcs.length * 2 * rwcs.length + 1];
-
-		System.out.println(ret.length);
+				+ (expShellAlphas.length * smcs.length) + nps.length * 2
+				* rwcs.length + smcs.length * 2 * rwcs.length + smcs.length
+				* minDeltas.length + nps.length * minDeltas.length * 2 + 1];
+		// CDDeltaQ
 		ret[0] = new CDDeltaQ("long", true, 0);
+		
+		// CDLPA
 		ret[1] = new CDLPA(1);
 		ret[2] = new CDLPA(10);
 		int j = 3;
+		
+		// ############### CDExpandingSpheres
+		
 		for (NodePicker aktNP : nps) {
 			for (double aktAlpha : expShellAlphas) {
 				ret[j] = new CDExpandingSpheres(aktAlpha, aktNP);
@@ -100,22 +109,42 @@ public class CDAConfigurationFactory {
 			}
 		}
 		
+		// ############## CDFastUnfolding
+
 		ret[j] = new CDFastUnfolding();
 		j++;
 		
-		for(NodePicker np : nps){
-			for(int rwc : rwcs){
+		// ############### CDRandomWalk
+
+		for (NodePicker np : nps) {
+			for (int rwc : rwcs) {
 				ret[j] = new CDRandomWalk(rwc, true, np);
-				ret[j+1] = new CDRandomWalk(rwc, false, np);
+				ret[j + 1] = new CDRandomWalk(rwc, false, np);
 				j += 2;
 			}
 		}
 
-		for(SimilarityMeasureContainer aktSMC : smcs){
-			for(int rwc : rwcs){
+		for (SimilarityMeasureContainer aktSMC : smcs) {
+			for (int rwc : rwcs) {
 				ret[j] = new CDRandomWalk(rwc, true, aktSMC);
-				ret[j+1] = new CDRandomWalk(rwc, false, aktSMC);
+				ret[j + 1] = new CDRandomWalk(rwc, false, aktSMC);
 				j += 2;
+			}
+		}
+		
+		// ############## CDCrawling
+		for (NodePicker np : nps){
+			for(double delta : minDeltas){
+				ret[j] = new CDCrawling(delta, np, CDCrawling.ORIGINAL);
+				ret[j+1] = new CDCrawling(delta, np, CDCrawling.SINGLE_PASS);
+				j++;
+			}
+		}
+		
+		for(SimilarityMeasureContainer aktSMC : smcs){
+			for(double delta : minDeltas){
+				ret[j] = new CDCrawling(delta, aktSMC);
+				j++;
 			}
 		}
 		return ret;

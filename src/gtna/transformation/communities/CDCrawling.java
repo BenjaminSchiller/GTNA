@@ -45,7 +45,6 @@ import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.util.Util;
 import gtna.util.parameter.DoubleParameter;
-import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
@@ -55,9 +54,9 @@ import gtna.util.parameter.StringParameter;
  */
 public class CDCrawling extends Transformation {
 
-	private static final int MULTI_PASS = 2;
-	private static final int SINGLE_PASS = 1;
-	private static final int ORIGINAL = 0;
+	public static final int MULTI_PASS = 2;
+	public static final int SINGLE_PASS = 1;
+	public static final int ORIGINAL = 0;
 	private int mode;
 	private NodePicker np;
 	private SimilarityMeasureContainer smc;
@@ -68,26 +67,13 @@ public class CDCrawling extends Transformation {
 				new DoubleParameter("MINDELTA", minDelta),
 				new StringParameter("MODE", getModeString(mode)) },
 				np.getParameterArray()));
-		if(mode != CDCrawling.ORIGINAL && mode != CDCrawling.SINGLE_PASS && mode != CDCrawling.MULTI_PASS)
+		if(mode != CDCrawling.ORIGINAL && mode != CDCrawling.SINGLE_PASS)
 			throw new IllegalArgumentException("Invalid mode");
 		
 		this.mode = mode;
 		this.np = np;
 		this.minDelta = minDelta;
 
-	}
-
-	/**
-	 * @param mode2
-	 * @return
-	 */
-	private static String getModeString(int mode) {
-		if(mode == CDCrawling.ORIGINAL)
-			return "ORIGINAL";
-		else if(mode == CDCrawling.SINGLE_PASS)
-			return "SINGLE_PASS";
-		else
-			return "MULTI_PASS";
 	}
 
 	public CDCrawling(double minDelta, SimilarityMeasureContainer smc) {
@@ -149,13 +135,15 @@ public class CDCrawling extends Transformation {
 		return g;
 	}
 
-	/**
-	 * @param n
-	 * @param g
-	 * @param ignore
-	 * @param breakAfterFirstCommunity
-	 * @return
-	 */
+	private static String getModeString(int mode) {
+		if(mode == CDCrawling.ORIGINAL)
+			return "ORIGINAL";
+		else if(mode == CDCrawling.SINGLE_PASS)
+			return "SINGLE_PASS";
+		else
+			return "MULTI_PASS";
+	}
+	
 	private HashMap<Integer, Integer> getCommunityAroundNode(Node n, Graph g,
 			HashMap<Integer, Boolean> ignore, boolean breakAfterFirstCommunity) {
 		double score;
