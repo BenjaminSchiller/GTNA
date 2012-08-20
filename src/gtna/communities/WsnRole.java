@@ -35,6 +35,7 @@
  */
 package gtna.communities;
 
+import gtna.communities.Role.RoleType;
 import gtna.util.Config;
 
 /**
@@ -62,19 +63,19 @@ public class WsnRole extends Role {
 		}
 		return ((WsnRole) obj).type == this.type;
 	}
-	
-	public int hashCode(){
-		return this.type.toString().hashCode();
-	}
 
-	@Override
-	public String getName() {
-		return Config.get("ROLES_WSN_" + this.type.toString() + "_NAME");
+	public int hashCode() {
+		return this.type.toString().hashCode();
 	}
 
 	@Override
 	public String toString() {
 		return this.type.toString();
+	}
+
+	@Override
+	public String getName() {
+		return Config.get("ROLES_WSN_" + this.type.toString() + "_NAME");
 	}
 
 	@Override
@@ -160,6 +161,11 @@ public class WsnRole extends Role {
 	@Override
 	public int toIndex() {
 		return this.toInt();
+	}
+
+	@Override
+	public RoleType getRoleType() {
+		return RoleType.WSN;
 	}
 
 }

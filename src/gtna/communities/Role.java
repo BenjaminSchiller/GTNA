@@ -60,6 +60,8 @@ public abstract class Role {
 
 	public abstract Role[] getRoleTypes();
 
+	public abstract RoleType getRoleType();
+
 	public static Role[] getRoleTypes(RoleType type) {
 		switch (type) {
 		case GUIMERA:
@@ -68,6 +70,17 @@ public abstract class Role {
 			return new WsnRole().getRoleTypes();
 		default:
 			return new Role[0];
+		}
+	}
+
+	public static Role fromString(RoleType type, String rs) {
+		switch (type) {
+		case GUIMERA:
+			return new GuimeraRole(GuimeraRole.GuimeraRoleType.valueOf(rs));
+		case WSN:
+			return new WsnRole(WsnRole.WsnRoleType.valueOf(rs));
+		default:
+			return null;
 		}
 	}
 }
