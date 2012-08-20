@@ -79,11 +79,21 @@ public class Gephi {
 	private float ringRadius;
 
 	public void plot(Graph g, IdentifierSpace idSpace, String fileName) {
-		plot(g, null, idSpace, fileName);
+		plot(g, idSpace, null, fileName);
+	}
+
+	public void plot(Graph g, IdentifierSpace idSpace, NodeColors colors,
+			String fileName) {
+		plot(g, null, idSpace, colors, fileName);
 	}
 
 	public void plot(Graph g, GephiDecorator[] decorators,
 			IdentifierSpace idSpace, String fileName) {
+		plot(g, decorators, idSpace, null, fileName);
+	}
+
+	public void plot(Graph g, GephiDecorator[] decorators,
+			IdentifierSpace idSpace, NodeColors colors, String fileName) {
 		ringRadius = Config.getInt("GEPHI_RING_RADIUS");
 		boolean curvedFlag = Config.getBoolean("GEPHI_DRAW_CURVED_EDGES");
 		float edgeScale = Config.getFloat("GEPHI_EDGE_SCALE");
@@ -118,7 +128,7 @@ public class Gephi {
 			sD.init(g);
 		}
 		gephiNodes = new org.gephi.graph.api.Node[g.getNodes().length];
-		this.plotGraph(g, idSpace);
+		this.plotGraph(g, idSpace, colors);
 
 		ExportController ec = Lookup.getDefault()
 				.lookup(ExportController.class);
@@ -134,11 +144,13 @@ public class Gephi {
 		this.useSpanningTreeOnNextPlot = true;
 	}
 
-	private void plotGraph(Graph g, IdentifierSpace idSpace) {
+	private void plotGraph(Graph g, IdentifierSpace idSpace, NodeColors colors) {
 		Partition[] p = idSpace.getPartitions();
 		boolean showNode;
 
-		NodeColors colors = (NodeColors) g.getProperty("NODE_COLORS_0");
+		if (g.hasProperty("NODE_COLORS_0") && colors == null) {
+			colors = (NodeColors) g.getProperty("NODE_COLORS_0");
+		}
 
 		// First run: add all nodes
 		for (Node n : g.getNodes()) {
