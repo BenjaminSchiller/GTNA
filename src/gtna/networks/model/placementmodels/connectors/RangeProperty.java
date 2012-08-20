@@ -54,6 +54,10 @@ import gtna.io.Filewriter;
 public class RangeProperty extends GraphProperty {
 	private double[] ranges;
 
+	public RangeProperty() {
+		this(new double[0]);
+	}
+
 	/**
 	 * Convenience constructor, assumes that the range is the same for all the
 	 * <code>count</code> nodes.
