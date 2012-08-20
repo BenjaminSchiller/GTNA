@@ -43,6 +43,7 @@ import gtna.graph.sorting.NodeSorter;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Config;
 import gtna.util.Timer;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
@@ -97,6 +98,10 @@ public abstract class Fragmentation extends Metric {
 
 	private double criticalPoint;
 
+	private double[] criticalPoints;
+
+	private int[] cpts;
+
 	private Timer runtime;
 
 	@Override
@@ -111,7 +116,13 @@ public abstract class Fragmentation extends Metric {
 		this.largestComponentSize = new double[excludeFirst.length];
 		this.largestComponentSizeFraction = new double[excludeFirst.length];
 		this.criticalPoint = 1.0;
+		this.cpts = this.getCriticalPointThreshold();
+		this.criticalPoints = new double[this.cpts.length];
+		for (int i = 0; i < this.criticalPoints.length; i++) {
+			this.criticalPoints[i] = 1.0;
+		}
 		Random rand = new Random();
+		this.addCriticalPointConfigs();
 		Node[] sorted = this.sorter.sort(g, rand);
 		for (int i = 0; i < excludeFirst.length; i++) {
 			boolean[] exclude = this.getExclude(sorted, excludeFirst[i]);
@@ -143,8 +154,67 @@ public abstract class Fragmentation extends Metric {
 				this.criticalPoint = (double) excludeFirst[i]
 						/ (double) g.getNodes().length;
 			}
+
+			for (int j = 0; j < criticalPoints.length; j++) {
+				double cpt = (double) this.cpts[j] / 100;
+				if (this.largestComponentSize[i] < cpt
+						* (g.getNodes().length - excludeFirst[i])
+						&& (double) excludeFirst[i]
+								/ (double) g.getNodes().length < this.criticalPoints[j]) {
+					this.criticalPoints[j] = (double) excludeFirst[i]
+							/ (double) g.getNodes().length;
+				}
+			}
 		}
 		this.runtime.end();
+	}
+
+	private int[] getCriticalPointThreshold() {
+		String[] temp = Config.get("FRAGMENTATION_CRITICAL_POINTS").split(",");
+		int[] criticalPoints = new int[temp.length];
+		for (int i = 0; i < temp.length; i++) {
+			criticalPoints[i] = Integer.parseInt(temp[i].trim());
+		}
+		return criticalPoints;
+	}
+
+	private void addCriticalPointConfigs() {
+		for (int cpt : this.cpts) {
+			Config.overwrite(
+					"FRAGMENTATION_CRITICAL_POINT_" + cpt + "_SINGLE_NAME",
+					Config.get(
+							"FRAGMENTATION_CRITICAL_POINT_SINGLE_NAME_TEMPLATE")
+							.replace("$PERCENT", "" + cpt));
+
+			Config.overwrite(
+					"FRAGMENTATION_CRITICAL_POINT_" + cpt + "_PLOT_DATA",
+					Config.get(
+							"FRAGMENTATION_CRITICAL_POINT_PLOT_DATA_TEMPLATE")
+							.replace("$PERCENT", "" + cpt));
+			Config.overwrite(
+					"FRAGMENTATION_CRITICAL_POINT_" + cpt + "_PLOT_FILENAME",
+					Config.get(
+							"FRAGMENTATION_CRITICAL_POINT_PLOT_FILENAME_TEMPLATE")
+							.replace("$PERCENT", "" + cpt));
+			Config.overwrite(
+					"FRAGMENTATION_CRITICAL_POINT_" + cpt + "_PLOT_TITLE",
+					Config.get(
+							"FRAGMENTATION_CRITICAL_POINT_PLOT_TITLE_TEMPLATE")
+							.replace("$PERCENT", "" + cpt));
+			Config.overwrite("FRAGMENTATION_CRITICAL_POINT_" + cpt + "_PLOT_Y",
+					Config.get("FRAGMENTATION_CRITICAL_POINT_PLOT_Y_TEMPLATE")
+							.replace("$PERCENT", "" + cpt));
+
+			Config.overwrite("FRAGMENTATION_SINGLES_KEYS",
+					Config.get("FRAGMENTATION_SINGLES_KEYS")
+							+ ", FRAGMENTATION_CRITICAL_POINT_" + cpt);
+			Config.overwrite("FRAGMENTATION_SINGLES_PLOTS",
+					Config.get("FRAGMENTATION_SINGLES_PLOTS")
+							+ ", FRAGMENTATION_CRITICAL_POINT_" + cpt);
+			Config.overwrite("FRAGMENTATION_TABLE_KEYS",
+					Config.get("FRAGMENTATION_TABLE_KEYS")
+							+ ", FRAGMENTATION_CRITICAL_POINT_" + cpt);
+		}
 	}
 
 	private double avgIsolatedSize(Partition p) {
@@ -202,11 +272,16 @@ public abstract class Fragmentation extends Metric {
 
 	@Override
 	public Single[] getSingles() {
-		Single CP = new Single("FRAGMENTATION_CRITICAL_POINT",
+		Single[] singles = new Single[this.cpts.length + 2];
+		singles[0] = new Single("FRAGMENTATION_CRITICAL_POINT",
 				this.criticalPoint);
-		Single RT = new Single("FRAGMENTATION_RUNTIME",
+		singles[1] = new Single("FRAGMENTATION_RUNTIME",
 				this.runtime.getRuntime());
-		return new Single[] { CP, RT };
+		for (int i = 0; i < this.cpts.length; i++) {
+			singles[i + 2] = new Single("FRAGMENTATION_CRITICAL_POINT_"
+					+ this.cpts[i], this.criticalPoints[i]);
+		}
+		return singles;
 	}
 
 	protected abstract Partition partition(Graph g, Node[] sorted,
