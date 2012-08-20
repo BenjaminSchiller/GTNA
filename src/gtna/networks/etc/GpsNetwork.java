@@ -61,7 +61,7 @@ public class GpsNetwork extends Network {
 	private double radius;
 
 	public GpsNetwork(String filename, String name, double radius,
-			RoutingAlgorithm ra, Transformation[] t) {
+			Transformation[] t) {
 		super("GPS_NETWORK", GpsNetwork.getNodes(filename), new Parameter[] {
 				new StringParameter("NAME", name),
 				new DoubleParameter("RADIUS", radius) }, t);
