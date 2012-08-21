@@ -205,15 +205,12 @@ public abstract class Fragmentation extends Metric {
 					Config.get("FRAGMENTATION_CRITICAL_POINT_PLOT_Y_TEMPLATE")
 							.replace("$PERCENT", "" + cpt));
 
-			Config.overwrite("FRAGMENTATION_SINGLES_KEYS",
-					Config.get("FRAGMENTATION_SINGLES_KEYS")
-							+ ", FRAGMENTATION_CRITICAL_POINT_" + cpt);
-			Config.overwrite("FRAGMENTATION_SINGLES_PLOTS",
-					Config.get("FRAGMENTATION_SINGLES_PLOTS")
-							+ ", FRAGMENTATION_CRITICAL_POINT_" + cpt);
-			Config.overwrite("FRAGMENTATION_TABLE_KEYS",
-					Config.get("FRAGMENTATION_TABLE_KEYS")
-							+ ", FRAGMENTATION_CRITICAL_POINT_" + cpt);
+			Config.appendToList("FRAGMENTATION_SINGLES_KEYS",
+					"FRAGMENTATION_CRITICAL_POINT_" + cpt);
+			Config.appendToList("FRAGMENTATION_SINGLES_PLOTS",
+					"FRAGMENTATION_CRITICAL_POINT_" + cpt);
+			Config.appendToList("FRAGMENTATION_TABLE_KEYS",
+					"FRAGMENTATION_CRITICAL_POINT_" + cpt);
 		}
 	}
 

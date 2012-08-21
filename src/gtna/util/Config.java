@@ -99,7 +99,7 @@ public class Config {
 		String oldValue = Config.get(key);
 		if (oldValue == null || oldValue.length() == 0) {
 			Config.overwrite(key, value);
-		} else {
+		} else if (!oldValue.contains(value)) {
 			Config.overwrite(key,
 					oldValue + Config.get("CONFIG_LIST_SEPARATOR") + value);
 		}
