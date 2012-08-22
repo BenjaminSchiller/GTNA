@@ -164,10 +164,11 @@ public class LookaheadRouting {
 		RoutingAlgorithm lmv = new LookaheadMinVia(50);
 
 		for (Transformation l : ll) {
-			Network nw1 = new Chord(chordNodes, chordBits, chordUniform, null);
-			Network nw2 = new Chord(chordNodes, chordBits, chordUniform,
+			Network nw1 = new Chord(chordNodes, chordBits, 1, chordUniform,
+					null);
+			Network nw2 = new Chord(chordNodes, chordBits, 1, chordUniform,
 					new Transformation[] { l });
-			Network nw3 = new Chord(chordNodes, chordBits, chordUniform,
+			Network nw3 = new Chord(chordNodes, chordBits, 1, chordUniform,
 					new Transformation[] { l });
 			Network[] nw = new Network[] { nw1, nw2, nw3 };
 			Series[] s = generate ? Series.generate(nw, metrics, times)
@@ -177,16 +178,16 @@ public class LookaheadRouting {
 		}
 
 		Network[] sls = new Network[ll.length + 1];
-		sls[0] = new Chord(chordNodes, chordBits, chordUniform, null);
+		sls[0] = new Chord(chordNodes, chordBits, 1, chordUniform, null);
 		sls[0] = new DescriptionWrapper(sls[0], "G");
 		Network[] slmv = new Network[ll.length + 1];
-		slmv[0] = new Chord(chordNodes, chordBits, chordUniform, null);
+		slmv[0] = new Chord(chordNodes, chordBits, 1, chordUniform, null);
 		slmv[0] = new DescriptionWrapper(sls[0], "G");
 		for (int i = 0; i < ll.length; i++) {
-			sls[i + 1] = new Chord(chordNodes, chordBits, chordUniform,
+			sls[i + 1] = new Chord(chordNodes, chordBits, 1, chordUniform,
 					new Transformation[] { ll[i] });
 			sls[i + 1] = new DescriptionWrapper(sls[i + 1], map.get(ll[i]));
-			slmv[i + 1] = new Chord(chordNodes, chordBits, chordUniform,
+			slmv[i + 1] = new Chord(chordNodes, chordBits, 1, chordUniform,
 					new Transformation[] { ll[i] });
 			slmv[i + 1] = new DescriptionWrapper(slmv[i + 1], map.get(ll[i]));
 		}
@@ -300,7 +301,7 @@ public class LookaheadRouting {
 
 		Network[] nw = new Network[ll.length + 1];
 		if (input == Input.Chord) {
-			nw[0] = new Chord(chordNodes, chordBits, chordUniform, null);
+			nw[0] = new Chord(chordNodes, chordBits, 1, chordUniform, null);
 		} else if (input == Input.SPI) {
 			nw[0] = new ReadableFile(spiName, spiFolder, spiGraph,
 					new Transformation[] { t1 });
@@ -315,7 +316,7 @@ public class LookaheadRouting {
 		for (int i = 0; i < LL.length; i++) {
 			int index = 0;
 			if (input == Input.Chord) {
-				nw[i + 1] = new Chord(chordNodes, chordBits, chordUniform,
+				nw[i + 1] = new Chord(chordNodes, chordBits, 1, chordUniform,
 						LL[i]);
 			} else if (input == Input.SPI) {
 				nw[i + 1] = new ReadableFile(spiName, spiFolder, spiGraph,

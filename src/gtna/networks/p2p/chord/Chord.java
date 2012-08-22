@@ -60,38 +60,54 @@ public class Chord extends Network {
 
 	private IDSelection selection;
 
-	public static Chord[] get(int[] nodes, int bits, IDSelection selection,
-			Transformation[] t) {
+	private int successorLinks;
+
+	// private int predecessorLinks;
+
+	public static Chord[] get(int[] nodes, int bits, int successorLinks,
+			IDSelection selection, Transformation[] t) {
 		Chord[] nw = new Chord[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
-			nw[i] = new Chord(nodes[i], bits, selection, t);
+			nw[i] = new Chord(nodes[i], bits, successorLinks, selection, t);
 		}
 		return nw;
 	}
 
-	public static Chord[] get(int nodes, int[] bits, IDSelection selection,
-			Transformation[] t) {
+	public static Chord[] get(int nodes, int[] bits, int successorLinks,
+			IDSelection selection, Transformation[] t) {
 		Chord[] nw = new Chord[bits.length];
 		for (int i = 0; i < bits.length; i++) {
-			nw[i] = new Chord(nodes, bits[i], selection, t);
+			nw[i] = new Chord(nodes, bits[i], successorLinks, selection, t);
 		}
 		return nw;
 	}
 
-	public static Chord[] get(int nodes, int bits, IDSelection[] selection,
-			Transformation[] t) {
+	public static Chord[] get(int nodes, int bits, int successorLinks,
+			IDSelection[] selection, Transformation[] t) {
 		Chord[] nw = new Chord[selection.length];
 		for (int i = 0; i < selection.length; i++) {
-			nw[i] = new Chord(nodes, bits, selection[i], t);
+			nw[i] = new Chord(nodes, bits, successorLinks, selection[i], t);
 		}
 		return nw;
 	}
 
-	public Chord(int nodes, int bits, IDSelection selection, Transformation[] t) {
+	public static Chord[] get(int nodes, int bits, int[] successorLinks,
+			IDSelection selection, Transformation[] t) {
+		Chord[] nw = new Chord[successorLinks.length];
+		for (int i = 0; i < successorLinks.length; i++) {
+			nw[i] = new Chord(nodes, bits, successorLinks[i], selection, t);
+		}
+		return nw;
+	}
+
+	public Chord(int nodes, int bits, int successorLinks,
+			IDSelection selection, Transformation[] t) {
 		super("CHORD", nodes, new Parameter[] { new IntParameter("BITS", bits),
+				new IntParameter("SUCCESSOR_LINKS", successorLinks),
 				new StringParameter("ID_SELECTION", selection.toString()) }, t);
 		this.bits = bits;
 		this.selection = selection;
+		this.successorLinks = successorLinks;
 	}
 
 	@Override
@@ -108,6 +124,7 @@ public class Chord extends Network {
 		ChordPartition[] partitions = (ChordPartition[]) idSpace
 				.getPartitions();
 
+		int[] successors = new int[nodes.length];
 		Edges edges = new Edges(nodes, nodes.length * this.bits);
 		for (Node node : nodes) {
 			ChordPartition p = partitions[node.getIndex()];
@@ -117,8 +134,8 @@ public class Chord extends Network {
 
 			// int predIndex = this.find(partitions, p.getPred(),
 			// node.getIndex());
-			int succIndex = this.find(partitions, new ChordIdentifier(succID,
-					this.bits), node.getIndex());
+			successors[node.getIndex()] = this.find(partitions,
+					new ChordIdentifier(succID, this.bits), node.getIndex());
 
 			BigInteger add = BigInteger.ONE;
 			int[] fingerIndex = new int[this.bits];
@@ -130,11 +147,19 @@ public class Chord extends Network {
 				add = add.shiftLeft(1);
 			}
 
-			edges.add(node.getIndex(), succIndex);
+			// edges.add(node.getIndex(), predIndex);
+			edges.add(node.getIndex(), successors[node.getIndex()]);
 			for (int finger : fingerIndex) {
 				edges.add(node.getIndex(), finger);
 			}
 		}
+
+		for (int s = 1; s < this.successorLinks; s++) {
+			for (int n = 0; n < nodes.length; n++) {
+				edges.add(n, successors[(n + s) % successors.length]);
+			}
+		}
+
 		edges.fill();
 
 		return graph;
