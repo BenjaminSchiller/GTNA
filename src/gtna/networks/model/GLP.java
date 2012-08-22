@@ -49,6 +49,14 @@ import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 /**
+ * Implements the so-called Barabasi Albert network growth model described by
+ * Tian Bu and Don Towsley in their publication
+ * "On Distinguishing between Internet Power Law Topology Generators" (2002).
+ * 
+ * Parameters are the initial network size, the number of edges per added, the
+ * probability to choose between two strategies and the parameter for the
+ * nonlinear preference.
+ * 
  * @author truong
  * 
  */
@@ -93,46 +101,38 @@ public class GLP extends Network {
 		Node[] nodes = Node.init(this.getNodes(), graph);
 		edgesList = new HashMap<String, Point>();
 		nodeDegree = new int[nodes.length];
-		int maxIter = 100;
+		int maxIter = 100; // after this amount of iteration we will break the
+							// loop if we can not choose a "valid" node to new
+							// edges
 		int temp;
 
 		Random randForP = new Random();
 		Random randForM = new Random();
 		Random randForNode = new Random();
 
-		// test
+		// test for the random variable m
 		int sumOfM = 0;
 		int usedM = 0;
 
-		/*
-		 * Network ba = new BarabasiAlbert(this.numOfStartNodes, 3, null); Graph
-		 * startGraph = ba.generate(); for (Edge e :
-		 * startGraph.getEdges().getEdges()) { int src = e.getSrc(); int dst =
-		 * e.getDst(); this.addEdge(src, dst); }
-		 */
-		/*
-		 * for (int i = 1; i < this.numOfStartNodes; i++) { this.addEdge(i, i -
-		 * 1); }
-		 */
+		// create a start graph from numOfStartNodes nodes and (numOfStartNodes
+		// - 1) edges (as in paper)
 		for (int i = 1; i < this.numOfStartNodes; i++) {
 			int dst = (new Random()).nextInt(i);
 			this.addEdge(i, dst);
 		}
 
+		// graph growths
 		int i = this.numOfStartNodes;
 		while (i < nodes.length) {
-			// we start with m0 nodes connected through (m0 - 1) edges
-
-			// m, the initial degree of new nodes in the GLP model, is a
-			// constant integer. However, the initial degree can be a random
-			// variable with some distribution.
+			// we want the value of m to be a float but a single value must be
+			// integer. So we take two nearby values and for each iteration one
+			// will be selected using a random variable
 			if (randForM.nextDouble() < this.mThreshold) {
 				this.numOfAddedEdges = this.low;
 			} else {
 				this.numOfAddedEdges = this.high;
 			}
-
-			// test
+			// for test purpose
 			sumOfM += this.numOfAddedEdges;
 			usedM++;
 
@@ -165,7 +165,7 @@ public class GLP extends Network {
 			}
 		}
 
-		// test
+		// for test purpose
 		System.out.println("m = " + (((double) sumOfM) / usedM));
 
 		// copy edges to graph
@@ -182,7 +182,9 @@ public class GLP extends Network {
 	}
 
 	/**
-	 * 
+	 * we have low < m < height. we must calculate the threshold, 0 <= threshold
+	 * < 1, such that with: probability threshold: value = low, with probability
+	 * (1 - threshold): value = height, then average value = m
 	 */
 	private void calculateMThreshold() {
 		this.low = (int) Math.ceil(this.numOfAddedEdges);
@@ -192,8 +194,7 @@ public class GLP extends Network {
 	}
 
 	/**
-	 * @param i
-	 * @param nodeIndex
+	 * Add edge from src to dst to the graph
 	 */
 	private void addEdge(int src, int dst) {
 		if (src == dst) {
@@ -210,10 +211,16 @@ public class GLP extends Network {
 		this.nodeDegree[dst]++;
 	}
 
+	/**
+	 * Use for edges hash table
+	 */
 	private String edge(int src, int dst) {
 		return "from " + src + " to " + dst;
 	}
 
+	/**
+	 * Check if the edge from src to dst already existed
+	 */
 	private boolean hasEdge(int src, int dst) {
 		if (this.edgesList.containsKey(this.edge(src, dst)))
 			return true;
@@ -222,6 +229,15 @@ public class GLP extends Network {
 		return false;
 	}
 
+	/**
+	 * Choose a node using the defined reference
+	 * 
+	 * @param maxIndex
+	 *            range of node will be chosen: 0 -> maxIndex
+	 * @param rand
+	 *            random variable
+	 * @return the index of the node
+	 */
 	private int selectNodeUsingPref(int maxIndex, Random rand) {
 		double prefSum = 0;
 		for (int i = 0; i <= maxIndex; i++) {

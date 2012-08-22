@@ -101,9 +101,9 @@ public class EffectiveDiameter extends Metric {
 		allPairs = new int[g.getNodes().length][g.getNodes().length];
 		Node[] sorted = this.sorter.sort(g, new Random());
 		for (int i = 0; i < this.numberOfRounds; i++) {
-			// System.out.println("==========" + i);
+			System.out.println("==========" + i);
 			int d = this.compute(g, i);
-			// System.out.println("D = " + d);
+			System.out.println("D = " + d);
 			this.effectiveDiameter[i][0] = excluded;
 			this.effectiveDiameter[i][1] = d;
 
@@ -134,19 +134,19 @@ public class EffectiveDiameter extends Metric {
 			int add = comp.length * (comp.length - 1);
 			totalConnectedPairs += add;
 		}
-		// System.out.println("Total = " + totalConnectedPairs);
-		// System.out.println("Number of comps " + components.length);
+		System.out.println("Total = " + totalConnectedPairs);
+		System.out.println("Number of comps " + components.length);
 		this.mustBeComputed = 0;
 		int diameter = 1;
 		if (totalConnectedPairs > 0) {
 			// allPairs = new int[g.getNodes().length][g.getNodes().length];
 			while (true) {
-				// System.out.println("Round " + diameter);
+				System.out.println("Round " + diameter);
 				int connectedPairs = 0;
 				for (int[] comp : components) {
 					connectedPairs += this.computePairs(g, comp, diameter);
 				}
-				// System.out.println("Connected Pairs = " + connectedPairs);
+				System.out.println("Connected Pairs = " + connectedPairs);
 				if (connectedPairs >= (0.9 * totalConnectedPairs)) {
 					break;
 				}
@@ -155,7 +155,7 @@ public class EffectiveDiameter extends Metric {
 					break;
 			}
 		}
-		// System.out.println("Comps computed " + this.mustBeComputed);
+		System.out.println("Comps computed " + this.mustBeComputed);
 		return diameter;
 	}
 

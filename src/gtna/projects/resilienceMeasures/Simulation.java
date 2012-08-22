@@ -67,18 +67,20 @@ public class Simulation {
 	 */
 	public static void main(String[] args) {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
-		Config.overwrite("MAIN_DATA_FOLDER", "./data/DegreeDistribution/");
-		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/DegreeDistribution/");
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/BiconnectedClose/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/BiconnectedClose/");
 		String n = args[0];
+		int round = Integer.parseInt(args[1]);
 		String[] ss = new String[] { n + "2007", n + "2008", n + "2009",
 				n + "2010", n + "2011", n + "2012" };
 		for (String s : ss) {
 			System.out.println("=====" + s + "=====");
 			Network nw = new ReadableFolder(s, s, "./graphs/" + s + "/", "",
 					null);
-			Metric metric = new DegreeDistribution();
+			Metric metric = new BiconnectedComponent(new CentralityNodeSorter(
+					CentralityMode.CLOSENESS, NodeSorterMode.DESC), 0.1);
 			Metric[] metrics = new Metric[] { metric };
-			Series series = Series.generate(nw, metrics, 100);
+			Series series = Series.generate(nw, metrics, round);
 			Plotting.multi(series, metrics, s + "/");
 		}
 	}
