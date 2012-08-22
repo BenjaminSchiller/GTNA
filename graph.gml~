@@ -1,0 +1,201 @@
+graph
+[
+  node
+  [
+    id "161"
+  ]
+  node
+  [
+    id "162"
+  ]
+  node
+  [
+    id "163"
+  ]
+  node
+  [
+    id "165"
+  ]
+  node
+  [
+    id "166"
+  ]
+  node
+  [
+    id "167"
+  ]
+  node
+  [
+    id "168"
+  ]
+  node
+  [
+    id "169"
+  ]
+  node
+  [
+    id "170"
+  ]
+  node
+  [
+    id "172"
+  ]
+  node
+  [
+    id "173"
+  ]
+  node
+  [
+    id "174"
+  ]
+  node
+  [
+    id "175"
+  ]
+  node
+  [
+    id "176"
+  ]
+  node
+  [
+    id "177"
+  ]
+  node
+  [
+    id "180"
+  ]
+  node
+  [
+    id "182"
+  ]
+  node
+  [
+    id "183"
+  ]
+  node
+  [
+    id "185"
+  ]
+  node
+  [
+    id "186"
+  ]
+  node
+  [
+    id "187"
+  ]
+  node
+  [
+    id "188"
+  ]
+  node
+  [
+    id "189"
+  ]
+  node
+  [
+    id "190"
+  ]
+  edge
+  [
+    id "407"
+    source "161"
+    target "189"
+  ]
+  edge
+  [
+    id "408"
+    source "162"
+    target "183"
+  ]
+  edge
+  [
+    id "418"
+    source "165"
+    target "186"
+  ]
+  edge
+  [
+    id "419"
+    source "166"
+    target "170"
+  ]
+  edge
+  [
+    id "420"
+    source "166"
+    target "180"
+  ]
+  edge
+  [
+    id "421"
+    source "167"
+    target "173"
+  ]
+  edge
+  [
+    id "422"
+    source "168"
+    target "169"
+  ]
+  edge
+  [
+    id "423"
+    source "168"
+    target "173"
+  ]
+  edge
+  [
+    id "424"
+    source "170"
+    target "172"
+  ]
+  edge
+  [
+    id "432"
+    source "172"
+    target "185"
+  ]
+  edge
+  [
+    id "433"
+    source "174"
+    target "175"
+  ]
+  edge
+  [
+    id "435"
+    source "175"
+    target "188"
+  ]
+  edge
+  [
+    id "438"
+    source "177"
+    target "182"
+  ]
+  edge
+  [
+    id "439"
+    source "180"
+    target "190"
+  ]
+  edge
+  [
+    id "442"
+    source "182"
+    target "188"
+  ]
+  edge
+  [
+    id "445"
+    source "186"
+    target "189"
+  ]
+  edge
+  [
+    id "446"
+    source "187"
+    target "190"
+  ]
+]
