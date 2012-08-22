@@ -62,6 +62,18 @@ public class IG extends Network {
 	private HashMap<String, Point> edgesList;
 	private int[] nodeDegree;
 
+	/**
+	 * Implements the so-called the Interactive Growth network model described
+	 * by Shi Zhou and Raul J. Mondragon in their publication
+	 * "Towards Modelling The Internet Topology - The Interactive Growth Model"
+	 * (2003).
+	 * 
+	 * Parameters are the initial network size and the probability used to
+	 * choose one of two growth strategies
+	 * 
+	 * @author truong
+	 * 
+	 */
 	public IG(int nodes, int numOfStartNodes, double probability,
 			Transformation[] transformations) {
 		super("IG", nodes, new Parameter[] {
@@ -87,33 +99,26 @@ public class IG extends Network {
 			this.nodeDegree[i] = 0;
 		}
 
-		// original random graph
-		/*
-		 * Network nw = new BarabasiAlbert(this.numOfStartNodes, 3, null); Graph
-		 * startGraph = nw.generate(); for (Edge e :
-		 * startGraph.getEdges().getEdges()) { int src = e.getSrc(); int dst =
-		 * e.getDst(); this.addEdge(src, dst); }
-		 */
-
+		// we start with a random graph with numOfStartNodes nodes and
+		// (numOfStartNodes - 1) edges
 		for (int i = 1; i < this.numOfStartNodes; i++) {
 			int temp = (new Random()).nextInt(i);
 			this.addEdge(i, temp);
 		}
-		for (int i = 0; i < this.numOfStartNodes; i++) {
-			if (this.nodeDegree[i] < 1) {
-				System.out.println("Node " + i
-						+ " is not connected in start graph");
-			}
-		}
-		System.out.println("Start Graph generated!");
 
 		Random rand = new Random();
 		int temp;
-		int maxIter = 100;
+		int maxIter = 100; // after this amount of iteration we will break the
+							// loop if we can not choose a "valid" node to new
+							// edges
+							// graph growths
+
 		// graph growths
 		for (int i = this.numOfStartNodes; i < nodes.length; i++) {
 			if (rand.nextDouble() < this.p) {
-				// with probability p
+				// with probability p, we choose one host and two peers. The new
+				// node is connected to the host and the host is connected to
+				// the peers
 				int hostIndex = this.chooseNode(i - 1);
 				int peer1Index = hostIndex;
 				temp = 0;
@@ -133,7 +138,9 @@ public class IG extends Network {
 				this.addEdge(hostIndex, peer2Index);
 				this.addEdge(hostIndex, peer1Index);
 			} else {
-				// with probability (1 - p)
+				// with probability (1 - p), we choose two hosts and one peer.
+				// The new node is connected to the hosts and the hosts are
+				// connected to the peer
 				int host1Index = this.chooseNode(i - 1);
 				int host2Index = host1Index;
 				temp = 0;
@@ -166,12 +173,15 @@ public class IG extends Network {
 		return graph;
 	}
 
-	/**
-	 * @param i
-	 * @return
-	 */
 	private Random chooseNodeRand = new Random();
 
+	/**
+	 * Choose a node using linear preference
+	 * 
+	 * @param maxIndex
+	 *            node from 0 to maxIndex will be chosen
+	 * @return the index of the chosen node
+	 */
 	private int chooseNode(int maxIndex) {
 		int degreeSum = 0;
 		for (int i = 0; i <= maxIndex; i++) {
@@ -193,6 +203,8 @@ public class IG extends Network {
 	}
 
 	/**
+	 * add edge from src to dst to the graph
+	 * 
 	 * @param src
 	 * @param dst
 	 */
@@ -212,6 +224,8 @@ public class IG extends Network {
 	}
 
 	/**
+	 * Check if the edge from src to dst is already existed
+	 * 
 	 * @param src
 	 * @param dst
 	 * @return
@@ -225,6 +239,8 @@ public class IG extends Network {
 	}
 
 	/**
+	 * used for hash table
+	 * 
 	 * @param src
 	 * @param dst
 	 * @return

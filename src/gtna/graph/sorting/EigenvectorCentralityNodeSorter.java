@@ -43,18 +43,25 @@ import java.util.HashMap;
 import java.util.Random;
 
 /**
+ * Implement the Eigenvector Centrality using iteration approximation.
+ * 
  * @author truong
  * 
  */
 public class EigenvectorCentralityNodeSorter extends NodeSorter {
 
 	private HashMap<Node, Double> map = new HashMap<Node, Double>();
-	private int numRuns = 1000;
+	private int numRuns = 1000; // number of iterations
 
 	public EigenvectorCentralityNodeSorter(NodeSorterMode mode) {
 		super("EIGENVECTOR", mode);
 	}
 
+	/**
+	 * we can set the number of iterations
+	 * 
+	 * @param numRuns
+	 */
 	public void setNumRuns(int numRuns) {
 		this.numRuns = numRuns;
 	}
@@ -95,9 +102,6 @@ public class EigenvectorCentralityNodeSorter extends NodeSorter {
 		}
 	}
 
-	/**
-	 * @param g2
-	 */
 	private void calculate(Graph g) {
 		int N = g.getNodes().length;
 		double[] tmp = new double[N];

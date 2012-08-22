@@ -47,10 +47,11 @@ import java.util.Random;
 import java.util.Stack;
 
 /**
- * Implement the Betweenness Centrality described by Ulrik Brandes in
- * "A Faster Algorithm for Betweenness Centrality" (2001)
- * 
- * The Closeness Centrality and Effective Eccentricity are implicit calculated
+ * Implement the Betweenness Centrality, the Closeness Centrality and the
+ * Eccentricity Centrality using the algorithm described by Ulrik Brandes in
+ * "A Faster Algorithm for Betweenness Centrality". The original algorithm was
+ * used only for Betweenness Centrality but I modified it so that we can use for
+ * the others.
  * 
  * @author truong
  * 
@@ -127,13 +128,25 @@ public class CentralityNodeSorter extends NodeSorter {
 		}
 	}
 
-	public Node[] resort(String key, Random rand) {
-		if (key.equalsIgnoreCase("BETWEENNESS"))
+	/**
+	 * Usage of this method: if one of the three centrality is calculated, we
+	 * must not do it again for the others. We can call this method and the node
+	 * will be resorted.
+	 */
+	public Node[] resort(CentralityMode mode, Random rand) {
+		switch (mode) {
+		case BETWEENNESS:
 			map = bcMap;
-		if (key.equalsIgnoreCase("ECCENTRICITY"))
-			map = eeMap;
-		if (key.equalsIgnoreCase("CLOSENESS"))
+			break;
+		case CLOSENESS:
 			map = ccMap;
+			break;
+		case ECCENTRICITY:
+			map = eeMap;
+			break;
+		default:
+			break;
+		}
 		Node[] sorted = this.clone(g.getNodes());
 		Arrays.sort(sorted, new DegreeAsc());
 		this.randomize(sorted, rand);

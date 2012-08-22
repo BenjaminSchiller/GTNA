@@ -50,6 +50,13 @@ import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 /**
+ * Implements the so-called the Positive-Feedback Preference (PFP) model
+ * described by Shi Zhou and Raul J. Mondragon in their publication
+ * "Accurately modeling the internet topology" (2004).
+ * 
+ * Parameters are the initial network size, the two probabilities to choose
+ * between three growth strategies and the parameter for the preference
+ * 
  * @author truong
  * 
  */
@@ -99,7 +106,10 @@ public class PFP extends Network {
 			this.nodeDegree[i] = 0;
 		}
 
-		// original random graph
+		// In the paper, it was not shown what type of start graph they used. So
+		// I take a BA graph to start with, because the IG network model was
+		// developed
+		// upon the BA network model
 		Network ba = new BarabasiAlbert(this.numOfStartNodes, 3, null);
 		Graph g = ba.generate();
 		for (Edge e : g.getEdges().getEdges()) {
@@ -107,7 +117,6 @@ public class PFP extends Network {
 			int dst = e.getDst();
 			this.addEdge(src, dst);
 		}
-		System.out.println("Start graph generated");
 
 		// graph growths
 		for (int i = this.numOfStartNodes; i < nodes.length; i++) {
@@ -115,7 +124,9 @@ public class PFP extends Network {
 			int maxIter = 100;
 			int temp;
 			if (randVal < this.p) {
-				// 1. strategy with probability p
+				// 1. strategy with probability p, a new node is attached to one
+				// host node, and at the same time one new internal link
+				// appears between the host node and a peer node
 				int hostIndex = this.chooseNode(i - 1);
 				int peerIndex = hostIndex;
 				temp = 0;
@@ -127,7 +138,9 @@ public class PFP extends Network {
 				this.addEdge(i, hostIndex);
 				this.addEdge(hostIndex, peerIndex);
 			} else if (randVal < this.p + this.q) {
-				// 2. strategy with probability q
+				// 2. strategy with probability q, a new node is attached to one
+				// host node, and at the same time two new internal links appear
+				// between the host node and two peer nodes
 				int hostIndex = this.chooseNode(i - 1);
 				int peer1Index = hostIndex;
 				temp = 0;
@@ -147,7 +160,10 @@ public class PFP extends Network {
 				this.addEdge(hostIndex, peer2Index);
 				this.addEdge(hostIndex, peer1Index);
 			} else {
-				// 3. strategy with probability (1 - p - q)
+				// 3. strategy with probability (1 - p - q), a new node is
+				// attached to two host nodes, and dat the same time on new
+				// internal link appears between one of the host nodes and one
+				// peer node
 				int host1Index = this.chooseNode(i - 1);
 				int host2Index = host1Index;
 				temp = 0;
@@ -180,6 +196,12 @@ public class PFP extends Network {
 		return graph;
 	}
 
+	/**
+	 * Add an edge from src to dst to the graph
+	 * 
+	 * @param src
+	 * @param dst
+	 */
 	private void addEdge(int src, int dst) {
 		if (src == dst) {
 			System.out.println("src = dst");
@@ -197,10 +219,24 @@ public class PFP extends Network {
 		this.updatePref(dst);
 	}
 
+	/**
+	 * used for hash table
+	 * 
+	 * @param src
+	 * @param dst
+	 * @return
+	 */
 	private String edge(int src, int dst) {
 		return "from " + src + " to " + dst;
 	}
 
+	/**
+	 * check if an edge from src to dst already existed
+	 * 
+	 * @param src
+	 * @param dst
+	 * @return
+	 */
 	private boolean hasEdge(int src, int dst) {
 		if (this.edgesList.containsKey(this.edge(src, dst)))
 			return true;
@@ -209,12 +245,23 @@ public class PFP extends Network {
 		return false;
 	}
 
+	/**
+	 * update the preferences after a node added
+	 * 
+	 * @param index
+	 */
 	private void updatePref(int index) {
 		int k = this.nodeDegree[index];
 		this.nodePref[index] = Math.pow((double) k,
 				1 + this.delta * Math.log((double) k));
 	}
 
+	/**
+	 * choose a node from 1 to maxIndex using the defined preferences
+	 * 
+	 * @param maxIndex
+	 * @return
+	 */
 	private int chooseNode(int maxIndex) {
 		double prefSum = 0;
 		for (int i = 0; i <= maxIndex; i++) {

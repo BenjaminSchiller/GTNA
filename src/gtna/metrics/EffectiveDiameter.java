@@ -139,7 +139,6 @@ public class EffectiveDiameter extends Metric {
 		this.mustBeComputed = 0;
 		int diameter = 1;
 		if (totalConnectedPairs > 0) {
-			// allPairs = new int[g.getNodes().length][g.getNodes().length];
 			while (true) {
 				System.out.println("Round " + diameter);
 				int connectedPairs = 0;
@@ -163,19 +162,36 @@ public class EffectiveDiameter extends Metric {
 	private int lastRemoved = -1;
 	private int mustBeComputed;
 
+	/**
+	 * calculate number of distances in a component that are smaller than the
+	 * diamter
+	 * 
+	 * @param g
+	 *            the graph
+	 * @param comp
+	 *            the current component
+	 * @param diameter
+	 *            the diameter
+	 * @return the number of distances
+	 */
 	private int computePairs(Graph g, int[] comp, int diameter) {
 		int pairs = 0;
 
+		// for the first check, we must recalculate the distances
 		if (diameter == 1) {
 			boolean alreadyComputed = true;
+			// if nothing was removed or more than 1 node were removed
 			if (lastRemoved == -1) {
 				alreadyComputed = false;
 			} else {
 				int temp = allPairs[lastRemoved][comp[0]];
+				// if the last removed is connected to the current component
+				// then the component must be recomputed
 				if (temp > 0) {
 					alreadyComputed = false;
 				}
 			}
+			// recomputed
 			if (!alreadyComputed) {
 				this.mustBeComputed++;
 				for (int i = 0; i < comp.length; i++) {

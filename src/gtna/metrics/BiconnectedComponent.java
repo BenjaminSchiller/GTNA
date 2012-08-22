@@ -62,6 +62,8 @@ public class BiconnectedComponent extends Metric {
 
 	private NodeSorter sorter;
 	private boolean[] excludedNode;
+
+	// varabiles for exclude node
 	private double mixedPercent;
 	/*
 	 * nodes 0 -> (mixed - 1): single deleted. nodes mixed -> (N - 1):
@@ -105,7 +107,6 @@ public class BiconnectedComponent extends Metric {
 			this.excludedNode[i] = false;
 		}
 		this.excluded = 0;
-		// TODO: when mixed < N - 100!
 		this.numberOfRound = mixed + 100;
 		this.maxBicomponentSize = new double[numberOfRound][2];
 
@@ -137,8 +138,6 @@ public class BiconnectedComponent extends Metric {
 	}
 
 	private void computeBiconnectedSize(Graph g) {
-		// TODO:
-		// int N = g.getNodes().length - this.excluded;
 		this.maxComponent = new ArrayList<Node>();
 		this.count = 0;
 		this.stack = new Stack<Point>();

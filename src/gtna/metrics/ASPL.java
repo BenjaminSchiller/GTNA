@@ -62,12 +62,14 @@ public class ASPL extends Metric {
 	private double[][] diameter;
 
 	private NodeSorter sorter;
+
+	// variable for exclude nodes
 	private double mixedPercent;
 	private int mixed;
 	private int numberOfRound;
 	private int excluded;
-
 	private boolean[] excludedNode;
+
 	private Timer runtime;
 	private boolean stop;
 
@@ -199,6 +201,12 @@ public class ASPL extends Metric {
 		}
 	}
 
+	/**
+	 * delete a node
+	 * 
+	 * @param index
+	 * @param sorted
+	 */
 	private void excludeNode(int index, Node[] sorted) {
 		Node nodeToExclude = sorted[index];
 		this.excludedNode[nodeToExclude.getIndex()] = true;
