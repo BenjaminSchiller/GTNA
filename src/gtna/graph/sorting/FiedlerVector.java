@@ -70,11 +70,10 @@ public class FiedlerVector implements GraphProperty {
 		
 
 			// CLASS
-			//fr.readLine();
+			fr.readLine();
 
 			// KEY
-			//String key = fr.readLine();
-            String key = "FIEDLER_VECTOR_0";
+			String key = fr.readLine();
 			
 			this.vector = new double[graph.getNodes().length];
 
