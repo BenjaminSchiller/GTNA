@@ -75,18 +75,18 @@ public class FiedlerVector implements GraphProperty {
 			// KEY
 			String key = fr.readLine();
 			
+			
 			this.vector = new double[graph.getNodes().length];
 
 			// PARTITIONS
 			String line = null;
 			while ((line = fr.readLine()) != null) {
-				String[] temp = line.split("	");
+				String[] temp = line.split(":");
 				int index = Integer.parseInt(temp[0]);
 				this.vector[index] = Double.parseDouble(temp[1]);
 			}
 
 			fr.close();
-
 			graph.addProperty(key, this);
 		
 	}
