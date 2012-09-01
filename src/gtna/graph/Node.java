@@ -262,12 +262,18 @@ public class Node implements Comparable<Node> {
 		int[] array = this.expand(this.getIncomingEdges(), 1);
 		array[array.length - 1] = index;
 		this.sorted = false;
+
+		// added by truong
+		this.incomingEdges = array;
 	}
 
 	public void addOut(int index) {
 		int[] array = this.expand(this.getOutgoingEdges(), 1);
 		array[array.length - 1] = index;
 		this.sorted = false;
+
+		// added by truong
+		this.outgoingEdges = array;
 	}
 
 	public boolean removeIn(int index) {
