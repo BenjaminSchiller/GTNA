@@ -48,8 +48,7 @@ import gtna.networks.Network;
 import gtna.util.Timer;
 
 /**
- * @author stef
- *
+ * @author stef writing the sorted fiedler vector
  */
 public class WriteFiedler extends Metric {
 	private double[] vec;
@@ -63,31 +62,38 @@ public class WriteFiedler extends Metric {
 		// TODO Auto-generated constructor stub
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.metrics.Metric#computeData(gtna.graph.Graph, gtna.networks.Network, java.util.HashMap)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#computeData(gtna.graph.Graph,
+	 * gtna.networks.Network, java.util.HashMap)
 	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		t = new Timer();
 		GraphProperty pro = g.getProperty("FIEDLER_VECTOR_0");
-		this.vec = ((FiedlerVector)pro).getVector().clone();
-        Arrays.sort(vec);
-        t.end();
+		this.vec = ((FiedlerVector) pro).getVector().clone();
+		Arrays.sort(vec);
+		t.end();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.metrics.Metric#writeData(java.lang.String)
 	 */
 	@Override
 	public boolean writeData(String folder) {
 		// TODO Auto-generated method stub
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(this.vec,
-				"WRITE_FIEDLER_VECTOR", folder);
+		success &= DataWriter.writeWithIndex(this.vec, "WRITE_FIEDLER_VECTOR",
+				folder);
 		return success;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.metrics.Metric#getSingles()
 	 */
 	@Override
@@ -96,13 +102,16 @@ public class WriteFiedler extends Metric {
 		return new Single[0];
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.metrics.Metric#applicable(gtna.graph.Graph, gtna.networks.Network, java.util.HashMap)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#applicable(gtna.graph.Graph,
+	 * gtna.networks.Network, java.util.HashMap)
 	 */
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 		GraphProperty pro = g.getProperty("FIEDLER_VECTOR_0");
-		if (pro == null){
+		if (pro == null) {
 			return false;
 		} else {
 			return true;

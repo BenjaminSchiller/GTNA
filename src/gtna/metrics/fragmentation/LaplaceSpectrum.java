@@ -51,7 +51,8 @@ import Jama.Matrix;
 
 /**
  * @author stef
- *
+ * compute the eigenvectors/-values of the Laplacian,
+ * i.e. D -A, D=diagonal matrix with degrees, A=adjacency 
  */
 public class LaplaceSpectrum extends Metric {
 	/**
@@ -124,8 +125,6 @@ public class LaplaceSpectrum extends Metric {
 				array[i][out[j]] = -1;
 			}
 		}
-		
-		
 		Matrix L = new Matrix(array);
 		return L;
 	}

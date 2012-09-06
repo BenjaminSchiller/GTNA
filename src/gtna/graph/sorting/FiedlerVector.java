@@ -45,50 +45,46 @@ import gtna.io.Filewriter;
 import gtna.util.Config;
 
 /**
- * @author Sony
- *
+ * @author stef adds fiedler vector of a graph as property
  */
 public class FiedlerVector implements GraphProperty {
 	private double[] vector;
-	
-	public FiedlerVector(double[] vector){
+
+	public FiedlerVector(double[] vector) {
 		this.setVector(vector);
 	}
 
-	public FiedlerVector(){
-		
-	}
-	
+	public FiedlerVector() {
 
-	/* (non-Javadoc)
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.graph.GraphProperty#read(java.lang.String, gtna.graph.Graph)
 	 */
 	@Override
 	public void read(String filename, Graph graph) {
 		Filereader fr = new Filereader(filename);
+		// CLASS
+		fr.readLine();
 
-		
+		// KEY
+		String key = fr.readLine();
 
-			// CLASS
-			fr.readLine();
+		this.vector = new double[graph.getNodes().length];
 
-			// KEY
-			String key = fr.readLine();
-			
-			
-			this.vector = new double[graph.getNodes().length];
+		// PARTITIONS
+		String line = null;
+		while ((line = fr.readLine()) != null) {
+			String[] temp = line.split(":");
+			int index = Integer.parseInt(temp[0]);
+			this.vector[index] = Double.parseDouble(temp[1]);
+		}
 
-			// PARTITIONS
-			String line = null;
-			while ((line = fr.readLine()) != null) {
-				String[] temp = line.split(":");
-				int index = Integer.parseInt(temp[0]);
-				this.vector[index] = Double.parseDouble(temp[1]);
-			}
+		fr.close();
+		graph.addProperty(key, this);
 
-			fr.close();
-			graph.addProperty(key, this);
-		
 	}
 
 	@Override
@@ -100,12 +96,11 @@ public class FiedlerVector implements GraphProperty {
 		fw.writeln(this.getClass().getCanonicalName().toString());
 
 		// KEY
-				fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
-				fw.writeln(key);
+		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
+		fw.writeln(key);
 
 		fw.writeln();
 
-		
 		for (int i = 0; i < this.vector.length; i++) {
 			fw.writeln(i + ":" + this.vector[i]);
 		}
@@ -114,12 +109,13 @@ public class FiedlerVector implements GraphProperty {
 	}
 
 	/**
-	 * @param vector the vector to set
+	 * @param vector
+	 *            the vector to set
 	 */
 	public void setVector(double[] vector) {
 		this.vector = vector;
 	}
-	
+
 	public double[] getVector() {
 		return this.vector;
 	}

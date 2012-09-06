@@ -50,15 +50,16 @@ import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 
 /**
- * @author stef
- * 
+ * @author stef order for node removal in fragmentation based on the second
+ *         eigenvector of the Laplacian matric, allows diverse treatments of
+ *         nodes with identical values
  */
 public class FiedlerNodeSorter2 extends NodeSorter {
 
 	private double[] secondEigenvector;
 	private Selection select;
 	private Difference diff;
-	private int k; // number of skipped neighbours in K-neighbours metric
+	private int k; // number of skipped neighbours in vector
 
 	public enum Selection {
 		SUM, // sum of distance to predeccessor and successor in sorted vector
@@ -82,7 +83,8 @@ public class FiedlerNodeSorter2 extends NodeSorter {
 
 	@Override
 	public String getKey() {
-		return super.getKey() + "_" + this.select.toString() + "_" + this.diff.toString() + "_" + this.k;
+		return super.getKey() + "_" + this.select.toString() + "_"
+				+ this.diff.toString() + "_" + this.k;
 	}
 
 	/*
@@ -93,51 +95,13 @@ public class FiedlerNodeSorter2 extends NodeSorter {
 	 */
 	@Override
 	public Node[] sort(Graph g, Random rand) {
-		// if (this.file != null){
-		// File f = new File(this.file);
-		// if (f.exists()){
-		// this.secondEigenvector = DataReader.readDouble(this.file);
-		// } else {
-		// this.generateEigen(g);
-		// DataWriter.write(this.secondEigenvector, this.file, true);
-		// }
-		// } else {
-		// this.generateEigen(g);
-		// }
+		// retrieve property
 		GraphProperty pro = g.getProperty("FIEDLER_VECTOR_0");
-
 		this.secondEigenvector = ((FiedlerVector) pro).getVector();
-
+		// sort nodes according to fiedler vector entry
 		Node[] sorted = this.clone(g.getNodes());
 		Arrays.sort(sorted, new FiedlerAsc(this.secondEigenvector));
-
-		// HashMap<Double, Vector<Integer>> map = new
-		// HashMap<Double,Vector<Integer>>(nodes.length);
-		// Vector<Integer> vec;
-		// for (int i = 0; i < this.secondEigenvector.length; i++){
-		// vec = map.get(this.secondEigenvector[i]);
-		// if (vec == null){
-		// vec = new Vector<Integer>();
-		// map.put(this.secondEigenvector[i], vec);
-		// }
-		// vec.add(i);
-		// }
-		// HashMap<Double, Integer> map = new
-		// HashMap<Double,Integer>(nodes.length);
-		// Vector<Integer> vec;
-		// for (int i = 0; i < this.secondEigenvector.length; i++){
-		// //vec = map.get(this.secondEigenvector[i]);
-		// //if (vec == null){
-		// // vec = new Vector<Integer>();
-		// this.secondEigenvector[i] =
-		// this.secondEigenvector[i]+rand.nextDouble()*0.0000001;
-		// map.put(this.secondEigenvector[i], i);
-		//
-		// }
-		// double[] sorted = this.secondEigenvector.clone();
-		// Arrays.sort(sorted);
-		// HashMap<Double, Integer> mapDist = new
-		// HashMap<Double,Integer>(sorted.length);
+		// compute differences
 		double[] dist = new double[sorted.length];
 		if (this.select == Selection.SUM) {
 			for (int j = 0; j < sorted.length; j++) {
@@ -151,7 +115,6 @@ public class FiedlerNodeSorter2 extends NodeSorter {
 					dist[sorted[j].getIndex()] = dist[sorted[j].getIndex()]
 							/ (double) this.numberEqual(j, sorted);
 				}
-				// - sorted [Math.max(j-k,0)];
 			}
 		}
 
@@ -258,25 +221,11 @@ public class FiedlerNodeSorter2 extends NodeSorter {
 				}
 			}
 		}
+		// sort according to differences
 		Node[] sortedFinal = this.clone(g.getNodes());
 		Arrays.sort(sortedFinal, new FiedlerAsc(dist));
 		this.randomize(sortedFinal, rand);
 		sortedFinal = this.reverse(sortedFinal);
-
-		// for (int i = 0; i < dist.length; i++){
-		// if (mapDist.containsKey(dist[i])){
-		// dist[i] = dist[i] + rand.nextDouble()*0.000001;
-		// }
-		// mapDist.put(dist[i], map.get(sorted[i]));
-		//
-		// }
-		// Arrays.sort(dist);
-		// Node[] old = g.getNodes();
-		// for (int i = 0; i < dist.length; i++){
-		// int nr = mapDist.get(dist[i]);
-		// nodes[nodes.length-1-i] = old[mapDist.get(dist[i])];
-		// System.out.println(nodes[nodes.length-1-i].getIndex());
-		// }
 		return sortedFinal;
 	}
 

@@ -44,11 +44,11 @@ import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 
 /**
- * @author stef
- *
+ * @author stef computes the Fiedler vector (second eigenvector of the
+ *         Laplacian) and stores it as a graph property
  */
 public class StoreFiedler extends Transformation {
-	
+
 	private double[] secondEigenvector;
 
 	public StoreFiedler() {
@@ -57,44 +57,45 @@ public class StoreFiedler extends Transformation {
 
 	@Override
 	public Graph transform(Graph g) {
+		// compute spectrum
 		Matrix L = LaplaceSpectrum.makeLaplacian(g);
 		EigenvalueDecomposition eig = new EigenvalueDecomposition(L);
 		double[] eigenvals = eig.getRealEigenvalues();
 		double[][] eigenvecs = eig.getV().getArray();
-		double first,second;
-		int index1,index2;
-		if (eigenvals[0] < eigenvals[1]){
-		  first = eigenvals[0];
-		  index1 = 0;
-		  second = eigenvals[1];
-		  index2 = 1;
+		// sort eigenvectors
+		double first, second;
+		int index1, index2;
+		if (eigenvals[0] < eigenvals[1]) {
+			first = eigenvals[0];
+			index1 = 0;
+			second = eigenvals[1];
+			index2 = 1;
 		} else {
 			first = eigenvals[1];
 			index1 = 1;
-			  second = eigenvals[0];
-			  index2 = 0;
+			second = eigenvals[0];
+			index2 = 0;
 		}
-		for (int i = 2; i < eigenvals.length; i++){
-			if (eigenvals[i] < first){
+		for (int i = 2; i < eigenvals.length; i++) {
+			if (eigenvals[i] < first) {
 				second = first;
 				index2 = index1;
 				first = eigenvals[i];
 				index1 = i;
 			} else {
-				if (eigenvals[i] < second){
+				if (eigenvals[i] < second) {
 					second = eigenvals[i];
 					index2 = i;
 				}
 			}
 		}
+		// store second eigenvector
 		this.secondEigenvector = new double[eigenvals.length];
-		for (int i = 0; i < this.secondEigenvector.length; i++){
+		for (int i = 0; i < this.secondEigenvector.length; i++) {
 			this.secondEigenvector[i] = eigenvecs[i][index2];
 		}
-		
 		GraphProperty vec = new FiedlerVector(this.secondEigenvector);
 		g.addProperty(g.getNextKey("FIEDLER_VECTOR"), vec);
-		
 		return g;
 	}
 
