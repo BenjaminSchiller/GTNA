@@ -129,8 +129,6 @@ public class GpsNetwork extends Network {
 		graph.setNodes(nodes);
 		UnitDiscGraph udg = new UnitDiscGraph(radius);
 		graph = udg.transform(graph);
-		System.out.println(graph.hasProperty("ID_SPACE_0"));
-		System.out.println(graph.getProperty("ID_SPACE_0"));
 		return graph;
 	}
 
