@@ -43,7 +43,6 @@ import gtna.id.DPartition;
 import gtna.id.Identifier;
 import gtna.id.data.DataStorageList;
 import gtna.routing.Route;
-import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
@@ -76,16 +75,6 @@ public class GreedyBacktracking extends RoutingAlgorithm {
 		this.ttl = ttl;
 	}
 
-	@Override
-	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
-		DIdentifier target = (DIdentifier) this.idSpace.randomID(rand);
-		while (this.p[start].contains(target)) {
-			target = (DIdentifier) this.idSpace.randomID(rand);
-		}
-		return this.route(new ArrayList<Integer>(), start, target, rand,
-				graph.getNodes(), new HashMap<Integer, Integer>());
-	}
-
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Route routeToTarget(Graph graph, int start, Identifier target,
@@ -100,14 +89,14 @@ public class GreedyBacktracking extends RoutingAlgorithm {
 			HashMap<Integer, Integer> from) {
 		route.add(current);
 		if (this.idSpace.getPartitions()[current].contains(target)) {
-			return new RouteImpl(route, true);
+			return new Route(route, true);
 		}
 		if (this.dsl != null
 				&& this.dsl.getStorageForNode(current).containsId(target)) {
-			return new RouteImpl(route, true);
+			return new Route(route, true);
 		}
 		if (route.size() > ttl) {
-			return new RouteImpl(route, false);
+			return new Route(route, false);
 		}
 		double currentDist = this.idSpace.getPartitions()[current]
 				.distance(target);
@@ -124,7 +113,7 @@ public class GreedyBacktracking extends RoutingAlgorithm {
 			return this.route(route, from.get(current), target, rand, nodes,
 					from);
 		} else if (minNode == -1) {
-			return new RouteImpl(route, false);
+			return new Route(route, false);
 		}
 		from.put(minNode, current);
 		return this.route(route, minNode, target, rand, nodes, from);

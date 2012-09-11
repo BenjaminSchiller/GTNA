@@ -47,7 +47,6 @@ import gtna.id.lookahead.LookaheadElement;
 import gtna.id.lookahead.LookaheadList;
 import gtna.id.lookahead.LookaheadLists;
 import gtna.routing.Route;
-import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
@@ -92,16 +91,6 @@ public abstract class Lookahead extends RoutingAlgorithm {
 	}
 
 	@Override
-	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
-		Identifier target = this.idSpace.randomID(rand);
-		while (this.p[start].contains(target)) {
-			target = this.idSpace.randomID(rand);
-		}
-		return this.route(new ArrayList<Integer>(), start, target, rand,
-				graph.getNodes(), new HashSet<Integer>());
-	}
-
-	@Override
 	public Route routeToTarget(Graph graph, int start, Identifier target,
 			Random rand) {
 		return this.route(new ArrayList<Integer>(), start, target, rand,
@@ -113,21 +102,21 @@ public abstract class Lookahead extends RoutingAlgorithm {
 		route.add(current);
 		seen.add(current);
 		if (this.idSpace.getPartitions()[current].contains(target)) {
-			return new RouteImpl(route, true);
+			return new Route(route, true);
 		}
 		if (this.dsl != null
 				&& this.dsl.getStorageForNode(current).containsId(target)) {
-			return new RouteImpl(route, true);
+			return new Route(route, true);
 		}
 		if (route.size() > this.ttl) {
-			return new RouteImpl(route, false);
+			return new Route(route, false);
 		}
 		LookaheadList list = this.lists.getList(current);
 
 		int via = -1;
 
 		if (list.getList().length == 0) {
-			return new RouteImpl(route, false);
+			return new Route(route, false);
 		}
 
 		if (list.getList()[0].getPartition() instanceof DPartition) {
@@ -225,7 +214,7 @@ public abstract class Lookahead extends RoutingAlgorithm {
 		}
 
 		if (via == -1) {
-			return new RouteImpl(route, false);
+			return new Route(route, false);
 		}
 		return this.route(route, via, target, rand, nodes, seen);
 	}

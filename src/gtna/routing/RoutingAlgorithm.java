@@ -37,6 +37,8 @@ package gtna.routing;
 
 import gtna.graph.Graph;
 import gtna.id.Identifier;
+import gtna.id.IdentifierSpace;
+import gtna.id.data.DataStorageList;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.ParameterList;
 
@@ -50,7 +52,13 @@ import java.util.Random;
  * @author benni
  * 
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class RoutingAlgorithm extends ParameterList {
+
+	protected IdentifierSpace identifierSpace;
+
+	protected DataStorageList dataStorageList;
+
 	public RoutingAlgorithm(String key) {
 		super(key);
 	}
@@ -58,24 +66,6 @@ public abstract class RoutingAlgorithm extends ParameterList {
 	public RoutingAlgorithm(String key, Parameter[] parameters) {
 		super(key, parameters);
 	}
-
-	/**
-	 * Implements the actual routing. The given source node attempts to route
-	 * towards a random destination which can be a random identifier in the
-	 * identifier space of a specific node (or its identifier). Choosing the
-	 * destination of such a random routing attempt is also part of the routing
-	 * algorithm's implementation.
-	 * 
-	 * @param nodes
-	 *            set of all nodes in the network
-	 * @param src
-	 *            node from which the routing should start
-	 * @param rand
-	 *            PRNG
-	 * @return Path object containing information about the routing attempt
-	 */
-	public abstract Route routeToRandomTarget(Graph graph, int start,
-			Random rand);
 
 	/**
 	 * The given source attempts to route towards the destination specified by
@@ -89,7 +79,6 @@ public abstract class RoutingAlgorithm extends ParameterList {
 	 *            target identifier to be routed towards
 	 * @return Path object containing information about the routing attempt
 	 */
-	@SuppressWarnings("rawtypes")
 	public abstract Route routeToTarget(Graph graph, int start,
 			Identifier target, Random rand);
 
@@ -111,7 +100,50 @@ public abstract class RoutingAlgorithm extends ParameterList {
 	 * @param nodes
 	 *            list of all nodes contained in the network
 	 */
-	public abstract void preprocess(Graph graph);
+	public void preprocess(Graph graph) {
+		if (this.hasIdentifierSpace(graph)) {
+			this.identifierSpace = (IdentifierSpace) graph
+					.getProperty("ID_SPACE_0");
+		}
+		if (this.hasDataStorage(graph)) {
+			this.dataStorageList = (DataStorageList) graph
+					.getProperty("DATA_STORAGE_0");
+		}
+	}
+
+	protected boolean hasIdentifierSpace(Graph graph) {
+		return graph.hasProperty("ID_SPACE_0")
+				&& graph.getProperty("ID_SPACE_0") instanceof IdentifierSpace;
+	}
+
+	protected boolean hasDataStorage(Graph graph) {
+		return graph.hasProperty("DATA_STORAGE_0")
+				&& graph.getProperty("DATA_STORAGE_0") instanceof DataStorageList;
+	}
+
+	public boolean hasDataItem(int node, Identifier id) {
+		if (this.dataStorageList == null) {
+			return false;
+		}
+		return this.dataStorageList.getStorageForNode(node).containsId(id);
+	}
+
+	public boolean isResponsibleForIdentifier(int node, Identifier id) {
+		if (this.identifierSpace == null) {
+			return false;
+		}
+		return this.identifierSpace.getPartitions()[node].contains(id);
+	}
+
+	public boolean isEndPoint(int node, Identifier id) {
+		if (this.dataStorageList != null) {
+			return this.hasDataItem(node, id);
+		}
+		if (this.identifierSpace != null) {
+			return this.isResponsibleForIdentifier(node, id);
+		}
+		return false;
+	}
 
 	public static String toString(RoutingAlgorithm[] phases) {
 		StringBuffer buff = new StringBuffer();

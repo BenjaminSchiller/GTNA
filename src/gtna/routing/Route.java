@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  * 
  * ---------------------------------------
- * Route.java
+ * RouteImpl.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -35,22 +35,51 @@
  */
 package gtna.routing;
 
+import java.util.List;
+
 /**
- * Interface for representations of the results of a single routing attempt by a
- * routing algorithm. This contains the path taken by the algorithm and a flag
- * for success.
+ * Representation of a route as generated using a RoutingAlgorithm and used by
+ * the Routing metric.
  * 
  * @author benni
  * 
  */
-public interface Route {
-	public int[] getRoute();
+public class Route {
+	private int[] route;
 
-	public int getHops();
+	private boolean successful;
 
-	public boolean isSuccessful();
-	
-	public int getFirstNode();
-	
-	public int getLastNode();
+	public Route(int[] route, boolean successful) {
+		this.route = route;
+		this.successful = successful;
+	}
+
+	public Route(List<Integer> route, boolean successful) {
+		this.route = new int[route.size()];
+		int index = 0;
+		for (int r : route) {
+			this.route[index++] = r;
+		}
+		this.successful = successful;
+	}
+
+	public int[] getRoute() {
+		return this.route;
+	}
+
+	public int getHops() {
+		return this.route.length - 1;
+	}
+
+	public boolean isSuccessful() {
+		return this.successful;
+	}
+
+	public int getFirstNode() {
+		return this.route[0];
+	}
+
+	public int getLastNode() {
+		return this.route[this.route.length - 1];
+	}
 }

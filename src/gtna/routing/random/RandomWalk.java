@@ -42,7 +42,6 @@ import gtna.id.IdentifierSpace;
 import gtna.id.Partition;
 import gtna.id.data.DataStorageList;
 import gtna.routing.Route;
-import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
@@ -71,15 +70,6 @@ public class RandomWalk extends RoutingAlgorithm {
 	}
 
 	@Override
-	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
-		Identifier target = (Identifier) this.ids.randomID(rand);
-		while (this.p[start].contains(target)) {
-			target = (Identifier) this.ids.randomID(rand);
-		}
-		return this.routeToTarget(graph, start, target, rand);
-	}
-
-	@Override
 	public Route routeToTarget(Graph graph, int start, Identifier target,
 			Random rand) {
 		return this.route(new ArrayList<Integer>(), start, target, rand,
@@ -90,18 +80,18 @@ public class RandomWalk extends RoutingAlgorithm {
 			Identifier target, Random rand, Node[] nodes) {
 		route.add(current);
 		if (route.size() > 1 && this.p[current].contains(target)) {
-			return new RouteImpl(route, true);
+			return new Route(route, true);
 		}
 		if (route.size() > 1 && this.dsl != null
 				&& this.dsl.getStorageForNode(current).containsId(target)) {
-			return new RouteImpl(route, true);
+			return new Route(route, true);
 		}
 		if (route.size() > this.ttl) {
-			return new RouteImpl(route, false);
+			return new Route(route, false);
 		}
 
 		if (nodes[current].getOutDegree() == 0) {
-			return new RouteImpl(route, false);
+			return new Route(route, false);
 		}
 
 		int nextIndex = rand.nextInt(nodes[current].getOutDegree());

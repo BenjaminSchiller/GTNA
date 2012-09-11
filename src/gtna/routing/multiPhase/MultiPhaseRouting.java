@@ -42,7 +42,6 @@ import gtna.id.IdentifierSpace;
 import gtna.id.Partition;
 import gtna.id.data.DataStorageList;
 import gtna.routing.Route;
-import gtna.routing.RouteImpl;
 import gtna.routing.RoutingAlgorithm;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
@@ -86,15 +85,6 @@ public class MultiPhaseRouting extends RoutingAlgorithm {
 	}
 
 	@Override
-	public Route routeToRandomTarget(Graph graph, int start, Random rand) {
-		Identifier target = (Identifier) this.ids.randomID(rand);
-		while (this.p[start].contains(target)) {
-			target = (Identifier) this.ids.randomID(rand);
-		}
-		return this.routeToTarget(graph, start, target, rand);
-	}
-
-	@Override
 	public Route routeToTarget(Graph graph, int start, Identifier target,
 			Random rand) {
 		return this.route(graph, start, target, rand, graph.getNodes());
@@ -106,11 +96,11 @@ public class MultiPhaseRouting extends RoutingAlgorithm {
 		route.add(start);
 
 		if (this.p[start].contains(target)) {
-			return new RouteImpl(route, true);
+			return new Route(route, true);
 		}
 		if (this.dsl != null
 				&& this.dsl.getStorageForNode(start).containsId(target)) {
-			return new RouteImpl(route, true);
+			return new Route(route, true);
 		}
 
 		route.add(start);
@@ -126,13 +116,13 @@ public class MultiPhaseRouting extends RoutingAlgorithm {
 				}
 
 				if (r.isSuccessful()) {
-					return new RouteImpl(route, true);
+					return new Route(route, true);
 				}
 			}
 
 		}
 
-		return new RouteImpl(route, false);
+		return new Route(route, false);
 	}
 
 	@Override
