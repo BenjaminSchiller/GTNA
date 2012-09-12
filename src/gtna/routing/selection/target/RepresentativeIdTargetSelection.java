@@ -49,7 +49,7 @@ public class RepresentativeIdTargetSelection extends TargetSelection {
 	protected IdentifierSpace ids;
 
 	public RepresentativeIdTargetSelection() {
-		super("TARGET_SELECTION_REPRESENTATIVE_IDENTIFIER");
+		super("TARGET_SELECTION_REPRESENTATIVE_ID");
 	}
 
 	public void init(Graph graph) {
