@@ -44,12 +44,12 @@ import gtna.id.IdentifierSpace;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class UniformIdTargetSelection extends TargetSelection {
+public class RandomIdTargetSelection extends TargetSelection {
 
 	protected IdentifierSpace ids;
 
-	public UniformIdTargetSelection() {
-		super("TARGET_SELECTION_UNIFORM");
+	public RandomIdTargetSelection() {
+		super("TARGET_SELECTION_RANDOM_ID");
 	}
 
 	public void init(Graph graph) {
