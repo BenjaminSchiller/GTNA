@@ -168,6 +168,11 @@ public class Graph {
 		this.properties.put(key, property);
 	}
 
+	@SuppressWarnings("rawtypes")
+	public boolean hasProperty(String key, Class type) {
+		return this.hasProperty(key) && type.isInstance(this.getProperty(key));
+	}
+
 	public boolean hasProperty(String key) {
 		return this.properties.containsKey(key);
 	}
