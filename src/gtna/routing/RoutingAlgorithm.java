@@ -38,7 +38,7 @@ package gtna.routing;
 import gtna.graph.Graph;
 import gtna.id.Identifier;
 import gtna.id.IdentifierSpace;
-import gtna.id.data.DataStorageList;
+import gtna.id.data.DataStorage;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.ParameterList;
 
@@ -57,7 +57,7 @@ public abstract class RoutingAlgorithm extends ParameterList {
 
 	protected IdentifierSpace identifierSpace;
 
-	protected DataStorageList dataStorageList;
+	protected DataStorage dataStorageList;
 
 	public RoutingAlgorithm(String key) {
 		super(key);
@@ -106,7 +106,7 @@ public abstract class RoutingAlgorithm extends ParameterList {
 					.getProperty("ID_SPACE_0");
 		}
 		if (this.hasDataStorage(graph)) {
-			this.dataStorageList = (DataStorageList) graph
+			this.dataStorageList = (DataStorage) graph
 					.getProperty("DATA_STORAGE_0");
 		}
 	}
@@ -118,14 +118,14 @@ public abstract class RoutingAlgorithm extends ParameterList {
 
 	protected boolean hasDataStorage(Graph graph) {
 		return graph.hasProperty("DATA_STORAGE_0")
-				&& graph.getProperty("DATA_STORAGE_0") instanceof DataStorageList;
+				&& graph.getProperty("DATA_STORAGE_0") instanceof DataStorage;
 	}
 
 	public boolean hasDataItem(int node, Identifier id) {
 		if (this.dataStorageList == null) {
 			return false;
 		}
-		return this.dataStorageList.getStorageForNode(node).containsId(id);
+		return this.dataStorageList.getStorageForNode(node).contains(id);
 	}
 
 	public boolean isResponsibleForIdentifier(int node, Identifier id) {

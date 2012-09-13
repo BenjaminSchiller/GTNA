@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * DataStorageGraphProperty.java
+ * FifoDataStore.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -35,55 +35,61 @@
  */
 package gtna.id.data;
 
-import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
+import gtna.id.Identifier;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
 
 /**
  * @author benni
  * 
  */
-public class DataStorage implements GraphProperty {
-	private DataStore[] list;
+@SuppressWarnings("rawtypes")
+public class FifoDataStore extends UnlimitedDataStore {
 
-	private Set<DataItem> dataItems;
+	protected LinkedList<Identifier> list;
 
-	public DataStorage() {
-		this.list = new DataStore[0];
-		this.dataItems = new HashSet<DataItem>();
+	protected int max;
+
+	public FifoDataStore(int node, int max) {
+		super(node);
+		this.max = max;
+		this.list = new LinkedList<Identifier>();
 	}
 
-	public DataStorage(DataStore[] list) {
-		this.list = list;
-		this.dataItems = new HashSet<DataItem>();
-		for (DataStore ds : list) {
-			this.dataItems.addAll(ds.getData());
+	@Override
+	public DataStore getEmptyDataStore() {
+		return new FifoDataStore(this.node, this.max);
+	}
+
+	@Override
+	public DataItem add(Identifier id) {
+		return this.add(id, new DataItem(id));
+	}
+
+	@Override
+	public DataItem add(Identifier id, DataItem data) {
+		if (this.contains(id)) {
+			return null;
 		}
-	}
-
-	public DataStore[] getList() {
-		return this.list;
-	}
-
-	public Set<DataItem> getDataItems() {
-		return this.dataItems;
-	}
-
-	public DataStore getStorageForNode(int index) {
-		return this.list[index];
+		DataItem data2 = super.add(id, data);
+		this.list.addLast(id);
+		while (this.list.size() > max) {
+			Identifier first = this.list.pop();
+			this.storage.remove(first);
+		}
+		return data2;
 	}
 
 	@Override
-	public boolean write(String filename, String key) {
-		// TODO Auto-generated method stub
-		return true;
+	public DataItem remove(Identifier id) {
+		DataItem data = this.storage.remove(id);
+		this.list.remove(id);
+		return data;
 	}
 
 	@Override
-	public void read(String filename, Graph graph) {
-		// TODO Auto-generated method stub
+	public void access(Identifier id) {
+
 	}
 
 }
