@@ -103,7 +103,11 @@ public class Dijkstra {
 				if (alt < dist[v]) {
 					dist[v] = alt;
 					previous[v] = u;
-					nextHop[v] = nextHop[u];
+					if (u == start) {
+						nextHop[v] = v;
+					} else {
+						nextHop[v] = nextHop[u];
+					}
 				}
 			}
 		}
