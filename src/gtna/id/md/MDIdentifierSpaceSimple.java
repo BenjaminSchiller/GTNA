@@ -52,7 +52,7 @@ import gtna.util.Config;
  * @author Nico
  * 
  */
-public class MDIdentifierSpaceSimple implements DIdentifierSpace {
+public class MDIdentifierSpaceSimple extends DIdentifierSpace {
 	private MDPartitionSimple[] partitions;
 
 	private double[] modulus;
@@ -82,7 +82,7 @@ public class MDIdentifierSpaceSimple implements DIdentifierSpace {
 		this.distFunc = dist;
 		this.computeMaxDist();
 	}
-	
+
 	public MDIdentifierSpaceSimple(MDPartitionSimple[] partitions,
 			double[] modulus, boolean wrapAround) {
 		this.partitions = partitions;

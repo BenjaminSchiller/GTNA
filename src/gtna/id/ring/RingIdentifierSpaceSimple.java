@@ -49,8 +49,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RingIdentifierSpaceSimple extends RingIdentifierSpace implements
-		DIdentifierSpace {
+public class RingIdentifierSpaceSimple extends RingIdentifierSpace {
 	private RingPartitionSimple[] partitions;
 
 	private double modulus;
@@ -71,7 +70,7 @@ public class RingIdentifierSpaceSimple extends RingIdentifierSpace implements
 		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
 		this.distance = RingIdentifierSpace.Distance.RING;
 	}
-	
+
 	public RingIdentifierSpaceSimple(RingPartitionSimple[] partitions,
 			double modulus, boolean wrapAround, Distance distance) {
 		this.partitions = partitions;

@@ -46,7 +46,7 @@ import gtna.id.Partition;
  * @author benni
  * 
  */
-public class NodeIdentifierSpace implements DIdentifierSpace {
+public class NodeIdentifierSpace extends DIdentifierSpace {
 
 	protected NodePartition[] partitions;
 

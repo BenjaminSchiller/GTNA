@@ -42,7 +42,8 @@ import gtna.id.Identifier;
  * @author benni
  * 
  */
-public class NodeIdentifier implements DIdentifier, Comparable<NodeIdentifier> {
+public class NodeIdentifier extends DIdentifier implements
+		Comparable<NodeIdentifier> {
 
 	public static final int dataValueMod = 10000;
 

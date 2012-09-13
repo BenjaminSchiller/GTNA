@@ -49,7 +49,8 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RingIdentifier implements DIdentifier, Comparable<RingIdentifier> {
+public class RingIdentifier extends DIdentifier implements
+		Comparable<RingIdentifier> {
 	private double position;
 
 	private RingIdentifierSpace idSpace;
@@ -75,19 +76,19 @@ public class RingIdentifier implements DIdentifier, Comparable<RingIdentifier> {
 
 	@Override
 	public Double distance(Identifier<Double> id) {
-		if (this.getIdSpace().distance == Distance.RING){
+		if (this.getIdSpace().distance == Distance.RING) {
 			return getRingDistance(id);
 		}
-		if (this.getIdSpace().distance == Distance.CLOCKWISE){
+		if (this.getIdSpace().distance == Distance.CLOCKWISE) {
 			return getClockwiseDistance(id);
 		}
-		if (this.getIdSpace().distance == Distance.SIGNED){
+		if (this.getIdSpace().distance == Distance.SIGNED) {
 			return getSignedDistance(id);
 		}
 		return null;
 	}
-	
-	private double getRingDistance(Identifier<Double> id){
+
+	private double getRingDistance(Identifier<Double> id) {
 		double dest = ((RingIdentifier) id).getPosition();
 		if (this.idSpace.isWrapAround()) {
 			return Math.min(
@@ -99,34 +100,39 @@ public class RingIdentifier implements DIdentifier, Comparable<RingIdentifier> {
 			return Math.abs(dest - this.position);
 		}
 	}
-	
-	private double getClockwiseDistance(Identifier<Double> id){
+
+	private double getClockwiseDistance(Identifier<Double> id) {
 		double dest = ((RingIdentifier) id).getPosition();
 		if (this.getIdSpace().isWrapAround()) {
-			if (dest >= this.getPosition()){
+			if (dest >= this.getPosition()) {
 				return dest - this.getPosition();
 			} else {
-				return (this.getIdSpace().getModulus()+dest-this.getPosition());
+				return (this.getIdSpace().getModulus() + dest - this
+						.getPosition());
 			}
 		} else {
-			throw new IllegalArgumentException("Clockwise distance only possible with wraparound");
+			throw new IllegalArgumentException(
+					"Clockwise distance only possible with wraparound");
 		}
 	}
-	
-	private double getSignedDistance(Identifier<Double> id){
+
+	private double getSignedDistance(Identifier<Double> id) {
 		double dest = ((RingIdentifier) id).getPosition();
 		if (this.getIdSpace().isWrapAround()) {
-			if (Math.abs(dest-this.getPosition()) < this.getIdSpace().getMaxDistance()){
-				return dest-this.getPosition();
+			if (Math.abs(dest - this.getPosition()) < this.getIdSpace()
+					.getMaxDistance()) {
+				return dest - this.getPosition();
 			} else {
-				if (dest > this.getPosition()){
-					return -(this.getIdSpace().getModulus()+this.getPosition()-dest);
+				if (dest > this.getPosition()) {
+					return -(this.getIdSpace().getModulus()
+							+ this.getPosition() - dest);
 				} else {
-					return -(this.getIdSpace().getModulus()+dest-this.getPosition());
+					return -(this.getIdSpace().getModulus() + dest - this
+							.getPosition());
 				}
 			}
 		} else {
-			return dest-this.getPosition();
+			return dest - this.getPosition();
 		}
 	}
 

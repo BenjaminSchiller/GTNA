@@ -44,7 +44,7 @@ import gtna.id.Partition;
  * @author benni
  * 
  */
-public class RingPartitionSimple implements DPartition {
+public class RingPartitionSimple extends DPartition {
 	private RingIdentifier id;
 
 	public RingPartitionSimple(RingIdentifier id) {

@@ -44,7 +44,7 @@ import gtna.id.Partition;
  * @author Nico
  *
  */
-public class MDPartitionSimple implements DPartition {
+public class MDPartitionSimple extends DPartition {
 	private MDIdentifier id;
 
 	public MDPartitionSimple(MDIdentifier id) {

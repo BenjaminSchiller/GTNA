@@ -43,7 +43,7 @@ import gtna.id.Partition;
  * @author benni
  * 
  */
-public class NodePartition implements DPartition {
+public class NodePartition extends DPartition {
 
 	protected int node;
 

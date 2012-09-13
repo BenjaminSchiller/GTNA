@@ -48,7 +48,7 @@ import java.util.Set;
  * @author benni
  * 
  */
-public class EdgeWeights implements GraphProperty {
+public class EdgeWeights extends GraphProperty {
 
 	private Map<Edge, Double> weights;
 

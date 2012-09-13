@@ -44,7 +44,7 @@ import gtna.id.Partition;
  * @author benni
  * 
  */
-public class RingPartition implements DPartition {
+public class RingPartition extends DPartition {
 	private RingIdentifier start;
 
 	private RingIdentifier end;
@@ -87,12 +87,14 @@ public class RingPartition implements DPartition {
 	@Override
 	public boolean contains(Identifier<Double> id) {
 		if (this.start.getPosition() < ((RingIdentifier) id).getPosition()
-				&& this.end.getPosition() >= ((RingIdentifier) id).getPosition()) {
+				&& this.end.getPosition() >= ((RingIdentifier) id)
+						.getPosition()) {
 			return true;
 		}
 		if (this.start.getPosition() > this.end.getPosition()
-				&& (this.start.getPosition() < ((RingIdentifier) id).getPosition() || this.end
-						.getPosition() >= ((RingIdentifier) id).getPosition())) {
+				&& (this.start.getPosition() < ((RingIdentifier) id)
+						.getPosition() || this.end.getPosition() >= ((RingIdentifier) id)
+						.getPosition())) {
 			return true;
 		}
 		return false;

@@ -45,7 +45,7 @@ import java.util.Set;
  * @author benni
  * 
  */
-public class DataStoreList implements GraphProperty {
+public class DataStoreList extends GraphProperty {
 	private DataStore[] list;
 
 	private Set<DataItem> dataItems;

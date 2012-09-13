@@ -52,7 +52,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class ChordIdentifierSpace implements BIIdentifierSpace {
+public class ChordIdentifierSpace extends BIIdentifierSpace {
 	private int bits;
 
 	private BigInteger modulus;

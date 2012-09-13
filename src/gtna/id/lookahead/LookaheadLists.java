@@ -37,7 +37,7 @@ package gtna.id.lookahead;
 
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
-import gtna.id.DIdentifier;
+import gtna.id.DPartition;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
 import gtna.util.Config;
@@ -49,7 +49,7 @@ import java.util.ArrayList;
  * @author benni
  * 
  */
-public class LookaheadLists implements GraphProperty {
+public class LookaheadLists extends GraphProperty {
 	private LookaheadList[] lists;
 
 	public LookaheadLists() {
@@ -134,9 +134,9 @@ public class LookaheadLists implements GraphProperty {
 
 		// CLASS OF IDS
 		String idClassname = fr.readLine();
-		Constructor<DIdentifier>[] constructors = null;
+		Constructor<DPartition>[] constructors = null;
 		try {
-			constructors = (Constructor<DIdentifier>[]) ClassLoader
+			constructors = (Constructor<DPartition>[]) ClassLoader
 					.getSystemClassLoader().loadClass(idClassname)
 					.getConstructors();
 		} catch (SecurityException e) {
@@ -144,8 +144,8 @@ public class LookaheadLists implements GraphProperty {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		Constructor<DIdentifier> constructor = null;
-		for (Constructor<DIdentifier> c : constructors) {
+		Constructor<DPartition> constructor = null;
+		for (Constructor<DPartition> c : constructors) {
 			if (c.getParameterTypes().length == 1
 					&& c.getParameterTypes()[0].toString().equals(
 							"class java.lang.String")) {

@@ -44,7 +44,7 @@ import gtna.util.ArrayUtils;
  * @author benni
  * 
  */
-public class NodeWeights implements GraphProperty {
+public class NodeWeights extends GraphProperty {
 
 	private double[] weights;
 

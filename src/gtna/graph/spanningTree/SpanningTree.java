@@ -49,11 +49,11 @@ import java.util.ArrayList;
  * @author benni
  * 
  */
-public class SpanningTree implements GraphProperty {
+public class SpanningTree extends GraphProperty {
 	private int[] parent;
 	private int[][] children;
 	private int[] depth;
-	
+
 	private int src;
 
 	public SpanningTree() {
@@ -74,7 +74,8 @@ public class SpanningTree implements GraphProperty {
 		int[] counter = new int[nodes];
 		// fill parent and depth list
 		for (ParentChild pc : pcs) {
-			if ( pc.getParent() == -1 ) continue;
+			if (pc.getParent() == -1)
+				continue;
 			this.parent[pc.getChild()] = pc.getParent();
 			this.depth[pc.getChild()] = pc.getDepth();
 			counter[pc.getParent()]++;
@@ -85,7 +86,8 @@ public class SpanningTree implements GraphProperty {
 		}
 		// fill children list
 		for (ParentChild pc : pcs) {
-			if ( pc.getParent() == -1 ) continue;
+			if (pc.getParent() == -1)
+				continue;
 			this.children[pc.getParent()][this.children[pc.getParent()].length
 					- counter[pc.getParent()]] = pc.getChild();
 			counter[pc.getParent()]--;
@@ -191,10 +193,10 @@ public class SpanningTree implements GraphProperty {
 	public int getParent(int child) {
 		return this.parent[child];
 	}
-	
+
 	public int getDepth(int child) {
 		return this.depth[child];
-	}	
+	}
 
 	public int[] getChildren(int parent) {
 		return this.children[parent];

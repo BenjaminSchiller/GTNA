@@ -53,7 +53,7 @@ import gtna.util.Config;
  * @author Philipp Neubrand
  * 
  */
-public class RangeProperty implements GraphProperty {
+public class RangeProperty extends GraphProperty {
 	private double[] ranges;
 
 	/**

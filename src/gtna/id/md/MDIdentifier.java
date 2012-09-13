@@ -46,7 +46,8 @@ import java.util.Random;
  * @author Nico
  * 
  */
-public class MDIdentifier implements DIdentifier, Comparable<MDIdentifier> {
+public class MDIdentifier extends DIdentifier implements
+		Comparable<MDIdentifier> {
 	private double[] coordinates;
 
 	private MDIdentifierSpaceSimple idSpace;

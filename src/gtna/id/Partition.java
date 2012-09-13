@@ -39,12 +39,12 @@ package gtna.id;
  * @author benni
  * 
  */
-public interface Partition<Type> {
-	public Type distance(Identifier<Type> id);
+public abstract class Partition<Type> {
+	public abstract Type distance(Identifier<Type> id);
 
-	public boolean equals(Partition<Type> p);
+	public abstract boolean equals(Partition<Type> p);
 
-	public boolean contains(Identifier<Type> id);
+	public abstract boolean contains(Identifier<Type> id);
 
-	public Identifier<Type> getRepresentativeID();
+	public abstract Identifier<Type> getRepresentativeID();
 }

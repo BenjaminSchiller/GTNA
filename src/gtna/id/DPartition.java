@@ -39,6 +39,6 @@ package gtna.id;
  * @author benni
  * 
  */
-public interface DPartition extends Partition<Double> {
+public abstract class DPartition extends Partition<Double> {
 	
 }

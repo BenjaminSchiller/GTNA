@@ -37,7 +37,6 @@ package gtna.routing.table;
 
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
-import gtna.graph.GraphPropertyHelper;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
 
@@ -45,7 +44,7 @@ import gtna.io.Filewriter;
  * @author benni
  * 
  */
-public class RoutingTables extends GraphPropertyHelper implements GraphProperty {
+public class RoutingTables extends GraphProperty {
 
 	protected RoutingTable[] tables;
 
@@ -65,7 +64,8 @@ public class RoutingTables extends GraphPropertyHelper implements GraphProperty 
 
 		this.writeHeader(fw, this.getClass(), key);
 
-		this.writeParameter(fw, "Routing Table Class", this.tables[0].getClass());
+		this.writeParameter(fw, "Routing Table Class",
+				this.tables[0].getClass());
 		this.writeParameter(fw, "Routing Tables", this.tables.length);
 
 		fw.writeln();
@@ -83,14 +83,15 @@ public class RoutingTables extends GraphPropertyHelper implements GraphProperty 
 		Filereader fr = new Filereader(filename);
 
 		String key = this.readHeader(fr);
-		
+
 		Class routingTableClass = this.readClass(fr);
 		int routingTables = this.readInt(fr);
-		
+
 		this.tables = new RoutingTable[routingTables];
-		for(int i=0; i<routingTables; i++){
+		for (int i = 0; i < routingTables; i++) {
 			try {
-				RoutingTable rt = (RoutingTable) routingTableClass.newInstance();
+				RoutingTable rt = (RoutingTable) routingTableClass
+						.newInstance();
 				this.tables[i] = rt;
 			} catch (InstantiationException e) {
 				e.printStackTrace();
@@ -98,9 +99,9 @@ public class RoutingTables extends GraphPropertyHelper implements GraphProperty 
 				e.printStackTrace();
 			}
 		}
-		
+
 		fr.close();
-		
+
 		graph.addProperty(key, this);
 	}
 }

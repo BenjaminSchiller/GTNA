@@ -45,7 +45,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class PlaneIdentifier implements DIdentifier,
+public class PlaneIdentifier extends DIdentifier implements
 		Comparable<PlaneIdentifier> {
 	private double x;
 

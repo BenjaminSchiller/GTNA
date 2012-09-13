@@ -37,9 +37,11 @@ package gtna.transformation.gd;
 
 /**
  * @author Nico
- *
+ * 
  */
 public class GDTransformationException extends RuntimeException {
+	private static final long serialVersionUID = 1L;
+
 	public GDTransformationException(String string) {
 		super(string);
 	}

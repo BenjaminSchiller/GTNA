@@ -39,5 +39,5 @@ package gtna.id;
  * @author benni
  * 
  */
-public interface DIdentifierSpace extends IdentifierSpace<Double> {
+public abstract class DIdentifierSpace extends IdentifierSpace<Double> {
 }

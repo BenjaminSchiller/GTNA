@@ -42,12 +42,12 @@ import java.util.Random;
  * @author benni
  * 
  */
-public interface IdentifierSpace<Type> extends GraphProperty, Cloneable {
-	public Partition<Type>[] getPartitions();
+public abstract class IdentifierSpace<Type> extends GraphProperty {
+	public abstract Partition<Type>[] getPartitions();
 
-	public void setPartitions(Partition<Type>[] partitions);
+	public abstract void setPartitions(Partition<Type>[] partitions);
 
-	public Identifier<Type> randomID(Random rand);
+	public abstract Identifier<Type> randomID(Random rand);
 
-	public Type getMaxDistance();
+	public abstract Type getMaxDistance();
 }

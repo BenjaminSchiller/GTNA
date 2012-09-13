@@ -50,7 +50,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RingIdentifierSpace implements DIdentifierSpace {
+public class RingIdentifierSpace extends DIdentifierSpace {
 	private RingPartition[] partitions;
 
 	protected double modulus;

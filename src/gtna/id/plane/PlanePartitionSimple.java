@@ -44,14 +44,15 @@ import gtna.id.Partition;
  * @author benni
  * 
  */
-public class PlanePartitionSimple implements DPartition {
+public class PlanePartitionSimple extends DPartition {
 	private PlaneIdentifier id;
 
 	public PlanePartitionSimple(PlaneIdentifier id) {
 		this.id = id;
 	}
 
-	public PlanePartitionSimple(String string, PlaneIdentifierSpaceSimple idSpace) {
+	public PlanePartitionSimple(String string,
+			PlaneIdentifierSpaceSimple idSpace) {
 		this.id = new PlaneIdentifier(string, idSpace);
 	}
 

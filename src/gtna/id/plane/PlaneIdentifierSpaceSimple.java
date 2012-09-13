@@ -50,7 +50,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class PlaneIdentifierSpaceSimple implements DIdentifierSpace {
+public class PlaneIdentifierSpaceSimple extends DIdentifierSpace {
 	private PlanePartitionSimple[] partitions;
 
 	private double modulusX;

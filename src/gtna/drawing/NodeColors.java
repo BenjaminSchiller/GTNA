@@ -44,7 +44,7 @@ import java.awt.Color;
  * @author benni
  * 
  */
-public class NodeColors implements GraphProperty {
+public class NodeColors extends GraphProperty {
 
 	private Color[] colors;
 

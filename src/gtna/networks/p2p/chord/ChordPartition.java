@@ -46,7 +46,7 @@ import java.math.BigInteger;
  * @author benni
  * 
  */
-public class ChordPartition implements BIPartition {
+public class ChordPartition extends BIPartition {
 	private ChordIdentifier pred;
 
 	private ChordIdentifier succ;

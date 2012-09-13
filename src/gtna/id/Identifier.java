@@ -39,8 +39,8 @@ package gtna.id;
  * @author benni
  * 
  */
-public interface Identifier<Type> {
-	public Type distance(Identifier<Type> id);
+public abstract class Identifier<Type> {
+	public abstract Type distance(Identifier<Type> id);
 
-	public boolean equals(Identifier<Type> id);
+	public abstract boolean equals(Identifier<Type> id);
 }

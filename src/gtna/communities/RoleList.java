@@ -46,7 +46,7 @@ import java.util.Set;
  * @author benni
  * 
  */
-public class RoleList implements GraphProperty {
+public class RoleList extends GraphProperty {
 	private Role[] roles;
 
 	public RoleList(Role[] roles) {

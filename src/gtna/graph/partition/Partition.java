@@ -46,7 +46,7 @@ import java.util.Comparator;
  * @author benni
  * 
  */
-public class Partition implements GraphProperty {
+public class Partition extends GraphProperty {
 
 	private int[][] components;
 

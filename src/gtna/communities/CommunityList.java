@@ -48,7 +48,7 @@ import java.util.HashMap;
  * @author benni
  * 
  */
-public class CommunityList implements GraphProperty {
+public class CommunityList extends GraphProperty {
 	private Community[] communities;
 
 	private int[] communityOfNode;

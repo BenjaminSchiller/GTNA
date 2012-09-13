@@ -45,7 +45,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class ChordIdentifier implements BIIdentifier,
+public class ChordIdentifier extends BIIdentifier implements
 		Comparable<ChordIdentifier> {
 	private ChordIdentifierSpace idSpace;
 

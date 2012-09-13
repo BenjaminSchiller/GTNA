@@ -39,5 +39,5 @@ package gtna.id;
  * @author benni
  * 
  */
-public interface DIdentifier extends Identifier<Double> {
+public abstract class DIdentifier extends Identifier<Double> {
 }
