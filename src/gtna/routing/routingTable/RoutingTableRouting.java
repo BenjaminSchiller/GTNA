@@ -57,9 +57,14 @@ public class RoutingTableRouting extends RoutingAlgorithm {
 	protected RoutingTables rt;
 
 	public RoutingTableRouting() {
-		super("ROUTING_TABLE_ROUTING");
+		this("ROUTING_TABLE_ROUTING");
 	}
 
+	protected RoutingTableRouting(String key) {
+		super(key);
+	}
+
+	@Override
 	public void preprocess(Graph graph) {
 		super.preprocess(graph);
 		if (this.hasRoutingTable(graph)) {
@@ -70,26 +75,24 @@ public class RoutingTableRouting extends RoutingAlgorithm {
 	@Override
 	public Route routeToTarget(Graph graph, int start, Identifier target,
 			Random rand) {
-		System.out.print(target + " @ " + start);
 		return this.routeToTarget(new ArrayList<Integer>(), start, target,
 				graph.getNodes());
 	}
 
 	public Route routeToTarget(ArrayList<Integer> route, int current,
 			Identifier target, Node[] nodes) {
-		System.out.print(" => " + current);
 		route.add(current);
-		if (this.isEndPoint(current, target)) {
-			System.out.println("\n" + current + " is endpoint for " + target);
+
+		if (this.isEndPoint(current, target))
 			return new Route(route, true);
-		}
-		if (route.size() > ttl) {
+
+		if (route.size() > ttl)
 			return new Route(route, false);
-		}
+
 		int nextHop = this.rt.getRoutingTable(current).getNextHop(target);
-		if (nextHop == RoutingTables.noRoute) {
+		if (nextHop == current || nextHop == RoutingTables.noRoute)
 			return new Route(route, false);
-		}
+
 		return this.routeToTarget(route, nextHop, target, nodes);
 	}
 
