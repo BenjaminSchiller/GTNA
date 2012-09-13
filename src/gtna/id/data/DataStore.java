@@ -53,17 +53,24 @@ public abstract class DataStore {
 
 	protected int node;
 
+	protected String key;
+
 	/**
 	 * 
 	 * @param node
 	 *            index of the node this data store belongs to
 	 */
-	public DataStore(int node) {
+	public DataStore(int node, String key) {
 		this.node = node;
+		this.key = key;
 	}
 
 	public int getNode() {
 		return this.node;
+	}
+
+	public String getKey() {
+		return this.key;
 	}
 
 	/**

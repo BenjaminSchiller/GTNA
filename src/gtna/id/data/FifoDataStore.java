@@ -51,7 +51,7 @@ public class FifoDataStore extends UnlimitedDataStore {
 	protected int max;
 
 	public FifoDataStore(int node, int max) {
-		super(node);
+		super(node, "FIFO");
 		this.max = max;
 		this.list = new LinkedList<Identifier>();
 	}

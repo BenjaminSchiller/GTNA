@@ -53,9 +53,13 @@ import java.util.Set;
 public class UnlimitedDataStore extends DataStore {
 
 	protected Map<Identifier, DataItem> storage;
+	
+	public UnlimitedDataStore(int node){
+		this(node, "UNLIMITED");
+	}
 
-	public UnlimitedDataStore(int node) {
-		super(node);
+	protected UnlimitedDataStore(int node, String key) {
+		super(node, key);
 		this.storage = new HashMap<Identifier, DataItem>();
 	}
 

@@ -51,7 +51,7 @@ public class LruDataStore extends UnlimitedDataStore {
 	protected int max;
 
 	public LruDataStore(int node, int max) {
-		super(node);
+		super(node, "LRU");
 		this.max = max;
 		this.list = new LinkedList<Identifier>();
 	}
