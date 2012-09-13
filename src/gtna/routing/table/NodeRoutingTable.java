@@ -51,12 +51,13 @@ public class NodeRoutingTable extends RoutingTable {
 	private static final String delimiter = ";";
 
 	public NodeRoutingTable(int node, int[] nextHop) {
+		this.node = node;
 		this.nextHop = nextHop;
 	}
 
 	@Override
 	public String asString() {
-		StringBuffer buff = new StringBuffer(this.node);
+		StringBuffer buff = new StringBuffer(this.node + "");
 		for (int i = 0; i < this.nextHop.length; i++) {
 			buff.append(delimiter + this.nextHop[i]);
 		}

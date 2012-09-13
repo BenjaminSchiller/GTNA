@@ -37,18 +37,18 @@ package gtna.routing.table;
 
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
-import gtna.id.ring.RingPartition;
+import gtna.graph.GraphPropertyHelper;
+import gtna.io.Filereader;
 import gtna.io.Filewriter;
-import gtna.util.Config;
 
 /**
  * @author benni
  * 
  */
-public class RoutingTables implements GraphProperty {
-	
+public class RoutingTables extends GraphPropertyHelper implements GraphProperty {
+
 	protected RoutingTable[] tables;
-	
+
 	public static final int noRoute = -1;
 
 	public RoutingTables(RoutingTable[] tables) {
@@ -63,40 +63,44 @@ public class RoutingTables implements GraphProperty {
 	public boolean write(String filename, String key) {
 		Filewriter fw = new Filewriter(filename);
 
-		// CLASS
-		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
-		fw.writeln(this.getClass().getCanonicalName().toString());
+		this.writeHeader(fw, this.getClass(), key);
 
-		// KEY
-		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
-		fw.writeln(key);
-
-		// # MODULUS
-		fw.writeComment("Modulus");
-		fw.writeln(this.modulus);
-
-		// # WRAP-AROUND
-		fw.writeComment("Wrap-around");
-		fw.writeln(this.wrapAround + "");
-
-		// # PARTITIONS
-		fw.writeComment("Partitions");
-		fw.writeln(this.partitions.length);
+		this.writeParameter(fw, "Routing Table Class", this.tables[0].getClass());
+		this.writeParameter(fw, "Routing Tables", this.tables.length);
 
 		fw.writeln();
 
-		// PARTITIONS
-		int index = 0;
-		for (RingPartition p : this.partitions) {
-			fw.writeln(index++ + ":" + p.toString());
+		for (RoutingTable table : this.tables) {
+			fw.writeln(table.asString());
 		}
 
 		return fw.close();
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void read(String filename, Graph graph) {
-		// TODO Auto-generated method stub
+		Filereader fr = new Filereader(filename);
 
+		String key = this.readHeader(fr);
+		
+		Class routingTableClass = this.readClass(fr);
+		int routingTables = this.readInt(fr);
+		
+		this.tables = new RoutingTable[routingTables];
+		for(int i=0; i<routingTables; i++){
+			try {
+				RoutingTable rt = (RoutingTable) routingTableClass.newInstance();
+				this.tables[i] = rt;
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		fr.close();
+		
+		graph.addProperty(key, this);
 	}
 }
