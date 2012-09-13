@@ -45,7 +45,6 @@ import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
 import gtna.id.DPartition;
 import gtna.id.Identifier;
-import gtna.id.data.DataStorageList;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
 import gtna.util.parameter.IntParameter;
@@ -69,8 +68,6 @@ public abstract class GreedyTemplate extends RoutingAlgorithm {
 	BIIdentifierSpace idSpaceBI;
 
 	BIPartition[] pBI;
-
-	private DataStorageList dsl;
 
 	private int ttl;
 
@@ -124,11 +121,7 @@ public abstract class GreedyTemplate extends RoutingAlgorithm {
 	private Route routeBI(ArrayList<Integer> route, int current,
 			BIIdentifier target, Random rand, Node[] nodes) {
 		route.add(current);
-		if (this.idSpaceBI.getPartitions()[current].contains(target)) {
-			return new Route(route, true);
-		}
-		if (this.dsl != null
-				&& this.dsl.getStorageForNode(current).containsId(target)) {
+		if (this.isEndPoint(current, target)) {
 			return new Route(route, true);
 		}
 		if (route.size() > this.ttl) {
@@ -155,11 +148,7 @@ public abstract class GreedyTemplate extends RoutingAlgorithm {
 	private Route routeD(ArrayList<Integer> route, int current,
 			DIdentifier target, Random rand, Node[] nodes) {
 		route.add(current);
-		if (this.idSpaceD.getPartitions()[current].contains(target)) {
-			return new Route(route, true);
-		}
-		if (this.dsl != null
-				&& this.dsl.getStorageForNode(current).containsId(target)) {
+		if (this.isEndPoint(current, target)) {
 			return new Route(route, true);
 		}
 		if (route.size() > this.ttl) {
@@ -181,6 +170,7 @@ public abstract class GreedyTemplate extends RoutingAlgorithm {
 
 	@Override
 	public void preprocess(Graph graph) {
+		super.preprocess(graph);
 		GraphProperty p = graph.getProperty("ID_SPACE_0");
 		if (p instanceof DIdentifierSpace) {
 			this.idSpaceD = (DIdentifierSpace) p;
@@ -197,9 +187,6 @@ public abstract class GreedyTemplate extends RoutingAlgorithm {
 			this.pD = null;
 			this.idSpaceBI = null;
 			this.pBI = null;
-		}
-		if (graph.hasProperty("DATA_STORAGE_0")) {
-			this.dsl = (DataStorageList) graph.getProperty("DATA_STORAGE_0");
 		}
 	}
 

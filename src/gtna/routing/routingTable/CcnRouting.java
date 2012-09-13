@@ -52,12 +52,6 @@ public class CcnRouting extends RoutingTableRouting {
 		super("CCN_ROUTING");
 	}
 
-	// @Override
-	// public void preprocess(Graph graph) {
-	// super.preprocess(graph);
-	// this.dataStorageList = new DataStorageList(this.dataStorageList);
-	// }
-
 	@Override
 	public Route routeToTarget(Graph graph, int start, Identifier target,
 			Random rand) {

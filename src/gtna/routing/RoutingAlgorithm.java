@@ -38,7 +38,7 @@ package gtna.routing;
 import gtna.graph.Graph;
 import gtna.id.Identifier;
 import gtna.id.IdentifierSpace;
-import gtna.id.data.DataStorage;
+import gtna.id.data.DataStoreList;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.ParameterList;
 
@@ -57,7 +57,7 @@ public abstract class RoutingAlgorithm extends ParameterList {
 
 	protected IdentifierSpace identifierSpace;
 
-	protected DataStorage dataStorageList;
+	protected DataStoreList dataStorageList;
 
 	public RoutingAlgorithm(String key) {
 		super(key);
@@ -101,24 +101,14 @@ public abstract class RoutingAlgorithm extends ParameterList {
 	 *            list of all nodes contained in the network
 	 */
 	public void preprocess(Graph graph) {
-		if (this.hasIdentifierSpace(graph)) {
+		if (graph.hasProperty("ID_SPACE_0", IdentifierSpace.class)) {
 			this.identifierSpace = (IdentifierSpace) graph
 					.getProperty("ID_SPACE_0");
 		}
-		if (this.hasDataStorage(graph)) {
-			this.dataStorageList = (DataStorage) graph
+		if (graph.hasProperty("DATA_STORAGE_0", DataStoreList.class)) {
+			this.dataStorageList = (DataStoreList) graph
 					.getProperty("DATA_STORAGE_0");
 		}
-	}
-
-	protected boolean hasIdentifierSpace(Graph graph) {
-		return graph.hasProperty("ID_SPACE_0")
-				&& graph.getProperty("ID_SPACE_0") instanceof IdentifierSpace;
-	}
-
-	protected boolean hasDataStorage(Graph graph) {
-		return graph.hasProperty("DATA_STORAGE_0")
-				&& graph.getProperty("DATA_STORAGE_0") instanceof DataStorage;
 	}
 
 	public boolean hasDataItem(int node, Identifier id) {

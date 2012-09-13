@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * BasicDataStorageList.java
+ * DataStorageGraphProperty.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,52 +33,57 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.id.data;
+package gtna.id.data;
 
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
-import gtna.id.IdentifierSpace;
-import gtna.id.Partition;
-import gtna.id.data.DataStorage;
-import gtna.id.data.DataStorageList;
-import gtna.transformation.Transformation;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author benni
  * 
  */
-public class BasicDataStorage extends Transformation {
+public class DataStoreList implements GraphProperty {
+	private DataStore[] list;
 
-	public BasicDataStorage() {
-		super("BASIC_DATA_STORAGE");
+	private Set<DataItem> dataItems;
+
+	public DataStoreList() {
+		this.list = new DataStore[0];
+		this.dataItems = new HashSet<DataItem>();
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Graph transform(Graph g) {
-		for (GraphProperty gp : g.getProperties("ID_SPACE")) {
-			g.addProperty(g.getNextKey("DATA_STORAGE"), BasicDataStorage
-					.getBasicDataStorage((IdentifierSpace) gp));
+	public DataStoreList(DataStore[] list) {
+		this.list = list;
+		this.dataItems = new HashSet<DataItem>();
+		for (DataStore ds : list) {
+			this.dataItems.addAll(ds.getData());
 		}
-		return g;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static DataStorageList getBasicDataStorage(IdentifierSpace ids) {
-		DataStorage[] list = new DataStorage[ids.getPartitions().length];
-		int index = 0;
+	public DataStore[] getList() {
+		return this.list;
+	}
 
-		for (Partition p : ids.getPartitions()) {
-			list[index++] = new DataStorage(p.getRepresentativeID());
-		}
+	public Set<DataItem> getDataItems() {
+		return this.dataItems;
+	}
 
-		return new DataStorageList(list);
+	public DataStore getStorageForNode(int index) {
+		return this.list[index];
 	}
 
 	@Override
-	public boolean applicable(Graph g) {
-		return g.hasProperty("ID_SPACE_0")
-				&& g.getProperty("ID_SPACE_0") instanceof IdentifierSpace;
+	public boolean write(String filename, String key) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public void read(String filename, Graph graph) {
+		// TODO Auto-generated method stub
 	}
 
 }

@@ -37,8 +37,8 @@ package gtna.transformation.id.node;
 
 import gtna.algorithms.shortestPaths.Dijkstra;
 import gtna.graph.Graph;
-import gtna.id.data.DataStorage;
-import gtna.id.data.DataStorageList;
+import gtna.id.data.DataStore;
+import gtna.id.data.DataStoreList;
 import gtna.id.node.NodeIdentifier;
 import gtna.id.node.NodeIdentifierSpace;
 import gtna.id.node.NodePartition;
@@ -48,6 +48,7 @@ import gtna.routing.table.RoutingTables;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
  * @author benni
@@ -55,18 +56,14 @@ import gtna.util.parameter.Parameter;
  */
 public class NodeIdentifierSpaceRoutingTable extends Transformation {
 
-	private int dataItemsPerNode;
+	protected DataStore dataStore;
 
-	public NodeIdentifierSpaceRoutingTable() {
-		super("NODE_IDENTIFIER_SPACE_ROUTING_TABLE");
-		this.dataItemsPerNode = 0;
-	}
-
-	public NodeIdentifierSpaceRoutingTable(int dataItemsPerNode) {
+	public NodeIdentifierSpaceRoutingTable(DataStore dataStore,
+			int dataItemsPerNode) {
 		super("NODE_IDENTIFIER_SPACE_ROUTING_TABLE",
-				new Parameter[] { new IntParameter("DATA_ITEMS_PER_NODE",
-						dataItemsPerNode) });
-		this.dataItemsPerNode = dataItemsPerNode;
+				new Parameter[] { new StringParameter("DATA_STORE",
+						dataStore.getKey()) });
+		this.dataStore = dataStore;
 	}
 
 	@Override
@@ -85,20 +82,6 @@ public class NodeIdentifierSpaceRoutingTable extends Transformation {
 		}
 		RoutingTables rt = new RoutingTables(tables);
 		g.addProperty(g.getNextKey("ROUTING_TABLES"), rt);
-
-		if (this.dataItemsPerNode < 2) {
-			return g;
-		}
-
-		DataStorage[] ds = new DataStorage[g.getNodeCount()];
-		for (int i = 0; i < ds.length; i++) {
-			ds[i] = new DataStorage();
-			for (int data = 0; data < this.dataItemsPerNode; data++) {
-				ds[i].add(new NodeIdentifier(i, data));
-			}
-		}
-		DataStorageList dsl = new DataStorageList(ds);
-		g.addProperty(g.getNextKey("DATA_STORAGE"), dsl);
 
 		return g;
 	}

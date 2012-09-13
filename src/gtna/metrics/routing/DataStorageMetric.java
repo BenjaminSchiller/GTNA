@@ -38,7 +38,7 @@ package gtna.metrics.routing;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.id.data.DataStore;
-import gtna.id.data.DataStorage;
+import gtna.id.data.DataStoreList;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -63,7 +63,7 @@ public class DataStorageMetric extends Metric {
 
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		DataStorage dsl = (DataStorage) g.getProperty("DATA_STORAGE_0");
+		DataStoreList dsl = (DataStoreList) g.getProperty("DATA_STORAGE_0");
 
 		int max = 0;
 		for (DataStore ds : dsl.getList()) {
@@ -108,7 +108,7 @@ public class DataStorageMetric extends Metric {
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 		return g.hasProperty("DATA_STORAGE_0")
-				&& g.getProperty("DATA_STORAGE_0") instanceof DataStorage;
+				&& g.getProperty("DATA_STORAGE_0") instanceof DataStoreList;
 	}
 
 }

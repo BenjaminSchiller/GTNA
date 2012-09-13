@@ -37,7 +37,7 @@ package gtna.transformation.id.node;
 
 import gtna.graph.Graph;
 import gtna.id.data.DataStore;
-import gtna.id.data.DataStorage;
+import gtna.id.data.DataStoreList;
 import gtna.id.node.NodeIdentifier;
 import gtna.id.node.NodeIdentifierSpace;
 import gtna.transformation.Transformation;
@@ -76,7 +76,7 @@ public class NodeIdsDataStorage extends Transformation {
 				ds[i].add(new NodeIdentifier(i, data));
 			}
 		}
-		DataStorage dsl = new DataStorage(ds);
+		DataStoreList dsl = new DataStoreList(ds);
 		g.addProperty(g.getNextKey("DATA_STORAGE"), dsl);
 
 		return g;

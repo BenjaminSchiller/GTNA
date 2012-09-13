@@ -39,9 +39,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
-import gtna.id.DPartition;
 import gtna.id.Identifier;
-import gtna.id.data.DataStorageList;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
 import gtna.util.parameter.IntParameter;
@@ -56,11 +54,6 @@ import java.util.Random;
  * 
  */
 public class GreedyBacktracking extends RoutingAlgorithm {
-	private DIdentifierSpace idSpace;
-
-	private DPartition[] p;
-
-	private DataStorageList dsl;
 
 	private int ttl;
 
@@ -84,26 +77,24 @@ public class GreedyBacktracking extends RoutingAlgorithm {
 				new HashMap<Integer, Integer>());
 	}
 
+	@SuppressWarnings("unchecked")
 	private Route route(ArrayList<Integer> route, int current,
 			DIdentifier target, Random rand, Node[] nodes,
 			HashMap<Integer, Integer> from) {
 		route.add(current);
-		if (this.idSpace.getPartitions()[current].contains(target)) {
-			return new Route(route, true);
-		}
-		if (this.dsl != null
-				&& this.dsl.getStorageForNode(current).containsId(target)) {
+		if (this.isEndPoint(current, target)) {
 			return new Route(route, true);
 		}
 		if (route.size() > ttl) {
 			return new Route(route, false);
 		}
-		double currentDist = this.idSpace.getPartitions()[current]
+		double currentDist = (Double) this.identifierSpace.getPartitions()[current]
 				.distance(target);
-		double minDist = this.idSpace.getMaxDistance();
+		double minDist = (Double) this.identifierSpace.getMaxDistance();
 		int minNode = -1;
 		for (int out : nodes[current].getOutgoingEdges()) {
-			double dist = this.p[out].distance(target);
+			double dist = (Double) this.identifierSpace.getPartitions()[out]
+					.distance(target);
 			if (dist < minDist && dist < currentDist && !from.containsKey(out)) {
 				minDist = dist;
 				minNode = out;
@@ -121,17 +112,7 @@ public class GreedyBacktracking extends RoutingAlgorithm {
 
 	@Override
 	public boolean applicable(Graph graph) {
-		return graph.hasProperty("ID_SPACE_0")
-				&& graph.getProperty("ID_SPACE_0") instanceof DIdentifierSpace;
-	}
-
-	@Override
-	public void preprocess(Graph graph) {
-		this.idSpace = (DIdentifierSpace) graph.getProperty("ID_SPACE_0");
-		this.p = (DPartition[]) idSpace.getPartitions();
-		if (graph.hasProperty("DATA_STORAGE_0")) {
-			this.dsl = (DataStorageList) graph.getProperty("DATA_STORAGE_0");
-		}
+		return graph.hasProperty("ID_SPACE_0", DIdentifierSpace.class);
 	}
 
 }

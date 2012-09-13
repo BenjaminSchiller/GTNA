@@ -38,9 +38,6 @@ package gtna.routing.multiPhase;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.Identifier;
-import gtna.id.IdentifierSpace;
-import gtna.id.Partition;
-import gtna.id.data.DataStorageList;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
 import gtna.util.parameter.IntParameter;
@@ -54,18 +51,12 @@ import java.util.Random;
  * @author benni
  * 
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({ "rawtypes" })
 public class MultiPhaseRouting extends RoutingAlgorithm {
 
 	private int retries;
 
 	private RoutingAlgorithm[] phases;
-
-	private IdentifierSpace ids;
-
-	private Partition[] p;
-
-	private DataStorageList dsl;
 
 	public MultiPhaseRouting(RoutingAlgorithm[] phases) {
 		super("MULTI_PHASE_ROUTING", new Parameter[] { new StringParameter(
@@ -95,11 +86,7 @@ public class MultiPhaseRouting extends RoutingAlgorithm {
 		ArrayList<Integer> route = new ArrayList<Integer>();
 		route.add(start);
 
-		if (this.p[start].contains(target)) {
-			return new Route(route, true);
-		}
-		if (this.dsl != null
-				&& this.dsl.getStorageForNode(start).containsId(target)) {
+		if (this.isEndPoint(start, target)) {
 			return new Route(route, true);
 		}
 
@@ -140,11 +127,8 @@ public class MultiPhaseRouting extends RoutingAlgorithm {
 
 	@Override
 	public void preprocess(Graph graph) {
-		this.ids = (IdentifierSpace) graph.getProperty("ID_SPACE_0");
-		this.p = this.ids.getPartitions();
-		if (graph.hasProperty("DATA_STORAGE_0")) {
-			this.dsl = (DataStorageList) graph.getProperty("DATA_STORAGE_0");
-		}
+		super.preprocess(graph);
+
 		for (RoutingAlgorithm phase : this.phases) {
 			phase.preprocess(graph);
 		}

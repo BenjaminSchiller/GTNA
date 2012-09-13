@@ -38,7 +38,7 @@ package gtna.routing.selection.target;
 import gtna.graph.Graph;
 import gtna.id.Identifier;
 import gtna.id.data.DataItem;
-import gtna.id.data.DataStorage;
+import gtna.id.data.DataStoreList;
 
 /**
  * @author benni
@@ -47,7 +47,7 @@ import gtna.id.data.DataStorage;
 @SuppressWarnings("rawtypes")
 public class DataStorageRandomTargetSelection extends TargetSelection {
 
-	protected DataStorage dsl;
+	protected DataStoreList dsl;
 
 	protected DataItem[] items;
 
@@ -57,7 +57,7 @@ public class DataStorageRandomTargetSelection extends TargetSelection {
 
 	public void init(Graph graph) {
 		super.init(graph);
-		this.dsl = (DataStorage) this.graph.getProperty("DATA_STORAGE_0");
+		this.dsl = (DataStoreList) this.graph.getProperty("DATA_STORAGE_0");
 		this.items = (DataItem[]) this.dsl.getDataItems().toArray(
 				new DataItem[this.dsl.getDataItems().size()]);
 	}
@@ -70,7 +70,7 @@ public class DataStorageRandomTargetSelection extends TargetSelection {
 	@Override
 	public boolean applicable(Graph graph) {
 		return graph.hasProperty("DATA_STORAGE_0")
-				&& graph.getProperty("DATA_STORAGE_0") instanceof DataStorage;
+				&& graph.getProperty("DATA_STORAGE_0") instanceof DataStoreList;
 	}
 
 }

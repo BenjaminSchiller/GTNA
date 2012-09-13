@@ -41,8 +41,6 @@ import gtna.id.BIPartition;
 import gtna.id.DPartition;
 import gtna.id.Identifier;
 import gtna.id.IdentifierSpace;
-import gtna.id.Partition;
-import gtna.id.data.DataStorageList;
 import gtna.id.lookahead.LookaheadElement;
 import gtna.id.lookahead.LookaheadList;
 import gtna.id.lookahead.LookaheadLists;
@@ -66,13 +64,7 @@ public abstract class Lookahead extends RoutingAlgorithm {
 
 	protected ViaSelection viaSelection;
 
-	protected IdentifierSpace idSpace;
-
-	protected Partition[] p;
-
 	protected LookaheadLists lists;
-
-	private DataStorageList dsl;
 
 	protected enum ViaSelection {
 		sequential, minVia
@@ -101,16 +93,14 @@ public abstract class Lookahead extends RoutingAlgorithm {
 			Identifier target, Random rand, Node[] nodes, HashSet<Integer> seen) {
 		route.add(current);
 		seen.add(current);
-		if (this.idSpace.getPartitions()[current].contains(target)) {
-			return new Route(route, true);
-		}
-		if (this.dsl != null
-				&& this.dsl.getStorageForNode(current).containsId(target)) {
+
+		if (this.isEndPoint(current, target)) {
 			return new Route(route, true);
 		}
 		if (route.size() > this.ttl) {
 			return new Route(route, false);
 		}
+
 		LookaheadList list = this.lists.getList(current);
 
 		int via = -1;
@@ -120,8 +110,9 @@ public abstract class Lookahead extends RoutingAlgorithm {
 		}
 
 		if (list.getList()[0].getPartition() instanceof DPartition) {
-			double currentDist = (Double) this.p[current].distance(target);
-			double minDist = (Double) this.idSpace.getMaxDistance();
+			double currentDist = (Double) this.identifierSpace.getPartitions()[current]
+					.distance(target);
+			double minDist = (Double) this.identifierSpace.getMaxDistance();
 			if (this.viaSelection == ViaSelection.sequential) {
 				for (LookaheadElement l : list.getList()) {
 					double dist = ((DPartition) l.getPartition())
@@ -150,10 +141,12 @@ public abstract class Lookahead extends RoutingAlgorithm {
 					via = best.get(0).getVia();
 				} else if (best.size() > 1) {
 					via = best.get(0).getVia();
-					minDist = ((DPartition) this.p[best.get(0).getVia()])
+					minDist = ((DPartition) this.identifierSpace
+							.getPartitions()[best.get(0).getVia()])
 							.distance(target);
 					for (int i = 1; i < best.size(); i++) {
-						double dist = ((DPartition) this.p[best.get(i).getVia()])
+						double dist = ((DPartition) this.identifierSpace
+								.getPartitions()[best.get(i).getVia()])
 								.distance(target);
 						if (dist < minDist) {
 							minDist = dist;
@@ -163,9 +156,10 @@ public abstract class Lookahead extends RoutingAlgorithm {
 				}
 			}
 		} else if (list.getList()[0].getPartition() instanceof BIPartition) {
-			BigInteger currentDist = (BigInteger) this.p[current]
-					.distance(target);
-			BigInteger minDist = (BigInteger) this.idSpace.getMaxDistance();
+			BigInteger currentDist = (BigInteger) this.identifierSpace
+					.getPartitions()[current].distance(target);
+			BigInteger minDist = (BigInteger) this.identifierSpace
+					.getMaxDistance();
 			if (this.viaSelection == ViaSelection.sequential) {
 				for (LookaheadElement l : list.getList()) {
 					BigInteger dist = ((BIPartition) l.getPartition())
@@ -197,11 +191,13 @@ public abstract class Lookahead extends RoutingAlgorithm {
 					via = best.get(0).getVia();
 				} else if (best.size() > 1) {
 					via = best.get(0).getVia();
-					minDist = ((BIPartition) this.p[best.get(0).getVia()])
+					minDist = ((BIPartition) this.identifierSpace
+							.getPartitions()[best.get(0).getVia()])
 							.distance(target);
 					for (int i = 1; i < best.size(); i++) {
-						BigInteger dist = ((BIPartition) this.p[best.get(i)
-								.getVia()]).distance(target);
+						BigInteger dist = ((BIPartition) this.identifierSpace
+								.getPartitions()[best.get(i).getVia()])
+								.distance(target);
 						if (dist.compareTo(minDist) == -1) {
 							minDist = dist;
 							via = best.get(i).getVia();
@@ -221,17 +217,13 @@ public abstract class Lookahead extends RoutingAlgorithm {
 
 	@Override
 	public boolean applicable(Graph graph) {
-		return graph.hasProperty("LOOKAHEAD_LIST_0")
-				&& graph.getProperty("LOOKAHEAD_LIST_0") instanceof LookaheadLists;
+		return graph.hasProperty("ID_SPACE_0", IdentifierSpace.class)
+				&& graph.hasProperty("LOOKAHEAD_LIST_0", LookaheadList.class);
 	}
 
 	@Override
 	public void preprocess(Graph graph) {
-		this.idSpace = (IdentifierSpace) graph.getProperty("ID_SPACE_0");
-		this.p = (Partition[]) this.idSpace.getPartitions();
+		super.preprocess(graph);
 		this.lists = (LookaheadLists) graph.getProperty("LOOKAHEAD_LIST_0");
-		if (graph.hasProperty("DATA_STORAGE_0")) {
-			this.dsl = (DataStorageList) graph.getProperty("DATA_STORAGE_0");
-		}
 	}
 }

@@ -38,8 +38,11 @@ package gtna.routing.routingTable;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.Identifier;
+import gtna.id.IdentifierSpace;
+import gtna.id.data.DataStoreList;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
+import gtna.routing.table.RoutingTable;
 import gtna.routing.table.RoutingTables;
 
 import java.util.ArrayList;
@@ -67,7 +70,7 @@ public class RoutingTableRouting extends RoutingAlgorithm {
 	@Override
 	public void preprocess(Graph graph) {
 		super.preprocess(graph);
-		if (this.hasRoutingTable(graph)) {
+		if (graph.hasProperty("ROUTING_TABLES_0", RoutingTable.class)) {
 			this.rt = (RoutingTables) graph.getProperty("ROUTING_TABLES_0");
 		}
 	}
@@ -96,16 +99,10 @@ public class RoutingTableRouting extends RoutingAlgorithm {
 		return this.routeToTarget(route, nextHop, target, nodes);
 	}
 
-	protected boolean hasRoutingTable(Graph graph) {
-		return graph.hasProperty("ROUTING_TABLES_0")
-				&& graph.getProperty("ROUTING_TABLES_0") instanceof RoutingTables;
-	}
-
 	@Override
 	public boolean applicable(Graph graph) {
-		return this.hasRoutingTable(graph)
-				&& (this.hasIdentifierSpace(graph) || this
-						.hasDataStorage(graph));
+		return graph.hasProperty("ROUTING_TABLES_0", RoutingTable.class)
+				&& (graph.hasProperty("ID_SPACE_0", IdentifierSpace.class) || graph
+						.hasProperty("DATA_STORAGE_0", DataStoreList.class));
 	}
-
 }
