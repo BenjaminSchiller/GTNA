@@ -111,7 +111,8 @@ public class Routing extends Metric {
 
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-		return this.ra.applicable(g);
+		return this.ra.applicable(g) && this.sourceSelection.applicable(g)
+				&& this.targetSelection.applicable(g);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -127,44 +128,43 @@ public class Routing extends Metric {
 		this.routes = new Route[graph.getNodes().length * routesPerNode];
 		int index = 0;
 
-		int parallel = Config.getInt("PARALLEL_ROUTINGS");
-		if (parallel == 1) {
-			for (int n = 0; n < graph.getNodeCount(); n++) {
-				for (int i = 0; i < routesPerNode; i++) {
-					int start = this.sourceSelection.getNextSrc();
-					Identifier target = this.targetSelection.getNextTarget();
-					Route r = this.ra.routeToTarget(graph, start, target, rand);
-					System.out.println(index + ": " + r.getHops());
-					this.routes[index++] = r;
-				}
+		// int parallel = Config.getInt("PARALLEL_ROUTINGS");
+		// if (parallel == 1) {
+		for (int n = 0; n < graph.getNodeCount(); n++) {
+			for (int i = 0; i < routesPerNode; i++) {
+				int start = this.sourceSelection.getNextSrc();
+				Identifier target = this.targetSelection.getNextTarget();
+				Route r = this.ra.routeToTarget(graph, start, target, rand);
+				this.routes[index++] = r;
 			}
-		} else {
-			System.err
-					.println("parallelization in routing not supported right now");
-			// RoutingThread[] threads = new RoutingThread[parallel];
-			// for (int i = 0; i < threads.length; i++) {
-			// int start = graph.getNodes().length / threads.length * i;
-			// int end = graph.getNodes().length / threads.length * (i + 1)
-			// - 1;
-			// if (i == threads.length - 1) {
-			// end = graph.getNodes().length - 1;
-			// }
-			// threads[i] = new RoutingThread(start, end, routesPerNode,
-			// graph, ra, rand);
-			// threads[i].start();
-			// }
-			// index = 0;
-			// for (RoutingThread t : threads) {
-			// try {
-			// t.join();
-			// } catch (InterruptedException e) {
-			// e.printStackTrace();
-			// }
-			// for (Route r : t.getRoutes()) {
-			// this.routes[index++] = r;
-			// }
-			// }
 		}
+		// } else {
+		// System.err
+		// .println("parallelization in routing not supported right now");
+		// RoutingThread[] threads = new RoutingThread[parallel];
+		// for (int i = 0; i < threads.length; i++) {
+		// int start = graph.getNodes().length / threads.length * i;
+		// int end = graph.getNodes().length / threads.length * (i + 1)
+		// - 1;
+		// if (i == threads.length - 1) {
+		// end = graph.getNodes().length - 1;
+		// }
+		// threads[i] = new RoutingThread(start, end, routesPerNode,
+		// graph, ra, rand);
+		// threads[i].start();
+		// }
+		// index = 0;
+		// for (RoutingThread t : threads) {
+		// try {
+		// t.join();
+		// } catch (InterruptedException e) {
+		// e.printStackTrace();
+		// }
+		// for (Route r : t.getRoutes()) {
+		// this.routes[index++] = r;
+		// }
+		// }
+		// }
 
 		this.hopDistribution = this.computeHopDistribution();
 		this.hopDistributionAbsolute = this.computeHopDistributionAbsolute();
