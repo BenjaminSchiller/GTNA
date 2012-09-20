@@ -139,7 +139,7 @@ public class GTNA {
 		// + "WEAK_CONNECTIVITY");
 		Metric[] metrics = new Metric[] { new DegreeDistribution() };
 
-		Transformation t1 = new RandomRingIDSpace();
+		Transformation t1 = new RandomRingIDSpace(true);
 		Transformation t2 = new Bidirectional();
 		Transformation[] t = new Transformation[] { t1, t2 };
 
