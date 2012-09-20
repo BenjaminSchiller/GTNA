@@ -111,15 +111,14 @@ public class Chord extends Network {
 		Edges edges = new Edges(nodes, nodes.length * this.bits);
 		for (Node node : nodes) {
 			ChordPartition p = partitions[node.getIndex()];
-			BigInteger id = p.getSucc().getId();
+			BigInteger id = ((ChordIdentifier) p.getRepresentativeIdentifier()).position;
 			// BigInteger predID = p.getPred().getId();
-			BigInteger succID = id.add(BigInteger.ONE)
-					.mod(idSpace.getModulus());
+			BigInteger succID = id.add(BigInteger.ONE).mod(idSpace.modulus);
 
 			// int predIndex = this.find(partitions, p.getPred(),
 			// node.getIndex());
-			int succIndex = this.find(partitions, new ChordIdentifier(idSpace,
-					succID), node.getIndex());
+			int succIndex = this.find(partitions, new ChordIdentifier(succID,
+					this.bits), node.getIndex());
 
 			BigInteger add = BigInteger.ONE;
 			int[] fingerIndex = new int[this.bits];
@@ -127,22 +126,10 @@ public class Chord extends Network {
 			for (int i = 0; i < this.bits; i++) {
 				fingerID[i] = id.add(add).mod(idSpace.getModulus());
 				fingerIndex[i] = this.find(partitions, new ChordIdentifier(
-						idSpace, fingerID[i]), node.getIndex());
+						fingerID[i], this.bits), node.getIndex());
 				add = add.shiftLeft(1);
 			}
 
-			// System.out.println(p);
-			// System.out.println("  pred = " + predID + " => "
-			// + partitions[predIndex]);
-			// System.out.println("  succ = " + succID + " => "
-			// + partitions[succIndex]);
-			// for (int i = 0; i < fingerIndex.length; i++) {
-			// System.out.println("  f[" + i + "] = " + fingerID[i] + " => "
-			// + partitions[fingerIndex[i]]);
-			// }
-			// System.out.println();
-
-			// edges.add(node.getIndex(), predIndex);
 			edges.add(node.getIndex(), succIndex);
 			for (int finger : fingerIndex) {
 				edges.add(node.getIndex(), finger);

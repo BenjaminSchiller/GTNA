@@ -35,91 +35,102 @@
  */
 package gtna.networks.p2p.chord;
 
-import gtna.id.BIIdentifier;
+import gtna.id.BiIdentifier;
 import gtna.id.Identifier;
 
 import java.math.BigInteger;
-import java.util.Random;
 
 /**
  * @author benni
  * 
  */
-public class ChordIdentifier extends BIIdentifier implements
-		Comparable<ChordIdentifier> {
-	private ChordIdentifierSpace idSpace;
+public class ChordIdentifier extends BiIdentifier {
 
-	private BigInteger id;
+	protected BigInteger position;
 
-	public ChordIdentifier(ChordIdentifierSpace idSpace, BigInteger id) {
-		this.idSpace = idSpace;
-		this.id = id;
+	protected int bits;
+
+	protected BigInteger modulus;
+
+	public ChordIdentifier(BigInteger position, int bits) {
+		this.position = position;
+		this.bits = bits;
+		this.modulus = BigInteger.ONE.add(BigInteger.ONE).pow(this.bits);
 	}
 
-	public ChordIdentifier(ChordIdentifierSpace idSpace, String string) {
-		this.id = null;
-		this.id = new BigInteger(string);
-	}
-
-	@Override
-	public int compareTo(ChordIdentifier arg0) {
-		return this.id.compareTo(((ChordIdentifier) arg0).getId());
-	}
-
-	public BigInteger distance(Identifier<BigInteger> id) {
-		BigInteger dest = ((ChordIdentifier) id).getId();
-		if (this.id.compareTo(dest) == -1) {
-			return dest.subtract(this.id);
-		} else {
-			return this.idSpace.getModulus().subtract(this.id).add(dest);
-		}
-		// BigInteger sub1 = this.id.subtract(dest).abs();
-		// BigInteger sub2 = this.idSpace.getModulus().subtract(sub1);
-		// return sub1.min(sub2);
-	}
-
-	@Override
-	public boolean equals(Identifier<BigInteger> id) {
-		return this.id.equals(((ChordIdentifier) id).getId());
-	}
-
-	public static ChordIdentifier rand(Random rand, ChordIdentifierSpace idSpace) {
-		return new ChordIdentifier(idSpace, new BigInteger(idSpace.getBits(),
-				rand));
-	}
-
-	/**
-	 * @return the idSpace
-	 */
-	public ChordIdentifierSpace getIdSpace() {
-		return this.idSpace;
-	}
-
-	/**
-	 * @param idSpace
-	 *            the idSpace to set
-	 */
-	public void setIdSpace(ChordIdentifierSpace idSpace) {
-		this.idSpace = idSpace;
-	}
-
-	/**
-	 * @return the id
-	 */
-	public BigInteger getId() {
-		return this.id;
-	}
-
-	/**
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(BigInteger id) {
-		this.id = id;
+	public ChordIdentifier(String string) {
+		String[] temp = string.split(Identifier.delimiter);
+		this.position = new BigInteger(temp[0]);
+		this.bits = Integer.parseInt(temp[1]);
+		this.modulus = BigInteger.ONE.add(BigInteger.ONE).pow(this.bits);
 	}
 
 	public String toString() {
-		return this.id.toString();
+		return "Chord:" + this.position;
+	}
+
+	@Override
+	public int compareTo(BiIdentifier o) {
+		return this.position.compareTo(((ChordIdentifier) o).getPosition());
+	}
+
+	@Override
+	public BigInteger distance(BiIdentifier id) {
+		BigInteger pos = ((ChordIdentifier) id).getPosition();
+
+		if (this.position.compareTo(pos) == -1)
+			return pos.subtract(this.position);
+
+		return this.modulus.subtract(this.position).add(pos);
+	}
+
+	@Override
+	public String asString() {
+		return this.position.toString() + Identifier.delimiter + this.bits;
+	}
+
+	@Override
+	public boolean equals(Identifier id) {
+		return this.position.equals(((ChordIdentifier) id).getPosition())
+				&& this.bits == ((ChordIdentifier) id).getBits();
+	}
+
+	/**
+	 * @return the position
+	 */
+	public BigInteger getPosition() {
+		return this.position;
+	}
+
+	/**
+	 * @param position
+	 *            the position to set
+	 */
+	public void setPosition(BigInteger position) {
+		this.position = position;
+	}
+
+	/**
+	 * @return the bits
+	 */
+	public int getBits() {
+		return this.bits;
+	}
+
+	/**
+	 * @param bits
+	 *            the bits to set
+	 */
+	public void setBits(int bits) {
+		this.bits = bits;
+		this.modulus = BigInteger.ONE.add(BigInteger.ONE).pow(this.bits);
+	}
+
+	/**
+	 * @return the modulus
+	 */
+	public BigInteger getModulus() {
+		return this.modulus;
 	}
 
 }

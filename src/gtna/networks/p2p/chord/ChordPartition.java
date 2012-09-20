@@ -35,101 +35,133 @@
  */
 package gtna.networks.p2p.chord;
 
-import gtna.id.BIIdentifier;
-import gtna.id.BIPartition;
+import gtna.id.BiIdentifier;
+import gtna.id.BiPartition;
 import gtna.id.Identifier;
 import gtna.id.Partition;
 
 import java.math.BigInteger;
+import java.util.Random;
 
 /**
  * @author benni
  * 
  */
-public class ChordPartition extends BIPartition {
-	private ChordIdentifier pred;
+public class ChordPartition extends BiPartition {
 
-	private ChordIdentifier succ;
+	protected ChordIdentifier start;
 
-	public ChordPartition(ChordIdentifier pred, ChordIdentifier succ) {
-		this.pred = pred;
-		this.succ = succ;
+	protected ChordIdentifier end;
+
+	public ChordPartition(ChordIdentifier start, ChordIdentifier end) {
+		this.start = start;
+		this.end = end;
 	}
 
 	public ChordPartition(String string) {
-		this(string, null);
-	}
-
-	public ChordPartition(String string, ChordIdentifierSpace idSpace) {
-		String[] temp = string.replace("(", "").replace("]", "").split(",");
-		this.pred = new ChordIdentifier(idSpace, temp[0]);
-		this.succ = new ChordIdentifier(idSpace, temp[1]);
+		String[] temp = string.split(Partition.delimiter);
+		int bits = Integer.parseInt(temp[2]);
+		this.start = new ChordIdentifier(new BigInteger(temp[0]), bits);
+		this.end = new ChordIdentifier(new BigInteger(temp[1]), bits);
 	}
 
 	public String toString() {
-		return "(" + this.pred.getId() + "," + this.succ.getId() + "]";
+		return "Chord (" + this.start.getPosition() + ", "
+				+ this.end.getPosition() + "]";
 	}
 
 	@Override
-	public BigInteger distance(Identifier<BigInteger> id) {
-		if (this.contains(id)) {
+	public BigInteger distance(BiIdentifier id) {
+		if (this.contains(id))
 			return BigInteger.ZERO;
-		}
-		return this.succ.distance(id);
+
+		return this.end.distance(id);
 	}
 
 	@Override
-	public boolean equals(Partition<BigInteger> partition) {
-		ChordPartition compare = (ChordPartition) partition;
-		return this.pred.equals(compare.getPred())
-				&& this.succ.equals(compare.getSucc());
+	public BigInteger distance(BiPartition p) {
+		return this.end.distance(((ChordPartition) p).getEnd());
 	}
 
 	@Override
-	public boolean contains(Identifier<BigInteger> id) {
-		BigInteger v = ((ChordIdentifier) id).getId();
-		BigInteger p = this.pred.getId();
-		BigInteger s = this.succ.getId();
-		if (this.pred.getId().compareTo(this.succ.getId()) == -1) {
-			return p.compareTo(v) == -1 && v.compareTo(s) != 1;
-		} else {
-			return p.compareTo(v) == -1 || v.compareTo(s) != 1;
-		}
+	public String asString() {
+		return this.start.position + Partition.delimiter + this.end.position
+				+ Partition.delimiter + this.start.getBits();
 	}
 
 	@Override
-	public BIIdentifier getRepresentativeID() {
-		return this.succ;
+	public boolean contains(Identifier id) {
+		BigInteger start = this.start.position;
+		BigInteger end = this.end.position;
+		BigInteger pos = ((ChordIdentifier) id).position;
+
+		if (!this.isWrapping())
+			return start.compareTo(pos) < 0 && pos.compareTo(end) <= 0;
+
+		return start.compareTo(pos) < 0 || pos.compareTo(end) <= 0;
+	}
+
+	@Override
+	public Identifier getRepresentativeIdentifier() {
+		return new ChordIdentifier(this.end.position, this.end.getBits());
+	}
+
+	@Override
+	public Identifier getRandomIdentifier(Random rand) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean equals(Partition p) {
+		return this.start.equals(((ChordPartition) p).getStart())
+				&& this.end.equals(((ChordPartition) p).getEnd());
+	}
+
+	public BigInteger getIntervalWidth() {
+		if (!this.isWrapping())
+			return this.end.position.subtract(this.start.position);
+
+		return this.start.modulus.add(this.end.position).subtract(
+				this.start.position);
 	}
 
 	/**
-	 * @return the pred
+	 * 
+	 * @return true if this partition is wrapping around 0, i.e., end <= start
 	 */
-	public ChordIdentifier getPred() {
-		return this.pred;
+	public boolean isWrapping() {
+		return this.end.position.compareTo(this.start.position) <= 0;
 	}
 
 	/**
-	 * @param pred
-	 *            the pred to set
+	 * @return the start
 	 */
-	public void setPred(ChordIdentifier pred) {
-		this.pred = pred;
+	public ChordIdentifier getStart() {
+		return this.start;
 	}
 
 	/**
-	 * @return the succ
+	 * @param start
+	 *            the start to set
 	 */
-	public ChordIdentifier getSucc() {
-		return this.succ;
+	public void setStart(ChordIdentifier start) {
+		this.start = start;
 	}
 
 	/**
-	 * @param succ
-	 *            the succ to set
+	 * @return the end
 	 */
-	public void setSucc(ChordIdentifier succ) {
-		this.succ = succ;
+	public ChordIdentifier getEnd() {
+		return this.end;
+	}
+
+	/**
+	 * @param end
+	 *            the end to set
+	 */
+	public void setEnd(ChordIdentifier end) {
+		this.end = end;
 	}
 
 }
