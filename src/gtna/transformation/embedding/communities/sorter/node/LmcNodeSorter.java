@@ -37,7 +37,7 @@ package gtna.transformation.embedding.communities.sorter.node;
 
 import gtna.communities.Community;
 import gtna.graph.Graph;
-import gtna.id.DPartition;
+import gtna.id.Partition;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpaceSimple;
 import gtna.transformation.Transformation;
@@ -61,7 +61,7 @@ public class LmcNodeSorter extends NodeSorter {
 
 	@Override
 	public int[] sort(Graph g, Community[] communities, Community community) {
-		
+
 		Map<Integer, Integer> indexMap = new HashMap<Integer, Integer>();
 
 		int index = 0;
@@ -70,7 +70,7 @@ public class LmcNodeSorter extends NodeSorter {
 		}
 
 		Graph subgraph = GraphUtils.subgraph(g, indexMap);
-		Transformation rids = new RandomRingIDSpaceSimple();
+		Transformation rids = new RandomRingIDSpaceSimple(true);
 		Transformation lmc = new LMC(1000, LMC.MODE_UNRESTRICTED, 0,
 				LMC.DELTA_1_N, 0);
 
@@ -79,13 +79,13 @@ public class LmcNodeSorter extends NodeSorter {
 
 		RingIdentifierSpaceSimple ids = (RingIdentifierSpaceSimple) subgraph
 				.getProperty("ID_SPACE_0");
-		DPartition[] partitions = ids.getPartitions();
+		Partition[] partitions = ids.getPartitions();
 
 		NodePosition[] positions = new NodePosition[community.getNodes().length];
 		index = 0;
 		for (int node : community.getNodes()) {
 			double pos = ((RingIdentifier) partitions[indexMap.get(node)]
-					.getRepresentativeID()).getPosition();
+					.getRepresentativeIdentifier()).getPosition();
 			positions[index++] = new NodePosition(node, pos);
 		}
 

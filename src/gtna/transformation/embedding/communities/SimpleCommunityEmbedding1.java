@@ -58,16 +58,16 @@ public class SimpleCommunityEmbedding1 extends SimpleCommunityEmbedding {
 	public Graph transform(Graph g) {
 		RingPartitionSimple[] partitions = new RingPartitionSimple[g.getNodes().length];
 		RingIdentifierSpaceSimple idSpace = new RingIdentifierSpaceSimple(
-				partitions, this.modulus, this.wrapAround);
+				partitions, this.wrapAround);
 		CommunityList cl = (CommunityList) g.getProperty("COMMUNITIES_0");
 
 		int index = 0;
-		double step = idSpace.getModulus() / (double) g.getNodes().length;
+		double step = 1.0 / (double) g.getNodes().length;
 		for (Community c : cl.getCommunities()) {
 			for (int node : c.getNodes()) {
 				double pos = (double) index * step;
 				partitions[node] = new RingPartitionSimple(new RingIdentifier(
-						pos, idSpace));
+						pos, this.wrapAround));
 				index++;
 			}
 		}

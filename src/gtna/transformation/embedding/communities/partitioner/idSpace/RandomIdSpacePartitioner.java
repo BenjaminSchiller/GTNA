@@ -35,13 +35,13 @@
  */
 package gtna.transformation.embedding.communities.partitioner.idSpace;
 
-import java.util.Arrays;
-import java.util.Random;
-
 import gtna.communities.Community;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.id.ring.RingIdentifierSpaceSimple;
+
+import java.util.Arrays;
+import java.util.Random;
 
 /**
  * @author benni
@@ -54,7 +54,7 @@ public class RandomIdSpacePartitioner extends IdSpacePartitioner {
 	}
 
 	@Override
-	public double[][] getIntervals(IdentifierSpace<Double> ids, Graph g,
+	public double[][] getIntervals(IdentifierSpace ids, Graph g,
 			Community[] communities) {
 		if (!(ids instanceof RingIdentifierSpaceSimple)) {
 			return null;
@@ -62,11 +62,9 @@ public class RandomIdSpacePartitioner extends IdSpacePartitioner {
 
 		Random rand = new Random();
 
-		double modulus = ((RingIdentifierSpaceSimple) ids).getModulus();
-
 		double[] pos = new double[communities.length];
 		for (int i = 0; i < pos.length; i++) {
-			pos[i] = rand.nextDouble() * modulus;
+			pos[i] = rand.nextDouble();
 		}
 		Arrays.sort(pos);
 		pos[0] = 0;
@@ -75,7 +73,7 @@ public class RandomIdSpacePartitioner extends IdSpacePartitioner {
 		for (int i = 0; i < intervals.length; i++) {
 			intervals[i][0] = pos[i];
 			if (i == intervals.length - 1) {
-				intervals[i][1] = modulus;
+				intervals[i][1] = 1.0;
 			} else {
 				intervals[i][1] = pos[i + 1];
 			}

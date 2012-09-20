@@ -73,7 +73,7 @@ public class NodeIdsDataStorage extends Transformation {
 		for (int i = 0; i < ds.length; i++) {
 			ds[i] = this.store.getEmptyDataStore();
 			for (int data = 0; data < this.dataItemsPerNode; data++) {
-				ds[i].add(new NodeIdentifier(i, data));
+				ds[i].add(new NodeIdentifier(i));
 			}
 		}
 		DataStoreList dsl = new DataStoreList(ds);

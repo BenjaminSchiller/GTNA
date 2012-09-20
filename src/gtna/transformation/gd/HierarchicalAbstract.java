@@ -85,11 +85,15 @@ public abstract class HierarchicalAbstract extends GraphDrawingAbstract {
 		scaleY = scaleY * 1.1;
 
 		PlaneIdentifier pos;
-		PlanePartitionSimple[] partitions = new PlanePartitionSimple[g.getNodes().length];
-		this.idSpace = new PlaneIdentifierSpaceSimple(partitions, this.modulusX, this.modulusY, false);
+		PlanePartitionSimple[] partitions = new PlanePartitionSimple[g
+				.getNodes().length];
+		this.idSpace = new PlaneIdentifierSpaceSimple(partitions,
+				this.modulusX, this.modulusY, false);
 		for (int i = 0; i < nodePositionsX.length; i++) {
-			pos = new PlaneIdentifier((nodePositionsX[i] / scaleX) * idSpace.getModulusX(),
-					(nodePositionsY[i] / scaleY) * idSpace.getModulusY(), idSpace);
+			pos = new PlaneIdentifier((nodePositionsX[i] / scaleX)
+					* idSpace.getxModulus(), (nodePositionsY[i] / scaleY)
+					* idSpace.getyModulus(), idSpace.getxModulus(),
+					idSpace.getyModulus(), idSpace.isWrapAround());
 			partitions[i] = new PlanePartitionSimple(pos);
 		}
 		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
@@ -98,6 +102,6 @@ public abstract class HierarchicalAbstract extends GraphDrawingAbstract {
 	@Override
 	public boolean applicable(Graph g) {
 		return g.hasProperty("SPANNINGTREE");
-	}	
-	
+	}
+
 }

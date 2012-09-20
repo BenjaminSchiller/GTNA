@@ -126,14 +126,18 @@ public class SixTollis extends CircularAbstract {
 
 		vertexList = Arrays.asList(g.getNodes().clone());
 
-		System.out.println("Done with all init stuff, should run following loop from 1 to " + (vertexList.size() - 3));
+		System.out
+				.println("Done with all init stuff, should run following loop from 1 to "
+						+ (vertexList.size() - 3));
 
 		for (int counter = 1; counter < (vertexList.size() - 3); counter++) {
 			currentVertex = getVertex();
 			if (counter % (vertexList.size() / 10) == 0) {
-//				System.out.println("Processing " + currentVertex + " with a degree of "
-//						+ getEdges(currentVertex).size() + " (vertex " + counter + " of " + (vertexList.size() - 3)
-//						+ ")");
+				// System.out.println("Processing " + currentVertex +
+				// " with a degree of "
+				// + getEdges(currentVertex).size() + " (vertex " + counter +
+				// " of " + (vertexList.size() - 3)
+				// + ")");
 			}
 			pairEdges = getPairEdges(currentVertex);
 			for (Edge singleEdge : pairEdges.values()) {
@@ -243,7 +247,7 @@ public class SixTollis extends CircularAbstract {
 
 		LinkedList<Node> orderedVertices = orderVertices();
 		placeVertices(orderedVertices);
-		
+
 		/*
 		 * To avoid memory leaks: remove stuff that is not needed anymore
 		 */
@@ -252,9 +256,9 @@ public class SixTollis extends CircularAbstract {
 		removedEdges = null;
 		removedVertices = null;
 
-//		 countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
-//		 true);
-//		 System.out.println("Crossings after phase 1: " + countCrossings);
+		// countCrossings = ec.calculateCrossings(g.generateEdges(), idSpace,
+		// true);
+		// System.out.println("Crossings after phase 1: " + countCrossings);
 		if (graphPlotter != null)
 			graphPlotter.plot(g, idSpace, graphPlotter.getBasename()
 					+ "-afterPhase1");
@@ -284,7 +288,8 @@ public class SixTollis extends CircularAbstract {
 		 */
 		RingIdentifier[] ids = new RingIdentifier[g.getNodes().length];
 		for (Node n : orderedVertices) {
-			ids[n.getIndex()] = new RingIdentifier(lastPos, idSpace);
+			ids[n.getIndex()] = new RingIdentifier(lastPos,
+					idSpace.isWrapAround());
 			// System.out.println("Place " + n.getIndex() + " at " + lastPos);
 			lastPos += posDiff;
 		}
@@ -304,20 +309,22 @@ public class SixTollis extends CircularAbstract {
 		/*
 		 * Compute the longest path in a spanning tree created by DFS
 		 */
-//		System.out.println("Starting computation of longest path");
+		// System.out.println("Starting computation of longest path");
 		LinkedList<Node> longestPath = longestPath();
-//		System.out.println("Longest path contains " + longestPath.size() + " vertices, total number: "
-//				+ vertexList.size());
-//		System.out.println("Characteristics for these vertices:");
-//		int counter = 0;
-//		int sum = 0;
-//		int[] degrees = new int[longestPath.size()];
-//		
-//		for ( Node n: longestPath) {
-//			degrees[counter++] = n.getOutDegree();
-//			sum += n.getOutDegree();
-//		}
-//		System.out.println("Avg degree: " + ( (double)sum / counter) + ", median degree: " + degrees[degrees.length/2]);
+		// System.out.println("Longest path contains " + longestPath.size() +
+		// " vertices, total number: "
+		// + vertexList.size());
+		// System.out.println("Characteristics for these vertices:");
+		// int counter = 0;
+		// int sum = 0;
+		// int[] degrees = new int[longestPath.size()];
+		//
+		// for ( Node n: longestPath) {
+		// degrees[counter++] = n.getOutDegree();
+		// sum += n.getOutDegree();
+		// }
+		// System.out.println("Avg degree: " + ( (double)sum / counter) +
+		// ", median degree: " + degrees[degrees.length/2]);
 
 		/*
 		 * Check which vertices still need to be placed, as they do not lie on

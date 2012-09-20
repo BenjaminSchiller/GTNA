@@ -38,14 +38,11 @@ package gtna.transformation.id;
 import gtna.graph.Graph;
 import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDIdentifierSpaceSimple;
-import gtna.id.md.MDIdentifierSpaceSimple.DistanceMD;
 import gtna.id.md.MDPartitionSimple;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleArrayParameter;
-import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
-import gtna.util.parameter.StringParameter;
 
 import java.util.Random;
 
@@ -55,44 +52,35 @@ import java.util.Random;
  */
 public class RandomMDIDSpaceSimple extends Transformation {
 
-	private int realities;
 	private double[] modulus;
+
 	private boolean wrapAround;
-	private DistanceMD dist;
 
 	public RandomMDIDSpaceSimple() {
 		super("RANDOM_MD_ID_SPACE_SIMPLE");
-		this.realities = 1;
-		this.modulus = new double[]{1};
+		this.modulus = new double[] { 1.0 };
+		this.wrapAround = false;
 	}
 
-	public RandomMDIDSpaceSimple(int realities, double[] modulus,
-			boolean wrapAround, DistanceMD dist) {
+	public RandomMDIDSpaceSimple(double[] modulus, boolean wrapAround) {
 		super("RANDOM_MD_ID_SPACE_SIMPLE", new Parameter[] {
-				new IntParameter("REALITIES", realities),
 				new DoubleArrayParameter("MODULI", modulus),
-				new BooleanParameter("WRAPAROUND", wrapAround),
-				new StringParameter("DISTANCE", dist.toString())});
-		this.realities = realities;
+				new BooleanParameter("WRAPAROUND", wrapAround) });
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
-		this.dist = dist;
 	}
 
 	@Override
 	public Graph transform(Graph graph) {
 		Random rand = new Random();
-		for (int r = 0; r < this.realities; r++) {
-			MDPartitionSimple[] partitions = new MDPartitionSimple[graph
-					.getNodes().length];
-			MDIdentifierSpaceSimple idSpace = new MDIdentifierSpaceSimple(
-					partitions, this.modulus, this.wrapAround, this.dist);
-			for (int i = 0; i < partitions.length; i++) {
-				partitions[i] = new MDPartitionSimple(MDIdentifier.rand(rand,
-						idSpace));
-			}
-			graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
+		MDPartitionSimple[] partitions = new MDPartitionSimple[graph.getNodes().length];
+		MDIdentifierSpaceSimple idSpace = new MDIdentifierSpaceSimple(
+				partitions, this.modulus, this.wrapAround);
+		for (int i = 0; i < partitions.length; i++) {
+			partitions[i] = new MDPartitionSimple(
+					(MDIdentifier) idSpace.getRandomIdentifier(rand));
 		}
+		graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
 		return graph;
 	}
 

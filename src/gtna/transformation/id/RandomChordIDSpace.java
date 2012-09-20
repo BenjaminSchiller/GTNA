@@ -57,7 +57,6 @@ import java.util.Random;
  * 
  */
 public class RandomChordIDSpace extends Transformation {
-	private int realities;
 
 	private int bits;
 
@@ -69,57 +68,52 @@ public class RandomChordIDSpace extends Transformation {
 				new BooleanParameter("ID_SELECTION", uniform) });
 		this.bits = bits;
 		this.uniform = uniform;
-		this.realities = 1;
 	}
 
 	public RandomChordIDSpace(int bits, boolean uniform, int realities) {
 		super("RANDOM_CHORD_ID_SPACE", new Parameter[] {
 				new IntParameter("BITS", bits),
-				new IntParameter("REALITIES", realities),
 				new BooleanParameter("ID_SELECTION", uniform) });
 		this.bits = bits;
 		this.uniform = uniform;
-		this.realities = realities;
 	}
 
 	@Override
 	public Graph transform(Graph graph) {
 		Random rand = new Random();
-		for (int r = 0; r < this.realities; r++) {
-			ChordIdentifierSpace idSpace = new ChordIdentifierSpace(this.bits);
-			ChordIdentifier[] ids = new ChordIdentifier[graph.getNodes().length];
-			if (this.uniform) {
-				BigInteger stepSize = idSpace.getModulus().divide(
-						new BigInteger("" + graph.getNodes().length));
-				for (int i = 0; i < ids.length; i++) {
-					ids[i] = new ChordIdentifier(idSpace,
-							stepSize.multiply(new BigInteger("" + i)));
-				}
-			} else {
-				HashSet<String> idSet = new HashSet<String>();
-				for (int i = 0; i < ids.length; i++) {
-					ChordIdentifier id = (ChordIdentifier) idSpace
-							.randomID(rand);
-					while (idSet.contains(id.toString())) {
-						id = (ChordIdentifier) idSpace.randomID(rand);
-					}
-					ids[i] = id;
-					idSet.add(id.toString());
-				}
+		BigInteger modulus = BigInteger.ONE.add(BigInteger.ONE).pow(this.bits);
+		ChordIdentifier[] ids = new ChordIdentifier[graph.getNodes().length];
+		if (this.uniform) {
+			BigInteger stepSize = modulus.divide(new BigInteger(""
+					+ graph.getNodes().length));
+			for (int i = 0; i < ids.length; i++) {
+				ids[i] = new ChordIdentifier(stepSize.multiply(new BigInteger(
+						"" + i)), this.bits);
 			}
-			Arrays.sort(ids);
-
-			ChordPartition[] partitions = new ChordPartition[ids.length];
-			partitions[0] = new ChordPartition(ids[ids.length - 1], ids[0]);
-			for (int i = 1; i < partitions.length; i++) {
-				partitions[i] = new ChordPartition(ids[i - 1], ids[i]);
+		} else {
+			HashSet<String> idSet = new HashSet<String>();
+			for (int i = 0; i < ids.length; i++) {
+				ChordIdentifier id = new ChordIdentifier(new BigInteger(
+						this.bits, rand), this.bits);
+				while (idSet.contains(id.toString())) {
+					id = new ChordIdentifier(new BigInteger(this.bits, rand),
+							this.bits);
+				}
+				ids[i] = id;
+				idSet.add(id.toString());
 			}
-
-			// Util.randomize(partitions, rand);
-			idSpace.setPartitions(partitions);
-
-			graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
 		}
+		Arrays.sort(ids);
+
+		ChordPartition[] partitions = new ChordPartition[ids.length];
+		partitions[0] = new ChordPartition(ids[ids.length - 1], ids[0]);
+		for (int i = 1; i < partitions.length; i++) {
+			partitions[i] = new ChordPartition(ids[i - 1], ids[i]);
+		}
+
+		ChordIdentifierSpace idSpace = new ChordIdentifierSpace(partitions, this.bits);
+		
+		graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
 		return graph;
 	}
 

@@ -70,11 +70,10 @@ public abstract class CircularAbstract extends GraphDrawingAbstract {
 	protected void initIDSpace(Graph g) {
 		for (int r = 0; r < this.realities; r++) {
 			partitions = new RingPartition[g.getNodes().length];
-			idSpace = new RingIdentifierSpace(partitions, this.modulus,
-					this.wrapAround);
+			idSpace = new RingIdentifierSpace(partitions, this.wrapAround);
 			RingIdentifier[] ids = new RingIdentifier[g.getNodes().length];
 			for (int i = 0; i < ids.length; i++) {
-				ids[i] = RingIdentifier.rand(rand, idSpace);
+				ids[i] = (RingIdentifier) idSpace.getRandomIdentifier(rand);
 			}
 			Arrays.sort(ids);
 			for (int i = 0; i < partitions.length; i++) {

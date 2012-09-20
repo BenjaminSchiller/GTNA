@@ -39,6 +39,7 @@ import gtna.drawing.GraphPlotter;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.util.MDVector;
+import gtna.util.Util;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleArrayParameter;
 import gtna.util.parameter.IntParameter;
@@ -118,7 +119,7 @@ public class Frick extends ForceDrivenAbstract {
 
 		initIDSpace(g);
 
-		double[] moduli = this.idSpace.getModuli();
+		double[] moduli = this.idSpace.getModulus();
 		this.area = 1;
 		for (double singleModulus : moduli)
 			this.area = this.area * singleModulus;
@@ -295,8 +296,8 @@ public class Frick extends ForceDrivenAbstract {
 	}
 
 	private MDVector getRandomDisturbanceVector() {
-		double minModulus = idSpace.getMinModulus();
-		return new MDVector(idSpace.getDimensions(), rand.nextDouble()
+		double minModulus = Util.min(idSpace.getModulus());
+		return new MDVector(idSpace.getModulus().length, rand.nextDouble()
 				* (minModulus / 100));
 	}
 

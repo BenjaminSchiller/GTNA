@@ -52,7 +52,7 @@ public abstract class IdentifierNode extends IQDNode {
 	/**
 	 * @param index
 	 * @param g
-	 * @param id
+	 * @param identifier
 	 * @param epsilon
 	 *            : random offset for IDs
 	 */

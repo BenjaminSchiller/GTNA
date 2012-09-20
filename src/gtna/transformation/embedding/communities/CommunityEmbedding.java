@@ -67,8 +67,6 @@ public class CommunityEmbedding extends Transformation {
 
 	protected CommunityPartitioner communityPartitioner;
 
-	protected double modulus;
-
 	protected boolean wrapAround;
 
 	/**
@@ -76,8 +74,7 @@ public class CommunityEmbedding extends Transformation {
 	 */
 	public CommunityEmbedding(CommunitySorter communitySorter,
 			IdSpacePartitioner idSpacePartitioner, NodeSorter nodeSorter,
-			CommunityPartitioner communityPartitioner, double modulus,
-			boolean wrapAround) {
+			CommunityPartitioner communityPartitioner, boolean wrapAround) {
 		super("COMMUNITY_EMBEDDING",
 				new Parameter[] {
 						new ParameterListParameter("COMMUNITY_SORTER",
@@ -91,7 +88,6 @@ public class CommunityEmbedding extends Transformation {
 		this.nodeSorter = nodeSorter;
 		this.idSpacePartitioner = idSpacePartitioner;
 		this.communityPartitioner = communityPartitioner;
-		this.modulus = modulus;
 		this.wrapAround = wrapAround;
 	}
 
@@ -102,7 +98,7 @@ public class CommunityEmbedding extends Transformation {
 
 		RingPartitionSimple[] partitions = new RingPartitionSimple[g.getNodes().length];
 		RingIdentifierSpaceSimple ids = new RingIdentifierSpaceSimple(
-				partitions, this.modulus, this.wrapAround);
+				partitions, this.wrapAround);
 
 		// sort communities
 		Community[] communities = this.communitySorter.sort(g,
@@ -129,7 +125,8 @@ public class CommunityEmbedding extends Transformation {
 
 		for (Node node : g.getNodes()) {
 			partitions[node.getIndex()] = new RingPartitionSimple(
-					new RingIdentifier(pos.get(node.getIndex()), ids));
+					new RingIdentifier(pos.get(node.getIndex()),
+							this.wrapAround));
 		}
 
 		g.addProperty(g.getNextKey("ID_SPACE"), ids);

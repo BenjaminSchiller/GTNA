@@ -53,7 +53,7 @@ public abstract class IdentifierMDNode extends IQDMDNode {
 	/**
 	 * @param index
 	 * @param g
-	 * @param id
+	 * @param identifier
 	 * @param epsilon
 	 *            : random offset for IDs
 	 */

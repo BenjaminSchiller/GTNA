@@ -54,6 +54,6 @@ public abstract class IdSpacePartitioner extends ParameterList {
 		super(key, parameters);
 	}
 
-	public abstract double[][] getIntervals(IdentifierSpace<Double> ids,
-			Graph g, Community[] communities);
+	public abstract double[][] getIntervals(IdentifierSpace ids, Graph g,
+			Community[] communities);
 }

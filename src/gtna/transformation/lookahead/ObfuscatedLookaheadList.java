@@ -37,8 +37,8 @@ package gtna.transformation.lookahead;
 
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
-import gtna.id.BIIdentifier;
-import gtna.id.BIIdentifierSpace;
+import gtna.id.BiIdentifier;
+import gtna.id.BiIdentifierSpace;
 import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
 import gtna.id.Partition;
@@ -122,7 +122,7 @@ public abstract class ObfuscatedLookaheadList extends Transformation {
 			Parameter[] parameters) {
 		super(key, ParameterList.append(parameters, new Parameter[] {
 				new IntParameter("MIN_BITS", minBits),
-				new IntParameter("MAX_BITS",  maxBits) }));
+				new IntParameter("MAX_BITS", maxBits) }));
 		this.minBits = minBits;
 		this.maxBits = maxBits;
 		this.diff = maxBits - minBits;
@@ -133,20 +133,6 @@ public abstract class ObfuscatedLookaheadList extends Transformation {
 		}
 	}
 
-	private static String[] add(String[] values, String v1, String v2) {
-		if (values.length == 0) {
-			return new String[] { v1, v2 };
-		}
-		String[] newValues = new String[values.length + 2];
-		for (int i = 0; i < values.length; i++) {
-			newValues[i] = values[i];
-		}
-		newValues[values.length] = v1;
-		newValues[values.length + 1] = v2;
-		return newValues;
-	}
-
-	@SuppressWarnings("rawtypes")
 	protected Partition obfuscatePartition(Partition partition, Random rand) {
 		if (this.minBits == 0 && this.maxBits == 0 && this.minEpsilon == 0.0
 				&& this.maxEpsilon == 0.0) {
@@ -156,9 +142,9 @@ public abstract class ObfuscatedLookaheadList extends Transformation {
 			RingPartitionSimple p = (RingPartitionSimple) partition;
 			double sign = rand.nextBoolean() ? 1.0 : -1.0;
 			double epsilon = minEpsilon + rand.nextDouble() * this.size;
-			double position = p.getId().getPosition() + sign * epsilon;
+			double position = p.getIdentifier().getPosition() + sign * epsilon;
 			return new RingPartitionSimple(new RingIdentifier(position, p
-					.getId().getIdSpace()));
+					.getIdentifier().isWrapAround()));
 		} else if (partition instanceof RingPartition) {
 			RingPartition p = (RingPartition) partition;
 			double sign1 = rand.nextBoolean() ? 1.0 : -1.0;
@@ -168,8 +154,8 @@ public abstract class ObfuscatedLookaheadList extends Transformation {
 			double epsilon2 = minEpsilon + rand.nextDouble() * this.size;
 			double position2 = p.getEnd().getPosition() + sign2 * epsilon2;
 			return new RingPartition(new RingIdentifier(position1, p.getStart()
-					.getIdSpace()), new RingIdentifier(position2, p.getEnd()
-					.getIdSpace()));
+					.isWrapAround()), new RingIdentifier(position2, p.getEnd()
+					.isWrapAround()));
 		} else if (partition instanceof PlanePartitionSimple) {
 			PlanePartitionSimple p = (PlanePartitionSimple) partition;
 			double sign1 = rand.nextBoolean() ? 1.0 : -1.0;
@@ -179,24 +165,26 @@ public abstract class ObfuscatedLookaheadList extends Transformation {
 			double epsilon2 = minEpsilon + rand.nextDouble() * this.size;
 			double position2 = p.getId().getY() + sign2 * epsilon2;
 			return new PlanePartitionSimple(new PlaneIdentifier(position1,
-					position2, p.getId().getIdSpace()));
+					position2, p.getId().getxModulus(),
+					p.getId().getyModulus(), p.getId().isWrapAround()));
 		} else if (partition instanceof ChordPartition) {
 			ChordPartition p = (ChordPartition) partition;
 			BigInteger epsilon1 = new BigInteger(this.diff, rand);
-			BigInteger position1 = rand.nextBoolean() ? p.getPred().getId()
-					.add(this.min).add(epsilon1)
-					.mod(p.getPred().getIdSpace().getModulus()) : p.getPred()
-					.getId().subtract(this.min).subtract(epsilon1).abs()
-					.mod(p.getPred().getIdSpace().getModulus());
+			BigInteger position1 = rand.nextBoolean() ? p.getStart()
+					.getPosition().add(this.min).add(epsilon1)
+					.mod(p.getEnd().getModulus()) : p.getStart().getPosition()
+					.subtract(this.min).subtract(epsilon1).abs()
+					.mod(p.getEnd().getModulus());
 			BigInteger epsilon2 = new BigInteger(this.diff, rand);
-			BigInteger position2 = rand.nextBoolean() ? p.getSucc().getId()
-					.add(this.min).add(epsilon2)
-					.mod(p.getSucc().getIdSpace().getModulus()) : p.getSucc()
-					.getId().subtract(this.min).subtract(epsilon2)
-					.mod(p.getSucc().getIdSpace().getModulus());
-			return new ChordPartition(new ChordIdentifier(p.getPred()
-					.getIdSpace(), position1), new ChordIdentifier(p.getSucc()
-					.getIdSpace(), position2));
+			BigInteger position2 = rand.nextBoolean() ? p.getEnd()
+					.getPosition().add(this.min).add(epsilon2)
+					.mod(p.getEnd().getModulus()) : p.getEnd().getPosition()
+					.subtract(this.min).subtract(epsilon2)
+					.mod(p.getEnd().getModulus());
+			return new ChordPartition(new ChordIdentifier(p.getStart()
+					.getPosition(), p.getStart().getBits()),
+					new ChordIdentifier(p.getEnd().getPosition(), p.getEnd()
+							.getBits()));
 		} else {
 			throw new RuntimeException(
 					"Cannot create obfuscated partition for "
@@ -204,31 +192,33 @@ public abstract class ObfuscatedLookaheadList extends Transformation {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	protected Partition copyPartition(Partition partition) {
 		if (partition instanceof RingPartitionSimple) {
 			RingPartitionSimple p = (RingPartitionSimple) partition;
-			return new RingPartitionSimple(new RingIdentifier(p.getId()
-					.getPosition(), p.getId().getIdSpace()));
+			return new RingPartitionSimple(new RingIdentifier(p.getIdentifier()
+					.getPosition(), p.getIdentifier().isWrapAround()));
 		} else if (partition instanceof RingPartition) {
 			RingPartition p = (RingPartition) partition;
 			return new RingPartition(new RingIdentifier(p.getStart()
-					.getPosition(), p.getStart().getIdSpace()),
+					.getPosition(), p.getStart().isWrapAround()),
 					new RingIdentifier(p.getEnd().getPosition(), p.getEnd()
-							.getIdSpace()));
+							.isWrapAround()));
 		} else if (partition instanceof PlanePartitionSimple) {
 			PlanePartitionSimple p = (PlanePartitionSimple) partition;
 			return new PlanePartitionSimple(new PlaneIdentifier(p.getId()
-					.getX(), p.getId().getY(), p.getId().getIdSpace()));
+					.getX(), p.getId().getY(), p.getId().getxModulus(), p
+					.getId().getyModulus(), p.getId().isWrapAround()));
 		} else if (partition instanceof ChordPartition) {
 			ChordPartition p = (ChordPartition) partition;
-			return new ChordPartition(new ChordIdentifier(p.getPred()
-					.getIdSpace(), p.getPred().getId()), new ChordIdentifier(p
-					.getSucc().getIdSpace(), p.getSucc().getId()));
+			return new ChordPartition(new ChordIdentifier(p.getStart()
+					.getPosition(), p.getStart().getBits()),
+					new ChordIdentifier(p.getEnd().getPosition(), p.getEnd()
+							.getBits()));
 		} else if (partition instanceof MDPartitionSimple) {
 			MDPartitionSimple p = (MDPartitionSimple) partition;
-			return new MDPartitionSimple(new MDIdentifier(p.getId()
-					.getCoordinates(), p.getId().getIdSpace()));
+			return new MDPartitionSimple(new MDIdentifier(p.getIdentifier()
+					.getCoordinates(), p.getIdentifier().getModulus(), p
+					.getIdentifier().isWrapAround()));
 		} else {
 			throw new RuntimeException("Cannot copy partition for "
 					+ partition.getClass());
@@ -241,15 +231,15 @@ public abstract class ObfuscatedLookaheadList extends Transformation {
 		for (GraphProperty p : g.getProperties("ID_SPACE")) {
 			if (p instanceof DIdentifierSpace) {
 				DIdentifier id = (DIdentifier) ((DIdentifierSpace) p)
-						.randomID(rand);
+						.getRandomIdentifier(rand);
 				if (!(id instanceof RingIdentifier)
 						&& !(id instanceof MDIdentifier)
 						&& !(id instanceof PlaneIdentifier)) {
 					return false;
 				}
-			} else if (p instanceof BIIdentifierSpace) {
-				BIIdentifier id = (BIIdentifier) ((BIIdentifierSpace) p)
-						.randomID(rand);
+			} else if (p instanceof BiIdentifierSpace) {
+				BiIdentifier id = (BiIdentifier) ((BiIdentifierSpace) p)
+						.getRandomIdentifier(rand);
 				if (!(id instanceof ChordIdentifier)) {
 					return false;
 				}

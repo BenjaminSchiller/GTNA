@@ -40,6 +40,7 @@ import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.util.MDVector;
+import gtna.util.Util;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleArrayParameter;
 import gtna.util.parameter.IntParameter;
@@ -101,14 +102,14 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 	public Graph transform(Graph g) {
 		initIDSpace(g);
 
-		double[] moduli = this.idSpace.getModuli();
+		double[] moduli = this.idSpace.getModulus();
 		this.space = 1;
 		for (double singleModulus : moduli)
 			this.space = this.space * singleModulus;
 		k = Math.pow(this.space / this.partitions.length, 1.0 / moduli.length);
 		// System.out.println("Best distance: " + k);
 
-		this.t = idSpace.getMaxModulus();
+		this.t = Util.max(idSpace.getModulus());
 		edgeList = g.generateEdges();
 
 		for (int i = 0; i < this.iterations; i++) {
@@ -138,7 +139,7 @@ public class FruchtermanReingold extends ForceDrivenAbstract {
 				continue;
 
 			// Reset displacement
-			disp[v.getIndex()] = new MDVector(idSpace.getDimensions(), 0d);
+			disp[v.getIndex()] = new MDVector(idSpace.getModulus().length, 0d);
 
 			// Calculate repulsive forces to *all* other nodes
 			for (Node u : g.getNodes()) {

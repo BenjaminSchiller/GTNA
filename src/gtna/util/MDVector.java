@@ -41,16 +41,17 @@ import java.util.Arrays;
 
 /**
  * @author Nico
- *
+ * 
  */
 public class MDVector {
 	private int dimension;
-	public MDVector ( MDIdentifier id ) {
-		this.dimension = id.getIdSpace().getDimensions();
+
+	public MDVector(MDIdentifier id) {
+		this.dimension = id.getCoordinates().length;
 		this.coordinates = id.getCoordinates().clone();
 	}
 
-	public MDVector ( int dimension, double[] coordinates ) {
+	public MDVector(int dimension, double[] coordinates) {
 		this.dimension = dimension;
 		this.coordinates = coordinates;
 	}
@@ -60,18 +61,18 @@ public class MDVector {
 	 * @param i
 	 */
 	public MDVector(int dimensions, double init) {
-		this ( dimensions, new double[dimensions] );
-		for ( int i = 0; i < dimensions; i++ ) {
+		this(dimensions, new double[dimensions]);
+		for (int i = 0; i < dimensions; i++) {
 			coordinates[i] = init;
 		}
 	}
 
 	public MDVector(int dimensions) {
-		this (dimensions, new double[dimensions]);
+		this(dimensions, new double[dimensions]);
 	}
-	
+
 	public MDVector(double[] coordinates) {
-		this ( coordinates.length, coordinates );
+		this(coordinates.length, coordinates);
 	}
 
 	public int getDimension() {
@@ -85,7 +86,7 @@ public class MDVector {
 	public double[] getCoordinates() {
 		return this.coordinates.clone();
 	}
-	
+
 	public double getCoordinate(int i) {
 		return this.coordinates[i];
 	}
@@ -93,83 +94,88 @@ public class MDVector {
 	public void setCoordinates(double[] coordinates) {
 		this.coordinates = coordinates;
 	}
-	
+
 	public void setCoordinate(int i, double coordinate) {
 		this.coordinates[i] = coordinate;
 	}
 
 	private double[] coordinates;
-	
-	public MDVector divideBy ( double divisor ) {
-		for ( int i = 0; i < dimension; i++ ) {
+
+	public MDVector divideBy(double divisor) {
+		for (int i = 0; i < dimension; i++) {
 			coordinates[i] = coordinates[i] / divisor;
 		}
 		return this;
 	}
-	
-	public MDVector multiplyWith ( double factor ) {
-		for ( int i = 0; i < dimension; i++ ) {
+
+	public MDVector multiplyWith(double factor) {
+		for (int i = 0; i < dimension; i++) {
 			coordinates[i] = coordinates[i] * factor;
 		}
 		return this;
-	}	
+	}
 
 	public MDVector add(MDVector additive) {
-		if ( additive.getDimension() != this.dimension ) {
-			throw new RuntimeException("Cannot add with different dimensions" );
+		if (additive.getDimension() != this.dimension) {
+			throw new RuntimeException("Cannot add with different dimensions");
 		}
 		double[] additiveVector = additive.getCoordinates();
-		for ( int i = 0; i < dimension; i++ ) {
-			if ( Double.isNaN(additiveVector[i]) ) continue;
+		for (int i = 0; i < dimension; i++) {
+			if (Double.isNaN(additiveVector[i]))
+				continue;
 			coordinates[i] = coordinates[i] + additiveVector[i];
 		}
 		return this;
-	}	
-	
+	}
+
 	public MDVector subtract(MDVector subtractor) {
-		if ( subtractor.getDimension() != this.dimension ) {
-			throw new RuntimeException("Cannot subtract with different dimensions" );
+		if (subtractor.getDimension() != this.dimension) {
+			throw new RuntimeException(
+					"Cannot subtract with different dimensions");
 		}
 		double[] subtractVector = subtractor.getCoordinates();
-		for ( int i = 0; i < dimension; i++ ) {
+		for (int i = 0; i < dimension; i++) {
 			coordinates[i] = coordinates[i] - subtractVector[i];
 		}
 		return this;
 	}
-	
-	public double dotProduct ( MDVector v ) {
-		if ( v.getDimension() != this.dimension ) {
-			throw new RuntimeException("Cannot create dot product with different dimensions" );
+
+	public double dotProduct(MDVector v) {
+		if (v.getDimension() != this.dimension) {
+			throw new RuntimeException(
+					"Cannot create dot product with different dimensions");
 		}
 		double result = 0;
-		for ( int i = 0; i < getDimension(); i++ ) {
+		for (int i = 0; i < getDimension(); i++) {
 			result += getCoordinate(i) * v.getCoordinate(i);
 		}
 		return result;
 	}
-	
-	public double angleTo ( MDVector v ) {
-		double cosOfAngle = dotProduct(v) / ( this.getNorm() * v.getNorm() );
+
+	public double angleTo(MDVector v) {
+		double cosOfAngle = dotProduct(v) / (this.getNorm() * v.getNorm());
 		return Math.toDegrees(Math.acos(cosOfAngle));
 	}
-	
+
 	public String toString() {
 		return Arrays.toString(coordinates);
 	}
-	
+
 	public double getNorm() {
 		double result = 0;
-		for ( int i = 0; i < dimension; i++ ) {
-			result += ( coordinates[i] * coordinates[i] );
+		for (int i = 0; i < dimension; i++) {
+			result += (coordinates[i] * coordinates[i]);
 		}
 		return Math.sqrt(result);
 	}
-	
-	public static MDVector min ( MDVector x, MDVector y ) {
-		if ( x.getNorm() < y.getNorm() ) return x;
-		else return y;
+
+	public static MDVector min(MDVector x, MDVector y) {
+		if (x.getNorm() < y.getNorm())
+			return x;
+		else
+			return y;
 	}
-	
+
 	public MDVector clone() {
 		return new MDVector(this.getDimension(), this.getCoordinates());
 	}

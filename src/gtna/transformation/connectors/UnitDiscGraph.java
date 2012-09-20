@@ -37,6 +37,8 @@ package gtna.transformation.connectors;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
+import gtna.id.DIdentifier;
+import gtna.id.DPartition;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.DoubleParameter;
@@ -64,8 +66,10 @@ public class UnitDiscGraph extends Transformation {
 		for (int i = 0; i < g.getNodes().length; i++) {
 			for (int j = 0; j < g.getNodes().length; j++) {
 				if (i != j
-						&& idSpace.getPartitions()[i].distance((idSpace
-								.getPartitions()[j].getRepresentativeID())) <= radius) {
+						&& ((DPartition) idSpace.getPartition(i))
+								.distance(((DIdentifier) idSpace
+										.getPartition(j)
+										.getRepresentativeIdentifier())) <= radius) {
 					edges.add(i, j);
 				}
 			}

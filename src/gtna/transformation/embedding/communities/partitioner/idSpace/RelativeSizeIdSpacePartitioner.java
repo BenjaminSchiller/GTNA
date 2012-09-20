@@ -61,16 +61,15 @@ public class RelativeSizeIdSpacePartitioner extends IdSpacePartitioner {
 	}
 
 	@Override
-	public double[][] getIntervals(IdentifierSpace<Double> ids, Graph g,
+	public double[][] getIntervals(IdentifierSpace ids, Graph g,
 			Community[] communities) {
 		if (!(ids instanceof RingIdentifierSpaceSimple)) {
 			return null;
 		}
 
-		double modulus = ((RingIdentifierSpaceSimple) ids).getModulus();
 		double[][] intervals = new double[communities.length][2];
 
-		double nodeWidth = modulus / (double) g.getNodes().length;
+		double nodeWidth = 1.0 / (double) g.getNodes().length;
 		double intervalWidth = nodeWidth / (1.0 + this.emptyRatio);
 
 		int nodes = 0;

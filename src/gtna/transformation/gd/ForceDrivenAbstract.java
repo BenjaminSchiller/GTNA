@@ -66,8 +66,8 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 			this.idSpace = new MDIdentifierSpaceSimple(partitions, this.moduli,
 					this.wrapAround);
 			for (int i = 0; i < partitions.length; i++) {
-				partitions[i] = new MDPartitionSimple(MDIdentifier.rand(rand,
-						idSpace));
+				partitions[i] = new MDPartitionSimple(
+						(MDIdentifier) idSpace.getRandomIdentifier(rand));
 			}
 		}
 		generateBias();
@@ -92,8 +92,8 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 
 	protected MDVector setNormalized(MDVector v) {
 		for (int i = 0; i < v.getDimension(); i++) {
-			double coordinate = Math.min(idSpace.getModulus(i) / 2,
-					Math.max(idSpace.getModulus(i) / -2, v.getCoordinate(i)));
+			double coordinate = Math.min(idSpace.getModulus()[i] / 2,
+					Math.max(idSpace.getModulus()[i] / -2, v.getCoordinate(i)));
 			v.setCoordinate(i, coordinate);
 		}
 		return v;
@@ -104,8 +104,8 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 	}
 
 	protected MDVector getCoordinate(int i) {
-		MDVector iV = ((MDIdentifier) partitions[i].getRepresentativeID())
-				.toMDVector();
+		MDVector iV = new MDVector(
+				(MDIdentifier) partitions[i].getRepresentativeIdentifier());
 		// System.out.print("Retrieving " + iV);
 		iV.subtract(bias);
 		// System.out.println(" (biased: " + iV + ") for " +i);
@@ -116,7 +116,7 @@ public abstract class ForceDrivenAbstract extends GraphDrawingAbstract {
 		// System.out.print("Setting " + newPos);
 		newPos.add(bias);
 		// System.out.println(" (biased: " + newPos + ")");
-		((MDIdentifier) partitions[v.getIndex()].getRepresentativeID())
+		((MDIdentifier) partitions[v.getIndex()].getRepresentativeIdentifier())
 				.setCoordinates(newPos.getCoordinates());
 	}
 

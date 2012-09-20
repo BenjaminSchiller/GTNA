@@ -51,22 +51,22 @@ public class EqualSizeIdSpacePartitioner extends IdSpacePartitioner {
 	protected double emptyRatio;
 
 	public EqualSizeIdSpacePartitioner(double emptyRatio) {
-		super("ID_SPACE_PARTITIONER_EQUAL_SIZE", new Parameter[] { new DoubleParameter(
-				"EMPTY_RATIO", emptyRatio) });
+		super(
+				"ID_SPACE_PARTITIONER_EQUAL_SIZE",
+				new Parameter[] { new DoubleParameter("EMPTY_RATIO", emptyRatio) });
 		this.emptyRatio = emptyRatio;
 	}
 
 	@Override
-	public double[][] getIntervals(IdentifierSpace<Double> ids, Graph g,
+	public double[][] getIntervals(IdentifierSpace ids, Graph g,
 			Community[] communities) {
 		if (!(ids instanceof RingIdentifierSpaceSimple)) {
 			return null;
 		}
 
-		double modulus = ((RingIdentifierSpaceSimple) ids).getModulus();
 		double[][] intervals = new double[communities.length][2];
 
-		double totalWidth = modulus / (double) communities.length;
+		double totalWidth = 1.0 / (double) communities.length;
 		double intervalWidth = totalWidth / (1.0 + this.emptyRatio);
 		// double emptyWidth = totalWidth * this.emptyRatio
 		// / (1.0 + this.emptyRatio);
