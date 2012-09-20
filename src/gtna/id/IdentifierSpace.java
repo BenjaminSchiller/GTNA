@@ -35,19 +35,110 @@
  */
 package gtna.id;
 
+import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
+import gtna.io.Filereader;
+import gtna.io.Filewriter;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 /**
  * @author benni
  * 
  */
-public abstract class IdentifierSpace<Type> extends GraphProperty {
-	public abstract Partition<Type>[] getPartitions();
+public abstract class IdentifierSpace extends GraphProperty {
+	
+	public static final String delimiter = "_";
+	
+	protected Partition[] partitions;
 
-	public abstract void setPartitions(Partition<Type>[] partitions);
+	protected IdentifierSpace(Partition[] partitions) {
+		this.partitions = partitions;
+	}
 
-	public abstract Identifier<Type> randomID(Random rand);
+	public Partition[] getPartitions() {
+		return this.partitions;
+	}
 
-	public abstract Type getMaxDistance();
+	public Partition getPartition(int node) {
+		return this.partitions[node];
+	}
+
+	@Override
+	public boolean write(String filename, String key) {
+		Filewriter fw = new Filewriter(filename);
+
+		this.writeHeader(fw, this.getClass(), key);
+		this.writeParameter(fw, "Partition count", this.partitions.length);
+		this.writeParameter(fw, "Partition class",
+				this.partitions[0].getClass());
+		this.writeParameters(fw);
+
+		for (Partition p : this.partitions) {
+			fw.writeln(p.asString());
+		}
+
+		return fw.close();
+	}
+
+	@Override
+	public void read(String filename, Graph graph) {
+		Filereader fr = new Filereader(filename);
+
+		String key = this.readHeader(fr);
+		int partitionCount = this.readInt(fr);
+		Class<?> partitionClass = this.readClass(fr);
+		this.partitions = new Partition[partitionCount];
+		this.readParameters(fr);
+
+		for (int i = 0; i < partitionCount; i++) {
+			try {
+				Constructor<?> con = partitionClass
+						.getConstructor(new Class[] { String.class });
+				this.partitions[i] = (Partition) con
+						.newInstance(new Object[] { fr.readLine() });
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+
+		graph.addProperty(key, this);
+
+		fr.close();
+	}
+
+	/**
+	 * Write all the parameters required for reading in this IdentifierSpace
+	 * using .writeParameter(.).
+	 * 
+	 * @param fw
+	 */
+	protected abstract void writeParameters(Filewriter fw);
+
+	/**
+	 * Read all parameters required for initiating this IdentifierSpace.
+	 * 
+	 * @param fr
+	 */
+	protected abstract void readParameters(Filereader fr);
+
+	/**
+	 * 
+	 * @param rand
+	 * @return random identifier selected uniformly from all possible
+	 *         identifiers from the identifier space
+	 */
+	public abstract Identifier getRandomIdentifier(Random rand);
 }

@@ -35,16 +35,79 @@
  */
 package gtna.id;
 
+import java.util.Random;
+
 /**
  * @author benni
  * 
  */
-public abstract class Partition<Type> {
-	public abstract Type distance(Identifier<Type> id);
+public abstract class Partition {
+	public static final String delimiter = ":";
 
-	public abstract boolean equals(Partition<Type> p);
+	public int hashCode() {
+		return this.asString().hashCode();
+	}
 
-	public abstract boolean contains(Identifier<Type> id);
+	/**
+	 * 
+	 * @return String representation of this partition that can be parsed and
+	 *         interpreted to create a new instance of this partition type. For
+	 *         creating new instances of an partition, each partition must
+	 *         supply a constructor with a single String parameter which is
+	 *         equal to the one created by this method.
+	 */
+	public abstract String asString();
 
-	public abstract Identifier<Type> getRepresentativeID();
+	/**
+	 * 
+	 * @param id
+	 * @return true if this partition contains the identifier $id; false
+	 *         otherwise
+	 */
+	public abstract boolean contains(Identifier id);
+
+	/**
+	 * 
+	 * @param to
+	 * @param than
+	 * @return true if the distance of this partition to the identifier $to is
+	 *         smaller than or equal to the distance of this partition to the
+	 *         identifier $than; false otherwise
+	 */
+	public abstract boolean isCloser(Identifier to, Identifier than);
+
+	/**
+	 * CONVENTION: in case the distance between this partition and two or more
+	 * partitions is equal, the first node in the list is returned
+	 * 
+	 * @param nodes
+	 *            list of node indices
+	 * @param partitions
+	 *            list of all partitions
+	 * @return index of the node in $nodes whose partition has the smallest
+	 *         distance to this partition
+	 */
+	public abstract int getClosestNode(int[] nodes, Partition[] partitions);
+
+	/**
+	 * 
+	 * @return identifier that is representative for this partition, e.g., B in
+	 *         the case of an interval (A, B]
+	 */
+	public abstract Identifier getRepresentativeIdentifier();
+
+	/**
+	 * 
+	 * @param rand
+	 * @return random identifier selected uniformly from all possible
+	 *         identifiers in this partition
+	 */
+	public abstract Identifier getRandomIdentifier(Random rand);
+
+	/**
+	 * 
+	 * @param p
+	 * @return true if this partition equals the given one; false otherwise
+	 */
+	public abstract boolean equals(Partition p);
 }
