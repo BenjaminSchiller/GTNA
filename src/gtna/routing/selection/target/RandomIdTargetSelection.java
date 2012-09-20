@@ -43,10 +43,9 @@ import gtna.id.IdentifierSpace;
  * @author benni
  * 
  */
-@SuppressWarnings("rawtypes")
 public class RandomIdTargetSelection extends TargetSelection {
 
-	protected IdentifierSpace ids;
+	protected IdentifierSpace identifierSpace;
 
 	public RandomIdTargetSelection() {
 		super("TARGET_SELECTION_RANDOM_ID");
@@ -54,12 +53,13 @@ public class RandomIdTargetSelection extends TargetSelection {
 
 	public void init(Graph graph) {
 		super.init(graph);
-		this.ids = (IdentifierSpace) this.graph.getProperty("ID_SPACE_0");
+		this.identifierSpace = (IdentifierSpace) this.graph
+				.getProperty("ID_SPACE_0");
 	}
 
 	@Override
 	public Identifier getNextTarget() {
-		return this.ids.randomID(this.rand);
+		return this.identifierSpace.getRandomIdentifier(this.rand);
 	}
 
 	@Override

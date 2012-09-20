@@ -45,7 +45,6 @@ import java.lang.reflect.InvocationTargetException;
  * @author benni
  * 
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class LookaheadElement {
 	private Partition partition;
 

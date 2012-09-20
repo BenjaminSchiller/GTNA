@@ -37,11 +37,8 @@ package gtna.routing.lookahead;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.BIPartition;
-import gtna.id.DPartition;
 import gtna.id.Identifier;
 import gtna.id.IdentifierSpace;
-import gtna.id.lookahead.LookaheadElement;
 import gtna.id.lookahead.LookaheadList;
 import gtna.id.lookahead.LookaheadLists;
 import gtna.routing.Route;
@@ -49,7 +46,6 @@ import gtna.routing.RoutingAlgorithm;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
@@ -109,110 +105,114 @@ public abstract class Lookahead extends RoutingAlgorithm {
 			return new Route(route, false);
 		}
 
-		if (list.getList()[0].getPartition() instanceof DPartition) {
-			double currentDist = (Double) this.identifierSpace.getPartitions()[current]
-					.distance(target);
-			double minDist = (Double) this.identifierSpace.getMaxDistance();
-			if (this.viaSelection == ViaSelection.sequential) {
-				for (LookaheadElement l : list.getList()) {
-					double dist = ((DPartition) l.getPartition())
-							.distance(target);
-					if (dist < minDist && dist < currentDist
-							&& !seen.contains(l.getVia())) {
-						minDist = dist;
-						via = l.getVia();
-					}
-				}
-			} else if (this.viaSelection == ViaSelection.minVia) {
-				ArrayList<LookaheadElement> best = new ArrayList<LookaheadElement>();
-				for (LookaheadElement l : list.getList()) {
-					double dist = ((DPartition) l.getPartition())
-							.distance(target);
-					if (dist < minDist && dist < currentDist
-							&& !seen.contains(l.getVia())) {
-						best.clear();
-						minDist = dist;
-						best.add(l);
-					} else if (dist == minDist && !seen.contains(l.getVia())) {
-						best.add(l);
-					}
-				}
-				if (best.size() == 1) {
-					via = best.get(0).getVia();
-				} else if (best.size() > 1) {
-					via = best.get(0).getVia();
-					minDist = ((DPartition) this.identifierSpace
-							.getPartitions()[best.get(0).getVia()])
-							.distance(target);
-					for (int i = 1; i < best.size(); i++) {
-						double dist = ((DPartition) this.identifierSpace
-								.getPartitions()[best.get(i).getVia()])
-								.distance(target);
-						if (dist < minDist) {
-							minDist = dist;
-							via = best.get(i).getVia();
-						}
-					}
-				}
-			}
-		} else if (list.getList()[0].getPartition() instanceof BIPartition) {
-			BigInteger currentDist = (BigInteger) this.identifierSpace
-					.getPartitions()[current].distance(target);
-			BigInteger minDist = (BigInteger) this.identifierSpace
-					.getMaxDistance();
-			if (this.viaSelection == ViaSelection.sequential) {
-				for (LookaheadElement l : list.getList()) {
-					BigInteger dist = ((BIPartition) l.getPartition())
-							.distance(target);
-					if (dist.compareTo(minDist) == -1
-							&& dist.compareTo(currentDist) == -1
-							&& !seen.contains(l.getVia())) {
-						minDist = dist;
-						via = l.getVia();
-					}
-				}
-			} else if (this.viaSelection == ViaSelection.minVia) {
-				ArrayList<LookaheadElement> best = new ArrayList<LookaheadElement>();
-				for (LookaheadElement l : list.getList()) {
-					BigInteger dist = ((BIPartition) l.getPartition())
-							.distance(target);
-					if (dist.compareTo(minDist) == -1
-							&& dist.compareTo(currentDist) == -1
-							&& !seen.contains(l.getVia())) {
-						best.clear();
-						minDist = dist;
-						best.add(l);
-					} else if (dist.equals(minDist)
-							&& !seen.contains(l.getVia())) {
-						best.add(l);
-					}
-				}
-				if (best.size() == 1) {
-					via = best.get(0).getVia();
-				} else if (best.size() > 1) {
-					via = best.get(0).getVia();
-					minDist = ((BIPartition) this.identifierSpace
-							.getPartitions()[best.get(0).getVia()])
-							.distance(target);
-					for (int i = 1; i < best.size(); i++) {
-						BigInteger dist = ((BIPartition) this.identifierSpace
-								.getPartitions()[best.get(i).getVia()])
-								.distance(target);
-						if (dist.compareTo(minDist) == -1) {
-							minDist = dist;
-							via = best.get(i).getVia();
-						}
-					}
-				}
-			}
-		} else {
-			return null;
-		}
+		// if (list.getList()[0].getPartition() instanceof DPartition) {
+		// double currentDist = (Double)
+		// this.identifierSpace.getPartitions()[current]
+		// .distance(target);
+		// double minDist = (Double) this.identifierSpace.getMaxDistance();
+		// if (this.viaSelection == ViaSelection.sequential) {
+		// for (LookaheadElement l : list.getList()) {
+		// double dist = ((DPartition) l.getPartition())
+		// .distance(target);
+		// if (dist < minDist && dist < currentDist
+		// && !seen.contains(l.getVia())) {
+		// minDist = dist;
+		// via = l.getVia();
+		// }
+		// }
+		// } else if (this.viaSelection == ViaSelection.minVia) {
+		// ArrayList<LookaheadElement> best = new ArrayList<LookaheadElement>();
+		// for (LookaheadElement l : list.getList()) {
+		// double dist = ((DPartition) l.getPartition())
+		// .distance(target);
+		// if (dist < minDist && dist < currentDist
+		// && !seen.contains(l.getVia())) {
+		// best.clear();
+		// minDist = dist;
+		// best.add(l);
+		// } else if (dist == minDist && !seen.contains(l.getVia())) {
+		// best.add(l);
+		// }
+		// }
+		// if (best.size() == 1) {
+		// via = best.get(0).getVia();
+		// } else if (best.size() > 1) {
+		// via = best.get(0).getVia();
+		// minDist = ((DPartition) this.identifierSpace
+		// .getPartitions()[best.get(0).getVia()])
+		// .distance(target);
+		// for (int i = 1; i < best.size(); i++) {
+		// double dist = ((DPartition) this.identifierSpace
+		// .getPartitions()[best.get(i).getVia()])
+		// .distance(target);
+		// if (dist < minDist) {
+		// minDist = dist;
+		// via = best.get(i).getVia();
+		// }
+		// }
+		// }
+		// }
+		// } else if (list.getList()[0].getPartition() instanceof BIPartition) {
+		// BigInteger currentDist = (BigInteger) this.identifierSpace
+		// .getPartitions()[current].distance(target);
+		// BigInteger minDist = (BigInteger) this.identifierSpace
+		// .getMaxDistance();
+		// if (this.viaSelection == ViaSelection.sequential) {
+		// for (LookaheadElement l : list.getList()) {
+		// BigInteger dist = ((BIPartition) l.getPartition())
+		// .distance(target);
+		// if (dist.compareTo(minDist) == -1
+		// && dist.compareTo(currentDist) == -1
+		// && !seen.contains(l.getVia())) {
+		// minDist = dist;
+		// via = l.getVia();
+		// }
+		// }
+		// } else if (this.viaSelection == ViaSelection.minVia) {
+		// ArrayList<LookaheadElement> best = new ArrayList<LookaheadElement>();
+		// for (LookaheadElement l : list.getList()) {
+		// BigInteger dist = ((BIPartition) l.getPartition())
+		// .distance(target);
+		// if (dist.compareTo(minDist) == -1
+		// && dist.compareTo(currentDist) == -1
+		// && !seen.contains(l.getVia())) {
+		// best.clear();
+		// minDist = dist;
+		// best.add(l);
+		// } else if (dist.equals(minDist)
+		// && !seen.contains(l.getVia())) {
+		// best.add(l);
+		// }
+		// }
+		// if (best.size() == 1) {
+		// via = best.get(0).getVia();
+		// } else if (best.size() > 1) {
+		// via = best.get(0).getVia();
+		// minDist = ((BIPartition) this.identifierSpace
+		// .getPartitions()[best.get(0).getVia()])
+		// .distance(target);
+		// for (int i = 1; i < best.size(); i++) {
+		// BigInteger dist = ((BIPartition) this.identifierSpace
+		// .getPartitions()[best.get(i).getVia()])
+		// .distance(target);
+		// if (dist.compareTo(minDist) == -1) {
+		// minDist = dist;
+		// via = best.get(i).getVia();
+		// }
+		// }
+		// }
+		// }
+		// } else {
+		// return null;
+		// }
+		//
+		// if (via == -1) {
+		// return new Route(route, false);
+		// }
+		// return this.route(route, via, target, rand, nodes, seen);
 
-		if (via == -1) {
-			return new Route(route, false);
-		}
-		return this.route(route, via, target, rand, nodes, seen);
+		// TODO adapt to changes in identifier space
+		return null;
 	}
 
 	@Override

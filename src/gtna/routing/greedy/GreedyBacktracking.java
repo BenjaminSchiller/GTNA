@@ -37,7 +37,6 @@ package gtna.routing.greedy;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
 import gtna.id.Identifier;
 import gtna.routing.Route;
@@ -68,46 +67,38 @@ public class GreedyBacktracking extends RoutingAlgorithm {
 		this.ttl = ttl;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public Route routeToTarget(Graph graph, int start, Identifier target,
 			Random rand) {
-		return this.route(new ArrayList<Integer>(), start,
-				(DIdentifier) target, rand, graph.getNodes(),
-				new HashMap<Integer, Integer>());
+		return this.route(new ArrayList<Integer>(), start, target, rand,
+				graph.getNodes(), new HashMap<Integer, Integer>());
 	}
 
-	@SuppressWarnings("unchecked")
 	private Route route(ArrayList<Integer> route, int current,
-			DIdentifier target, Random rand, Node[] nodes,
+			Identifier target, Random rand, Node[] nodes,
 			HashMap<Integer, Integer> from) {
 		route.add(current);
+
 		if (this.isEndPoint(current, target)) {
 			return new Route(route, true);
 		}
-		if (route.size() > ttl) {
+		if (route.size() > this.ttl) {
 			return new Route(route, false);
 		}
-		double currentDist = (Double) this.identifierSpace.getPartitions()[current]
-				.distance(target);
-		double minDist = (Double) this.identifierSpace.getMaxDistance();
-		int minNode = -1;
-		for (int out : nodes[current].getOutgoingEdges()) {
-			double dist = (Double) this.identifierSpace.getPartitions()[out]
-					.distance(target);
-			if (dist < minDist && dist < currentDist && !from.containsKey(out)) {
-				minDist = dist;
-				minNode = out;
+
+		int closest = target.getClosestNode(nodes[current].getOutgoingEdges(),
+				this.identifierSpace.getPartitions());
+		if (!target.isCloser(this.identifierSpace.getPartition(closest),
+				this.identifierSpace.getPartition(current))) {
+			if (from.containsKey(current)) {
+				return this.route(route, from.get(current), target, rand,
+						nodes, from);
 			}
-		}
-		if (minNode == -1 && from.containsKey(current)) {
-			return this.route(route, from.get(current), target, rand, nodes,
-					from);
-		} else if (minNode == -1) {
 			return new Route(route, false);
 		}
-		from.put(minNode, current);
-		return this.route(route, minNode, target, rand, nodes, from);
+
+		from.put(closest, current);
+		return this.route(route, closest, target, rand, nodes, from);
 	}
 
 	@Override

@@ -43,7 +43,6 @@ import gtna.id.IdentifierSpace;
  * @author benni
  * 
  */
-@SuppressWarnings("rawtypes")
 public class RepresentativeIdTargetSelection extends TargetSelection {
 
 	protected IdentifierSpace ids;
@@ -60,12 +59,11 @@ public class RepresentativeIdTargetSelection extends TargetSelection {
 	@Override
 	public Identifier getNextTarget() {
 		return this.ids.getPartitions()[this.rand.nextInt(this.ids
-				.getPartitions().length)].getRepresentativeID();
+				.getPartitions().length)].getRepresentativeIdentifier();
 	}
 
 	@Override
 	public boolean applicable(Graph graph) {
-		return graph.hasProperty("ID_SPACE_0")
-				&& graph.getProperty("ID_SPACE_0") instanceof IdentifierSpace;
+		return graph.hasProperty("ID_SPACE_0", IdentifierSpace.class);
 	}
 }

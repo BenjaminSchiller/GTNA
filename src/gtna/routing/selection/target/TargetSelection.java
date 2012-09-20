@@ -65,7 +65,6 @@ public abstract class TargetSelection extends ParameterList {
 		this.graph = graph;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public abstract Identifier getNextTarget();
 
 	public abstract boolean applicable(Graph graph);

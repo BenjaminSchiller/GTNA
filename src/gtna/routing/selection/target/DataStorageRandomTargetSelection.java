@@ -44,10 +44,9 @@ import gtna.id.data.DataStoreList;
  * @author benni
  * 
  */
-@SuppressWarnings("rawtypes")
 public class DataStorageRandomTargetSelection extends TargetSelection {
 
-	protected DataStoreList dsl;
+	protected DataStoreList dataStoreList;
 
 	protected DataItem[] items;
 
@@ -57,9 +56,10 @@ public class DataStorageRandomTargetSelection extends TargetSelection {
 
 	public void init(Graph graph) {
 		super.init(graph);
-		this.dsl = (DataStoreList) this.graph.getProperty("DATA_STORAGE_0");
-		this.items = (DataItem[]) this.dsl.getDataItems().toArray(
-				new DataItem[this.dsl.getDataItems().size()]);
+		this.dataStoreList = (DataStoreList) this.graph
+				.getProperty("DATA_STORAGE_0");
+		this.items = (DataItem[]) this.dataStoreList.getDataItems().toArray(
+				new DataItem[this.dataStoreList.getDataItems().size()]);
 	}
 
 	@Override
