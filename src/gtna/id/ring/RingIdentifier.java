@@ -37,141 +37,71 @@ package gtna.id.ring;
 
 import gtna.id.DIdentifier;
 import gtna.id.Identifier;
-import gtna.id.ring.RingIdentifierSpace.Distance;
-
-import java.util.Random;
 
 /**
  * Implements an ID in the wrapping ID space [0,1) (i.e. a ring). Distance
- * computations are performed with wrap-around. When creating a RingID or
- * setting a new position, the position if computed modulo 1.0.
+ * computations are performed with or without wrap-around depending on the flag.
+ * When creating a RingID or setting a new position, the position is computed
+ * modulo 1.0.
  * 
  * @author benni
  * 
  */
-public class RingIdentifier extends DIdentifier implements
-		Comparable<RingIdentifier> {
-	private double position;
+public class RingIdentifier extends DIdentifier {
+	protected double position;
 
-	private RingIdentifierSpace idSpace;
+	protected boolean wrapAround;
 
-	public RingIdentifier(double pos, RingIdentifierSpace idSpace) {
-		this.position = Math.abs(pos);
-		this.idSpace = idSpace;
-	}
-
-	public RingIdentifier(String string, RingIdentifierSpace idSpace) {
-		this.position = Double.parseDouble(string.replace("(", "").replace(")",
-				""));
-		this.idSpace = idSpace;
+	public RingIdentifier(double position, boolean wrapAround) {
+		this.position = position % 1.0;
+		this.wrapAround = wrapAround;
 	}
 
 	public RingIdentifier(String string) {
-		this(string, null);
+		String[] temp = string.split(Identifier.delimiter);
+		this.position = Double.parseDouble(temp[0]) % 1.0;
+		this.wrapAround = Boolean.parseBoolean(temp[1]);
 	}
 
 	public String toString() {
-		return "(" + this.position + ")";
+		return "R:" + this.position;
 	}
 
 	@Override
-	public Double distance(Identifier<Double> id) {
-		if (this.getIdSpace().distance == Distance.RING) {
-			return getRingDistance(id);
-		}
-		if (this.getIdSpace().distance == Distance.CLOCKWISE) {
-			return getClockwiseDistance(id);
-		}
-		if (this.getIdSpace().distance == Distance.SIGNED) {
-			return getSignedDistance(id);
-		}
-		return null;
-	}
-
-	private double getRingDistance(Identifier<Double> id) {
-		double dest = ((RingIdentifier) id).getPosition();
-		if (this.idSpace.isWrapAround()) {
-			return Math.min(
-					Math.abs(this.position - dest),
-					Math.min(this.getIdSpace().getModulus() + this.position
-							- dest, this.getIdSpace().getModulus()
-							- this.position + dest));
-		} else {
-			return Math.abs(dest - this.position);
-		}
-	}
-
-	private double getClockwiseDistance(Identifier<Double> id) {
-		double dest = ((RingIdentifier) id).getPosition();
-		if (this.getIdSpace().isWrapAround()) {
-			if (dest >= this.getPosition()) {
-				return dest - this.getPosition();
-			} else {
-				return (this.getIdSpace().getModulus() + dest - this
-						.getPosition());
-			}
-		} else {
-			throw new IllegalArgumentException(
-					"Clockwise distance only possible with wraparound");
-		}
-	}
-
-	private double getSignedDistance(Identifier<Double> id) {
-		double dest = ((RingIdentifier) id).getPosition();
-		if (this.getIdSpace().isWrapAround()) {
-			if (Math.abs(dest - this.getPosition()) < this.getIdSpace()
-					.getMaxDistance()) {
-				return dest - this.getPosition();
-			} else {
-				if (dest > this.getPosition()) {
-					return -(this.getIdSpace().getModulus()
-							+ this.getPosition() - dest);
-				} else {
-					return -(this.getIdSpace().getModulus() + dest - this
-							.getPosition());
-				}
-			}
-		} else {
-			return dest - this.getPosition();
-		}
-	}
-
-	@Override
-	public boolean equals(Identifier<Double> id) {
-		return this.position == ((RingIdentifier) id).getPosition();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof RingIdentifier)) {
-			return false;
-		}
-		return ((RingIdentifier) obj).getPosition() == this.position;
-	}
-
-	@Override
-	public int hashCode() {
-		return this.toString().hashCode();
-	}
-
-	@Override
-	public int compareTo(RingIdentifier id) {
-		if (id.getPosition() < this.position) {
-			return 1;
-		} else if (id.getPosition() > this.position) {
+	public int compareTo(DIdentifier o) {
+		if (this.position < ((RingIdentifier) o).position)
 			return -1;
-		} else {
+		else if (this.position == ((RingIdentifier) o).position)
 			return 0;
-		}
+		else
+			return 1;
 	}
 
-	public static RingIdentifier rand(Random rand, RingIdentifierSpace idSpace) {
-		return new RingIdentifier(rand.nextDouble() * idSpace.getModulus(),
-				idSpace);
+	@Override
+	public double distance(DIdentifier id) {
+		double pos = ((RingIdentifier) id).position;
+
+		if (!this.wrapAround)
+			return Math.abs(pos - this.position);
+
+		return Math.min(Math.abs(this.position - pos),
+				Math.min(1.0 + this.position - pos, 1.0 - this.position + pos));
+	}
+
+	@Override
+	public String asString() {
+		return this.position + Identifier.delimiter + this.wrapAround;
+	}
+
+	@Override
+	public boolean equals(Identifier id) {
+		return id instanceof RingIdentifier
+				&& this.position == ((RingIdentifier) id).position
+				&& this.wrapAround == ((RingIdentifier) id).wrapAround;
 	}
 
 	/**
-	 * @return the pos
+	 * @return the position
 	 */
 	public double getPosition() {
 		return this.position;
@@ -182,13 +112,21 @@ public class RingIdentifier extends DIdentifier implements
 	 *            the position to set
 	 */
 	public void setPosition(double position) {
-		this.position = position;
+		this.position = position % 1.0;
 	}
 
 	/**
-	 * @return the idSpace
+	 * @return the wrapAround
 	 */
-	public RingIdentifierSpace getIdSpace() {
-		return this.idSpace;
+	public boolean isWrapAround() {
+		return this.wrapAround;
+	}
+
+	/**
+	 * @param wrapAround
+	 *            the wrapAround to set
+	 */
+	public void setWrapAround(boolean wrapAround) {
+		this.wrapAround = wrapAround;
 	}
 }

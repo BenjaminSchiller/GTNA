@@ -35,14 +35,10 @@
  */
 package gtna.id.ring;
 
-import gtna.graph.Graph;
 import gtna.id.DIdentifierSpace;
-import gtna.id.DPartition;
 import gtna.id.Identifier;
-import gtna.id.Partition;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
-import gtna.util.Config;
 
 import java.util.Random;
 
@@ -51,141 +47,46 @@ import java.util.Random;
  * 
  */
 public class RingIdentifierSpace extends DIdentifierSpace {
-	private RingPartition[] partitions;
 
-	protected double modulus;
+	boolean wrapAround;
 
-	protected boolean wrapAround;
-
-	protected double maxDistance;
-	
-	public static enum Distance{
-		RING, CLOCKWISE, SIGNED
-	}
-	
-	protected Distance distance;
-
-	public RingIdentifierSpace() {
-		this.partitions = new RingPartition[] {};
-		this.modulus = Double.MAX_VALUE;
-		this.wrapAround = false;
-		this.maxDistance = Double.MAX_VALUE;
-		this.distance = Distance.RING;
-	}
-
-	public RingIdentifierSpace(RingPartition[] partitions, double modulus,
-			boolean wrapAround) {
-		this.partitions = partitions;
-		this.modulus = modulus;
-		this.wrapAround = wrapAround;
-		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
-		this.distance = Distance.RING;
-	}
-	
-	public RingIdentifierSpace(RingPartition[] partitions, double modulus,
-			boolean wrapAround, Distance distance) {
-		this.partitions = partitions;
-		this.modulus = modulus;
-		this.wrapAround = wrapAround;
-		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
-		this.distance = distance;
-	}
-
-	@Override
-	public DPartition[] getPartitions() {
-		return this.partitions;
-	}
-
-	@Override
-	public void setPartitions(Partition<Double>[] partitions) {
-		this.partitions = (RingPartition[]) partitions;
-	}
-
-	@Override
-	public Identifier<Double> randomID(Random rand) {
-		return RingIdentifier.rand(rand, this);
-	}
-
-	@Override
-	public Double getMaxDistance() {
-		return this.maxDistance;
-	}
-
-	@Override
-	public boolean write(String filename, String key) {
-		Filewriter fw = new Filewriter(filename);
-
-		// CLASS
-		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
-		fw.writeln(this.getClass().getCanonicalName().toString());
-
-		// KEY
-		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
-		fw.writeln(key);
-
-		// # MODULUS
-		fw.writeComment("Modulus");
-		fw.writeln(this.modulus);
-
-		// # WRAP-AROUND
-		fw.writeComment("Wrap-around");
-		fw.writeln(this.wrapAround + "");
-
-		// # PARTITIONS
-		fw.writeComment("Partitions");
-		fw.writeln(this.partitions.length);
-
-		fw.writeln();
-
-		// PARTITIONS
-		int index = 0;
-		for (RingPartition p : this.partitions) {
-			fw.writeln(index++ + ":" + p.toString());
-		}
-
-		return fw.close();
-	}
-
-	@Override
-	public void read(String filename, Graph graph) {
-		Filereader fr = new Filereader(filename);
-
-		// CLASS
-		fr.readLine();
-
-		// KEY
-		String key = fr.readLine();
-
-		// # MUDULUS
-		this.modulus = Double.parseDouble(fr.readLine());
-
-		// # WRAP-AROUND
-		this.wrapAround = Boolean.parseBoolean(fr.readLine());
-
-		// # PARTITIONS
-		int partitions = Integer.parseInt(fr.readLine());
-		this.partitions = new RingPartition[partitions];
-
-		this.maxDistance = this.wrapAround ? this.modulus / 2.0 : this.modulus;
-
-		// PARTITIONS
-		String line = null;
-		while ((line = fr.readLine()) != null) {
-			String[] temp = line.split(":");
-			int index = Integer.parseInt(temp[0]);
-			this.partitions[index] = new RingPartition(temp[1], this);
-		}
-
-		fr.close();
-
-		graph.addProperty(key, this);
+	/**
+	 * 
+	 * @param partitions
+	 * @param wrapAround
+	 */
+	public RingIdentifierSpace(RingPartition[] partitions, boolean wrapAround) {
+		super(partitions);
 	}
 
 	/**
-	 * @return the modulus
+	 * 
 	 */
-	public double getModulus() {
-		return this.modulus;
+	public RingIdentifierSpace() {
+		this(null, false);
+	}
+
+	@Override
+	public double getMaxDistance() {
+		if (this.wrapAround)
+			return 0.5;
+
+		return 1.0;
+	}
+
+	@Override
+	protected void writeParameters(Filewriter fw) {
+		this.writeParameter(fw, "Wrap around", this.wrapAround);
+	}
+
+	@Override
+	protected void readParameters(Filereader fr) {
+		this.wrapAround = this.readBoolean(fr);
+	}
+
+	@Override
+	public Identifier getRandomIdentifier(Random rand) {
+		return new RingIdentifier(rand.nextDouble(), this.wrapAround);
 	}
 
 	/**
@@ -193,5 +94,13 @@ public class RingIdentifierSpace extends DIdentifierSpace {
 	 */
 	public boolean isWrapAround() {
 		return this.wrapAround;
+	}
+
+	/**
+	 * @param wrapAround
+	 *            the wrapAround to set
+	 */
+	public void setWrapAround(boolean wrapAround) {
+		this.wrapAround = wrapAround;
 	}
 }

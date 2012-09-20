@@ -35,6 +35,8 @@
  */
 package gtna.id.ring;
 
+import java.util.Random;
+
 import gtna.id.DIdentifier;
 import gtna.id.DPartition;
 import gtna.id.Identifier;
@@ -45,50 +47,75 @@ import gtna.id.Partition;
  * 
  */
 public class RingPartitionSimple extends DPartition {
-	private RingIdentifier id;
 
-	public RingPartitionSimple(RingIdentifier id) {
-		this.id = id;
-	}
+	protected RingIdentifier identifier;
 
-	public RingPartitionSimple(String string, RingIdentifierSpace idSpace) {
-		string = string.replace("[", "").replace("]", "");
-		this.id = new RingIdentifier(string, idSpace);
+	public RingPartitionSimple(RingIdentifier identifier) {
+		this.identifier = identifier;
 	}
 
 	public RingPartitionSimple(String string) {
-		this(string, null);
+		String[] temp = string.split(Partition.delimiter);
+		this.identifier = new RingIdentifier(Double.parseDouble(temp[0]),
+				Boolean.parseBoolean(temp[1]));
 	}
 
 	public String toString() {
-		return "[" + this.id.getPosition() + "]";
+		return "R [" + this.identifier.position + "]";
 	}
 
 	@Override
-	public Double distance(Identifier<Double> id) {
-		return this.id.distance(id);
+	public double distance(DIdentifier id) {
+		return this.identifier.distance(id);
 	}
 
 	@Override
-	public boolean equals(Partition<Double> partition) {
-		return this.id.equals(((RingPartitionSimple) partition).getId());
+	public double distance(DPartition p) {
+		return this.distance(((RingPartitionSimple) p).identifier);
 	}
 
 	@Override
-	public boolean contains(Identifier<Double> id) {
-		return this.id.equals((RingIdentifier) id);
+	public String asString() {
+		return this.identifier.position + Partition.delimiter
+				+ this.identifier.wrapAround;
 	}
 
 	@Override
-	public DIdentifier getRepresentativeID() {
-		return this.id;
+	public boolean contains(Identifier id) {
+		return this.identifier.equals(id);
+	}
+
+	@Override
+	public Identifier getRepresentativeIdentifier() {
+		return new RingIdentifier(this.identifier.position,
+				this.identifier.wrapAround);
+	}
+
+	@Override
+	public Identifier getRandomIdentifier(Random rand) {
+		return new RingIdentifier(this.identifier.position,
+				this.identifier.wrapAround);
+	}
+
+	@Override
+	public boolean equals(Partition p) {
+		return this.identifier
+				.equals(((RingPartitionSimple) p).identifier);
 	}
 
 	/**
-	 * @return the id
+	 * @return the identifier
 	 */
-	public RingIdentifier getId() {
-		return this.id;
+	public RingIdentifier getIdentifier() {
+		return this.identifier;
+	}
+
+	/**
+	 * @param identifier
+	 *            the identifier to set
+	 */
+	public void setIdentifier(RingIdentifier identifier) {
+		this.identifier = identifier;
 	}
 
 }

@@ -40,69 +40,111 @@ import gtna.id.DPartition;
 import gtna.id.Identifier;
 import gtna.id.Partition;
 
+import java.util.Random;
+
 /**
+ * Implements a partition in the wrapping ID space [0,1). A partition is
+ * represented as an interval (start, end] with start beeing excluded from the
+ * set of contained identifiers.
+ * 
  * @author benni
  * 
  */
 public class RingPartition extends DPartition {
-	private RingIdentifier start;
+	protected RingIdentifier start;
 
-	private RingIdentifier end;
+	protected RingIdentifier end;
 
 	public RingPartition(RingIdentifier start, RingIdentifier end) {
 		this.start = start;
 		this.end = end;
 	}
 
-	public RingPartition(String string, RingIdentifierSpace idSpace) {
-		String[] temp = string.replace("(", "").replace("]", "").split(",");
-		this.start = new RingIdentifier(Double.parseDouble(temp[0]), idSpace);
-		this.end = new RingIdentifier(Double.parseDouble(temp[1]), idSpace);
-	}
-
 	public RingPartition(String string) {
-		this(string, null);
+		String[] temp = string.split(Partition.delimiter);
+		boolean wrapAround = Boolean.parseBoolean(temp[2]);
+		this.start = new RingIdentifier(Double.parseDouble(temp[0]), wrapAround);
+		this.end = new RingIdentifier(Double.parseDouble(temp[1]), wrapAround);
 	}
 
 	public String toString() {
-		return "(" + this.start.getPosition() + "," + this.end.getPosition()
+		return "R (" + this.start.position + ", " + this.end.position
 				+ "]";
 	}
 
 	@Override
-	public Double distance(Identifier<Double> id) {
+	public double distance(DIdentifier id) {
 		if (this.contains(id)) {
-			return 0.0;
+			return 0;
 		}
-		return Math.min(this.start.distance((RingIdentifier) id),
-				this.end.distance((RingIdentifier) id));
+		return Math.min(this.start.distance(id), this.end.distance(id));
 	}
 
 	@Override
-	public boolean equals(Partition<Double> partition) {
-		return this.start.equals(((RingPartition) partition).getStart())
-				&& this.end.equals(((RingPartition) partition).getEnd());
+	public double distance(DPartition p) {
+		return this.distance((DIdentifier) p.getRepresentativeIdentifier());
 	}
 
 	@Override
-	public boolean contains(Identifier<Double> id) {
-		if (this.start.getPosition() < ((RingIdentifier) id).getPosition()
-				&& this.end.getPosition() >= ((RingIdentifier) id)
-						.getPosition()) {
-			return true;
-		}
-		if (this.start.getPosition() > this.end.getPosition()
-				&& (this.start.getPosition() < ((RingIdentifier) id)
-						.getPosition() || this.end.getPosition() >= ((RingIdentifier) id)
-						.getPosition())) {
-			return true;
-		}
-		return false;
+	public String asString() {
+		return this.start.position + Partition.delimiter
+				+ this.end.position + Partition.delimiter
+				+ this.start.wrapAround;
 	}
 
 	@Override
-	public DIdentifier getRepresentativeID() {
+	public boolean contains(Identifier id) {
+		double pos = ((RingIdentifier) id).position;
+		if (this.isWrapping()) {
+			return this.start.position < pos
+					&& pos <= this.end.position;
+		}
+		return this.start.position < pos || pos <= this.end.position;
+	}
+
+	@Override
+	public Identifier getRepresentativeIdentifier() {
 		return this.end;
+	}
+
+	@Override
+	public Identifier getRandomIdentifier(Random rand) {
+		if (this.start.position == this.end.position) {
+			return new RingIdentifier(this.start.position,
+					this.start.wrapAround);
+		}
+		double r = rand.nextDouble();
+		while (r == 0.0) {
+			r = rand.nextDouble();
+		}
+		return new RingIdentifier(
+				(this.start.position + this.getIntervalWidth() * r) % 1.0,
+				this.start.wrapAround);
+	}
+
+	@Override
+	public boolean equals(Partition p) {
+		return this.start.equals(((RingPartition) p).start)
+				&& this.end.equals(((RingPartition) p).end);
+	}
+
+	/**
+	 * 
+	 * @return width of the interval (start, end], i.e. end - start
+	 */
+	public double getIntervalWidth() {
+		if (this.isWrapping()) {
+			return this.end.position - this.start.position;
+		}
+		return 1 + this.end.position - this.start.position;
+	}
+
+	/**
+	 * 
+	 * @return true if this partition wraps around 0.0, i.e., end <= start
+	 */
+	public boolean isWrapping() {
+		return this.end.position <= this.start.position;
 	}
 
 	/**
@@ -113,10 +155,26 @@ public class RingPartition extends DPartition {
 	}
 
 	/**
+	 * @param start
+	 *            the start to set
+	 */
+	public void setStart(RingIdentifier start) {
+		this.start = start;
+	}
+
+	/**
 	 * @return the end
 	 */
 	public RingIdentifier getEnd() {
 		return this.end;
+	}
+
+	/**
+	 * @param end
+	 *            the end to set
+	 */
+	public void setEnd(RingIdentifier end) {
+		this.end = end;
 	}
 
 }
