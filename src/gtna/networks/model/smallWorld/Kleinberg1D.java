@@ -111,7 +111,7 @@ public class Kleinberg1D extends Network {
 		Node[] nodes = new Node[this.getNodes()];
 		RingPartitionSimple[] parts = new RingPartitionSimple[this.getNodes()];
 		RingIdentifierSpaceSimple idSpace = new RingIdentifierSpaceSimple(
-				parts, 1, true);
+				parts, true);
 
 		double[] pos = new double[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
@@ -124,8 +124,7 @@ public class Kleinberg1D extends Network {
 		}
 		Arrays.sort(pos);
 		for (int j = 0; j < pos.length; j++) {
-			parts[j] = new RingPartitionSimple(new RingIdentifier(pos[j],
-					idSpace));
+			parts[j] = new RingPartitionSimple(new RingIdentifier(pos[j], true));
 		}
 
 		Edges edges = new Edges(nodes, this.getNodes()
@@ -142,7 +141,7 @@ public class Kleinberg1D extends Network {
 		// long-distance links
 		double sum = 0;
 		for (int j = 1; j < nodes.length; j++) {
-			sum += Math.pow(parts[0].distance(parts[j].getId()),
+			sum += Math.pow(parts[0].distance(parts[j].getIdentifier()),
 					-this.CLUSTERING_EXPONENT);
 		}
 
@@ -152,9 +151,10 @@ public class Kleinberg1D extends Network {
 				sum = 0;
 				for (int j = 0; j < nodes.length; j++) {
 					if (i + 1 != j) {
-						sum += Math.pow(
-								parts[i + 1].distance(parts[j].getId()),
-								-this.CLUSTERING_EXPONENT);
+						sum += Math
+								.pow(parts[i + 1].distance(parts[j]
+										.getIdentifier()),
+										-this.CLUSTERING_EXPONENT);
 					}
 				}
 			}
@@ -182,7 +182,8 @@ public class Kleinberg1D extends Network {
 				continue;
 			}
 			sum2 = sum2
-					+ Math.pow(part[nr].distance(part[current].getId()),
+					+ Math.pow(
+							part[nr].distance(part[current].getIdentifier()),
 							-this.CLUSTERING_EXPONENT);
 			;
 			if (sum2 >= rands[found]) {

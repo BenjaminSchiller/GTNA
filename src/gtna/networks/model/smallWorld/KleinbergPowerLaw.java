@@ -77,8 +77,6 @@ public class KleinbergPowerLaw extends Network {
 		Random rand = new Random();
 		Node[] nodes = new Node[this.getNodes()];
 		RingPartitionSimple[] parts = new RingPartitionSimple[this.getNodes()];
-		RingIdentifierSpaceSimple idSpace = new RingIdentifierSpaceSimple(
-				parts, 1, true);
 
 		double[] pos = new double[nodes.length];
 		for (int i = 0; i < nodes.length; i++) {
@@ -91,9 +89,10 @@ public class KleinbergPowerLaw extends Network {
 		}
 		Arrays.sort(pos);
 		for (int j = 0; j < pos.length; j++) {
-			parts[j] = new RingPartitionSimple(new RingIdentifier(pos[j],
-					idSpace));
+			parts[j] = new RingPartitionSimple(new RingIdentifier(pos[j], true));
 		}
+		RingIdentifierSpaceSimple idSpace = new RingIdentifierSpaceSimple(
+				parts, true);
 
 		double norm = 0;
 		for (int j = 1; j < this.CUTOFF; j++) {
@@ -115,7 +114,7 @@ public class KleinbergPowerLaw extends Network {
 		// long-distance links
 		double sum = 0;
 		for (int j = 1; j < nodes.length; j++) {
-			sum += 1 / parts[0].distance(parts[j].getId());
+			sum += 1 / parts[0].distance(parts[j].getIdentifier());
 		}
 
 		for (int i = 0; i < nodes.length; i++) {
@@ -131,7 +130,8 @@ public class KleinbergPowerLaw extends Network {
 				sum = 0;
 				for (int j = 0; j < nodes.length; j++) {
 					if (i + 1 != j) {
-						sum += 1 / (parts[i + 1].distance(parts[j].getId()));
+						sum += 1 / (parts[i + 1].distance(parts[j]
+								.getIdentifier()));
 					}
 				}
 			}
@@ -159,7 +159,7 @@ public class KleinbergPowerLaw extends Network {
 				current++;
 				continue;
 			}
-			sum2 = sum2 + 1 / part[nr].distance(part[current].getId());
+			sum2 = sum2 + 1 / part[nr].distance(part[current].getIdentifier());
 			;
 			if (sum2 >= rands[found]) {
 				edges.add(nr, current);

@@ -125,7 +125,8 @@ public class Kleinberg extends Network {
 		MDIdentifierSpaceSimple idSpace = new MDIdentifierSpaceSimple(parts,
 				modulo, this.WRAPAROUND);
 		for (int i = 0; i < nodes.length; i++) {
-			MDIdentifier id = new MDIdentifier(x.clone(), idSpace);
+			MDIdentifier id = new MDIdentifier(x.clone(), modulo,
+					this.WRAPAROUND);
 			parts[i] = new MDPartitionSimple(id);
 			nodes[i] = new Node(i, g);
 			x[0] = (x[0] + 1) % this.EDGELENGTH;
@@ -151,7 +152,7 @@ public class Kleinberg extends Network {
 		if (this.WRAPAROUND) {
 			for (int j = 1; j < nodes.length; j++) {
 
-				sum += Math.pow(parts[0].distance(parts[j].getId()),
+				sum += Math.pow(parts[0].distance(parts[j].getIdentifier()),
 						-this.CLUSTERING_EXPONENT);
 
 			}
@@ -161,7 +162,8 @@ public class Kleinberg extends Network {
 				sum = 0;
 				for (int j = 0; j < nodes.length; j++) {
 					if (i != j) {
-						sum += Math.pow(parts[i].distance(parts[j].getId()),
+						sum += Math.pow(
+								parts[i].distance(parts[j].getIdentifier()),
 								-this.CLUSTERING_EXPONENT);
 					}
 				}
@@ -182,7 +184,7 @@ public class Kleinberg extends Network {
 	private void generateLocalContacts(int nr, Edges edges,
 			MDPartitionSimple[] part) {
 		for (int i = nr + 1; i < part.length; i++) {
-			if (part[nr].getId().distance(part[i].getId()) <= this.LOCAL_DISTANCE) {
+			if (part[nr].getIdentifier().distance(part[i].getIdentifier()) <= this.LOCAL_DISTANCE) {
 				edges.add(nr, i);
 				edges.add(i, nr);
 			}
@@ -206,7 +208,8 @@ public class Kleinberg extends Network {
 				continue;
 			}
 			sum2 = sum2
-					+ Math.pow(part[nr].distance(part[current].getId()),
+					+ Math.pow(
+							part[nr].distance(part[current].getIdentifier()),
 							-this.CLUSTERING_EXPONENT);
 			if (sum2 >= rands[found]) {
 				edges.add(nr, current);

@@ -84,13 +84,12 @@ public class ScaleFreeUndirectedLD extends Network {
 		}
 		RingIdentifier[] ids = new RingIdentifier[nodes.length];
 		RingPartitionSimple[] parts = new RingPartitionSimple[nodes.length];
-		RingIdentifierSpaceSimple idSpace = new RingIdentifierSpaceSimple(null,
-				1, true);
 		for (int i = 0; i < nodes.length; i++) {
-			ids[i] = new RingIdentifier(i * this.interval, idSpace);
+			ids[i] = new RingIdentifier(i * this.interval, true);
 			parts[i] = new RingPartitionSimple(ids[i]);
 		}
-		idSpace.setPartitions(parts);
+		RingIdentifierSpaceSimple idSpace = new RingIdentifierSpaceSimple(
+				parts, true);
 
 		// label distribution: each node is given a label that determines its
 		// potential degree distribution
