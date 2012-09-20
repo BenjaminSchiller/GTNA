@@ -41,7 +41,6 @@ import gtna.id.Identifier;
  * @author benni
  * 
  */
-@SuppressWarnings("rawtypes")
 public class DataItem {
 	private Identifier id;
 

@@ -49,7 +49,6 @@ import java.util.Set;
  *         independent of the number of data items stored.
  * 
  */
-@SuppressWarnings("rawtypes")
 public class UnlimitedDataStore extends DataStore {
 
 	protected Map<Identifier, DataItem> storage;

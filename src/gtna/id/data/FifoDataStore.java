@@ -43,7 +43,6 @@ import java.util.LinkedList;
  * @author benni
  * 
  */
-@SuppressWarnings("rawtypes")
 public class FifoDataStore extends UnlimitedDataStore {
 
 	protected LinkedList<Identifier> list;

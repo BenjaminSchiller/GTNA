@@ -48,7 +48,6 @@ import java.util.Set;
  *         data in a systems, e.g., for routing purposes.
  * 
  */
-@SuppressWarnings("rawtypes")
 public abstract class DataStore {
 
 	protected int node;
