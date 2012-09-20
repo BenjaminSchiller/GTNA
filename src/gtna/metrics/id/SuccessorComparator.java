@@ -35,7 +35,7 @@
  */
 package gtna.metrics.id;
 
-import gtna.id.DPartition;
+import gtna.id.Partition;
 import gtna.id.ring.RingIdentifier;
 import gtna.util.ArrayUtils;
 
@@ -47,18 +47,18 @@ import java.util.Comparator;
  * 
  */
 public class SuccessorComparator implements Comparator<Integer> {
-	private DPartition[] partitions;
+	private Partition[] partitions;
 
-	public SuccessorComparator(DPartition[] partitions) {
+	public SuccessorComparator(Partition[] partitions) {
 		this.partitions = partitions;
 	}
 
 	@Override
 	public int compare(Integer n1, Integer n2) {
 		RingIdentifier id1 = (RingIdentifier) this.partitions[n1]
-				.getRepresentativeID();
+				.getRepresentativeIdentifier();
 		RingIdentifier id2 = (RingIdentifier) this.partitions[n2]
-				.getRepresentativeID();
+				.getRepresentativeIdentifier();
 		double dist = id2.getPosition() - id1.getPosition();
 		if (dist == 0) {
 			return 0;
@@ -69,7 +69,7 @@ public class SuccessorComparator implements Comparator<Integer> {
 		}
 	}
 
-	public static int[] getNodesSorted(DPartition[] partitions) {
+	public static int[] getNodesSorted(Partition[] partitions) {
 		Integer[] nodesSorted = ArrayUtils.initIntegerArray(partitions.length);
 
 		SuccessorComparator sc = new SuccessorComparator(partitions);

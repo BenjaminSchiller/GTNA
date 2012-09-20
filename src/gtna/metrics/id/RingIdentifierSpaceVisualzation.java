@@ -89,8 +89,7 @@ public class RingIdentifierSpaceVisualzation extends Metric {
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		double[] pos = this.getPos(g);
-		double modulus = ((RingIdentifierSpace) g.getProperty("ID_SPACE_0"))
-				.getModulus();
+		double modulus = 1.0;
 
 		if (this.bins > 0) {
 			this.ring = this.getRingBinned(pos, modulus, this.bins);
@@ -205,14 +204,13 @@ public class RingIdentifierSpaceVisualzation extends Metric {
 				Math.cos(Math.toRadians(angle)) };
 	}
 
-	@SuppressWarnings("rawtypes")
 	private double[] getPos(Graph g) {
 		IdentifierSpace ids = (IdentifierSpace) g.getProperty("ID_SPACE_0");
 		RingIdentifierSpace ring = (RingIdentifierSpace) ids;
 		double[] pos = new double[g.getNodes().length];
 		for (int i = 0; i < pos.length; i++) {
 			pos[i] = ((RingIdentifier) ring.getPartitions()[i]
-					.getRepresentativeID()).getPosition();
+					.getRepresentativeIdentifier()).getPosition();
 		}
 		return pos;
 	}
@@ -236,7 +234,6 @@ public class RingIdentifierSpaceVisualzation extends Metric {
 		return new Single[0];
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 		if (!g.hasProperty("ID_SPACE_0")) {

@@ -38,8 +38,8 @@ package gtna.metrics.id;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.DPartition;
 import gtna.id.IdentifierSpace;
+import gtna.id.Partition;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
@@ -75,17 +75,17 @@ public class PlaneIdentifierSpaceDistancesToCenter extends Metric {
 				-1, -1 } };
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		IdentifierSpace ids = (IdentifierSpace) g.getProperty("ID_SPACE_0");
 		PlaneIdentifierSpaceSimple plane = (PlaneIdentifierSpaceSimple) ids;
-		DPartition[] partitions = plane.getPartitions();
+		Partition[] partitions = plane.getPartitions();
 
-		PlaneIdentifier center = new PlaneIdentifier(plane.getModulusX() / 2.0,
-				plane.getModulusY() / 2.0, plane);
-		double maxDist = Math.sqrt(Math.pow(plane.getModulusX() / 2.0, 2.0)
-				+ Math.pow(plane.getModulusY() / 2.0, 2.0));
+		PlaneIdentifier center = new PlaneIdentifier(plane.getxModulus() / 2.0,
+				plane.getyModulus() / 2.0, plane.getxModulus(),
+				plane.getyModulus(), plane.isWrapAround());
+		double maxDist = Math.sqrt(Math.pow(plane.getxModulus() / 2.0, 2.0)
+				+ Math.pow(plane.getyModulus() / 2.0, 2.0));
 
 		double[] dist = this.computeCenterDistances(g.getNodes(), partitions,
 				center, maxDist);
@@ -98,7 +98,7 @@ public class PlaneIdentifierSpaceDistancesToCenter extends Metric {
 	}
 
 	private double[] computeCenterDistances(Node[] nodes,
-			DPartition[] partitions, PlaneIdentifier center, double maxDist) {
+			Partition[] partitions, PlaneIdentifier center, double maxDist) {
 		double[] dist = new double[nodes.length];
 
 		for (Node node : nodes) {

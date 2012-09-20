@@ -37,8 +37,8 @@ package gtna.metrics.id;
 
 import gtna.data.Single;
 import gtna.graph.Graph;
-import gtna.id.DPartition;
 import gtna.id.IdentifierSpace;
+import gtna.id.Partition;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.id.plane.PlanePartitionSimple;
@@ -61,7 +61,6 @@ public class PlaneIdentifierSpaceVisualization extends Metric {
 		this.points = new double[][] { new double[] { -1, -1 } };
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		IdentifierSpace ids = (IdentifierSpace) g.getProperty("ID_SPACE_0");
@@ -69,10 +68,10 @@ public class PlaneIdentifierSpaceVisualization extends Metric {
 
 		this.points = new double[plane.getPartitions().length][2];
 		int index = 0;
-		for (DPartition p : plane.getPartitions()) {
+		for (Partition p : plane.getPartitions()) {
 			PlaneIdentifier id = ((PlanePartitionSimple) p).getId();
-			double x = id.getX() / plane.getModulusX();
-			double y = id.getY() / plane.getModulusY();
+			double x = id.getX() / plane.getxModulus();
+			double y = id.getY() / plane.getyModulus();
 			this.points[index++] = new double[] { x, y };
 		}
 	}

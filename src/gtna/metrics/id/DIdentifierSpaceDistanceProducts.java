@@ -38,6 +38,7 @@ package gtna.metrics.id;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
 import gtna.id.DPartition;
 import gtna.id.Partition;
@@ -83,10 +84,10 @@ public class DIdentifierSpaceDistanceProducts extends Metric {
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		DIdentifierSpace ids = (DIdentifierSpace) g.getProperty("ID_SPACE_0");
-		Partition<Double>[] partitions = ids.getPartitions();
+		Partition[] partitions = ids.getPartitions();
 
 		double maxDist = ids.getMaxDistance();
-		double step = 1.0 / (double) this.bins;
+		// double step = 1.0 / (double) this.bins;
 
 		double[] prod = this.computeNeighborDistanceProducts(g.getNodes(),
 				partitions, maxDist);
@@ -109,7 +110,7 @@ public class DIdentifierSpaceDistanceProducts extends Metric {
 	}
 
 	private double[] computeNeighborDistanceProducts(Node[] nodes,
-			Partition<Double>[] partitions, double maxDist) {
+			Partition[] partitions, double maxDist) {
 		double[] prod = new double[nodes.length];
 
 		for (Node node : nodes) {
@@ -118,8 +119,10 @@ public class DIdentifierSpaceDistanceProducts extends Metric {
 				prod[node.getIndex()] = 1;
 			}
 			for (int out : node.getOutgoingEdges()) {
-				prod[node.getIndex()] *= p.distance(partitions[out]
-						.getRepresentativeID()) / maxDist;
+				prod[node.getIndex()] *= ((DPartition) p)
+						.distance((DIdentifier) partitions[out]
+								.getRepresentativeIdentifier())
+						/ maxDist;
 			}
 		}
 

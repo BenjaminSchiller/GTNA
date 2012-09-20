@@ -38,7 +38,7 @@ package gtna.metrics.id;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.DPartition;
+import gtna.id.Partition;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
@@ -68,7 +68,7 @@ public class RingIdentifierSpaceSuccessorHopDistances extends Metric {
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		RingIdentifierSpace ids = (RingIdentifierSpace) g
 				.getProperty("ID_SPACE_0");
-		DPartition[] partitions = ids.getPartitions();
+		Partition[] partitions = ids.getPartitions();
 
 		int[] nodesSorted = SuccessorComparator.getNodesSorted(partitions);
 

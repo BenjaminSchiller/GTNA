@@ -39,7 +39,9 @@ import gtna.data.Single;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
+import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
+import gtna.id.DPartition;
 import gtna.id.Partition;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
@@ -74,7 +76,7 @@ public class DIdentifierSpaceDistances extends Metric {
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		DIdentifierSpace ids = (DIdentifierSpace) g.getProperty("ID_SPACE_0");
-		Partition<Double>[] partitions = ids.getPartitions();
+		Partition[] partitions = ids.getPartitions();
 		Edges edges = g.getEdges();
 
 		double maxDist = ids.getMaxDistance();
@@ -88,13 +90,15 @@ public class DIdentifierSpaceDistances extends Metric {
 
 	}
 
-	private double[] computeEdgeDistances(Edges edges,
-			Partition<Double>[] partitions, double maxDist) {
+	private double[] computeEdgeDistances(Edges edges, Partition[] partitions,
+			double maxDist) {
 		double[] dist = new double[edges.getEdges().size()];
 		int index = 0;
 		for (Edge edge : edges.getEdges()) {
-			dist[index++] = partitions[edge.getSrc()].distance(partitions[edge
-					.getDst()].getRepresentativeID()) / maxDist;
+			dist[index++] = ((DPartition) partitions[edge.getSrc()])
+					.distance((DIdentifier) partitions[edge.getDst()]
+							.getRepresentativeIdentifier())
+					/ maxDist;
 		}
 		return dist;
 	}

@@ -38,7 +38,9 @@ package gtna.metrics.id;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.id.DIdentifier;
 import gtna.id.DPartition;
+import gtna.id.Partition;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
@@ -76,7 +78,7 @@ public class RingIdentifierSpaceSuccessorDistances extends Metric {
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		RingIdentifierSpace ids = (RingIdentifierSpace) g
 				.getProperty("ID_SPACE_0");
-		DPartition[] partitions = ids.getPartitions();
+		Partition[] partitions = ids.getPartitions();
 		double maxDist = ids.getMaxDistance();
 
 		int[] nodesSorted = SuccessorComparator.getNodesSorted(partitions);
@@ -91,14 +93,16 @@ public class RingIdentifierSpaceSuccessorDistances extends Metric {
 	}
 
 	private double[] computeSuccessorDistances(Node[] nodes, int[] nodesSorted,
-			DPartition[] partitions, double maxDist) {
+			Partition[] partitions, double maxDist) {
 		double[] dist = new double[nodes.length];
 
 		for (int i = 0; i < nodesSorted.length; i++) {
 			int n = nodesSorted[i];
 			int succ = nodesSorted[(i + 1) % nodesSorted.length];
-			dist[i] = partitions[n].distance(partitions[succ]
-					.getRepresentativeID()) / maxDist;
+			dist[i] = ((DPartition) partitions[n])
+					.distance((DIdentifier) partitions[succ]
+							.getRepresentativeIdentifier())
+					/ maxDist;
 		}
 
 		return dist;
