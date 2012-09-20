@@ -35,247 +35,120 @@
  */
 package gtna.id.md;
 
-import java.util.Arrays;
-import java.util.Random;
-
-import gtna.graph.Graph;
-import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
-import gtna.id.DPartition;
-import gtna.id.Partition;
-import gtna.id.plane.PlanePartitionSimple;
+import gtna.id.Identifier;
+import gtna.id.IdentifierSpace;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
-import gtna.util.Config;
+
+import java.util.Random;
 
 /**
- * @author Nico
+ * @author benni
  * 
  */
 public class MDIdentifierSpaceSimple extends DIdentifierSpace {
-	private MDPartitionSimple[] partitions;
 
-	private double[] modulus;
+	protected double[] modulus;
 
-	private boolean wrapAround;
+	protected boolean wrapAround;
 
-	private double maxDistance;
-
-	private DistanceMD distFunc;
-
-	public static enum DistanceMD {
-		EUCLIDEAN, MANHATTAN
-	}
-
-	public MDIdentifierSpaceSimple() {
-		this.partitions = new MDPartitionSimple[] {};
-		this.wrapAround = true;
-		this.distFunc = DistanceMD.EUCLIDEAN;
-		this.computeMaxDist();
-	}
-
-	public MDIdentifierSpaceSimple(MDPartitionSimple[] partitions,
-			double[] modulus, boolean wrapAround, DistanceMD dist) {
-		this.partitions = partitions;
-		this.modulus = modulus;
-		this.wrapAround = wrapAround;
-		this.distFunc = dist;
-		this.computeMaxDist();
-	}
-
+	/**
+	 * 
+	 * @param partitions
+	 * @param dimensions
+	 */
 	public MDIdentifierSpaceSimple(MDPartitionSimple[] partitions,
 			double[] modulus, boolean wrapAround) {
-		this.partitions = partitions;
+		super(partitions);
 		this.modulus = modulus;
 		this.wrapAround = wrapAround;
-		this.distFunc = DistanceMD.EUCLIDEAN;
-		this.computeMaxDist();
-	}
-
-	private void computeMaxDist() {
-		if (this.modulus == null) {
-			this.maxDistance = Double.MAX_VALUE;
-		} else {
-			this.maxDistance = 0;
-			if (this.wrapAround) {
-				if (this.distFunc == DistanceMD.MANHATTAN) {
-					for (int i = 0; i < modulus.length; i++) {
-						this.maxDistance = this.maxDistance + modulus[i]
-								/ (double) 2;
-					}
-				}
-				if (this.distFunc == DistanceMD.EUCLIDEAN) {
-					for (int i = 0; i < modulus.length; i++) {
-						this.maxDistance = this.maxDistance + modulus[i]
-								* modulus[i] / (double) 4;
-					}
-					this.maxDistance = Math.sqrt(this.maxDistance);
-				}
-			} else {
-				if (this.distFunc == DistanceMD.MANHATTAN) {
-					for (int i = 0; i < modulus.length; i++) {
-						this.maxDistance = this.maxDistance + modulus[i];
-					}
-				}
-				if (this.distFunc == DistanceMD.EUCLIDEAN) {
-					for (int i = 0; i < modulus.length; i++) {
-						this.maxDistance = this.maxDistance + modulus[i]
-								* modulus[i];
-					}
-					this.maxDistance = Math.sqrt(this.maxDistance);
-				}
-			}
-		}
 	}
 
 	/**
-	 * @return
+	 * 
 	 */
-	public double[] getModuli() {
+	public MDIdentifierSpaceSimple() {
+		this(null, null, false);
+	}
+
+	@Override
+	public double getMaxDistance() {
+		double sum = 0.0;
+
+		if (this.wrapAround) {
+			for (double mod : this.modulus) {
+				sum += mod * mod / 4;
+			}
+		} else {
+			for (double mod : this.modulus) {
+				sum += mod * mod;
+			}
+		}
+		return Math.sqrt(sum);
+	}
+
+	@Override
+	protected void writeParameters(Filewriter fw) {
+		StringBuffer buff = new StringBuffer();
+		buff.append(this.modulus[0]);
+		for (int i = 1; i < this.modulus.length; i++) {
+			buff.append(IdentifierSpace.delimiter + this.modulus[i]);
+		}
+		this.writeParameter(fw, "Modulus", buff.toString());
+
+		this.writeParameter(fw, "Wrap around", this.wrapAround);
+	}
+
+	@Override
+	protected void readParameters(Filereader fr) {
+		String[] temp = this.readString(fr).split(IdentifierSpace.delimiter);
+		this.modulus = new double[temp.length];
+		for (int i = 0; i < temp.length; i++) {
+			this.modulus[i] = Double.parseDouble(temp[i]);
+		}
+
+		this.wrapAround = this.readBoolean(fr);
+	}
+
+	@Override
+	public Identifier getRandomIdentifier(Random rand) {
+		double[] coordinates = new double[this.modulus.length];
+		for (int i = 0; i < coordinates.length; i++) {
+			coordinates[i] = rand.nextDouble() * this.modulus[i];
+			if (this.wrapAround) {
+				coordinates[i] = coordinates[i] % this.modulus[i];
+			}
+		}
+		return new MDIdentifier(coordinates, this.modulus, this.wrapAround);
+	}
+
+	/**
+	 * @return the modulus
+	 */
+	public double[] getModulus() {
 		return this.modulus;
 	}
 
-	public double getModulus(int i) {
-		return this.modulus[i];
+	/**
+	 * @param modulus the modulus to set
+	 */
+	public void setModulus(double[] modulus) {
+		this.modulus = modulus;
 	}
 
-	public double getMaxModulus() {
-		double result = Double.MIN_VALUE;
-		for (double x : modulus) {
-			result = Math.max(result, x);
-		}
-		return result;
-	}
-
-	public double getMinModulus() {
-		double result = Double.MAX_VALUE;
-		for (double x : modulus) {
-			result = Math.min(result, x);
-		}
-		return result;
-	}
-
-	public int getDimensions() {
-		return modulus.length;
-	}
-
-	@Override
-	public DPartition[] getPartitions() {
-		return this.partitions;
-	}
-
-	@Override
-	public void setPartitions(Partition<Double>[] partitions) {
-		this.partitions = (MDPartitionSimple[]) partitions;
-	}
-
-	@Override
-	public DIdentifier randomID(Random rand) {
-		return this.partitions[rand.nextInt(this.partitions.length)].getId();
-	}
-
-	@Override
-	public Double getMaxDistance() {
-		return this.maxDistance;
-	}
-
-	@Override
-	public boolean write(String filename, String key) {
-		Filewriter fw = new Filewriter(filename);
-
-		// CLASS
-		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
-		fw.writeln(this.getClass().getCanonicalName().toString());
-
-		// KEY
-		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
-		fw.writeln(key);
-
-		// # DIMENSIONS
-		fw.writeComment("Dimensions");
-		fw.writeln(this.getDimensions());
-
-		// # MODULUS
-		fw.writeComment("Modulus");
-		fw.writeln(Arrays.toString(modulus));
-
-		// # WRAP-AROUND
-		fw.writeComment("Wrap-around");
-		fw.writeln(this.wrapAround + "");
-
-		// # PARTITIONS
-		fw.writeComment("Partitions");
-		fw.writeln(this.partitions.length);
-
-		fw.writeln();
-
-		// PARTITIONS
-		int index = 0;
-		for (MDPartitionSimple p : this.partitions) {
-			fw.writeln(index++ + ":" + p.toString());
-		}
-
-		return fw.close();
-	}
-
-	@Override
-	public void read(String filename, Graph graph) {
-		Filereader fr = new Filereader(filename);
-
-		// CLASS
-		fr.readLine();
-
-		// KEY
-		String key = fr.readLine();
-
-		// DIMENSIONS
-		int dimensions = Integer.parseInt(fr.readLine());
-
-		// # MODULUS_Y
-		this.modulus = new double[dimensions];
-
-		String[] modulusTemp = fr.readLine().replace("[", "").replace("]", "")
-				.split(",");
-		if (modulusTemp.length != dimensions) {
-			throw new RuntimeException(
-					"Error: written dimension does not match the number of written modulus values");
-		}
-		for (int i = 0; i < dimensions; i++) {
-			this.modulus[i] = Double.parseDouble(modulusTemp[i]);
-		}
-
-		// # WRAP-AROUND
-		this.wrapAround = Boolean.parseBoolean(fr.readLine());
-
-		// # PARTITIONS
-		int partitions = Integer.parseInt(fr.readLine());
-		this.partitions = new MDPartitionSimple[partitions];
-
-		// compute max distance
-		this.computeMaxDist();
-
-		// PARTITIONS
-		String line = null;
-		while ((line = fr.readLine()) != null) {
-			String[] temp = line.split(":");
-			int index = Integer.parseInt(temp[0]);
-			this.partitions[index] = new MDPartitionSimple(temp[1], this);
-		}
-
-		fr.close();
-
-		graph.addProperty(key, this);
-	}
-
+	/**
+	 * @return the wrapAround
+	 */
 	public boolean isWrapAround() {
 		return this.wrapAround;
 	}
 
 	/**
-	 * @return the distance function
+	 * @param wrapAround the wrapAround to set
 	 */
-	public DistanceMD getDistFunc() {
-		return distFunc;
+	public void setWrapAround(boolean wrapAround) {
+		this.wrapAround = wrapAround;
 	}
 
 }

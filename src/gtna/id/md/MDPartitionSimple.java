@@ -40,61 +40,71 @@ import gtna.id.DPartition;
 import gtna.id.Identifier;
 import gtna.id.Partition;
 
+import java.util.Random;
+
 /**
- * @author Nico
- *
+ * @author benni
+ * 
  */
 public class MDPartitionSimple extends DPartition {
-	private MDIdentifier id;
+
+	protected MDIdentifier identifier;
 
 	public MDPartitionSimple(MDIdentifier id) {
-		this.id = id;
-	}
-
-	public MDPartitionSimple(String string, MDIdentifierSpaceSimple idSpace) {
-		this.id = new MDIdentifier(string, idSpace);
+		this.identifier = id;
 	}
 
 	public MDPartitionSimple(String string) {
-		this(string, null);
-	}
-
-	public String toString() {
-		return this.id.toString();
-	}
-	
-	@Override
-	public Double distance(Identifier<Double> id) {
-		return this.id.distance(id);
-	}
-	
-	@Override
-	public boolean equals(Partition<Double> partition) {
-		return this.id.equals((((MDPartitionSimple) partition).getId()));
+		this.identifier = new MDIdentifier(string);
 	}
 
 	@Override
-	public boolean contains(Identifier<Double> id) {
-		return this.id.equals(id);
+	public double distance(DIdentifier id) {
+		return this.identifier.distance(id);
 	}
 
 	@Override
-	public DIdentifier getRepresentativeID() {
-		return this.id;
+	public double distance(DPartition p) {
+		return this.identifier.distance(identifier);
 	}
-	
+
+	@Override
+	public String asString() {
+		return this.identifier.asString();
+	}
+
+	@Override
+	public boolean contains(Identifier id) {
+		return this.identifier.equals(id);
+	}
+
+	@Override
+	public Identifier getRepresentativeIdentifier() {
+		return this.identifier;
+	}
+
+	@Override
+	public Identifier getRandomIdentifier(Random rand) {
+		return new MDIdentifier(this.identifier.coordinates.clone(),
+				this.identifier.modulus.clone(), this.identifier.wrapAround);
+	}
+
+	@Override
+	public boolean equals(Partition p) {
+		return this.identifier.equals(((MDPartitionSimple) p).identifier);
+	}
+
 	/**
-	 * @return the id
+	 * @return the identifier
 	 */
-	public MDIdentifier getId() {
-		return this.id;
+	public MDIdentifier getIdentifier() {
+		return this.identifier;
 	}
 
 	/**
-	 * @param id
-	 *            the id to set
+	 * @param identifier the identifier to set
 	 */
-	public void setId(MDIdentifier id) {
-		this.id = id;
-	}	
+	public void setIdentifier(MDIdentifier identifier) {
+		this.identifier = identifier;
+	}
 }
