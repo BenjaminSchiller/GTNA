@@ -37,7 +37,7 @@ package gtna.metrics.placement;
 
 import gtna.data.Single;
 import gtna.graph.Graph;
-import gtna.id.DPartition;
+import gtna.id.Partition;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.metrics.Metric;
@@ -89,8 +89,8 @@ public class Coverage extends Metric {
 
 		long in = 0;
 
-		double width = idspace.getModulusX();
-		double height = idspace.getModulusY();
+		double width = idspace.getxModulus();
+		double height = idspace.getyModulus();
 
 		int cols = Config.getInt("COVERAGE_COLS");
 		int rows = Config.getInt("COVERAGE_ROWS");
@@ -111,16 +111,15 @@ public class Coverage extends Metric {
 		double dist = 0;
 		boolean ret = false;
 		int id = 0;
-		for (DPartition akt : idspace.getPartitions()) {
+		for (Partition akt : idspace.getPartitions()) {
 
-			dist = Math
-					.sqrt(Math.pow(
-							((PlaneIdentifier) akt.getRepresentativeID())
-									.getX() - x, 2)
-							+ Math.pow(
-									((PlaneIdentifier) akt
-											.getRepresentativeID()).getY() - y,
-									2));
+			dist = Math.sqrt(Math.pow(
+					((PlaneIdentifier) akt.getRepresentativeIdentifier())
+							.getX() - x, 2)
+					+ Math.pow(
+							((PlaneIdentifier) akt
+									.getRepresentativeIdentifier()).getY() - y,
+							2));
 			if (dist < range.getRanges()[id]) {
 				ret = true;
 				break;

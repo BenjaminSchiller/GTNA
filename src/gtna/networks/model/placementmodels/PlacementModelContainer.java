@@ -146,9 +146,6 @@ public class PlacementModelContainer extends Network {
 		this.nodeBoxHeight = nodeBoxHeight;
 		this.hotspotBoxWidth = hotspotBoxWidth;
 		this.hotspotBoxHeight = hotspotBoxHeight;
-
-		idSpace = new PlaneIdentifierSpaceSimple(null, getNodeBoxWidth(),
-				getNodeBoxHeight(), false);
 	}
 
 	/**
@@ -201,7 +198,8 @@ public class PlacementModelContainer extends Network {
 		// create the required Graph object and fill it
 		Graph g = new Graph(this.getDescription());
 
-		idSpace.setPartitions(coords);
+		idSpace = new PlaneIdentifierSpaceSimple(coords, getNodeBoxWidth(),
+				getNodeBoxHeight(), false);
 
 		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
 
@@ -262,7 +260,8 @@ public class PlacementModelContainer extends Network {
 		for (int i = 0; i < nodeCoords.length; i++) {
 			pps[i + arrayOffset] = new PlanePartitionSimple(
 					new PlaneIdentifier(nodeCoords[i].getX(),
-							nodeCoords[i].getY(), idSpace));
+							nodeCoords[i].getY(), idSpace.getxModulus(),
+							idSpace.getyModulus(), idSpace.isWrapAround()));
 		}
 	}
 }

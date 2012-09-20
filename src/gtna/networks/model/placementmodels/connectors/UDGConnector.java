@@ -36,6 +36,8 @@ package gtna.networks.model.placementmodels.connectors;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.id.DIdentifier;
+import gtna.id.DPartition;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.networks.model.placementmodels.NodeConnectorImpl;
 import gtna.util.parameter.DoubleParameter;
@@ -62,7 +64,8 @@ public class UDGConnector extends NodeConnectorImpl {
 	public UDGConnector(double range) {
 		this.range = range;
 		setKey("UDG");
-		setAdditionalConfigParameters(new Parameter[] { new DoubleParameter("RANGE", range) });
+		setAdditionalConfigParameters(new Parameter[] { new DoubleParameter(
+				"RANGE", range) });
 	}
 
 	/**
@@ -77,14 +80,14 @@ public class UDGConnector extends NodeConnectorImpl {
 		for (int i = 0; i < nodes.length; i++) {
 			for (int j = 0; j < nodes.length; j++) {
 				if (i != j
-						&& ids.getPartitions()[i]
-								.distance((ids.getPartitions()[j]
-										.getRepresentativeID())) <= range) {
+						&& ((DPartition) ids.getPartitions()[i])
+								.distance((DIdentifier) ids.getPartitions()[j]
+										.getRepresentativeIdentifier()) <= range) {
 					edges.add(i, j);
 				}
 			}
 		}
-		
+
 		g.addProperty("RANGE_0", new RangeProperty(range, nodes.length));
 
 		edges.fill();

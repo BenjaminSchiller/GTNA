@@ -36,6 +36,8 @@ package gtna.networks.model.placementmodels.connectors;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.id.DIdentifier;
+import gtna.id.DPartition;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.networks.model.placementmodels.NodeConnectorImpl;
 import gtna.util.parameter.DoubleParameter;
@@ -74,7 +76,10 @@ public class QUDGConnector extends NodeConnectorImpl {
 		this.range2 = range2;
 		this.perc = perc;
 		setKey("QUDG");
-		setAdditionalConfigParameters(new Parameter[] { new DoubleParameter("RANGE1", range1), new DoubleParameter("RANGE2", range2), new DoubleParameter("PROB", perc) });
+		setAdditionalConfigParameters(new Parameter[] {
+				new DoubleParameter("RANGE1", range1),
+				new DoubleParameter("RANGE2", range2),
+				new DoubleParameter("PROB", perc) });
 	}
 
 	/**
@@ -93,15 +98,16 @@ public class QUDGConnector extends NodeConnectorImpl {
 			for (int j = 0; j < nodes.length; j++) {
 				if (i == j)
 					continue;
-				dist = ids.getPartitions()[i].distance((ids.getPartitions()[j]
-						.getRepresentativeID()));
+				dist = ((DPartition) ids.getPartitions()[i])
+						.distance((DIdentifier) ids.getPartitions()[j]
+								.getRepresentativeIdentifier());
 				if (dist <= range1)
 					edges.add(i, j);
 				else if (dist <= range2 && Math.random() < perc)
 					edges.add(i, j);
 			}
 		}
-		
+
 		g.addProperty("RANGE_0", new RangeProperty(range1, nodes.length));
 
 		edges.fill();

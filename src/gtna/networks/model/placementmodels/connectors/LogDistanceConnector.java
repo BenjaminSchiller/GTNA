@@ -33,15 +33,17 @@
  */
 package gtna.networks.model.placementmodels.connectors;
 
-import java.util.Random;
-
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.id.DIdentifier;
+import gtna.id.DPartition;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.networks.model.placementmodels.NodeConnectorImpl;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
+
+import java.util.Random;
 
 /**
  * The <code>LogDistanceConnector</code> connects nodes based on their distance.
@@ -110,8 +112,9 @@ public class LogDistanceConnector extends NodeConnectorImpl {
 					continue;
 				dist = 10
 						* gamma
-						* Math.log10(ids.getPartitions()[i].distance((ids
-								.getPartitions()[j].getRepresentativeID()))
+						* Math.log10(((DPartition) ids.getPartitions()[i])
+								.distance((DIdentifier) ids.getPartitions()[j]
+										.getRepresentativeIdentifier())
 								/ d0) + rnd.nextGaussian() * sigma;
 				if (dist < range)
 					edges.add(i, j);
