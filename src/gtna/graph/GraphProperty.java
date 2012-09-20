@@ -43,7 +43,6 @@ import gtna.util.Config;
  * @author benni
  * 
  */
-@SuppressWarnings("rawtypes")
 public abstract class GraphProperty {
 	/**
 	 * Writes the GraphProperty into a file that should readable using the
@@ -73,7 +72,7 @@ public abstract class GraphProperty {
 	 */
 	public abstract void read(String filename, Graph graph);
 
-	protected void writeHeader(Filewriter fw, Class c, String key) {
+	protected void writeHeader(Filewriter fw, Class<?> c, String key) {
 		// CLASS
 		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
 		fw.writeln(this.getClass().getCanonicalName().toString());
@@ -100,7 +99,7 @@ public abstract class GraphProperty {
 		this.writeParameter(fw, name, value + "");
 	}
 
-	protected void writeParameter(Filewriter fw, String name, Class value) {
+	protected void writeParameter(Filewriter fw, String name, Class<?> value) {
 		this.writeParameter(fw, name, value.getCanonicalName().toString());
 	}
 
@@ -130,7 +129,7 @@ public abstract class GraphProperty {
 		return Integer.parseInt(this.readString(fr));
 	}
 
-	protected Class readClass(Filereader fr) {
+	protected Class<?> readClass(Filereader fr) {
 		String className = fr.readLine();
 		try {
 			return ClassLoader.getSystemClassLoader().loadClass(className);
