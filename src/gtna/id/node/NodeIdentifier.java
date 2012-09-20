@@ -42,67 +42,63 @@ import gtna.id.Identifier;
  * @author benni
  * 
  */
-public class NodeIdentifier extends DIdentifier implements
-		Comparable<NodeIdentifier> {
-
-	public static final int dataValueMod = 10000;
-
-	public static final int dataValueDefault = -1;
+public class NodeIdentifier extends DIdentifier {
 
 	protected int node;
 
-	protected int data;
-
+	/**
+	 * 
+	 * @param node
+	 *            index of the node represented by this identifier
+	 */
 	public NodeIdentifier(int node) {
 		this.node = node;
-		this.data = dataValueDefault;
 	}
 
-	public NodeIdentifier(int node, int data) {
-		this.node = node;
-		this.data = data % dataValueMod;
+	public NodeIdentifier(String string) {
+		this(Integer.parseInt(string));
 	}
 
 	@Override
-	public Double distance(Identifier<Double> id) {
-		NodeIdentifier nid = (NodeIdentifier) id;
-		if (nid.node == this.node) {
-			return 0.0;
+	public int compareTo(DIdentifier arg0) {
+		NodeIdentifier id = (NodeIdentifier) arg0;
+		if (this.node < id.node) {
+			return -1;
+		} else if (this.node > id.node) {
+			return 1;
+		} else {
+			return 0;
 		}
-		return Double.MAX_VALUE;
 	}
 
 	@Override
-	public boolean equals(Identifier<Double> id) {
-		NodeIdentifier nid = (NodeIdentifier) id;
-		return nid.node == this.node && nid.data == this.data;
+	public double distance(DIdentifier id) {
+		return 0;
 	}
 
 	@Override
-	public int compareTo(NodeIdentifier arg0) {
-		return arg0.node - this.node;
-	}
-
-	public String toString() {
-		return "NID:" + this.node + "/" + this.data;
-	}
-
 	public String asString() {
-		return this.node + ":" + data;
+		return this.node + "";
 	}
 
-	public NodeIdentifier fromString(String str) {
-		String[] temp = str.split(":");
-		return new NodeIdentifier(Integer.parseInt(temp[0]),
-				Integer.parseInt(temp[1]));
+	@Override
+	public boolean equals(Identifier id) {
+		return this.node == ((NodeIdentifier) id).node;
 	}
 
+	/**
+	 * @return the node
+	 */
 	public int getNode() {
 		return this.node;
 	}
 
-	public int getData() {
-		return this.getData();
+	/**
+	 * @param node
+	 *            the node to set
+	 */
+	public void setNode(int node) {
+		this.node = node;
 	}
 
 }

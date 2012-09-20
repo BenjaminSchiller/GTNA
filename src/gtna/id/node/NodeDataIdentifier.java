@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * NodeIdentifierSpace.java
+ * NodeDataIdentifier.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -35,44 +35,63 @@
  */
 package gtna.id.node;
 
-import gtna.id.DIdentifierSpace;
+import gtna.id.DIdentifier;
 import gtna.id.Identifier;
-import gtna.io.Filereader;
-import gtna.io.Filewriter;
-
-import java.util.Random;
 
 /**
  * @author benni
  * 
  */
-public class NodeIdentifierSpace extends DIdentifierSpace {
+public class NodeDataIdentifier extends NodeIdentifier {
+
+	protected int data;
 
 	/**
-	 * @param partitions
+	 * 
+	 * @param node
+	 *            index of the node represented by this identifier
+	 * @param data
+	 *            value for the data item represented by this identifier
 	 */
-	public NodeIdentifierSpace(NodePartition[] partitions) {
-		super(partitions);
+	public NodeDataIdentifier(int node, int data) {
+		super(node);
+		this.data = data;
+	}
+
+	public NodeDataIdentifier(String string) {
+		this(Integer.parseInt(string.split(Identifier.delimiter)[0]), Integer
+				.parseInt(string.split(Identifier.delimiter)[1]));
 	}
 
 	@Override
-	public double getMaxDistance() {
+	public int compareTo(DIdentifier o) {
+		int ct = super.compareTo(o);
+		if (ct != 0) {
+			return ct;
+		}
+		NodeDataIdentifier id = (NodeDataIdentifier) o;
+		if (this.data < id.data) {
+			return -1;
+		} else if (this.data > id.data) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	@Override
+	public double distance(DIdentifier id) {
 		return 0;
 	}
 
 	@Override
-	protected void writeParameters(Filewriter fw) {
-
+	public String asString() {
+		return this.node + Identifier.delimiter + this.data;
 	}
 
 	@Override
-	protected void readParameters(Filereader fr) {
-
-	}
-
-	@Override
-	public Identifier getRandomIdentifier(Random rand) {
-		return new NodeIdentifier(rand.nextInt(this.partitions.length));
+	public boolean equals(Identifier id) {
+		return super.equals(id) && this.data == ((NodeDataIdentifier) id).data;
 	}
 
 }

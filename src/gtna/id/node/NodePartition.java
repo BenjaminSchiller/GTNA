@@ -35,6 +35,9 @@
  */
 package gtna.id.node;
 
+import java.util.Random;
+
+import gtna.id.DIdentifier;
 import gtna.id.DPartition;
 import gtna.id.Identifier;
 import gtna.id.Partition;
@@ -45,44 +48,54 @@ import gtna.id.Partition;
  */
 public class NodePartition extends DPartition {
 
-	protected int node;
+	protected NodeIdentifier id;
 
+	/**
+	 * 
+	 * @param node
+	 *            index of the node this partition is representing
+	 */
 	public NodePartition(int node) {
-		this.node = node;
+		this.id = new NodeIdentifier(node);
+	}
+
+	public NodePartition(String string) {
+		this(Integer.parseInt(string));
 	}
 
 	@Override
-	public Double distance(Identifier<Double> id) {
-		NodeIdentifier nid = (NodeIdentifier) id;
-		if (nid.node == this.node) {
-			return 0.0;
-		}
-		return Double.MAX_VALUE;
+	public double distance(DIdentifier id) {
+		return 0;
 	}
 
 	@Override
-	public boolean equals(Partition<Double> p) {
-		NodePartition np = (NodePartition) p;
-		return np.node == this.node;
+	public double distance(DPartition p) {
+		return 0;
 	}
 
 	@Override
-	public boolean contains(Identifier<Double> id) {
-		NodeIdentifier nid = (NodeIdentifier) id;
-		return nid.node == this.node;
-	}
-
-	@Override
-	public Identifier<Double> getRepresentativeID() {
-		return new NodeIdentifier(this.node);
-	}
-
 	public String asString() {
-		return this.node + "";
+		return this.id.node + "";
 	}
 
-	public static NodePartition fromString(String str) {
-		return new NodePartition(Integer.parseInt(str));
+	@Override
+	public boolean contains(Identifier id) {
+		return this.id.node == ((NodeIdentifier) id).node;
+	}
+
+	@Override
+	public Identifier getRepresentativeIdentifier() {
+		return new NodeIdentifier(this.id.node);
+	}
+
+	@Override
+	public Identifier getRandomIdentifier(Random rand) {
+		return new NodeIdentifier(this.id.node);
+	}
+
+	@Override
+	public boolean equals(Partition p) {
+		return this.id.node == ((NodePartition) p).id.node;
 	}
 
 }
