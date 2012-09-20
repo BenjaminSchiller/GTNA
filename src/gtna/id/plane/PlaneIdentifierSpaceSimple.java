@@ -35,14 +35,11 @@
  */
 package gtna.id.plane;
 
-import gtna.graph.Graph;
-import gtna.id.DIdentifier;
 import gtna.id.DIdentifierSpace;
-import gtna.id.DPartition;
+import gtna.id.Identifier;
 import gtna.id.Partition;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
-import gtna.util.Config;
 
 import java.util.Random;
 
@@ -51,154 +48,96 @@ import java.util.Random;
  * 
  */
 public class PlaneIdentifierSpaceSimple extends DIdentifierSpace {
-	private PlanePartitionSimple[] partitions;
 
-	private double modulusX;
+	protected double xModulus;
 
-	private double modulusY;
+	protected double yModulus;
 
-	private boolean wrapAround;
+	protected boolean wrapAround;
 
-	private double maxDistance;
-
-	public PlaneIdentifierSpaceSimple() {
-		this.partitions = new PlanePartitionSimple[] {};
-		this.modulusX = Double.MAX_VALUE;
-		this.modulusY = Double.MAX_VALUE;
-		this.wrapAround = true;
-		this.maxDistance = Double.MAX_VALUE;
-	}
-
-	public PlaneIdentifierSpaceSimple(PlanePartitionSimple[] partitions,
-			double modulusX, double modulusY, boolean wrapAround) {
-		this.partitions = partitions;
-		this.modulusX = modulusX;
-		this.modulusY = modulusY;
+	/**
+	 * 
+	 * @param partitions
+	 * @param xModulus
+	 * @param yModulus
+	 * @param wrapAround
+	 */
+	public PlaneIdentifierSpaceSimple(Partition[] partitions, double xModulus,
+			double yModulus, boolean wrapAround) {
+		super(partitions);
+		this.xModulus = xModulus;
+		this.yModulus = yModulus;
 		this.wrapAround = wrapAround;
-		if (this.wrapAround) {
-			this.maxDistance = Math.sqrt(Math.pow(this.modulusX / 2.0, 2)
-					+ Math.pow(this.modulusY / 2.0, 2));
-		} else {
-			this.maxDistance = Math.sqrt(Math.pow(this.modulusX, 2)
-					+ Math.pow(this.modulusY, 2));
-		}
-	}
-
-	@Override
-	public DPartition[] getPartitions() {
-		return this.partitions;
-	}
-
-	@Override
-	public void setPartitions(Partition<Double>[] partitions) {
-		this.partitions = (PlanePartitionSimple[]) partitions;
-	}
-
-	@Override
-	public DIdentifier randomID(Random rand) {
-		return this.partitions[rand.nextInt(this.partitions.length)].getId();
-	}
-
-	@Override
-	public Double getMaxDistance() {
-		return this.maxDistance;
-	}
-
-	@Override
-	public boolean write(String filename, String key) {
-		Filewriter fw = new Filewriter(filename);
-
-		// CLASS
-		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
-		fw.writeln(this.getClass().getCanonicalName().toString());
-
-		// KEY
-		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
-		fw.writeln(key);
-
-		// # MODULUS_X
-		fw.writeComment("Modulus-X");
-		fw.writeln(this.modulusX);
-
-		// # MODULUS_Y
-		fw.writeComment("Modulus-Y");
-		fw.writeln(this.modulusY);
-
-		// # WRAP-AROUND
-		fw.writeComment("Wrap-around");
-		fw.writeln(this.wrapAround + "");
-
-		// # PARTITIONS
-		fw.writeComment("Partitions");
-		fw.writeln(this.partitions.length);
-
-		fw.writeln();
-
-		// PARTITIONS
-		int index = 0;
-		for (PlanePartitionSimple p : this.partitions) {
-			fw.writeln(index++ + ":" + p.toString());
-		}
-
-		return fw.close();
-	}
-
-	@Override
-	public void read(String filename, Graph graph) {
-		Filereader fr = new Filereader(filename);
-
-		// CLASS
-		fr.readLine();
-
-		// KEY
-		String key = fr.readLine();
-
-		// # MUDULUS_X
-		this.modulusX = Double.parseDouble(fr.readLine());
-
-		// # MUDULUS_Y
-		this.modulusY = Double.parseDouble(fr.readLine());
-
-		// # WRAP-AROUND
-		this.wrapAround = Boolean.parseBoolean(fr.readLine());
-
-		// # PARTITIONS
-		int partitions = Integer.parseInt(fr.readLine());
-		this.partitions = new PlanePartitionSimple[partitions];
-
-		if (this.wrapAround) {
-			this.maxDistance = Math.sqrt(Math.pow(this.modulusX / 2.0, 2)
-					+ Math.pow(this.modulusY / 2.0, 2));
-		} else {
-			this.maxDistance = Math.sqrt(Math.pow(this.modulusX, 2)
-					+ Math.pow(this.modulusY, 2));
-		}
-
-		// PARTITIONS
-		String line = null;
-		while ((line = fr.readLine()) != null) {
-			String[] temp = line.split(":");
-			int index = Integer.parseInt(temp[0]);
-			this.partitions[index] = new PlanePartitionSimple(temp[1], this);
-		}
-
-		fr.close();
-
-		graph.addProperty(key, this);
 	}
 
 	/**
-	 * @return the modulusX
+	 * 
 	 */
-	public double getModulusX() {
-		return this.modulusX;
+	public PlaneIdentifierSpaceSimple() {
+		this(null, -1.0, -1.0, false);
+	}
+
+	@Override
+	public double getMaxDistance() {
+		if (this.wrapAround) {
+			return Math.sqrt(this.xModulus * this.xModulus / 4 + this.yModulus
+					* this.yModulus / 4);
+		} else {
+			return Math.sqrt(this.xModulus * this.xModulus + this.yModulus
+					* this.yModulus);
+		}
+	}
+
+	@Override
+	protected void writeParameters(Filewriter fw) {
+		this.writeParameter(fw, "X modulus", this.xModulus);
+		this.writeParameter(fw, "Y modulus", this.yModulus);
+		this.writeParameter(fw, "Wrap around", this.wrapAround);
+
+	}
+
+	@Override
+	protected void readParameters(Filereader fr) {
+		this.xModulus = this.readDouble(fr);
+		this.yModulus = this.readDouble(fr);
+		this.wrapAround = this.readBoolean(fr);
+	}
+
+	@Override
+	public Identifier getRandomIdentifier(Random rand) {
+		return new PlaneIdentifier(rand.nextDouble() * this.xModulus,
+				rand.nextDouble() * this.yModulus, this.xModulus,
+				this.yModulus, this.wrapAround);
 	}
 
 	/**
-	 * @return the modulusY
+	 * @return the xModulus
 	 */
-	public double getModulusY() {
-		return this.modulusY;
+	public double getxModulus() {
+		return this.xModulus;
+	}
+
+	/**
+	 * @param xModulus
+	 *            the xModulus to set
+	 */
+	public void setxModulus(double xModulus) {
+		this.xModulus = xModulus;
+	}
+
+	/**
+	 * @return the yModulus
+	 */
+	public double getyModulus() {
+		return this.yModulus;
+	}
+
+	/**
+	 * @param yModulus
+	 *            the yModulus to set
+	 */
+	public void setyModulus(double yModulus) {
+		this.yModulus = yModulus;
 	}
 
 	/**
@@ -206,5 +145,13 @@ public class PlaneIdentifierSpaceSimple extends DIdentifierSpace {
 	 */
 	public boolean isWrapAround() {
 		return this.wrapAround;
+	}
+
+	/**
+	 * @param wrapAround
+	 *            the wrapAround to set
+	 */
+	public void setWrapAround(boolean wrapAround) {
+		this.wrapAround = wrapAround;
 	}
 }
