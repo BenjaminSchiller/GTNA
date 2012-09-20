@@ -140,32 +140,30 @@ public class CommunityEmbeddings {
 		// sort nodes: random / lmc
 		// partition communities: random
 
-		Transformation rridss = new RandomRingIDSpaceSimple();
+		Transformation rridss = new RandomRingIDSpaceSimple(true);
 		Transformation sw = new Swapping(1000);
 		Transformation lmc = new LMC(1000, LMC.MODE_UNRESTRICTED, 0,
 				LMC.DELTA_1_N, 0);
 
 		Transformation ce1 = new CommunityEmbedding(
 				new RandomCommunitySorter(), new RandomIdSpacePartitioner(),
-				new RandomNodeSorter(), new RandomCommunityPartitioner(), 1.0,
-				true);
+				new RandomNodeSorter(), new RandomCommunityPartitioner(), true);
 		Transformation ce2 = new CommunityEmbedding(
 				new NeighborsByEdgesCommunitySorter(),
 				new RandomIdSpacePartitioner(), new RandomNodeSorter(),
-				new RandomCommunityPartitioner(), 1.0, true);
+				new RandomCommunityPartitioner(), true);
 		Transformation ce3 = new CommunityEmbedding(
 				new NeighborsByEdgesCommunitySorter(),
 				new RandomIdSpacePartitioner(), new LmcNodeSorter(),
-				new RandomCommunityPartitioner(), 1.0, true);
+				new RandomCommunityPartitioner(), true);
 		Transformation ce4 = new CommunityEmbedding(
 				new NeighborsByEdgesCommunitySorter(),
 				new RandomIdSpacePartitioner(), new RandomNodeSorter(),
-				new LmcCommunityPartitioner(), 1.0, true);
+				new LmcCommunityPartitioner(), true);
 		Transformation ce5 = new CommunityEmbedding(
 				new NeighborsByEdgesCommunitySorter(),
 				new RelativeSizeIdSpacePartitioner(0.0),
-				new RandomNodeSorter(), new LmcCommunityPartitioner(), 1.0,
-				true);
+				new RandomNodeSorter(), new LmcCommunityPartitioner(), true);
 
 		Transformation[] t_r = new Transformation[] { rridss };
 		Transformation[] t_sw = new Transformation[] { rridss, sw };

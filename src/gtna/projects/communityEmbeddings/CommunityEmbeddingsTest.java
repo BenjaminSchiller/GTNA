@@ -115,17 +115,17 @@ public class CommunityEmbeddingsTest {
 					new OriginalCommunitySorter(),
 					new RelativeSizeIdSpacePartitioner(0.0),
 					new OriginalNodeSorter(),
-					new EqualSizeCommunityPartitioner(), 1.0, true);
+					new EqualSizeCommunityPartitioner(), true);
 			Transformation ce_2 = new CommunityEmbedding(
 					new OriginalCommunitySorter(),
 					new EqualSizeIdSpacePartitioner(0.0),
 					new OriginalNodeSorter(),
-					new EqualSizeCommunityPartitioner(), 1.0, true);
+					new EqualSizeCommunityPartitioner(), true);
 			Transformation ce_3 = new CommunityEmbedding(
 					new NeighborsByEdgesCommunitySorter(),
 					new EqualSizeIdSpacePartitioner(0.0),
 					new OriginalNodeSorter(),
-					new EqualSizeCommunityPartitioner(), 1.0, true);
+					new EqualSizeCommunityPartitioner(), true);
 
 			Graph g = nw.generate();
 
@@ -158,7 +158,7 @@ public class CommunityEmbeddingsTest {
 		Transformation cd = new CDLPA(20);
 		// Transformation cd = new CommunityDetectionDeltaQ();
 
-		Transformation re = new RandomRingIDSpaceSimple();
+		Transformation re = new RandomRingIDSpaceSimple(true);
 		Transformation lmc = new LMC(1000, LMC.MODE_UNRESTRICTED, 0,
 				LMC.DELTA_1_N, 0);
 		Transformation sw = new Swapping(1000);
@@ -169,20 +169,20 @@ public class CommunityEmbeddingsTest {
 				new OriginalCommunitySorter(),
 				new RelativeSizeIdSpacePartitioner(0.0),
 				new OriginalNodeSorter(), new EqualSizeCommunityPartitioner(),
-				1.0, true);
+				true);
 		Transformation ce_2 = new CommunityEmbedding(
 				new OriginalCommunitySorter(), new EqualSizeIdSpacePartitioner(
 						0.0), new OriginalNodeSorter(),
-				new EqualSizeCommunityPartitioner(), 1.0, true);
+				new EqualSizeCommunityPartitioner(), true);
 		Transformation ce_3 = new CommunityEmbedding(
 				new NeighborsByEdgesCommunitySorter(),
 				new RelativeSizeIdSpacePartitioner(0.0),
 				new OriginalNodeSorter(), new EqualSizeCommunityPartitioner(),
-				1.0, true);
+				true);
 		Transformation ce_4 = new CommunityEmbedding(
 				new NeighborsByEdgesCommunitySorter(),
 				new EqualSizeIdSpacePartitioner(0.0), new OriginalNodeSorter(),
-				new EqualSizeCommunityPartitioner(), 1.0, true);
+				new EqualSizeCommunityPartitioner(), true);
 
 		Transformation[] tr = new Transformation[] { scp, gcc, cd, re };
 		Transformation[] tlmc = new Transformation[] { scp, gcc, cd, re, lmc };

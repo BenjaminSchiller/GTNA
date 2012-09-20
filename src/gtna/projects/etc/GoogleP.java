@@ -602,7 +602,7 @@ public class GoogleP {
 		g = t.transform(g);
 		PlaneIdentifierSpaceSimple idspace = (PlaneIdentifierSpaceSimple) g
 				.getProperty("ID_SPACE_0");
-		Partition<Double>[] p = idspace.getPartitions();
+		Partition[] p = idspace.getPartitions();
 
 		ArrayList<ArrayList<String>> idss = GoogleP
 				.generateNeighborhood1Hop(basis1hop);
@@ -611,7 +611,7 @@ public class GoogleP {
 			ArrayList<String> ids = idss.get(i);
 			int starter = mapping.getMap().get(ids.get(0));
 			PlaneIdentifier starterID = ((PlaneIdentifier) p[starter]
-					.getRepresentativeID());
+					.getRepresentativeIdentifier());
 			double a = -1;
 			double b = -1;
 			double radius = 700;
@@ -636,7 +636,7 @@ public class GoogleP {
 			for (int j = 1; j < ids.size(); j++) {
 				int index = mapping.getMap().get(ids.get(j));
 				PlaneIdentifier nodeID = ((PlaneIdentifier) p[index]
-						.getRepresentativeID());
+						.getRepresentativeIdentifier());
 				double pos = (double) (j - 1) / (double) (ids.size() - 1);
 				double angle = pos * 360;
 				double x = Math.sin(Math.toRadians(angle)) * radius;
@@ -655,7 +655,7 @@ public class GoogleP {
 		g = t.transform(g);
 		PlaneIdentifierSpaceSimple idspace = (PlaneIdentifierSpaceSimple) g
 				.getProperty("ID_SPACE_0");
-		Partition<Double>[] p = idspace.getPartitions();
+		Partition[] p = idspace.getPartitions();
 
 		ArrayList<ArrayList<String>> idss = GoogleP
 				.generateNeighborhood1Hop(basis1hop);
@@ -671,7 +671,7 @@ public class GoogleP {
 			for (String id : ids) {
 				int index = mapping.getMap().get(id);
 				PlaneIdentifier nodeID = ((PlaneIdentifier) p[index]
-						.getRepresentativeID());
+						.getRepresentativeIdentifier());
 				double pos = (double) counter / (double) (g.getNodes().length);
 				double angle = pos * 360;
 				double x = Math.sin(Math.toRadians(angle)) * radius;
@@ -691,7 +691,7 @@ public class GoogleP {
 		g = t.transform(g);
 		PlaneIdentifierSpaceSimple idspace = (PlaneIdentifierSpaceSimple) g
 				.getProperty("ID_SPACE_0");
-		Partition<Double>[] p = idspace.getPartitions();
+		Partition[] p = idspace.getPartitions();
 
 		ArrayList<ArrayList<String>> idss = GoogleP
 				.generateNeighborhood1Hop(basis1hop);
@@ -700,7 +700,7 @@ public class GoogleP {
 			ArrayList<String> ids = idss.get(i);
 			int starter = mapping.getMap().get(ids.get(0));
 			PlaneIdentifier starterID = ((PlaneIdentifier) p[starter]
-					.getRepresentativeID());
+					.getRepresentativeIdentifier());
 			double a = -1;
 			double b = -1;
 			double radius = 700;
@@ -727,7 +727,7 @@ public class GoogleP {
 			for (int j = 1; j < ids.size(); j++) {
 				int index = mapping.getMap().get(ids.get(j));
 				PlaneIdentifier nodeID = ((PlaneIdentifier) p[index]
-						.getRepresentativeID());
+						.getRepresentativeIdentifier());
 				double pos = (double) (j - 1) / (double) (ids.size() - 1);
 				if (i == 1) {
 					pos = (double) (j - 1)
@@ -753,7 +753,7 @@ public class GoogleP {
 		g = t.transform(g);
 		PlaneIdentifierSpaceSimple idspace = (PlaneIdentifierSpaceSimple) g
 				.getProperty("ID_SPACE_0");
-		Partition<Double>[] p = idspace.getPartitions();
+		Partition[] p = idspace.getPartitions();
 
 		ArrayList<ArrayList<String>> idss = GoogleP
 				.generateNeighborhood1Hop(basis1hop);
@@ -762,7 +762,7 @@ public class GoogleP {
 			ArrayList<String> ids = idss.get(i);
 			int starter = mapping.getMap().get(ids.get(0));
 			PlaneIdentifier starterID = ((PlaneIdentifier) p[starter]
-					.getRepresentativeID());
+					.getRepresentativeIdentifier());
 			double a = 0;
 			double b = 0;
 			double radius = 700;
@@ -774,7 +774,7 @@ public class GoogleP {
 			for (int j = 1; j < ids.size(); j++) {
 				int index = mapping.getMap().get(ids.get(j));
 				PlaneIdentifier nodeID = ((PlaneIdentifier) p[index]
-						.getRepresentativeID());
+						.getRepresentativeIdentifier());
 				double pos = (double) (j - 1) / (double) (ids.size() - 1);
 				double angle = pos * 360;
 				double x = Math.sin(Math.toRadians(angle)) * radius;

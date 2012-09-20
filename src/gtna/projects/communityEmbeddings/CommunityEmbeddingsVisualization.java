@@ -87,27 +87,27 @@ public class CommunityEmbeddingsVisualization {
 		Transformation gcc = new LargestWeaklyConnectedComponent();
 		Transformation cd = new CDLPA(20);
 		// Transformation cd = new CommunityDetectionDeltaQ();
-		Transformation re = new RandomRingIDSpaceSimple();
+		Transformation re = new RandomRingIDSpaceSimple(true);
 		Transformation ce1 = new SimpleCommunityEmbedding1();
 		Transformation ce2 = new SimpleCommunityEmbedding2();
 		Transformation ce_1 = new CommunityEmbedding(
 				new OriginalCommunitySorter(),
 				new RelativeSizeIdSpacePartitioner(0.0),
 				new OriginalNodeSorter(), new EqualSizeCommunityPartitioner(),
-				1.0, true);
+				true);
 		Transformation ce_2 = new CommunityEmbedding(
 				new OriginalCommunitySorter(), new EqualSizeIdSpacePartitioner(
 						0.0), new OriginalNodeSorter(),
-				new EqualSizeCommunityPartitioner(), 1.0, true);
+				new EqualSizeCommunityPartitioner(), true);
 		Transformation ce_3 = new CommunityEmbedding(
 				new NeighborsByEdgesCommunitySorter(),
 				new RelativeSizeIdSpacePartitioner(0.0),
 				new OriginalNodeSorter(), new EqualSizeCommunityPartitioner(),
-				1.0, true);
+				true);
 		Transformation ce_4 = new CommunityEmbedding(
 				new NeighborsByEdgesCommunitySorter(),
 				new EqualSizeIdSpacePartitioner(0.0), new OriginalNodeSorter(),
-				new EqualSizeCommunityPartitioner(), 1.0, true);
+				new EqualSizeCommunityPartitioner(), true);
 
 		Transformation[] t0 = new Transformation[] { scp, gcc, cd, re };
 		Transformation[] t1 = new Transformation[] { scp, gcc, cd, ce1 };

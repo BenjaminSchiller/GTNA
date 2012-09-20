@@ -74,7 +74,7 @@ public class LookaheadRouting {
 		Stats stats = new Stats();
 
 		Config.overwrite("METRICS", "R");
-		Metric[] metrics = new Metric[] { };
+		Metric[] metrics = new Metric[] {};
 		Config.overwrite("MAIN_DATA_FOLDER", "./data/lookahead/");
 		Config.overwrite("MAIN_PLOT_FOLDER", "./plots/lookahead/");
 		Config.overwrite("GNUPLOT_PATH", "/sw/bin/gnuplot");
@@ -252,7 +252,7 @@ public class LookaheadRouting {
 		// double[] obfuscationD = new double[] { 0.0, .1E-10, .1E-9, .1E-8,
 		// .1E-7, .1E-6, .1E-5, .1E-4, .1E-3, .1E-2, .1E-1, .1 };
 
-		Transformation t1 = new RandomRingIDSpace();
+		Transformation t1 = new RandomRingIDSpace(true);
 
 		Transformation nf = new NeighborsFirstLookaheadList(false);
 		Transformation nfr = new NeighborsFirstLookaheadList(true);

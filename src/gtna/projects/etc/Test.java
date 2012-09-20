@@ -65,9 +65,9 @@ import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.attackableEmbedding.lmc.LMC;
-import gtna.transformation.communities.CommunityColors;
 import gtna.transformation.communities.CDDeltaQ;
 import gtna.transformation.communities.CDLPA;
+import gtna.transformation.communities.CommunityColors;
 import gtna.transformation.communities.GuimeraRolesTransformation;
 import gtna.transformation.communities.WsnRolesTransformation;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
@@ -163,8 +163,9 @@ public class Test {
 		Network nw = new ErdosRenyi(200, 10, true, new Transformation[] {
 				new WeakConnectivityPartition(),
 				new LargestWeaklyConnectedComponent(),
-				new RandomRingIDSpaceSimple(), new RandomRingIDSpaceSimple(),
-				new RandomRingIDSpaceSimple() });
+				new RandomRingIDSpaceSimple(true),
+				new RandomRingIDSpaceSimple(true),
+				new RandomRingIDSpaceSimple(true) });
 		Series s = Series.generate(nw, metrics, times);
 	}
 
