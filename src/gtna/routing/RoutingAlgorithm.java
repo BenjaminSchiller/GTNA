@@ -52,7 +52,6 @@ import java.util.Random;
  * @author benni
  * 
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class RoutingAlgorithm extends ParameterList {
 
 	protected IdentifierSpace identifierSpace;

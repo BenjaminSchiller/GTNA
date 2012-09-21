@@ -61,16 +61,16 @@ public class FifoDataStore extends UnlimitedDataStore {
 	}
 
 	@Override
-	public DataItem add(Identifier id) {
-		return this.add(id, new DataItem(id));
+	public DataItem addReplica(Identifier id) {
+		return this.addReplica(id, new DataItem(id));
 	}
 
 	@Override
-	public DataItem add(Identifier id, DataItem data) {
-		if (this.contains(id)) {
+	public DataItem addReplica(Identifier id, DataItem data) {
+		if (this.containsReplica(id)) {
 			return null;
 		}
-		DataItem data2 = super.add(id, data);
+		DataItem data2 = super.addReplica(id, data);
 		this.list.addLast(id);
 		while (this.list.size() > max) {
 			Identifier first = this.list.pop();
@@ -80,14 +80,14 @@ public class FifoDataStore extends UnlimitedDataStore {
 	}
 
 	@Override
-	public DataItem remove(Identifier id) {
+	public DataItem removeReplica(Identifier id) {
 		DataItem data = this.storage.remove(id);
 		this.list.remove(id);
 		return data;
 	}
 
 	@Override
-	public void access(Identifier id) {
+	public void accessReplica(Identifier id) {
 
 	}
 

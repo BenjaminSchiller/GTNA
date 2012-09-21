@@ -46,7 +46,6 @@ import java.util.Random;
  * @author benni
  * 
  */
-@SuppressWarnings("rawtypes")
 public class CcnRouting extends RoutingTableRouting {
 	public CcnRouting() {
 		super("CCN_ROUTING");
@@ -59,7 +58,7 @@ public class CcnRouting extends RoutingTableRouting {
 				target, graph.getNodes());
 		if (route.isSuccessful()) {
 			for (int node : route.getRoute()) {
-				this.dataStorageList.getStorageForNode(node).add(target);
+				this.dataStorageList.getStorageForNode(node).addReplica(target);
 			}
 		}
 		return route;

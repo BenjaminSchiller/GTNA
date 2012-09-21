@@ -59,7 +59,7 @@ public class DataStoreList extends GraphProperty {
 		this.list = list;
 		this.dataItems = new HashSet<DataItem>();
 		for (DataStore ds : list) {
-			this.dataItems.addAll(ds.getData());
+			this.dataItems.addAll(ds.getSourceData());
 		}
 	}
 

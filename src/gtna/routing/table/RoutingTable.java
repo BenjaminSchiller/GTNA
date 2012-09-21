@@ -39,13 +39,12 @@ import gtna.id.Identifier;
 
 /**
  * @author benni
- *
+ * 
  */
 public abstract class RoutingTable {
 	public abstract String asString();
-	
+
 	public abstract void fromString(String str);
-	
-	@SuppressWarnings("rawtypes")
+
 	public abstract int getNextHop(Identifier target);
 }

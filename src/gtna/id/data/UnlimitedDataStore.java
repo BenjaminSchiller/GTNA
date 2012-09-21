@@ -68,55 +68,55 @@ public class UnlimitedDataStore extends DataStore {
 	}
 
 	@Override
-	public boolean contains(Identifier id) {
+	public boolean containsReplica(Identifier id) {
 		return this.storage.containsKey(id);
 	}
 
 	@Override
-	public boolean contains(DataItem data) {
+	public boolean containsReplica(DataItem data) {
 		return this.storage.containsValue(data);
 	}
 
 	@Override
-	public DataItem add(Identifier id) {
-		return this.add(id, new DataItem(id));
+	public DataItem addReplica(Identifier id) {
+		return this.addReplica(id, new DataItem(id));
 	}
 
 	@Override
-	public DataItem add(Identifier id, DataItem data) {
-		if (this.contains(id)) {
+	public DataItem addReplica(Identifier id, DataItem data) {
+		if (this.containsReplica(id)) {
 			return null;
 		}
 		return this.storage.put(id, data);
 	}
 
 	@Override
-	public DataItem remove(Identifier id) {
+	public DataItem removeReplica(Identifier id) {
 		return this.storage.remove(id);
 	}
 
 	@Override
-	public DataItem get(Identifier id) {
+	public DataItem getReplica(Identifier id) {
 		return this.storage.get(id);
 	}
 
 	@Override
-	public void access(Identifier id) {
+	public void accessReplica(Identifier id) {
 
 	}
 
 	@Override
-	public int size() {
+	public int sizeOfReplicaStore() {
 		return this.storage.size();
 	}
 
 	@Override
-	public Set<Identifier> getIdentifiers() {
+	public Set<Identifier> getReplicaIdentifiers() {
 		return this.storage.keySet();
 	}
 
 	@Override
-	public Collection<DataItem> getData() {
+	public Collection<DataItem> getReplicaData() {
 		return this.storage.values();
 	}
 }

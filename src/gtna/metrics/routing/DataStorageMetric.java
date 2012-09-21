@@ -68,14 +68,14 @@ public class DataStorageMetric extends Metric {
 		int max = 0;
 		for (DataStore ds : dsl.getList()) {
 			// System.out.println("DS.size = " + ds.size());
-			if (ds.size() > max) {
-				max = ds.size();
+			if (ds.sizeOfStore() > max) {
+				max = ds.sizeOfStore();
 			}
 		}
 
 		double[] distr = new double[max + 1];
 		for (DataStore ds : dsl.getList()) {
-			distr[ds.size()]++;
+			distr[ds.sizeOfStore()]++;
 		}
 		ArrayUtils.divide(distr, dsl.getList().length);
 

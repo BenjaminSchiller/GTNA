@@ -42,7 +42,6 @@ import gtna.id.IdentifierSpace;
 import gtna.id.data.DataStoreList;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
-import gtna.routing.table.RoutingTable;
 import gtna.routing.table.RoutingTables;
 
 import java.util.ArrayList;
@@ -52,7 +51,6 @@ import java.util.Random;
  * @author benni
  * 
  */
-@SuppressWarnings("rawtypes")
 public class RoutingTableRouting extends RoutingAlgorithm {
 
 	private static final int ttl = 100;
@@ -70,7 +68,7 @@ public class RoutingTableRouting extends RoutingAlgorithm {
 	@Override
 	public void preprocess(Graph graph) {
 		super.preprocess(graph);
-		if (graph.hasProperty("ROUTING_TABLES_0", RoutingTable.class)) {
+		if (graph.hasProperty("ROUTING_TABLES_0", RoutingTables.class)) {
 			this.rt = (RoutingTables) graph.getProperty("ROUTING_TABLES_0");
 		}
 	}
@@ -101,7 +99,7 @@ public class RoutingTableRouting extends RoutingAlgorithm {
 
 	@Override
 	public boolean applicable(Graph graph) {
-		return graph.hasProperty("ROUTING_TABLES_0", RoutingTable.class)
+		return graph.hasProperty("ROUTING_TABLES_0", RoutingTables.class)
 				&& (graph.hasProperty("ID_SPACE_0", IdentifierSpace.class) || graph
 						.hasProperty("DATA_STORAGE_0", DataStoreList.class));
 	}
