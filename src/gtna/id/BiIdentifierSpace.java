@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * BIPartition.java
+ * BiIdentifierSpace.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -41,6 +41,16 @@ import java.math.BigInteger;
  * @author benni
  * 
  */
-public interface BIPartition extends Partition<BigInteger> {
+public abstract class BiIdentifierSpace extends IdentifierSpace {
+
+	protected BiIdentifierSpace(Partition[] partitions) {
+		super(partitions);
+	}
+
+	/**
+	 * @return maximum distance between any two identifier in this identifier
+	 *         space
+	 */
+	public abstract BigInteger getMaxDistance();
 
 }

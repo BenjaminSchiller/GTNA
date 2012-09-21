@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * BIIdentifierSpace.java
+ * BiPartition.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -41,5 +41,41 @@ import java.math.BigInteger;
  * @author benni
  * 
  */
-public interface BIIdentifierSpace extends IdentifierSpace<BigInteger> {
+public abstract class BiPartition extends Partition {
+	/**
+	 * @param id
+	 * @return distance from this partition to the identifier $id
+	 */
+	public abstract BigInteger distance(BiIdentifier id);
+
+	/**
+	 * @param id
+	 * @return distance from this partition to the partition $p
+	 */
+	public abstract BigInteger distance(BiPartition p);
+
+	@Override
+	public boolean isCloser(Identifier to, Identifier than) {
+		return this.distance((BiIdentifier) to).compareTo(
+				this.distance((BiIdentifier) than)) <= 0;
+	}
+
+	@Override
+	public int getClosestNode(int[] nodes, Partition[] partitions) {
+		if (nodes.length <= 0) {
+			return -1;
+		}
+		int closest = nodes[0];
+		BigInteger distance = ((BiPartition) partitions[closest])
+				.distance(this);
+
+		for (int i = 1; i < nodes.length; i++) {
+			BigInteger d = ((BiPartition) partitions[nodes[i]]).distance(this);
+			if (d.compareTo(distance) < 0) {
+				closest = nodes[i];
+				distance = d;
+			}
+		}
+		return closest;
+	}
 }
