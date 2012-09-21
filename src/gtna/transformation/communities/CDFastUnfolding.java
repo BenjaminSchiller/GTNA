@@ -38,11 +38,11 @@ package gtna.transformation.communities;
 import java.util.HashMap;
 
 import gtna.graph.Edge;
-import gtna.graph.EdgeWeights;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.graph.NodeWeights;
+import gtna.graph.weights.EdgeWeights;
+import gtna.graph.weights.NodeWeights;
 import gtna.transformation.Transformation;
 
 /**

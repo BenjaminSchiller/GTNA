@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * EdgeWeights.java
+ * NodeWeights.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,57 +33,45 @@
  * ---------------------------------------
  *
  */
-package gtna.graph;
+package gtna.graph.weights;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
+import gtna.util.ArrayUtils;
 
 /**
- * Implements a graph property to hold edge weights, i.e., a weight assigned to
- * each edge in the network. If the weight of a node is requested that has not
- * yet been assigned, the defaultWeight is returned.
+ * Implements a graph property to hold node weights, i.e., a double value for
+ * each node in a network.
  * 
  * @author benni
  * 
  */
-public class EdgeWeights extends GraphProperty {
+public class NodeWeights extends GraphProperty {
 
-	private Map<Edge, Double> weights;
+	private double[] weights;
 
-	private double defaultWeight;
-
-	public EdgeWeights() {
-		this(-1);
+	public NodeWeights(int nodes) {
+		this.weights = new double[nodes];
 	}
 
-	public EdgeWeights(double defaultWeight) {
-		this(new Edge[0], 0, defaultWeight);
+	public NodeWeights(double[] weights) {
+		this.weights = weights;
 	}
 
-	public EdgeWeights(Edge[] edges, double weight, double defaultWeight) {
-		this.weights = new HashMap<Edge, Double>();
-		this.defaultWeight = defaultWeight;
-		for (Edge edge : edges) {
-			this.weights.put(edge, weight);
-		}
+	public NodeWeights(int nodes, double weight) {
+		this.weights = ArrayUtils.initDoubleArray(nodes, weight);
 	}
 
-	public Set<Entry<Edge, Double>> getWeights() {
-		return this.weights.entrySet();
+	public double[] getWeights() {
+		return this.weights;
 	}
 
-	public void setWeight(Edge edge, double weight) {
-		this.weights.put(edge, weight);
+	public double getWeight(int index) {
+		return this.weights[index];
 	}
 
-	public double getWeight(Edge edge) {
-		try {
-			return this.weights.get(edge);
-		} catch (NullPointerException e) {
-			return this.defaultWeight;
-		}
+	public void setWeight(int index, double weight) {
+		this.weights[index] = weight;
 	}
 
 	@Override
@@ -95,6 +83,7 @@ public class EdgeWeights extends GraphProperty {
 	@Override
 	public void read(String filename, Graph graph) {
 		// TODO Auto-generated method stub
+
 	}
 
 }
