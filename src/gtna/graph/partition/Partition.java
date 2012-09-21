@@ -35,7 +35,6 @@
  */
 package gtna.graph.partition;
 
-import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 
 import java.util.ArrayList;
@@ -83,28 +82,28 @@ public class Partition extends GraphProperty {
 			return arg1.length - arg0.length;
 		}
 	}
-	
+
 	/**
 	 * @return the components
 	 */
 	public int[][] getComponents() {
 		return this.components;
 	}
-	
-	public int[] getLargestComponent(){
+
+	public int[] getLargestComponent() {
 		return this.components[0];
 	}
 
 	@Override
 	public boolean write(String filename, String key) {
-		// TODO Auto-generated method stub
+		// TODO implement GraphProperty.write(...)
 		return false;
 	}
 
 	@Override
-	public void read(String filename, Graph graph) {
-		// TODO Auto-generated method stub
-
+	public String read(String filename) {
+		// TODO implement GraphProperty.read(...)
+		return null;
 	}
 
 }

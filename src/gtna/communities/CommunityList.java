@@ -35,11 +35,9 @@
  */
 package gtna.communities;
 
-import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
-import gtna.util.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,33 +108,22 @@ public class CommunityList extends GraphProperty {
 		}
 	}
 
-    public Community[] getCommunities(){
-        return communities;
-    }
+	public Community[] getCommunities() {
+		return communities;
+	}
 
-    public Community getCommunityOfNode(int nodeIndex){
-        return communities[communityOfNode[nodeIndex]];
-    }
+	public Community getCommunityOfNode(int nodeIndex) {
+		return communities[communityOfNode[nodeIndex]];
+	}
 
 	@Override
 	public boolean write(String filename, String key) {
 		Filewriter fw = new Filewriter(filename);
 
-		// CLASS
-		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
-		fw.writeln(this.getClass().getCanonicalName().toString());
+		this.writeHeader(fw, this.getClass(), key);
 
-		// KEYS
-		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
-		fw.writeln(key);
+		this.writeParameter(fw, "Communities", this.communities.length);
 
-		// # OF COMMUNITIES
-		fw.writeComment("Communities");
-		fw.writeln(this.communities.length);
-
-		fw.writeln();
-
-		// LIST OF COMMUNITIES
 		for (Community community : this.communities) {
 			fw.writeln(community.toString());
 		}
@@ -145,20 +132,12 @@ public class CommunityList extends GraphProperty {
 	}
 
 	@Override
-	public void read(String filename, Graph graph) {
+	public String read(String filename) {
 		Filereader fr = new Filereader(filename);
 
-		// CLASS
-		fr.readLine();
+		String key = this.readHeader(fr);
+		this.communities = new Community[this.readInt(fr)];
 
-		// KEYS
-		String key = fr.readLine();
-
-		// # OF COMMUNITIES
-		int communities = Integer.parseInt(fr.readLine());
-		this.communities = new Community[communities];
-
-		// COMMUNITIES
 		String line = null;
 		int index = 0;
 		while ((line = fr.readLine()) != null) {
@@ -169,6 +148,6 @@ public class CommunityList extends GraphProperty {
 
 		this.computeCommunityOfNodes();
 
-		graph.addProperty(key, this);
+		return key;
 	}
 }

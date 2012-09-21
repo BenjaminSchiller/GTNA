@@ -40,7 +40,6 @@ import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
-import gtna.util.Config;
 import gtna.util.Util;
 
 import java.util.ArrayList;
@@ -140,21 +139,10 @@ public class SpanningTree extends GraphProperty {
 	public boolean write(String filename, String key) {
 		Filewriter fw = new Filewriter(filename);
 
-		// CLASS
-		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
-		fw.writeln(this.getClass().getCanonicalName().toString());
+		this.writeHeader(fw, this.getClass(), key);
 
-		// KEYS
-		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
-		fw.writeln(key);
+		this.writeParameter(fw, "Nodes", this.parent.length);
 
-		// # OF NODES
-		fw.writeComment("Nodes");
-		fw.writeln(this.parent.length);
-
-		fw.writeln();
-
-		// LIST OF COMMUNITIES
 		ParentChild[] pcs = this.generateParentChildList();
 		for (ParentChild pc : pcs) {
 			fw.writeln(pc.toString());
@@ -164,19 +152,13 @@ public class SpanningTree extends GraphProperty {
 	}
 
 	@Override
-	public void read(String filename, Graph graph) {
+	public String read(String filename) {
 		Filereader fr = new Filereader(filename);
 
-		// CLASS
-		fr.readLine();
+		String key = this.readHeader(fr);
 
-		// KEYS
-		String key = fr.readLine();
-
-		// # OF NODES
 		int nodes = Integer.parseInt(fr.readLine());
 
-		// PARENT_CHILD
 		ArrayList<ParentChild> pcs = new ArrayList<ParentChild>();
 		String line = null;
 		while ((line = fr.readLine()) != null) {
@@ -187,7 +169,7 @@ public class SpanningTree extends GraphProperty {
 
 		fr.close();
 
-		graph.addProperty(key, this);
+		return key;
 	}
 
 	public int getParent(int child) {

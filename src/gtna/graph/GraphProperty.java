@@ -60,7 +60,7 @@ public abstract class GraphProperty {
 	public abstract boolean write(String filename, String key);
 
 	/**
-	 * Reads the GraphProperty from a file what should be written using
+	 * Reads the GraphProperty from a file that should be written using
 	 * .write(filename, key). Always use .readHeader(.) and read*(.) to read
 	 * classname, key, and parameters before starting to read the content.
 	 * 
@@ -69,8 +69,9 @@ public abstract class GraphProperty {
 	 * @param graph
 	 *            Graph object to which the property should be added after
 	 *            reading it
+	 * @return key given in the file for adding it as a property to a graph
 	 */
-	public abstract void read(String filename, Graph graph);
+	public abstract String read(String filename);
 
 	protected void writeHeader(Filewriter fw, Class<?> c, String key) {
 		// CLASS

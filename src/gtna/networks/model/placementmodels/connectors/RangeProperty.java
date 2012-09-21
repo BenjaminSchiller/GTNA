@@ -35,11 +35,9 @@
  */
 package gtna.networks.model.placementmodels.connectors;
 
-import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
-import gtna.util.Config;
 
 /**
  * The <code>RangeProperty</code> contains the radii of the disks of the disk
@@ -83,20 +81,28 @@ public class RangeProperty extends GraphProperty {
 	}
 
 	@Override
-	public void read(String filename, Graph graph) {
+	public boolean write(String filename, String key) {
+		Filewriter fw = new Filewriter(filename);
+
+		this.writeHeader(fw, this.getClass(), key);
+
+		this.writeParameter(fw, "Nodes", this.ranges.length);
+
+		for (double d : this.ranges) {
+			fw.writeln(d);
+		}
+
+		return fw.close();
+	}
+
+	@Override
+	public String read(String filename) {
 		Filereader fr = new Filereader(filename);
 
-		// CLASS
-		fr.readLine();
+		String key = this.readHeader(fr);
 
-		// KEYS
-		String key = fr.readLine();
+		this.ranges = new double[this.readInt(fr)];
 
-		// # OF COMMUNITIES
-		int nodes = Integer.parseInt(fr.readLine());
-		this.ranges = new double[nodes];
-
-		// COMMUNITIES
 		String line = null;
 		int index = 0;
 		while ((line = fr.readLine()) != null) {
@@ -105,34 +111,7 @@ public class RangeProperty extends GraphProperty {
 
 		fr.close();
 
-		graph.addProperty(key, this);
-
-	}
-
-	@Override
-	public boolean write(String filename, String key) {
-		Filewriter fw = new Filewriter(filename);
-
-		// CLASS
-		fw.writeComment(Config.get("GRAPH_PROPERTY_CLASS"));
-		fw.writeln(this.getClass().getCanonicalName().toString());
-
-		// KEYS
-		fw.writeComment(Config.get("GRAPH_PROPERTY_KEY"));
-		fw.writeln(key);
-
-		// # OF COMMUNITIES
-		fw.writeComment("# Nodes");
-		fw.writeln(this.ranges.length);
-
-		fw.writeln();
-
-		// LIST OF COMMUNITIES
-		for (double d : this.ranges) {
-			fw.writeln(d);
-		}
-
-		return fw.close();
+		return key;
 	}
 
 	/**

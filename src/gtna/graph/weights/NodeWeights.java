@@ -35,7 +35,6 @@
  */
 package gtna.graph.weights;
 
-import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.util.ArrayUtils;
 
@@ -76,14 +75,14 @@ public class NodeWeights extends GraphProperty {
 
 	@Override
 	public boolean write(String filename, String key) {
-		// TODO Auto-generated method stub
+		// TODO implement GraphProperty.write(...)
 		return false;
 	}
 
 	@Override
-	public void read(String filename, Graph graph) {
-		// TODO Auto-generated method stub
-
+	public String read(String filename) {
+		// TODO implement GraphProperty.read(...)
+		return null;
 	}
 
 }

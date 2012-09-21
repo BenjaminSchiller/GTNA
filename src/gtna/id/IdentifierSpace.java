@@ -35,7 +35,6 @@
  */
 package gtna.id;
 
-import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
@@ -49,9 +48,9 @@ import java.util.Random;
  * 
  */
 public abstract class IdentifierSpace extends GraphProperty {
-	
+
 	public static final String delimiter = "_";
-	
+
 	protected Partition[] partitions;
 
 	protected IdentifierSpace(Partition[] partitions) {
@@ -84,7 +83,7 @@ public abstract class IdentifierSpace extends GraphProperty {
 	}
 
 	@Override
-	public void read(String filename, Graph graph) {
+	public String read(String filename) {
 		Filereader fr = new Filereader(filename);
 
 		String key = this.readHeader(fr);
@@ -114,9 +113,9 @@ public abstract class IdentifierSpace extends GraphProperty {
 			}
 		}
 
-		graph.addProperty(key, this);
-
 		fr.close();
+
+		return key;
 	}
 
 	/**

@@ -35,7 +35,6 @@
  */
 package gtna.routing.table;
 
-import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
@@ -79,7 +78,7 @@ public class RoutingTables extends GraphProperty {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void read(String filename, Graph graph) {
+	public String read(String filename) {
 		Filereader fr = new Filereader(filename);
 
 		String key = this.readHeader(fr);
@@ -102,6 +101,6 @@ public class RoutingTables extends GraphProperty {
 
 		fr.close();
 
-		graph.addProperty(key, this);
+		return key;
 	}
 }

@@ -35,7 +35,6 @@
  */
 package gtna.drawing;
 
-import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 
 import java.awt.Color;
@@ -62,14 +61,14 @@ public class NodeColors extends GraphProperty {
 
 	@Override
 	public boolean write(String filename, String key) {
-		// TODO Auto-generated method stub
+		// TODO implement GraphProperty.write(...)
 		return false;
 	}
 
 	@Override
-	public void read(String filename, Graph graph) {
-		// TODO Auto-generated method stub
-
+	public String read(String filename) {
+		// TODO implement GraphProperty.read(...)
+		return null;
 	}
 
 }

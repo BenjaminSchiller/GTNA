@@ -139,7 +139,8 @@ public abstract class GraphReader {
 				GraphProperty property = (GraphProperty) ClassLoader
 						.getSystemClassLoader().loadClass(className)
 						.newInstance();
-				property.read(prop, graph);
+				String key = property.read(prop);
+				graph.addProperty(key, property);
 			} catch (InstantiationException e) {
 				return null;
 			} catch (IllegalAccessException e) {
