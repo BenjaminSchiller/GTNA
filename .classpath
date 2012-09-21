@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="gtna/transformation/attackableEmbedding/|gtna/transformation/embedding/communities/|gtna/routing/greedyVariations/|gtna/projects/communityEmbeddings/|gtna/projects/etc/|gtna/projects/id/|gtna/projects/pets/" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/gephi-toolkit.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
