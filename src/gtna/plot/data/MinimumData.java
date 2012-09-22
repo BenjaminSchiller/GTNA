@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.plot;
+package gtna.plot.data;
 
 import gtna.plot.Gnuplot.Style;
 

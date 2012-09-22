@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * VarianceData.java
+ * GnuplotData.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.plot;
+package gtna.plot.data;
 
 import gtna.plot.Gnuplot.Style;
 
@@ -41,36 +41,52 @@ import gtna.plot.Gnuplot.Style;
  * @author benni
  * 
  */
-public class VarianceData extends Data {
-
-	public VarianceData(String data, Style style, String title) {
-		super(data, style, title);
+public abstract class Data {
+	public static enum Type {
+		average, median, minimum, maximum, variance, confidence1, confidence2, function
 	}
 
-	@Override
-	public boolean isStyleValid() {
-		return this.style.equals(Style.yerrorbars);
+	protected String data;
+
+	protected Style style;
+
+	protected String title;
+
+	public Data(String data, Style style, String title) {
+		this.data = data;
+		this.style = style;
+		this.title = title;
 	}
 
-	@Override
-	public String getEntry(int lt, int lw, double offsetX, double offsetY) {
-		StringBuffer buff = new StringBuffer();
-		// 2 avg
-		// 3 med
-		// 4 min
-		// 5 max
-		// 6 var
-		// 7 varLow
-		// 8 varUp
-		// 9 confLow
-		// 10 confUp
-		buff.append("'" + this.data + "' using ($1 + " + offsetX + "):($2 + "
-				+ offsetY + "):($2 - $7 + " + offsetY + "):($2 + $8 + "
-				+ offsetY + ") with " + this.style);
-		buff.append(" lt " + lt + " lw " + lw);
-		buff.append(title == null ? " notitle" : " title \"" + this.title
-				+ "\"");
-		return buff.toString();
+	public abstract boolean isStyleValid();
+
+	public abstract String getEntry(int lt, int lw, double offsetX,
+			double offsetY);
+
+	public String[] getConfig() {
+		return new String[0];
 	}
 
+	public static Data get(String data, Style style, String title, Type type) {
+		switch (type) {
+		case average:
+			return new AverageData(data, style, title);
+		case median:
+			return new MedianData(data, style, title);
+		case minimum:
+			return new MinimumData(data, style, title);
+		case maximum:
+			return new MaximumData(data, style, title);
+		case variance:
+			return new VarianceData(data, style, title);
+		case confidence1:
+			return new ConfidenceData1(data, style, title);
+		case confidence2:
+			return new ConfidenceData2(data, style, title);
+		case function:
+			return new FunctionData(data, style, title);
+		default:
+			return null;
+		}
+	}
 }

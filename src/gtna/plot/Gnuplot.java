@@ -38,6 +38,7 @@ package gtna.plot;
 import gtna.io.DataWriter;
 import gtna.io.Output;
 import gtna.metrics.Metric;
+import gtna.plot.data.Data;
 import gtna.util.Config;
 
 import java.io.BufferedReader;

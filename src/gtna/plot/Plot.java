@@ -36,6 +36,7 @@
 package gtna.plot;
 
 import gtna.io.Filewriter;
+import gtna.plot.data.Data;
 import gtna.util.Config;
 
 import java.util.ArrayList;

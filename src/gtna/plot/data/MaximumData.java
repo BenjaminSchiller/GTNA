@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * AverageData.java
+ * MaximumData.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.plot;
+package gtna.plot.data;
 
 import gtna.plot.Gnuplot.Style;
 
@@ -41,9 +41,9 @@ import gtna.plot.Gnuplot.Style;
  * @author benni
  * 
  */
-public class AverageData extends Data {
+public class MaximumData extends Data {
 
-	public AverageData(String data, Style style, String title) {
+	public MaximumData(String data, Style style, String title) {
 		super(data, style, title);
 	}
 
@@ -56,12 +56,11 @@ public class AverageData extends Data {
 	@Override
 	public String getEntry(int lt, int lw, double offsetX, double offsetY) {
 		StringBuffer buff = new StringBuffer();
-		buff.append("'" + this.data + "' using ($1 + " + offsetX + "):($2 + "
+		buff.append("'" + this.data + "' using ($1 + " + offsetX + "):($5 + "
 				+ offsetY + ") with " + this.style);
 		buff.append(" lt " + lt + " lw " + lw);
 		buff.append(title == null ? " notitle" : " title \"" + this.title
 				+ "\"");
 		return buff.toString();
 	}
-
 }
