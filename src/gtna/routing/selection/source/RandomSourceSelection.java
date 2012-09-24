@@ -48,7 +48,7 @@ public class RandomSourceSelection extends SourceSelection {
 	}
 
 	@Override
-	public int getNextSrc() {
+	public int getNextSource() {
 		return this.rand.nextInt(this.graph.getNodeCount());
 	}
 

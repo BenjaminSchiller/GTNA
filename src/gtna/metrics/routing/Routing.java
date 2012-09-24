@@ -132,7 +132,7 @@ public class Routing extends Metric {
 		// if (parallel == 1) {
 		for (int n = 0; n < graph.getNodeCount(); n++) {
 			for (int i = 0; i < routesPerNode; i++) {
-				int start = this.sourceSelection.getNextSrc();
+				int start = this.sourceSelection.getNextSource();
 				Identifier target = this.targetSelection.getNextTarget();
 				Route r = this.ra.routeToTarget(graph, start, target, rand);
 				this.routes[index++] = r;

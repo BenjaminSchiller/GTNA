@@ -64,7 +64,7 @@ public abstract class SourceSelection extends ParameterList {
 		this.graph = graph;
 	}
 
-	public abstract int getNextSrc();
+	public abstract int getNextSource();
 
 	public abstract boolean applicable(Graph graph);
 

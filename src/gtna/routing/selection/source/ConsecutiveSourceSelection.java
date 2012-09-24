@@ -55,7 +55,7 @@ public class ConsecutiveSourceSelection extends SourceSelection {
 	}
 
 	@Override
-	public int getNextSrc() {
+	public int getNextSource() {
 		return (this.index++) % this.graph.getNodeCount();
 	}
 
