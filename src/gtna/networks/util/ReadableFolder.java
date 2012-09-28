@@ -62,7 +62,7 @@ public class ReadableFolder extends Network {
 
 	public ReadableFolder(String name, String folder, String srcFolder,
 			String suffix, Parameter[] parameters, Transformation[] t) {
-		super(ReadableFolder.key(name, folder), ReadableFolder.getNodes(
+		super(ReadableFolder.key(folder, name), ReadableFolder.getNodes(
 				srcFolder, suffix), parameters, t);
 		File d = new File(srcFolder);
 		if (!d.exists()) {
@@ -72,6 +72,9 @@ public class ReadableFolder extends Network {
 			Arrays.sort(this.files);
 		}
 		this.index = 0;
+		for (Parameter p : parameters) {
+			ReadableFolder.parameterKey(folder, p.getKey(), p.getKey());
+		}
 	}
 
 	public Graph generate() {
@@ -97,12 +100,20 @@ public class ReadableFolder extends Network {
 		return new GtnaGraphReader().nodes(f[0].getAbsolutePath());
 	}
 
-	public static String key(String name, String folder) {
-		Config.overwrite("READABLE_FOLDER_" + folder + "_NAME", name);
-		Config.overwrite("READABLE_FOLDER_" + folder + "_NAME_SHORT", name);
-		Config.overwrite("READABLE_FOLDER_" + folder + "_NAME_LONG", name);
-		Config.overwrite("READABLE_FOLDER_" + folder + "_FOLDER", folder);
-		return "READABLE_FOLDER_" + folder;
+	public static String key(String folder, String name) {
+		Config.overwrite("READABLE_FILE_" + folder + "_NAME", name);
+		Config.overwrite("READABLE_FILE_" + folder + "_NAME_SHORT", name);
+		Config.overwrite("READABLE_FILE_" + folder + "_NAME_LONG", name);
+		Config.overwrite("READABLE_FILE_" + folder + "_FOLDER", folder);
+		return "READABLE_FILE_" + folder;
+	}
+
+	public static void parameterKey(String folder, String key, String name) {
+		Config.overwrite("READABLE_FILE_" + folder + "_" + key + "_NAME", name);
+		Config.overwrite("READABLE_FILE_" + folder + "_" + key + "_NAME_SHORT",
+				name);
+		Config.overwrite("READABLE_FILE_" + folder + "_" + key + "_NAME_LONG",
+				name);
 	}
 
 	public void incIndex() {

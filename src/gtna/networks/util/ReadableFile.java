@@ -65,19 +65,28 @@ public class ReadableFile extends Network {
 
 	public ReadableFile(String name, String folder, String filename,
 			Parameter[] parameters, Transformation[] t) {
-		super(ReadableFile.key(name, folder), new GtnaGraphReader()
+		super(ReadableFile.key(folder, name), new GtnaGraphReader()
 				.nodes(filename), parameters, t);
 		this.filename = filename;
+		for (Parameter p : parameters) {
+			ReadableFile.parameterKey(folder, p.getKey(), p.getKey());
+		}
 	}
 
-	public static String key(String name, String folder) {
+	public static String key(String folder, String name) {
 		Config.overwrite("READABLE_FILE_" + folder + "_NAME", name);
 		Config.overwrite("READABLE_FILE_" + folder + "_NAME_SHORT", name);
 		Config.overwrite("READABLE_FILE_" + folder + "_NAME_LONG", name);
 		Config.overwrite("READABLE_FILE_" + folder + "_FOLDER", folder);
-		Config.overwrite("READABLE_FILE_" + folder + "_NAME_SHORT", folder);
-		Config.overwrite("READABLE_FILE_" + folder + "_NAME_LONG", folder);
 		return "READABLE_FILE_" + folder;
+	}
+
+	public static void parameterKey(String folder, String key, String name) {
+		Config.overwrite("READABLE_FILE_" + folder + "_" + key + "_NAME", name);
+		Config.overwrite("READABLE_FILE_" + folder + "_" + key + "_NAME_SHORT",
+				name);
+		Config.overwrite("READABLE_FILE_" + folder + "_" + key + "_NAME_LONG",
+				name);
 	}
 
 	public Graph generate() {
