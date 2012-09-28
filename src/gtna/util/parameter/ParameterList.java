@@ -249,6 +249,9 @@ public class ParameterList {
 				} else if (p1 instanceof DoubleParameter) {
 					// different double parameter
 					return p1;
+				} else if (p1 instanceof DateTimeParameter) {
+					// different datetime parameter
+					return p1;
 				} else if (p1 instanceof ParameterListParameter
 						&& p2 instanceof ParameterListParameter) {
 					// different parameterList parameter
@@ -297,6 +300,9 @@ public class ParameterList {
 		}
 		if (p instanceof IntParameter) {
 			return ((IntParameter) p).getIntValue();
+		}
+		if (p instanceof DateTimeParameter) {
+			return ((DateTimeParameter) p).getDateTimeValue().getMillis() / 1000;
 		}
 		return -1;
 	}

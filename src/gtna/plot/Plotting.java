@@ -45,6 +45,7 @@ import gtna.plot.data.Data.Type;
 import gtna.util.ArrayUtils;
 import gtna.util.Config;
 import gtna.util.Timer;
+import gtna.util.parameter.DateTimeParameter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
@@ -86,6 +87,7 @@ public class Plotting {
 		Timer timer = new Timer("single (" + s.length + "|" + s[0].length
 				+ ") (" + type + "|" + style + ")");
 		double[][] x = new double[s.length][];
+		String[] config = new String[0];
 		ArrayList<String> labels = new ArrayList<String>();
 		for (int i = 0; i < s.length; i++) {
 			Parameter diffP = s[i][0].getNetwork().getDiffParameter(
@@ -107,8 +109,14 @@ public class Plotting {
 					x[i][j] = ((IntParameter) p).getIntValue();
 				} else if (p instanceof DoubleParameter) {
 					x[i][j] = ((DoubleParameter) p).getDoubleValue();
+				} else if (p instanceof DateTimeParameter) {
+					x[i][j] = ((DateTimeParameter) p).getDateTimeValue()
+							.getMillis() / 1000;
+					config = new String[] { "set xdata time",
+							"set timefmt \"%s\"" };
 				} else {
-					System.err.println("diff param not of type int or long");
+					System.err
+							.println("diff param not of type int, long, or datetime");
 					return false;
 				}
 			}
@@ -122,7 +130,7 @@ public class Plotting {
 			}
 		}
 		boolean success = Plotting.singleMetrics(s, metrics, folder, type,
-				style, x, xLabel.toString());
+				style, x, xLabel.toString(), config);
 		timer.end();
 		return success;
 	}
@@ -173,13 +181,14 @@ public class Plotting {
 		String xLabel = Config.get(metricX.getKey() + "_" + keyX
 				+ "_SINGLE_NAME");
 		boolean success = Plotting.singleMetrics(s, metrics, folder, type,
-				style, x, xLabel);
+				style, x, xLabel, new String[0]);
 		timer.end();
 		return success;
 	}
 
 	private static boolean singleMetrics(Series[][] s, Metric[] metrics,
-			String folder, Type type, Style style, double[][] x, String xLabel) {
+			String folder, Type type, Style style, double[][] x, String xLabel,
+			String[] config) {
 		if (x == null) {
 			return false;
 		}
@@ -192,7 +201,7 @@ public class Plotting {
 						+ (subfolders ? m.getFolder() : m.getFolderName());
 				(new File(pre)).mkdirs();
 				success &= Plotting.singleMetric(s, new Metric[] { m }, key,
-						pre, type, style, x, xLabel);
+						pre, type, style, x, xLabel, config);
 			}
 		}
 
@@ -207,7 +216,7 @@ public class Plotting {
 								.get("FILESYSTEM_FOLDER_DELIMITER") : "");
 				(new File(pre)).mkdirs();
 				success &= Plotting.singleMetric(s, group, key, pre, type,
-						style, x, xLabel);
+						style, x, xLabel, config);
 			}
 		}
 
@@ -216,7 +225,7 @@ public class Plotting {
 
 	private static boolean singleMetric(Series[][] s, Metric[] metrics,
 			String plotKey, String pre, Type type, Style style, double[][] x,
-			String xLabel) {
+			String xLabel, String[] config) {
 		String[] dataKeys = Config.keys(plotKey + "_PLOT_DATA");
 		Data[] data = new Data[s.length * dataKeys.length * metrics.length];
 		int index = 0;
@@ -256,6 +265,9 @@ public class Plotting {
 		plot.setTitle(Config.get(plotKey + "_PLOT_TITLE"));
 		plot.setxLabel(xLabel);
 		plot.setyLabel(Config.get(plotKey + "_PLOT_Y"));
+		for (String cfg : config) {
+			plot.addConfig(cfg);
+		}
 
 		return Gnuplot.plot(plot, metrics, plotKey);
 	}
