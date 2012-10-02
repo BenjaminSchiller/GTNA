@@ -35,27 +35,27 @@
  */
 package gtna.util.parameter;
 
-import org.joda.time.DateTime;
+import java.util.Date;
 
 /**
  * @author benni
  * 
  */
-public class DateTimeParameter extends Parameter {
+public class DateParameter extends Parameter {
 
-	private DateTime dateTimeValue;
+	private Date dateValue;
 
 	/**
 	 * @param key
 	 * @param value
 	 */
-	public DateTimeParameter(String key, DateTime dateTimeValue) {
-		super(key, dateTimeValue.toString());
-		this.dateTimeValue = dateTimeValue;
+	public DateParameter(String key, Date dateValue) {
+		super(key, dateValue.toString());
+		this.dateValue = dateValue;
 	}
 
-	public DateTime getDateTimeValue() {
-		return this.dateTimeValue;
+	public Date getDateValue() {
+		return this.dateValue;
 	}
 
 }
