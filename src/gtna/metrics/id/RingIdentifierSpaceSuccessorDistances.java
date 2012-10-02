@@ -38,8 +38,8 @@ package gtna.metrics.id;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.DIdentifier;
-import gtna.id.DPartition;
+import gtna.id.DoubleIdentifier;
+import gtna.id.DoublePartition;
 import gtna.id.Partition;
 import gtna.id.ring.RingIdentifierSpace;
 import gtna.io.DataWriter;
@@ -99,8 +99,8 @@ public class RingIdentifierSpaceSuccessorDistances extends Metric {
 		for (int i = 0; i < nodesSorted.length; i++) {
 			int n = nodesSorted[i];
 			int succ = nodesSorted[(i + 1) % nodesSorted.length];
-			dist[i] = ((DPartition) partitions[n])
-					.distance((DIdentifier) partitions[succ]
+			dist[i] = ((DoublePartition) partitions[n])
+					.distance((DoubleIdentifier) partitions[succ]
 							.getRepresentativeIdentifier())
 					/ maxDist;
 		}

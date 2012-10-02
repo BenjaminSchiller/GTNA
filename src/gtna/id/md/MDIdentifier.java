@@ -35,14 +35,14 @@
  */
 package gtna.id.md;
 
-import gtna.id.DIdentifier;
+import gtna.id.DoubleIdentifier;
 import gtna.id.Identifier;
 
 /**
  * @author benni
  * 
  */
-public class MDIdentifier extends DIdentifier {
+public class MDIdentifier extends DoubleIdentifier {
 
 	protected double[] coordinates;
 
@@ -72,7 +72,7 @@ public class MDIdentifier extends DIdentifier {
 	}
 
 	@Override
-	public int compareTo(DIdentifier arg0) {
+	public int compareTo(DoubleIdentifier arg0) {
 		MDIdentifier id = (MDIdentifier) arg0;
 		for (int i = 0; i < this.coordinates.length; i++) {
 			if (this.coordinates[i] < id.coordinates[i]) {
@@ -85,7 +85,7 @@ public class MDIdentifier extends DIdentifier {
 	}
 
 	@Override
-	public double distance(DIdentifier id) {
+	public double distance(DoubleIdentifier id) {
 		double sum = 0.0;
 		MDIdentifier mdid = (MDIdentifier) id;
 

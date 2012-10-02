@@ -37,8 +37,8 @@ package gtna.id.node;
 
 import java.util.Random;
 
-import gtna.id.DIdentifier;
-import gtna.id.DPartition;
+import gtna.id.DoubleIdentifier;
+import gtna.id.DoublePartition;
 import gtna.id.Identifier;
 import gtna.id.Partition;
 
@@ -46,7 +46,7 @@ import gtna.id.Partition;
  * @author benni
  * 
  */
-public class NodePartition extends DPartition {
+public class NodePartition extends DoublePartition {
 
 	protected NodeIdentifier id;
 
@@ -64,12 +64,12 @@ public class NodePartition extends DPartition {
 	}
 
 	@Override
-	public double distance(DIdentifier id) {
+	public double distance(DoubleIdentifier id) {
 		return 0;
 	}
 
 	@Override
-	public double distance(DPartition p) {
+	public double distance(DoublePartition p) {
 		return 0;
 	}
 

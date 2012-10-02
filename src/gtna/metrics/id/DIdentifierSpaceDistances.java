@@ -39,9 +39,9 @@ import gtna.data.Single;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.id.DIdentifier;
-import gtna.id.DIdentifierSpace;
-import gtna.id.DPartition;
+import gtna.id.DoubleIdentifier;
+import gtna.id.DoubleIdentifierSpace;
+import gtna.id.DoublePartition;
 import gtna.id.Partition;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
@@ -75,7 +75,7 @@ public class DIdentifierSpaceDistances extends Metric {
 
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		DIdentifierSpace ids = (DIdentifierSpace) g.getProperty("ID_SPACE_0");
+		DoubleIdentifierSpace ids = (DoubleIdentifierSpace) g.getProperty("ID_SPACE_0");
 		Partition[] partitions = ids.getPartitions();
 		Edges edges = g.getEdges();
 
@@ -95,8 +95,8 @@ public class DIdentifierSpaceDistances extends Metric {
 		double[] dist = new double[edges.getEdges().size()];
 		int index = 0;
 		for (Edge edge : edges.getEdges()) {
-			dist[index++] = ((DPartition) partitions[edge.getSrc()])
-					.distance((DIdentifier) partitions[edge.getDst()]
+			dist[index++] = ((DoublePartition) partitions[edge.getSrc()])
+					.distance((DoubleIdentifier) partitions[edge.getDst()]
 							.getRepresentativeIdentifier())
 					/ maxDist;
 		}
@@ -124,7 +124,7 @@ public class DIdentifierSpaceDistances extends Metric {
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 		return g.hasProperty("ID_SPACE_0")
-				&& (g.getProperty("ID_SPACE_0") instanceof DIdentifierSpace);
+				&& (g.getProperty("ID_SPACE_0") instanceof DoubleIdentifierSpace);
 	}
 
 }

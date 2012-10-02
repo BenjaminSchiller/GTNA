@@ -36,8 +36,8 @@ package gtna.networks.model.placementmodels.connectors;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.DIdentifier;
-import gtna.id.DPartition;
+import gtna.id.DoubleIdentifier;
+import gtna.id.DoublePartition;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.networks.model.placementmodels.NodeConnectorImpl;
 import gtna.util.parameter.DoubleParameter;
@@ -112,8 +112,8 @@ public class LogDistanceConnector extends NodeConnectorImpl {
 					continue;
 				dist = 10
 						* gamma
-						* Math.log10(((DPartition) ids.getPartitions()[i])
-								.distance((DIdentifier) ids.getPartitions()[j]
+						* Math.log10(((DoublePartition) ids.getPartitions()[i])
+								.distance((DoubleIdentifier) ids.getPartitions()[j]
 										.getRepresentativeIdentifier())
 								/ d0) + rnd.nextGaussian() * sigma;
 				if (dist < range)

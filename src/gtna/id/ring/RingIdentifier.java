@@ -35,7 +35,7 @@
  */
 package gtna.id.ring;
 
-import gtna.id.DIdentifier;
+import gtna.id.DoubleIdentifier;
 import gtna.id.Identifier;
 
 /**
@@ -47,7 +47,7 @@ import gtna.id.Identifier;
  * @author benni
  * 
  */
-public class RingIdentifier extends DIdentifier {
+public class RingIdentifier extends DoubleIdentifier {
 	protected double position;
 
 	protected boolean wrapAround;
@@ -68,7 +68,7 @@ public class RingIdentifier extends DIdentifier {
 	}
 
 	@Override
-	public int compareTo(DIdentifier o) {
+	public int compareTo(DoubleIdentifier o) {
 		if (this.position < ((RingIdentifier) o).position)
 			return -1;
 		else if (this.position == ((RingIdentifier) o).position)
@@ -78,7 +78,7 @@ public class RingIdentifier extends DIdentifier {
 	}
 
 	@Override
-	public double distance(DIdentifier id) {
+	public double distance(DoubleIdentifier id) {
 		double pos = ((RingIdentifier) id).position;
 
 		if (!this.wrapAround)

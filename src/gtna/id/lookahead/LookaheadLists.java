@@ -36,7 +36,7 @@
 package gtna.id.lookahead;
 
 import gtna.graph.GraphProperty;
-import gtna.id.DPartition;
+import gtna.id.DoublePartition;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
 
@@ -103,15 +103,15 @@ public class LookaheadLists extends GraphProperty {
 		this.lists = new LookaheadList[this.readInt(fr)];
 		Class<?> partitionClass = this.readClass(fr);
 
-		Constructor<DPartition>[] constructors = null;
+		Constructor<DoublePartition>[] constructors = null;
 		try {
-			constructors = (Constructor<DPartition>[]) partitionClass
+			constructors = (Constructor<DoublePartition>[]) partitionClass
 					.getConstructors();
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		}
-		Constructor<DPartition> constructor = null;
-		for (Constructor<DPartition> c : constructors) {
+		Constructor<DoublePartition> constructor = null;
+		for (Constructor<DoublePartition> c : constructors) {
 			if (c.getParameterTypes().length == 1
 					&& c.getParameterTypes()[0].toString().equals(
 							"class java.lang.String")) {

@@ -39,7 +39,7 @@ import gtna.data.Single;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.DIdentifierSpace;
+import gtna.id.DoubleIdentifierSpace;
 import gtna.id.IdentifierSpace;
 import gtna.id.Partition;
 import gtna.id.md.MDIdentifier;
@@ -90,7 +90,7 @@ public class EdgeCrossings extends Metric {
 
 		Edge[] edges = graph.generateEdges();
 
-		DIdentifierSpace idSpace = (DIdentifierSpace) graph
+		DoubleIdentifierSpace idSpace = (DoubleIdentifierSpace) graph
 				.getProperty("ID_SPACE_0");
 		calculateCrossings(edges, idSpace, false);
 

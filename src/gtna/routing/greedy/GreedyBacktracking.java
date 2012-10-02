@@ -37,7 +37,7 @@ package gtna.routing.greedy;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.DIdentifierSpace;
+import gtna.id.DoubleIdentifierSpace;
 import gtna.id.Identifier;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
@@ -103,7 +103,7 @@ public class GreedyBacktracking extends RoutingAlgorithm {
 
 	@Override
 	public boolean applicable(Graph graph) {
-		return graph.hasProperty("ID_SPACE_0", DIdentifierSpace.class);
+		return graph.hasProperty("ID_SPACE_0", DoubleIdentifierSpace.class);
 	}
 
 }

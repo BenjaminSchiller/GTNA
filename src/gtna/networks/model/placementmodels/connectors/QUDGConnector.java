@@ -36,8 +36,8 @@ package gtna.networks.model.placementmodels.connectors;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.id.DIdentifier;
-import gtna.id.DPartition;
+import gtna.id.DoubleIdentifier;
+import gtna.id.DoublePartition;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.networks.model.placementmodels.NodeConnectorImpl;
 import gtna.util.parameter.DoubleParameter;
@@ -98,8 +98,8 @@ public class QUDGConnector extends NodeConnectorImpl {
 			for (int j = 0; j < nodes.length; j++) {
 				if (i == j)
 					continue;
-				dist = ((DPartition) ids.getPartitions()[i])
-						.distance((DIdentifier) ids.getPartitions()[j]
+				dist = ((DoublePartition) ids.getPartitions()[i])
+						.distance((DoubleIdentifier) ids.getPartitions()[j]
 								.getRepresentativeIdentifier());
 				if (dist <= range1)
 					edges.add(i, j);

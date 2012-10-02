@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * DIdentifierSpace.java
+ * DPartition.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -39,16 +39,40 @@ package gtna.id;
  * @author benni
  * 
  */
-public abstract class DIdentifierSpace extends IdentifierSpace {
-
-	protected DIdentifierSpace(Partition[] partitions) {
-		super(partitions);
-	}
+public abstract class DoublePartition extends Partition {
+	/**
+	 * @param id
+	 * @return distance from this partition to the identifier $id
+	 */
+	public abstract double distance(DoubleIdentifier id);
 
 	/**
-	 * @return maximum distance between any two identifier in this identifier
-	 *         space
+	 * @param id
+	 * @return distance from this partition to the partition $p
 	 */
-	public abstract double getMaxDistance();
+	public abstract double distance(DoublePartition p);
 
+	@Override
+	public boolean isCloser(Identifier to, Identifier than) {
+		return this.distance((DoubleIdentifier) to) < this
+				.distance((DoubleIdentifier) than);
+	}
+
+	@Override
+	public int getClosestNode(int[] nodes, Partition[] partitions) {
+		if (nodes.length <= 0) {
+			return -1;
+		}
+		int closest = nodes[0];
+		double distance = ((DoublePartition) partitions[closest]).distance(this);
+
+		for (int i = 1; i < nodes.length; i++) {
+			double d = ((DoublePartition) partitions[nodes[i]]).distance(this);
+			if (d < distance) {
+				closest = nodes[i];
+				distance = d;
+			}
+		}
+		return closest;
+	}
 }

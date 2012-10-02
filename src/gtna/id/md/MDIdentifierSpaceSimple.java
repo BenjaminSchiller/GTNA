@@ -35,7 +35,7 @@
  */
 package gtna.id.md;
 
-import gtna.id.DIdentifierSpace;
+import gtna.id.DoubleIdentifierSpace;
 import gtna.id.Identifier;
 import gtna.id.IdentifierSpace;
 import gtna.io.Filereader;
@@ -47,7 +47,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class MDIdentifierSpaceSimple extends DIdentifierSpace {
+public class MDIdentifierSpaceSimple extends DoubleIdentifierSpace {
 
 	protected double[] modulus;
 

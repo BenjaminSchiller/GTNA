@@ -39,8 +39,8 @@ import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.id.BiIdentifier;
 import gtna.id.BiIdentifierSpace;
-import gtna.id.DIdentifier;
-import gtna.id.DIdentifierSpace;
+import gtna.id.DoubleIdentifier;
+import gtna.id.DoubleIdentifierSpace;
 import gtna.id.Partition;
 import gtna.id.md.MDIdentifier;
 import gtna.id.md.MDPartitionSimple;
@@ -229,8 +229,8 @@ public abstract class ObfuscatedLookaheadList extends Transformation {
 	public boolean applicable(Graph g) {
 		Random rand = new Random();
 		for (GraphProperty p : g.getProperties("ID_SPACE")) {
-			if (p instanceof DIdentifierSpace) {
-				DIdentifier id = (DIdentifier) ((DIdentifierSpace) p)
+			if (p instanceof DoubleIdentifierSpace) {
+				DoubleIdentifier id = (DoubleIdentifier) ((DoubleIdentifierSpace) p)
 						.getRandomIdentifier(rand);
 				if (!(id instanceof RingIdentifier)
 						&& !(id instanceof MDIdentifier)

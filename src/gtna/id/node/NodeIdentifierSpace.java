@@ -35,7 +35,7 @@
  */
 package gtna.id.node;
 
-import gtna.id.DIdentifierSpace;
+import gtna.id.DoubleIdentifierSpace;
 import gtna.id.Identifier;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
@@ -46,7 +46,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class NodeIdentifierSpace extends DIdentifierSpace {
+public class NodeIdentifierSpace extends DoubleIdentifierSpace {
 
 	/**
 	 * @param partitions

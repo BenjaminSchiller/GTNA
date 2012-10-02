@@ -35,14 +35,14 @@
  */
 package gtna.id.plane;
 
-import gtna.id.DIdentifier;
+import gtna.id.DoubleIdentifier;
 import gtna.id.Identifier;
 
 /**
  * @author benni
  * 
  */
-public class PlaneIdentifier extends DIdentifier {
+public class PlaneIdentifier extends DoubleIdentifier {
 
 	protected double x;
 
@@ -73,7 +73,7 @@ public class PlaneIdentifier extends DIdentifier {
 	}
 
 	@Override
-	public int compareTo(DIdentifier arg0) {
+	public int compareTo(DoubleIdentifier arg0) {
 		if (this.x < ((PlaneIdentifier) arg0).x) {
 			return -1;
 		} else if (this.x > ((PlaneIdentifier) arg0).x) {
@@ -88,7 +88,7 @@ public class PlaneIdentifier extends DIdentifier {
 	}
 
 	@Override
-	public double distance(DIdentifier id) {
+	public double distance(DoubleIdentifier id) {
 		PlaneIdentifier to = (PlaneIdentifier) id;
 		if (this.wrapAround) {
 			double dx = Math.min(

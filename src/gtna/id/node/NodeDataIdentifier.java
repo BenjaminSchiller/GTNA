@@ -35,7 +35,7 @@
  */
 package gtna.id.node;
 
-import gtna.id.DIdentifier;
+import gtna.id.DoubleIdentifier;
 import gtna.id.Identifier;
 
 /**
@@ -64,7 +64,7 @@ public class NodeDataIdentifier extends NodeIdentifier {
 	}
 
 	@Override
-	public int compareTo(DIdentifier o) {
+	public int compareTo(DoubleIdentifier o) {
 		int ct = super.compareTo(o);
 		if (ct != 0) {
 			return ct;
@@ -80,7 +80,7 @@ public class NodeDataIdentifier extends NodeIdentifier {
 	}
 
 	@Override
-	public double distance(DIdentifier id) {
+	public double distance(DoubleIdentifier id) {
 		return 0;
 	}
 

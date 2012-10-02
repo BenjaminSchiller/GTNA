@@ -35,8 +35,8 @@
  */
 package gtna.id.md;
 
-import gtna.id.DIdentifier;
-import gtna.id.DPartition;
+import gtna.id.DoubleIdentifier;
+import gtna.id.DoublePartition;
 import gtna.id.Identifier;
 import gtna.id.Partition;
 
@@ -46,7 +46,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class MDPartitionSimple extends DPartition {
+public class MDPartitionSimple extends DoublePartition {
 
 	protected MDIdentifier identifier;
 
@@ -59,12 +59,12 @@ public class MDPartitionSimple extends DPartition {
 	}
 
 	@Override
-	public double distance(DIdentifier id) {
+	public double distance(DoubleIdentifier id) {
 		return this.identifier.distance(id);
 	}
 
 	@Override
-	public double distance(DPartition p) {
+	public double distance(DoublePartition p) {
 		return this.identifier.distance(identifier);
 	}
 

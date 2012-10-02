@@ -35,8 +35,8 @@
  */
 package gtna.id.ring;
 
-import gtna.id.DIdentifier;
-import gtna.id.DPartition;
+import gtna.id.DoubleIdentifier;
+import gtna.id.DoublePartition;
 import gtna.id.Identifier;
 import gtna.id.Partition;
 
@@ -50,7 +50,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class RingPartition extends DPartition {
+public class RingPartition extends DoublePartition {
 	protected RingIdentifier start;
 
 	protected RingIdentifier end;
@@ -73,7 +73,7 @@ public class RingPartition extends DPartition {
 	}
 
 	@Override
-	public double distance(DIdentifier id) {
+	public double distance(DoubleIdentifier id) {
 		if (this.contains(id)) {
 			return 0;
 		}
@@ -81,8 +81,8 @@ public class RingPartition extends DPartition {
 	}
 
 	@Override
-	public double distance(DPartition p) {
-		return this.distance((DIdentifier) p.getRepresentativeIdentifier());
+	public double distance(DoublePartition p) {
+		return this.distance((DoubleIdentifier) p.getRepresentativeIdentifier());
 	}
 
 	@Override

@@ -35,7 +35,7 @@
  */
 package gtna.id.plane;
 
-import gtna.id.DIdentifierSpace;
+import gtna.id.DoubleIdentifierSpace;
 import gtna.id.Identifier;
 import gtna.id.Partition;
 import gtna.io.Filereader;
@@ -47,7 +47,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class PlaneIdentifierSpaceSimple extends DIdentifierSpace {
+public class PlaneIdentifierSpaceSimple extends DoubleIdentifierSpace {
 
 	protected double xModulus;
 

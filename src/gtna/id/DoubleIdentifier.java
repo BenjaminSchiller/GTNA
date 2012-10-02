@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * DPartition.java
+ * DIdentifier.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -39,23 +39,24 @@ package gtna.id;
  * @author benni
  * 
  */
-public abstract class DPartition extends Partition {
+public abstract class DoubleIdentifier extends Identifier implements
+		Comparable<DoubleIdentifier> {
 	/**
 	 * @param id
-	 * @return distance from this partition to the identifier $id
+	 * @return distance from this identifier to the identifier $id
 	 */
-	public abstract double distance(DIdentifier id);
-
-	/**
-	 * @param id
-	 * @return distance from this partition to the partition $p
-	 */
-	public abstract double distance(DPartition p);
+	public abstract double distance(DoubleIdentifier id);
 
 	@Override
 	public boolean isCloser(Identifier to, Identifier than) {
-		return this.distance((DIdentifier) to) < this
-				.distance((DIdentifier) than);
+		return this.distance((DoubleIdentifier) to) < this
+				.distance((DoubleIdentifier) than);
+	}
+
+	@Override
+	public boolean isCloser(Partition to, Partition than) {
+		return ((DoublePartition) to).distance(this) < ((DoublePartition) than)
+				.distance(this);
 	}
 
 	@Override
@@ -64,10 +65,10 @@ public abstract class DPartition extends Partition {
 			return -1;
 		}
 		int closest = nodes[0];
-		double distance = ((DPartition) partitions[closest]).distance(this);
+		double distance = ((DoublePartition) partitions[closest]).distance(this);
 
 		for (int i = 1; i < nodes.length; i++) {
-			double d = ((DPartition) partitions[nodes[i]]).distance(this);
+			double d = ((DoublePartition) partitions[nodes[i]]).distance(this);
 			if (d < distance) {
 				closest = nodes[i];
 				distance = d;

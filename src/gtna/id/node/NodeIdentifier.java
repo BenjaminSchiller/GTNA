@@ -35,14 +35,14 @@
  */
 package gtna.id.node;
 
-import gtna.id.DIdentifier;
+import gtna.id.DoubleIdentifier;
 import gtna.id.Identifier;
 
 /**
  * @author benni
  * 
  */
-public class NodeIdentifier extends DIdentifier {
+public class NodeIdentifier extends DoubleIdentifier {
 
 	protected int node;
 
@@ -60,7 +60,7 @@ public class NodeIdentifier extends DIdentifier {
 	}
 
 	@Override
-	public int compareTo(DIdentifier arg0) {
+	public int compareTo(DoubleIdentifier arg0) {
 		NodeIdentifier id = (NodeIdentifier) arg0;
 		if (this.node < id.node) {
 			return -1;
@@ -72,7 +72,7 @@ public class NodeIdentifier extends DIdentifier {
 	}
 
 	@Override
-	public double distance(DIdentifier id) {
+	public double distance(DoubleIdentifier id) {
 		return 0;
 	}
 
