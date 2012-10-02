@@ -39,10 +39,10 @@ package gtna.id;
  * @author benni
  *
  */
-public abstract class IIdentifier extends Identifier {
+public abstract class IntegerIdentifier extends Identifier {
 	/**
 	 * @param id
 	 * @return distance from this identifier to the identifier $id
 	 */
-	public abstract int distance(IIdentifier id);
+	public abstract int distance(IntegerIdentifier id);
 }

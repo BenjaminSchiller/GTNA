@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * IIdentifierSpace.java
+ * IPartition.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -39,16 +39,17 @@ package gtna.id;
  * @author benni
  * 
  */
-public abstract class IIdentifierSpace extends IdentifierSpace {
-
-	protected IIdentifierSpace(Partition[] partitions) {
-		super(partitions);
-	}
+public abstract class IntegerPartition extends Partition implements
+		Comparable<IntegerPartition> {
+	/**
+	 * @param id
+	 * @return distance from this partition to the identifier $id
+	 */
+	public abstract int distance(IntegerIdentifier id);
 
 	/**
-	 * @return maximum distance between any two identifier in this identifier
-	 *         space
+	 * @param id
+	 * @return distance from this partition to the partition $id
 	 */
-	public abstract int getMaxDistance();
-
+	public abstract int distance(IntegerPartition p);
 }
