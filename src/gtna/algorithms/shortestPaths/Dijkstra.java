@@ -44,33 +44,12 @@ import java.util.Set;
 /**
  * @author benni
  * 
+ * http://en.wikipedia.org/wiki/Dijkstra's_algorithm#Pseudocode
  */
-public class Dijkstra {
-	/**
-	 * 
-	 * @param graph
-	 * @return {int[][] dist, int[][] previous, int[][] nextHop} for all nodes
-	 *         in $graph
-	 */
-	public static int[][][] getShortestPaths(Graph graph) {
-		int[][][] sp = new int[3][graph.getNodeCount()][];
-		for (int i = 0; i < sp.length; i++) {
-			int[][] temp = Dijkstra.getShortestPaths(graph, i);
-			sp[0][i] = temp[0];
-			sp[1][i] = temp[1];
-			sp[2][i] = temp[2];
-		}
-		return sp;
-	}
+public class Dijkstra extends ShortestPathsAlgorithm {
 
-	/**
-	 * http://en.wikipedia.org/wiki/Dijkstra's_algorithm#Pseudocode
-	 * 
-	 * @param graph
-	 * @param start
-	 * @return {int[] dist, int[] previous, int[] nextHop} for node $start
-	 */
-	public static int[][] getShortestPaths(Graph graph, int start) {
+	@Override
+	public int[][] getShortestPaths(Graph graph, int start) {
 		int[] dist = new int[graph.getNodeCount()];
 		int[] previous = new int[graph.getNodeCount()];
 		int[] nextHop = new int[graph.getNodeCount()];

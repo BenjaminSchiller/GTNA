@@ -35,7 +35,9 @@
  */
 package gtna.transformation.id.node;
 
+import gtna.algorithms.shortestPaths.BreadthFirstSearch;
 import gtna.algorithms.shortestPaths.Dijkstra;
+import gtna.algorithms.shortestPaths.ShortestPathsAlgorithm;
 import gtna.graph.Graph;
 import gtna.id.data.DataStore;
 import gtna.id.node.NodeIdentifierSpace;
@@ -73,8 +75,9 @@ public class NodeIdentifierSpaceRoutingTable extends Transformation {
 		g.addProperty(g.getNextKey("ID_SPACE"), ids);
 
 		RoutingTable[] tables = new RoutingTable[g.getNodeCount()];
+		ShortestPathsAlgorithm spa = new Dijkstra();
 		for (int i = 0; i < tables.length; i++) {
-			int[][] temp = Dijkstra.getShortestPaths(g, i);
+			int[][] temp = spa.getShortestPaths(g, i);
 			tables[i] = new NodeRoutingTable(i, temp[2]);
 		}
 		RoutingTables rt = new RoutingTables(tables);
