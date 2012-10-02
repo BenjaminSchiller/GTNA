@@ -37,8 +37,8 @@ package gtna.transformation.lookahead;
 
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
-import gtna.id.BiIdentifier;
-import gtna.id.BiIdentifierSpace;
+import gtna.id.BigIntegerIdentifier;
+import gtna.id.BigIntegerIdentifierSpace;
 import gtna.id.DoubleIdentifier;
 import gtna.id.DoubleIdentifierSpace;
 import gtna.id.Partition;
@@ -237,8 +237,8 @@ public abstract class ObfuscatedLookaheadList extends Transformation {
 						&& !(id instanceof PlaneIdentifier)) {
 					return false;
 				}
-			} else if (p instanceof BiIdentifierSpace) {
-				BiIdentifier id = (BiIdentifier) ((BiIdentifierSpace) p)
+			} else if (p instanceof BigIntegerIdentifierSpace) {
+				BigIntegerIdentifier id = (BigIntegerIdentifier) ((BigIntegerIdentifierSpace) p)
 						.getRandomIdentifier(rand);
 				if (!(id instanceof ChordIdentifier)) {
 					return false;

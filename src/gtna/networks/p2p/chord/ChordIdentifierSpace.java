@@ -35,7 +35,7 @@
  */
 package gtna.networks.p2p.chord;
 
-import gtna.id.BiIdentifierSpace;
+import gtna.id.BigIntegerIdentifierSpace;
 import gtna.id.Identifier;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
@@ -47,7 +47,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class ChordIdentifierSpace extends BiIdentifierSpace {
+public class ChordIdentifierSpace extends BigIntegerIdentifierSpace {
 
 	protected int bits;
 

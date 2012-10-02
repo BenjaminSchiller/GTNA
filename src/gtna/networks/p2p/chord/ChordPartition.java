@@ -35,8 +35,8 @@
  */
 package gtna.networks.p2p.chord;
 
-import gtna.id.BiIdentifier;
-import gtna.id.BiPartition;
+import gtna.id.BigIntegerIdentifier;
+import gtna.id.BigIntegerPartition;
 import gtna.id.Identifier;
 import gtna.id.Partition;
 
@@ -47,7 +47,7 @@ import java.util.Random;
  * @author benni
  * 
  */
-public class ChordPartition extends BiPartition {
+public class ChordPartition extends BigIntegerPartition {
 
 	protected ChordIdentifier start;
 
@@ -71,7 +71,7 @@ public class ChordPartition extends BiPartition {
 	}
 
 	@Override
-	public BigInteger distance(BiIdentifier id) {
+	public BigInteger distance(BigIntegerIdentifier id) {
 		if (this.contains(id))
 			return BigInteger.ZERO;
 
@@ -79,7 +79,7 @@ public class ChordPartition extends BiPartition {
 	}
 
 	@Override
-	public BigInteger distance(BiPartition p) {
+	public BigInteger distance(BigIntegerPartition p) {
 		return this.end.distance(((ChordPartition) p).getEnd());
 	}
 

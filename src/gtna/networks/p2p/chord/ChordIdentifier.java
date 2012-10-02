@@ -35,7 +35,7 @@
  */
 package gtna.networks.p2p.chord;
 
-import gtna.id.BiIdentifier;
+import gtna.id.BigIntegerIdentifier;
 import gtna.id.Identifier;
 
 import java.math.BigInteger;
@@ -44,7 +44,7 @@ import java.math.BigInteger;
  * @author benni
  * 
  */
-public class ChordIdentifier extends BiIdentifier {
+public class ChordIdentifier extends BigIntegerIdentifier {
 
 	protected BigInteger position;
 
@@ -70,12 +70,12 @@ public class ChordIdentifier extends BiIdentifier {
 	}
 
 	@Override
-	public int compareTo(BiIdentifier o) {
+	public int compareTo(BigIntegerIdentifier o) {
 		return this.position.compareTo(((ChordIdentifier) o).getPosition());
 	}
 
 	@Override
-	public BigInteger distance(BiIdentifier id) {
+	public BigInteger distance(BigIntegerIdentifier id) {
 		BigInteger pos = ((ChordIdentifier) id).getPosition();
 
 		if (this.position.compareTo(pos) == -1)

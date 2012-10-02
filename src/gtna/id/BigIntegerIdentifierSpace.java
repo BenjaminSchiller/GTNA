@@ -41,9 +41,9 @@ import java.math.BigInteger;
  * @author benni
  * 
  */
-public abstract class BiIdentifierSpace extends IdentifierSpace {
+public abstract class BigIntegerIdentifierSpace extends IdentifierSpace {
 
-	protected BiIdentifierSpace(Partition[] partitions) {
+	protected BigIntegerIdentifierSpace(Partition[] partitions) {
 		super(partitions);
 	}
 

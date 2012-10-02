@@ -41,23 +41,23 @@ import java.math.BigInteger;
  * @author benni
  * 
  */
-public abstract class BiPartition extends Partition {
+public abstract class BigIntegerPartition extends Partition {
 	/**
 	 * @param id
 	 * @return distance from this partition to the identifier $id
 	 */
-	public abstract BigInteger distance(BiIdentifier id);
+	public abstract BigInteger distance(BigIntegerIdentifier id);
 
 	/**
 	 * @param id
 	 * @return distance from this partition to the partition $p
 	 */
-	public abstract BigInteger distance(BiPartition p);
+	public abstract BigInteger distance(BigIntegerPartition p);
 
 	@Override
 	public boolean isCloser(Identifier to, Identifier than) {
-		return this.distance((BiIdentifier) to).compareTo(
-				this.distance((BiIdentifier) than)) <= 0;
+		return this.distance((BigIntegerIdentifier) to).compareTo(
+				this.distance((BigIntegerIdentifier) than)) <= 0;
 	}
 
 	@Override
@@ -66,11 +66,11 @@ public abstract class BiPartition extends Partition {
 			return -1;
 		}
 		int closest = nodes[0];
-		BigInteger distance = ((BiPartition) partitions[closest])
+		BigInteger distance = ((BigIntegerPartition) partitions[closest])
 				.distance(this);
 
 		for (int i = 1; i < nodes.length; i++) {
-			BigInteger d = ((BiPartition) partitions[nodes[i]]).distance(this);
+			BigInteger d = ((BigIntegerPartition) partitions[nodes[i]]).distance(this);
 			if (d.compareTo(distance) < 0) {
 				closest = nodes[i];
 				distance = d;

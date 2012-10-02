@@ -41,24 +41,24 @@ import java.math.BigInteger;
  * @author benni
  * 
  */
-public abstract class BiIdentifier extends Identifier implements
-		Comparable<BiIdentifier> {
+public abstract class BigIntegerIdentifier extends Identifier implements
+		Comparable<BigIntegerIdentifier> {
 	/**
 	 * @param id
 	 * @return distance from this identifier to the identifier $id
 	 */
-	public abstract BigInteger distance(BiIdentifier id);
+	public abstract BigInteger distance(BigIntegerIdentifier id);
 
 	@Override
 	public boolean isCloser(Identifier to, Identifier than) {
-		return this.distance((BiIdentifier) to).compareTo(
-				this.distance((BiIdentifier) than)) <= 0;
+		return this.distance((BigIntegerIdentifier) to).compareTo(
+				this.distance((BigIntegerIdentifier) than)) <= 0;
 	}
 
 	@Override
 	public boolean isCloser(Partition to, Partition than) {
-		return ((BiPartition) to).distance(this).compareTo(
-				((BiPartition) than).distance(this)) <= 0;
+		return ((BigIntegerPartition) to).distance(this).compareTo(
+				((BigIntegerPartition) than).distance(this)) <= 0;
 	}
 
 	@Override
@@ -67,11 +67,11 @@ public abstract class BiIdentifier extends Identifier implements
 			return -1;
 		}
 		int closest = nodes[0];
-		BigInteger distance = ((BiPartition) partitions[closest])
+		BigInteger distance = ((BigIntegerPartition) partitions[closest])
 				.distance(this);
 
 		for (int i = 1; i < nodes.length; i++) {
-			BigInteger d = ((BiPartition) partitions[nodes[i]]).distance(this);
+			BigInteger d = ((BigIntegerPartition) partitions[nodes[i]]).distance(this);
 			if (d.compareTo(distance) < 0) {
 				closest = nodes[i];
 				distance = d;
