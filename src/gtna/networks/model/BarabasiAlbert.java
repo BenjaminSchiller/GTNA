@@ -64,6 +64,24 @@ public class BarabasiAlbert extends Network {
 
 	private int EDGES_PER_NODE = 3;
 
+	public static BarabasiAlbert[] get(int nodes, int[] edgesPerNode,
+			Transformation[] t) {
+		BarabasiAlbert[] nw = new BarabasiAlbert[edgesPerNode.length];
+		for (int i = 0; i < edgesPerNode.length; i++) {
+			nw[i] = new BarabasiAlbert(nodes, edgesPerNode[i], t);
+		}
+		return nw;
+	}
+
+	public static BarabasiAlbert[] get(int[] nodes, int edgesPerNode,
+			Transformation[] t) {
+		BarabasiAlbert[] nw = new BarabasiAlbert[nodes.length];
+		for (int i = 0; i < nodes.length; i++) {
+			nw[i] = new BarabasiAlbert(nodes[i], edgesPerNode, t);
+		}
+		return nw;
+	}
+
 	public BarabasiAlbert(int nodes, int EDGES_PER_NODE, Transformation[] t) {
 		super("BARABASI_ALBERT", nodes, new Parameter[] { new IntParameter(
 				"EDGES_PER_NODE", EDGES_PER_NODE) }, t);
