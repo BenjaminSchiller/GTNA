@@ -44,7 +44,6 @@ import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Config;
-import gtna.util.Timer;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
@@ -102,11 +101,8 @@ public abstract class Fragmentation extends Metric {
 
 	private int[] cpts;
 
-	private Timer runtime;
-
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		this.runtime = new Timer();
 		int[] excludeFirst = this.getExcludeFirst(g.getNodes().length);
 		this.isolatedComponentSizeAvg = new double[excludeFirst.length];
 		this.isolatedComponentSizeMax = new double[excludeFirst.length];
@@ -166,7 +162,6 @@ public abstract class Fragmentation extends Metric {
 				}
 			}
 		}
-		this.runtime.end();
 	}
 
 	private int[] getCriticalPointThreshold() {
@@ -269,13 +264,11 @@ public abstract class Fragmentation extends Metric {
 
 	@Override
 	public Single[] getSingles() {
-		Single[] singles = new Single[this.cpts.length + 2];
+		Single[] singles = new Single[this.cpts.length + 1];
 		singles[0] = new Single("FRAGMENTATION_CRITICAL_POINT",
 				this.criticalPoint);
-		singles[1] = new Single("FRAGMENTATION_RUNTIME",
-				this.runtime.getRuntime());
 		for (int i = 0; i < this.cpts.length; i++) {
-			singles[i + 2] = new Single("FRAGMENTATION_CRITICAL_POINT_"
+			singles[i + 1] = new Single("FRAGMENTATION_CRITICAL_POINT_"
 					+ this.cpts[i], this.criticalPoints[i]);
 		}
 		return singles;

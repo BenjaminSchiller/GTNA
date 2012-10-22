@@ -42,15 +42,12 @@ import gtna.graph.sorting.NodeSorting;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
-import gtna.util.Timer;
 
 import java.util.HashMap;
 import java.util.Random;
 
 public class RichClubConnectivity extends Metric {
 	private double[] rcc;
-
-	private Timer timer;
 
 	public RichClubConnectivity() {
 		super("RICH_CLUB_CONNECTIVITY");
@@ -62,7 +59,6 @@ public class RichClubConnectivity extends Metric {
 	}
 
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		this.timer = new Timer();
 		int[] order = NodeSorting.byDegreeDesc(g.getNodes(), new Random());
 		Edges edges = g.getEdges();
 		int edgeCount = 0;
@@ -80,13 +76,10 @@ public class RichClubConnectivity extends Metric {
 			}
 			this.rcc[p] = (double) edgeCount / (double) (p * (p - 1));
 		}
-		timer.end();
 	}
 
 	public Single[] getSingles() {
-		Single runtime = new Single("RICH_CLUB_CONNECTIVITY_RUNTIME",
-				this.timer.getRuntime());
-		return new Single[] { runtime };
+		return new Single[0];
 	}
 
 	public boolean writeData(String folder) {

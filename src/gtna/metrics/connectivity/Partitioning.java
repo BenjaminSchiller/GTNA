@@ -41,7 +41,6 @@ import gtna.graph.partition.Partition;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
-import gtna.util.Timer;
 
 import java.util.HashMap;
 
@@ -58,8 +57,6 @@ public abstract class Partitioning extends Metric {
 
 	private double[] componentsFraction;
 
-	private Timer runtime;
-
 	public Partitioning(String key) {
 		super(key);
 	}
@@ -71,7 +68,6 @@ public abstract class Partitioning extends Metric {
 
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		this.runtime = new Timer();
 		Partition p = this.getPartition(g);
 		this.largestComponent = p.getComponents()[0].length;
 		this.largestComponentFraction = this.largestComponent
@@ -83,7 +79,6 @@ public abstract class Partitioning extends Metric {
 			this.componentsFraction[i] = this.components[i]
 					/ (double) g.getNodes().length;
 		}
-		this.runtime.end();
 	}
 
 	@Override
@@ -102,10 +97,7 @@ public abstract class Partitioning extends Metric {
 				+ "_LARGEST_COMPONENT", this.largestComponent);
 		Single largestComponentFraction = new Single(this.getKey()
 				+ "_LARGEST_COMPONENT_FRACTION", this.largestComponentFraction);
-		Single runtime = new Single(this.getKey() + "_RUNTIME",
-				this.runtime.getRuntime());
-		return new Single[] { largestComponent, largestComponentFraction,
-				runtime };
+		return new Single[] { largestComponent, largestComponentFraction };
 	}
 
 	protected abstract Partition getPartition(Graph g);

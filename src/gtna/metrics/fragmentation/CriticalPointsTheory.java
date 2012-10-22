@@ -67,7 +67,6 @@ public class CriticalPointsTheory extends Metric {
 
 	private double p;
 	private double deg;
-	private Timer runtime;
 	private Selection selection;
 
 	public CriticalPointsTheory(boolean directed, Selection selection) {
@@ -86,7 +85,6 @@ public class CriticalPointsTheory extends Metric {
 	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		this.runtime = new Timer();
 		Node[] nodes = g.getNodes();
 		if (this.dir) {
 			int maxOut = 0;
@@ -170,7 +168,6 @@ public class CriticalPointsTheory extends Metric {
 			this.p = res[0];
 			this.deg = res[1];
 		}
-		this.runtime.end();
 	}
 
 	/*
@@ -192,9 +189,7 @@ public class CriticalPointsTheory extends Metric {
 	public Single[] getSingles() {
 		Single pR = new Single("CRITICAL_POINTS_CP", this.p);
 		Single degR = new Single("CRITICAL_POINTS_DEG", this.deg);
-		Single runtime = new Single("CRITICAL_POINTS_RUNTIME",
-				this.runtime.getRuntime());
-		return new Single[] { pR, degR, runtime };
+		return new Single[] { pR, degR };
 	}
 
 	/*

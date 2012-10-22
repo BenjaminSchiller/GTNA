@@ -73,7 +73,6 @@ public class UndirectedMotifs4 extends MotifCounter {
 	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		runtime = new Timer();
 		this.counts = new double[6];
 		Node[] nodes = g.getNodes();
 		int[] neighbors, neighbors2;
@@ -233,7 +232,6 @@ public class UndirectedMotifs4 extends MotifCounter {
 				}
 			}
 		}
-		runtime.end();
 	}
 
 }

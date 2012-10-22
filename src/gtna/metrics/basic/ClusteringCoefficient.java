@@ -46,7 +46,6 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
-import gtna.util.Timer;
 import gtna.util.Util;
 
 import java.util.HashMap;
@@ -61,8 +60,6 @@ public class ClusteringCoefficient extends Metric {
 
 	private double transitivity;
 
-	private Timer runtime;
-
 	public ClusteringCoefficient() {
 		super("CLUSTERING_COEFFICIENT");
 	}
@@ -75,14 +72,12 @@ public class ClusteringCoefficient extends Metric {
 	@Override
 	public void computeData(Graph graph, Network nw,
 			HashMap<String, Metric> metrics) {
-		this.runtime = new Timer();
 		Edges edges = new Edges(graph.getNodes(), graph.generateEdges());
 		this.localClusteringCoefficient = this
 				.computeLocalClusteringCoefficient(graph.getNodes(), edges);
 		this.clusteringCoefficient = this
 				.computeClusteringCoefficient(this.localClusteringCoefficient);
 		this.transitivity = this.computeTransitivity(graph);
-		this.runtime.end();
 	}
 
 	private double[] computeLocalClusteringCoefficient(Node[] nodes, Edges edges) {
@@ -152,8 +147,6 @@ public class ClusteringCoefficient extends Metric {
 				this.clusteringCoefficient);
 		Single transitivity = new Single("CLUSTERING_COEFFICIENT_TRANSITIVITY",
 				this.transitivity);
-		Single runtime = new Single("CLUSTERING_COEFFICIENT_RUNTIME",
-				this.runtime.getRuntime());
-		return new Single[] { clusteringCoefficient, transitivity, runtime };
+		return new Single[] { clusteringCoefficient, transitivity };
 	}
 }

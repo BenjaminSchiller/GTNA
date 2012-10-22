@@ -54,7 +54,6 @@ import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Distribution;
-import gtna.util.Timer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +67,6 @@ import java.util.TreeSet;
  * 
  */
 public class EdgeCrossings extends Metric {
-	private Timer runtime;
 	private double[] cd;
 	private int maxCrossingNumber;
 	private HashSet<String> handledEdges;
@@ -86,8 +84,6 @@ public class EdgeCrossings extends Metric {
 	}
 
 	public void computeData(Graph graph, Network nw, HashMap<String, Metric> m) {
-		this.runtime = new Timer();
-
 		Edge[] edges = graph.generateEdges();
 
 		DoubleIdentifierSpace idSpace = (DoubleIdentifierSpace) graph
@@ -101,8 +97,6 @@ public class EdgeCrossings extends Metric {
 		this.completeCrossingDistribution = new Distribution(finalCD);
 		this.crossingsOnlyDistribution = new Distribution(Arrays.copyOfRange(
 				finalCD, 1, finalCD.length));
-
-		this.runtime.end();
 	}
 
 	public int calculateCrossings(Edge[] edges, IdentifierSpace idSpace,
@@ -110,7 +104,6 @@ public class EdgeCrossings extends Metric {
 		int result = 0;
 		cd = new double[edges.length];
 		maxCrossingNumber = 0;
-		this.runtime = new Timer();
 		partitions = idSpace.getPartitions();
 
 		if (useShortcuts && idSpace instanceof RingIdentifierSpace) {
@@ -135,10 +128,6 @@ public class EdgeCrossings extends Metric {
 			}
 			handledEdges = null;
 		}
-		this.runtime.end();
-		// System.out.println("Computed " + result + " crossings with " +
-		// edges.length + " edges in " + runtime.getMsec()
-		// + " msec");
 		return result;
 	}
 

@@ -42,7 +42,6 @@ import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Distribution;
-import gtna.util.Timer;
 import gtna.util.Util;
 
 import java.util.HashMap;
@@ -63,8 +62,6 @@ public class ShortestPaths extends Metric {
 
 	private double connectivity;
 
-	private Timer runtime;
-
 	public ShortestPaths() {
 		super("SHORTEST_PATHS");
 	}
@@ -77,7 +74,6 @@ public class ShortestPaths extends Metric {
 	@Override
 	public void computeData(Graph graph, Network nw,
 			HashMap<String, Metric> metrics) {
-		this.runtime = new Timer();
 		this.localCharacteristicPathLength = new double[graph.getNodes().length];
 		long[] SPL = this.computeShortestPathLengths(graph.getNodes());
 		this.shortestPathLengthDistribution = new Distribution(
@@ -87,7 +83,6 @@ public class ShortestPaths extends Metric {
 		this.connectivity = (double) Util.sum(SPL)
 				/ (double) ((double) graph.getNodes().length * (double) (graph
 						.getNodes().length - 1));
-		this.runtime.end();
 	}
 
 	private double[] computeShortestPathLengthDistribution(long[] SPL) {
@@ -189,11 +184,9 @@ public class ShortestPaths extends Metric {
 				this.shortestPathLengthDistribution.getMax());
 		Single connectivity = new Single("SHORTEST_PATHS_CONNECTIVITY",
 				this.connectivity);
-		Single runtime = new Single("SHORTEST_PATHS_RUNTIME",
-				this.runtime.getRuntime());
 		return new Single[] { averageShortestPathLength,
 				medianShortestPathLength, maximumShortestPathLength,
-				connectivity, runtime };
+				connectivity };
 	}
 
 	/**
@@ -223,12 +216,4 @@ public class ShortestPaths extends Metric {
 	public double getConnectivity() {
 		return this.connectivity;
 	}
-
-	/**
-	 * @return the runtime
-	 */
-	public Timer getRuntime() {
-		return this.runtime;
-	}
-
 }

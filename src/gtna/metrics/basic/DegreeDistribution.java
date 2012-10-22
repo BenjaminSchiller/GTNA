@@ -42,7 +42,6 @@ import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Distribution;
-import gtna.util.Timer;
 
 import java.util.HashMap;
 
@@ -57,8 +56,6 @@ public class DegreeDistribution extends Metric {
 
 	private int edges;
 
-	private Timer runtime;
-
 	public DegreeDistribution() {
 		super("DEGREE_DISTRIBUTION");
 	}
@@ -69,8 +66,6 @@ public class DegreeDistribution extends Metric {
 	}
 
 	public void computeData(Graph graph, Network nw, HashMap<String, Metric> m) {
-		this.runtime = new Timer();
-
 		double[] dd = new double[this.maxDegree(graph) + 1];
 		double[] ddi = new double[this.maxInDegree(graph) + 1];
 		double[] ddo = new double[this.maxOutDegree(graph) + 1];
@@ -96,8 +91,6 @@ public class DegreeDistribution extends Metric {
 
 		this.nodes = graph.getNodes().length;
 		this.edges = graph.generateEdges().length;
-
-		this.runtime.end();
 	}
 
 	private int maxDegree(Graph graph) {
@@ -155,12 +148,9 @@ public class DegreeDistribution extends Metric {
 		Single outDegreeMax = new Single("DEGREE_DISTRIBUTION_OUT_DEGREE_MAX",
 				this.outDegreeDistribution.getMax());
 
-		Single runtime = new Single("DEGREE_DISTRIBUTION_RUNTIME",
-				this.runtime.getRuntime());
-
 		return new Single[] { nodes, edges, degreeMin, degreeMed, degreeAvg,
 				degreeMax, inDegreeMin, inDegreeMed, inDegreeAvg, inDegreeMax,
-				outDegreeMin, outDegreeMed, outDegreeAvg, outDegreeMax, runtime };
+				outDegreeMin, outDegreeMed, outDegreeAvg, outDegreeMax };
 	}
 
 	public boolean writeData(String folder) {
@@ -218,12 +208,5 @@ public class DegreeDistribution extends Metric {
 	 */
 	public int getEdges() {
 		return this.edges;
-	}
-
-	/**
-	 * @return the timer
-	 */
-	public Timer getRuntime() {
-		return this.runtime;
 	}
 }

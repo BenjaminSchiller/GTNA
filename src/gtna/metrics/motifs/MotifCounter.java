@@ -38,7 +38,6 @@ package gtna.metrics.motifs;
 import gtna.data.Single;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
-import gtna.util.Timer;
 
 /**
  * abstract class for counting motifs in a graph
@@ -48,7 +47,6 @@ import gtna.util.Timer;
  */
 public abstract class MotifCounter extends Metric {
 	protected double[] counts;
-	protected Timer runtime;
 
 	/**
 	 * @param key
@@ -78,8 +76,7 @@ public abstract class MotifCounter extends Metric {
 
 	@Override
 	public Single[] getSingles() {
-		return new Single[] { new Single(this.getKey() + "_RUNTIME",
-				this.runtime.getRuntime()) };
+		return new Single[0];
 	}
 
 }
