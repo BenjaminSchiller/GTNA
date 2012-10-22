@@ -5,6 +5,7 @@
 /resources
 /bin
 /src/gtna/projects/Test.java
+/src/gtna/projects/test/
 
 # deploy
 /deploy*
