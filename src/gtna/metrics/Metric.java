@@ -114,6 +114,10 @@ public abstract class Metric extends ParameterList {
 	 * @return single scalar values
 	 */
 	public abstract Single[] getSingles();
+	
+	public String getRuntimeSingleName(){
+		return this.getFolderName() + "_RUNTIME";
+	}
 
 	public abstract boolean applicable(Graph g, Network n,
 			HashMap<String, Metric> m);

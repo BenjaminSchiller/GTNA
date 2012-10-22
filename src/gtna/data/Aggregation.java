@@ -65,7 +65,8 @@ public class Aggregation {
 				return false;
 			}
 		}
-		return Aggregation.aggregateRuntimes(s, z, runs);
+		return Aggregation.aggregateRuntimes(s, z, runs)
+				&& Aggregation.aggregateEtc(s, z, runs);
 	}
 
 	private static boolean aggregate(Series s, Metric m, double z, int runs) {
@@ -91,15 +92,21 @@ public class Aggregation {
 		return true;
 	}
 
+	private static boolean aggregateFrom(String[] from, String to, double z,
+			int runs) {
+		SingleList first = SingleList.read(null, from[0]);
+		String[] keys = first.getKeys();
+		return Aggregation.aggregateSingle(from, to, keys, z);
+	}
+
 	private static boolean aggregateSingle(Series s, Metric m, double z,
 			int runs) {
 		String[] from = new String[runs];
 		for (int run = 0; run < runs; run++) {
 			from[run] = s.getSinglesFilenameRun(run, m);
 		}
-		String to = s.getSinglesFilename(m);
-		String[] keys = m.getSingleKeys();
-		return Aggregation.aggregateSingle(from, to, keys, z);
+		return Aggregation
+				.aggregateFrom(from, s.getSinglesFilename(m), z, runs);
 	}
 
 	private static boolean aggregateRuntimes(Series s, double z, int runs) {
@@ -107,10 +114,16 @@ public class Aggregation {
 		for (int run = 0; run < runs; run++) {
 			from[run] = s.getRuntimesFilenameRun(run);
 		}
-		String to = s.getRuntimesFilename();
-		SingleList first = SingleList.read(null, s.getRuntimesFilenameRun(0));
-		String[] keys = first.getKeys();
-		return Aggregation.aggregateSingle(from, to, keys, z);
+		return Aggregation
+				.aggregateFrom(from, s.getRuntimesFilename(), z, runs);
+	}
+
+	private static boolean aggregateEtc(Series s, double z, int runs) {
+		String[] from = new String[runs];
+		for (int run = 0; run < runs; run++) {
+			from[run] = s.getEtcFilename(run);
+		}
+		return Aggregation.aggregateFrom(from, s.getEtcFilename(), z, runs);
 	}
 
 	private static boolean aggregateSingle(String[] from, String to,

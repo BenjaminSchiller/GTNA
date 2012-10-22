@@ -112,4 +112,8 @@ public abstract class Transformation extends ParameterList {
 	 *         otherwise
 	 */
 	public abstract boolean applicable(Graph g);
+	
+	public String getRuntimeSingleName(){
+		return this.getFolderName() + "_RUNTIME";
+	}
 }

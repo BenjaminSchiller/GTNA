@@ -45,7 +45,7 @@ import gtna.plot.data.Data.Type;
 import gtna.util.ArrayUtils;
 import gtna.util.Config;
 import gtna.util.Timer;
-import gtna.util.parameter.DateTimeParameter;
+import gtna.util.parameter.DateParameter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
@@ -109,9 +109,8 @@ public class Plotting {
 					x[i][j] = ((IntParameter) p).getIntValue();
 				} else if (p instanceof DoubleParameter) {
 					x[i][j] = ((DoubleParameter) p).getDoubleValue();
-				} else if (p instanceof DateTimeParameter) {
-					x[i][j] = ((DateTimeParameter) p).getDateTimeValue()
-							.getMillis() / 1000;
+				} else if (p instanceof DateParameter) {
+					x[i][j] = ((DateParameter) p).getDateValue().getTime() / 1000;
 					config = new String[] { "set xdata time",
 							"set timefmt \"%s\"" };
 				} else {
@@ -131,6 +130,14 @@ public class Plotting {
 		}
 		boolean success = Plotting.singleMetrics(s, metrics, folder, type,
 				style, x, xLabel.toString(), config);
+		if (Config.getBoolean("RUNTIME_PLOTS_GENERATE")) {
+			success &= Plotting.runtimes(s, metrics, folder, type, style, x,
+					xLabel.toString(), new String[0]);
+		}
+		if (Config.getBoolean("ETC_PLOTS_GENERATE")) {
+			success &= Plotting.etc(s, folder, type, style, x,
+					xLabel.toString(), new String[0]);
+		}
 		timer.end();
 		return success;
 	}
@@ -182,6 +189,14 @@ public class Plotting {
 				+ "_SINGLE_NAME");
 		boolean success = Plotting.singleMetrics(s, metrics, folder, type,
 				style, x, xLabel, new String[0]);
+		if (Config.getBoolean("RUNTIME_PLOTS_GENERATE")) {
+			success &= Plotting.runtimes(s, metrics, folder, type, style, x,
+					xLabel.toString(), new String[0]);
+		}
+		if (Config.getBoolean("ETC_PLOTS_GENERATE")) {
+			success &= Plotting.etc(s, folder, type, style, x,
+					xLabel.toString(), new String[0]);
+		}
 		timer.end();
 		return success;
 	}
@@ -270,6 +285,98 @@ public class Plotting {
 		}
 
 		return Gnuplot.plot(plot, metrics, plotKey);
+	}
+
+	private static boolean etc(Series[][] s, String folder, Type type,
+			Style style, double[][] x, String xLabel, String[] config) {
+		String[] keys = Config.keys("ETC_PLOTS");
+
+		SingleList[][] sl = new SingleList[s.length][];
+		for (int i = 0; i < s.length; i++) {
+			sl[i] = new SingleList[s[i].length];
+			for (int j = 0; j < s[i].length; j++) {
+				sl[i][j] = SingleList.read(null, s[i][j].getEtcFilename());
+			}
+		}
+
+		String pre = Config.get("MAIN_PLOT_FOLDER") + folder
+				+ Config.get("ETC_PLOTS_FOLDER");
+		(new File(pre)).mkdirs();
+
+		boolean success = true;
+		for (String key : keys) {
+			String yLabel = Config.get("ETC_PLOTS_" + key + "_Y_LABEL");
+			String title = Config.get("ETC_PLOTS_" + key + "_TITLE");
+			success &= Plotting.fromSingleList(s, sl, key, pre, type, style, x,
+					xLabel, yLabel, title, config);
+		}
+		return success;
+	}
+
+	private static boolean runtimes(Series[][] s, Metric[] metrics,
+			String folder, Type type, Style style, double[][] x, String xLabel,
+			String[] config) {
+		String[] keys = new String[metrics.length + 1];
+		for (int i = 0; i < metrics.length; i++) {
+			keys[i] = metrics[i].getRuntimeSingleName();
+		}
+		keys[keys.length - 1] = "G_RUNTIME";
+
+		SingleList[][] sl = new SingleList[s.length][];
+		for (int i = 0; i < s.length; i++) {
+			sl[i] = new SingleList[s[i].length];
+			for (int j = 0; j < s[i].length; j++) {
+				sl[i][j] = SingleList.read(null, s[i][j].getRuntimesFilename());
+			}
+		}
+
+		String pre = Config.get("MAIN_PLOT_FOLDER") + folder
+				+ Config.get("RUNTIME_PLOTS_FOLDER");
+		(new File(pre)).mkdirs();
+
+		boolean success = true;
+		for (String key : keys) {
+			success &= Plotting.fromSingleList(s, sl, key, pre, type, style, x,
+					xLabel, Config.get("RUNTIME_PLOTS_Y_LABEL"), key, config);
+		}
+		return success;
+	}
+
+	private static boolean fromSingleList(Series[][] s, SingleList[][] sl,
+			String key, String pre, Type type, Style style, double[][] x,
+			String xLabel, String yLabel, String title, String[] config) {
+		Data[] data = new Data[s.length];
+		int index = 0;
+		for (int i = 0; i < s.length; i++) {
+			double[][] d = new double[s[i].length][];
+			for (int j = 0; j < s[i].length; j++) {
+				Single single = sl[i][j].get(key);
+				d[j] = new double[single.getData().length + 1];
+				d[j][0] = x[i][j];
+				for (int k = 0; k < single.getData().length; k++) {
+					d[j][k + 1] = single.getData()[k];
+				}
+			}
+			String filename = Gnuplot.writeTempData(null, key, index, d);
+			if (filename == null) {
+				return false;
+			}
+			String t = s[i][0].getNetwork().getDiffDescriptionShort(
+					s[i][1 % s[i].length].getNetwork());
+			data[index++] = Data.get(filename, style, t, type);
+		}
+
+		String terminal = Config.get("GNUPLOT_TERMINAL");
+		String output = pre + key + Config.get("PLOT_EXTENSION");
+		Plot plot = new Plot(data, terminal, output);
+		plot.setTitle(title);
+		plot.setxLabel(xLabel);
+		plot.setyLabel(yLabel);
+		for (String cfg : config) {
+			plot.addConfig(cfg);
+		}
+
+		return Gnuplot.plot(plot, null, key);
 	}
 
 	/**
