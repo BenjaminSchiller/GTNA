@@ -50,11 +50,9 @@ import gtna.networks.model.placementmodels.models.CommunityPlacementModel;
 import gtna.networks.model.placementmodels.models.GridPlacementModel;
 import gtna.networks.model.placementmodels.partitioners.SimplePartitioner;
 import gtna.networks.util.DescriptionWrapper;
-import gtna.plot.Data.Type;
 import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
-import gtna.projects.communities.CommunityDetection;
-import gtna.projects.placement.PlacementModels;
+import gtna.plot.data.Data.Type;
 import gtna.util.Config;
 import gtna.util.Stats;
 

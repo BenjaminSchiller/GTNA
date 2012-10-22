@@ -60,11 +60,6 @@ public class LookaheadSimple extends RoutingAlgorithm {
 		this.ttl = Integer.MAX_VALUE;
 	}
 
-	public LookaheadSimple() {
-		super("LOOKAHEAD_SIMPLE");
-		this.ttl = Integer.MAX_VALUE;
-	}
-
 	public LookaheadSimple(int ttl) {
 		super("LOOKAHEAD_SIMPLE",
 				new Parameter[] { new IntParameter("TTL", ttl) });

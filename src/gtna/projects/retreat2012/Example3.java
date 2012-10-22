@@ -67,7 +67,7 @@ public class Example3 {
 
 		Metric[] metrics = new Metric[] { greedy, lookahead };
 
-		Network[] nw = Chord.get(new int[] { 1000, 2000, 3000, 4000 }, 128,
+		Network[] nw = Chord.get(new int[] { 1000, 2000, 3000, 4000 }, 128, 0,
 				IDSelection.RANDOM, null);
 
 		Series[] series = Series.generate(nw, metrics, times);
