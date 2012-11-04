@@ -35,14 +35,13 @@
  */
 package gtna;
 
-import gtna.metrics.basic.ClusteringCoefficient;
+import gtna.data.Series;
+import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.networks.util.ReadableFile;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import gtna.transformation.Transformation;
+import gtna.transformation.eigenvector.StoreSpectrum;
+import gtna.util.Config;
 
 /**
  * @author stefanie
@@ -51,47 +50,27 @@ import java.io.IOException;
 public class Test {
 	
 	public static void main(String[] args) {
-		String folder;
-		//String[] folders = {"ngram10-30_1K/" };
-		String[] names = {"2gram", "3gram", "4gram",  "real"};
-		String[] sig = {"30", "1083"};
-		String[] size = {"1K", "5K"};
-		String[] langs = {"deu", "eng", "est", "fra", "fas", "ind", "lit"};
-		for (int i = 0; i < 2; i++){
-			for (int h = 0; h < 2; h++){
-		try {
-			folder = size[i] + "-" + sig[h];
-			BufferedWriter bw = new BufferedWriter(new FileWriter("trans"+folder+".txt"));
-		ClusteringCoefficient cc = new ClusteringCoefficient();
-		 for (int m = 0; m < langs.length; m++){
-			 
-			String[] files = (new File("ngramsAll/"+size[i]+"/"+sig[h]+"/"+langs[m])).list();
-				String line = langs[m];
-				for (int k = 0; k < names.length; k++){
-			for (int j = 0; j < files.length; j++){
-				if (files[j].contains(names[k])){
-					System.out.println(files[j]);
-				Network net = new ReadableFile(files[j], files[j], "ngramsAll/"+size[i]+"/"+sig[h]+"/"+langs[m]+"/"+files[j], null);
-				cc.computeData(net.generate(), net, null);
-				cc.getSingles();
-				line = line + " & ";
-				line = line + (double)(Math.round(cc.getSingles()[1].value*10000)/(double)10000);				
-				}
-			}
-				
-			}
-				bw.write(line+"\\\\");
-				bw.newLine();
-				System.out.println(folder);	
-		 }
-		bw.flush();
-		bw.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-			}
-		}
+		Config.overwrite("MAIN_DATA_FOLDER", "./data/test/");
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
+		Network nw = new BarabasiAlbert(1000,2,new Transformation[]
+				{new LargestWeaklyConnectedComponent(),new StoreFiedler()});
+		Metric[] m = new Metric[]{new WeakFragmentation(new DegreeNodeSorter(NodeSorterMode.DESC), Resolution.PERCENT),
+				new WeakFragmentation(new FiedlerNodeSorter(Selection.SUM,NodeSorterMode.DESC,1), Resolution.PERCENT),
+				new WeakFragmentation(new FiedlerNodeSorter2(FiedlerNodeSorter2.Selection.SUM,
+						Difference.AVERAGE,NodeSorterMode.DESC,1), Resolution.PERCENT),
+				new WeakFragmentation(new RandomNodeSorter(), Resolution.PERCENT)};
+		Series s = Series.generate(nw, m, 10);
+		Plotting.multi(s, m, "data/test/");
+//		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+//		Config.overwrite("MAIN_DATA_FOLDER", "./data/examples/");
+//		Config.overwrite("SERIES_GRAPH_WRITE", "true");
+//		//int nr = 9;
+//		for (int nr = 1; nr < 10; nr++){
+//		Network nw = new ReadableFile("TEST"+nr,"TEST"+nr,"data/exgraphs/test"+nr+".txt",new Transformation[]
+//				{new StoreSpectrum()});
+//		Metric[] m = new Metric[]{};
+//		Series.generate(nw, m, 1);
+//		}
 	}
 
 }

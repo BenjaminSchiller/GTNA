@@ -165,7 +165,22 @@ public class FiedlerNodeSorter extends NodeSorter {
 		this.secondEigenvector = dist;
 		this.randomize(sortedFinal, rand);
 		sortedFinal = this.reverse(sortedFinal);
-		return sortedFinal;
+		Node[] oneEx = new Node[sortedFinal.length];
+		Vector<Node> ones = new Vector<Node>();
+		int c = 0;
+		for (int i = 0; i < sortedFinal.length; i++){
+			if (sortedFinal[i].getInDegree() == 1){
+				ones.add(sortedFinal[i]);
+			} else {
+				oneEx[c] = sortedFinal[i];
+				c++;
+			}
+		}
+		for (int j = 0; j < ones.size(); j++){
+			oneEx[c] = ones.get(j);
+			c++;
+		}
+		return oneEx;
 	}
 
 	/*
