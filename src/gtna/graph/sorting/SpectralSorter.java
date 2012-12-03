@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Vector;
 
 /**
  * @author stefanie
@@ -59,7 +60,7 @@ public class SpectralSorter extends NodeSorter{
 	}
 	
 	public enum DegreeOne{
-		INCLUDE, INCLUDE_CAL,EXCLUDE
+		INCLUDE, EXCLUDE, INCLUDE_CAL
 	}
 	/**
 	 * @param key
@@ -107,6 +108,16 @@ public class SpectralSorter extends NodeSorter{
 			sortedFinal = this.reverse(sortedFinal);
 			return sortedFinal;
 		}
+		if (this.calc == Calculation.ABSOLUTE && this.degree == DegreeOne.INCLUDE){
+			// sort nodes by their value in fiedler vector
+			   Node[] sorted = this.clone(g.getNodes());
+			   for (int i = 0; i < vec.length; i++){
+				   vec[i] = Math.abs(vec[i]);
+			   }
+			   Arrays.sort(sorted, new FiedlerAsc(this.vec));
+			   this.randomize(sorted, rand);
+				return sorted;
+			}
 		if (this.calc == Calculation.SUM && this.degree == DegreeOne.INCLUDE_CAL){
 			// sort nodes by their value in fiedler vector
 			   Node[] sorted = this.clone(g.getNodes());
@@ -125,9 +136,100 @@ public class SpectralSorter extends NodeSorter{
 				this.vec = dist;
 				this.randomize(sortedFinal, rand);
 				sortedFinal = this.reverse(sortedFinal);
-				return sortedFinal;
+				Node[] result = new Node[sorted.length];
+				Vector<Integer> degOne = new Vector<Integer>();
+				int c = 0;
+				for (int i = 0; i < sorted.length; i++){
+					if (sortedFinal[i].getInDegree() > 1){
+						result[c] = sortedFinal[i];
+						c++;
+					} else {
+						degOne.add(i);
+					}
+				}
+				for (int i = 0; i < degOne.size(); i++){
+					result[c] = sortedFinal[degOne.get(i)];
+					c++;
+				}
+				return result;
 			}
-		
+			if (this.calc == Calculation.ABSOLUTE && this.degree == DegreeOne.INCLUDE_CAL){
+				// sort nodes by their value in fiedler vector
+				   Node[] sorted = this.clone(g.getNodes());
+				   for (int i = 0; i < vec.length; i++){
+					   vec[i] = Math.abs(vec[i]);
+				   }
+				   Arrays.sort(sorted, new FiedlerAsc(this.vec));
+				   this.randomize(sorted, rand);
+				   Node[] result = new Node[sorted.length];
+					Vector<Integer> degOne = new Vector<Integer>();
+					int c = 0;
+					for (int i = 0; i < sorted.length; i++){
+						if (sorted[i].getInDegree() > 1){
+							result[c] = sorted[i];
+							c++;
+						} else {
+							degOne.add(i);
+						}
+					}
+					for (int i = 0; i < degOne.size(); i++){
+						result[c] = sorted[degOne.get(i)];
+						c++;
+					}
+					return result;
+				}
+			if (this.calc == Calculation.SUM && this.degree == DegreeOne.EXCLUDE){
+				// sort nodes by their value in fiedler vector
+				   Node[] sorted = this.clone(g.getNodes());
+				   Arrays.sort(sorted, new FiedlerAsc(this.vec));
+				   this.randomize(sorted, rand);
+				   Node[] nonOne = new Node[sorted.length];
+				   int count = 0;
+				   for (int i = 0; i < nonOne.length; i++){
+					   if (sorted[i].getDegree() <3){
+						   count++;
+					   }
+				   }
+				   int c = 0;
+				   for (int i = 0; i < nonOne.length; i++){
+					   if (sorted[i].getDegree() > 2){
+						   nonOne[count] = sorted[i];
+						   count++;
+					   } else {
+						   nonOne[c] = sorted[i];
+						   c++; 
+					   }
+				   }
+				   // compute distance between successive nodes
+				   double[] dist = new double[sorted.length];
+					for (int j = c; j < sorted.length; j++) {
+							dist[sorted[j].getIndex()] = this.vec[sorted[Math
+									.min(j + 1, sorted.length - 1)].getIndex()]
+									- this.vec[sorted[Math.max(j - 1, c)]
+											.getIndex()];
+					}
+					Node[] sortedFinal = this.clone(g.getNodes());
+					Arrays.sort(sortedFinal, new FiedlerAsc(dist));
+					this.vec = dist;
+					this.randomize(sortedFinal, rand);
+					sortedFinal = this.reverse(sortedFinal);
+					return sortedFinal;
+				}
+				if (this.calc == Calculation.ABSOLUTE && this.degree == DegreeOne.EXCLUDE){
+					// sort nodes by their value in fiedler vector
+					   Node[] sorted = this.clone(g.getNodes());
+					   for (int i = 0; i < vec.length; i++){
+						   if (sorted[i].getDegree() > 2){
+						   vec[i] = Math.abs(vec[i]);
+						   } else {
+							   vec[i] = Double.MAX_VALUE; 
+						   }
+					   }
+					   Arrays.sort(sorted, new FiedlerAsc(this.vec));
+					   this.randomize(sorted, rand);
+					   
+						return sorted;
+					}
 		return null;
 	}
 

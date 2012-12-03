@@ -36,11 +36,21 @@
 package gtna;
 
 import gtna.data.Series;
+import gtna.graph.sorting.DegreeNodeSorter;
+import gtna.graph.sorting.NodeSorter.NodeSorterMode;
+import gtna.graph.sorting.RandomNodeSorter;
+import gtna.graph.sorting.SpectralSorter;
+import gtna.graph.sorting.SpectralSorter.Calculation;
+import gtna.graph.sorting.SpectralSorter.DegreeOne;
 import gtna.metrics.Metric;
+import gtna.metrics.fragmentation.Fragmentation.Resolution;
+import gtna.metrics.fragmentation.WeakFragmentation;
 import gtna.networks.Network;
-import gtna.networks.util.ReadableFile;
+import gtna.networks.model.BarabasiAlbert;
+import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
-import gtna.transformation.eigenvector.StoreSpectrum;
+import gtna.transformation.eigenvector.StoreFiedler;
+import gtna.transformation.partition.LargestWeaklyConnectedComponent;
 import gtna.util.Config;
 
 /**
@@ -55,9 +65,12 @@ public class Test {
 		Network nw = new BarabasiAlbert(1000,2,new Transformation[]
 				{new LargestWeaklyConnectedComponent(),new StoreFiedler()});
 		Metric[] m = new Metric[]{new WeakFragmentation(new DegreeNodeSorter(NodeSorterMode.DESC), Resolution.PERCENT),
-				new WeakFragmentation(new FiedlerNodeSorter(Selection.SUM,NodeSorterMode.DESC,1), Resolution.PERCENT),
-				new WeakFragmentation(new FiedlerNodeSorter2(FiedlerNodeSorter2.Selection.SUM,
-						Difference.AVERAGE,NodeSorterMode.DESC,1), Resolution.PERCENT),
+				new WeakFragmentation(new SpectralSorter(NodeSorterMode.DESC,Calculation.SUM,DegreeOne.INCLUDE), Resolution.PERCENT),
+				new WeakFragmentation(new SpectralSorter(NodeSorterMode.DESC,Calculation.ABSOLUTE,DegreeOne.INCLUDE), Resolution.PERCENT),
+				new WeakFragmentation(new SpectralSorter(NodeSorterMode.DESC,Calculation.SUM,DegreeOne.INCLUDE_CAL), Resolution.PERCENT),
+				new WeakFragmentation(new SpectralSorter(NodeSorterMode.DESC,Calculation.ABSOLUTE,DegreeOne.INCLUDE_CAL), Resolution.PERCENT),
+				new WeakFragmentation(new SpectralSorter(NodeSorterMode.DESC,Calculation.SUM,DegreeOne.EXCLUDE), Resolution.PERCENT),
+				new WeakFragmentation(new SpectralSorter(NodeSorterMode.DESC,Calculation.ABSOLUTE,DegreeOne.EXCLUDE), Resolution.PERCENT),
 				new WeakFragmentation(new RandomNodeSorter(), Resolution.PERCENT)};
 		Series s = Series.generate(nw, m, 10);
 		Plotting.multi(s, m, "data/test/");
