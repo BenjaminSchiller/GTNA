@@ -44,11 +44,16 @@ import gtna.data.Single;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.io.networks.googlePlus.Statistics;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Util;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ClusteringCoefficient extends Metric {
 	// TODO add LCC => binning?!?
@@ -60,8 +65,17 @@ public class ClusteringCoefficient extends Metric {
 
 	private double transitivity;
 
+	private int version;
+
 	public ClusteringCoefficient() {
 		super("CLUSTERING_COEFFICIENT");
+		this.version = 1;
+	}
+
+	public ClusteringCoefficient(int version) {
+		super("CLUSTERING_COEFFICIENT", new Parameter[] { new IntParameter(
+				"VERSION", version) });
+		this.version = version;
 	}
 
 	@Override
@@ -72,12 +86,79 @@ public class ClusteringCoefficient extends Metric {
 	@Override
 	public void computeData(Graph graph, Network nw,
 			HashMap<String, Metric> metrics) {
-		Edges edges = new Edges(graph.getNodes(), graph.generateEdges());
-		this.localClusteringCoefficient = this
-				.computeLocalClusteringCoefficient(graph.getNodes(), edges);
-		this.clusteringCoefficient = this
-				.computeClusteringCoefficient(this.localClusteringCoefficient);
-		this.transitivity = this.computeTransitivity(graph);
+		if (version == 1) {
+			Edges edges = new Edges(graph.getNodes(), graph.generateEdges());
+			this.localClusteringCoefficient = this
+					.computeLocalClusteringCoefficient(graph.getNodes(), edges);
+			this.clusteringCoefficient = this
+					.computeClusteringCoefficient(this.localClusteringCoefficient);
+			this.transitivity = this.computeTransitivity(graph);
+		} else {
+			Edges edges = graph.getEdges();
+			this.localClusteringCoefficient = new double[graph.getNodeCount()];
+
+			long triplets = 0;
+			long closedTriplets = 0;
+
+			for (Node node : graph.getNodes()) {
+				Set<Integer> neighborhood = this.getNeighborhoodDirected(node);
+				int links = 0;
+				for (int a : neighborhood) {
+					for (int b : neighborhood) {
+						if (a != b && edges.contains(a, b)) {
+							links++;
+							if (a < b && edges.contains(b, a)) {
+								closedTriplets++;
+							}
+						}
+					}
+				}
+				double k = neighborhood.size();
+				if (k < 2) {
+					this.localClusteringCoefficient[node.getIndex()] = 0.0;
+				} else {
+					this.localClusteringCoefficient[node.getIndex()] = (double) links
+							/ (k * (k - 1.0));
+					triplets += k * (k - 1);
+				}
+			}
+			this.clusteringCoefficient = Util
+					.avg(this.localClusteringCoefficient);
+			this.transitivity = (double) closedTriplets / triplets;
+		}
+	}
+
+	private Set<Integer> getNeighborhoodDirected(Node node) {
+		Set<Integer> outList = new HashSet<Integer>();
+		for (int out : node.getOutgoingEdges()) {
+			outList.add(out);
+		}
+		Set<Integer> neighbors = new HashSet<Integer>();
+		for (int in : node.getIncomingEdges()) {
+			if (outList.contains(in)) {
+				neighbors.add(in);
+			}
+		}
+		return neighbors;
+	}
+
+	private Set<Integer> getNeighborhoodUndirected(Node node) {
+		Set<Integer> neighbors = new HashSet<Integer>();
+		for (int out : node.getOutgoingEdges()) {
+			neighbors.add(out);
+		}
+		return neighbors;
+	}
+
+	private Set<Integer> getNeighborhod(Node node) {
+		Set<Integer> outSet = new HashSet<Integer>();
+		for (int out : node.getOutgoingEdges()) {
+
+		}
+
+		Set<Integer> neighbors = new HashSet<Integer>();
+
+		return neighbors;
 	}
 
 	private double[] computeLocalClusteringCoefficient(Node[] nodes, Edges edges) {
