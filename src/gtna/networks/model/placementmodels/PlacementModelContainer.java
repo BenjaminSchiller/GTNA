@@ -180,6 +180,8 @@ public class PlacementModelContainer extends Network {
 
 		// Prepare ID space
 		PlanePartitionSimple[] coords = new PlanePartitionSimple[nodes];
+		idSpace = new PlaneIdentifierSpaceSimple(coords, getNodeBoxWidth(),
+				getNodeBoxHeight(), false);
 
 		// get assignment of nodes to spots
 		int[] nodesPerSpot = partitioner.partition(nodes, hotspots);
@@ -197,9 +199,6 @@ public class PlacementModelContainer extends Network {
 
 		// create the required Graph object and fill it
 		Graph g = new Graph(this.getDescription());
-
-		idSpace = new PlaneIdentifierSpaceSimple(coords, getNodeBoxWidth(),
-				getNodeBoxHeight(), false);
 
 		g.addProperty(g.getNextKey("ID_SPACE"), idSpace);
 
