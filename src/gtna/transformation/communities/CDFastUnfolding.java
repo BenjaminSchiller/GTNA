@@ -90,6 +90,7 @@ public class CDFastUnfolding extends Transformation {
 			return g;
 
 		edgeCount = g.getEdges().getEdges().size();
+		System.out.println("..." + edgeCount);
 		int[] mastercoms = new int[g.getNodes().length];
 		for (int i = 0; i < mastercoms.length; i++)
 			mastercoms[i] = i;
@@ -128,7 +129,6 @@ public class CDFastUnfolding extends Transformation {
 	 */
 	private int[] doWork(Graph g, int[] mastercoms, EdgeWeights ews,
 			NodeWeights nws) {
-
 		// Initialize the communitylist and the communities
 		NormalizableCommunityList<EdgeCountingCommunity> coms = new NormalizableCommunityList<EdgeCountingCommunity>();
 		EdgeCountingCommunity temp;
@@ -147,21 +147,22 @@ public class CDFastUnfolding extends Transformation {
 		boolean changed = false;
 
 		MoveValue mv;
+		int i = 0;
 		// move nodes around till no improvement is possible
 		while (!finished) {
-
 			finished = true;
+			i = 0;
 			for (Node akt : g.getNodes()) {
+				i++;
 				// get best possible move for the current node
-				mv = getBestMove(akt, coms, g, ews);
+				mv = getBestMove(akt, coms, g, ews, nws);
 				if (mv.getModDelta() > 0) {
 					// if best possible move is an improvement then do it
-
 					temp = coms.getCommunityOfNode(akt.getIndex());
-					temp.removeNode(akt.getIndex());
 					// if the old community is empty, remove it
-					if (temp.getNodes().length == 0)
+					if (temp.getNodes().length == 1){
 						coms.removeCommunity(temp);
+					}
 
 					// add the node to the new community
 					coms.getCommunityByID(mv.getNewCom()).addNode(
@@ -197,11 +198,11 @@ public class CDFastUnfolding extends Transformation {
 		// unneeded calculations to update the edgecounts while moving nodes
 		// around, therefore they are calculated once after the communities are
 		// fixed
-		int[][] edgetemp = new int[distinct][distinct];
+		double[][] edgetemp = new double[distinct][distinct];
 		for (Edge akt : g.getEdges().getEdges()) {
 			edgetemp[coms.getCommunityOfNode(akt.getSrc()).getIndex()][coms
-					.getCommunityOfNode(akt.getDst()).getIndex()] += (newEW == null) ? 1
-					: newEW.getWeight(akt);
+					.getCommunityOfNode(akt.getDst()).getIndex()] += (ews == null) ? 1
+					: ews.getWeight(akt);
 		}
 
 		int[] mcnew = new int[mastercoms.length];
@@ -212,7 +213,7 @@ public class CDFastUnfolding extends Transformation {
 
 			n2[akt.getIndex()] = new Node(akt.getIndex(), n);
 
-			newNW.setWeight(akt.getIndex(), akt.getInternalEdges());
+			newNW.setWeight(akt.getIndex(), (akt.getInternalEdges()) + getSumNWs(akt, nws));
 			for (EdgeCountingCommunity akt2 : coms.getCommunities()) {
 				if (akt.equals(akt2))
 					continue;
@@ -242,8 +243,23 @@ public class CDFastUnfolding extends Transformation {
 
 	}
 
+	/**
+	 * @param akt
+	 * @param nws
+	 * @return
+	 */
+	private double getSumNWs(EdgeCountingCommunity akt, NodeWeights nws) {
+		if(nws == null)
+			return 0;
+		double sum = 0;
+		for(int aktN : akt.getNodes())
+			sum += nws.getWeight(aktN);
+		
+		return sum;
+	}
+
 	private MoveValue getBestMove(Node aktNode,
-			NormalizableCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew) {
+			NormalizableCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew, NodeWeights nw) {
 		EdgeCountingCommunity ownc = coms.getCommunityOfNode(aktNode
 				.getIndex());
 		EdgeCountingCommunity c;
@@ -254,6 +270,8 @@ public class CDFastUnfolding extends Transformation {
 		ret.setModDelta(-Double.MAX_VALUE);
 
 		for (Edge akt : aktNode.getEdges()) {
+			if(ew != null)
+				System.out.println(akt +":" + ew.getWeight(akt));
 			if (akt.getSrc() == index)
 				c = coms.getCommunityOfNode(akt.getDst());
 			else
@@ -261,9 +279,11 @@ public class CDFastUnfolding extends Transformation {
 			if (c.getIndex() == ownc.getIndex())
 				continue;
 
-			v1 = calcDeltaAddc(aktNode, c, coms, g, ew);
-			if (!(ownc.getNodes().length == 1))
-				v1 -= calcDeltaRemove(aktNode, c, coms, g, ew);
+			v1 = calcDeltaAddc(aktNode, c, coms, g, ew, nw);
+			System.out.print("Before: " + v1);
+			if (!(ownc.getNodes().length == 1)){
+				v1 -= calcDeltaRemove(aktNode, c, coms, g, ew, nw);
+			}
 
 			if (v1 > ret.getModDelta()) {
 				ret.setModDelta(v1);
@@ -276,34 +296,34 @@ public class CDFastUnfolding extends Transformation {
 	}
 
 	private double calcDeltaRemove(Node i, EdgeCountingCommunity c,
-			NormalizableCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew) {
+			NormalizableCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew, NodeWeights nw) {
 		double nodeToCom = getSumWeightsNodeToCom(i, c, coms, ew, g);
-		double sumIn = c.getInternalEdges() - nodeToCom;
-		double sumNode = getSumWeight(i, ew);
-		double sumOut = c.getExternalEdges() - (sumNode - nodeToCom) + sumIn;
+		double sumIn = (c.getInternalEdges() - nodeToCom);
+		double sumNode = getSumWeight(i, ew, nw);
+		double sumOut = (c.getExternalEdges()+c.getInternalEdges()) - (sumNode);
 
-		return calcDelta(sumIn, sumNode, sumOut,
-				getSumWeightsNodeToCom(i, c, coms, ew, g));
+		return calcDelta(sumIn/2, sumNode/2, sumOut/2,
+				getSumWeightsNodeToCom(i, c, coms, ew, g)/2);
 
 	}
 
 	private double calcDeltaAddc(Node i, EdgeCountingCommunity c,
-			NormalizableCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew) {
-		double sumIn = c.getInternalEdges();
-		double sumOut = c.getExternalEdges() + sumIn;
-		double sumNode = getSumWeight(i, ew);
-
+			NormalizableCommunityList<EdgeCountingCommunity> coms, Graph g, EdgeWeights ew, NodeWeights nw) {
+		double sumIn = c.getInternalEdges()/2;
+		double sumOut = (c.getExternalEdges()+c.getInternalEdges())/2;
+		double sumNode = getSumWeight(i, ew, nw)/2;
+		System.out.println("calcDelta("+sumIn+","+sumNode+","+sumOut+","+getSumWeightsNodeToCom(i, c, coms, ew, g)/2+","+edgeCount+")");
 		return calcDelta(sumIn, sumNode, sumOut,
-				getSumWeightsNodeToCom(i, c, coms, ew, g));
+				getSumWeightsNodeToCom(i, c, coms, ew, g)/2);
 	}
 
 	public double calcDelta(double sumIn, double sumNode, double sumOut,
 			double sumNodeToCom) {
-		return (((sumIn + sumNodeToCom) / (2 * edgeCount)) - Math.pow(
-				((sumOut + sumNode) / (2 * edgeCount)), 2))
-				- ((sumIn / (2 * edgeCount))
-						- Math.pow(sumOut / (2 * edgeCount), 2) - Math.pow(
-						sumNode / (2 * edgeCount), 2));
+		return (((sumIn + sumNodeToCom) / (edgeCount)) - Math.pow(
+				((sumOut + sumNode) / (edgeCount)), 2))
+				- ((sumIn / (edgeCount))
+						- Math.pow(sumOut / (edgeCount), 2) - Math.pow(
+						sumNode / (edgeCount), 2));
 	}
 
 	private double getSumWeightsNodeToCom(Node i,
@@ -323,12 +343,16 @@ public class CDFastUnfolding extends Transformation {
 		return ret;
 	}
 
-	private double getSumWeight(Node i, EdgeWeights ews) {
-
-		if (ews == null)
-			return i.getEdges().length;
-
+	private double getSumWeight(Node i, EdgeWeights ews, NodeWeights nws) {
 		double ret = 0;
+		if(nws != null){
+			ret = nws.getWeight(i.getIndex());
+		}
+		
+		if (ews == null)
+			return ret + i.getEdges().length;
+
+		
 		for (Edge akt : i.getEdges())
 			ret += ews.getWeight(akt);
 

@@ -183,7 +183,7 @@ public class CDExpandingSpheres extends Transformation {
 
 		ArrayList<Integer> sphere = new ArrayList<Integer>();
 		sphere.add(akt.getIndex());
-		double curr = akt.getDegree();
+		double curr = akt.getDegree()/2;
 		double last;
 		do {
 			last = curr;
@@ -217,7 +217,7 @@ public class CDExpandingSpheres extends Transformation {
 		int count = 0;
 		for (int akt : sphere) {
 			for (int akt2 : g.getNode(akt).getOutgoingEdges()) {
-				if (contains(sphere, akt2))
+				if (!contains(sphere, akt2))
 					count++;
 			}
 		}
@@ -244,7 +244,7 @@ public class CDExpandingSpheres extends Transformation {
 
 			for (int akt2 : g.getNode(akt).getOutgoingEdges())
 				if ((!contains(ret, akt2))
-						&& (ignore == null || !ignore.containsKey(akt)))
+						&& (ignore == null || !ignore.containsKey(akt2)))
 					ret.add(akt2);
 		}
 

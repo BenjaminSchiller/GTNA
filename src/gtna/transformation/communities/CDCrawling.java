@@ -50,7 +50,7 @@ import gtna.util.parameter.StringParameter;
 
 /**
  * Encapsulates the Community Detection Algorithm based on Crawling, originally
- * introduced by Nortbert Blenn et al. in "Crawling and Detecting Community
+ * introduced by Norbert Blenn et al. in "Crawling and Detecting Community
  * Structure in Online Social Networks using Local Information". The main idea
  * is that instead of randomly moving through the graph, the algorithm always
  * selects the next node with the highest connection ratio into the already
@@ -148,19 +148,22 @@ public class CDCrawling extends Transformation {
 			np.addAll(g.getNodes());
 
 			Node n;
+			int offset = 0;
 			HashMap<Integer, Boolean> ignore = new HashMap<Integer, Boolean>();
 			HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
 
 			while (!np.empty()) {
 				n = np.pop();
-
+				
 				temp = this.getCommunityAroundNode(n, g, ignore, true);
-
 				for (int akt : temp.keySet()) {
-					map.put(akt, temp.get(akt));
+					if(ignore.get(akt) != null && ignore.get(akt) == true)
+						System.out.println("wtf");
+					map.put(akt, temp.get(akt) + offset);
 					np.remove(akt);
 					ignore.put(akt, true);
 				}
+				offset+=1;
 			}
 
 			cl = new CommunityList(map);
@@ -211,7 +214,7 @@ public class CDCrawling extends Transformation {
 			double oldScore = 0;
 			minScore = Double.MAX_VALUE;
 			for (Node akt : refs.keySet()) {
-				if ((ignore != null && ignore.containsKey(akt))
+				if ((ignore != null && ignore.containsKey(akt.getIndex()))
 						|| visited.contains(akt))
 					continue;
 
@@ -236,7 +239,7 @@ public class CDCrawling extends Transformation {
 				} else {
 					neighbor = g.getNode(akt.getDst());
 				}
-				if ((ignore != null && ignore.containsKey(neighbor))
+				if ((ignore != null && ignore.containsKey(neighbor.getIndex()))
 						|| visited.contains(neighbor))
 					continue;
 

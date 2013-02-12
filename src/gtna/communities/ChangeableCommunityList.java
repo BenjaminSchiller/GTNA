@@ -107,7 +107,7 @@ public class ChangeableCommunityList<T extends Community> extends CommunityList 
 	@SuppressWarnings("unchecked")
 	@Override
 	public T[] getCommunities() {
-		T[] array = (T[]) Array.newInstance( communities.get(0).getClass(), communities.size() );
+		T[] array = (T[]) Array.newInstance( communities.values().iterator().next().getClass(), communities.size() );
 		return (T[]) communities.values().toArray(array);
 	}
 
@@ -162,7 +162,8 @@ public class ChangeableCommunityList<T extends Community> extends CommunityList 
 	 *            The community to be removed.
 	 */
 	public void removeCommunity(T com) {
-		communities.remove(com);
+		
+		communities.remove(com.getIndex());
 		for (int akt : com.getNodes())
 			nodeBuffer.remove(akt);
 
