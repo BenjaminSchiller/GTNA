@@ -1,10 +1,18 @@
 \documentclass[10pt,a4paper]{article}
 
+\usepackage{geometry}
+\geometry{a4paper,left=25mm,right=25mm,top=35mm,bottom=35mm}
+
 \usepackage{graphicx}
 \usepackage{subfig}
 \usepackage{placeins}
 \graphicspath{{images/}{./}}
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\usepackage{url}
+\usepackage{hyperref}
+
+\usepackage{mathtools}
 
 \usepackage{tabularx}
 \usepackage{booktabs}
@@ -56,6 +64,8 @@
 	\end{figure}
 }
 
+\newcommand{\gtna}{\emph{GTNA}}
+
 
 \title{\includegraphics[width=0.8\textwidth]{GTNA_Logo_RGB}$\;$\\ $\;$\\ $\;$\\ GTNA - Graph-Theoretic Network Analyzer \\ Documentation}
 \author{Benjamin Schiller}
@@ -77,7 +87,6 @@
 
 \include{sections/components}
 \include{sections/graphs}
-\include{sections/graph-properties}
 \include{sections/networks}
 \include{sections/transformations}
 \include{sections/metrics}
@@ -92,7 +101,7 @@
 \include{sections/examples}
 
 \appendix
-\include{sections/graph-formats}
+\include{sections/appendix}
 
 
 

@@ -8,3 +8,6 @@ bin/
 *.log
 *.toc
 *.synctex.gz
+*.bbl
+*.blg
+*.out

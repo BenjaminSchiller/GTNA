@@ -3,14 +3,193 @@
 \section{Graphs}
 \label{sec:graphs}
 
+In this Section, we describe the main data structures that represent graphs in \gtna and how they can be used to generate networks topologies.
+All discussed classes can be found in the package \emph{gtna.graph}.
+For information regarding supported graph formats, please refer to Appendix \ref{sec:appendix:graph-formats}.
+Descriptions how graphs can be read or written can be found in Appendix \ref{sec:appendix:graph-io}.
+
+First, we discuss preliminaries about the structure of graphs in \gtna (\ref{sec:graphs:preliminaries}).
+Then, we describe the data structures used to represent graphs, nodes, and edges (\ref{sec:graphs:graph}, \ref{sec:graphs:node}, \ref{sec:graphs:edge})).
+In \ref{sec:graphs:edges}, we sketch the usage of the \emph{Edges} object and how it can be utilized during the generation of graphs.
+Finally, we describe the concept of graph properties and how they are stored as part of graph objects (\ref{sec:graph:properties}).
 
 
 
-\begin{lstlisting}[label={lst:graph},caption={Basic graph object}]
-public class Graph {	private String name;	private Node[] nodes;	private HashMap<String, GraphProperty> properties;...}
+
+
+
+\subsection{Preliminaries}
+\label{sec:graphs:preliminaries}
+
+A graph $G = (V, E)$ is a tuple, consisting of a set of nodes $V = \{v_1, v_2, \dots v_N\}$ and a set of edges $E = \{e_1, e_2 \dots e_M : e_i = (v_j, v_k)\}$.
+Note that in \gtna, an edge $e_i$ is always considered as a directed connection between the two nodes $v_j$ and $v_k$.
+Therefore, undirected connections $\{v_j, v_k\}$ cannot be expressed explicitly.
+They can be modeled implicitly by two directed edges in opposite direction, i.e., $\{v_j, v_k\} \equiv (v_j, v_k), (v_k, v_j)$.
+
+
+
+
+
+\subsection{Graph}
+\label{sec:graphs:graph}
+
+In \gtna, graphs are considered as static topologies whose structure does not change after generation.
+Therefore, nodes and edges inside a graph are stored in arrays rather than lists, vectors, or sets.
+Since adding to or removing from an array is rather costly, it is neither recommended not intended to perform constant changes to the graph's topology~\footnote{The representation and analysis of dynamic and constantly changing networks is currently a \emph{Work in Progress}}.
+While this design decision makes it harder and more expensive to change graph structures, the memory required for storing these structures if much lower because of the use of arrays only.
+
+When generating a new graph it is assumed that the number of nodes is fixed from the beginning.
+In contrast, the total number of edges as well as the number of connections per node are not known a priori in most cases.
+Handling the generation of edges for a graph using the \emph{Edges} object is discussed in Section \ref{sec:graphs:edges}.
+
+The instance of a graph consists of a name (\emph{String}), a list of nodes (\emph{Node[]}), a set of edges (\emph{Edges}), and a set of graph properties (\emph{HashMap$<$String, GraphProperty$>$}) (cf. Listing \ref{lst:graphs:graph}).
+While the name and list of nodes are set for every graph, the set of edges is \emph{null} by default and only generated in case it is requested in order to decrease the memory required to store the graph.
+Listing \ref{lst:graphs:instantiation} gives two examples of instatiating graph objects.
+
+\begin{lstlisting}[label={lst:graphs:graph},caption={Instance variables and constructors of the \emph{Graph} object}]
+public class Graph {	private String name;	private Node[] nodes = new Node[0];
+	private Edges edges = null;	private HashMap<String, GraphProperty> properties;
+	
+	public Graph(String name) { \dots }
+	public Graph(String name, int nodes) { \dots }	
+	$\dots$}
 \end{lstlisting}
 
 
-\begin{lstlisting}[label={lst:node},caption={Basic node object}]
-public class Node implements Comparable<Node> {	private Graph graph;	private int index;	private int[] incomingEdges;	private int[] outgoingEdges;...}
+
+
+\begin{lstlisting}[label={lst:graphs:instantiation}, caption={Examples for the usage of both \emph{Graph} constructors}]
+// instantiates a Graph object and sets the nodes afterwards
+Graph graph1 = new Graph('Graph-1');
+Node[] nodes = Node.init(100, graph1);
+graph1.setNodes(nodes);
+
+// same outcome as before but shorter :-)
+Graph graph2 = new Graph('Graph-2', 100);
+\end{lstlisting}
+
+
+
+
+
+
+
+\subsection{Node}
+\label{sec:graphs:node}
+
+A \emph{Node} object consists of a reference to the graph it is containted in (\emph{Graph}), the index of this node in the graph (\emph{int}), as well as an array of incoming and outgoing edges (\emph{int$[]$}) (cf. Listing \ref{lst:graphs:node}).
+
+\begin{lstlisting}[label={lst:graphs:node},caption={Instance variables and constructors of the \emph{Node} object}]
+public class Node implements Comparable<Node> {	private Graph graph;	private int index;	private int[] incomingEdges;	private int[] outgoingEdges;
+	
+	public Node(int index, Graph graph) { $\dots$ }
+	public Node(int index, Graph graph, int in, int out) { $\dots$ }
+	public Node(int index, Graph graph, int[] in, int[] out) { $\dots$ }
+		$\dots$}
+\end{lstlisting}
+
+Note that the index must be the same as the index of the node in the graph's node list, i.e., \emph{node.equals(node.getGraph().getNode(node.getIndex())} must be true.
+This is important when changing the graph's structure by adding or removing nodes.
+In this case, the index of each node as well as the index in the edge references needs to be updated.
+
+While there exists an \emph{Edge} object (cf. Section \ref{sec:graphs:edge}), the incoming and outgoing edges of nodes are stored as \emph{int} arrays.
+Using \emph{Edge} objects to store the connections between nodes would be costly, since additional objects would be created.
+Instead of storing the incoming and outgoing connections of a node as arrays of \emph{Node} references, they are stored as arrays of \emph{int} values representing the respective node's index.
+This is reasonable because the reference to a \emph{Node} object would require 64 bit of memory on 64 bit machines while storing an \emph{int} values only requires 32 bit.
+
+All constructors require the node's graph and index. Optionally, the lists or numbers of oncoming and outgoing edges can be given.
+
+
+
+
+
+\subsection{Edge}
+\label{sec:graphs:edge}
+
+An \emph{Edge} object consists of the respective index of the source and destination node (cf. Listing \ref{lst:graphs:edge}).
+
+\begin{lstlisting}[label={lst:graphs:edge},caption={Instance variables and constructors of the \emph{Edge} object}]
+public class Edge {
+	private int src;
+	private int dst;
+
+	public Edge(int src, int dst) { $\dots$ }
+	public Edge(Node src, Node dst) { $\dots$ }
+	
+	$\dots$
+}
+\end{lstlisting}
+
+The constructor takes either the indexes or the respective node instances.
+
+Storing a graph does not require any \emph{Edge} objects since the information about connections between nodes is stored as arrays of node indexes (cf. Section \ref{sec:graphs:node}).
+The \emph{Edge} object is used by the \emph{Edges} object for creating connections while generating a graph as described in Section \ref{sec:graphs:edges}.
+
+
+
+
+
+
+\subsection{Edges}
+\label{sec:graphs:edges}
+
+Since connections in the \emph{Node} object are stored as arrays, generating graphs without predetermindes node degrees can be a cumbersome and time consuming  task since the arrays need to be update for every edge added to the graph.
+
+Using the \emph{Edges} class, this process can be simplified.
+All operations dealing with the generation and maintenance of edge lists are hidden allowing for a cleaner and faster generation of graphs.
+In essence, connections are passed on to an \emph{Edges} object using the \emph{add(\dots)} methods (cf. Listing \ref{lst:graphs:edges}).
+When all connections are added, calling the \emph{fill()} method invokes a generation of the appropriate edge lists for all nodes in the graph.
+
+\begin{lstlisting}[label={lst:graphs:edges}, caption={Constructor and important methods of the \emph{Edges} class}]
+public class Edges {
+	public Edges(Node[] nodes, int edges) { $\dots$ }
+	public Edges(Node[] nodes, Edge[] edges) { $\dots$ }
+
+	public boolean contains(int src, int dst) { $\dots$ }
+
+	private boolean add(Edge edge) { $\dots$ }
+	public boolean add(int src, int dst) { $\dots$ }
+
+	public void fill() { $\dots$ }
+	
+	$\dots$
+\end{lstlisting}
+
+Listing \ref{lst:graph:edges:example} gives a basic example how the generation of a graph using the emph{Edges} class works.
+
+\begin{lstlisting}[label={lst:graphs:edges:example}, caption={Example for the usage of the \emph{Edge} object for generating the on and out lists of nodes in a graph}]
+	Graph graph = new Graph(this.getDescription());
+	Node[] nodes = Node.init(this.getNodes(), graph);
+	$\dots$
+	Edges edges = new Edges(nodes, this.getNodes() * 2 - 2);
+	for (int i = 1; i < nodes.length; i++) {
+		edges.add(0, i);
+		edges.add(i, 0);
+	}
+	edges.fill();
+	graph.setNodes(nodes);
+\end{lstlisting}
+
+
+
+
+
+
+\subsection{Graph Properties}
+\label{sec:graph:properties}
+
+
+\begin{verbatim}
+Add certain characteristics to graph and nodesIdentifier Space(s)Node ColorsCommunities & RolesPartitionSpanning Tree
+\end{verbatim}
+
+
+\begin{lstlisting}[label={lst:graph-properties:interface},caption={GraphProperty interface}]
+public interface GraphProperty {	public boolean write(String filename, String key);	public void read(String filename, Graph graph);}
+\end{lstlisting}
+
+
+
+\begin{lstlisting}[label={lst:graph-properties:graph},caption={Graph methods for handling graph properties}]
+public class Graph {	...	public void addProperty(String key, GraphProperty property) {...}	public boolean hasProperty(String key) {...}	public GraphProperty getProperty(String key) {...}	public GraphProperty[] getProperties(String type) {...}}
 \end{lstlisting}
