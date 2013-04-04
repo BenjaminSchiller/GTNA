@@ -83,7 +83,7 @@ public class StoreFiedler extends Transformation {
 				index++;
 			}
 			int c = (int)Math.round(eigenvals[index]);
-			while (Math.round(eigenvals[index]) == c){
+			bwhile (Math.round(eigenvals[index]) == c){
 				for (int i = 0; i < this.secondEigenvector.length; i++) {
 					this.secondEigenvector[i] = this.secondEigenvector[i]+eigenvecs[i][index];
 				}

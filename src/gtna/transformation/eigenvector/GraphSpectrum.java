@@ -115,13 +115,13 @@ public class GraphSpectrum implements GraphProperty {
 		fw.writeln();
 
 		String temp = ""+this.vals[0];
-		for (int i = 0; i < this.vals.length; i++) {
+		for (int i = 1; i < this.vals.length; i++) {
 			temp = temp + ":" + this.vals[i];
 		}
 		fw.writeln(temp);
 		for (int i = 0; i < this.vals.length; i++) {
 			temp = ""+this.vector[i][0];
-			for (int j = 0; j < this.vals.length; j++) {
+			for (int j = 1; j < this.vals.length; j++) {
 				temp = temp + ":" + this.vector[i][j];
 			}
 			fw.writeln(temp);
