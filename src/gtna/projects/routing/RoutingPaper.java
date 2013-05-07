@@ -36,21 +36,23 @@
 package gtna.projects.routing;
 
 import gtna.data.Series;
+import gtna.graph.Graph;
 import gtna.id.data.LruDataStore;
 import gtna.io.graphReader.CaidaGraphReader;
 import gtna.io.graphReader.GraphReader;
+import gtna.io.graphReader.GtnaGraphReader;
 import gtna.io.graphWriter.GraphWriter;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
 import gtna.metrics.MetricDescriptionWrapper;
-import gtna.metrics.basic.DegreeDistribution;
-import gtna.metrics.basic.ShortestPaths;
 import gtna.metrics.routing.DataStorageMetric;
 import gtna.metrics.routing.Routing;
 import gtna.networks.Network;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.networks.util.ReadableFile;
+import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
+import gtna.plot.data.Data.Type;
 import gtna.routing.routingTable.CcnRouting;
 import gtna.routing.routingTable.RoutingTableRouting;
 import gtna.routing.selection.source.ConsecutiveSourceSelection;
@@ -70,6 +72,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import sun.print.resources.serviceui;
+
 /**
  * @author benni
  * 
@@ -78,14 +82,14 @@ public class RoutingPaper {
 
 	static String[] dates_all = new String[] { "20070913", "20080102",
 			"20080702", "20090103", "20090702", "20100101", "20100701",
-			"20110102", "20110701", "20120102", "20120703" };
+			"20110102", "20110701", "20120102", "20120703", "20130102" };
 
 	static String[] dates = new String[] { "20070913", "20080102", "20080702",
 			"20090103", "20090702", "20100101", "20100701", "20110102",
-			"20110701", "20120102", "20120703" };
+			"20110701", "20120102", "20120703", "20130102" };
 
-	static String pathFrom = "resources/_temp/CAIDA/original/";
-	static String pathTo = "resources/_temp/CAIDA/gtna/";
+	static String pathFrom = "../resources/_temp/CAIDA/original/";
+	static String pathTo = "../resources/_temp/CAIDA/gtna/";
 
 	/**
 	 * @param args
@@ -97,8 +101,36 @@ public class RoutingPaper {
 		System.out.println(new Date(l));
 		System.out.println(new Date(l * 1000));
 		// graphs();
-		eval();
-		// evaluation();
+		// print();
+
+		int startRun = 0;
+		int endRun = 69;
+		if (args.length == 2) {
+			startRun = Integer.parseInt(args[0]);
+			endRun = Integer.parseInt(args[1]);
+		}
+
+		eval(startRun, endRun);
+	}
+
+	public static void print() {
+		String[] filenames = getFilenames();
+		GraphReader reader = new GtnaGraphReader();
+		for (int i = 0; i < filenames.length; i++) {
+			Graph g = reader.read(filenames[i]);
+			// System.out.println(filenames[i]);
+			// System.out.println(dates[i]);
+			// System.out.println("  name: " + g.getName());
+			// System.out.println("  nodes: " + g.getNodes().length);
+			// System.out.println("  edges: " + g.getEdges().size());
+			int n = g.getNodes().length;
+			int e = g.getEdges().size();
+			String d = dates[i];
+			System.out.println(d.substring(2, 4) + "-" + d.substring(4, 6)
+					+ " & " + ((n - (n % 1000)) / 1000) + "," + (n % 1000)
+					+ " & " + ((e - (e % 1000)) / 1000) + "," + (e % 1000)
+					+ " & ms & ms \\\\");
+		}
 	}
 
 	public static void graphs() {
@@ -145,21 +177,24 @@ public class RoutingPaper {
 		return pathTo + date + ".txt.gtna";
 	}
 
-	public static void eval() {
-		Config.overwrite("MAIN_DATA_FOLDER", "data/gtna2-routing-3/");
-		Config.overwrite("MAIN_PLOT_FOLDER", "plots/gtna2-routing-3/");
+	public static void eval(int startRun, int endRun) {
+		System.out.println("generating run(s) " + startRun + ":" + endRun);
+
+		boolean generate = true;
+		int routes = 5;
+
+		Config.overwrite("MAIN_DATA_FOLDER", "data/routing-" + routes + "/");
+		Config.overwrite("MAIN_PLOT_FOLDER", "plots/routing-" + routes + "/");
+		Config.overwrite("TEMP_FOLDER", Config.get("MAIN_PLOT_FOLDER")
+				+ "_scripts/");
 
 		Config.overwrite("SERIES_GRAPH_WRITE", "true");
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 
-		Config.overwrite("ROUTING_ROUTES_PER_NODE", "5");
+		Config.overwrite("ROUTING_ROUTES_PER_NODE", "" + routes);
 
 		Config.overwrite("GNUPLOT_TERMINAL", "png");
 		Config.overwrite("PLOT_EXTENSION", ".png");
-
-		int times = 10;
-
-		boolean generate = false;
 
 		Transformation t0, t1, t2, t3;
 		t0 = new Bidirectional();
@@ -180,8 +215,6 @@ public class RoutingPaper {
 		DataStorageMetric ds1_ = new DataStorageMetric();
 		DataStorageMetric ds2_ = new DataStorageMetric();
 
-		Metric dd = new DegreeDistribution();
-		Metric sp = new ShortestPaths();
 		Metric r1 = new MetricDescriptionWrapper(r1_, "IP");
 		Metric ds1 = new MetricDescriptionWrapper(ds1_, "IP", 1);
 		Metric r2 = new MetricDescriptionWrapper(r2_, "NDN");
@@ -189,12 +222,21 @@ public class RoutingPaper {
 
 		Metric[] metrics = new Metric[] { r1, ds1, r2, ds2 };
 
-		Series[] s = generate ? Series.generate(nw, metrics, times) : Series
-				.get(nw, metrics);
+		if (generate) {
+			for (Network network : nw) {
+				if (startRun == 0) {
+					Series.generate(network, metrics, endRun + 1);
+				} else {
+					Series.generate(network, metrics, startRun, endRun);
+				}
+			}
+		}
+		Series[] s = Series.get(nw, metrics);
 
-		Plotting.multi(s, metrics, "multi/");
-		Plotting.single(s, metrics, "single/");
+		Plotting.multi(s, metrics, "multi/", Type.average, Style.linespoint);
+		Plotting.single(s, metrics, "single/", Type.median, Style.linespoint);
 
-		Plotting.multi(s[s.length - 1], metrics, "multi-1/");
+		Plotting.multi(s[s.length - 1], metrics, "multi-1/", Type.average,
+				Style.linespoint);
 	}
 }
