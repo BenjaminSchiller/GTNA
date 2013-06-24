@@ -183,7 +183,9 @@ import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.WattsStrogatz;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
+import gtna.transformation.id.RandomPlaneIDSpaceSimple;
 import gtna.transformation.id.RandomRingIDSpace;
+import gtna.transformation.id.node.NodeIds;
 import gtna.util.Config;
 >>>>>>> exploring gtna functionality
 
@@ -686,16 +688,16 @@ public class Exploring {
 //		Transformation t = new Bidirectional();
 >>>>>>> - refactoring
 
-		Network nw1 = new ErdosRenyi(200, 10, false, null);
-		Network nw2 = new BarabasiAlbert(200, 10, null);
-		Network nw3 = new WattsStrogatz(200, 6, 0.2, null);
-		Network nw4 = new CondonAndKarp(200, 4, 0.4, 0.05, null);
-		Network nw5 = new ErdosRenyi(500, 10, false, null);
-		Network nw6 = new BarabasiAlbert(500, 10, null);
-		Network nw7 = new WattsStrogatz(500, 6, 0.2, null);
-		Network nw8 = new CondonAndKarp(500, 4, 0.4, 0.05, null);
+		Network nw1 = new ErdosRenyi(10, 3, false, null);
+		Network nw2 = new BarabasiAlbert(10, 2, null);
+		Network nw3 = new WattsStrogatz(10, 2, 0.2, null);
+		Network nw4 = new CondonAndKarp(10, 2, 0.4, 0.05, null);
+		Network nw5 = new ErdosRenyi(100, 10, false, null);
+		Network nw6 = new BarabasiAlbert(100, 10, null);
+		Network nw7 = new WattsStrogatz(100, 6, 0.2, null);
+		Network nw8 = new CondonAndKarp(100, 4, 0.4, 0.05, null);
 		
-		Network[] n = new Network[] {nw1 /*, nw2, nw3, nw4, nw5, nw6, nw7, nw8*/};
+		Network[] n = new Network[] {nw1, nw2, nw3, nw4, nw5, nw6, nw7, nw8};
 		
 		Metric[] metrics = new Metric[] { 
 				new DegreeDistribution(),
@@ -726,16 +728,17 @@ public class Exploring {
 	
 	
 	public static void plot(Network nw, String filename, int times) {
-		Transformation t_rpid = new RandomRingIDSpace(true);
+		Transformation t_rpid = new RandomPlaneIDSpaceSimple(1, 100, 100, true);
+		Transformation t_nid = new NodeIds();
 		
 		
 		for (int i = 0; i < times; i++) {
 			Gephi gephi = new Gephi();
 			Config.overwrite("GEPHI_RING_RADIUS", "1");
-			Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "1");
-			Config.overwrite("GEPHI_EDGE_SCALE", "0.01");
-			Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
-			Config.overwrite("GEPHI_NODE_SIZE", "1.5");
+			Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.01");
+			Config.overwrite("GEPHI_EDGE_SCALE", "0.001");
+			Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "true");
+			Config.overwrite("GEPHI_NODE_SIZE", "0.1");
 
 			String graphFilename = filename;
 			
