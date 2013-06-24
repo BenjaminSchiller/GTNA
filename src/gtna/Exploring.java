@@ -37,6 +37,7 @@ package gtna;
 
 import gtna.data.Series;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
@@ -165,21 +166,24 @@ import gtna.util.Stats;
 import java.io.File;
 import java.util.Arrays;
 =======
+=======
+import gtna.drawing.Gephi;
+import gtna.graph.Graph;
+import gtna.id.IdentifierSpace;
+import gtna.io.graphWriter.GtnaGraphWriter;
+>>>>>>> - refactoring
 import gtna.metrics.Metric;
 import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
-import gtna.metrics.connectivity.RichClubConnectivity;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.WattsStrogatz;
-import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
-import gtna.plot.data.Data.Type;
 import gtna.transformation.Transformation;
-import gtna.transformation.edges.Bidirectional;
+import gtna.transformation.id.RandomRingIDSpace;
 import gtna.util.Config;
 >>>>>>> exploring gtna functionality
 
@@ -192,6 +196,7 @@ public class Exploring {
 	public static void main(String[] args) {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 		// Config.overwrite("GNUPLOT_PRINT_ERRORS", "true");
+<<<<<<< HEAD
 <<<<<<< HEAD
 		
 		
@@ -672,33 +677,34 @@ public class Exploring {
 			System.out.println(filename);
 		}
 =======
-
-		Transformation t = new Bidirectional();
-
-		Network nw1 = new ErdosRenyi(200, 10, false, new Transformation[]{t});
-		Network nw2 = new BarabasiAlbert(200, 10, new Transformation[]{t});
-		Network nw3 = new WattsStrogatz(200, 6, 0.2, new Transformation[]{t});
-		/*
-		 * CC -> 19500msec to 20500msec 
-		 */
-		Network nw4 = new CondonAndKarp(200, 3, 0.4, 0.05, new Transformation[]{t});
-
-		Metric[] metrics = new Metric[] { new DegreeDistribution(),
-				new ShortestPaths(), new ClusteringCoefficient()};
-		// .generate for new networks
-		// .get for loading networks
-//		Series s1 = Series.get(nw1, metrics/*, 5*/);
-//		Series s2 = Series.get(nw2, metrics/*, 5*/);
-//		Series s3 = Series.get(nw3, metrics/*, 5*/);
-//		Series s4 = Series.get(nw4, metrics/*, 5*/);
-
-		Series s1 = Series.generate(nw1, metrics, 5);
-		Series s2 = Series.generate(nw2, metrics, 5);
-		Series s3 = Series.generate(nw3, metrics, 5);
-		Series s4 = Series.generate(nw4, metrics, 5);
-
+=======
 		
-		Series[] s = new Series[] { s1, s2, s3, s4 };
+		
+		boolean get = false; // get or generate
+		int times = 5;		// how many generations?
+		
+//		Transformation t = new Bidirectional();
+>>>>>>> - refactoring
+
+		Network nw1 = new ErdosRenyi(200, 10, false, null);
+		Network nw2 = new BarabasiAlbert(200, 10, null);
+		Network nw3 = new WattsStrogatz(200, 6, 0.2, null);
+		Network nw4 = new CondonAndKarp(200, 4, 0.4, 0.05, null);
+		Network nw5 = new ErdosRenyi(500, 10, false, null);
+		Network nw6 = new BarabasiAlbert(500, 10, null);
+		Network nw7 = new WattsStrogatz(500, 6, 0.2, null);
+		Network nw8 = new CondonAndKarp(500, 4, 0.4, 0.05, null);
+		
+		Network[] n = new Network[] {nw1 /*, nw2, nw3, nw4, nw5, nw6, nw7, nw8*/};
+		
+		Metric[] metrics = new Metric[] { 
+				new DegreeDistribution(),
+				new ShortestPaths(), 
+				new ClusteringCoefficient()
+				};
+		
+		
+		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
 
 		if (!Plotting.single(s, metrics, "example-s/")) {
 //			System.err.println("Failed plotting single values");
@@ -708,6 +714,44 @@ public class Exploring {
 		 if(Plotting.multi(s, metrics, "example-m/")){
 //		 System.err.println("Failed plotting multi values");
 		 }
+<<<<<<< HEAD
 >>>>>>> exploring gtna functionality
+=======
+		 
+		 for(Network i : n){
+			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
+			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
+		 }
+	}
+	
+	
+	public static void plot(Network nw, String filename, int times) {
+		Transformation t_rpid = new RandomRingIDSpace(true);
+		
+		
+		for (int i = 0; i < times; i++) {
+			Gephi gephi = new Gephi();
+			Config.overwrite("GEPHI_RING_RADIUS", "1");
+			Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "1");
+			Config.overwrite("GEPHI_EDGE_SCALE", "0.01");
+			Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
+			Config.overwrite("GEPHI_NODE_SIZE", "1.5");
+
+			String graphFilename = filename;
+			
+			Graph g = nw.generate();
+			
+			g = t_rpid.transform(g);
+	
+			IdentifierSpace ids = (IdentifierSpace) g
+					.getProperty("ID_SPACE_0");
+	
+			new GtnaGraphWriter().writeWithProperties(g, graphFilename+".txt");
+			
+			gephi.plot(g, ids, graphFilename+".pdf");
+			
+			System.out.println(filename);
+		}
+>>>>>>> - refactoring
 	}
 }
