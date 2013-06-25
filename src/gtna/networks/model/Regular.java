@@ -68,20 +68,20 @@ public class Regular extends Network {
 
 	private boolean BIDIRECTIONAL;
 
-	public static Regular[] get(int[] n, double d, boolean b,
+	public static Regular[] get(int[] n, int d, boolean r, boolean b,
 			Transformation[] t) {
 		Regular[] nw = new Regular[n.length];
 		for (int i = 0; i < n.length; i++) {
-			nw[i] = new Regular(n[i], d, b, t);
+			nw[i] = new Regular(n[i], d, r, b, t);
 		}
 		return nw;
 	}
 
-	public static Regular[] get(int n, double[] d, boolean b,
+	public static Regular[] get(int n, int[] d, boolean[] r, boolean b,
 			Transformation[] t) {
 		Regular[] nw = new Regular[d.length];
 		for (int i = 0; i < d.length; i++) {
-			nw[i] = new Regular(n, d[i], b, t);
+			nw[i] = new Regular(n, d[i], r[i], b, t);
 		}
 		return nw;
 	}
