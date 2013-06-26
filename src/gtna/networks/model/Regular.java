@@ -159,9 +159,9 @@ public class Regular extends Network {
 
 	private boolean addRingEdges(Node[] nodes, Edges edges, int toAdd){
 		for(int i = 0; i < nodes.length; i++){
-			for(int j = 0; j < DEGREE; j++){
+			for(int j = 1; j <= DEGREE; j++){
 				int src = i;	
-				int dst = i+j;	// get the next neighbor
+				int dst = (i+j)%(nodes.length-1);	// get the next neighbor
 				if (src == dst) {
 					continue;
 				}	
