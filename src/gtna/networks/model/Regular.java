@@ -42,6 +42,7 @@ import gtna.networks.Network;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.Random;
@@ -64,10 +65,19 @@ import java.util.Random;
  * @author Tim  
  */
 public class Regular extends Network {
-	private double AVERAGE_DEGREE;
-
+	private int DEGREE;
+	private boolean RING;
 	private boolean BIDIRECTIONAL;
 
+	/**
+	 * Generates n.length regular networks
+	 * @param n sizes of the regular networks
+	 * @param d degree of the nodes 
+	 * @param r true: ring topology, false: random topology
+	 * @param b bidirectional
+	 * @param t	transformations
+	 * @return	array of n.length regular networks
+	 */
 	public static Regular[] get(int[] n, int d, boolean r, boolean b,
 			Transformation[] t) {
 		Regular[] nw = new Regular[n.length];
@@ -77,32 +87,52 @@ public class Regular extends Network {
 		return nw;
 	}
 
-	public static Regular[] get(int n, int[] d, boolean[] r, boolean b,
+	/**
+	 * Generates d.length regular networks
+	 * @param n size of the regular networks
+	 * @param d degrees of the nodes 
+	 * @param r true: ring topology, false: random topology
+	 * @param b bidirectional
+	 * @param t	transformations
+	 * @return	array of d.length regular networks
+	 */
+	public static Regular[] get(int n, int[] d, boolean r, boolean b,
 			Transformation[] t) {
 		Regular[] nw = new Regular[d.length];
 		for (int i = 0; i < d.length; i++) {
-			nw[i] = new Regular(n, d[i], r[i], b, t);
+			nw[i] = new Regular(n, d[i], r, b, t);
 		}
 		return nw;
 	}
 
-	public static Regular[][] get(int[] n, double[] d, boolean b,
+	/**
+	 * Generates n.length x d.length regular networks
+	 * @param n sizes of the regular networks
+	 * @param d degrees of the nodes 
+	 * @param r true: ring topology, false: random topology
+	 * @param b bidirectional
+	 * @param t	transformations
+	 * @return	array of d.length regular networks
+	 */
+	public static Regular[][] get(int[] n, int[] d, boolean r, boolean b,
 			Transformation[] t) {
 		Regular[][] nw = new Regular[d.length][n.length];
 		for (int i = 0; i < d.length; i++) {
 			for (int j = 0; j < n.length; j++) {
-				nw[i][j] = new Regular(n[j], d[i], b, t);
+				nw[i][j] = new Regular(n[j], d[i], r, b, t);
 			}
 		}
 		return nw;
 	}
 
-	public Regular(int nodes, int degree, boolean RING, boolean BIDIRECTIONAL,
+	public Regular(int nodes, int DEGREE, boolean RING, boolean BIDIRECTIONAL,
 			Transformation[] t) {
-		super("ERDOS_RENYI", nodes, new Parameter[] {
-				new DoubleParameter("AVERAGE_DEGREE", AVERAGE_DEGREE),
+		super("REGULAR", nodes, new Parameter[] {
+				new IntParameter("DEGREE", DEGREE),
+				new BooleanParameter("RING_TOPOLOGY", RING),
 				new BooleanParameter("BIDIRECTIONAL", BIDIRECTIONAL) }, t);
-		this.AVERAGE_DEGREE = AVERAGE_DEGREE;
+		this.DEGREE = DEGREE;
+		this.RING = RING;
 		this.BIDIRECTIONAL = BIDIRECTIONAL;
 	}
 
@@ -110,23 +140,39 @@ public class Regular extends Network {
 		Graph graph = new Graph(this.getDescription());
 		Random rand = new Random(System.currentTimeMillis());
 		Node[] nodes = Node.init(this.getNodes(), graph);
-		int toAdd = (int) (this.AVERAGE_DEGREE * this.getNodes() / 2);
+		int toAdd = BIDIRECTIONAL ? DEGREE*nodes.length*2 : DEGREE*nodes.length;
 		Edges edges = new Edges(nodes, toAdd);
-		while (edges.size() < toAdd) {
-			int src = rand.nextInt(nodes.length);
-			int dst = rand.nextInt(nodes.length);
-			if (src == dst) {
-				continue;
-			}
-			if (this.BIDIRECTIONAL) {
-				edges.add(src, dst);
-				edges.add(dst, src);
-			} else {
-				edges.add(src, dst);
-			}
-		}
+		
+		if(RING) addRingEdges(nodes, edges, toAdd); 
+		else addRandomEdges(nodes, edges, toAdd);
+		
 		edges.fill();
 		graph.setNodes(nodes);
 		return graph;
+	}
+	
+	
+	private boolean addRandomEdges(Node[] nodes, Edges edges, int toAdd) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	private boolean addRingEdges(Node[] nodes, Edges edges, int toAdd){
+		for(int i = 0; i < nodes.length; i++){
+			for(int j = 0; j < DEGREE; j++){
+				int src = i;	
+				int dst = i+j;	// get the next neighbor
+				if (src == dst) {
+					continue;
+				}	
+				if (this.BIDIRECTIONAL) {
+					edges.add(src, dst);
+					edges.add(dst, src);
+				} else {
+					edges.add(src, dst);
+				}
+			}
+		}
+		return true;
 	}
 }
