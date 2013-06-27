@@ -712,6 +712,7 @@ public class Exploring {
 		
 		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
 
+<<<<<<< HEAD
 		if (!Plotting.single(s, metrics, "example-s/")) {
 //			System.err.println("Failed plotting single values");
 		}
@@ -723,6 +724,11 @@ public class Exploring {
 <<<<<<< HEAD
 >>>>>>> exploring gtna functionality
 =======
+=======
+		Plotting.single(s, metrics, "example-s/");
+
+		Plotting.multi(s, metrics, "example-m/");
+>>>>>>> Plotting-s/-m
 		 
 		 for(Network i : n){
 			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
