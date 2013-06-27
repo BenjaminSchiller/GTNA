@@ -96,14 +96,9 @@ public class Exploring {
 		
 		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
 
-		if (!Plotting.single(s, metrics, "example-s/")) {
-//			System.err.println("Failed plotting single values");
-		}
-//		Plotting.multi(s, metrics, "example-m/", Type.confidence1,
-//				Style.candlesticks);
-		 if(Plotting.multi(s, metrics, "example-m/")){
-//		 System.err.println("Failed plotting multi values");
-		 }
+		Plotting.single(s, metrics, "example-s/");
+
+		Plotting.multi(s, metrics, "example-m/");
 		 
 		 for(Network i : n){
 			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
