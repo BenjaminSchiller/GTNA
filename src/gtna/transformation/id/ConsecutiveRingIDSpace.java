@@ -75,7 +75,7 @@ public class ConsecutiveRingIDSpace extends Transformation {
 			ids[i] = (RingIdentifier) idSpace.getConsecutiveIdentifier((double)i/(double)ids.length);
 			
 		}
-		Arrays.sort(ids);
+		//Arrays.sort(ids);
 		for (int i = 0; i < partitions.length; i++) {
 			partitions[i] = new RingPartition(ids[i], ids[(i + 1) % ids.length]);
 		}
