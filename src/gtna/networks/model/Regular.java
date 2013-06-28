@@ -22,15 +22,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  * 
  * ---------------------------------------
- * ErdosRenyi.java
+ * Regular.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  * 
- * Original Author: Benjamin Schiller;
+ * Original Author: Tim Grube
  * Contributors:    -;
  * 
- * Changes since 2011-05-17
+ * Changes since 2013-06-25
  * ---------------------------------------
  */
 package gtna.networks.model;
