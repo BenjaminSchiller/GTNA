@@ -88,6 +88,10 @@ public class RingIdentifierSpace extends DoubleIdentifierSpace {
 	public Identifier getRandomIdentifier(Random rand) {
 		return new RingIdentifier(rand.nextDouble(), this.wrapAround);
 	}
+	
+	public Identifier getConsecutiveIdentifier(double id){
+		return new RingIdentifier(id, this.wrapAround);
+	}
 
 	/**
 	 * @return the wrapAround
