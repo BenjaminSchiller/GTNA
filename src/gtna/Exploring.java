@@ -52,6 +52,7 @@ import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
+import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
 import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
@@ -74,16 +75,27 @@ public class Exploring {
 		
 //		Transformation t = new Bidirectional();
 
+//		Network nw0 = new Regular(10, 2, true, false, null);
+//		Network nw1 = new ErdosRenyi(10, 3, false, null);
+//		Network nw2 = new BarabasiAlbert(10, 2, null);
+//		Network nw3 = new WattsStrogatz(10, 2, 0.2, null);
+//		Network nw4 = new CondonAndKarp(10, 2, 0.4, 0.05, null);
+//		Network nw5 = new Regular(100, 5, true, false, null);
+//		Network nw6 = new ErdosRenyi(100, 10, false, null);
+//		Network nw7 = new BarabasiAlbert(100, 10, null);
+//		Network nw8 = new WattsStrogatz(100, 6, 0.2, null);
+//		Network nw9 = new CondonAndKarp(100, 4, 0.4, 0.05, null);
+		
 		Network nw0 = new Regular(10, 2, true, false, null);
-		Network nw1 = new ErdosRenyi(10, 3, false, null);
-		Network nw2 = new BarabasiAlbert(10, 2, null);
-		Network nw3 = new WattsStrogatz(10, 2, 0.2, null);
-		Network nw4 = new CondonAndKarp(10, 2, 0.4, 0.05, null);
-		Network nw5 = new Regular(100, 5, true, false, null);
-		Network nw6 = new ErdosRenyi(100, 10, false, null);
-		Network nw7 = new BarabasiAlbert(100, 10, null);
-		Network nw8 = new WattsStrogatz(100, 6, 0.2, null);
-		Network nw9 = new CondonAndKarp(100, 4, 0.4, 0.05, null);
+		Network nw1 = new Regular(20, 2, true, false, null);
+		Network nw2 = new Regular(30, 2, true, false, null);
+		Network nw3 = new Regular(40, 2, true, false, null);
+		Network nw4 = new Regular(50, 2, true, false, null);
+		Network nw5 = new Regular(60, 2, true, false, null);
+		Network nw6 = new Regular(70, 2, true, false, null);
+		Network nw7 = new Regular(80, 2, true, false, null);
+		Network nw8 = new Regular(90, 2, true, false, null);
+		Network nw9 = new Regular(100, 2, true, false, null);
 		
 		Network[] n = new Network[] {nw0, nw1, nw2, nw3, nw4, nw5, nw6, nw7, nw8, nw9};
 		
@@ -110,9 +122,9 @@ public class Exploring {
 	public static void plot(Network nw, String filename, int times) {
 		Transformation t_rpid = new RandomPlaneIDSpaceSimple(1, 100, 100, true);
 		Transformation t_rrid = new RandomRingIDSpaceSimple(true);
+		Transformation t_crid = new ConsecutiveRingIDSpace(true);
 		
-		
-		Transformation t_nid = t_rpid;
+		Transformation t_nid = t_crid;
 		
 		
 		for (int i = 0; i < times; i++) {
@@ -124,7 +136,7 @@ public class Exploring {
 				Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "true");
 				Config.overwrite("GEPHI_NODE_SIZE", "0.1");
 			}else 
-				if(t_nid == t_rrid){
+				if(t_nid == t_rrid || t_nid == t_crid){
 					Config.overwrite("GEPHI_RING_RADIUS", "50");
 					Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.01");
 					Config.overwrite("GEPHI_EDGE_SCALE", "0.001");
