@@ -430,7 +430,7 @@ public class Regular extends Network {
 		for(int i = 0; i < nodes.length; i++){
 			for(int j = 1; j <= DEGREE; j++){
 				int src = i;	
-				int dst = (i+j)%(nodes.length-1);	// get the next neighbor
+				int dst = (i+j)%(nodes.length);	// get the next neighbor
 				if (src == dst) {
 					continue;
 				}	
