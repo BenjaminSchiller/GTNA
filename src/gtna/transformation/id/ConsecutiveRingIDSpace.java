@@ -73,6 +73,7 @@ public class ConsecutiveRingIDSpace extends Transformation {
 		RingIdentifier[] ids = new RingIdentifier[graph.getNodes().length];
 		for (int i = 0; i < ids.length; i++) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			ids[i] = (RingIdentifier) idSpace.getConsecutiveIdentifier((double)i/(double)ids.length);
 			
 		}
@@ -83,6 +84,10 @@ public class ConsecutiveRingIDSpace extends Transformation {
 //		Util.randomize(partitions, rand);
 =======
 			ids[i] = (RingIdentifier) idSpace.getConsecutiveIdentifier(new Double(i/ids.length));
+=======
+			ids[i] = (RingIdentifier) idSpace.getConsecutiveIdentifier((double)i/(double)ids.length);
+			
+>>>>>>> ConsecutiveRingIDSpace + properties
 		}
 		Arrays.sort(ids);
 		for (int i = 0; i < partitions.length; i++) {
