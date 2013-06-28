@@ -71,7 +71,8 @@ public class Exploring {
 		
 		
 		boolean get = false; // get or generate
-		int times = 5;		// how many generations?
+		int times = 1;		// how many generations?
+		boolean b = false; // bidirectional
 		
 //		Transformation t = new Bidirectional();
 
@@ -86,16 +87,18 @@ public class Exploring {
 //		Network nw8 = new WattsStrogatz(100, 6, 0.2, null);
 //		Network nw9 = new CondonAndKarp(100, 4, 0.4, 0.05, null);
 		
-		Network nw0 = new Regular(10, 2, true, false, null);
-		Network nw1 = new Regular(20, 2, true, false, null);
-		Network nw2 = new Regular(30, 2, true, false, null);
-		Network nw3 = new Regular(40, 2, true, false, null);
-		Network nw4 = new Regular(50, 2, true, false, null);
-		Network nw5 = new Regular(60, 2, true, false, null);
-		Network nw6 = new Regular(70, 2, true, false, null);
-		Network nw7 = new Regular(80, 2, true, false, null);
-		Network nw8 = new Regular(90, 2, true, false, null);
-		Network nw9 = new Regular(100, 2, true, false, null);
+
+		
+		Network nw0 = new Regular(10, 2, true, b, null);
+		Network nw1 = new Regular(20, 2, true, b, null);
+		Network nw2 = new Regular(30, 2, true, b, null);
+		Network nw3 = new Regular(40, 2, true, b, null);
+		Network nw4 = new Regular(50, 2, true, b, null);
+		Network nw5 = new Regular(60, 2, true, b, null);
+		Network nw6 = new Regular(70, 2, true, b, null);
+		Network nw7 = new Regular(80, 2, true, b, null);
+		Network nw8 = new Regular(90, 2, true, b, null);
+		Network nw9 = new Regular(100, 2, true, b, null);
 		
 		Network[] n = new Network[] {nw0, nw1, nw2, nw3, nw4, nw5, nw6, nw7, nw8, nw9};
 		
@@ -133,14 +136,14 @@ public class Exploring {
 				Config.overwrite("GEPHI_RING_RADIUS", "1");
 				Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.01");
 				Config.overwrite("GEPHI_EDGE_SCALE", "0.001");
-				Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "true");
+				Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
 				Config.overwrite("GEPHI_NODE_SIZE", "0.1");
 			}else 
 				if(t_nid == t_rrid || t_nid == t_crid){
 					Config.overwrite("GEPHI_RING_RADIUS", "50");
 					Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.01");
 					Config.overwrite("GEPHI_EDGE_SCALE", "0.001");
-					Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "true");
+					Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
 					Config.overwrite("GEPHI_NODE_SIZE", "0.001");	
 			}
 
