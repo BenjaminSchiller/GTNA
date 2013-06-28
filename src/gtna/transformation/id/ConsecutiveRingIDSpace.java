@@ -78,6 +78,7 @@ public class ConsecutiveRingIDSpace extends Transformation {
 			
 		}
 		//Arrays.sort(ids);
+<<<<<<< HEAD
 		for (int i = 0; i < partitions.length; i++) {
 			partitions[i] = new RingPartition(ids[i], ids[(i + 1) % ids.length]);
 		}
@@ -90,6 +91,8 @@ public class ConsecutiveRingIDSpace extends Transformation {
 >>>>>>> ConsecutiveRingIDSpace + properties
 		}
 		Arrays.sort(ids);
+=======
+>>>>>>> corrected the sorting of IDs
 		for (int i = 0; i < partitions.length; i++) {
 			partitions[i] = new RingPartition(ids[i], ids[(i + 1) % ids.length]);
 		}
