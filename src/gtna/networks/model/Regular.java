@@ -23,14 +23,19 @@
  * 
  * ---------------------------------------
 <<<<<<< HEAD
+<<<<<<< HEAD
  * Regular.java
 =======
  * ErdosRenyi.java
 >>>>>>> Using ER generator to adapt a generator for my regular network
+=======
+ * Regular.java
+>>>>>>> correct comment
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  * 
+<<<<<<< HEAD
 <<<<<<< HEAD
  * Original Author: Tim Grube
  * Contributors:    -;
@@ -42,6 +47,12 @@
  * 
  * Changes since 2011-05-17
 >>>>>>> Using ER generator to adapt a generator for my regular network
+=======
+ * Original Author: Tim Grube
+ * Contributors:    -;
+ * 
+ * Changes since 2013-06-25
+>>>>>>> correct comment
  * ---------------------------------------
  */
 package gtna.networks.model;
