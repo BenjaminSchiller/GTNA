@@ -88,17 +88,18 @@ public class Exploring {
 //		Network nw9 = new CondonAndKarp(100, 4, 0.4, 0.05, null);
 		
 
+		boolean r = false;
 		
-		Network nw0 = new Regular(10, 2, true, b, null);
-		Network nw1 = new Regular(20, 2, true, b, null);
-		Network nw2 = new Regular(30, 2, true, b, null);
-		Network nw3 = new Regular(40, 2, true, b, null);
-		Network nw4 = new Regular(50, 2, true, b, null);
-		Network nw5 = new Regular(60, 2, true, b, null);
-		Network nw6 = new Regular(70, 2, true, b, null);
-		Network nw7 = new Regular(80, 2, true, b, null);
-		Network nw8 = new Regular(90, 2, true, b, null);
-		Network nw9 = new Regular(100, 2, true, b, null);
+		Network nw0 = new Regular(10, 2, r, b, null);
+		Network nw1 = new Regular(20, 2, r, b, null);
+		Network nw2 = new Regular(30, 2, r, b, null);
+		Network nw3 = new Regular(40, 2, r, b, null);
+		Network nw4 = new Regular(50, 2, r, b, null);
+		Network nw5 = new Regular(60, 2, r, b, null);
+		Network nw6 = new Regular(70, 2, r, b, null);
+		Network nw7 = new Regular(80, 2, r, b, null);
+		Network nw8 = new Regular(90, 2, r, b, null);
+		Network nw9 = new Regular(100, 2, r, b, null);
 		
 		Network[] n = new Network[] {nw0, nw1, nw2, nw3, nw4, nw5, nw6, nw7, nw8, nw9};
 		
