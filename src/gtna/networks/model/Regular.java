@@ -87,6 +87,8 @@ import gtna.util.parameter.IntParameter;
 >>>>>>> added Ring topology
 import gtna.util.parameter.Parameter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -422,7 +424,64 @@ public class Regular extends Network {
 	
 	
 	private boolean addRandomEdges(Node[] nodes, Edges edges, int toAdd) {
-		// TODO Auto-generated method stub
+		ArrayList<Node> listDst = new ArrayList<Node>();
+		ArrayList<Node> listSrc = new ArrayList<Node>();
+		
+		
+		/*
+		 *  initialize source and destination lists
+		 *  As we built a regular network, we can add the whole node list 
+		 *  again and again
+		 *  
+		 */
+		for(int i = 0; i<DEGREE; i++){
+			listDst.addAll(Arrays.asList(nodes));
+			listSrc.addAll(Arrays.asList(nodes));
+		}
+		
+		Random rand = new Random(); // TODO how to get a configurable seed?
+		int retries = 30;
+		while(!listSrc.isEmpty() && !listDst.isEmpty() && retries > 0){
+			int srcId = rand.nextInt(listSrc.size());
+			Node srcN = listSrc.get(srcId);
+			int src = srcN.getIndex();
+			
+			int dstId = rand.nextInt(listDst.size());
+			Node dstN = listDst.get(dstId); 
+			int dst = dstN.getIndex();
+			
+			if (src == dst) {
+				System.err.println("SELFLOOP! src=" + src + " dst=" +dst);
+				try {
+				    Thread.sleep(500);
+				} catch(InterruptedException ex) {
+				    Thread.currentThread().interrupt();
+				}
+				retries--;
+				continue;
+			}
+			
+			if (this.BIDIRECTIONAL) {
+				edges.add(src, dst);
+				edges.add(dst, src);
+				listSrc.remove(srcN);listDst.remove(srcN);
+				listDst.remove(dstN);listSrc.remove(dstN);
+				
+			} else {
+				edges.add(src, dst);
+				listSrc.remove(srcN);
+				listDst.remove(dstN);
+			}
+			retries = 30;
+		}
+		
+		if(edges.size() != toAdd){
+			System.err.println("Restarting Generator! " +
+					"(" + edges.size() + " - " + toAdd + ")");
+			edges = new Edges(nodes, toAdd);
+			return addRandomEdges(nodes, edges, toAdd);
+		}
+		
 		return true;
 	}
 
