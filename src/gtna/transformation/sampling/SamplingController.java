@@ -35,6 +35,7 @@
  */
 package gtna.transformation.sampling;
 
+<<<<<<< HEAD
 import java.util.Collection;
 import java.util.Random;
 
@@ -129,10 +130,23 @@ public class SamplingController extends Transformation {
 	/*
 	 * (non-Javadoc)
 	 * 
+=======
+import gtna.graph.Graph;
+import gtna.transformation.Transformation;
+
+/**
+ * @author Tim
+ *
+ */
+public class SamplingController extends Transformation {
+
+	/* (non-Javadoc)
+>>>>>>> Class Structure
 	 * @see gtna.transformation.Transformation#transform(gtna.graph.Graph)
 	 */
 	@Override
 	public Graph transform(Graph g) {
+<<<<<<< HEAD
 		if (!initialized()) {
 			return g;
 		} else {
@@ -163,10 +177,18 @@ public class SamplingController extends Transformation {
 	/*
 	 * (non-Javadoc)
 	 * 
+=======
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+>>>>>>> Class Structure
 	 * @see gtna.transformation.Transformation#applicable(gtna.graph.Graph)
 	 */
 	@Override
 	public boolean applicable(Graph g) {
+<<<<<<< HEAD
 		if (!initialized()) {
 			System.out.println("Sampling is not initialized:");
 			if (dimension <= 0)
@@ -380,4 +402,10 @@ public class SamplingController extends Transformation {
 		this.rng = rng;
 	}
 
+=======
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+>>>>>>> Class Structure
 }

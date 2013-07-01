@@ -35,6 +35,7 @@
  */
 package gtna.transformation.sampling;
 
+<<<<<<< HEAD
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.sample.NetworkSample;
@@ -185,3 +186,12 @@ public abstract class AWalker extends Parameter {
     }
 
 }
+=======
+/**
+ * @author Tim
+ *
+ */
+public abstract class AWalker {
+
+}
+>>>>>>> Class Structure

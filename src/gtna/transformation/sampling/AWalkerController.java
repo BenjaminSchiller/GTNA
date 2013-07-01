@@ -35,6 +35,7 @@
  */
 package gtna.transformation.sampling;
 
+<<<<<<< HEAD
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -226,5 +227,12 @@ public abstract class AWalkerController extends Parameter {
 	public Random getRNG() {
 	    return samplingController.getRng();
 	}
+=======
+/**
+ * @author Tim
+ *
+ */
+public abstract class AWalkerController {
+>>>>>>> Class Structure
 
 }
