@@ -439,14 +439,26 @@ public class Regular extends Network {
 			listSrc.addAll(Arrays.asList(nodes));
 		}
 		
-		Random rand = new Random(); // TODO how to get a configurable seed?
+		Random rand = new Random();
 		int retries = 30;
 		while(!listSrc.isEmpty() && !listDst.isEmpty() && retries > 0){
-			int srcId = rand.nextInt(listSrc.size());
+//			int srcId = rand.nextInt(listSrc.size());
+//			Node srcN = listSrc.get(srcId);
+//			int src = srcN.getIndex();
+//			
+//			int dstId = rand.nextInt(listDst.size());
+//			Node dstN = listDst.get(dstId); 
+//			int dst = dstN.getIndex();
+			
+			int srcId = rand.nextInt();
+			srcId = (srcId < 0) ? srcId*(-1) : srcId;
+			srcId = srcId % listSrc.size();
 			Node srcN = listSrc.get(srcId);
 			int src = srcN.getIndex();
 			
-			int dstId = rand.nextInt(listDst.size());
+			int dstId = rand.nextInt();
+			dstId = (dstId < 0) ? dstId*(-1) : dstId;
+			dstId = dstId % listDst.size();
 			Node dstN = listDst.get(dstId); 
 			int dst = dstN.getIndex();
 			
@@ -478,6 +490,7 @@ public class Regular extends Network {
 		if(edges.size() != toAdd){
 			System.err.println("Restarting Generator! " +
 					"(" + edges.size() + " - " + toAdd + ")");
+			edges = null;
 			edges = new Edges(nodes, toAdd);
 			return addRandomEdges(nodes, edges, toAdd);
 		}
