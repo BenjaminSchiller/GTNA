@@ -35,6 +35,7 @@
  */
 package gtna.transformation.sampling;
 
+<<<<<<< HEAD
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -178,5 +179,12 @@ public abstract class ASampler extends Parameter {
 	
     }
 
+=======
+/**
+ * @author Tim
+ *
+ */
+public class ASampler {
+>>>>>>> Class Structure
 
 }

@@ -35,6 +35,7 @@
  */
 package gtna.transformation.sampling;
 
+<<<<<<< HEAD
 import gtna.graph.Node;
 import gtna.transformation.sampling.sample.NetworkSample;
 
@@ -116,4 +117,12 @@ public class CandidateFilter {
 	    NetworkSample ns) {
 	return c;
     }
+=======
+/**
+ * @author Tim
+ *
+ */
+public class CandidateFilter {
+
+>>>>>>> Class Structure
 }
