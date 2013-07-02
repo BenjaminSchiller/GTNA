@@ -35,10 +35,12 @@
  */
 package gtna.transformation.sampling;
 
+import gtna.util.parameter.Parameter;
+
 /**
  * @author Tim
  *
  */
-public abstract class AStartNodeSelector {
+public abstract class AStartNodeSelector extends Parameter{
 
 }
