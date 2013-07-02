@@ -35,10 +35,12 @@
  */
 package gtna.transformation.sampling;
 
+import gtna.util.parameter.Parameter;
+
 /**
  * @author Tim
  *
  */
-public class NetworkSample {
+public class NetworkSample extends Parameter {
 
 }
