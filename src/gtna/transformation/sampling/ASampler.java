@@ -190,10 +190,26 @@ import gtna.util.parameter.Parameter;
  *
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
 public class ASampler {
 >>>>>>> Class Structure
 =======
 public class ASampler extends Parameter {
 >>>>>>> SamplingController is a Transformation
+=======
+public abstract class ASampler extends Parameter {
+
+	/**
+	 * @param targetSampleSize 
+	 * @param walkerController 
+	 * 
+	 */
+	public abstract void initialize(AWalkerController walkerController, int targetSampleSize);
+
+	/**
+	 * @return
+	 */
+	public abstract boolean sampleNodes();
+>>>>>>> Implementing the SamplingController - coarse structure
 
 }

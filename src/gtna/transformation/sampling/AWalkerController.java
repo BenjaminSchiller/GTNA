@@ -37,6 +37,7 @@ package gtna.transformation.sampling;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -230,6 +231,10 @@ public abstract class AWalkerController extends Parameter {
 	}
 =======
 =======
+=======
+import gtna.graph.Graph;
+import gtna.graph.Node;
+>>>>>>> Implementing the SamplingController - coarse structure
 import gtna.util.parameter.Parameter;
 
 >>>>>>> SamplingController is a Transformation
@@ -243,5 +248,11 @@ public abstract class AWalkerController {
 =======
 public abstract class AWalkerController extends Parameter{
 >>>>>>> SamplingController is a Transformation
+
+	/**
+	 * @param g 
+	 * @param startNodes
+	 */
+	public abstract void initialize(Graph g, Node[] startNodes);
 
 }
