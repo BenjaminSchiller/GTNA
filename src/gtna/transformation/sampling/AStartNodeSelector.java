@@ -35,6 +35,8 @@
  */
 package gtna.transformation.sampling;
 
+import gtna.graph.Graph;
+import gtna.graph.Node;
 import gtna.util.parameter.Parameter;
 
 /**
@@ -42,5 +44,15 @@ import gtna.util.parameter.Parameter;
  *
  */
 public abstract class AStartNodeSelector extends Parameter{
+
+	/**
+	 * @param g 
+	 * @param dimension
+	 * @return
+	 */
+	public Node[] selectStartNodes(Graph g, int dimension) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

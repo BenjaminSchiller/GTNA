@@ -35,6 +35,8 @@
  */
 package gtna.transformation.sampling;
 
+import gtna.graph.Graph;
+import gtna.graph.Node;
 import gtna.util.parameter.Parameter;
 
 /**
@@ -42,5 +44,11 @@ import gtna.util.parameter.Parameter;
  *
  */
 public abstract class AWalkerController extends Parameter{
+
+	/**
+	 * @param g 
+	 * @param startNodes
+	 */
+	public abstract void initialize(Graph g, Node[] startNodes);
 
 }
