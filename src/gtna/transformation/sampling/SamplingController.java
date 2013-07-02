@@ -133,6 +133,10 @@ public class SamplingController extends Transformation {
 =======
 import gtna.graph.Graph;
 import gtna.transformation.Transformation;
+import gtna.util.parameter.BooleanParameter;
+import gtna.util.parameter.DoubleParameter;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
 
 /**
  * @author Tim
@@ -140,6 +144,22 @@ import gtna.transformation.Transformation;
  */
 public class SamplingController extends Transformation {
 
+	AWalkerController walkerController;
+	ASampler sampler;
+	AStartNodeSelector startNodeSelector;
+	NetworkSample networkSample;
+	
+	public SamplingController(String algorithm, AWalkerController awc, ASampler as, AStartNodeSelector asns, double scaledown, int dimension, boolean revisiting){
+		super("SAMPLING_"+algorithm, new Parameter[]{
+				awc, 
+				as, 
+				asns, 
+				new DoubleParameter("SCALEDOWN", scaledown),
+				new IntParameter("DIMENSIONS", dimension),
+				new BooleanParameter("REVISITING", revisiting)
+		});
+	}
+	
 	/* (non-Javadoc)
 >>>>>>> Class Structure
 	 * @see gtna.transformation.Transformation#transform(gtna.graph.Graph)

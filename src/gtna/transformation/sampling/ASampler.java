@@ -36,6 +36,7 @@
 package gtna.transformation.sampling;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -180,11 +181,19 @@ public abstract class ASampler extends Parameter {
     }
 
 =======
+=======
+import gtna.util.parameter.Parameter;
+
+>>>>>>> SamplingController is a Transformation
 /**
  * @author Tim
  *
  */
+<<<<<<< HEAD
 public class ASampler {
 >>>>>>> Class Structure
+=======
+public class ASampler extends Parameter {
+>>>>>>> SamplingController is a Transformation
 
 }

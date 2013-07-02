@@ -36,6 +36,7 @@
 package gtna.transformation.sampling;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -228,11 +229,19 @@ public abstract class AWalkerController extends Parameter {
 	    return samplingController.getRng();
 	}
 =======
+=======
+import gtna.util.parameter.Parameter;
+
+>>>>>>> SamplingController is a Transformation
 /**
  * @author Tim
  *
  */
+<<<<<<< HEAD
 public abstract class AWalkerController {
 >>>>>>> Class Structure
+=======
+public abstract class AWalkerController extends Parameter{
+>>>>>>> SamplingController is a Transformation
 
 }
