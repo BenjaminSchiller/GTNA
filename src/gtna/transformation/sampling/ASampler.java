@@ -41,6 +41,18 @@ import gtna.util.parameter.Parameter;
  * @author Tim
  *
  */
-public class ASampler extends Parameter {
+public abstract class ASampler extends Parameter {
+
+	/**
+	 * @param targetSampleSize 
+	 * @param walkerController 
+	 * 
+	 */
+	public abstract void initialize(AWalkerController walkerController, int targetSampleSize);
+
+	/**
+	 * @return
+	 */
+	public abstract boolean sampleNodes();
 
 }
