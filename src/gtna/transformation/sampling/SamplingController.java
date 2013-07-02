@@ -36,6 +36,7 @@
 package gtna.transformation.sampling;
 
 import gtna.graph.Graph;
+import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;
@@ -53,6 +54,10 @@ public class SamplingController extends Transformation {
 	AStartNodeSelector startNodeSelector;
 	NetworkSample networkSample;
 	
+	int dimension;
+	double scaledown;
+	boolean revisiting;
+	
 	public SamplingController(String algorithm, AWalkerController awc, ASampler as, AStartNodeSelector asns, double scaledown, int dimension, boolean revisiting){
 		super("SAMPLING_"+algorithm, new Parameter[]{
 				awc, 
@@ -62,6 +67,21 @@ public class SamplingController extends Transformation {
 				new IntParameter("DIMENSIONS", dimension),
 				new BooleanParameter("REVISITING", revisiting)
 		});
+		
+		if(dimension < 1){
+			throw new IllegalArgumentException("Dimension has to be at least 1 but is: " + dimension);
+		}
+		
+		if(scaledown < 0.0 || scaledown > 1.0){
+			throw new IllegalArgumentException("Scaledown has to be in [0,1] but is: " + scaledown);
+		}
+		
+		
+		this.scaledown = scaledown;
+		this.dimension = dimension;
+		this.revisiting = revisiting;
+		
+		
 	}
 	
 	/* (non-Javadoc)
@@ -79,6 +99,26 @@ public class SamplingController extends Transformation {
 	@Override
 	public boolean applicable(Graph g) {
 		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	public int calculateTargetedSampleSize(Graph g, double scaledown){
+		
+		int originalSize = g.getNodeCount();
+				
+		return (int) Math.ceil(originalSize * scaledown);
+	}
+	
+	public boolean sampleGraph(Graph g, int targetSampleSize){
+		Node[] startNodes = startNodeSelector.selectStartNodes(g, dimension); 
+		
+		walkerController.initialize(g, startNodes); // place walker(s) on start node(s)
+		sampler.initialize(walkerController, targetSampleSize); // initialize Sampler, eventually sampling the start nodes
+		do{
+			
+		}while(sampler.sampleNodes());
+		
+		
 		return false;
 	}
 
