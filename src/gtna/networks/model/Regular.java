@@ -193,15 +193,26 @@ public class Regular extends Network {
 			Node dstN = listDst.get(dstId); 
 			int dst = dstN.getIndex();
 			
-			if (src == dst) {
-				System.err.println("SELFLOOP! src=" + src + " dst=" +dst);
+			while ((src == dst || edges.contains(src, dst)) && retries > 0) {
+				System.err.println("SELFLOOP OR DOUBLE EDGE! src=" + src + " dst=" +dst);
 				try {
 				    Thread.sleep(500);
 				} catch(InterruptedException ex) {
 				    Thread.currentThread().interrupt();
 				}
+				dstId = (dstId+1) % listDst.size();
+				dstN = listDst.get(dstId);
+				dst = dstN.getIndex();
 				retries--;
 				continue;
+			}
+			
+			if(retries == 0){
+				System.err.println("Restarting Generator! " +
+						"(" + edges.size() + " - " + toAdd + ")");
+				edges = null;
+				edges = new Edges(nodes, toAdd);
+				return addRandomEdges(nodes, edges, toAdd);
 			}
 			
 			if (this.BIDIRECTIONAL) {
@@ -218,13 +229,7 @@ public class Regular extends Network {
 			retries = 30;
 		}
 		
-		if(edges.size() != toAdd){
-			System.err.println("Restarting Generator! " +
-					"(" + edges.size() + " - " + toAdd + ")");
-			edges = null;
-			edges = new Edges(nodes, toAdd);
-			return addRandomEdges(nodes, edges, toAdd);
-		}
+		
 		
 		return true;
 	}
