@@ -90,16 +90,16 @@ public class Exploring {
 
 		boolean r = false;
 		
-		Network nw0 = new Regular(1000, 3, r, b, null);
-		Network nw1 = new Regular(2000, 3, r, b, null);
-		Network nw2 = new Regular(3000, 3, r, b, null);
-		Network nw3 = new Regular(4000, 3, r, b, null);
-		Network nw4 = new Regular(5000, 3, r, b, null);
-		Network nw5 = new Regular(6000, 3, r, b, null);
-		Network nw6 = new Regular(7000, 3, r, b, null);
-		Network nw7 = new Regular(8000, 3, r, b, null);
-		Network nw8 = new Regular(9000, 3, r, b, null);
-		Network nw9 = new Regular(10000, 3, r, b, null);
+		Network nw0 = new Regular(100, 4, r, b, null);
+		Network nw1 = new Regular(200, 4, r, b, null);
+		Network nw2 = new Regular(300, 4, r, b, null);
+		Network nw3 = new Regular(400, 4, r, b, null);
+		Network nw4 = new Regular(500, 4, r, b, null);
+		Network nw5 = new Regular(600, 4, r, b, null);
+		Network nw6 = new Regular(700, 4, r, b, null);
+		Network nw7 = new Regular(800, 4, r, b, null);
+		Network nw8 = new Regular(900, 4, r, b, null);
+		Network nw9 = new Regular(1000, 4, r, b, null);
 		
 		Network[] n = new Network[] {nw0, nw1, nw2, nw3, nw4, nw5, nw6, nw7, nw8, nw9};
 		
