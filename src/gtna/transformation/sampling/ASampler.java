@@ -209,7 +209,11 @@ public abstract class ASampler extends Parameter {
 	/**
 	 * @return
 	 */
+<<<<<<< HEAD
 	public abstract boolean sampleNodes();
 >>>>>>> Implementing the SamplingController - coarse structure
+=======
+	public abstract boolean sampleOneStepNodes();
+>>>>>>> SamplingController: applicable, sampling-loop
 
 }

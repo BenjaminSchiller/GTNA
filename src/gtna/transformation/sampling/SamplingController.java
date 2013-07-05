@@ -155,7 +155,7 @@ public class SamplingController extends Transformation {
 	boolean revisiting;
 	
 	public SamplingController(String algorithm, AWalkerController awc, ASampler as, AStartNodeSelector asns, double scaledown, int dimension, boolean revisiting){
-		super("SAMPLING_"+algorithm, new Parameter[]{
+		super("SAMPLING_"+algorithm+"_"+awc.getKey() + "_" + as.getKey(), new Parameter[]{
 				awc, 
 				as, 
 				asns, 
@@ -164,10 +164,12 @@ public class SamplingController extends Transformation {
 				new BooleanParameter("REVISITING", revisiting)
 		});
 		
+		// we must have at least 1 walker
 		if(dimension < 1){
 			throw new IllegalArgumentException("Dimension has to be at least 1 but is: " + dimension);
 		}
 		
+		// a scaledown has to be a float between 0.0 and 1.0 representing the percentage of the original size
 		if(scaledown < 0.0 || scaledown > 1.0){
 			throw new IllegalArgumentException("Scaledown has to be in [0,1] but is: " + scaledown);
 		}
@@ -228,6 +230,7 @@ public class SamplingController extends Transformation {
 	 */
 	@Override
 	public boolean applicable(Graph g) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 		if (!initialized()) {
 			System.out.println("Sampling is not initialized:");
@@ -445,6 +448,13 @@ public class SamplingController extends Transformation {
 =======
 		// TODO Auto-generated method stub
 		return false;
+=======
+		// do not sample twice with the same algorithm
+		if(g.hasProperty(this.key))
+			return false;
+		else
+			return true;
+>>>>>>> SamplingController: applicable, sampling-loop
 	}
 	
 	public int calculateTargetedSampleSize(Graph g, double scaledown){
@@ -459,12 +469,13 @@ public class SamplingController extends Transformation {
 		
 		walkerController.initialize(g, startNodes); // place walker(s) on start node(s)
 		sampler.initialize(walkerController, targetSampleSize); // initialize Sampler, eventually sampling the start nodes
+		
+		// walk -> sample loop as long new nodes are sampled
 		do{
-			
-		}while(sampler.sampleNodes());
+			walkerController.walkOneStep();
+		}while(sampler.sampleOneStepNodes());
 		
-		
-		return false;
+		return true;
 	}
 
 >>>>>>> Class Structure
