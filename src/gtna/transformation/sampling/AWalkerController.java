@@ -255,4 +255,12 @@ public abstract class AWalkerController extends Parameter{
 	 */
 	public abstract void initialize(Graph g, Node[] startNodes);
 
+	/**
+	 * 
+	 */
+	public void walkOneStep() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
