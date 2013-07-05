@@ -79,7 +79,7 @@ public class ConsecutiveRingIDSpace extends Transformation {
 		for (int i = 0; i < partitions.length; i++) {
 			partitions[i] = new RingPartition(ids[i], ids[(i + 1) % ids.length]);
 		}
-		Util.randomize(partitions, rand);
+//		Util.randomize(partitions, rand);
 		graph.addProperty(graph.getNextKey("ID_SPACE"), idSpace);
 		return graph;
 	}
