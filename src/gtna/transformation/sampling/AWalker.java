@@ -41,4 +41,10 @@ package gtna.transformation.sampling;
  */
 public abstract class AWalker {
 
+	/**
+	 * 
+	 */
+	public abstract void takeAStep();
+
+	
 }
