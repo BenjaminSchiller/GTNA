@@ -35,6 +35,7 @@
  */
 package gtna.transformation.sampling;
 
+import gtna.graph.Node;
 import gtna.util.parameter.Parameter;
 
 /**
@@ -42,5 +43,14 @@ import gtna.util.parameter.Parameter;
  *
  */
 public class NetworkSample extends Parameter {
+
+	/**
+	 * @param n
+	 * @return
+	 */
+	public boolean contains(Node n) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }

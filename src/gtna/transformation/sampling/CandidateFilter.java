@@ -36,12 +36,17 @@
 package gtna.transformation.sampling;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.graph.Node;
 import gtna.transformation.sampling.sample.NetworkSample;
+=======
+import gtna.graph.Node;
+>>>>>>> CandidateFilter default implementation
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+<<<<<<< HEAD
 /**
  * @author Tim
  * 
@@ -118,11 +123,67 @@ public class CandidateFilter {
 	return c;
     }
 =======
+=======
+>>>>>>> CandidateFilter default implementation
 /**
  * @author Tim
  *
  */
 public class CandidateFilter {
 
+<<<<<<< HEAD
 >>>>>>> Class Structure
+=======
+	
+	private boolean revisiting = false;
+	
+	public CandidateFilter(boolean revisiting){
+		this.revisiting = revisiting;
+	}
+
+	/**
+	 * Filter the candidate collection with respect to @classfield revisiting
+	 *  
+	 * calls filterCandidatesSelfAware OR filterCandidatesRevisiting
+	 * 
+	 * @param c		candidate set
+	 * @param ns	current network sample
+	 * @return		filtered set of candidates
+	 */
+	public Collection<Node> filterCandidates(Collection<Node> c, NetworkSample ns){
+		if(revisiting )
+			return filterCandidatesRevisiting(c, ns);
+		else
+			return filterCandidatesSelfAware(c, ns);
+	}
+
+	/**
+	 * This default implementation removes all in the current sample contained nodes from the candidate collection
+	 * @param c		candidate set
+	 * @param ns 	current network sample
+	 * @return		c without ns.nodes
+	 */
+	public Collection<Node> filterCandidatesSelfAware(Collection<Node> c, NetworkSample ns) {
+		Collection<Node> filtered = new ArrayList<Node>();
+		
+		for(Node n : c){
+			if(!ns.contains(n))
+				filtered.add(n);
+		}
+		
+		
+		return filtered;
+	}
+
+	/**
+	 * This default implementation does NOT remove any nodes from the candidate collection.
+	 * In our standard case of revisiting sampling algorithms, all candidates are real candidates.
+	 * @param c		candidate set	
+	 * @param ns 	current networksample
+	 * @return		== c
+	 */
+	public Collection<Node> filterCandidatesRevisiting(Collection<Node> c, NetworkSample ns) {
+		return c;
+	}
+>>>>>>> CandidateFilter default implementation
 }
