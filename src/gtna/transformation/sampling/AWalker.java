@@ -193,5 +193,15 @@ public abstract class AWalker extends Parameter {
  */
 public abstract class AWalker {
 
+<<<<<<< HEAD
 }
 >>>>>>> Class Structure
+=======
+	/**
+	 * 
+	 */
+	public abstract void takeAStep();
+
+	
+}
+>>>>>>> AWalkerController structure and default implementations
