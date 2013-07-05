@@ -38,6 +38,7 @@ package gtna.transformation.sampling;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -232,6 +233,10 @@ public abstract class AWalkerController extends Parameter {
 =======
 =======
 =======
+=======
+import java.util.Collection;
+
+>>>>>>> AWalkerController structure and default implementations
 import gtna.graph.Graph;
 import gtna.graph.Node;
 >>>>>>> Implementing the SamplingController - coarse structure
@@ -240,27 +245,84 @@ import gtna.util.parameter.Parameter;
 >>>>>>> SamplingController is a Transformation
 /**
  * @author Tim
- *
+ * 
  */
+<<<<<<< HEAD
 <<<<<<< HEAD
 public abstract class AWalkerController {
 >>>>>>> Class Structure
 =======
 public abstract class AWalkerController extends Parameter{
 >>>>>>> SamplingController is a Transformation
+=======
+public abstract class AWalkerController extends Parameter {
+
+	Collection<AWalker> walkers;
+	CandidateFilter candidateFilter;
 
 	/**
-	 * @param g 
+	 * @param key
+	 * @param value
+	 */
+	public AWalkerController(String key, String value) {
+		super(key, value);
+
+	}
+
+	public AWalkerController(String key, String value, Collection<AWalker> w, CandidateFilter cf) {
+		super(key, value);
+		walkers = w;
+		candidateFilter = cf;
+	}
+>>>>>>> AWalkerController structure and default implementations
+
+	/**
+	 * @param g
 	 * @param startNodes
 	 */
 	public abstract void initialize(Graph g, Node[] startNodes);
 
+	public void initialize(Graph g, Node[] startNodes, Collection<AWalker> w, CandidateFilter cf) {
+		walkers = w;
+		candidateFilter = cf;
+		this.initialize(g, startNodes);
+	}
+
+	public boolean isInitialized() {
+		if (walkers == null || walkers.size() == 0 || candidateFilter == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 	/**
-	 * 
+	 * Perform one step of walking with all active walker. The number of active walkers depends on the used walking-strategy
 	 */
 	public void walkOneStep() {
-		// TODO Auto-generated method stub
+		if (!isInitialized()) {
+			throw new IllegalStateException(
+					"You have to initialize the WalkerController with a Collection of Walker-instances and a CandidateFilter first.\n"
+							+ "Please use the initialize(Graph, Node[], Collection<AWalker>, CandidateFilter) method or "
+							+ "the AWalkerController(String, String, Collection<AWalker>, CandidateFilter) constructor.");
+		}
 		
+		Collection<AWalker> activeWalkers = this.getActiveWalkers();
+		for(AWalker w : activeWalkers){
+			w.takeAStep();
+		}
 	}
+
+	/**
+	 *  evaluates the collection of walkers to return a subset of the walkers which have to take a step
+	 */
+	protected abstract Collection<AWalker> getActiveWalkers();
+	
+	/**
+	 * Filters the list of candidates for real candidates e.g. without already sampled nodes
+	 * @param candidates	possible nodes
+	 * @return				subset of candidates
+	 */
+	public abstract Collection<Node> filterCandidates(Collection<Node> candidates);
 
 }
