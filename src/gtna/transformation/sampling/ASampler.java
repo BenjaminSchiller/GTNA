@@ -53,6 +53,6 @@ public abstract class ASampler extends Parameter {
 	/**
 	 * @return
 	 */
-	public abstract boolean sampleNodes();
+	public abstract boolean sampleOneStepNodes();
 
 }
