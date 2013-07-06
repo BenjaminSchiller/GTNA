@@ -35,6 +35,11 @@
  */
 package gtna.transformation.sampling;
 
+import gtna.graph.Node;
+
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * @author Tim
  *
@@ -45,6 +50,11 @@ public abstract class AWalker {
 	 * 
 	 */
 	public abstract void takeAStep();
+
+	/**
+	 * @return
+	 */
+	public abstract Map<Node, Collection<Node>> getCurrentCandidates();
 
 	
 }
