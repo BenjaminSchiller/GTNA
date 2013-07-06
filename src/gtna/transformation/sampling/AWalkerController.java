@@ -41,9 +41,13 @@ package gtna.transformation.sampling;
 <<<<<<< HEAD
 import java.util.Arrays;
 import java.util.Collection;
+<<<<<<< HEAD
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+=======
+import java.util.Map;
+>>>>>>> ASampler default implementation
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -323,6 +327,6 @@ public abstract class AWalkerController extends Parameter {
 	 * @param candidates	possible nodes
 	 * @return				subset of candidates
 	 */
-	public abstract Collection<Node> filterCandidates(Collection<Node> candidates);
+	public abstract Collection<Node> filterCandidates(Map<Node, Collection<Node>> candidates);
 
 }
