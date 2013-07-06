@@ -36,6 +36,7 @@
 package gtna.transformation.sampling;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.sample.NetworkSample;
@@ -187,6 +188,13 @@ public abstract class AWalker extends Parameter {
 
 }
 =======
+=======
+import gtna.graph.Node;
+
+import java.util.Collection;
+import java.util.Map;
+
+>>>>>>> ASampler default implementation
 /**
  * @author Tim
  *
@@ -201,6 +209,11 @@ public abstract class AWalker {
 	 * 
 	 */
 	public abstract void takeAStep();
+
+	/**
+	 * @return
+	 */
+	public abstract Map<Node, Collection<Node>> getCurrentCandidates();
 
 	
 }

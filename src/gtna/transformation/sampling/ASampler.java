@@ -37,6 +37,7 @@ package gtna.transformation.sampling;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -182,6 +183,13 @@ public abstract class ASampler extends Parameter {
 
 =======
 =======
+=======
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+
+import gtna.graph.Node;
+>>>>>>> ASampler default implementation
 import gtna.util.parameter.Parameter;
 
 >>>>>>> SamplingController is a Transformation
@@ -200,20 +208,59 @@ public class ASampler extends Parameter {
 public abstract class ASampler extends Parameter {
 
 	/**
+	 * @param key
+	 * @param value
+	 */
+	public ASampler(String key, String value) {
+		super(key, value);
+	}
+	
+	
+
+
+	AWalkerController walkerController;
+	
+	
+	/**
 	 * @param targetSampleSize 
 	 * @param walkerController 
 	 * 
 	 */
 	public abstract void initialize(AWalkerController walkerController, int targetSampleSize);
 
+	public boolean initialized(){
+		if(walkerController == null){
+			return false;
+		}
+		
+		return true;
+	}
 	/**
 	 * @return
 	 */
+<<<<<<< HEAD
 <<<<<<< HEAD
 	public abstract boolean sampleNodes();
 >>>>>>> Implementing the SamplingController - coarse structure
 =======
 	public abstract boolean sampleOneStepNodes();
 >>>>>>> SamplingController: applicable, sampling-loop
+=======
+	public Collection<Node> sampleOneStepNodes(int maxNodes){
+		Collection<AWalker> walkers = walkerController.getActiveWalkers();
+		Collection<Node> sampled = new LinkedList<Node>();
+		
+		for(AWalker w : walkers){
+			Map<Node, Collection<Node>> wcc = w.getCurrentCandidates();
+			Collection<Node> fc = walkerController.filterCandidates(wcc);
+			sampled.addAll(sampleNodes(fc));
+		}		
+		return sampled;
+		
+	}
+	
+	
+	protected abstract Collection<Node> sampleNodes(Collection<Node> filteredCandidates);
+>>>>>>> ASampler default implementation
 
 }
