@@ -35,6 +35,11 @@
  */
 package gtna.transformation.sampling;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+
+import gtna.graph.Node;
 import gtna.util.parameter.Parameter;
 
 /**
@@ -44,15 +49,50 @@ import gtna.util.parameter.Parameter;
 public abstract class ASampler extends Parameter {
 
 	/**
+	 * @param key
+	 * @param value
+	 */
+	public ASampler(String key, String value) {
+		super(key, value);
+	}
+	
+	
+
+
+	AWalkerController walkerController;
+	
+	
+	/**
 	 * @param targetSampleSize 
 	 * @param walkerController 
 	 * 
 	 */
 	public abstract void initialize(AWalkerController walkerController, int targetSampleSize);
 
+	public boolean initialized(){
+		if(walkerController == null){
+			return false;
+		}
+		
+		return true;
+	}
 	/**
 	 * @return
 	 */
-	public abstract boolean sampleOneStepNodes();
+	public Collection<Node> sampleOneStepNodes(int maxNodes){
+		Collection<AWalker> walkers = walkerController.getActiveWalkers();
+		Collection<Node> sampled = new LinkedList<Node>();
+		
+		for(AWalker w : walkers){
+			Map<Node, Collection<Node>> wcc = w.getCurrentCandidates();
+			Collection<Node> fc = walkerController.filterCandidates(wcc);
+			sampled.addAll(sampleNodes(fc));
+		}		
+		return sampled;
+		
+	}
+	
+	
+	protected abstract Collection<Node> sampleNodes(Collection<Node> filteredCandidates);
 
 }
