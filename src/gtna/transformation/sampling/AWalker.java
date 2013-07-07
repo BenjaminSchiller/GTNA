@@ -37,22 +37,32 @@ package gtna.transformation.sampling;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.sample.NetworkSample;
+=======
+import gtna.graph.Graph;
+import gtna.graph.Node;
+>>>>>>> Default implementation awalker
 import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+<<<<<<< HEAD
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+=======
+import java.util.Map;
+>>>>>>> Default implementation awalker
 import java.util.Set;
 
 /**
  * @author Tim
  * 
+<<<<<<< HEAD
  */
 public abstract class AWalker extends Parameter {
 
@@ -198,23 +208,83 @@ import java.util.Map;
 /**
  * @author Tim
  *
+=======
+>>>>>>> Default implementation awalker
  */
-public abstract class AWalker {
+public abstract class AWalker extends Parameter {
+
+	private AWalkerController controller;
+	private Collection<Node> currents;
+
+	public AWalker(String key, String value, AWalkerController awc) {
+		super(key, value);
+
+		controller = awc;
+		currents = new ArrayList<Node>();
+	}
+
+	/**
+	 * Returns the current neighbors of current nodes of the walker
+	 * 
+	 * @return Map: key: current node value: neighbors of the current node
+	 */
+	private Map<Node, Collection<Node>> getCurrentCandidates(Graph g) {
+		Map<Node, Collection<Node>> cn = new HashMap<Node, Collection<Node>>();
+
+		for (Node n : currents) {
+			Collection<Node> nn = resolveCandidates(g, n);
+			cn.put(n, nn);
+		}
+		return cn;
+	}
 
 <<<<<<< HEAD
 }
 >>>>>>> Class Structure
 =======
 	/**
+	 * This default implementation returns the list of neighbors as candidates
 	 * 
+	 * @param g
+	 *            Graph
+	 * @param n
+	 *            Current node
+	 * @return List of candidates
 	 */
-	public abstract void takeAStep();
+	private Collection<Node> resolveCandidates(Graph g, Node n) {
+		int[] nids = n.getOutgoingEdges();
+		ArrayList<Node> nn = new ArrayList<Node>();
+		for (int i : nids) {
+			nn.add(g.getNode(i));
+		}
+		return nn;
+	}
 
 	/**
+	 * @param candidates
 	 * @return
 	 */
-	public abstract Map<Node, Collection<Node>> getCurrentCandidates();
+	protected abstract Node selectNextNode(Collection<Node> candidates);
 
+	/**
+	 * Move walker by one step
+	 */
+	public void takeAStep(Graph g) {
+		Map<Node, Collection<Node>> cc = this.getCurrentCandidates(g);
+		Set<Node> c = cc.keySet();
+		for (Node n : c) {
+			Collection<Node> candidates = controller
+					.filterCandidates(cc.get(n));
+			Node next = this.selectNextNode(candidates);
+			currents.remove(n);
+			currents.add(next);
+		}
+	}
+
+<<<<<<< HEAD
 	
 }
 >>>>>>> AWalkerController structure and default implementations
+=======
+}
+>>>>>>> Default implementation awalker
