@@ -36,6 +36,7 @@
 package gtna.transformation.sampling;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.Collection;
 import java.util.Random;
 
@@ -131,6 +132,10 @@ public class SamplingController extends Transformation {
 	 * (non-Javadoc)
 	 * 
 =======
+=======
+import java.util.Collection;
+
+>>>>>>> code style, minor changes in method-/class-design
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
@@ -141,7 +146,7 @@ import gtna.util.parameter.Parameter;
 
 /**
  * @author Tim
- *
+ * 
  */
 public class SamplingController extends Transformation {
 
@@ -149,41 +154,48 @@ public class SamplingController extends Transformation {
 	ASampler sampler;
 	AStartNodeSelector startNodeSelector;
 	NetworkSample networkSample;
-	
+
 	int dimension;
 	double scaledown;
 	boolean revisiting;
-	
-	public SamplingController(String algorithm, AWalkerController awc, ASampler as, AStartNodeSelector asns, double scaledown, int dimension, boolean revisiting){
-		super("SAMPLING_"+algorithm+"_"+awc.getKey() + "_" + as.getKey(), new Parameter[]{
-				awc, 
-				as, 
-				asns, 
-				new DoubleParameter("SCALEDOWN", scaledown),
-				new IntParameter("DIMENSIONS", dimension),
-				new BooleanParameter("REVISITING", revisiting)
-		});
-		
+
+	public SamplingController(String algorithm, AWalkerController awc,
+			ASampler as, AStartNodeSelector asns, double scaledown,
+			int dimension, boolean revisiting) {
+		super("SAMPLING_" + algorithm + "_" + awc.getKey() + "_" + as.getKey(),
+				new Parameter[] { awc, as, asns,
+						new DoubleParameter("SCALEDOWN", scaledown),
+						new IntParameter("DIMENSIONS", dimension),
+						new BooleanParameter("REVISITING", revisiting) });
+
 		// we must have at least 1 walker
-		if(dimension < 1){
-			throw new IllegalArgumentException("Dimension has to be at least 1 but is: " + dimension);
+		if (dimension < 1) {
+			throw new IllegalArgumentException(
+					"Dimension has to be at least 1 but is: " + dimension);
 		}
-		
-		// a scaledown has to be a float between 0.0 and 1.0 representing the percentage of the original size
-		if(scaledown < 0.0 || scaledown > 1.0){
-			throw new IllegalArgumentException("Scaledown has to be in [0,1] but is: " + scaledown);
+
+		// a scaledown has to be a float between 0.0 and 1.0 representing the
+		// percentage of the original size
+		if (scaledown < 0.0 || scaledown > 1.0) {
+			throw new IllegalArgumentException(
+					"Scaledown has to be in [0,1] but is: " + scaledown);
 		}
-		
-		
+
 		this.scaledown = scaledown;
 		this.dimension = dimension;
 		this.revisiting = revisiting;
-		
-		
+
 	}
+<<<<<<< HEAD
 	
 	/* (non-Javadoc)
 >>>>>>> Class Structure
+=======
+
+	/*
+	 * (non-Javadoc)
+	 * 
+>>>>>>> code style, minor changes in method-/class-design
 	 * @see gtna.transformation.Transformation#transform(gtna.graph.Graph)
 	 */
 	@Override
@@ -224,8 +236,14 @@ public class SamplingController extends Transformation {
 		return null;
 	}
 
+<<<<<<< HEAD
 	/* (non-Javadoc)
 >>>>>>> Class Structure
+=======
+	/*
+	 * (non-Javadoc)
+	 * 
+>>>>>>> code style, minor changes in method-/class-design
 	 * @see gtna.transformation.Transformation#applicable(gtna.graph.Graph)
 	 */
 	@Override
@@ -450,33 +468,83 @@ public class SamplingController extends Transformation {
 		return false;
 =======
 		// do not sample twice with the same algorithm
-		if(g.hasProperty(this.key))
+		if (g.hasProperty(this.key))
 			return false;
 		else
 			return true;
 >>>>>>> SamplingController: applicable, sampling-loop
 	}
-	
-	public int calculateTargetedSampleSize(Graph g, double scaledown){
-		
+
+	public int calculateTargetedSampleSize(Graph g, double scaledown) {
+
 		int originalSize = g.getNodeCount();
-				
+
 		return (int) Math.ceil(originalSize * scaledown);
 	}
-	
-	public boolean sampleGraph(Graph g, int targetSampleSize){
-		Node[] startNodes = startNodeSelector.selectStartNodes(g, dimension); 
-		
-		walkerController.initialize(g, startNodes); // place walker(s) on start node(s)
-		sampler.initialize(walkerController, targetSampleSize); // initialize Sampler, eventually sampling the start nodes
-		
+
+	public boolean sampleGraph(Graph g, int targetSampleSize) {
+		Node[] startNodes = startNodeSelector.selectStartNodes(g, dimension);
+
+		int maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
+		int round = 0;
+		walkerController.initialize(g, startNodes); // place walker(s) on start
+													// node(s)
+		sampler.initialize(walkerController, targetSampleSize); // initialize
+																// Sampler
+
+		// eventually sample startnodes
+		sampleOneStep(maxNodesInThisRound, round);
+
+		boolean running = true;
 		// walk -> sample loop as long new nodes are sampled
-		do{
+		do {
+			round++;
+			// walk
 			walkerController.walkOneStep();
-		}while(sampler.sampleOneStepNodes());
-		
+			// eventually sample
+			sampleOneStep(maxNodesInThisRound, round);
+			maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
+			running = (maxNodesInThisRound > 0) ? true : false;
+		} while (running);
+
 		return true;
 	}
 
+<<<<<<< HEAD
 >>>>>>> Class Structure
+=======
+	/**
+	 * Sample eventually nodes in the specified round
+	 * @param maxNodesInThisRound	number of maximal added nodes
+	 * @param round					current round
+	 * @return						true if at least one node is sampled, else false
+	 */
+	private boolean sampleOneStep(int maxNodesInThisRound, int round) {
+		Collection<Node> chosenNodes = sampler
+				.sampleOneStepNodes(maxNodesInThisRound);
+		if (chosenNodes.size() > 0)
+			return networkSample.addNodeToSample(chosenNodes, round);
+
+		return false;
+	}
+
+	/**
+	 * Calculates the residual sampling budget based on the targeted size and
+	 * the current size of the sample
+	 * 
+	 * @param targetSampleSize
+	 *            target size
+	 * @return residual Budget
+	 */
+	private int calculateResidualBudget(int targetSampleSize) {
+		int currentSampleSize = networkSample.getSampleSize();
+		int residualBudget = targetSampleSize - currentSampleSize;
+		if (residualBudget > 0) {
+			return residualBudget;
+		} else {
+			return 0;
+		}
+	}
+
+>>>>>>> code style, minor changes in method-/class-design
 }
