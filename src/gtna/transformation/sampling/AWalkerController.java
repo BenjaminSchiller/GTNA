@@ -113,6 +113,6 @@ public abstract class AWalkerController extends Parameter {
 	 * @param candidates	possible nodes
 	 * @return				subset of candidates
 	 */
-	public abstract Collection<Node> filterCandidates(Map<Node, Collection<Node>> candidates);
+	public abstract Map<Node, Collection<Node>> filterCandidates(Map<Node, Collection<Node>> candidates);
 
 }
