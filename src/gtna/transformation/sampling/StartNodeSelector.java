@@ -35,6 +35,10 @@
  */
 package gtna.transformation.sampling;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Random;
+
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.util.parameter.Parameter;
@@ -43,16 +47,46 @@ import gtna.util.parameter.Parameter;
  * @author Tim
  *
  */
-public abstract class AStartNodeSelector extends Parameter{
+public abstract class StartNodeSelector extends Parameter{
 
 	/**
-	 * @param g 
-	 * @param dimension
-	 * @return
+	 * @param key
+	 * @param value
 	 */
-	public Node[] selectStartNodes(Graph g, int dimension) {
-		// TODO Auto-generated method stub
-		return null;
+	public StartNodeSelector(String key, String value) {
+		super(key, value);
+	}
+
+	/**
+	 * Select start nodes from the original graph
+	 * The default implementation choses dimension random nodes
+	 * @param g 			Graph
+	 * @param dimension		Number of chosen startnodes
+	 * @return				Array of chosen startnodes
+	 */
+	public Node[] selectStartNodes(Graph g, int dimension){
+		Collection<Node> sn = new ArrayList<Node>();
+		Random r = new Random();
+		
+		int gsize = g.getNodeCount();
+		int nid;
+		Node n;
+		
+		int i = 0;
+		while(sn.size() < dimension){
+			nid = r.nextInt() % gsize;
+			n = g.getNode(nid);
+			
+			// add node to selected nodes 
+			if(!sn.contains(n)){
+				sn.add(n);
+			}	
+		}
+		
+		
+		return sn.toArray(new Node[dimension]);
+		
+	
 	}
 
 }
