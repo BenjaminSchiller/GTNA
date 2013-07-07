@@ -48,26 +48,32 @@ import gtna.util.parameter.Parameter;
  */
 public abstract class ASampler extends Parameter {
 
+	
+	AWalkerController walkerController;
+	
+	
+	
 	/**
 	 * @param key
 	 * @param value
 	 */
 	public ASampler(String key, String value) {
 		super(key, value);
-	}
-	
-	
-
-
-	AWalkerController walkerController;
-	
+	}	
 	
 	/**
-	 * @param targetSampleSize 
+	 * Initializes the ASampler implementation
+	 * 
+	 * This default implementation calls sampleOneStepNodes to sample
+	 * the startnode(s)!
+	 * @param targetSampleSize  max nodes sampled in this round 
 	 * @param walkerController 
 	 * 
 	 */
-	public abstract void initialize(AWalkerController walkerController, int targetSampleSize);
+	public Collection<Node> initialize(AWalkerController walkerController, int maxNodes){
+		this.walkerController = walkerController;
+		return sampleOneStepNodes(maxNodes);
+	}
 
 	public boolean initialized(){
 		if(walkerController == null){
@@ -85,7 +91,7 @@ public abstract class ASampler extends Parameter {
 		
 		for(AWalker w : walkers){
 			Map<Node, Collection<Node>> wcc = w.getCurrentCandidates();
-			Collection<Node> fc = walkerController.filterCandidates(wcc);
+			Map<Node, Collection<Node>> fc = walkerController.filterCandidates(wcc);
 			sampled.addAll(sampleNodes(fc));
 		}		
 		return sampled;
@@ -93,6 +99,6 @@ public abstract class ASampler extends Parameter {
 	}
 	
 	
-	protected abstract Collection<Node> sampleNodes(Collection<Node> filteredCandidates);
+	protected abstract Collection<Node> sampleNodes(Map<Node, Collection<Node>> filteredCandidates);
 
 }
