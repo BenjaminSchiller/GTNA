@@ -152,7 +152,7 @@ public class SamplingController extends Transformation {
 
 	AWalkerController walkerController;
 	ASampler sampler;
-	AStartNodeSelector startNodeSelector;
+	StartNodeSelector startNodeSelector;
 	NetworkSample networkSample;
 
 	int dimension;
@@ -160,7 +160,7 @@ public class SamplingController extends Transformation {
 	boolean revisiting;
 
 	public SamplingController(String algorithm, AWalkerController awc,
-			ASampler as, AStartNodeSelector asns, double scaledown,
+			ASampler as, StartNodeSelector asns, double scaledown,
 			int dimension, boolean revisiting) {
 		super("SAMPLING_" + algorithm + "_" + awc.getKey() + "_" + as.getKey(),
 				new Parameter[] { awc, as, asns,
