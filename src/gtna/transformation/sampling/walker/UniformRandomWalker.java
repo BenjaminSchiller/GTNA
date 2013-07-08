@@ -35,12 +35,9 @@
  */
 package gtna.transformation.sampling.walker;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
-import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 import gtna.transformation.sampling.AWalkerController;
@@ -56,42 +53,21 @@ public class UniformRandomWalker extends AWalker {
      * @param value
      * @param awc
      */
-    public UniformRandomWalker() {
-	super("UNIFORM_RANDOM_WALKER");
+    public UniformRandomWalker(String key, String value, AWalkerController awc) {
+	super(key, value, awc);
     }
 
     /* (non-Javadoc)
      * @see gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
      */
     @Override
-<<<<<<< HEAD
-    protected Node selectNextNode(Collection<Node> candidates, Node current) {
-	Random r = new Random();
-=======
     protected Node selectNextNode(Collection<Node> candidates) {
->>>>>>> Usage of the deterministic-rng
+	Random r = new Random();
 	
+	int next = r.nextInt() % candidates.size();
 	
-	int next = super.getRNG().nextInt(candidates.size());
-	next = next % candidates.size();
 	return candidates.toArray(new Node[0])[next];
 	
     }
-    
-    /**
-     * Returns all nodes of the graph as candidates
-     * @param g
-     *            Graph
-     * @param n
-     *            Current node
-     * @return List of candidates
-     */
-    @Override
-	public Collection<Node> resolveCandidates(Graph g, Node n){
-		Collection<Node> c = new ArrayList<Node>();
-		c.addAll(Arrays.asList(g.getNodes()));
-		
-		return c;
-	}
 
 }
