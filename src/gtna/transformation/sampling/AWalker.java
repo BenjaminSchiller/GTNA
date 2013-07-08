@@ -115,4 +115,12 @@ public abstract class AWalker extends Parameter {
 		}
 	}
 
+	/**
+	 * @param node
+	 */
+	public void setStartNode(Node node) {
+	    if(currents.size() == 0)
+		currents.add(node);	    
+	}
+
 }
