@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.sampling.uniformsampling;
+package gtna.transformation.sampling.walker;
 
 import java.util.Collection;
 import java.util.Random;
