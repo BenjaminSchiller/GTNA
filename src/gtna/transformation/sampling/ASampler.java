@@ -75,7 +75,7 @@ public abstract class ASampler extends Parameter {
 		return sampleOneStepNodes(maxNodes);
 	}
 
-	public boolean initialized(){
+	public boolean isInitialized(){
 		if(walkerController == null){
 			return false;
 		}
