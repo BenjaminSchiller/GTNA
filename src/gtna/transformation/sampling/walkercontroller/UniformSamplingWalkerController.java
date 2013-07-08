@@ -35,15 +35,21 @@
  */
 package gtna.transformation.sampling.walkercontroller;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+=======
+import java.util.Collection;
+import java.util.Map;
+>>>>>>> StartNode initialization
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 import gtna.transformation.sampling.AWalkerController;
 import gtna.transformation.sampling.CandidateFilter;
+<<<<<<< HEAD
 import gtna.transformation.sampling.StartNodeSelector;
 import gtna.transformation.sampling.sample.NetworkSample;
 
@@ -104,5 +110,73 @@ public class UniformSamplingWalkerController extends AWalkerController {
 	}
 	
 	
+=======
+
+/**
+ * @author Tim
+ *
+ */
+public class UniformSamplingWalkerController extends AWalkerController {
+
+    
+    CandidateFilter cf;
+    Collection<AWalker> walkers;
+    /**
+     * @param key
+     * @param value
+     * @param w
+     * @param cf
+     */
+    public UniformSamplingWalkerController(String key, String value,
+	    Collection<AWalker> w, CandidateFilter cf) {
+	super(key, value, w, cf);
+	this.walkers = w;
+	this.cf = cf;
+    }
+
+    /* (non-Javadoc)
+     * @see gtna.transformation.sampling.AWalkerController#initialize(gtna.graph.Graph, gtna.graph.Node[])
+     */
+    @Override
+    public void initialize(Graph g, Node[] startNodes) {
+	AWalker[] wa = walkers.toArray(new AWalker[0]);
+	for(int i = 0; i < walkers.size(); i++) {
+	    // if #walkers > #startNodes assign startnodes with wraparound
+	    int snid = i % startNodes.length; 
+	    
+	    wa[i].setStartNode(startNodes[snid]);
+	    
+	}
+
+    }
+
+    /* (non-Javadoc)
+     * @see gtna.transformation.sampling.AWalkerController#getActiveWalkers()
+     */
+    @Override
+    protected Collection<AWalker> getActiveWalkers() {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    /* (non-Javadoc)
+     * @see gtna.transformation.sampling.AWalkerController#filterCandidates(java.util.Map)
+     */
+    @Override
+    public Map<Node, Collection<Node>> filterCandidates(
+	    Map<Node, Collection<Node>> candidates) {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    /* (non-Javadoc)
+     * @see gtna.transformation.sampling.AWalkerController#filterCandidates(java.util.Collection)
+     */
+    @Override
+    public Collection<Node> filterCandidates(Collection<Node> candidates) {
+	// TODO Auto-generated method stub
+	return null;
+    }
+>>>>>>> StartNode initialization
 
 }

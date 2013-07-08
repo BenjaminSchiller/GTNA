@@ -282,9 +282,21 @@ public abstract class AWalker extends Parameter {
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
 }
 >>>>>>> AWalkerController structure and default implementations
 =======
 }
 >>>>>>> Default implementation awalker
+=======
+	/**
+	 * @param node
+	 */
+	public void setStartNode(Node node) {
+	    if(currents.size() == 0)
+		currents.add(node);	    
+	}
+
+}
+>>>>>>> StartNode initialization
