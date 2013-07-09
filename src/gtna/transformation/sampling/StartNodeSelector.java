@@ -47,14 +47,14 @@ import gtna.util.parameter.Parameter;
  * @author Tim
  *
  */
-public abstract class StartNodeSelector extends Parameter{
+public class StartNodeSelector extends Parameter{
 
 	/**
 	 * @param key
 	 * @param value
 	 */
-	public StartNodeSelector(String key, String value) {
-		super(key, value);
+	public StartNodeSelector(String startnodeselector) {
+		super("STARTNODESELECTOR", startnodeselector);
 	}
 
 	/**
