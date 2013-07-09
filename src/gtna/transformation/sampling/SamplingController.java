@@ -63,7 +63,7 @@ public class SamplingController extends Transformation {
     public SamplingController(String algorithm, AWalkerController awc,
 	    ASampler as, StartNodeSelector asns, double scaledown,
 	    int dimension, boolean revisiting) {
-	super("SAMPLING_" + algorithm + "_" + awc.getKey() + "_" + as.getKey(),
+	super("SAMPLING_" + algorithm + "_" + awc.getValue() + "_" + as.getValue(),
 		new Parameter[] { awc, as, asns,
 			new DoubleParameter("SCALEDOWN", scaledown),
 			new IntParameter("DIMENSIONS", dimension),
