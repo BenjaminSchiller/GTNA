@@ -35,6 +35,7 @@
  */
 package gtna.transformation.sampling;
 
+<<<<<<< HEAD
 import gtna.transformation.sampling.sample.NetworkSample;
 import gtna.transformation.sampling.sampler.RoundBasedVisitedNodeSampler;
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
@@ -84,11 +85,25 @@ import java.util.Collection;
 /**
  * @author Tim
  * 
+=======
+import java.util.ArrayList;
+import java.util.Collection;
+
+import gtna.transformation.sampling.sampler.VisitedNodeSampler;
+import gtna.transformation.sampling.walker.UniformRandomWalker;
+import gtna.transformation.sampling.walkercontroller.UniformSamplingWalkerController;
+import gtna.transformation.sampling.*;
+
+/**
+ * @author Tim
+ *
+>>>>>>> SamplingAlgorithmFactory
  */
 public class SamplingAlgorithmFactory {
 
     /**
      * Enumeration of by default supported sampling algorithms
+<<<<<<< HEAD
      * 
      * @author Tim
      * 
@@ -103,11 +118,34 @@ public class SamplingAlgorithmFactory {
     	DFS
     }
 
+=======
+     * @author Tim
+     *
+     */
+    public enum SamplingAlgorithm {
+	UNIFORMSAMPLING,
+	RANDOMWALK,
+	RANDOMWALK_METROPOLIZED,
+	RANDOMWALK_DEGREECORRECTION,
+	RANDOMWALK_MULTIPLE,
+	FRONTIERSAMPLING,
+	RANDOMSTROLL,
+	RANDOMSTROLL_DEGREECORRECTION,
+	RANDOMJUMP,
+	BFS,
+	SNOWBALLSAMPLING,
+	RESPONDENTDRIVENSAMPLING,
+	FORESTFIRE,
+	DFS
+    }
+    
+>>>>>>> SamplingAlgorithmFactory
     /**
      * build an instance of a default sampling transformation
      * 
      * @param sg
      * @param revisiting
+<<<<<<< HEAD
      * @param dimension
      *            IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
      * @param randomSeed - can be <b>null</b> to use a standard RNG
@@ -329,4 +367,37 @@ public class SamplingAlgorithmFactory {
     }
     
     
+=======
+     * @param dimension IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
+     * @return
+     */
+    public static SamplingController getInstanceOf(SamplingAlgorithm sg, double scaledown, boolean revisiting, int dimension) {
+	SamplingController sc;
+	ASampler as;
+	AWalker aw;
+	AWalkerController awc;
+	CandidateFilter cf;
+	NetworkSample ns;
+	StartNodeSelector sns;
+	String algorithm;
+	
+	switch(sg) {
+	case UNIFORMSAMPLING:
+	    as = new VisitedNodeSampler();
+	    aw = new UniformRandomWalker();
+	    cf = new CandidateFilter(revisiting);
+	    Collection<AWalker> cw = new ArrayList<AWalker>();
+	    cw.add(aw);
+	    awc = new UniformSamplingWalkerController(cw, cf);
+	    aw.setWalkerController(awc);
+	    sns = new StartNodeSelector("RANDOM");
+	    algorithm="UNIFORM_SAMPLING";
+	    break;
+	default:
+	    throw new IllegalArgumentException("Not supported algorithm");
+	}	
+	sc = new SamplingController(algorithm, awc, as, sns, scaledown, dimension, revisiting);
+	return sc;
+    }
+>>>>>>> SamplingAlgorithmFactory
 }
