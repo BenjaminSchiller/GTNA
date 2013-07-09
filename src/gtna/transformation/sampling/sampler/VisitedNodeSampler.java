@@ -53,12 +53,17 @@ public class VisitedNodeSampler extends ASampler {
      * @param value
      */
 <<<<<<< HEAD
+<<<<<<< HEAD
     public VisitedNodeSampler() {
 	super("VISITED_NODE_SAMPLER");
 =======
     public VisitedNodeSampler(String key, String value) {
 	super(key, value);
 >>>>>>> package structure
+=======
+    public VisitedNodeSampler() {
+	super("VISITED_NODE_SAMPLER");
+>>>>>>> set parameter values
     }
 
     /* (non-Javadoc)

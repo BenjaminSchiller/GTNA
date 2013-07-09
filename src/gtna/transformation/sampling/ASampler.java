@@ -213,11 +213,11 @@ public abstract class ASampler extends Parameter {
 	
 	
 	/**
-	 * @param key
-	 * @param value
+	 * 
+	 * @param sampler
 	 */
-	public ASampler(String key, String value) {
-		super(key, value);
+	public ASampler(String sampler) {
+		super("SAMPLER", sampler);
 	}	
 	
 	/**

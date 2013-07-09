@@ -268,13 +268,13 @@ public abstract class AWalkerController extends Parameter {
 	 * @param key
 	 * @param value
 	 */
-	public AWalkerController(String key, String value) {
-		super(key, value);
+	public AWalkerController(String walkercontroller) {
+		super("WALKER_CONTROLLER", walkercontroller);
 
 	}
 
-	public AWalkerController(String key, String value, Collection<AWalker> w, CandidateFilter cf) {
-		super(key, value);
+	public AWalkerController(String walkercontroller, Collection<AWalker> w, CandidateFilter cf) {
+		super("WALKER_CONTROLLER", walkercontroller);
 		walkers = w;
 		candidateFilter = cf;
 	}
@@ -303,7 +303,7 @@ public abstract class AWalkerController extends Parameter {
 	/**
 	 * Perform one step of walking with all active walker. The number of active walkers depends on the used walking-strategy
 	 */
-	public void walkOneStep() {
+	public void walkOneStep(Graph g, NetworkSample ns) {
 		if (!isInitialized()) {
 			throw new IllegalStateException(
 					"You have to initialize the WalkerController with a Collection of Walker-instances and a CandidateFilter first.\n"
@@ -313,7 +313,7 @@ public abstract class AWalkerController extends Parameter {
 		
 		Collection<AWalker> activeWalkers = this.getActiveWalkers();
 		for(AWalker w : activeWalkers){
-			w.takeAStep();
+			w.takeAStep(g, ns);
 		}
 	}
 
@@ -325,10 +325,17 @@ public abstract class AWalkerController extends Parameter {
 	/**
 	 * Filters the list of candidates for real candidates e.g. without already sampled nodes
 	 * @param candidates	possible nodes
+	 * @param sample	current networksamples
 	 * @return				subset of candidates
 	 */
-	public abstract Map<Node, Collection<Node>> filterCandidates(Map<Node, Collection<Node>> candidates);
+	public abstract Map<Node, Collection<Node>> filterCandidates(Map<Node, Collection<Node>> candidates, NetworkSample sample);
 	
-	public abstract Collection<Node> filterCandidates(Collection<Node> candidates);
+	/**
+	 * Filters the list of candidates for real candidates e.g. without already sampled nodes
+	 * @param candidates	possible nodes
+	 * @param sample	current networksamples
+	 * @return				subset of candidates
+	 */
+	public abstract Collection<Node> filterCandidates(Collection<Node> candidates, NetworkSample sample);
 
 }
