@@ -36,6 +36,7 @@
 package gtna.transformation.sampling.walkercontroller;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import gtna.graph.Graph;
@@ -43,6 +44,7 @@ import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 import gtna.transformation.sampling.AWalkerController;
 import gtna.transformation.sampling.CandidateFilter;
+import gtna.transformation.sampling.NetworkSample;
 
 /**
  * @author Tim
@@ -53,15 +55,16 @@ public class UniformSamplingWalkerController extends AWalkerController {
     
     CandidateFilter cf;
     Collection<AWalker> walkers;
+    Graph graph;
     /**
      * @param key
      * @param value
      * @param w
      * @param cf
      */
-    public UniformSamplingWalkerController(String key, String value,
-	    Collection<AWalker> w, CandidateFilter cf) {
-	super(key, value, w, cf);
+    public UniformSamplingWalkerController(Collection<AWalker> w, CandidateFilter cf) {
+	super(w.size() + "x_" + w.toArray(new AWalker[0])[0].getValue()
+		, w, cf);
 	this.walkers = w;
 	this.cf = cf;
     }
@@ -71,6 +74,7 @@ public class UniformSamplingWalkerController extends AWalkerController {
      */
     @Override
     public void initialize(Graph g, Node[] startNodes) {
+	graph = g;
 	AWalker[] wa = walkers.toArray(new AWalker[0]);
 	for(int i = 0; i < walkers.size(); i++) {
 	    // if #walkers > #startNodes assign startnodes with wraparound
@@ -87,8 +91,7 @@ public class UniformSamplingWalkerController extends AWalkerController {
      */
     @Override
     protected Collection<AWalker> getActiveWalkers() {
-	// TODO Auto-generated method stub
-	return null;
+	return walkers;
     }
 
     /* (non-Javadoc)
@@ -96,18 +99,25 @@ public class UniformSamplingWalkerController extends AWalkerController {
      */
     @Override
     public Map<Node, Collection<Node>> filterCandidates(
-	    Map<Node, Collection<Node>> candidates) {
-	// TODO Auto-generated method stub
-	return null;
+	    Map<Node, Collection<Node>> candidates,
+	    NetworkSample ns) {
+	Map<Node, Collection<Node>> filtered = new HashMap<Node, Collection<Node>>();
+	Collection<Node> f;
+	for(Node n : candidates.keySet()) {
+	    f = this.filterCandidates(candidates.get(n), ns);
+	}
+	
+	
+	return filtered;
     }
 
     /* (non-Javadoc)
      * @see gtna.transformation.sampling.AWalkerController#filterCandidates(java.util.Collection)
      */
     @Override
-    public Collection<Node> filterCandidates(Collection<Node> candidates) {
-	// TODO Auto-generated method stub
-	return null;
+    public Collection<Node> filterCandidates(Collection<Node> candidates, 
+	    NetworkSample ns) {
+	return cf.filterCandidates(candidates, ns);
     }
 
 }
