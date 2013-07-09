@@ -54,11 +54,13 @@ public abstract class AWalker extends Parameter {
 	private AWalkerController controller;
 	private Collection<Node> currents;
 
-	public AWalker(String key, String value, AWalkerController awc) {
-		super(key, value);
-
-		controller = awc;
+	public AWalker(String walker) {
+		super("WALKER", walker);
 		currents = new ArrayList<Node>();
+	}
+	
+	public void setWalkerController(AWalkerController awc) {
+	    controller = awc;
 	}
 
 	/**
@@ -103,12 +105,12 @@ public abstract class AWalker extends Parameter {
 	/**
 	 * Move walker by one step
 	 */
-	public void takeAStep(Graph g) {
+	public void takeAStep(Graph g, NetworkSample ns) {
 		Map<Node, Collection<Node>> cc = this.getCurrentCandidates(g);
 		Set<Node> c = cc.keySet();
 		for (Node n : c) {
 			Collection<Node> candidates = controller
-					.filterCandidates(cc.get(n));
+					.filterCandidates(cc.get(n), ns);
 			Node next = this.selectNextNode(candidates);
 			currents.remove(n);
 			currents.add(next);

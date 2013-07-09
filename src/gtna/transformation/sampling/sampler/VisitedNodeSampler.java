@@ -52,8 +52,8 @@ public class VisitedNodeSampler extends ASampler {
      * @param key
      * @param value
      */
-    public VisitedNodeSampler(String key, String value) {
-	super(key, value);
+    public VisitedNodeSampler() {
+	super("VISITED_NODE_SAMPLER");
     }
 
     /* (non-Javadoc)
