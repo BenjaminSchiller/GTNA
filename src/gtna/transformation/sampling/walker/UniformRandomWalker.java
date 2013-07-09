@@ -53,8 +53,8 @@ public class UniformRandomWalker extends AWalker {
      * @param value
      * @param awc
      */
-    public UniformRandomWalker(String key, String value, AWalkerController awc) {
-	super(key, value, awc);
+    public UniformRandomWalker() {
+	super("UNIFORM_RANDOM_WALKER");
     }
 
     /* (non-Javadoc)
