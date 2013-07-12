@@ -57,8 +57,8 @@ public class NetworkSample extends Parameter {
 	 * @param key
 	 * @param value
 	 */
-	public NetworkSample(String key, String value) {
-		super(key, value);
+	public NetworkSample() {
+		super("NETWORK_SAMPLE", "standard");
 
 		sampleNodeMapping = new HashMap<Integer, Integer>();
 		revisitFrequency = new HashMap<Integer, List<Integer>>();
@@ -207,6 +207,20 @@ public class NetworkSample extends Parameter {
 	 */
 	public int getNewIndexOfSampledNode(int n){
 		return sampleNodeMapping.get(n);
+	}
+	
+	public String toString() {
+	    return printMapping();
+	}
+	
+	private String printMapping() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("Network Sample (NodeId-mapping): \n");
+	    for(int n : sampleNodeMapping.keySet()) {
+		sb.append("> " + n + "-> " + sampleNodeMapping.get(n) + "\n");
+	    }
+	    
+	    return sb.toString();
 	}
 
 }
