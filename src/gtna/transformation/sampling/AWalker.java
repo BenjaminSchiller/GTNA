@@ -51,78 +51,105 @@ import java.util.Set;
  */
 public abstract class AWalker extends Parameter {
 
-	private AWalkerController controller;
-	private Collection<Node> currents;
+    private AWalkerController controller;
+    private Collection<Node> currents;
 
-	public AWalker(String walker) {
-		super("WALKER", walker);
-		currents = new ArrayList<Node>();
+    public AWalker(String walker) {
+	super("WALKER", walker);
+	currents = new ArrayList<Node>();
+    }
+
+    public void setWalkerController(AWalkerController awc) {
+	controller = awc;
+    }
+
+    /**
+     * Returns the current neighbors of current nodes of the walker
+     * 
+     * @return Map: key: current node value: neighbors of the current node
+     */
+    public Map<Node, Collection<Node>> getCurrentCandidates(Graph g) {
+	Map<Node, Collection<Node>> cn = new HashMap<Node, Collection<Node>>();
+
+	for (Node n : currents) {
+	    Collection<Node> nn = resolveCandidates(g, n);
+	    cn.put(n, nn);
 	}
-	
-	public void setWalkerController(AWalkerController awc) {
-	    controller = awc;
+	return cn;
+    }
+
+    /**
+     * This default implementation returns the list of neighbors as candidates
+     * 
+     * @param g
+     *            Graph
+     * @param n
+     *            Current node
+     * @return List of candidates
+     */
+    private Collection<Node> resolveCandidates(Graph g, Node n) {
+	int[] nids = n.getOutgoingEdges();
+	ArrayList<Node> nn = new ArrayList<Node>();
+	for (int i : nids) {
+	    nn.add(g.getNode(i));
 	}
+	return nn;
+    }
 
-	/**
-	 * Returns the current neighbors of current nodes of the walker
-	 * 
-	 * @return Map: key: current node value: neighbors of the current node
-	 */
-	public Map<Node, Collection<Node>> getCurrentCandidates(Graph g) {
-		Map<Node, Collection<Node>> cn = new HashMap<Node, Collection<Node>>();
+    /**
+     * @param candidates
+     * @return
+     */
+    protected abstract Node selectNextNode(Collection<Node> candidates);
 
-		for (Node n : currents) {
-			Collection<Node> nn = resolveCandidates(g, n);
-			cn.put(n, nn);
+    /**
+     * Move walker by one step
+     */
+    public void takeAStep(Graph g, NetworkSample ns) {
+	Map<Node, Collection<Node>> cc = this.getCurrentCandidates(g);
+	Collection<Node> c;
+	if (cc.size() > 0) { // should not happen, nodes without outgoing edges
+			      // are rare	    
+	    c = cc.keySet();
+	} else {
+	    c = getRestartNodes();
+	}
+	for (Node n : c) {
+	    Collection<Node> candidates = null;
+	    do {
+		
+		if(cc.size() > 0) {
+		    candidates = controller.filterCandidates(cc.get(n), ns);
+		}else {
+		    candidates = controller.filterCandidates(c, ns);
 		}
-		return cn;
-	}
-
-	/**
-	 * This default implementation returns the list of neighbors as candidates
-	 * 
-	 * @param g
-	 *            Graph
-	 * @param n
-	 *            Current node
-	 * @return List of candidates
-	 */
-	private Collection<Node> resolveCandidates(Graph g, Node n) {
-		int[] nids = n.getOutgoingEdges();
-		ArrayList<Node> nn = new ArrayList<Node>();
-		for (int i : nids) {
-			nn.add(g.getNode(i));
+		
+		if(candidates != null && candidates.size() == 0) {
+		    cc.clear();
+		    c = getRestartNodes();
 		}
-		return nn;
-	}
 
-	/**
-	 * @param candidates
-	 * @return
-	 */
-	protected abstract Node selectNextNode(Collection<Node> candidates);
-
-	/**
-	 * Move walker by one step
-	 */
-	public void takeAStep(Graph g, NetworkSample ns) {
-		Map<Node, Collection<Node>> cc = this.getCurrentCandidates(g);
-		Set<Node> c = cc.keySet();
-		for (Node n : c) {
-			Collection<Node> candidates = controller
-					.filterCandidates(cc.get(n), ns);
-			Node next = this.selectNextNode(candidates);
-			currents.remove(n);
-			currents.add(next);
-		}
+	    } while (candidates.size() == 0);
+	    Node next = this.selectNextNode(candidates);
+	    System.out.println("Next visited node: " + next);
+	    currents.remove(n);
+	    currents.add(next);
 	}
+    }
 
-	/**
-	 * @param node
-	 */
-	public void setStartNode(Node node) {
-	    if(currents.size() == 0)
-		currents.add(node);	    
-	}
+    /**
+     * @return
+     */
+    private Collection<Node> getRestartNodes() {
+	return this.controller.getRestartNodes();
+    }
+
+    /**
+     * @param node
+     */
+    public void setStartNode(Node node) {
+	if (currents.size() == 0)
+	    currents.add(node);
+    }
 
 }
