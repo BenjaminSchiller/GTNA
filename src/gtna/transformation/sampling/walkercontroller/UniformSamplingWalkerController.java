@@ -115,7 +115,11 @@ public class UniformSamplingWalkerController extends AWalkerController {
 =======
 =======
 import gtna.transformation.sampling.NetworkSample;
+<<<<<<< HEAD
 >>>>>>> set parameter values
+=======
+import gtna.transformation.sampling.StartNodeSelector;
+>>>>>>> testing & bugfixing (2)
 
 /**
  * @author Tim
@@ -133,9 +137,9 @@ public class UniformSamplingWalkerController extends AWalkerController {
      * @param w
      * @param cf
      */
-    public UniformSamplingWalkerController(Collection<AWalker> w, CandidateFilter cf) {
+    public UniformSamplingWalkerController(Collection<AWalker> w, CandidateFilter cf, StartNodeSelector sns) {
 	super(w.size() + "x_" + w.toArray(new AWalker[0])[0].getValue()
-		, w, cf);
+		, w, cf, sns);
 	this.walkers = w;
 	this.cf = cf;
     }
