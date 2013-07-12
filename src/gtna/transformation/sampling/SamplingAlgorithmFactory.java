@@ -390,6 +390,7 @@ public class SamplingAlgorithmFactory {
 	    cw.add(aw);
 	    awc = new UniformSamplingWalkerController(cw, cf);
 	    aw.setWalkerController(awc);
+	    as.setWalkerController(awc);
 	    sns = new StartNodeSelector("RANDOM");
 	    algorithm="UNIFORM_SAMPLING";
 	    break;

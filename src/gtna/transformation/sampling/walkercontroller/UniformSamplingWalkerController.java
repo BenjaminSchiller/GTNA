@@ -176,6 +176,7 @@ public class UniformSamplingWalkerController extends AWalkerController {
 	Collection<Node> f;
 	for(Node n : candidates.keySet()) {
 	    f = this.filterCandidates(candidates.get(n), ns);
+	    filtered.put(n, f);
 	}
 	
 	
