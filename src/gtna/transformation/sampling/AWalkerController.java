@@ -35,6 +35,7 @@
  */
 package gtna.transformation.sampling;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -50,6 +51,9 @@ public abstract class AWalkerController extends Parameter {
 
 	Collection<AWalker> walkers;
 	CandidateFilter candidateFilter;
+	private StartNodeSelector startNodeSelector;
+	private Graph graph;
+	private NetworkSample currentSample;
 
 	/**
 	 * @param key
@@ -60,12 +64,21 @@ public abstract class AWalkerController extends Parameter {
 
 	}
 
-	public AWalkerController(String walkercontroller, Collection<AWalker> w, CandidateFilter cf) {
+	public AWalkerController(String walkercontroller, Collection<AWalker> w, CandidateFilter cf, StartNodeSelector sns) {
 		super("WALKER_CONTROLLER", walkercontroller);
-		walkers = w;
-		candidateFilter = cf;
+		this.walkers = w;
+		this.candidateFilter = cf;
+		this.startNodeSelector = sns;
 	}
 
+	
+	public void setGraph(Graph g) {
+	    this.graph = g;
+	}
+	
+	public void setCurrentSample(NetworkSample ns) {
+	    this.currentSample = ns;
+	}
 	/**
 	 * @param g
 	 * @param startNodes
@@ -90,11 +103,10 @@ public abstract class AWalkerController extends Parameter {
 	 * Perform one step of walking with all active walker. The number of active walkers depends on the used walking-strategy
 	 */
 	public void walkOneStep(Graph g, NetworkSample ns) {
+	    	this.setCurrentSample(ns);
 		if (!isInitialized()) {
 			throw new IllegalStateException(
-					"You have to initialize the WalkerController with a Collection of Walker-instances and a CandidateFilter first.\n"
-							+ "Please use the initialize(Graph, Node[], Collection<AWalker>, CandidateFilter) method or "
-							+ "the AWalkerController(String, String, Collection<AWalker>, CandidateFilter) constructor.");
+					"You have to initialize the WalkerController first.");
 		}
 		
 		Collection<AWalker> activeWalkers = this.getActiveWalkers();
@@ -123,5 +135,20 @@ public abstract class AWalkerController extends Parameter {
 	 * @return				subset of candidates
 	 */
 	public abstract Collection<Node> filterCandidates(Collection<Node> candidates, NetworkSample sample);
+
+	/**
+	 * @return
+	 */
+	public Collection<Node> getRestartNodes() {
+	   Node[] rn;
+	   Collection<Node> frn, c;
+	   do {
+	       rn = startNodeSelector.selectStartNodes(graph, 1);
+	       c = Arrays.asList(rn);
+	       frn = filterCandidates(c, currentSample);
+	   }while(frn.size()==0);
+	   
+	   return frn;
+	}
 
 }
