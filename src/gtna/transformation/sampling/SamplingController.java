@@ -600,6 +600,7 @@ public class SamplingController extends Transformation {
 						    // node(s)
 	sampler.initialize(g, networkSample, targetSampleSize); // initialize
 								// Sampler
+	walkerController.setGraph(g);
 
 	// eventually sample startnodes
 	sampleOneStep(g, maxNodesInThisRound, round);
@@ -608,10 +609,14 @@ public class SamplingController extends Transformation {
 	// walk -> sample loop as long new nodes are sampled
 	do {
 	    round++;
+	    System.out.println("> Algorithm round " + round);
 	    // walk
 	    walkerController.walkOneStep(g, networkSample);
+	    System.out.println("> Walked");
 	    // eventually sample
 	    sampleOneStep(g, maxNodesInThisRound, round);
+	    
+	    System.out.println("> Sampled");
 	    maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
 	    running = (maxNodesInThisRound > 0) ? true : false;
 	} while (running);
