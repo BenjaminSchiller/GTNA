@@ -74,7 +74,8 @@ public class StartNodeSelector extends Parameter{
 		
 		int i = 0;
 		while(sn.size() < dimension){
-			nid = r.nextInt() % gsize;
+			nid = r.nextInt(gsize-1); 
+			nid = nid % gsize;
 			n = g.getNode(nid);
 			
 			// add node to selected nodes 
@@ -84,7 +85,7 @@ public class StartNodeSelector extends Parameter{
 		}
 		
 		
-		return sn.toArray(new Node[dimension]);
+		return sn.toArray(new Node[0]);
 		
 	
 	}

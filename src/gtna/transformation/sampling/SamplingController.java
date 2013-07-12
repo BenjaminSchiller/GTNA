@@ -143,6 +143,7 @@ import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 /**
  * @author Tim
@@ -162,12 +163,15 @@ public class SamplingController extends Transformation {
     public SamplingController(String algorithm, AWalkerController awc,
 	    ASampler as, StartNodeSelector asns, double scaledown,
 	    int dimension, boolean revisiting) {
-	super("SAMPLING_" + algorithm + "_" + awc.getValue() + "_" + as.getValue(),
-		new Parameter[] { awc, as, asns,
+	super("SAMPLING",
+		new Parameter[] { 
+			new StringParameter("ALGORITHM", algorithm),
+			awc, as, asns,
 			new DoubleParameter("SCALEDOWN", scaledown),
 			new IntParameter("DIMENSIONS", dimension),
 			new BooleanParameter("REVISITING", revisiting) });
 
+	
 	// we must have at least 1 walker
 	if (dimension < 1) {
 	    throw new IllegalArgumentException(
@@ -472,6 +476,10 @@ public class SamplingController extends Transformation {
 	this.scaledown = scaledown;
 	this.dimension = dimension;
 	this.revisiting = revisiting;
+	this.sampler = as;
+	this.walkerController = awc;
+	this.startNodeSelector = asns;
+	this.networkSample = new NetworkSample();
 
     }
 
@@ -485,7 +493,13 @@ public class SamplingController extends Transformation {
 	if (!initialized()) {
 	    return g;
 	} else {
+	    long startTime = System.currentTimeMillis();
 	    sampleGraph(g);
+	    long finishTime = System.currentTimeMillis();
+	    long duration = finishTime - startTime;
+	    System.out.println("Sampled " + networkSample.getSampleSize() 
+		    + " out of " + g.getNodeCount() 
+		    + " nodes. (Took " + duration + "ms)");
 	    return g;
 >>>>>>> SamplingController.applicable is checking the availability of the necessary submodules.
 	}
@@ -499,6 +513,13 @@ public class SamplingController extends Transformation {
     @Override
     public boolean applicable(Graph g) {
 	if (!initialized()) {
+	    System.out.println("Sampling is not initialized:");
+	    if(dimension <= 0) System.out.println("> Dimension is < 0");
+	    if(networkSample == null) System.out.println("> Network Sample is not initialized");
+	    if(walkerController == null || !walkerController.isInitialized()) System.out.println("> Walker Controller is not initilized");
+	    if(sampler == null || !sampler.isInitialized()) System.out.println("> Sampler is not initialized");
+	    if(startNodeSelector == null) System.out.println("> Startnode selector is not initialized");
+	    
 	    return false;
 	}
 <<<<<<< HEAD
@@ -577,20 +598,20 @@ public class SamplingController extends Transformation {
 	int round = 0;
 	walkerController.initialize(g, startNodes); // place walker(s) on start
 						    // node(s)
-	sampler.initialize(walkerController, targetSampleSize); // initialize
+	sampler.initialize(g, networkSample, targetSampleSize); // initialize
 								// Sampler
 
 	// eventually sample startnodes
-	sampleOneStep(maxNodesInThisRound, round);
+	sampleOneStep(g, maxNodesInThisRound, round);
 
 	boolean running = true;
 	// walk -> sample loop as long new nodes are sampled
 	do {
 	    round++;
 	    // walk
-	    walkerController.walkOneStep();
+	    walkerController.walkOneStep(g, networkSample);
 	    // eventually sample
-	    sampleOneStep(maxNodesInThisRound, round);
+	    sampleOneStep(g, maxNodesInThisRound, round);
 	    maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
 	    running = (maxNodesInThisRound > 0) ? true : false;
 	} while (running);
@@ -607,9 +628,9 @@ public class SamplingController extends Transformation {
      *            current round
      * @return true if at least one node is sampled, else false
      */
-    private boolean sampleOneStep(int maxNodesInThisRound, int round) {
+    private boolean sampleOneStep(Graph g, int maxNodesInThisRound, int round) {
 	Collection<Node> chosenNodes = sampler
-		.sampleOneStepNodes(maxNodesInThisRound);
+		.sampleOneStepNodes(g, networkSample, maxNodesInThisRound);
 	if (chosenNodes.size() > 0)
 	    return networkSample.addNodeToSample(chosenNodes, round);
 
