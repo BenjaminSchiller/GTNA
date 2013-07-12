@@ -64,7 +64,7 @@ public class UniformRandomWalker extends AWalker {
     protected Node selectNextNode(Collection<Node> candidates) {
 	Random r = new Random();
 	
-	int next = r.nextInt() % candidates.size();
+	int next = r.nextInt(candidates.size()-1);
 	
 	return candidates.toArray(new Node[0])[next];
 	

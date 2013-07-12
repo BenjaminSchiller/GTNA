@@ -68,7 +68,7 @@ public abstract class AWalker extends Parameter {
 	 * 
 	 * @return Map: key: current node value: neighbors of the current node
 	 */
-	private Map<Node, Collection<Node>> getCurrentCandidates(Graph g) {
+	public Map<Node, Collection<Node>> getCurrentCandidates(Graph g) {
 		Map<Node, Collection<Node>> cn = new HashMap<Node, Collection<Node>>();
 
 		for (Node n : currents) {

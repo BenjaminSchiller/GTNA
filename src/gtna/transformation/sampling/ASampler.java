@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
+import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.util.parameter.Parameter;
 
@@ -70,9 +71,12 @@ public abstract class ASampler extends Parameter {
 	 * @param walkerController 
 	 * 
 	 */
-	public Collection<Node> initialize(AWalkerController walkerController, int maxNodes){
-		this.walkerController = walkerController;
-		return sampleOneStepNodes(maxNodes);
+	public Collection<Node> initialize(Graph g, NetworkSample ns, int maxNodes){
+		return sampleOneStepNodes(g, ns, maxNodes);
+	}
+	
+	public void setWalkerController(AWalkerController awc) {
+	    this.walkerController = awc;
 	}
 
 	public boolean isInitialized(){
@@ -85,13 +89,13 @@ public abstract class ASampler extends Parameter {
 	/**
 	 * @return
 	 */
-	public Collection<Node> sampleOneStepNodes(int maxNodes){
+	public Collection<Node> sampleOneStepNodes(Graph g, NetworkSample ns, int maxNodes){
 		Collection<AWalker> walkers = walkerController.getActiveWalkers();
 		Collection<Node> sampled = new LinkedList<Node>();
 		
 		for(AWalker w : walkers){
-			Map<Node, Collection<Node>> wcc = w.getCurrentCandidates();
-			Map<Node, Collection<Node>> fc = walkerController.filterCandidates(wcc);
+			Map<Node, Collection<Node>> wcc = w.getCurrentCandidates(g);
+			Map<Node, Collection<Node>> fc = walkerController.filterCandidates(wcc, ns);
 			sampled.addAll(sampleNodes(fc));
 		}		
 		return sampled;
