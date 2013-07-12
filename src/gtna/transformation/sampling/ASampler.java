@@ -97,7 +97,8 @@ public abstract class ASampler extends Parameter {
 			Map<Node, Collection<Node>> wcc = w.getCurrentCandidates(g);
 			Map<Node, Collection<Node>> fc = walkerController.filterCandidates(wcc, ns);
 			sampled.addAll(sampleNodes(fc));
-		}		
+		}	
+		System.out.println("Sampled " + sampled.size() + " nodes.");
 		return sampled;
 		
 	}

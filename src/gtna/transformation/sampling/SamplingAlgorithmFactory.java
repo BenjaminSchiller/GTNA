@@ -94,12 +94,13 @@ public class SamplingAlgorithmFactory {
 	    as = new VisitedNodeSampler();
 	    aw = new UniformRandomWalker();
 	    cf = new CandidateFilter(revisiting);
+	    sns = new StartNodeSelector("RANDOM");
 	    Collection<AWalker> cw = new ArrayList<AWalker>();
 	    cw.add(aw);
-	    awc = new UniformSamplingWalkerController(cw, cf);
+	    awc = new UniformSamplingWalkerController(cw, cf, sns);
 	    aw.setWalkerController(awc);
 	    as.setWalkerController(awc);
-	    sns = new StartNodeSelector("RANDOM");
+	    
 	    algorithm="UNIFORM_SAMPLING";
 	    break;
 	default:

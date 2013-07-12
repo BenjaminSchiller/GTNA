@@ -45,6 +45,7 @@ import gtna.transformation.sampling.AWalker;
 import gtna.transformation.sampling.AWalkerController;
 import gtna.transformation.sampling.CandidateFilter;
 import gtna.transformation.sampling.NetworkSample;
+import gtna.transformation.sampling.StartNodeSelector;
 
 /**
  * @author Tim
@@ -62,9 +63,9 @@ public class UniformSamplingWalkerController extends AWalkerController {
      * @param w
      * @param cf
      */
-    public UniformSamplingWalkerController(Collection<AWalker> w, CandidateFilter cf) {
+    public UniformSamplingWalkerController(Collection<AWalker> w, CandidateFilter cf, StartNodeSelector sns) {
 	super(w.size() + "x_" + w.toArray(new AWalker[0])[0].getValue()
-		, w, cf);
+		, w, cf, sns);
 	this.walkers = w;
 	this.cf = cf;
     }

@@ -73,7 +73,7 @@ public class Sampling {
 	int times = 1;		// how many generations?
 	
 	// Sampling parameter
-	double scaledown = 0.5;
+	double scaledown = 0.1;
 	int dimension = 1;
 	boolean revisiting = false;
 
@@ -82,7 +82,7 @@ public class Sampling {
 			scaledown, revisiting, dimension);
 
 	Transformation[] t = new Transformation[] {uniformSampling};
-	Network nw1 = new ErdosRenyi(10, 3, false, t);
+	Network nw1 = new ErdosRenyi(10000, 12, false, t); 
 //	Network nw2 = new BarabasiAlbert(10, 2, null);
 //	Network nw3 = new WattsStrogatz(10, 2, 0.2, null);
 //	Network nw4 = new CondonAndKarp(10, 2, 0.4, 0.05, null);
