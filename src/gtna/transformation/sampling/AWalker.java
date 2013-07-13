@@ -54,11 +54,21 @@ public abstract class AWalker extends Parameter {
     private AWalkerController controller;
     private Collection<Node> currents;
 
+    /**
+     * create a walker instance
+     * 
+     * @param walker
+     */
     public AWalker(String walker) {
 	super("WALKER", walker);
 	currents = new ArrayList<Node>();
     }
 
+    /**
+     * set the appendant walker controller
+     * 
+     * @param awc
+     */
     public void setWalkerController(AWalkerController awc) {
 	controller = awc;
     }
@@ -103,48 +113,53 @@ public abstract class AWalker extends Parameter {
     protected abstract Node selectNextNode(Collection<Node> candidates);
 
     /**
-     * Move walker by one step
+     * Move walker one step
      */
     public void takeAStep(Graph g, NetworkSample ns) {
 	Map<Node, Collection<Node>> cc = this.getCurrentCandidates(g);
 	Collection<Node> c;
-	if (cc.size() > 0) { // should not happen, nodes without outgoing edges
-			      // are rare	    
+
+	// TODO
+	if (cc.size() > 0) {
 	    c = cc.keySet();
 	} else {
 	    c = getRestartNodes();
 	}
 	for (Node n : c) {
-	    Collection<Node> candidates = null;
+	    Collection<Node> candidates = new ArrayList<Node>();
 	    do {
-		
-		if(cc.size() > 0) {
+		// TODO
+		if (cc.size() > 0) {
 		    candidates = controller.filterCandidates(cc.get(n), ns);
-		}else {
+		} else {
 		    candidates = controller.filterCandidates(c, ns);
 		}
-		
-		if(candidates != null && candidates.size() == 0) {
+		if (candidates.size() == 0) {
 		    cc.clear();
 		    c = getRestartNodes();
 		}
 
 	    } while (candidates.size() == 0);
+
 	    Node next = this.selectNextNode(candidates);
-	    System.out.println("Next visited node: " + next);
+
 	    currents.remove(n);
 	    currents.add(next);
 	}
     }
 
     /**
-     * @return
+     * Get new nodes for restarting the walk if the walker blocks
+     * 
+     * @return collection of new start nodes
      */
     private Collection<Node> getRestartNodes() {
 	return this.controller.getRestartNodes();
     }
 
     /**
+     * Set start node of this walker
+     * 
      * @param node
      */
     public void setStartNode(Node node) {
