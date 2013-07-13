@@ -50,6 +50,7 @@ import gtna.util.parameter.Parameter;
 /**
  * @author Tim
  * 
+<<<<<<< HEAD
  */
 public abstract class ASampler extends Parameter {
 
@@ -196,6 +197,8 @@ import gtna.util.parameter.Parameter;
 /**
  * @author Tim
  *
+=======
+>>>>>>> refactoring and cleanup after debugging (1)
  */
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -207,43 +210,50 @@ public class ASampler extends Parameter {
 =======
 public abstract class ASampler extends Parameter {
 
-	
-	AWalkerController walkerController;
-	
-	
-	
-	/**
-	 * 
-	 * @param sampler
-	 */
-	public ASampler(String sampler) {
-		super("SAMPLER", sampler);
-	}	
-	
-	/**
-	 * Initializes the ASampler implementation
-	 * 
-	 * This default implementation calls sampleOneStepNodes to sample
-	 * the startnode(s)!
-	 * @param targetSampleSize  max nodes sampled in this round 
-	 * @param walkerController 
-	 * 
-	 */
-	public Collection<Node> initialize(Graph g, NetworkSample ns, int maxNodes){
-		return sampleOneStepNodes(g, ns, maxNodes);
-	}
-	
-	public void setWalkerController(AWalkerController awc) {
-	    this.walkerController = awc;
-	}
+    private AWalkerController walkerController;
 
-	public boolean isInitialized(){
-		if(walkerController == null){
-			return false;
-		}
-		
-		return true;
+    /**
+     * 
+     * @param sampler
+     */
+    public ASampler(String sampler) {
+	super("SAMPLER", sampler);
+    }
+
+    /**
+     * Initializes the ASampler implementation
+     * 
+     * This default implementation calls sampleOneStepNodes to sample the
+     * startnode(s)!
+     * 
+     * @param targetSampleSize
+     *            max nodes sampled in this round
+     * @param walkerController
+     * 
+     */
+    public Collection<Node> initialize(Graph g, NetworkSample ns, int maxNodes) {
+	return sampleOneStepNodes(g, ns, maxNodes);
+    }
+
+    /**
+     * Set the used walker controller instance
+     * 
+     * @param awc
+     */
+    public void setWalkerController(AWalkerController awc) {
+	this.walkerController = awc;
+    }
+
+    /**
+     * Checks the initialization of the sampler instance
+     * 
+     * @return true if ok, else false
+     */
+    public boolean isInitialized() {
+	if (walkerController == null) {
+	    return false;
 	}
+<<<<<<< HEAD
 	/**
 	 * @return
 	 */
@@ -280,5 +290,46 @@ public abstract class ASampler extends Parameter {
 =======
 	protected abstract Collection<Node> sampleNodes(Map<Node, Collection<Node>> filteredCandidates);
 >>>>>>> code style, minor changes in method-/class-design
+=======
+
+	return true;
+    }
+
+    /**
+     * Sample nodes of the current step
+     * 
+     * @param g
+     *            graph
+     * @param ns
+     *            current network sample
+     * @param maxNodes
+     *            sample max maxNodes nodes in this step
+     * @return
+     */
+    public Collection<Node> sampleOneStepNodes(Graph g, NetworkSample ns,
+	    int maxNodes) {
+	Collection<AWalker> walkers = walkerController.getActiveWalkers();
+	Collection<Node> sampled = new LinkedList<Node>();
+
+	for (AWalker w : walkers) {
+	    Map<Node, Collection<Node>> wcc = w.getCurrentCandidates(g);
+	    Map<Node, Collection<Node>> fc = walkerController.filterCandidates(
+		    wcc, ns);
+	    sampled.addAll(sampleNodes(fc));
+	}
+	return sampled;
+
+    }
+
+    /**
+     * Select the sampled node out of the filtered candidates
+     * 
+     * @param filteredCandidates
+     *            candidate nodes
+     * @return collection of selected nodes
+     */
+    protected abstract Collection<Node> sampleNodes(
+	    Map<Node, Collection<Node>> filteredCandidates);
+>>>>>>> refactoring and cleanup after debugging (1)
 
 }

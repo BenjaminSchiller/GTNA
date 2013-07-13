@@ -96,13 +96,18 @@ import gtna.transformation.sampling.*;
 
 /**
  * @author Tim
+<<<<<<< HEAD
  *
 >>>>>>> SamplingAlgorithmFactory
+=======
+ * 
+>>>>>>> refactoring and cleanup after debugging (1)
  */
 public class SamplingAlgorithmFactory {
 
     /**
      * Enumeration of by default supported sampling algorithms
+<<<<<<< HEAD
 <<<<<<< HEAD
      * 
      * @author Tim
@@ -119,32 +124,28 @@ public class SamplingAlgorithmFactory {
     }
 
 =======
+=======
+     * 
+>>>>>>> refactoring and cleanup after debugging (1)
      * @author Tim
-     *
+     * 
      */
+    @SuppressWarnings("javadoc")
     public enum SamplingAlgorithm {
-	UNIFORMSAMPLING,
-	RANDOMWALK,
-	RANDOMWALK_METROPOLIZED,
-	RANDOMWALK_DEGREECORRECTION,
-	RANDOMWALK_MULTIPLE,
-	FRONTIERSAMPLING,
-	RANDOMSTROLL,
-	RANDOMSTROLL_DEGREECORRECTION,
-	RANDOMJUMP,
-	BFS,
-	SNOWBALLSAMPLING,
-	RESPONDENTDRIVENSAMPLING,
-	FORESTFIRE,
-	DFS
+	UNIFORMSAMPLING, RANDOMWALK, RANDOMWALK_METROPOLIZED, RANDOMWALK_DEGREECORRECTION, RANDOMWALK_MULTIPLE, FRONTIERSAMPLING, RANDOMSTROLL, RANDOMSTROLL_DEGREECORRECTION, RANDOMJUMP, BFS, SNOWBALLSAMPLING, RESPONDENTDRIVENSAMPLING, FORESTFIRE, DFS
     }
+<<<<<<< HEAD
     
 >>>>>>> SamplingAlgorithmFactory
+=======
+
+>>>>>>> refactoring and cleanup after debugging (1)
     /**
      * build an instance of a default sampling transformation
      * 
      * @param sg
      * @param revisiting
+<<<<<<< HEAD
 <<<<<<< HEAD
      * @param dimension
      *            IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
@@ -369,19 +370,25 @@ public class SamplingAlgorithmFactory {
     
 =======
      * @param dimension IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
+=======
+     * @param dimension
+     *            IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
+>>>>>>> refactoring and cleanup after debugging (1)
      * @return
      */
-    public static SamplingController getInstanceOf(SamplingAlgorithm sg, double scaledown, boolean revisiting, int dimension) {
+    public static SamplingController getInstanceOf(SamplingAlgorithm sg,
+	    double scaledown, boolean revisiting, int dimension) {
 	SamplingController sc;
 	ASampler as;
 	AWalker aw;
 	AWalkerController awc;
 	CandidateFilter cf;
-	NetworkSample ns;
 	StartNodeSelector sns;
 	String algorithm;
-	
-	switch(sg) {
+	@SuppressWarnings("unused")
+	NetworkSample ns;
+
+	switch (sg) {
 	case UNIFORMSAMPLING:
 	    as = new VisitedNodeSampler();
 	    aw = new UniformRandomWalker();
@@ -392,13 +399,14 @@ public class SamplingAlgorithmFactory {
 	    awc = new UniformSamplingWalkerController(cw, cf, sns);
 	    aw.setWalkerController(awc);
 	    as.setWalkerController(awc);
-	    
-	    algorithm="UNIFORM_SAMPLING";
+
+	    algorithm = "UNIFORM_SAMPLING";
 	    break;
 	default:
 	    throw new IllegalArgumentException("Not supported algorithm");
-	}	
-	sc = new SamplingController(algorithm, awc, as, sns, scaledown, dimension, revisiting);
+	}
+	sc = new SamplingController(algorithm, awc, as, sns, scaledown,
+		dimension, revisiting);
 	return sc;
     }
 >>>>>>> SamplingAlgorithmFactory
