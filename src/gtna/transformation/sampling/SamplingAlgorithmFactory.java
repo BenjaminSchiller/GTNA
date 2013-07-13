@@ -45,51 +45,43 @@ import gtna.transformation.sampling.*;
 
 /**
  * @author Tim
- *
+ * 
  */
 public class SamplingAlgorithmFactory {
 
     /**
      * Enumeration of by default supported sampling algorithms
+     * 
      * @author Tim
-     *
+     * 
      */
+    @SuppressWarnings("javadoc")
     public enum SamplingAlgorithm {
-	UNIFORMSAMPLING,
-	RANDOMWALK,
-	RANDOMWALK_METROPOLIZED,
-	RANDOMWALK_DEGREECORRECTION,
-	RANDOMWALK_MULTIPLE,
-	FRONTIERSAMPLING,
-	RANDOMSTROLL,
-	RANDOMSTROLL_DEGREECORRECTION,
-	RANDOMJUMP,
-	BFS,
-	SNOWBALLSAMPLING,
-	RESPONDENTDRIVENSAMPLING,
-	FORESTFIRE,
-	DFS
+	UNIFORMSAMPLING, RANDOMWALK, RANDOMWALK_METROPOLIZED, RANDOMWALK_DEGREECORRECTION, RANDOMWALK_MULTIPLE, FRONTIERSAMPLING, RANDOMSTROLL, RANDOMSTROLL_DEGREECORRECTION, RANDOMJUMP, BFS, SNOWBALLSAMPLING, RESPONDENTDRIVENSAMPLING, FORESTFIRE, DFS
     }
-    
+
     /**
      * build an instance of a default sampling transformation
      * 
      * @param sg
      * @param revisiting
-     * @param dimension IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
+     * @param dimension
+     *            IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
      * @return
      */
-    public static SamplingController getInstanceOf(SamplingAlgorithm sg, double scaledown, boolean revisiting, int dimension) {
+    public static SamplingController getInstanceOf(SamplingAlgorithm sg,
+	    double scaledown, boolean revisiting, int dimension) {
 	SamplingController sc;
 	ASampler as;
 	AWalker aw;
 	AWalkerController awc;
 	CandidateFilter cf;
-	NetworkSample ns;
 	StartNodeSelector sns;
 	String algorithm;
-	
-	switch(sg) {
+	@SuppressWarnings("unused")
+	NetworkSample ns;
+
+	switch (sg) {
 	case UNIFORMSAMPLING:
 	    as = new VisitedNodeSampler();
 	    aw = new UniformRandomWalker();
@@ -100,13 +92,14 @@ public class SamplingAlgorithmFactory {
 	    awc = new UniformSamplingWalkerController(cw, cf, sns);
 	    aw.setWalkerController(awc);
 	    as.setWalkerController(awc);
-	    
-	    algorithm="UNIFORM_SAMPLING";
+
+	    algorithm = "UNIFORM_SAMPLING";
 	    break;
 	default:
 	    throw new IllegalArgumentException("Not supported algorithm");
-	}	
-	sc = new SamplingController(algorithm, awc, as, sns, scaledown, dimension, revisiting);
+	}
+	sc = new SamplingController(algorithm, awc, as, sns, scaledown,
+		dimension, revisiting);
 	return sc;
     }
 }

@@ -77,21 +77,34 @@ public class Sampling {
 	int dimension = 1;
 	boolean revisiting = false;
 
-	Transformation uniformSampling = 
+	Transformation uniformSampling1 = 
+		SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.UNIFORMSAMPLING,
+			scaledown, revisiting, dimension);
+	Transformation uniformSampling2 = 
+		SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.UNIFORMSAMPLING,
+			scaledown, revisiting, dimension);
+	Transformation uniformSampling3 = 
+		SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.UNIFORMSAMPLING,
+			scaledown, revisiting, dimension);
+	Transformation uniformSampling4 = 
 		SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.UNIFORMSAMPLING,
 			scaledown, revisiting, dimension);
 
-	Transformation[] t = new Transformation[] {uniformSampling};
-	Network nw1 = new ErdosRenyi(10000, 12, false, t); 
-//	Network nw2 = new BarabasiAlbert(10, 2, null);
-//	Network nw3 = new WattsStrogatz(10, 2, 0.2, null);
-//	Network nw4 = new CondonAndKarp(10, 2, 0.4, 0.05, null);
+	Transformation[] t1 = new Transformation[] {uniformSampling1};
+	Transformation[] t2 = new Transformation[] {uniformSampling2};
+	Transformation[] t3 = new Transformation[] {uniformSampling3};
+	Transformation[] t4 = new Transformation[] {uniformSampling4};
+	Network nw1 = new ErdosRenyi(1000, 12, false, t1); 
+	Network nw2 = new BarabasiAlbert(1000, 10, t2);
+	Network nw3 = new WattsStrogatz(1000, 6, 0.2, t3);
+	Network nw4 = new CondonAndKarp(1000, 4, 0.4, 0.05, t4);
+	
 //	Network nw5 = new ErdosRenyi(100, 10, false, null);
 //	Network nw6 = new BarabasiAlbert(100, 10, null);
 //	Network nw7 = new WattsStrogatz(100, 6, 0.2, null);
 //	Network nw8 = new CondonAndKarp(100, 4, 0.4, 0.05, null);
 	
-	Network[] n = new Network[] {nw1 /*, nw2, nw3, nw4, nw5, nw6, nw7, nw8*/};
+	Network[] n = new Network[] {nw1, nw2, nw3, nw4/*, nw5, nw6, nw7, nw8*/};
 	
 	Metric[] metrics = new Metric[] { 
 			new DegreeDistribution(),
