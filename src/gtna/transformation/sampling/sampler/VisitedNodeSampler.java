@@ -65,6 +65,7 @@ public class VisitedNodeSampler extends ASampler {
 	
 	Collection<Node> selected = new ArrayList<Node>();
 	
+	// add keySet as we sample all visited nodes!
 	selected.addAll(filteredCandidates.keySet());
 
 	return selected;
