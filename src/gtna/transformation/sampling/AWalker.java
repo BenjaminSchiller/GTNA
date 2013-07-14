@@ -53,7 +53,7 @@ public abstract class AWalker extends Parameter {
 
     private AWalkerController controller;
     private Collection<Node> currents;
-
+  
     /**
      * create a walker instance
      * 
@@ -78,11 +78,11 @@ public abstract class AWalker extends Parameter {
      * 
      * @return Map: key: current node value: neighbors of the current node
      */
-    public Map<Node, Collection<Node>> getCurrentCandidates(Graph g) {
+    public Map<Node, Collection<Node>> getCurrentCandidates() {
 	Map<Node, Collection<Node>> cn = new HashMap<Node, Collection<Node>>();
 
 	for (Node n : currents) {
-	    Collection<Node> nn = resolveCandidates(g, n);
+	    Collection<Node> nn = resolveCandidates(this.getGraph(), n);
 	    cn.put(n, nn);
 	}
 	return cn;
@@ -116,7 +116,7 @@ public abstract class AWalker extends Parameter {
      * Move walker one step
      */
     public void takeAStep(Graph g, NetworkSample ns) {
-	Map<Node, Collection<Node>> cc = this.getCurrentCandidates(g);
+	Map<Node, Collection<Node>> cc = this.getCurrentCandidates();
 	Collection<Node> c;
 
 	// TODO
@@ -130,9 +130,9 @@ public abstract class AWalker extends Parameter {
 	    do {
 		// TODO
 		if (cc.size() > 0) {
-		    candidates = controller.filterCandidates(cc.get(n), ns);
+		    candidates = controller.filterCandidates(cc.get(n));
 		} else {
-		    candidates = controller.filterCandidates(c, ns);
+		    candidates = controller.filterCandidates(c);
 		}
 		if (candidates.size() == 0) {
 		    cc.clear();
@@ -165,6 +165,14 @@ public abstract class AWalker extends Parameter {
     public void setStartNode(Node node) {
 	if (currents.size() == 0)
 	    currents.add(node);
+    }
+    
+    /**
+     * returns the graph hold by the sampling controller
+     * @return
+     */
+    public Graph getGraph() {
+	return controller.getGraph();
     }
 
 }
