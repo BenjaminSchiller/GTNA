@@ -57,6 +57,7 @@ public abstract class ASampler extends Parameter {
     private AWalkerController walkerController;
     private Graph graph;
     private SamplingController samplingController;
+<<<<<<< HEAD
 
     /**
      * 
@@ -211,6 +212,8 @@ public class ASampler extends Parameter {
 public abstract class ASampler extends Parameter {
 
     private AWalkerController walkerController;
+=======
+>>>>>>> refactoring (2)
 
     /**
      * 
@@ -219,6 +222,9 @@ public abstract class ASampler extends Parameter {
     public ASampler(String sampler) {
 	super("SAMPLER", sampler);
     }
+    
+    
+
 
     /**
      * Initializes the ASampler implementation
@@ -226,13 +232,17 @@ public abstract class ASampler extends Parameter {
      * This default implementation calls sampleOneStepNodes to sample the
      * startnode(s)!
      * 
+     * This default implementation calls setGraph, you don't have to take care about
+     * setting the graph after calling this method.
+     * 
      * @param targetSampleSize
      *            max nodes sampled in this round
      * @param walkerController
      * 
      */
-    public Collection<Node> initialize(Graph g, NetworkSample ns, int maxNodes) {
-	return sampleOneStepNodes(g, ns, maxNodes);
+    public Collection<Node> initialize(Graph g, int maxNodes) {
+	this.setGraph(g);
+	return sampleOneStep(maxNodes);
     }
 
     /**
@@ -306,15 +316,14 @@ public abstract class ASampler extends Parameter {
      *            sample max maxNodes nodes in this step
      * @return
      */
-    public Collection<Node> sampleOneStepNodes(Graph g, NetworkSample ns,
-	    int maxNodes) {
+    public Collection<Node> sampleOneStep(int maxNodes) {
 	Collection<AWalker> walkers = walkerController.getActiveWalkers();
 	Collection<Node> sampled = new LinkedList<Node>();
 
 	for (AWalker w : walkers) {
-	    Map<Node, Collection<Node>> wcc = w.getCurrentCandidates(g);
+	    Map<Node, Collection<Node>> wcc = w.getCurrentCandidates();
 	    Map<Node, Collection<Node>> fc = walkerController.filterCandidates(
-		    wcc, ns);
+		    wcc);
 	    sampled.addAll(sampleNodes(fc));
 	}
 	return sampled;
@@ -331,5 +340,36 @@ public abstract class ASampler extends Parameter {
     protected abstract Collection<Node> sampleNodes(
 	    Map<Node, Collection<Node>> filteredCandidates);
 >>>>>>> refactoring and cleanup after debugging (1)
+
+
+
+
+    /**
+     * @return the graph
+     */
+    public Graph getGraph() {
+	return graph;
+    }
+
+
+
+
+    /**
+     * @param graph the graph to set
+     */
+    public void setGraph(Graph graph) {
+	this.graph = graph;
+    }
+
+
+
+
+    /**
+     * @param sc
+     */
+    public void setSamplingController(SamplingController sc) {
+	this.samplingController = sc;
+	
+    }
 
 }

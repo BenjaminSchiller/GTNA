@@ -396,7 +396,7 @@ public class SamplingAlgorithmFactory {
 	    sns = new StartNodeSelector("RANDOM");
 	    Collection<AWalker> cw = new ArrayList<AWalker>();
 	    cw.add(aw);
-	    awc = new UniformSamplingWalkerController(cw, cf, sns);
+	    awc = new UniformSamplingWalkerController(cw, cf);
 	    aw.setWalkerController(awc);
 	    as.setWalkerController(awc);
 
@@ -407,6 +407,9 @@ public class SamplingAlgorithmFactory {
 	}
 	sc = new SamplingController(algorithm, awc, as, sns, scaledown,
 		dimension, revisiting);
+	
+	awc.setSamplingController(sc);
+	as.setSamplingController(sc);
 	return sc;
     }
 >>>>>>> SamplingAlgorithmFactory
