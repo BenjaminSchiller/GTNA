@@ -82,7 +82,11 @@ public class VisitedNodeSampler extends ASampler {
 	
 	Collection<Node> selected = new ArrayList<Node>();
 	
+<<<<<<< HEAD
 >>>>>>> package structure
+=======
+	// add keySet as we sample all visited nodes!
+>>>>>>> refactoring (2)
 	selected.addAll(filteredCandidates.keySet());
 
 	return selected;

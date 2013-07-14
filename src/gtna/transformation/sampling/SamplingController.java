@@ -155,6 +155,7 @@ public class SamplingController extends Transformation {
     private ASampler sampler;
     private StartNodeSelector startNodeSelector;
     private NetworkSample networkSample;
+    private Graph graph;
 
     private int dimension;
     private double scaledown;
@@ -507,6 +508,7 @@ public class SamplingController extends Transformation {
 	if (!initialized()) {
 	    return g;
 	} else {
+	    this.graph = g;
 	    sampleGraph(g);
 	    // TEST
 	    System.out.println("\n> Sampled " + networkSample.getSampleSize()
@@ -633,21 +635,17 @@ public class SamplingController extends Transformation {
 	int targetSampleSize = (int) Math.ceil(g.getNodeCount() * scaledown);
 	int maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
 	int round = 0;
-	walkerController.initialize(g, startNodes); // place walker(s) on start
+	walkerController.initialize(startNodes); // place walker(s) on start
 						    // node(s)
-	sampler.initialize(g, networkSample, targetSampleSize); // initialize
-								// Sampler
-	walkerController.setGraph(g);
+	sampler.initialize(g, targetSampleSize); // initialize Sampler
 
-	// eventually sample startnodes
-	sampleOneStep(g, maxNodesInThisRound, round);
 
 	boolean running = true;
 	// walk -> sample loop as long new nodes are sampled
 	do {
 	    round++;
 	    // walk
-	    walkerController.walkOneStep(g, networkSample);
+	    walkerController.walkOneStep();
 	    // eventually sample
 	    sampleOneStep(g, maxNodesInThisRound, round);
 
@@ -669,8 +667,7 @@ public class SamplingController extends Transformation {
      * @return true if at least one node is sampled, else false
      */
     private boolean sampleOneStep(Graph g, int maxNodesInThisRound, int round) {
-	Collection<Node> chosenNodes = sampler.sampleOneStepNodes(g,
-		networkSample, maxNodesInThisRound);
+	Collection<Node> chosenNodes = sampler.sampleOneStep(maxNodesInThisRound);
 	if (chosenNodes.size() > 0)
 	    return networkSample.addNodeToSample(chosenNodes, round);
 
@@ -748,6 +745,20 @@ public class SamplingController extends Transformation {
      */
     public NetworkSample getNetworkSample() {
 	return this.networkSample;
+    }
+
+    /**
+     * @return the graph
+     */
+    public Graph getGraph() {
+	return graph;
+    }
+
+    /**
+     * @param graph the graph to set
+     */
+    public void setGraph(Graph graph) {
+	this.graph = graph;
     }
 
     /**
