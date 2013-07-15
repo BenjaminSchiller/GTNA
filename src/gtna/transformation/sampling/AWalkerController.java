@@ -92,20 +92,6 @@ public abstract class AWalkerController extends Parameter {
 	 *            current networksamples
 	 * @return subset of candidates
 	 */
-	public abstract Collection<Node> filterCandidates(
-			Collection<Node> candidates);
-
-	
-	/**
-	 * Filters the list of candidates for real candidates e.g. without already
-	 * sampled nodes
-	 * 
-	 * @param candidates
-	 *            possible nodes
-	 * @param sample
-	 *            current networksamples
-	 * @return subset of candidates
-	 */
 	public Map<Node, Collection<Node>> filterCandidates(
 			Map<Node, Collection<Node>> candidates) {
 		Map<Node, Collection<Node>> filtered = new HashMap<Node, Collection<Node>>();
@@ -226,6 +212,10 @@ public abstract class AWalkerController extends Parameter {
 		for (AWalker w : activeWalkers) {
 			w.takeAStep(this.getGraph(), this.getNetworkSample());
 		}
+	}
+
+	public Collection<Node> filterCandidates(Collection<Node> candidates) {
+		return candidateFilter.filterCandidates(candidates, this.getNetworkSample());
 	}
 
 }
