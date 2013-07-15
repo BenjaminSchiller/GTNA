@@ -312,6 +312,7 @@ public abstract class AWalker extends Parameter {
 	if (cc.size() > 0) {
 	    c = cc.keySet();
 	} else {
+		System.err.println("Candidate Set is empty! catching restart nodes");
 	    c = getRestartNodes();
 	}
 	for (Node n : c) {
@@ -324,6 +325,7 @@ public abstract class AWalker extends Parameter {
 		    candidates = controller.filterCandidates(c);
 		}
 		if (candidates.size() == 0) {
+			System.err.println("Candidate Set is empty! catching restart nodes");
 		    cc.clear();
 		    c = getRestartNodes();
 		}

@@ -513,6 +513,7 @@ public class SamplingController extends Transformation {
 	    // TEST
 	    System.out.println("\n> Sampled " + networkSample.getSampleSize()
 		    + " out of " + g.getNodeCount() + " nodes.");
+	    System.out.println("\n\n> Mapping: \n" + networkSample.toString());
 	    return g;
 >>>>>>> SamplingController.applicable is checking the availability of the necessary submodules.
 	}
