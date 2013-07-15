@@ -36,16 +36,22 @@
 package gtna.transformation.sampling.walker;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> push down method resolveCandidates(Graph,Node) as the actual implementation depends on the concrete Walker implementation
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
 import gtna.graph.Graph;
+<<<<<<< HEAD
 =======
 import java.util.Collection;
 import java.util.Random;
 
 >>>>>>> added RandomWalkWalker
+=======
+>>>>>>> push down method resolveCandidates(Graph,Node) as the actual implementation depends on the concrete Walker implementation
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 
@@ -93,6 +99,9 @@ public class RandomWalkWalker extends AWalker {
 		return candidates.toArray(new Node[0])[next];
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> push down method resolveCandidates(Graph,Node) as the actual implementation depends on the concrete Walker implementation
 	
 	
 	 /**
@@ -113,7 +122,10 @@ public class RandomWalkWalker extends AWalker {
     	}
     	return nn;
     }
+<<<<<<< HEAD
 =======
 >>>>>>> added RandomWalkWalker
+=======
+>>>>>>> push down method resolveCandidates(Graph,Node) as the actual implementation depends on the concrete Walker implementation
 
 }
