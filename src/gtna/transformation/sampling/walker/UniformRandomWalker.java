@@ -35,9 +35,12 @@
  */
 package gtna.transformation.sampling.walker;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
+import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 import gtna.transformation.sampling.AWalkerController;
@@ -69,5 +72,21 @@ public class UniformRandomWalker extends AWalker {
 	return candidates.toArray(new Node[0])[next];
 	
     }
+    
+    /**
+     * Returns all nodes of the graph as candidates
+     * @param g
+     *            Graph
+     * @param n
+     *            Current node
+     * @return List of candidates
+     */
+    @Override
+	public Collection<Node> resolveCandidates(Graph g, Node n){
+		Collection<Node> c = new ArrayList<Node>();
+		c.addAll(Arrays.asList(g.getNodes()));
+		
+		return c;
+	}
 
 }
