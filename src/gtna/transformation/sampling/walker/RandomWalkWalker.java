@@ -65,12 +65,17 @@ public class RandomWalkWalker extends AWalker {
 	 * @param walker
 	 */
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public RandomWalkWalker() {
 		super("RANDOM_WALK_WALKER");
 =======
 	public RandomWalkWalker(String walker) {
 		super(walker);
 >>>>>>> added RandomWalkWalker
+=======
+	public RandomWalkWalker() {
+		super("RANDOM_WALK_WALKER");
+>>>>>>> RandomWalkWalkerController
 	}
 
 	/* (non-Javadoc)
