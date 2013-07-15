@@ -35,6 +35,8 @@
  */
 package gtna.transformation.sampling.walkercontroller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import gtna.graph.Graph;
@@ -100,18 +102,7 @@ public class UniformSamplingWalkerController extends AWalkerController {
 	protected Collection<AWalker> getActiveWalkers() {
 		return walkers;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * gtna.transformation.sampling.AWalkerController#filterCandidates(java.
-	 * util.Collection)
-	 */
-	@Override
-	public Collection<Node> filterCandidates(Collection<Node> candidates) {
-
-		return cf.filterCandidates(candidates, super.getNetworkSample());
-	}
+	
+	
 
 }
