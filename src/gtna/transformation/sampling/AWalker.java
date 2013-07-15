@@ -252,6 +252,7 @@ public abstract class AWalker extends Parameter {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 >>>>>>> Class Structure
 =======
@@ -290,6 +291,9 @@ public abstract class AWalker extends Parameter {
 	}
 	return nn;
     }
+=======
+   public abstract Collection<Node> resolveCandidates(Graph g, Node n);
+>>>>>>> push down method resolveCandidates(Graph,Node) as the actual implementation depends on the concrete Walker implementation
 
     /**
      * @param candidates
