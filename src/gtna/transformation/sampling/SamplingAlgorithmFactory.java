@@ -39,7 +39,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
+import gtna.transformation.sampling.walker.RandomWalkWalker;
 import gtna.transformation.sampling.walker.UniformRandomWalker;
+import gtna.transformation.sampling.walkercontroller.RandomWalkWalkerController;
 import gtna.transformation.sampling.walkercontroller.UniformSamplingWalkerController;
 import gtna.transformation.sampling.*;
 
@@ -74,6 +76,7 @@ public class SamplingAlgorithmFactory {
 	SamplingController sc;
 	ASampler as;
 	AWalker aw;
+	Collection<AWalker> cw;
 	AWalkerController awc;
 	CandidateFilter cf;
 	StartNodeSelector sns;
@@ -82,21 +85,34 @@ public class SamplingAlgorithmFactory {
 	NetworkSample ns;
 
 	switch (sg) {
-	case UNIFORMSAMPLING:
-	    as = new VisitedNodeSampler();
-	    aw = new UniformRandomWalker();
-	    cf = new CandidateFilter(revisiting);
-	    sns = new StartNodeSelector("RANDOM");
-	    Collection<AWalker> cw = new ArrayList<AWalker>();
-	    cw.add(aw);
-	    awc = new UniformSamplingWalkerController(cw, cf);
-	    aw.setWalkerController(awc);
-	    as.setWalkerController(awc);
+		case UNIFORMSAMPLING:
+			as = new VisitedNodeSampler();
+			aw = new UniformRandomWalker();
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			cw.add(aw);
+			awc = new UniformSamplingWalkerController(cw, cf);
+			aw.setWalkerController(awc);
+			as.setWalkerController(awc);
 
-	    algorithm = "UNIFORM_SAMPLING";
-	    break;
-	default:
-	    throw new IllegalArgumentException("Not supported algorithm");
+			algorithm = "UNIFORM_SAMPLING";
+			break;
+		case RANDOMWALK:
+			as = new VisitedNodeSampler();
+			aw = new RandomWalkWalker();
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			cw.add(aw);
+			awc = new RandomWalkWalkerController(cw, cf);
+			aw.setWalkerController(awc);
+			as.setWalkerController(awc);
+			
+			algorithm = "RANDOM_WALK";
+			break;
+		default:
+			throw new IllegalArgumentException("Not supported algorithm");
 	}
 	sc = new SamplingController(algorithm, awc, as, sns, scaledown,
 		dimension, revisiting);

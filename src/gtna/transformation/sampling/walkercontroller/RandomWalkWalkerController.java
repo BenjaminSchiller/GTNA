@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * RandomWalkWalker.java
+ * RandomWalkWalkerController.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,60 +33,61 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.sampling.walker;
+package gtna.transformation.sampling.walkercontroller;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Random;
 
-import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
+import gtna.transformation.sampling.AWalkerController;
+import gtna.transformation.sampling.CandidateFilter;
 
 /**
  * @author Tim
- *
+ * 
  */
-public class RandomWalkWalker extends AWalker {
+public class RandomWalkWalkerController extends AWalkerController {
 
-	/**
-	 * @param walker
-	 */
-	public RandomWalkWalker() {
-		super("RANDOM_WALK_WALKER");
+	public CandidateFilter cf;
+	Collection<AWalker> walkers;
+
+	public RandomWalkWalkerController(Collection<AWalker> w, CandidateFilter cf) {
+		super(w.size() + "x_" + w.toArray(new AWalker[0])[0].getValue(), w, cf);
+
+		if (w.size() != 1) {
+			throw new IllegalArgumentException(
+					"This Walker Controller is defined for single dimensional usage.");
+		}
+		this.walkers = w;
+		this.cf = cf; 
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.sampling.AWalkerController#initialize(gtna.graph.
+	 * Node[])
 	 */
 	@Override
-	protected Node selectNextNode(Collection<Node> candidates) {
-		Random r = new Random();
-		
-		int next = r.nextInt(candidates.size());
-		next = next % candidates.size();
-		
-		return candidates.toArray(new Node[0])[next];
+	public void initialize(Node[] startNodes) {
+		AWalker[] wa = walkers.toArray(new AWalker[0]);
+		for (int i = 0; i < walkers.size(); i++) {
+			// if #walkers > #startNodes assign startnodes with wraparound
+			int snid = i % startNodes.length;
+			wa[i].setStartNode(startNodes[snid]);
+		}
+
 	}
-	
-	
-	 /**
-     * returns the list of neighbors as candidates
-     * 
-     * @param g
-     *            Graph
-     * @param n
-     *            Current node
-     * @return List of candidates
-     */
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.transformation.sampling.AWalkerController#getActiveWalkers()
+	 */
 	@Override
-    public Collection<Node> resolveCandidates(Graph g, Node n) {
-    	int[] nids = n.getOutgoingEdges();
-    	ArrayList<Node> nn = new ArrayList<Node>();
-    	for (int i : nids) {
-    		nn.add(g.getNode(i));
-    	}
-    	return nn;
-    }
+	protected Collection<AWalker> getActiveWalkers() {
+		return walkers; // by definition only one walker
+	}
 
 }
