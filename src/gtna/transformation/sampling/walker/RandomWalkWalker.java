@@ -35,11 +35,17 @@
  */
 package gtna.transformation.sampling.walker;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
 import gtna.graph.Graph;
+=======
+import java.util.Collection;
+import java.util.Random;
+
+>>>>>>> added RandomWalkWalker
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 
@@ -52,14 +58,20 @@ public class RandomWalkWalker extends AWalker {
 	/**
 	 * @param walker
 	 */
+<<<<<<< HEAD
 	public RandomWalkWalker() {
 		super("RANDOM_WALK_WALKER");
+=======
+	public RandomWalkWalker(String walker) {
+		super(walker);
+>>>>>>> added RandomWalkWalker
 	}
 
 	/* (non-Javadoc)
 	 * @see gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
 	 */
 	@Override
+<<<<<<< HEAD
 <<<<<<< HEAD
 	protected Node selectNextNode(Collection<Node> candidates, Node current) {
 		Random r = new Random();
@@ -70,10 +82,17 @@ public class RandomWalkWalker extends AWalker {
 			
 		int next = super.getRNG().nextInt(candidates.size());
 >>>>>>> Usage of the deterministic-rng
+=======
+	protected Node selectNextNode(Collection<Node> candidates) {
+		Random r = new Random();
+		
+		int next = r.nextInt(candidates.size());
+>>>>>>> added RandomWalkWalker
 		next = next % candidates.size();
 		
 		return candidates.toArray(new Node[0])[next];
 	}
+<<<<<<< HEAD
 	
 	
 	 /**
@@ -94,5 +113,7 @@ public class RandomWalkWalker extends AWalker {
     	}
     	return nn;
     }
+=======
+>>>>>>> added RandomWalkWalker
 
 }
