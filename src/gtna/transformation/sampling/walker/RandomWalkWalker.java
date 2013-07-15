@@ -35,9 +35,11 @@
  */
 package gtna.transformation.sampling.walker;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
+import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 
@@ -66,5 +68,25 @@ public class RandomWalkWalker extends AWalker {
 		
 		return candidates.toArray(new Node[0])[next];
 	}
+	
+	
+	 /**
+     * returns the list of neighbors as candidates
+     * 
+     * @param g
+     *            Graph
+     * @param n
+     *            Current node
+     * @return List of candidates
+     */
+	@Override
+    public Collection<Node> resolveCandidates(Graph g, Node n) {
+    	int[] nids = n.getOutgoingEdges();
+    	ArrayList<Node> nn = new ArrayList<Node>();
+    	for (int i : nids) {
+    		nn.add(g.getNode(i));
+    	}
+    	return nn;
+    }
 
 }
