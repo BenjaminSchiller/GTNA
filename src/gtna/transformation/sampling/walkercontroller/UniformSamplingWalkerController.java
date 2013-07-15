@@ -36,6 +36,9 @@
 package gtna.transformation.sampling.walkercontroller;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> pull up second filterCandidates method
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -190,6 +193,7 @@ public class UniformSamplingWalkerController extends AWalkerController {
 	protected Collection<AWalker> getActiveWalkers() {
 		return walkers;
 	}
+<<<<<<< HEAD
 
 	/*
 	 * (non-Javadoc)
@@ -204,5 +208,9 @@ public class UniformSamplingWalkerController extends AWalkerController {
 		return cf.filterCandidates(candidates, super.getNetworkSample());
 	}
 >>>>>>> code format
+=======
+	
+	
+>>>>>>> pull up second filterCandidates method
 
 }
