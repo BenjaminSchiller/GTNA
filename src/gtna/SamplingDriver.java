@@ -289,7 +289,7 @@ public class SamplingDriver {
 =======
 			double scaledown, int dimension, boolean revisiting) {
 		Transformation sampling = SamplingAlgorithmFactory
-				.getInstanceOf(SamplingAlgorithm.RANDOMSTROLL, scaledown,
+				.getInstanceOf(SamplingAlgorithm.RANDOMSTROLL_DEGREECORRECTION, scaledown,
 						revisiting, dimension);
 
 <<<<<<< HEAD
