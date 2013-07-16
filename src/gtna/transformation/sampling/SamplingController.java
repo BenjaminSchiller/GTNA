@@ -232,7 +232,7 @@ public class SamplingController extends Transformation {
      * @return true if at least one node is sampled, else false
      */
     private boolean sampleOneStep(Graph g, int maxNodesInThisRound, int round) {
-	Collection<Node> chosenNodes = sampler.sampleOneStep(maxNodesInThisRound);
+	Collection<Node> chosenNodes = sampler.sampleOneStep(maxNodesInThisRound, round);
 	if (chosenNodes.size() > 0)
 	    return networkSample.addNodeToSample(chosenNodes, round);
 
