@@ -172,6 +172,19 @@ public class SamplingAlgorithmFactory {
 			
 			algorithm = "RANDOM_STROLL";
 			break;
+		case RANDOMSTROLL_DEGREECORRECTION:
+			as = new RoundBasedVisitedNodeSampler(5);
+			aw = new RandomWalkDegreeCorrectionWalker();
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			cw.add(aw);
+			awc = new RandomWalkWalkerController(cw, cf);
+			aw.setWalkerController(awc);
+			as.setWalkerController(awc);
+			
+			algorithm = "RANDOM_STROLL_WITH_DEGREE_CORRECTION";
+			break;
 		default:
 			throw new IllegalArgumentException("Not supported algorithm");
 	}
