@@ -77,6 +77,7 @@ public class SamplingDriver {
 
 		// Sampling parameter
 <<<<<<< HEAD
+<<<<<<< HEAD
 		double scaledown = 0.1;
 		int dimension = 1;
 =======
@@ -102,16 +103,33 @@ public class SamplingDriver {
 
 		Transformation[] t1 = instantiateSamplingTransformation(scaledown,
 				dimension, revisiting, seed);
+=======
+		double scaledown = 0.25;
+		int dimension = 1;
+		boolean revisiting = false;
+
+		String folder = "./plots/network-plot/";
+
+		Transformation[] t1 = instantiateSamplingTransformation(scaledown,
+				dimension, revisiting);
+>>>>>>> Fixing for BUG: writing a network to hdd before calculating the series
 
 		Network[] n = instantiateNetworkModels();
 
 		Metric[] metrics = new Metric[] { new DegreeDistribution(),
 				new ShortestPaths(), new ClusteringCoefficient() };
 
+<<<<<<< HEAD
 		Collection<String> networks = persistNetworks(times, n, folder, t1[0]);
 
 		Collection<Network> nets = loadNetworks(folder, t1, networks);
 		
+=======
+		Collection<String> networks = persistNetworks(times, n, folder);
+
+		Collection<Network> nets = loadNetworks(folder, t1, networks);
+
+>>>>>>> Fixing for BUG: writing a network to hdd before calculating the series
 		plotNetworkMetrics(get, times, metrics, nets);
 
 	}
@@ -137,19 +155,28 @@ public class SamplingDriver {
 	}
 
 	private static Collection<String> persistNetworks(int times, Network[] n,
+<<<<<<< HEAD
 			String folder, Transformation sample) {
+=======
+			String folder) {
+>>>>>>> Fixing for BUG: writing a network to hdd before calculating the series
 		Collection<String> networks = new ArrayList<String>();
 		for (Network i : n) {
 			String p = folder + "n-" + i.getKey() + "-" + i.getNodes();
 			System.out.println("Plotting network - " + i.getKey() + " @ "
 					+ i.getNodes() + " nodes");
+<<<<<<< HEAD
 			plot(i.generate(), p, times, sample);
+=======
+			plot(i.generate(), p, times);
+>>>>>>> Fixing for BUG: writing a network to hdd before calculating the series
 			networks.add(p);
 		}
 		return networks;
 	}
 
 	private static Network[] instantiateNetworkModels() {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -177,10 +204,21 @@ public class SamplingDriver {
 =======
 		Network[] n = new Network[] { nw1 };
 >>>>>>> added entry for random jump algorithm to the sampling algorithm factory
+=======
+		Network nw1 = new ErdosRenyi(1000, 12, false, null); 
+		Network nw2 = new BarabasiAlbert(1000, 10, null);
+		Network nw3 = new WattsStrogatz(1000, 6, 0.2, null);
+		Network nw4 = new CondonAndKarp(500, 4, 0.4, 0.05, null);
+
+//		Network[] n = new Network[] { nw3/*nw1, nw2, nw3, nw4*/ };
+		
+		Network[] n = new Network[] { nw4 };
+>>>>>>> Fixing for BUG: writing a network to hdd before calculating the series
 		return n;
 	}
 
 	private static Transformation[] instantiateSamplingTransformation(
+<<<<<<< HEAD
 <<<<<<< HEAD
 			double scaledown, int dimension, boolean revisiting) {
 <<<<<<< HEAD
@@ -220,11 +258,23 @@ public class SamplingDriver {
 >>>>>>> usage, persisting, loading of the deterministic-rng possible
 
 		Transformation[] t1 = new Transformation[] { sampling };
+=======
+			double scaledown, int dimension, boolean revisiting) {
+		Transformation uniformSampling1 = SamplingAlgorithmFactory
+				.getInstanceOf(SamplingAlgorithm.RANDOMWALK, scaledown,
+						revisiting, dimension);
+
+		Transformation[] t1 = new Transformation[] { uniformSampling1 };
+>>>>>>> Fixing for BUG: writing a network to hdd before calculating the series
 		return t1;
 	}
 
 	@SuppressWarnings("javadoc")
+<<<<<<< HEAD
 	public static void plot(Graph g, String filename, int times, Transformation sample) {
+=======
+	public static void plot(Graph g, String filename, int times) {
+>>>>>>> Fixing for BUG: writing a network to hdd before calculating the series
 		Transformation tCRIdS = new ConsecutiveRingIDSpace(true);
 
 		for (int i = 0; i < times; i++) {
@@ -238,7 +288,10 @@ public class SamplingDriver {
 			String graphFilename = filename;
 
 			g = tCRIdS.transform(g);
+<<<<<<< HEAD
 			g = sample.transform(g);
+=======
+>>>>>>> Fixing for BUG: writing a network to hdd before calculating the series
 
 			IdentifierSpace ids = (IdentifierSpace) g.getProperty("ID_SPACE_0");
 
