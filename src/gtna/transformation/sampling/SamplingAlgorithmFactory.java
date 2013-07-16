@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
+import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
 import gtna.transformation.sampling.walker.RandomWalkWalker;
 import gtna.transformation.sampling.walker.UniformRandomWalker;
 import gtna.transformation.sampling.walkercontroller.RandomWalkWalkerController;
@@ -110,6 +111,19 @@ public class SamplingAlgorithmFactory {
 			as.setWalkerController(awc);
 			
 			algorithm = "RANDOM_WALK";
+			break;
+		case RANDOMWALK_METROPOLIZED:
+			as = new VisitedNodeSampler();
+			aw = new MetropolizedRandomWalkWalker();
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			cw.add(aw);
+			awc = new RandomWalkWalkerController(cw, cf);
+			aw.setWalkerController(awc);
+			as.setWalkerController(awc);
+			
+			algorithm = "METROPOLIZED_RANDOM_WALK";
 			break;
 		default:
 			throw new IllegalArgumentException("Not supported algorithm");
