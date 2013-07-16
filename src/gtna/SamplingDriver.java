@@ -78,6 +78,7 @@ public class SamplingDriver {
 		// Sampling parameter
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		double scaledown = 0.1;
 		int dimension = 1;
 =======
@@ -105,6 +106,9 @@ public class SamplingDriver {
 				dimension, revisiting, seed);
 =======
 		double scaledown = 0.25;
+=======
+		double scaledown = 0.1;
+>>>>>>> testing the MetropolizedRandomWalkWalker implementation
 		int dimension = 1;
 		boolean revisiting = false;
 
@@ -180,6 +184,7 @@ public class SamplingDriver {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Network nw1 = new ErdosRenyi(100, 12, false, null); 
 		Network nw2 = new BarabasiAlbert(1000, 10, null);
 		Network nw3 = new WattsStrogatz(1000, 6, 0.2, null);
@@ -206,14 +211,21 @@ public class SamplingDriver {
 >>>>>>> added entry for random jump algorithm to the sampling algorithm factory
 =======
 		Network nw1 = new ErdosRenyi(1000, 12, false, null); 
+=======
+		Network nw1 = new ErdosRenyi(100, 12, false, null); 
+>>>>>>> testing the MetropolizedRandomWalkWalker implementation
 		Network nw2 = new BarabasiAlbert(1000, 10, null);
 		Network nw3 = new WattsStrogatz(1000, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(500, 4, 0.4, 0.05, null);
 
 //		Network[] n = new Network[] { nw3/*nw1, nw2, nw3, nw4*/ };
 		
+<<<<<<< HEAD
 		Network[] n = new Network[] { nw4 };
 >>>>>>> Fixing for BUG: writing a network to hdd before calculating the series
+=======
+		Network[] n = new Network[] { nw2 };
+>>>>>>> testing the MetropolizedRandomWalkWalker implementation
 		return n;
 	}
 
@@ -261,7 +273,7 @@ public class SamplingDriver {
 =======
 			double scaledown, int dimension, boolean revisiting) {
 		Transformation uniformSampling1 = SamplingAlgorithmFactory
-				.getInstanceOf(SamplingAlgorithm.RANDOMWALK, scaledown,
+				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_METROPOLIZED, scaledown,
 						revisiting, dimension);
 
 		Transformation[] t1 = new Transformation[] { uniformSampling1 };
