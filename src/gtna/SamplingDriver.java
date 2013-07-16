@@ -77,7 +77,7 @@ public class SamplingDriver {
 
 		// Sampling parameter
 		double scaledown = 0.25;
-		int dimension = 1;
+		int dimension = 5;
 		boolean revisiting = false;
 
 		String folder = "./plots/network-plot/";
@@ -132,10 +132,10 @@ public class SamplingDriver {
 	}
 
 	private static Network[] instantiateNetworkModels() {
-		Network nw1 = new ErdosRenyi(1000, 12, false, null); 
-		Network nw2 = new BarabasiAlbert(1000, 10, null);
-		Network nw3 = new WattsStrogatz(1000, 6, 0.2, null);
-		Network nw4 = new CondonAndKarp(500, 4, 0.4, 0.05, null);
+		Network nw1 = new ErdosRenyi(10000, 12, false, null); 
+		Network nw2 = new BarabasiAlbert(2500, 10, null);
+		Network nw3 = new WattsStrogatz(5000, 6, 0.2, null);
+		Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
 
 //		Network[] n = new Network[] { nw3/*nw1, nw2, nw3, nw4*/ };
 		
@@ -145,11 +145,11 @@ public class SamplingDriver {
 
 	private static Transformation[] instantiateSamplingTransformation(
 			double scaledown, int dimension, boolean revisiting) {
-		Transformation uniformSampling1 = SamplingAlgorithmFactory
-				.getInstanceOf(SamplingAlgorithm.RANDOMWALK, scaledown,
+		Transformation sampling = SamplingAlgorithmFactory
+				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown,
 						revisiting, dimension);
 
-		Transformation[] t1 = new Transformation[] { uniformSampling1 };
+		Transformation[] t1 = new Transformation[] { sampling };
 		return t1;
 	}
 
