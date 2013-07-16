@@ -39,7 +39,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
+<<<<<<< HEAD
 import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
+=======
+import gtna.transformation.sampling.walker.RandomWalkDegreeCorrectionWalker;
+>>>>>>> RandomWalk Walker with degree correction and entry for the sampling algorithm factory
 import gtna.transformation.sampling.walker.RandomWalkWalker;
 import gtna.transformation.sampling.walker.UniformRandomWalker;
 import gtna.transformation.sampling.walkercontroller.RandomWalkWalkerController;
@@ -112,9 +116,15 @@ public class SamplingAlgorithmFactory {
 			
 			algorithm = "RANDOM_WALK";
 			break;
+<<<<<<< HEAD
 		case RANDOMWALK_METROPOLIZED:
 			as = new VisitedNodeSampler();
 			aw = new MetropolizedRandomWalkWalker();
+=======
+		case RANDOMWALK_DEGREECORRECTION:
+			as = new VisitedNodeSampler();
+			aw = new RandomWalkDegreeCorrectionWalker();
+>>>>>>> RandomWalk Walker with degree correction and entry for the sampling algorithm factory
 			cf = new CandidateFilter(revisiting);
 			sns = new StartNodeSelector("RANDOM");
 			cw = new ArrayList<AWalker>();
@@ -123,7 +133,11 @@ public class SamplingAlgorithmFactory {
 			aw.setWalkerController(awc);
 			as.setWalkerController(awc);
 			
+<<<<<<< HEAD
 			algorithm = "METROPOLIZED_RANDOM_WALK";
+=======
+			algorithm = "RANDOM_WALK_WITH_DEGREE_CORRECTION";
+>>>>>>> RandomWalk Walker with degree correction and entry for the sampling algorithm factory
 			break;
 		default:
 			throw new IllegalArgumentException("Not supported algorithm");
