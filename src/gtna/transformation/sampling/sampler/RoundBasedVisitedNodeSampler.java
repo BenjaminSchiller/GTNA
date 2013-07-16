@@ -44,31 +44,43 @@ import gtna.transformation.sampling.ASampler;
 
 /**
  * @author Tim
- *
+ * 
  */
-public class VisitedNodeSampler extends ASampler {
+public class RoundBasedVisitedNodeSampler extends ASampler {
 
-    /**
-     * @param key
-     * @param value
-     */
-    public VisitedNodeSampler() {
-	super("VISITED_NODE_SAMPLER");
-    }
+	private int round;
 
-    /* (non-Javadoc)
-     * @see gtna.transformation.sampling.ASampler#sampleNodes(java.util.Map)
-     */
-    @Override
-    protected Collection<Node> sampleNodes(
-	    Map<Node, Collection<Node>> filteredCandidates, int round) {
-	
-	Collection<Node> selected = new ArrayList<Node>();
-	
-	// add keySet as we sample all visited nodes!
-	selected.addAll(filteredCandidates.keySet());
+	/**
+	 * @param key
+	 * @param value
+	 */
+	public RoundBasedVisitedNodeSampler(int rounds) {
+		super("ROUNDBASED(" + rounds + ")_VISITED_NODE_SAMPLER");
+		this.round = rounds;
+	}
 
-	return selected;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.transformation.sampling.ASampler#sampleNodes(java.util.Map)
+	 */
+	@Override
+	protected Collection<Node> sampleNodes(
+			Map<Node, Collection<Node>> filteredCandidates, int currentRound) {
+
+		int m = currentRound % round;
+		if(m != 0){
+			System.err.println("<> ROUND WITHOUT SAMPLING");
+			return new ArrayList<Node>();
+		}
+		
+		System.err.println("<> ROUND WITH SAMPLING");
+		Collection<Node> selected = new ArrayList<Node>();
+
+		// add keySet as we sample all visited nodes!
+		selected.addAll(filteredCandidates.keySet());
+
+		return selected;
+	}
 
 }
