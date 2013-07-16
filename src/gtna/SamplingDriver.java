@@ -76,7 +76,7 @@ public class SamplingDriver {
 		int times = 1; // how many generations?
 
 		// Sampling parameter
-		double scaledown = 0.25;
+		double scaledown = 0.1;
 		int dimension = 1;
 		boolean revisiting = false;
 
@@ -132,21 +132,21 @@ public class SamplingDriver {
 	}
 
 	private static Network[] instantiateNetworkModels() {
-		Network nw1 = new ErdosRenyi(1000, 12, false, null); 
+		Network nw1 = new ErdosRenyi(100, 12, false, null); 
 		Network nw2 = new BarabasiAlbert(1000, 10, null);
 		Network nw3 = new WattsStrogatz(1000, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(500, 4, 0.4, 0.05, null);
 
 //		Network[] n = new Network[] { nw3/*nw1, nw2, nw3, nw4*/ };
 		
-		Network[] n = new Network[] { nw4 };
+		Network[] n = new Network[] { nw2 };
 		return n;
 	}
 
 	private static Transformation[] instantiateSamplingTransformation(
 			double scaledown, int dimension, boolean revisiting) {
 		Transformation uniformSampling1 = SamplingAlgorithmFactory
-				.getInstanceOf(SamplingAlgorithm.RANDOMWALK, scaledown,
+				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_METROPOLIZED, scaledown,
 						revisiting, dimension);
 
 		Transformation[] t1 = new Transformation[] { uniformSampling1 };
