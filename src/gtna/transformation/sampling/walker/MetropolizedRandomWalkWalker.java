@@ -45,7 +45,11 @@ import gtna.transformation.sampling.AWalker;
 
 /**
  * @author Tim
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> Metropolized Random Walk Walker + Entry for SamplingAlgorithmFactory
  */
 public class MetropolizedRandomWalkWalker extends AWalker {
 
@@ -56,6 +60,7 @@ public class MetropolizedRandomWalkWalker extends AWalker {
 		super("METROPLIZED_RANDOM_WALK_WALKER");
 	}
 
+<<<<<<< HEAD
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -115,5 +120,57 @@ public class MetropolizedRandomWalkWalker extends AWalker {
 		}
 		return nn;
 	}
+=======
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
+	 */
+	@Override
+	protected Node selectNextNode(Collection<Node> candidates, Node current) {
+		Random r = new Random();
+		
+		int next = r.nextInt(candidates.size());
+		next = next % candidates.size();
+		
+		Node nextStepCandidate = candidates.toArray(new Node[0])[next];
+		
+		int nscDegree = nextStepCandidate.getDegree();
+		int cDegree = current.getDegree();
+		
+		double d = (double)cDegree / (double)nscDegree;
+		
+		d = Math.min(d, 1);
+		
+		double p = r.nextDouble();
+		
+		if(d < p){
+			return nextStepCandidate;	// move the walker to the next node
+		} else {
+			return current;  // stay and don't move the walker!
+		}
+		
+		
+		
+	}
+	
+	
+	 /**
+     * returns the list of neighbors as candidates
+     * 
+     * @param g
+     *            Graph
+     * @param n
+     *            Current node
+     * @return List of candidates
+     */
+	@Override
+    public Collection<Node> resolveCandidates(Graph g, Node n) {
+    	int[] nids = n.getOutgoingEdges();
+    	ArrayList<Node> nn = new ArrayList<Node>();
+    	for (int i : nids) {
+    		nn.add(g.getNode(i));
+    	}
+    	return nn;
+    }
+>>>>>>> Metropolized Random Walk Walker + Entry for SamplingAlgorithmFactory
 
 }
