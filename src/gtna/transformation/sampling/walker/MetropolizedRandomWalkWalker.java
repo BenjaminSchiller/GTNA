@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * UniformRandomWalker.java
+ * RandomWalkWalker.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -36,57 +36,75 @@
 package gtna.transformation.sampling.walker;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
-import gtna.transformation.sampling.AWalkerController;
 
 /**
  * @author Tim
  *
  */
-public class UniformRandomWalker extends AWalker {
+public class MetropolizedRandomWalkWalker extends AWalker {
 
-    /**
-     * @param key
-     * @param value
-     * @param awc
-     */
-    public UniformRandomWalker() {
-	super("UNIFORM_RANDOM_WALKER");
-    }
+	/**
+	 * @param walker
+	 */
+	public MetropolizedRandomWalkWalker() {
+		super("METROPLIZED_RANDOM_WALK_WALKER");
+	}
 
-    /* (non-Javadoc)
-     * @see gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
-     */
-    @Override
-    protected Node selectNextNode(Collection<Node> candidates, Node current) {
-	Random r = new Random();
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
+	 */
+	@Override
+	protected Node selectNextNode(Collection<Node> candidates, Node current) {
+		Random r = new Random();
+		
+		int next = r.nextInt(candidates.size());
+		next = next % candidates.size();
+		
+		Node nextStepCandidate = candidates.toArray(new Node[0])[next];
+		
+		int nscDegree = nextStepCandidate.getDegree();
+		int cDegree = current.getDegree();
+		
+		double d = (double)cDegree / (double)nscDegree;
+		
+		d = Math.min(d, 1);
+		
+		double p = r.nextDouble();
+		
+		if(d < p){
+			return nextStepCandidate;	// move the walker to the next node
+		} else {
+			return current;  // stay and don't move the walker!
+		}
+		
+		
+		
+	}
 	
-	int next = r.nextInt(candidates.size());
-	next = next % candidates.size();
-	return candidates.toArray(new Node[0])[next];
 	
-    }
-    
-    /**
-     * Returns all nodes of the graph as candidates
+	 /**
+     * returns the list of neighbors as candidates
+     * 
      * @param g
      *            Graph
      * @param n
      *            Current node
      * @return List of candidates
      */
-    @Override
-	public Collection<Node> resolveCandidates(Graph g, Node n){
-		Collection<Node> c = new ArrayList<Node>();
-		c.addAll(Arrays.asList(g.getNodes()));
-		
-		return c;
-	}
+	@Override
+    public Collection<Node> resolveCandidates(Graph g, Node n) {
+    	int[] nids = n.getOutgoingEdges();
+    	ArrayList<Node> nn = new ArrayList<Node>();
+    	for (int i : nids) {
+    		nn.add(g.getNode(i));
+    	}
+    	return nn;
+    }
 
 }
