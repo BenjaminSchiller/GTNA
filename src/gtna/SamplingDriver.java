@@ -76,8 +76,8 @@ public class SamplingDriver {
 		int times = 1; // how many generations?
 
 		// Sampling parameter
-		double scaledown = 0.1;
-		int dimension = 1;
+		double scaledown = 0.25;
+		int dimension = 5;
 		boolean revisiting = false;
 
 		String folder = "./plots/network-plot/";
@@ -145,11 +145,11 @@ public class SamplingDriver {
 
 	private static Transformation[] instantiateSamplingTransformation(
 			double scaledown, int dimension, boolean revisiting) {
-		Transformation uniformSampling1 = SamplingAlgorithmFactory
-				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_METROPOLIZED, scaledown,
+		Transformation sampling = SamplingAlgorithmFactory
+				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown,
 						revisiting, dimension);
 
-		Transformation[] t1 = new Transformation[] { uniformSampling1 };
+		Transformation[] t1 = new Transformation[] { sampling };
 		return t1;
 	}
 

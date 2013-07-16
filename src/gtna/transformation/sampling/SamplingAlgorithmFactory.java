@@ -43,6 +43,7 @@ import gtna.transformation.sampling.walker.RandomWalkDegreeCorrectionWalker;
 import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
 import gtna.transformation.sampling.walker.RandomWalkWalker;
 import gtna.transformation.sampling.walker.UniformRandomWalker;
+import gtna.transformation.sampling.walkercontroller.MultipleRandomWalkWalkerController;
 import gtna.transformation.sampling.walkercontroller.RandomWalkWalkerController;
 import gtna.transformation.sampling.walkercontroller.UniformSamplingWalkerController;
 import gtna.transformation.sampling.*;
@@ -125,6 +126,23 @@ public class SamplingAlgorithmFactory {
 			as.setWalkerController(awc);
 			
 			algorithm = "RANDOM_WALK_WITH_DEGREE_CORRECTION";
+			break;
+		case RANDOMWALK_MULTIPLE:
+			as = new VisitedNodeSampler();
+			
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			for(int i = 0; i < dimension; i++){
+				cw.add(new RandomWalkWalker());
+			}
+			awc = new MultipleRandomWalkWalkerController(cw, cf);
+			for(AWalker mrw : cw){
+				mrw.setWalkerController(awc);
+			}
+			as.setWalkerController(awc);
+			
+			algorithm = "MULTIPLE_RANDOM_WALK";
 			break;
 		case RANDOMWALK_METROPOLIZED:
 			as = new VisitedNodeSampler();
