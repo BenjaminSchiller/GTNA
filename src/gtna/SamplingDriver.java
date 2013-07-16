@@ -76,8 +76,13 @@ public class SamplingDriver {
 		int times = 1; // how many generations?
 
 		// Sampling parameter
+<<<<<<< HEAD
 		double scaledown = 0.1;
 		int dimension = 1;
+=======
+		double scaledown = 0.25;
+		int dimension = 5;
+>>>>>>> MultipleRandomWalk Walker Controller and added entry for the samplingalgorithmfactory
 		boolean revisiting = false;
 
 		String folder = "./plots/network-plot/";
@@ -132,10 +137,17 @@ public class SamplingDriver {
 	}
 
 	private static Network[] instantiateNetworkModels() {
+<<<<<<< HEAD
 		Network nw1 = new ErdosRenyi(100, 12, false, null); 
 		Network nw2 = new BarabasiAlbert(1000, 10, null);
 		Network nw3 = new WattsStrogatz(1000, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(500, 4, 0.4, 0.05, null);
+=======
+		Network nw1 = new ErdosRenyi(10000, 12, false, null); 
+		Network nw2 = new BarabasiAlbert(2500, 10, null);
+		Network nw3 = new WattsStrogatz(5000, 6, 0.2, null);
+		Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
+>>>>>>> MultipleRandomWalk Walker Controller and added entry for the samplingalgorithmfactory
 
 //		Network[] n = new Network[] { nw3/*nw1, nw2, nw3, nw4*/ };
 		
@@ -145,11 +157,16 @@ public class SamplingDriver {
 
 	private static Transformation[] instantiateSamplingTransformation(
 			double scaledown, int dimension, boolean revisiting) {
+<<<<<<< HEAD
 		Transformation uniformSampling1 = SamplingAlgorithmFactory
 				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_METROPOLIZED, scaledown,
+=======
+		Transformation sampling = SamplingAlgorithmFactory
+				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown,
+>>>>>>> MultipleRandomWalk Walker Controller and added entry for the samplingalgorithmfactory
 						revisiting, dimension);
 
-		Transformation[] t1 = new Transformation[] { uniformSampling1 };
+		Transformation[] t1 = new Transformation[] { sampling };
 		return t1;
 	}
 
