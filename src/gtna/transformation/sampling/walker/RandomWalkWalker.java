@@ -60,7 +60,7 @@ public class RandomWalkWalker extends AWalker {
 	 * @see gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
 	 */
 	@Override
-	protected Node selectNextNode(Collection<Node> candidates) {
+	protected Node selectNextNode(Collection<Node> candidates, Node current) {
 		Random r = new Random();
 		
 		int next = r.nextInt(candidates.size());
