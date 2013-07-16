@@ -242,7 +242,7 @@ public abstract class ASampler extends Parameter {
      */
     public Collection<Node> initialize(Graph g, int maxNodes) {
 	this.setGraph(g);
-	return sampleOneStep(maxNodes);
+	return sampleOneStep(maxNodes, 0);
     }
 
     /**
@@ -316,7 +316,7 @@ public abstract class ASampler extends Parameter {
      *            sample max maxNodes nodes in this step
      * @return
      */
-    public Collection<Node> sampleOneStep(int maxNodes) {
+    public Collection<Node> sampleOneStep(int maxNodes, int round) {
 	Collection<AWalker> walkers = walkerController.getActiveWalkers();
 	Collection<Node> sampled = new LinkedList<Node>();
 
@@ -324,7 +324,7 @@ public abstract class ASampler extends Parameter {
 	    Map<Node, Collection<Node>> wcc = w.getCurrentCandidates();
 	    Map<Node, Collection<Node>> fc = walkerController.filterCandidates(
 		    wcc);
-	    sampled.addAll(sampleNodes(fc));
+	    sampled.addAll(sampleNodes(fc, round));
 	}
 	return sampled;
 
@@ -338,8 +338,12 @@ public abstract class ASampler extends Parameter {
      * @return collection of selected nodes
      */
     protected abstract Collection<Node> sampleNodes(
+<<<<<<< HEAD
 	    Map<Node, Collection<Node>> filteredCandidates);
 >>>>>>> refactoring and cleanup after debugging (1)
+=======
+	    Map<Node, Collection<Node>> filteredCandidates, int round);
+>>>>>>> RoundBasedVisitedNodeSampler, round is now a parameter for samplenodes method
 
 
 
@@ -371,5 +375,6 @@ public abstract class ASampler extends Parameter {
 	this.samplingController = sc;
 	
     }
+
 
 }

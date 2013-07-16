@@ -72,6 +72,7 @@ public class VisitedNodeSampler extends ASampler {
     @Override
     protected Collection<Node> sampleNodes(
 <<<<<<< HEAD
+<<<<<<< HEAD
 	    Map<Node, Collection<Node>> filteredCandidates, int round) {
 	
 	Collection<Node> selected = new ArrayList<Node>();
@@ -79,6 +80,9 @@ public class VisitedNodeSampler extends ASampler {
 	// add keySet as we sample all visited nodes!
 =======
 	    Map<Node, Collection<Node>> filteredCandidates) {
+=======
+	    Map<Node, Collection<Node>> filteredCandidates, int round) {
+>>>>>>> RoundBasedVisitedNodeSampler, round is now a parameter for samplenodes method
 	
 	Collection<Node> selected = new ArrayList<Node>();
 	
