@@ -38,6 +38,7 @@ package gtna.transformation.sampling;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import gtna.transformation.sampling.sampler.RoundBasedVisitedNodeSampler;
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
 import gtna.transformation.sampling.walker.RandomWalkDegreeCorrectionWalker;
 import gtna.transformation.sampling.walker.RandomWalkWalker;
@@ -142,6 +143,33 @@ public class SamplingAlgorithmFactory {
 			as.setWalkerController(awc);
 			
 			algorithm = "MULTIPLE_RANDOM_WALK";
+			break;
+			
+		case RANDOMSTROLL:
+			as = new RoundBasedVisitedNodeSampler(5);
+			aw = new RandomWalkWalker();
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			cw.add(aw);
+			awc = new RandomWalkWalkerController(cw, cf);
+			aw.setWalkerController(awc);
+			as.setWalkerController(awc);
+			
+			algorithm = "RANDOM_STROLL";
+			break;
+		case RANDOMSTROLL_DEGREECORRECTION:
+			as = new RoundBasedVisitedNodeSampler(5);
+			aw = new RandomWalkDegreeCorrectionWalker();
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			cw.add(aw);
+			awc = new RandomWalkWalkerController(cw, cf);
+			aw.setWalkerController(awc);
+			as.setWalkerController(awc);
+			
+			algorithm = "RANDOM_STROLL_WITH_DEGREE_CORRECTION";
 			break;
 		default:
 			throw new IllegalArgumentException("Not supported algorithm");
