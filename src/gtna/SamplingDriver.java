@@ -162,8 +162,12 @@ public class SamplingDriver {
 				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_METROPOLIZED, scaledown,
 =======
 		Transformation sampling = SamplingAlgorithmFactory
+<<<<<<< HEAD
 				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown,
 >>>>>>> MultipleRandomWalk Walker Controller and added entry for the samplingalgorithmfactory
+=======
+				.getInstanceOf(SamplingAlgorithm.RANDOMSTROLL, scaledown,
+>>>>>>> testing random stroll
 						revisiting, dimension);
 
 		Transformation[] t1 = new Transformation[] { sampling };
