@@ -94,7 +94,7 @@ public abstract class AWalker extends Parameter {
      * @param candidates
      * @return
      */
-    protected abstract Node selectNextNode(Collection<Node> candidates);
+    protected abstract Node selectNextNode(Collection<Node> candidates, Node current);
 
     /**
      * Move walker one step
@@ -127,7 +127,7 @@ public abstract class AWalker extends Parameter {
 
 	    } while (candidates.size() == 0);
 
-	    Node next = this.selectNextNode(candidates);
+	    Node next = this.selectNextNode(candidates, n);
 
 	    currents.remove(n);
 	    currents.add(next);
@@ -159,6 +159,10 @@ public abstract class AWalker extends Parameter {
      */
     public Graph getGraph() {
 	return controller.getGraph();
+    }
+    
+    public Collection<Node> getCurrentNodes(){
+    	return currents;
     }
 
 }
