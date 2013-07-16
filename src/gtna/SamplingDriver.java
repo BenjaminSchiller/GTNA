@@ -146,7 +146,7 @@ public class SamplingDriver {
 	private static Transformation[] instantiateSamplingTransformation(
 			double scaledown, int dimension, boolean revisiting) {
 		Transformation sampling = SamplingAlgorithmFactory
-				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown,
+				.getInstanceOf(SamplingAlgorithm.RANDOMSTROLL, scaledown,
 						revisiting, dimension);
 
 		Transformation[] t1 = new Transformation[] { sampling };
