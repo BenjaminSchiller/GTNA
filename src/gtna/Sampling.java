@@ -114,7 +114,6 @@ public class Sampling {
 	
 	
 	Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
-
 	
 	Plotting.single(s, metrics, "example-s/");
 	Plotting.multi(s, metrics, "example-m/");
