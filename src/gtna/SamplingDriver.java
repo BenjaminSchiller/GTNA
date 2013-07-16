@@ -163,11 +163,15 @@ public class SamplingDriver {
 =======
 		Transformation sampling = SamplingAlgorithmFactory
 <<<<<<< HEAD
+<<<<<<< HEAD
 				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown,
 >>>>>>> MultipleRandomWalk Walker Controller and added entry for the samplingalgorithmfactory
 =======
 				.getInstanceOf(SamplingAlgorithm.RANDOMSTROLL, scaledown,
 >>>>>>> testing random stroll
+=======
+				.getInstanceOf(SamplingAlgorithm.RANDOMSTROLL_DEGREECORRECTION, scaledown,
+>>>>>>> build wiring of components for RANDOM_STROLL_WITH_DEGREE_CORRECTION
 						revisiting, dimension);
 
 		Transformation[] t1 = new Transformation[] { sampling };
