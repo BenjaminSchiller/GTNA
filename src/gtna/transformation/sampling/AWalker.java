@@ -88,23 +88,7 @@ public abstract class AWalker extends Parameter {
 	return cn;
     }
 
-    /**
-     * This default implementation returns the list of neighbors as candidates
-     * 
-     * @param g
-     *            Graph
-     * @param n
-     *            Current node
-     * @return List of candidates
-     */
-    private Collection<Node> resolveCandidates(Graph g, Node n) {
-	int[] nids = n.getOutgoingEdges();
-	ArrayList<Node> nn = new ArrayList<Node>();
-	for (int i : nids) {
-	    nn.add(g.getNode(i));
-	}
-	return nn;
-    }
+   public abstract Collection<Node> resolveCandidates(Graph g, Node n);
 
     /**
      * @param candidates
@@ -123,6 +107,7 @@ public abstract class AWalker extends Parameter {
 	if (cc.size() > 0) {
 	    c = cc.keySet();
 	} else {
+		System.err.println("Candidate Set is empty! catching restart nodes");
 	    c = getRestartNodes();
 	}
 	for (Node n : c) {
@@ -135,6 +120,7 @@ public abstract class AWalker extends Parameter {
 		    candidates = controller.filterCandidates(c);
 		}
 		if (candidates.size() == 0) {
+			System.err.println("Candidate Set is empty! catching restart nodes");
 		    cc.clear();
 		    c = getRestartNodes();
 		}
