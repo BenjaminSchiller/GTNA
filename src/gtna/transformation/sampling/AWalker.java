@@ -51,10 +51,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 =======
+=======
+import java.util.List;
+>>>>>>> added RandomJump Walker
 import java.util.Map;
 >>>>>>> Default implementation awalker
 import java.util.Set;
@@ -388,5 +392,17 @@ public abstract class AWalker extends Parameter {
     	return currents;
     }
 
+<<<<<<< HEAD
 }
 >>>>>>> StartNode initialization
+=======
+    /**
+     * @param nodesToFilter
+     * @return
+     */
+    public Collection<Node> filterCandidates(List<Node> nodesToFilter) {
+	return controller.filterCandidates(nodesToFilter);
+    }
+
+}
+>>>>>>> added RandomJump Walker
