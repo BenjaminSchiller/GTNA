@@ -227,6 +227,7 @@ public class SamplingDriver {
 //		Network[] n = new Network[] { nw3/*nw1, nw2, nw3, nw4*/ };
 		
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Network[] n = new Network[] { nw4 };
 >>>>>>> Fixing for BUG: writing a network to hdd before calculating the series
 =======
@@ -242,6 +243,9 @@ public class SamplingDriver {
 		
 		Network[] n = new Network[] { nw4 };
 >>>>>>> MultipleRandomWalk Walker Controller and added entry for the samplingalgorithmfactory
+=======
+		Network[] n = new Network[] { nw1 };
+>>>>>>> added entry for random jump algorithm to the sampling algorithm factory
 		return n;
 	}
 
@@ -289,7 +293,7 @@ public class SamplingDriver {
 =======
 			double scaledown, int dimension, boolean revisiting) {
 		Transformation sampling = SamplingAlgorithmFactory
-				.getInstanceOf(SamplingAlgorithm.RANDOMSTROLL_DEGREECORRECTION, scaledown,
+				.getInstanceOf(SamplingAlgorithm.RANDOMJUMP, scaledown,
 						revisiting, dimension);
 
 <<<<<<< HEAD
