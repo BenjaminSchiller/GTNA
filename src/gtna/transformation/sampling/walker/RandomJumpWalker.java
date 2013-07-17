@@ -64,14 +64,22 @@ public class RandomJumpWalker extends AWalker {
 	 */
 	@Override
 	protected Node selectNextNode(Collection<Node> candidates) {
+<<<<<<< HEAD
 	    Random r = super.getRNG();
+=======
+	    Random r = new Random();
+>>>>>>> added RandomJump Walker
 	    
 	    double c = r.nextDouble();
 	    
 	    if(c > pJump) {		
 		int next = r.nextInt(candidates.size());
 		next = next % candidates.size();
+<<<<<<< HEAD
 //		System.err.println("Walking!");
+=======
+		System.err.println("Walking!");
+>>>>>>> added RandomJump Walker
 		return candidates.toArray(new Node[0])[next];
 	    }else {
 		Graph g = super.getGraph();
@@ -79,7 +87,11 @@ public class RandomJumpWalker extends AWalker {
 		
 		int next = r.nextInt(fc.size());
 		
+<<<<<<< HEAD
 //		System.err.println("Jumping!");
+=======
+		System.err.println("Jumping!");
+>>>>>>> added RandomJump Walker
 		return fc.toArray(new Node[0])[next];
 	    }
 	}
