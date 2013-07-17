@@ -151,7 +151,11 @@ public class SamplingDriver {
 
 //		Network[] n = new Network[] { nw3/*nw1, nw2, nw3, nw4*/ };
 		
+<<<<<<< HEAD
 		Network[] n = new Network[] { nw2 };
+=======
+		Network[] n = new Network[] { nw1 };
+>>>>>>> added entry for random jump algorithm to the sampling algorithm factory
 		return n;
 	}
 
@@ -164,6 +168,7 @@ public class SamplingDriver {
 		Transformation sampling = SamplingAlgorithmFactory
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown,
 >>>>>>> MultipleRandomWalk Walker Controller and added entry for the samplingalgorithmfactory
 =======
@@ -172,6 +177,9 @@ public class SamplingDriver {
 =======
 				.getInstanceOf(SamplingAlgorithm.RANDOMSTROLL_DEGREECORRECTION, scaledown,
 >>>>>>> build wiring of components for RANDOM_STROLL_WITH_DEGREE_CORRECTION
+=======
+				.getInstanceOf(SamplingAlgorithm.RANDOMJUMP, scaledown,
+>>>>>>> added entry for random jump algorithm to the sampling algorithm factory
 						revisiting, dimension);
 
 		Transformation[] t1 = new Transformation[] { sampling };
