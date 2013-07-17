@@ -139,14 +139,18 @@ public class SamplingDriver {
 
 //		Network[] n = new Network[] { nw3/*nw1, nw2, nw3, nw4*/ };
 		
+<<<<<<< HEAD
 		Network[] n = new Network[] { nw2 };
+=======
+		Network[] n = new Network[] { nw1 };
+>>>>>>> added entry for random jump algorithm to the sampling algorithm factory
 		return n;
 	}
 
 	private static Transformation[] instantiateSamplingTransformation(
 			double scaledown, int dimension, boolean revisiting) {
 		Transformation sampling = SamplingAlgorithmFactory
-				.getInstanceOf(SamplingAlgorithm.RANDOMSTROLL_DEGREECORRECTION, scaledown,
+				.getInstanceOf(SamplingAlgorithm.RANDOMJUMP, scaledown,
 						revisiting, dimension);
 
 		Transformation[] t1 = new Transformation[] { sampling };
