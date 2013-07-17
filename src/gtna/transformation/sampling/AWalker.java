@@ -42,6 +42,7 @@ import gtna.util.parameter.Parameter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -159,6 +160,14 @@ public abstract class AWalker extends Parameter {
      */
     public Graph getGraph() {
 	return controller.getGraph();
+    }
+
+    /**
+     * @param nodesToFilter
+     * @return
+     */
+    public Collection<Node> filterCandidates(List<Node> nodesToFilter) {
+	return controller.filterCandidates(nodesToFilter);
     }
 
 }
