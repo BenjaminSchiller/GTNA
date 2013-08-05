@@ -36,6 +36,7 @@
 package gtna.transformation.sampling;
 
 import gtna.graph.GraphProperty;
+<<<<<<< HEAD
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
 import gtna.transformation.sampling.sample.NetworkSample;
@@ -260,4 +261,76 @@ public class Sample extends GraphProperty {
 		this.sample = sample;
 	}
 
+=======
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author Tim
+ *
+ */
+public class Sample extends GraphProperty {
+	private Map<Integer, Integer> nodeIdMapping;
+	private Map<Integer, List<Integer>> revisitFrequency;
+	
+	
+	/**
+	 * 
+	 */
+	public Sample() {
+		this.nodeIdMapping = new HashMap<Integer, Integer>();
+		this.revisitFrequency = new HashMap<Integer, List<Integer>>();
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.graph.GraphProperty#write(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public boolean write(String filename, String key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.graph.GraphProperty#read(java.lang.String)
+	 */
+	@Override
+	public String read(String filename) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/**
+	 * Returns the old node id of a sampled node or a negative integer if the node is not sampled
+	 * @param newId	:	new node id
+	 * @return			old node id <br>
+	 * 					integer < 0 if not sampled
+	 */
+	public int getOldNodeId(int newId){
+		if(nodeIdMapping.containsValue(newId)){
+			for(Map.Entry<Integer, Integer> e : nodeIdMapping.entrySet()){
+				if(e.getValue() == newId){
+					return e.getKey();
+				}
+			}
+		}
+		
+		return -1;
+	}
+
+	/**
+	 * Returns the new node id of a sampled node or a negative integer if the node is not sampled
+	 * @param oldId : node id in the original graph
+	 * @return			new node id <br>
+	 * 					integer < 0 if not sampled
+	 */
+	public int getNewNodeId(int oldId){
+		if(nodeIdMapping.containsKey(oldId)){
+			return nodeIdMapping.get(oldId);
+		} else return -1;
+		
+	}
+>>>>>>> Started implementation of the Sample Graphproperty persisting the sample results
 }
