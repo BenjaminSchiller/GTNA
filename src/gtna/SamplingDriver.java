@@ -85,6 +85,7 @@ public class SamplingDriver {
 =======
 		double scaledown = 0.25;
 <<<<<<< HEAD
+<<<<<<< HEAD
 		int dimension = 5;
 >>>>>>> MultipleRandomWalk Walker Controller and added entry for the samplingalgorithmfactory
 =======
@@ -115,6 +116,9 @@ public class SamplingDriver {
 		double scaledown = 0.25;
 		int dimension = 5;
 >>>>>>> MultipleRandomWalk Walker Controller and added entry for the samplingalgorithmfactory
+=======
+		int dimension = 1;
+>>>>>>> Implementation of sample property -> not persisted?!
 		boolean revisiting = false;
 
 		String folder = "./plots/network-plot/";
@@ -191,6 +195,7 @@ public class SamplingDriver {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Network nw1 = new ErdosRenyi(100, 12, false, null); 
 		Network nw2 = new BarabasiAlbert(1000, 10, null);
 		Network nw3 = new WattsStrogatz(1000, 6, 0.2, null);
@@ -203,6 +208,9 @@ public class SamplingDriver {
 =======
 		Network nw1 = new ErdosRenyi(10000, 3, false, null); 
 >>>>>>> - write property ;-seperated like the other properties use ; too
+=======
+		Network nw1 = new ErdosRenyi(100, 3, false, null); 
+>>>>>>> Implementation of sample property -> not persisted?!
 		Network nw2 = new BarabasiAlbert(2500, 10, null);
 		Network nw3 = new WattsStrogatz(5000, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
@@ -293,7 +301,7 @@ public class SamplingDriver {
 =======
 			double scaledown, int dimension, boolean revisiting) {
 		Transformation sampling = SamplingAlgorithmFactory
-				.getInstanceOf(SamplingAlgorithm.RANDOMJUMP, scaledown,
+				.getInstanceOf(SamplingAlgorithm.RANDOMWALK, scaledown,
 						revisiting, dimension);
 
 <<<<<<< HEAD
