@@ -81,8 +81,12 @@ public class SamplingDriver {
 		int dimension = 1;
 =======
 		double scaledown = 0.25;
+<<<<<<< HEAD
 		int dimension = 5;
 >>>>>>> MultipleRandomWalk Walker Controller and added entry for the samplingalgorithmfactory
+=======
+		int dimension = 1;
+>>>>>>> Implementation of sample property -> not persisted?!
 		boolean revisiting = false;
 
 		String folder = "./plots/network-plot/";
@@ -138,12 +142,16 @@ public class SamplingDriver {
 
 	private static Network[] instantiateNetworkModels() {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Network nw1 = new ErdosRenyi(100, 12, false, null); 
 		Network nw2 = new BarabasiAlbert(1000, 10, null);
 		Network nw3 = new WattsStrogatz(1000, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(500, 4, 0.4, 0.05, null);
 =======
 		Network nw1 = new ErdosRenyi(10000, 12, false, null); 
+=======
+		Network nw1 = new ErdosRenyi(100, 3, false, null); 
+>>>>>>> Implementation of sample property -> not persisted?!
 		Network nw2 = new BarabasiAlbert(2500, 10, null);
 		Network nw3 = new WattsStrogatz(5000, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
@@ -169,6 +177,7 @@ public class SamplingDriver {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown,
 >>>>>>> MultipleRandomWalk Walker Controller and added entry for the samplingalgorithmfactory
 =======
@@ -180,6 +189,9 @@ public class SamplingDriver {
 =======
 				.getInstanceOf(SamplingAlgorithm.RANDOMJUMP, scaledown,
 >>>>>>> added entry for random jump algorithm to the sampling algorithm factory
+=======
+				.getInstanceOf(SamplingAlgorithm.RANDOMWALK, scaledown,
+>>>>>>> Implementation of sample property -> not persisted?!
 						revisiting, dimension);
 
 		Transformation[] t1 = new Transformation[] { sampling };
