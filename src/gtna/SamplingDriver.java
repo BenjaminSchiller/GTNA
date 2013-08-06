@@ -77,7 +77,7 @@ public class SamplingDriver {
 
 		// Sampling parameter
 		double scaledown = 0.25;
-		int dimension = 5;
+		int dimension = 1;
 		boolean revisiting = false;
 
 		String folder = "./plots/network-plot/";
@@ -132,7 +132,7 @@ public class SamplingDriver {
 	}
 
 	private static Network[] instantiateNetworkModels() {
-		Network nw1 = new ErdosRenyi(10000, 12, false, null); 
+		Network nw1 = new ErdosRenyi(100, 3, false, null); 
 		Network nw2 = new BarabasiAlbert(2500, 10, null);
 		Network nw3 = new WattsStrogatz(5000, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
@@ -146,7 +146,7 @@ public class SamplingDriver {
 	private static Transformation[] instantiateSamplingTransformation(
 			double scaledown, int dimension, boolean revisiting) {
 		Transformation sampling = SamplingAlgorithmFactory
-				.getInstanceOf(SamplingAlgorithm.RANDOMJUMP, scaledown,
+				.getInstanceOf(SamplingAlgorithm.RANDOMWALK, scaledown,
 						revisiting, dimension);
 
 		Transformation[] t1 = new Transformation[] { sampling };
