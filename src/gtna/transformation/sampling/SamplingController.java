@@ -494,7 +494,7 @@ public class SamplingController extends Transformation {
 	this.sampler = as;
 	this.walkerController = awc;
 	this.startNodeSelector = asns;
-	this.networkSample = new NetworkSample();
+	this.networkSample = new NetworkSample(algorithm, scaledown, dimension, revisiting);
 
     }
 
@@ -514,6 +514,11 @@ public class SamplingController extends Transformation {
 	    System.out.println("\n> Sampled " + networkSample.getSampleSize()
 		    + " out of " + g.getNodeCount() + " nodes.");
 	    System.out.println("\n\n> Mapping: \n" + networkSample.toString());
+	    
+	    Sample s = new Sample(networkSample);
+	    g.addProperty(graph.getNextKey("SAMPLE"), s);
+	    
+	    // TODO RESET SAMPLE HERE!
 	    return g;
 >>>>>>> SamplingController.applicable is checking the availability of the necessary submodules.
 	}
