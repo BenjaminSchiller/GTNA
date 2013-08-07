@@ -78,9 +78,9 @@ public abstract class ASampler extends Parameter {
      * @param walkerController
      * 
      */
-    public Collection<Node> initialize(Graph g, int maxNodes) {
+    public Collection<Node> initialize(Graph g, int maxNodes, int round) {
 	this.setGraph(g);
-	return sampleOneStep(maxNodes, 0);
+	return sampleOneStep(maxNodes, round);
     }
 
     /**

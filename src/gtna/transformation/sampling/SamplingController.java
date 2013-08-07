@@ -131,7 +131,7 @@ public class SamplingController extends Transformation {
 	    Sample s = new Sample(networkSample);
 	    g.addProperty(graph.getNextKey("SAMPLE"), s);
 	    
-	    // TODO RESET SAMPLE HERE!
+	    networkSample = new NetworkSample();
 	    return g;
 	}
     }
@@ -207,7 +207,7 @@ public class SamplingController extends Transformation {
 	int round = 0;
 	walkerController.initialize(startNodes); // place walker(s) on start
 						    // node(s)
-	sampler.initialize(g, targetSampleSize); // initialize Sampler
+	sampler.initialize(g, targetSampleSize, round); // initialize Sampler
 
 
 	boolean running = true;
