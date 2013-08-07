@@ -316,9 +316,8 @@ public class Sample extends GraphProperty {
 	
 	int size = sample.getSampleSize();
 
-	for (int i = 0; i < size; i++) {
-	    fw.writeln(sample.toString());
-	}
+	fw.writeln(sample.toString());
+
 
 	return fw.close();
     }
@@ -345,7 +344,7 @@ public class Sample extends GraphProperty {
 	for(int i = 0; i < size; i++) {
 	    String l = fr.readLine();
 	    
-	    String[] sampledNode = l.split(":");
+	    String[] sampledNode = l.split(";");
 	    int oldId = Integer.parseInt(sampledNode[0].trim());
 	    int newId = Integer.parseInt(sampledNode[1].trim());
 	    List<Integer> rf = parseRevisitFrequencyString(sampledNode[2].trim());
