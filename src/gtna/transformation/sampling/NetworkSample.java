@@ -250,7 +250,7 @@ public class NetworkSample extends Parameter {
 	    Integer newId = sampleNodeMapping.get(n);
 	    String rf = getRevisitFrequencyString(revisitFrequency.get(n));
 	    
-	    sb.append(n + ": " + newId + ": " + rf + "\n");
+	    sb.append(n + ";" + newId + ";" + rf + "\n");
 	}
 
 	return sb.toString();

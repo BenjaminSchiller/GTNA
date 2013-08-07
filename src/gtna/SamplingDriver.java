@@ -78,7 +78,7 @@ public class SamplingDriver {
 		// Sampling parameter
 		double scaledown = 0.25;
 		int dimension = 1;
-		boolean revisiting = false;
+		boolean revisiting = true;
 
 		String folder = "./plots/network-plot/";
 
@@ -90,10 +90,10 @@ public class SamplingDriver {
 		Metric[] metrics = new Metric[] { new DegreeDistribution(),
 				new ShortestPaths(), new ClusteringCoefficient() };
 
-		Collection<String> networks = persistNetworks(times, n, folder);
+		Collection<String> networks = persistNetworks(times, n, folder, t1[0]);
 
 		Collection<Network> nets = loadNetworks(folder, t1, networks);
-
+		
 		plotNetworkMetrics(get, times, metrics, nets);
 
 	}
@@ -119,13 +119,13 @@ public class SamplingDriver {
 	}
 
 	private static Collection<String> persistNetworks(int times, Network[] n,
-			String folder) {
+			String folder, Transformation sample) {
 		Collection<String> networks = new ArrayList<String>();
 		for (Network i : n) {
 			String p = folder + "n-" + i.getKey() + "-" + i.getNodes();
 			System.out.println("Plotting network - " + i.getKey() + " @ "
 					+ i.getNodes() + " nodes");
-			plot(i.generate(), p, times);
+			plot(i.generate(), p, times, sample);
 			networks.add(p);
 		}
 		return networks;
@@ -133,12 +133,16 @@ public class SamplingDriver {
 
 	private static Network[] instantiateNetworkModels() {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Network nw1 = new ErdosRenyi(100, 12, false, null); 
 		Network nw2 = new BarabasiAlbert(1000, 10, null);
 		Network nw3 = new WattsStrogatz(1000, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(500, 4, 0.4, 0.05, null);
 =======
 		Network nw1 = new ErdosRenyi(100, 3, false, null); 
+=======
+		Network nw1 = new ErdosRenyi(10000, 3, false, null); 
+>>>>>>> - write property ;-seperated like the other properties use ; too
 		Network nw2 = new BarabasiAlbert(2500, 10, null);
 		Network nw3 = new WattsStrogatz(5000, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
@@ -165,7 +169,7 @@ public class SamplingDriver {
 	}
 
 	@SuppressWarnings("javadoc")
-	public static void plot(Graph g, String filename, int times) {
+	public static void plot(Graph g, String filename, int times, Transformation sample) {
 		Transformation tCRIdS = new ConsecutiveRingIDSpace(true);
 
 		for (int i = 0; i < times; i++) {
@@ -179,6 +183,7 @@ public class SamplingDriver {
 			String graphFilename = filename;
 
 			g = tCRIdS.transform(g);
+			g = sample.transform(g);
 
 			IdentifierSpace ids = (IdentifierSpace) g.getProperty("ID_SPACE_0");
 
