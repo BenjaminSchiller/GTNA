@@ -35,10 +35,18 @@
  */
 package gtna.transformation.sampling.subgraph;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import apple.awt.ClientPropertyApplicator.Property;
+import gtna.graph.Edge;
+import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
+import gtna.graph.Node;
 import gtna.transformation.Transformation;
+import gtna.transformation.sampling.Sample;
 
 /**
  * @author Tim
@@ -51,7 +59,34 @@ public class SubgraphTransformation extends Transformation {
      */
     @Override
     public Graph transform(Graph g) {
-	GraphProperty p = (Sample)g.getProperty("SAMPLE_0");
+	Sample sample = (Sample)g.getProperty("SAMPLE_0");
+	
+	Set<Integer> oldIds = sample.getSampledIds();
+	Edges edges = g.getEdges();
+	
+	List<Node> sampledNodes = new ArrayList<Node>();
+	
+	// get Sampled nodes
+	for(Integer i : oldIds) {
+	    sampledNodes.add(g.getNode(i));
+	}
+	
+	for(Node n : sampledNodes) {
+	    Edge[] ne = n.getEdges();
+	    List<Edge> sampledEdges = new ArrayList<Edge>();
+	    for(Edge e : ne) {
+		// save edge only iff src and dst nodes are sampled
+		if(oldIds.contains(e.getSrc()) &&
+			oldIds.contains(e.getDst())) {
+		    sampledEdges.add(e);
+		    
+		}
+	    }
+	    
+	}
+	
+	
+	return g;
     }
 
     /* (non-Javadoc)
