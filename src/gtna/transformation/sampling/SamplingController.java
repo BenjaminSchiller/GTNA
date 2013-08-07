@@ -107,7 +107,7 @@ public class SamplingController extends Transformation {
 	this.sampler = as;
 	this.walkerController = awc;
 	this.startNodeSelector = asns;
-	this.networkSample = new NetworkSample();
+	this.networkSample = new NetworkSample(algorithm, scaledown, dimension, revisiting);
 
     }
 
@@ -127,6 +127,11 @@ public class SamplingController extends Transformation {
 	    System.out.println("\n> Sampled " + networkSample.getSampleSize()
 		    + " out of " + g.getNodeCount() + " nodes.");
 	    System.out.println("\n\n> Mapping: \n" + networkSample.toString());
+	    
+	    Sample s = new Sample(networkSample);
+	    g.addProperty(graph.getNextKey("SAMPLE"), s);
+	    
+	    networkSample = new NetworkSample();
 	    return g;
 	}
     }
@@ -202,7 +207,7 @@ public class SamplingController extends Transformation {
 	int round = 0;
 	walkerController.initialize(startNodes); // place walker(s) on start
 						    // node(s)
-	sampler.initialize(g, targetSampleSize); // initialize Sampler
+	sampler.initialize(g, targetSampleSize, round); // initialize Sampler
 
 
 	boolean running = true;
