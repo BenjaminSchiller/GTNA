@@ -64,7 +64,7 @@ public class RandomJumpWalker extends AWalker {
 	 */
 	@Override
 	protected Node selectNextNode(Collection<Node> candidates) {
-	    Random r = new Random();
+	    Random r = super.getRNG();
 	    
 	    double c = r.nextDouble();
 	    
