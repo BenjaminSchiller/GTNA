@@ -55,12 +55,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+<<<<<<< HEAD
 =======
 =======
 import java.util.List;
 >>>>>>> added RandomJump Walker
 import java.util.Map;
 >>>>>>> Default implementation awalker
+=======
+>>>>>>> Usage of the deterministic-rng
 import java.util.Set;
 
 /**
@@ -404,5 +407,16 @@ public abstract class AWalker extends Parameter {
 	return controller.filterCandidates(nodesToFilter);
     }
 
+<<<<<<< HEAD
 }
 >>>>>>> added RandomJump Walker
+=======
+    /**
+     * @return
+     */
+    public Random getRNG() {
+	return controller.getRNG();
+    }
+
+}
+>>>>>>> Usage of the deterministic-rng

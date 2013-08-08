@@ -666,7 +666,7 @@ public class SamplingController extends Transformation {
      * @return true if ok
      */
     public boolean sampleGraph(Graph g) {
-	startNodes = startNodeSelector.selectStartNodes(g, dimension);
+	startNodes = startNodeSelector.selectStartNodes(g, dimension, rng);
 
 	int targetSampleSize = (int) Math.ceil(g.getNodeCount() * scaledown);
 	int maxNodesInThisRound = calculateResidualBudget(targetSampleSize);

@@ -51,6 +51,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+<<<<<<< HEAD
 =======
 import java.util.Map;
 >>>>>>> ASampler default implementation
@@ -159,6 +160,8 @@ public abstract class AWalkerController extends Parameter {
 
 		return frn;
 	}
+=======
+>>>>>>> Usage of the deterministic-rng
 
 	/**
 	 * @return the samplingController
@@ -433,7 +436,7 @@ public abstract class AWalkerController extends Parameter {
 		Collection<Node> frn, c;
 		do {
 			rn = samplingController.getStartNodeSelector().selectStartNodes(
-					this.getGraph(), 1);
+					this.getGraph(), 1, samplingController.getRng());
 			c = Arrays.asList(rn);
 			frn = filterCandidates(c);
 		} while (frn.size() == 0);
@@ -513,6 +516,13 @@ public abstract class AWalkerController extends Parameter {
 
 	public Collection<Node> filterCandidates(Collection<Node> candidates) {
 		return candidateFilter.filterCandidates(candidates, this.getNetworkSample());
+	}
+
+	/**
+	 * @return
+	 */
+	public Random getRNG() {
+	    return samplingController.getRng();
 	}
 
 }

@@ -62,10 +62,14 @@ public class RandomWalkDegreeCorrectionWalker extends AWalker {
 	@Override
 	protected Node selectNextNode(Collection<Node> candidates) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Random r = super.getRNG();
 =======
 		Random r = new Random();
 >>>>>>> RandomWalk Walker with degree correction and entry for the sampling algorithm factory
+=======
+		Random r = super.getRNG();
+>>>>>>> Usage of the deterministic-rng
 		ArrayList<Node> can = new ArrayList<Node>();
 		can.addAll(candidates);
 		
