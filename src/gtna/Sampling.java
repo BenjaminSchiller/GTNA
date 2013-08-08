@@ -79,16 +79,16 @@ public class Sampling {
 
 	Transformation uniformSampling1 = 
 		SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK,
-			scaledown, revisiting, dimension);
+			scaledown, revisiting, dimension, null);
 	Transformation uniformSampling2 = 
 			SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK,
-			scaledown, revisiting, dimension);
+			scaledown, revisiting, dimension, null);
 	Transformation uniformSampling3 = 
 			SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK,
-			scaledown, revisiting, dimension);
+			scaledown, revisiting, dimension, null);
 	Transformation uniformSampling4 = 
 			SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK,
-			scaledown, revisiting, dimension);
+			scaledown, revisiting, dimension, null);
 
 	Transformation[] t1 = new Transformation[] {uniformSampling1};
 	Transformation[] t2 = new Transformation[] {uniformSampling2};
