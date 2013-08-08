@@ -54,6 +54,13 @@ import gtna.transformation.sampling.Sample;
  */
 public class SubgraphTransformation extends Transformation {
 
+    /**
+     * @param key
+     */
+    public SubgraphTransformation() {
+	super("GENERATE_SAMPLED_GRAPH");
+    }
+
     /*
      * (non-Javadoc)
      * 
