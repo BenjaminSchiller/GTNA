@@ -310,6 +310,7 @@ public class SamplingDriver {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown,
 >>>>>>> MultipleRandomWalk Walker Controller and added entry for the samplingalgorithmfactory
 =======
@@ -334,6 +335,9 @@ public class SamplingDriver {
 						revisiting, dimension, randomSeed);
 >>>>>>> usage, persisting, loading of the deterministic-rng possible
 =======
+=======
+				.getInstanceOf(SamplingAlgorithm.RANDOMSTROLL, scaledown,
+>>>>>>> Usage of the deterministic-rng
 						revisiting, dimension, randomSeed);
 >>>>>>> usage, persisting, loading of the deterministic-rng possible
 

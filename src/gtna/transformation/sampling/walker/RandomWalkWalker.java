@@ -85,6 +85,7 @@ public class RandomWalkWalker extends AWalker {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	protected Node selectNextNode(Collection<Node> candidates, Node current) {
 		Random r = new Random();
 		
@@ -97,12 +98,22 @@ public class RandomWalkWalker extends AWalker {
 =======
 	protected Node selectNextNode(Collection<Node> candidates) {
 =======
+=======
+>>>>>>> Usage of the deterministic-rng
 	protected Node selectNextNode(Collection<Node> candidates, Node current) {
 >>>>>>> Metropolized Random Walk Walker + Entry for SamplingAlgorithmFactory
 		Random r = new Random();
 		
 		int next = r.nextInt(candidates.size());
+<<<<<<< HEAD
 >>>>>>> added RandomWalkWalker
+=======
+=======
+	protected Node selectNextNode(Collection<Node> candidates) {
+			
+		int next = super.getRNG().nextInt(candidates.size());
+>>>>>>> Usage of the deterministic-rng
+>>>>>>> Usage of the deterministic-rng
 		next = next % candidates.size();
 		
 		return candidates.toArray(new Node[0])[next];

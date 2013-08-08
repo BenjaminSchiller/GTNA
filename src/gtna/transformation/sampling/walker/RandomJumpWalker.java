@@ -65,10 +65,14 @@ public class RandomJumpWalker extends AWalker {
 	@Override
 	protected Node selectNextNode(Collection<Node> candidates) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	    Random r = super.getRNG();
 =======
 	    Random r = new Random();
 >>>>>>> added RandomJump Walker
+=======
+	    Random r = super.getRNG();
+>>>>>>> Usage of the deterministic-rng
 	    
 	    double c = r.nextDouble();
 	    

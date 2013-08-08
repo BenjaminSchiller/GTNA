@@ -67,9 +67,8 @@ public class StartNodeSelector extends Parameter {
      *            Number of chosen startnodes
      * @return Array of chosen startnodes
      */
-    public Node[] selectStartNodes(Graph g, int dimension) {
+    public Node[] selectStartNodes(Graph g, int dimension, Random r) {
 	Collection<Node> sn = new ArrayList<Node>();
-	Random r = new Random();
 
 	int gsize = g.getNodeCount();
 	int nid;
