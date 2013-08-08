@@ -62,6 +62,7 @@ public class SamplingController extends Transformation {
     private double scaledown;
     @SuppressWarnings({ "unused" })
     private boolean revisiting;
+    private Node[] startNodes;
 
     /**
      * @param algorithm
@@ -128,12 +129,24 @@ public class SamplingController extends Transformation {
 		    + " out of " + g.getNodeCount() + " nodes.");
 	    System.out.println("\n\n> Mapping: \n" + networkSample.toString());
 	    
-	    Sample s = new Sample(networkSample);
+	    int[] sn = collectStartNodeIndices();
+	    Sample s = new Sample(networkSample, sn);
 	    g.addProperty(graph.getNextKey("SAMPLE"), s);
 	    
 	    networkSample = new NetworkSample();
 	    return g;
 	}
+    }
+
+    /**
+     * @return
+     */
+    private int[] collectStartNodeIndices() {
+	int[] sn = new int[startNodes.length];
+	for(int i = 0; i < sn.length; i++) {
+	sn[i] = startNodes[i].getIndex();
+	}
+	return sn;
     }
 
     /*
@@ -200,7 +213,7 @@ public class SamplingController extends Transformation {
      * @return true if ok
      */
     public boolean sampleGraph(Graph g) {
-	Node[] startNodes = startNodeSelector.selectStartNodes(g, dimension);
+	startNodes = startNodeSelector.selectStartNodes(g, dimension);
 
 	int targetSampleSize = (int) Math.ceil(g.getNodeCount() * scaledown);
 	int maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
