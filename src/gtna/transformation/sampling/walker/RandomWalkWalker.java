@@ -61,9 +61,8 @@ public class RandomWalkWalker extends AWalker {
 	 */
 	@Override
 	protected Node selectNextNode(Collection<Node> candidates) {
-		Random r = new Random();
-		
-		int next = r.nextInt(candidates.size());
+			
+		int next = super.getRNG().nextInt(candidates.size());
 		next = next % candidates.size();
 		
 		return candidates.toArray(new Node[0])[next];
