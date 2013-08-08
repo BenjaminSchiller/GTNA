@@ -380,11 +380,15 @@ public class SamplingAlgorithmFactory {
 =======
      * @param dimension
      *            IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
+<<<<<<< HEAD
 >>>>>>> refactoring and cleanup after debugging (1)
+=======
+     * @param randomSeed 
+>>>>>>> usage, persisting, loading of the deterministic-rng possible
      * @return
      */
     public static SamplingController getInstanceOf(SamplingAlgorithm sg,
-	    double scaledown, boolean revisiting, int dimension) {
+	    double scaledown, boolean revisiting, int dimension, Long randomSeed) {
 	SamplingController sc;
 	ASampler as;
 	AWalker aw;
@@ -510,7 +514,7 @@ public class SamplingAlgorithmFactory {
 			throw new IllegalArgumentException("Not supported algorithm");
 	}
 	sc = new SamplingController(algorithm, awc, as, sns, scaledown,
-		dimension, revisiting);
+		dimension, revisiting, randomSeed);
 	
 	awc.setSamplingController(sc);
 	as.setSamplingController(sc);
