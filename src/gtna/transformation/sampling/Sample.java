@@ -269,9 +269,11 @@ import gtna.io.Filewriter;
 >>>>>>> Implementation of sample property -> not persisted?!
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tim
@@ -279,6 +281,7 @@ import java.util.Map;
  */
 public class Sample extends GraphProperty {
     private NetworkSample sample;
+    private int[] startnodes;
 
     /**
 	 * 
@@ -287,14 +290,10 @@ public class Sample extends GraphProperty {
 	this.sample = new NetworkSample();
     }
 
-    /**
-     * @param nim
-     *            Node Id Mapping
-     * @param rf
-     *            revisit frequency
-     */
-    public Sample(NetworkSample s) {
+   
+    public Sample(NetworkSample s, int[] startNodeIndices) {
 	this.sample = s;
+	this.startnodes = startNodeIndices;
     }
 
     /*
@@ -313,6 +312,7 @@ public class Sample extends GraphProperty {
 	this.writeParameter(fw, "Sample size", sample.getSampleSize());
 	this.writeParameter(fw, "Sample dimension", sample.getDimension());
 	this.writeParameter(fw, "Sample revisiting", sample.isRevisiting());
+	this.writeParameter(fw, "Sample startnodes", Arrays.toString(startnodes).replace("[", "").replace("]", ""));
 	
 	int size = sample.getSampleSize();
 
@@ -338,6 +338,7 @@ public class Sample extends GraphProperty {
 	int size = this.readInt(fr);
 	int dimension = this.readInt(fr);
 	boolean revisiting = this.readBoolean(fr);
+	int[] startnodes = this.readIntArray(fr);
 	
 	
 	sample = new NetworkSample(algorithm, scaledown, dimension, revisiting);
@@ -356,6 +357,22 @@ public class Sample extends GraphProperty {
 	
 	return key;
     }
+
+    /**
+     * @param fr
+     * @return
+     */
+    private int[] readIntArray(Filereader fr) {
+	String sn = this.readString(fr);
+	String[] sna = sn.split(", ");
+	int[] s = new int[sna.length];
+	for(int i = 0; i<s.length; i++) {
+	    s[i] = Integer.parseInt(sna[i]);
+	}
+	
+	return s;
+    }
+
 
     /**
      * @param trim
@@ -424,6 +441,14 @@ public class Sample extends GraphProperty {
     public int getNewNodeId(int oldId) {
 	return sample.getNewIndexOfSampledNode(oldId);
 
+    }
+    
+    /**
+     * Returns the Set of <b>old<b> node indices
+     * @return Set of Integers
+     */
+    public Set<Integer> getSampledIds(){
+	return sample.getSampleNodeMapping().keySet();
     }
 
 >>>>>>> Implementation of sample property -> not persisted?!
