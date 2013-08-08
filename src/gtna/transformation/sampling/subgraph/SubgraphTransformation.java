@@ -50,46 +50,102 @@ import gtna.transformation.sampling.Sample;
 
 /**
  * @author Tim
- *
+ * 
  */
 public class SubgraphTransformation extends Transformation {
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see gtna.transformation.Transformation#transform(gtna.graph.Graph)
      */
     @Override
     public Graph transform(Graph g) {
-	Sample sample = (Sample)g.getProperty("SAMPLE_0");
-	
+	Sample sample = (Sample) g.getProperty("SAMPLE_0");
+
 	Set<Integer> oldIds = sample.getSampledIds();
 	Edges edges = g.getEdges();
-	
+
 	List<Node> sampledNodes = new ArrayList<Node>();
-	
+
 	// get Sampled nodes
-	for(Integer i : oldIds) {
+	for (Integer i : oldIds) {
 	    sampledNodes.add(g.getNode(i));
 	}
-	
-	for(Node n : sampledNodes) {
-	    Edge[] ne = n.getEdges();
-	    List<Edge> sampledEdges = new ArrayList<Edge>();
-	    for(Edge e : ne) {
-		// save edge only iff src and dst nodes are sampled
-		if(oldIds.contains(e.getSrc()) &&
-			oldIds.contains(e.getDst())) {
-		    sampledEdges.add(e);
-		    
-		}
-	    }
-	    
+
+	for (Node n : sampledNodes) {
+	    setNewOutgoingEdges(g, sample, oldIds, n);
+	    setNewIncomingEdges(g, sample, oldIds, n);
+	    n.setIndex(sample.getNewNodeId(n.getIndex()));
 	}
 	
-	
+	// set new Nodearray
+	Node[] newNodes = new Node[sampledNodes.size()];
+	for(Node n : sampledNodes) {
+	    newNodes[n.getIndex()] = n;
+	}
+	g.setNodes(newNodes);
+
 	return g;
     }
 
-    /* (non-Javadoc)
+    /**
+     * @param g
+     * @param sample
+     * @param oldIds
+     * @param n
+     */
+    private void setNewIncomingEdges(Graph g, Sample sample,
+	    Set<Integer> oldIds, Node n) {
+	int[] nIn = n.getIncomingEdges();
+	List<Integer> newIn = new ArrayList<Integer>();
+	
+	// collect sampled edges and calculate new ids
+	for(int i : nIn) {
+	    if(oldIds.contains(i)) {
+		newIn.add(sample.getNewNodeId(i));
+	    }
+	}
+	
+	// set new incoming edges
+	nIn = new int[newIn.size()];
+	for(int i = 0; i < newIn.size(); i++) {
+	    nIn[i] = newIn.get(i);
+	}
+	
+	n.setIncomingEdges(nIn);
+
+    }
+
+    /**
+     * @param g
+     * @param sample
+     * @param oldIds
+     * @param n
+     */
+    private void setNewOutgoingEdges(Graph g, Sample sample,
+	    Set<Integer> oldIds, Node n) {
+	int[] nOut = n.getOutgoingEdges();
+	List<Integer> newOut = new ArrayList<Integer>();
+	
+	// collect sampled edges and calculate new ids
+	for (int i : nOut) {
+	    if (oldIds.contains(i)){
+		newOut.add(sample.getNewNodeId(i));
+	    }
+	}
+
+	// set new outgoing edges
+	nOut = new int[newOut.size()];
+	for (int i = 0; i < newOut.size(); i++) {
+	    nOut[i] = newOut.get(i);
+	}
+	n.setOutgoingEdges(nOut);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see gtna.transformation.Transformation#applicable(gtna.graph.Graph)
      */
     @Override
