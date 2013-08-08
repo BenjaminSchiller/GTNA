@@ -79,11 +79,12 @@ public class SamplingDriver {
 		double scaledown = 0.25;
 		int dimension = 1;
 		boolean revisiting = true;
-
+		Long seed = new Long(0);
+		
 		String folder = "./plots/network-plot/";
 
 		Transformation[] t1 = instantiateSamplingTransformation(scaledown,
-				dimension, revisiting);
+				dimension, revisiting, seed);
 
 		Network[] n = instantiateNetworkModels();
 
@@ -159,10 +160,10 @@ public class SamplingDriver {
 	}
 
 	private static Transformation[] instantiateSamplingTransformation(
-			double scaledown, int dimension, boolean revisiting) {
+			double scaledown, int dimension, boolean revisiting, Long randomSeed) {
 		Transformation sampling = SamplingAlgorithmFactory
 				.getInstanceOf(SamplingAlgorithm.RANDOMWALK, scaledown,
-						revisiting, dimension);
+						revisiting, dimension, randomSeed);
 
 		Transformation[] t1 = new Transformation[] { sampling };
 		return t1;

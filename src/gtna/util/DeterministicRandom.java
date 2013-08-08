@@ -43,7 +43,7 @@ import java.util.Random;
  */
 public class DeterministicRandom extends Random {
 
-    private Long seed;
+    private Long configuredSeed;
 
     /**
      * Create a standard RNG without configured seed
@@ -60,7 +60,7 @@ public class DeterministicRandom extends Random {
 	super();
 	if(seed != null) {
 	    this.setSeed(seed);
-	    this.seed = seed;
+	    this.configuredSeed = seed;
 	}
     }
     
@@ -68,14 +68,14 @@ public class DeterministicRandom extends Random {
      * reset RNG with the saved seed, iff a seed was given earlier
      */
     public void resetSeed() {
-	if(seed != null)
-	    this.setSeed(seed);
+	if(configuredSeed != null)
+	    this.setSeed(configuredSeed);
     }
     
     public void setNewSeed(Long seed) {
 	if(seed != null) {
 	    this.setSeed(seed);
-	    this.seed = seed;
+	    this.configuredSeed = seed;
 	}
     }
     
@@ -83,8 +83,8 @@ public class DeterministicRandom extends Random {
      * Returns the seed of the RNG
      * @return	Seed or <b>NULL</b> of no seed is set
      */
-    public long getSeed() {
-	return seed;
+    public Long getConfiguredSeed() {
+	return configuredSeed;
     }
     
     
