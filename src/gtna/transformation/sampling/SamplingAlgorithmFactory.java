@@ -73,10 +73,11 @@ public class SamplingAlgorithmFactory {
      * @param revisiting
      * @param dimension
      *            IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
+     * @param randomSeed 
      * @return
      */
     public static SamplingController getInstanceOf(SamplingAlgorithm sg,
-	    double scaledown, boolean revisiting, int dimension) {
+	    double scaledown, boolean revisiting, int dimension, Long randomSeed) {
 	SamplingController sc;
 	ASampler as;
 	AWalker aw;
@@ -189,7 +190,7 @@ public class SamplingAlgorithmFactory {
 			throw new IllegalArgumentException("Not supported algorithm");
 	}
 	sc = new SamplingController(algorithm, awc, as, sns, scaledown,
-		dimension, revisiting);
+		dimension, revisiting, randomSeed);
 	
 	awc.setSamplingController(sc);
 	as.setSamplingController(sc);
