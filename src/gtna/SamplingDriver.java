@@ -91,12 +91,17 @@ public class SamplingDriver {
 		boolean revisiting = false;
 =======
 		boolean revisiting = true;
+<<<<<<< HEAD
 >>>>>>> - write property ;-seperated like the other properties use ; too
 
+=======
+		Long seed = new Long(0);
+		
+>>>>>>> usage, persisting, loading of the deterministic-rng possible
 		String folder = "./plots/network-plot/";
 
 		Transformation[] t1 = instantiateSamplingTransformation(scaledown,
-				dimension, revisiting);
+				dimension, revisiting, seed);
 
 		Network[] n = instantiateNetworkModels();
 
@@ -176,11 +181,15 @@ public class SamplingDriver {
 	}
 
 	private static Transformation[] instantiateSamplingTransformation(
+<<<<<<< HEAD
 			double scaledown, int dimension, boolean revisiting) {
 <<<<<<< HEAD
 		Transformation uniformSampling1 = SamplingAlgorithmFactory
 				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_METROPOLIZED, scaledown,
 =======
+=======
+			double scaledown, int dimension, boolean revisiting, Long randomSeed) {
+>>>>>>> usage, persisting, loading of the deterministic-rng possible
 		Transformation sampling = SamplingAlgorithmFactory
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -199,8 +208,12 @@ public class SamplingDriver {
 >>>>>>> added entry for random jump algorithm to the sampling algorithm factory
 =======
 				.getInstanceOf(SamplingAlgorithm.RANDOMWALK, scaledown,
+<<<<<<< HEAD
 >>>>>>> Implementation of sample property -> not persisted?!
 						revisiting, dimension);
+=======
+						revisiting, dimension, randomSeed);
+>>>>>>> usage, persisting, loading of the deterministic-rng possible
 
 		Transformation[] t1 = new Transformation[] { sampling };
 		return t1;
