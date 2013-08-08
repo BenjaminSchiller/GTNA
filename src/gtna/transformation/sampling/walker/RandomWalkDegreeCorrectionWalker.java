@@ -61,7 +61,7 @@ public class RandomWalkDegreeCorrectionWalker extends AWalker {
 	 */
 	@Override
 	protected Node selectNextNode(Collection<Node> candidates) {
-		Random r = new Random();
+		Random r = super.getRNG();
 		ArrayList<Node> can = new ArrayList<Node>();
 		can.addAll(candidates);
 		
