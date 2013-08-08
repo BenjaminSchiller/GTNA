@@ -38,12 +38,14 @@ package gtna.transformation.sampling;
 import gtna.graph.GraphProperty;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
+import gtna.util.DeterministicRandom;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -53,6 +55,7 @@ import java.util.Set;
 public class Sample extends GraphProperty {
     private NetworkSample sample;
     private int[] startnodes;
+    private Random rng;
 
     /**
 	 * 
@@ -61,10 +64,24 @@ public class Sample extends GraphProperty {
 	this.sample = new NetworkSample();
     }
 
-   
+    /**
+     * @param s
+     * @param startNodeIndices
+     */
     public Sample(NetworkSample s, int[] startNodeIndices) {
 	this.sample = s;
 	this.startnodes = startNodeIndices;
+    }
+
+    /**
+     * @param s
+     * @param startNodeIndices
+     * @param rng
+     */
+    public Sample(NetworkSample s, int[] startNodeIndices, Random rng) {
+	this.sample = s;
+	this.startnodes = startNodeIndices;
+	this.rng = rng;
     }
 
     /*
@@ -83,12 +100,19 @@ public class Sample extends GraphProperty {
 	this.writeParameter(fw, "Sample size", sample.getSampleSize());
 	this.writeParameter(fw, "Sample dimension", sample.getDimension());
 	this.writeParameter(fw, "Sample revisiting", sample.isRevisiting());
-	this.writeParameter(fw, "Sample startnodes", Arrays.toString(startnodes).replace("[", "").replace("]", ""));
-	
+	this.writeParameter(fw, "Sample startnodes", Arrays
+		.toString(startnodes).replace("[", "").replace("]", ""));
+	if (rng instanceof DeterministicRandom
+		&& ((DeterministicRandom) rng).getConfiguredSeed() != null) {
+	    this.writeParameter(fw, "Sample randomseed",
+		    ((DeterministicRandom) rng).getConfiguredSeed().toString());
+	} else {
+	    this.writeParameter(fw, "Sample randomseed", "-");
+	}
+
 	int size = sample.getSampleSize();
 
 	fw.writeln(sample.toString());
-
 
 	return fw.close();
     }
@@ -101,32 +125,47 @@ public class Sample extends GraphProperty {
     @Override
     public String read(String filename) {
 	Filereader fr = new Filereader(filename);
-	
+
 	String key = this.readHeader(fr);
-	
+
 	String algorithm = this.readString(fr);
 	double scaledown = this.readDouble(fr);
 	int size = this.readInt(fr);
 	int dimension = this.readInt(fr);
 	boolean revisiting = this.readBoolean(fr);
 	int[] startnodes = this.readIntArray(fr);
-	
-	
+	rng = this.readRNG(fr);
+
 	sample = new NetworkSample(algorithm, scaledown, dimension, revisiting);
-	for(int i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) {
 	    String l = fr.readLine();
-	    
+
 	    String[] sampledNode = l.split(";");
 	    int oldId = Integer.parseInt(sampledNode[0].trim());
 	    int newId = Integer.parseInt(sampledNode[1].trim());
-	    List<Integer> rf = parseRevisitFrequencyString(sampledNode[2].trim());
-	    
+	    List<Integer> rf = parseRevisitFrequencyString(sampledNode[2]
+		    .trim());
+
 	    sample.addNodeEntry(oldId, newId, rf);
 	}
-	
+
 	fr.close();
-	
+
 	return key;
+    }
+
+    /**
+     * @param fr
+     * @return
+     */
+    private Random readRNG(Filereader fr) {
+	String r = this.readString(fr);
+	if(r.equalsIgnoreCase("-")) {
+	    return new Random();
+	} else {
+	    Long seed = Long.parseLong(r);
+	    return new DeterministicRandom(seed);
+	}
     }
 
     /**
@@ -137,13 +176,12 @@ public class Sample extends GraphProperty {
 	String sn = this.readString(fr);
 	String[] sna = sn.split(", ");
 	int[] s = new int[sna.length];
-	for(int i = 0; i<s.length; i++) {
+	for (int i = 0; i < s.length; i++) {
 	    s[i] = Integer.parseInt(sna[i]);
 	}
-	
+
 	return s;
     }
-
 
     /**
      * @param trim
@@ -151,14 +189,13 @@ public class Sample extends GraphProperty {
      */
     private List<Integer> parseRevisitFrequencyString(String trim) {
 	List<Integer> rf = new ArrayList<Integer>();
-	
+
 	String[] visits = trim.split(",");
-	
-	for(String v : visits) {
+
+	for (String v : visits) {
 	    rf.add(Integer.parseInt(v.trim()));
 	}
-	
-	
+
 	return rf;
     }
 
@@ -198,12 +235,13 @@ public class Sample extends GraphProperty {
 	return sample.getNewIndexOfSampledNode(oldId);
 
     }
-    
+
     /**
      * Returns the Set of <b>old<b> node indices
+     * 
      * @return Set of Integers
      */
-    public Set<Integer> getSampledIds(){
+    public Set<Integer> getSampledIds() {
 	return sample.getSampleNodeMapping().keySet();
     }
 
