@@ -123,6 +123,7 @@ public class SamplingDriver {
 		boolean revisiting = false;
 =======
 		boolean revisiting = true;
+<<<<<<< HEAD
 >>>>>>> - write property ;-seperated like the other properties use ; too
 
 		String folder = "./plots/network-plot/";
@@ -130,6 +131,14 @@ public class SamplingDriver {
 		Transformation[] t1 = instantiateSamplingTransformation(scaledown,
 				dimension, revisiting);
 >>>>>>> Fixing for BUG: writing a network to hdd before calculating the series
+=======
+		Long seed = new Long(0);
+		
+		String folder = "./plots/network-plot/";
+
+		Transformation[] t1 = instantiateSamplingTransformation(scaledown,
+				dimension, revisiting, seed);
+>>>>>>> usage, persisting, loading of the deterministic-rng possible
 
 		Network[] n = instantiateNetworkModels();
 
@@ -283,11 +292,15 @@ public class SamplingDriver {
 	private static Transformation[] instantiateSamplingTransformation(
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			double scaledown, int dimension, boolean revisiting) {
 <<<<<<< HEAD
 		Transformation uniformSampling1 = SamplingAlgorithmFactory
 				.getInstanceOf(SamplingAlgorithm.RANDOMWALK_METROPOLIZED, scaledown,
 =======
+=======
+			double scaledown, int dimension, boolean revisiting, Long randomSeed) {
+>>>>>>> usage, persisting, loading of the deterministic-rng possible
 =======
 			double scaledown, int dimension, boolean revisiting, Long randomSeed) {
 >>>>>>> usage, persisting, loading of the deterministic-rng possible
@@ -311,12 +324,16 @@ public class SamplingDriver {
 =======
 				.getInstanceOf(SamplingAlgorithm.RANDOMWALK, scaledown,
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> Implementation of sample property -> not persisted?!
 						revisiting, dimension);
 =======
 =======
 				.getInstanceOf(SamplingAlgorithm.RANDOMSTROLL, scaledown,
 >>>>>>> Usage of the deterministic-rng
+						revisiting, dimension, randomSeed);
+>>>>>>> usage, persisting, loading of the deterministic-rng possible
+=======
 						revisiting, dimension, randomSeed);
 >>>>>>> usage, persisting, loading of the deterministic-rng possible
 

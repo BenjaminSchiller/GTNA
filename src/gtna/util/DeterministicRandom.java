@@ -45,6 +45,7 @@ public class DeterministicRandom extends Random {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     private Long configuredSeed;
 
     /**
@@ -56,6 +57,9 @@ public class DeterministicRandom extends Random {
 >>>>>>> provides a configurable random number generator
 =======
     private Long seed;
+=======
+    private Long configuredSeed;
+>>>>>>> usage, persisting, loading of the deterministic-rng possible
 
     /**
      * Create a standard RNG without configured seed
@@ -77,6 +81,7 @@ public class DeterministicRandom extends Random {
 	super();
 	if(seed != null) {
 	    this.setSeed(seed);
+<<<<<<< HEAD
 <<<<<<< HEAD
 	    this.configuredSeed = seed;
 	}
@@ -101,6 +106,9 @@ public class DeterministicRandom extends Random {
 	this.seed = seed;
 =======
 	    this.seed = seed;
+=======
+	    this.configuredSeed = seed;
+>>>>>>> usage, persisting, loading of the deterministic-rng possible
 	}
 >>>>>>> null checks
     }
@@ -109,8 +117,8 @@ public class DeterministicRandom extends Random {
      * reset RNG with the saved seed, iff a seed was given earlier
      */
     public void resetSeed() {
-	if(seed != null)
-	    this.setSeed(seed);
+	if(configuredSeed != null)
+	    this.setSeed(configuredSeed);
     }
     
 <<<<<<< HEAD
@@ -121,7 +129,7 @@ public class DeterministicRandom extends Random {
     public void setNewSeed(Long seed) {
 	if(seed != null) {
 	    this.setSeed(seed);
-	    this.seed = seed;
+	    this.configuredSeed = seed;
 	}
 >>>>>>> null checks
     }
@@ -140,9 +148,14 @@ public class DeterministicRandom extends Random {
      * @return	Seed or <b>NULL</b> of no seed is set
 >>>>>>> null checks
      */
+<<<<<<< HEAD
     public long getSeed() {
 	return seed;
 >>>>>>> provides a configurable random number generator
+=======
+    public Long getConfiguredSeed() {
+	return configuredSeed;
+>>>>>>> usage, persisting, loading of the deterministic-rng possible
     }
     
     
