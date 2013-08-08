@@ -43,15 +43,21 @@ import java.util.Random;
  */
 public class DeterministicRandom extends Random {
 
+<<<<<<< HEAD
     private Long configuredSeed;
 
     /**
      * Create a standard RNG without configured seed
      */
+=======
+    private long seed;
+
+>>>>>>> provides a configurable random number generator
     public DeterministicRandom() {
 	super();
     }
     
+<<<<<<< HEAD
     /**
      * Create a standard RNG and initialize with the given seed
      * @param seed
@@ -77,14 +83,34 @@ public class DeterministicRandom extends Random {
 	    this.setSeed(seed);
 	    this.configuredSeed = seed;
 	}
+=======
+    public DeterministicRandom(long seed) {
+	super(seed);
+	this.seed = seed;
+    }
+    
+    public void resetSeed() {
+	this.setSeed(seed);
+    }
+    
+    public void setNewSeed(long seed) {
+	this.setSeed(seed);
+>>>>>>> provides a configurable random number generator
     }
     
     /**
      * Returns the seed of the RNG
+<<<<<<< HEAD
      * @return	Seed or <b>NULL</b> of no seed is set
      */
     public Long getConfiguredSeed() {
 	return configuredSeed;
+=======
+     * @return	Seed or <b>null<b> of no seed is set
+     */
+    public long getSeed() {
+	return seed;
+>>>>>>> provides a configurable random number generator
     }
     
     
