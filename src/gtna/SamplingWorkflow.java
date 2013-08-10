@@ -401,6 +401,8 @@ public class SamplingWorkflow {
 	Transformation sampling = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
 		randomSeed);
+	
+	// TODO insert subgraph generation here
 
 	Transformation[] t1 = new Transformation[] { sampling };
 	return t1;
