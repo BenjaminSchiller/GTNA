@@ -310,13 +310,32 @@ public class SamplingWorkflow {
      * @param metrics
      * @param folder
      */
-    private static void runWorkflow(int times, Metric[] metrics, Transformation[] t, Network[] networks, String folder) {
+    public static void runWorkflow(int times, Metric[] metrics, Transformation[] t, Network[] networks, String folder) {
 	
 	String[] networkPaths = persistNetworks(times, networks, folder);
 
-	Collection<String> graphPaths = loadNetworksAndApplyTransformations(
+	Graph[] g = loadNetworksAndApplyTransformations(
 		folder, t, networkPaths);
+	
+	Collection<String> graphPaths = new ArrayList<String>();
+	for (Graph gi : g) {
+	    String pg = persistGraphs(gi, "", gi.getName());
+	    graphPaths.add(pg);
+	}
+	
+	loadNetworksAndCalculateMetrics(folder, graphPaths, metrics);
+    }
+    
+    public static void runFastWorkflow(int times, Metric[] metrics, Transformation[] t, Network[] networks, String folder) {
+	
 
+	Graph[] g = applyTransformations(networks, t);
+	
+	Collection<String> graphPaths = new ArrayList<String>();
+	for (Graph gi : g) {
+	    String pg = persistGraphs(gi, "", gi.getName());
+	    graphPaths.add(pg);
+	}
 	
 	loadNetworksAndCalculateMetrics(folder, graphPaths, metrics);
     }
@@ -327,19 +346,16 @@ public class SamplingWorkflow {
      * @param networkPaths
      * @return
      */
-    private static Collection<String> loadNetworksAndApplyTransformations(
+    private static Graph[] loadNetworksAndApplyTransformations(
 	    String folder, Transformation[] t1, String[] networkPaths) {
 	Network[] nets = loadNetworks(folder, networkPaths);
 
-	Graph[] g = sampleGraphs(nets, t1);
+	Graph[] g = applyTransformations(nets, t1);
 
-	Collection<String> graphPaths = new ArrayList<String>();
-	for (Graph gi : g) {
-	    String pg = persistGraphs(gi, "", gi.getName());
-	    graphPaths.add(pg);
-	}
-	return graphPaths;
+	return g;
     }
+    
+    
 
     /**
      * @param times
@@ -357,7 +373,7 @@ public class SamplingWorkflow {
 		sampledNets, "example");
     }
 
-    public static Graph[] sampleGraphs(Network[] networks,
+    public static Graph[] applyTransformations(Network[] networks,
 	    Transformation[] samplingTransformation) {
 	Collection<Graph> sampledNetworks = new ArrayList<Graph>();
 
