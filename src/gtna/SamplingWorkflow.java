@@ -68,6 +68,7 @@ import java.util.ArrayList;
 =======
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
+import gtna.transformation.sampling.subgraph.ColorSampledSubgraph;
 import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
 import gtna.util.Config;
 
@@ -403,7 +404,8 @@ public class SamplingWorkflow {
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
 		randomSeed);
 	
-	Transformation subgraphing = new ExtractSampledSubgraph();
+//	Transformation subgraphing = new ExtractSampledSubgraph();
+	Transformation subgraphing = new ColorSampledSubgraph();
 
 	Transformation[] t1 = new Transformation[] { sampling, subgraphing};
 	return t1;
@@ -478,14 +480,14 @@ public class SamplingWorkflow {
     }
 
     public static Network[] instantiateNetworkModels() {
-	Network nw1 = new ErdosRenyi(10000, 3, false, null);
-	Network nw2 = new BarabasiAlbert(2500, 10, null);
+	Network nw1 = new ErdosRenyi(100, 3, false, null);
+	Network nw2 = new BarabasiAlbert(250, 5, null);
 	Network nw3 = new WattsStrogatz(5000, 6, 0.2, null);
 	Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
 
 	// Network[] n = new Network[] { nw3/*nw1, nw2, nw3, nw4*/ };
 
-	Network[] n = new Network[] { nw1 };
+	Network[] n = new Network[] { nw2 };
 	return n;
     }
 
@@ -504,10 +506,10 @@ public class SamplingWorkflow {
      */
     private static void setGephiConfiguration() {
 	Config.overwrite("GEPHI_RING_RADIUS", "1");
-	Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.01");
+	Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.001");
 	Config.overwrite("GEPHI_EDGE_SCALE", "0.001");
 	Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "true");
-	Config.overwrite("GEPHI_NODE_SIZE", "0.1");
+	Config.overwrite("GEPHI_NODE_SIZE", "0.01");
     }
 >>>>>>> Workflow definition and implementation
 
