@@ -52,12 +52,12 @@ import gtna.transformation.sampling.Sample;
  * @author Tim
  * 
  */
-public class SubgraphTransformation extends Transformation {
+public class ExtractSampledSubgraph extends Transformation {
 
     /**
      * @param key
      */
-    public SubgraphTransformation() {
+    public ExtractSampledSubgraph() {
 	super("GENERATE_SAMPLED_GRAPH");
     }
 
@@ -93,6 +93,9 @@ public class SubgraphTransformation extends Transformation {
 	}
 	g.setNodes(newNodes);
 
+	g.setName(g.getName() + " (SAMPLED)");
+	
+	
 	return g;
     }
 

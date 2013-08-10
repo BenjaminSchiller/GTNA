@@ -57,6 +57,7 @@ import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
+import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
 import gtna.util.Config;
 
 import java.util.ArrayList;
@@ -199,9 +200,9 @@ public class SamplingWorkflow {
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
 		randomSeed);
 	
-	// TODO insert subgraph generation here
+	Transformation subgraphing = new ExtractSampledSubgraph();
 
-	Transformation[] t1 = new Transformation[] { sampling };
+	Transformation[] t1 = new Transformation[] { sampling, subgraphing};
 	return t1;
     }
 
