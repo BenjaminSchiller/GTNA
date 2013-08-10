@@ -35,12 +35,30 @@
  */
 package gtna.routing.greedy;
 
+import gtna.data.Series;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.id.Identifier;
 import gtna.id.IdentifierSpace;
+import gtna.id.data.LruDataStore;
+import gtna.metrics.Metric;
+import gtna.metrics.basic.DegreeDistribution;
+import gtna.metrics.routing.DataStorageMetric;
+import gtna.metrics.routing.Routing;
+import gtna.networks.Network;
+import gtna.networks.util.ReadableFile;
+import gtna.plot.Plotting;
 import gtna.routing.Route;
 import gtna.routing.RoutingAlgorithm;
+import gtna.routing.routingTable.CcnRouting;
+import gtna.routing.selection.source.ConsecutiveSourceSelection;
+import gtna.routing.selection.source.SourceSelection;
+import gtna.routing.selection.target.DataStorageRandomTargetSelection;
+import gtna.routing.selection.target.TargetSelection;
+import gtna.transformation.Transformation;
+import gtna.transformation.id.node.NodeIds;
+import gtna.transformation.id.node.NodeIdsDataStorage;
+import gtna.transformation.id.node.NodeIdsRoutingTable;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
@@ -75,7 +93,7 @@ public class Greedy extends RoutingAlgorithm {
 	private Route route(ArrayList<Integer> route, int current,
 			Identifier target, Random rand, Node[] nodes) {
 		route.add(current);
-		
+
 		if (this.isEndPoint(current, target)) {
 			return new Route(route, true);
 		}
