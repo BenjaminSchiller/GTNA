@@ -35,6 +35,7 @@
  */
 package gtna.transformation.sampling.subgraph;
 
+<<<<<<< HEAD
 import gtna.drawing.NodeColors;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -45,6 +46,22 @@ import gtna.util.parameter.StringParameter;
 
 import java.awt.Color;
 import java.util.Set;
+=======
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import apple.awt.ClientPropertyApplicator.Property;
+import gtna.drawing.NodeColors;
+import gtna.graph.Edge;
+import gtna.graph.Edges;
+import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
+import gtna.graph.Node;
+import gtna.transformation.Transformation;
+import gtna.transformation.sampling.Sample;
+>>>>>>> First implementation of coloring the sampled subgraph
 
 /**
  * @author Tim
@@ -52,12 +69,16 @@ import java.util.Set;
  */
 public class ColorSampledSubgraph extends Transformation {
 
+<<<<<<< HEAD
     String sampleKey = "SAMPLE_0"; 
     int key = 0;
+=======
+>>>>>>> First implementation of coloring the sampled subgraph
     /**
      * @param key
      */
     public ColorSampledSubgraph() {
+<<<<<<< HEAD
 	super("SUBGRAPH", new Parameter[] {
 		new StringParameter("SUBGPRAPHFUNCTION", "colored")
 	});
@@ -70,6 +91,9 @@ public class ColorSampledSubgraph extends Transformation {
     public void setSamplingKeyToColoredSample(int key) {
 	this.sampleKey = "SAMPLE_" + key;
 	this.key = key;
+=======
+	super("COLOR_SAMPLED_GRAPH");
+>>>>>>> First implementation of coloring the sampled subgraph
     }
 
     /*
@@ -79,11 +103,19 @@ public class ColorSampledSubgraph extends Transformation {
      */
     @Override
     public Graph transform(Graph g) {
+<<<<<<< HEAD
 	Sample sample = (Sample) g.getProperty(sampleKey);
 
 	Set<Integer> sampledNodes = sample.getSampledIds();
 	
 	Color[] C = this.getColors(2, key*2);
+=======
+	Sample sample = (Sample) g.getProperty("SAMPLE_0");
+
+	Set<Integer> sampledNodes = sample.getSampledIds();
+	
+	Color[] C = this.getColors(2);
+>>>>>>> First implementation of coloring the sampled subgraph
 	Color[] colors = new Color[g.getNodes().length];
 	Node[] nodes = g.getNodes();
 	for (int i = 0; i < nodes.length; i++) {
@@ -103,13 +135,22 @@ public class ColorSampledSubgraph extends Transformation {
 	return g;
     }
     
+<<<<<<< HEAD
     private Color[] getColors(int number, int start) {
+=======
+    private Color[] getColors(int number) {
+>>>>>>> First implementation of coloring the sampled subgraph
 	Color[] init = new Color[] { Color.green, Color.red, Color.blue,
 			Color.cyan, Color.black, Color.orange, Color.yellow,
 			Color.MAGENTA, Color.pink, Color.darkGray, Color.gray };
 	Color[] c = new Color[number];
+<<<<<<< HEAD
 	for (int i = start; i-start < c.length; i++) {
 		c[i-start] = init[i % init.length];
+=======
+	for (int i = 0; i < c.length; i++) {
+		c[i] = init[i % init.length];
+>>>>>>> First implementation of coloring the sampled subgraph
 	}
 	return c;
     }
@@ -121,7 +162,11 @@ public class ColorSampledSubgraph extends Transformation {
      */
     @Override
     public boolean applicable(Graph g) {
+<<<<<<< HEAD
 	return g.hasProperty(sampleKey);
+=======
+	return g.hasProperty("SAMPLE_0");
+>>>>>>> First implementation of coloring the sampled subgraph
     }
 
 }
