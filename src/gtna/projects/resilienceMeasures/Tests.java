@@ -35,42 +35,34 @@
  */
 package gtna.projects.resilienceMeasures;
 
+import gtna.data.Series;
+import gtna.graph.Graph;
+import gtna.graph.Node;
+import gtna.graph.sorting.CentralityNodeSorter;
+import gtna.graph.sorting.CentralityNodeSorter.CentralityMode;
+import gtna.graph.sorting.ClosenessCentralityNodeSorter;
+import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
+import gtna.graph.sorting.NodeSorter;
+import gtna.graph.sorting.NodeSorter.NodeSorterMode;
+import gtna.graph.sorting.RandomNodeSorter;
+import gtna.graph.sorting.algorithms.ResilienceMetrics;
+import gtna.metrics.EffectiveDiameter;
+import gtna.metrics.Metric;
+import gtna.metrics.basic.DegreeDistribution;
+import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
+import gtna.networks.model.GLP;
+import gtna.networks.model.PFP1;
+import gtna.networks.util.ReadableFile;
+import gtna.plot.Plotting;
+import gtna.util.Config;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 
 import org.gephi.statistics.plugin.GraphDistance;
-
-import gtna.data.Series;
-import gtna.graph.Graph;
-import gtna.graph.Node;
-import gtna.graph.sorting.CentralityNodeSorter;
-import gtna.graph.sorting.ClosenessCentralityNodeSorter;
-import gtna.graph.sorting.DegreeNodeSorter;
-import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
-import gtna.graph.sorting.NodeSorter;
-import gtna.graph.sorting.CentralityNodeSorter.CentralityMode;
-import gtna.graph.sorting.NodeSorter.NodeSorterMode;
-import gtna.graph.sorting.RandomNodeSorter;
-import gtna.graph.sorting.algorithms.ResilienceMetrics;
-import gtna.io.GraphWriter;
-import gtna.metrics.BiconnectedComponent;
-import gtna.metrics.DegreeDistribution;
-import gtna.metrics.EffectiveDiameter;
-import gtna.metrics.Metric;
-import gtna.metrics.fragmentation.Fragmentation.Resolution;
-import gtna.metrics.fragmentation.StrongFragmentation;
-import gtna.metrics.fragmentation.WeakFragmentation;
-import gtna.networks.Network;
-import gtna.networks.model.BarabasiAlbert;
-import gtna.networks.model.ErdosRenyi;
-import gtna.networks.model.GLP;
-import gtna.networks.model.PFP;
-import gtna.networks.model.PFP1;
-import gtna.networks.util.ReadableFile;
-import gtna.plot.Plotting;
-import gtna.util.Config;
 
 /**
  * @author truong
