@@ -403,13 +403,25 @@ public class SamplingWorkflow {
 	    double scaledown, int dimension, boolean revisiting, Long randomSeed) {
 	Transformation sampling = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		randomSeed);
+		null);
+	Transformation sampling2 = SamplingAlgorithmFactory.getInstanceOf(
+		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
+		null);
+	Transformation sampling3 = SamplingAlgorithmFactory.getInstanceOf(
+		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
+		null);
+	Transformation sampling4 = SamplingAlgorithmFactory.getInstanceOf(
+		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
+		null);
+	Transformation sampling5 = SamplingAlgorithmFactory.getInstanceOf(
+		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
+		null);
 	
 //	Transformation subgraphing = new ExtractSampledSubgraph();
 //	Transformation subgraphing = new ColorSampledSubgraph();
 	Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
-	Transformation[] t1 = new Transformation[] { sampling, subgraphing};
+	Transformation[] t1 = new Transformation[] { sampling, sampling2, sampling3, sampling4, sampling5, subgraphing};
 	return t1;
     }
 
