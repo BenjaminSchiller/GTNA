@@ -56,11 +56,22 @@ import gtna.transformation.sampling.Sample;
  */
 public class ColorSampledSubgraph extends Transformation {
 
+    String sampleKey = "SAMPLE_0"; 
+    int key = 0;
     /**
      * @param key
      */
     public ColorSampledSubgraph() {
 	super("COLOR_SAMPLED_GRAPH");
+    }
+    
+    public String getSamplingKeyToColoredSample() {
+	return sampleKey;
+    }
+    
+    public void setSamplingKeyToColoredSample(int key) {
+	this.sampleKey = "SAMPLE_" + key;
+	this.key = key;
     }
 
     /*
@@ -70,11 +81,11 @@ public class ColorSampledSubgraph extends Transformation {
      */
     @Override
     public Graph transform(Graph g) {
-	Sample sample = (Sample) g.getProperty("SAMPLE_0");
+	Sample sample = (Sample) g.getProperty(sampleKey);
 
 	Set<Integer> sampledNodes = sample.getSampledIds();
 	
-	Color[] C = this.getColors(2);
+	Color[] C = this.getColors(2, key*2);
 	Color[] colors = new Color[g.getNodes().length];
 	Node[] nodes = g.getNodes();
 	for (int i = 0; i < nodes.length; i++) {
@@ -94,13 +105,13 @@ public class ColorSampledSubgraph extends Transformation {
 	return g;
     }
     
-    private Color[] getColors(int number) {
+    private Color[] getColors(int number, int start) {
 	Color[] init = new Color[] { Color.green, Color.red, Color.blue,
 			Color.cyan, Color.black, Color.orange, Color.yellow,
 			Color.MAGENTA, Color.pink, Color.darkGray, Color.gray };
 	Color[] c = new Color[number];
-	for (int i = 0; i < c.length; i++) {
-		c[i] = init[i % init.length];
+	for (int i = start; i-start < c.length; i++) {
+		c[i-start] = init[i % init.length];
 	}
 	return c;
     }
@@ -112,7 +123,7 @@ public class ColorSampledSubgraph extends Transformation {
      */
     @Override
     public boolean applicable(Graph g) {
-	return g.hasProperty("SAMPLE_0");
+	return g.hasProperty(sampleKey);
     }
 
 }
