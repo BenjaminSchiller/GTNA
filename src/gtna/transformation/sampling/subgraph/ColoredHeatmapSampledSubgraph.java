@@ -35,6 +35,7 @@
  */
 package gtna.transformation.sampling.subgraph;
 
+<<<<<<< HEAD
 import gtna.drawing.NodeColors;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
@@ -51,6 +52,27 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+=======
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import apple.awt.ClientPropertyApplicator.Property;
+import gtna.drawing.NodeColors;
+import gtna.graph.Edge;
+import gtna.graph.Edges;
+import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
+import gtna.graph.Node;
+import gtna.transformation.Transformation;
+import gtna.transformation.sampling.Sample;
+
+>>>>>>> count node occurrences in samples
 /**
  * @author Tim
  * 
@@ -61,6 +83,7 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
      * @param key
      */
     public ColoredHeatmapSampledSubgraph() {
+<<<<<<< HEAD
 	super("SUBGRAPH", new Parameter[] {
 		new StringParameter("SUBGPRAPHFUNCTION", "heatmap") 
 	});
@@ -68,6 +91,12 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 
     private Color base = Color.YELLOW;
 
+=======
+	super("HEATMAP_SAMPLED_GRAPH");
+    }
+    
+    
+>>>>>>> count node occurrences in samples
     /*
      * (non-Javadoc)
      * 
@@ -75,6 +104,7 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
      */
     @Override
     public Graph transform(Graph g) {
+<<<<<<< HEAD
 	GraphProperty[] p = g.getProperties("SAMPLE");
 	Collection<Sample> samples = new ArrayList<Sample>();
 	for(GraphProperty pi : p) {
@@ -128,12 +158,40 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 	}
     }
 
+=======
+	Sample sample = (Sample) g.getProperty("SAMPLE_0");
+	
+	Sample[] samples = (Sample[]) g.getProperties("SAMPLE");
+	Map<Integer, Integer> occurences = calculateSampleOccurences(samples);
+	
+	Color[] C = this.getColors(2, 0);
+	Color[] colors = new Color[g.getNodes().length];
+	Node[] nodes = g.getNodes();
+	for (int i = 0; i < nodes.length; i++) {
+	    if(sampledNodes.contains(nodes[i].getIndex()))
+		colors[i] = C[0];
+	    else
+		colors[i] = C[1];
+	}
+	NodeColors cc = new NodeColors(colors);
+	g.addProperty(g.getNextKey("NODE_COLORS"), cc);
+	
+	
+
+	g.setName(g.getName() + " (SAMPLED)");
+	
+	
+	return g;
+    }
+    
+>>>>>>> count node occurrences in samples
     /**
      * @param samples
      * @return
      */
     private Map<Integer, Integer> calculateSampleOccurences(Sample[] samples) {
 	Map<Integer, Integer> hm = new HashMap<Integer, Integer>();
+<<<<<<< HEAD
 
 	for (Sample s : samples) {
 	    Set<Integer> ids = s.getSampledIds();
@@ -142,10 +200,21 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 		if (o != null) {
 		    hm.put(i, o + 1);
 		} else {
+=======
+	
+	for(Sample s : samples) {
+	    Set<Integer> ids = s.getSampledIds();
+	    for(Integer i : ids) {
+		Integer o = hm.get(i);
+		if(o != null) {
+		    hm.put(i, o+1);
+		}else {
+>>>>>>> count node occurrences in samples
 		    hm.put(i, 1);
 		}
 	    }
 	}
+<<<<<<< HEAD
 
 	return hm;
     }
@@ -171,6 +240,21 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 	    c[i+1] = new Color(r, g, b);
 	}	
 
+=======
+	
+	return hm;
+    }
+
+
+    private Color[] getColors(int number, int start) {
+	Color[] init = new Color[] { Color.green, Color.red, Color.blue,
+			Color.cyan, Color.black, Color.orange, Color.yellow,
+			Color.MAGENTA, Color.pink, Color.darkGray, Color.gray };
+	Color[] c = new Color[number];
+	for (int i = start; i-start < c.length; i++) {
+		c[i-start] = init[i % init.length];
+	}
+>>>>>>> count node occurrences in samples
 	return c;
     }
 
@@ -181,7 +265,11 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
      */
     @Override
     public boolean applicable(Graph g) {
+<<<<<<< HEAD
 	return g.hasProperty("SAMPLE_0");
+=======
+	return g.hasProperty(sampleKey);
+>>>>>>> count node occurrences in samples
     }
 
 }
