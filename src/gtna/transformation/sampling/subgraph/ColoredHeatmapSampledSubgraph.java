@@ -66,8 +66,9 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
     public ColoredHeatmapSampledSubgraph() {
 	super("HEATMAP_SAMPLED_GRAPH");
     }
-    
-    
+
+    private Color base = Color.YELLOW;
+
     /*
      * (non-Javadoc)
      * 
@@ -75,61 +76,76 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
      */
     @Override
     public Graph transform(Graph g) {
-	Sample sample = (Sample) g.getProperty("SAMPLE_0");
-	
-	Sample[] samples = (Sample[]) g.getProperties("SAMPLE");
-	Map<Integer, Integer> occurences = calculateSampleOccurences(samples);
-	
-	Color[] C = this.getColors(2, 0);
+	GraphProperty[] p = g.getProperties("SAMPLE");
+	Collection<Sample> samples = new ArrayList<Sample>();
+	for(GraphProperty pi : p) {
+	    if(pi instanceof Sample) {
+		samples.add((Sample) pi);
+	    }
+	}
+	Map<Integer, Integer> occurences = calculateSampleOccurences(samples.toArray(new Sample[0]));
+
+	Color[] C = this.getColors(10);
 	Color[] colors = new Color[g.getNodes().length];
 	Node[] nodes = g.getNodes();
 	for (int i = 0; i < nodes.length; i++) {
-	    if(sampledNodes.contains(nodes[i].getIndex()))
-		colors[i] = C[0];
-	    else
-		colors[i] = C[1];
+	    colors[i] = assignColorToNode(C, nodes[i], occurences);
 	}
 	NodeColors cc = new NodeColors(colors);
 	g.addProperty(g.getNextKey("NODE_COLORS"), cc);
-	
-	
 
 	g.setName(g.getName() + " (SAMPLED)");
-	
-	
+
 	return g;
     }
-    
+
+    /**
+     * @param c
+     * @param node
+     * @param occurences
+     * @return
+     */
+    private Color assignColorToNode(Color[] c, Node node,
+	    Map<Integer, Integer> occurences) {
+	Integer o = occurences.get(node.getIndex());
+	if (o == null) {
+	    return c[0];
+	} else {
+	    return c[o];
+	}
+    }
+
     /**
      * @param samples
      * @return
      */
     private Map<Integer, Integer> calculateSampleOccurences(Sample[] samples) {
 	Map<Integer, Integer> hm = new HashMap<Integer, Integer>();
-	
-	for(Sample s : samples) {
+
+	for (Sample s : samples) {
 	    Set<Integer> ids = s.getSampledIds();
-	    for(Integer i : ids) {
+	    for (Integer i : ids) {
 		Integer o = hm.get(i);
-		if(o != null) {
-		    hm.put(i, o+1);
-		}else {
+		if (o != null) {
+		    hm.put(i, o + 1);
+		} else {
 		    hm.put(i, 1);
 		}
 	    }
 	}
-	
+
 	return hm;
     }
 
-
-    private Color[] getColors(int number, int start) {
-	Color[] init = new Color[] { Color.green, Color.red, Color.blue,
-			Color.cyan, Color.black, Color.orange, Color.yellow,
-			Color.MAGENTA, Color.pink, Color.darkGray, Color.gray };
+    private Color[] getColors(int number) {
 	Color[] c = new Color[number];
-	for (int i = start; i-start < c.length; i++) {
-		c[i-start] = init[i % init.length];
+	for (int i = 0; i < c.length; i++) {
+	    int r = base.getRed();
+	    int g = base.getGreen();	
+	    int b = base.getBlue();
+	    
+	    g = g - (255/number)*i;
+	    c[i] = new Color(r, g, b);
 	}
 	return c;
     }
@@ -141,7 +157,7 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
      */
     @Override
     public boolean applicable(Graph g) {
-	return g.hasProperty(sampleKey);
+	return g.hasProperty("SAMPLE_0");
     }
 
 }
