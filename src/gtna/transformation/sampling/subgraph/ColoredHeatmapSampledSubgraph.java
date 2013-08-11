@@ -84,8 +84,7 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 	    }
 	}
 	Map<Integer, Integer> occurences = calculateSampleOccurences(samples.toArray(new Sample[0]));
-
-	Color[] C = this.getColors(10);
+	Color[] C = calculateColors(occurences);
 	Color[] colors = new Color[g.getNodes().length];
 	Node[] nodes = g.getNodes();
 	for (int i = 0; i < nodes.length; i++) {
@@ -97,6 +96,21 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 	g.setName(g.getName() + " (SAMPLED)");
 
 	return g;
+    }
+
+    /**
+     * @param occurences
+     * @return
+     */
+    private Color[] calculateColors(Map<Integer, Integer> occurences) {
+	int max = 0;
+	for(Integer oi : occurences.values()) {
+	    if(max < oi) {
+		max = oi;
+	    }
+	}
+	Color[] C = this.getColors(1+max);
+	return C;
     }
 
     /**
