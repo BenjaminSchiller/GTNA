@@ -123,6 +123,7 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 	}
 	Map<Integer, Integer> occurences = calculateSampleOccurences(samples.toArray(new Sample[0]));
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Color[] C = calculateColors(occurences);
 	Color[] colors = new Color[g.getNodes().length];
 	Node[] nodes = g.getNodes();
@@ -179,6 +180,9 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 
 	Color[] C = this.getColors(10);
 >>>>>>> Calculate colors. Here: yellow to red. Try to calculate the colors automatically?
+=======
+	Color[] C = calculateColors(occurences);
+>>>>>>> Heatmap yellow -> red is calculated automatically for all SAMPLE properties of a graph
 	Color[] colors = new Color[g.getNodes().length];
 	Node[] nodes = g.getNodes();
 	for (int i = 0; i < nodes.length; i++) {
@@ -195,6 +199,21 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
     
 >>>>>>> count node occurrences in samples
 =======
+
+    /**
+     * @param occurences
+     * @return
+     */
+    private Color[] calculateColors(Map<Integer, Integer> occurences) {
+	int max = 0;
+	for(Integer oi : occurences.values()) {
+	    if(max < oi) {
+		max = oi;
+	    }
+	}
+	Color[] C = this.getColors(1+max);
+	return C;
+    }
 
     /**
      * @param c
