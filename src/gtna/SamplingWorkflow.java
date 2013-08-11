@@ -58,6 +58,7 @@ import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.transformation.sampling.subgraph.ColorSampledSubgraph;
+import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
 import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
 import gtna.util.Config;
 
@@ -202,7 +203,8 @@ public class SamplingWorkflow {
 		randomSeed);
 	
 //	Transformation subgraphing = new ExtractSampledSubgraph();
-	Transformation subgraphing = new ColorSampledSubgraph();
+//	Transformation subgraphing = new ColorSampledSubgraph();
+	Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
 	Transformation[] t1 = new Transformation[] { sampling, subgraphing};
 	return t1;
