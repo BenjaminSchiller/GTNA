@@ -94,9 +94,15 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 =======
 	super("HEATMAP_SAMPLED_GRAPH");
     }
+<<<<<<< HEAD
     
     
 >>>>>>> count node occurrences in samples
+=======
+
+    private Color base = Color.YELLOW;
+
+>>>>>>> Calculate colors. Here: yellow to red. Try to calculate the colors automatically?
     /*
      * (non-Javadoc)
      * 
@@ -105,6 +111,9 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
     @Override
     public Graph transform(Graph g) {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Calculate colors. Here: yellow to red. Try to calculate the colors automatically?
 	GraphProperty[] p = g.getProperties("SAMPLE");
 	Collection<Sample> samples = new ArrayList<Sample>();
 	for(GraphProperty pi : p) {
@@ -113,6 +122,7 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 	    }
 	}
 	Map<Integer, Integer> occurences = calculateSampleOccurences(samples.toArray(new Sample[0]));
+<<<<<<< HEAD
 	Color[] C = calculateColors(occurences);
 	Color[] colors = new Color[g.getNodes().length];
 	Node[] nodes = g.getNodes();
@@ -165,32 +175,51 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 	Map<Integer, Integer> occurences = calculateSampleOccurences(samples);
 	
 	Color[] C = this.getColors(2, 0);
+=======
+
+	Color[] C = this.getColors(10);
+>>>>>>> Calculate colors. Here: yellow to red. Try to calculate the colors automatically?
 	Color[] colors = new Color[g.getNodes().length];
 	Node[] nodes = g.getNodes();
 	for (int i = 0; i < nodes.length; i++) {
-	    if(sampledNodes.contains(nodes[i].getIndex()))
-		colors[i] = C[0];
-	    else
-		colors[i] = C[1];
+	    colors[i] = assignColorToNode(C, nodes[i], occurences);
 	}
 	NodeColors cc = new NodeColors(colors);
 	g.addProperty(g.getNextKey("NODE_COLORS"), cc);
-	
-	
 
 	g.setName(g.getName() + " (SAMPLED)");
-	
-	
+
 	return g;
     }
+<<<<<<< HEAD
     
 >>>>>>> count node occurrences in samples
+=======
+
+    /**
+     * @param c
+     * @param node
+     * @param occurences
+     * @return
+     */
+    private Color assignColorToNode(Color[] c, Node node,
+	    Map<Integer, Integer> occurences) {
+	Integer o = occurences.get(node.getIndex());
+	if (o == null) {
+	    return c[0];
+	} else {
+	    return c[o];
+	}
+    }
+
+>>>>>>> Calculate colors. Here: yellow to red. Try to calculate the colors automatically?
     /**
      * @param samples
      * @return
      */
     private Map<Integer, Integer> calculateSampleOccurences(Sample[] samples) {
 	Map<Integer, Integer> hm = new HashMap<Integer, Integer>();
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 	for (Sample s : samples) {
@@ -203,17 +232,28 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 =======
 	
 	for(Sample s : samples) {
+=======
+
+	for (Sample s : samples) {
+>>>>>>> Calculate colors. Here: yellow to red. Try to calculate the colors automatically?
 	    Set<Integer> ids = s.getSampledIds();
-	    for(Integer i : ids) {
+	    for (Integer i : ids) {
 		Integer o = hm.get(i);
+<<<<<<< HEAD
 		if(o != null) {
 		    hm.put(i, o+1);
 		}else {
 >>>>>>> count node occurrences in samples
+=======
+		if (o != null) {
+		    hm.put(i, o + 1);
+		} else {
+>>>>>>> Calculate colors. Here: yellow to red. Try to calculate the colors automatically?
 		    hm.put(i, 1);
 		}
 	    }
 	}
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 	return hm;
@@ -242,17 +282,21 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 
 =======
 	
+=======
+
+>>>>>>> Calculate colors. Here: yellow to red. Try to calculate the colors automatically?
 	return hm;
     }
 
-
-    private Color[] getColors(int number, int start) {
-	Color[] init = new Color[] { Color.green, Color.red, Color.blue,
-			Color.cyan, Color.black, Color.orange, Color.yellow,
-			Color.MAGENTA, Color.pink, Color.darkGray, Color.gray };
+    private Color[] getColors(int number) {
 	Color[] c = new Color[number];
-	for (int i = start; i-start < c.length; i++) {
-		c[i-start] = init[i % init.length];
+	for (int i = 0; i < c.length; i++) {
+	    int r = base.getRed();
+	    int g = base.getGreen();	
+	    int b = base.getBlue();
+	    
+	    g = g - (255/number)*i;
+	    c[i] = new Color(r, g, b);
 	}
 >>>>>>> count node occurrences in samples
 	return c;
@@ -266,10 +310,14 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
     @Override
     public boolean applicable(Graph g) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	return g.hasProperty("SAMPLE_0");
 =======
 	return g.hasProperty(sampleKey);
 >>>>>>> count node occurrences in samples
+=======
+	return g.hasProperty("SAMPLE_0");
+>>>>>>> Calculate colors. Here: yellow to red. Try to calculate the colors automatically?
     }
 
 }
