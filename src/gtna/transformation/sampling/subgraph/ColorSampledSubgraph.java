@@ -70,10 +70,15 @@ import gtna.transformation.sampling.Sample;
 public class ColorSampledSubgraph extends Transformation {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     String sampleKey = "SAMPLE_0"; 
     int key = 0;
 =======
 >>>>>>> First implementation of coloring the sampled subgraph
+=======
+    String sampleKey = "SAMPLE_0"; 
+    int key = 0;
+>>>>>>> Color different sample properties in different colors. (if a node is sampled multiple times - the last set color will win!)
     /**
      * @param key
      */
@@ -95,6 +100,15 @@ public class ColorSampledSubgraph extends Transformation {
 	super("COLOR_SAMPLED_GRAPH");
 >>>>>>> First implementation of coloring the sampled subgraph
     }
+    
+    public String getSamplingKeyToColoredSample() {
+	return sampleKey;
+    }
+    
+    public void setSamplingKeyToColoredSample(int key) {
+	this.sampleKey = "SAMPLE_" + key;
+	this.key = key;
+    }
 
     /*
      * (non-Javadoc)
@@ -103,6 +117,7 @@ public class ColorSampledSubgraph extends Transformation {
      */
     @Override
     public Graph transform(Graph g) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 	Sample sample = (Sample) g.getProperty(sampleKey);
 
@@ -116,6 +131,13 @@ public class ColorSampledSubgraph extends Transformation {
 	
 	Color[] C = this.getColors(2);
 >>>>>>> First implementation of coloring the sampled subgraph
+=======
+	Sample sample = (Sample) g.getProperty(sampleKey);
+
+	Set<Integer> sampledNodes = sample.getSampledIds();
+	
+	Color[] C = this.getColors(2, key*2);
+>>>>>>> Color different sample properties in different colors. (if a node is sampled multiple times - the last set color will win!)
 	Color[] colors = new Color[g.getNodes().length];
 	Node[] nodes = g.getNodes();
 	for (int i = 0; i < nodes.length; i++) {
@@ -136,14 +158,19 @@ public class ColorSampledSubgraph extends Transformation {
     }
     
 <<<<<<< HEAD
+<<<<<<< HEAD
     private Color[] getColors(int number, int start) {
 =======
     private Color[] getColors(int number) {
 >>>>>>> First implementation of coloring the sampled subgraph
+=======
+    private Color[] getColors(int number, int start) {
+>>>>>>> Color different sample properties in different colors. (if a node is sampled multiple times - the last set color will win!)
 	Color[] init = new Color[] { Color.green, Color.red, Color.blue,
 			Color.cyan, Color.black, Color.orange, Color.yellow,
 			Color.MAGENTA, Color.pink, Color.darkGray, Color.gray };
 	Color[] c = new Color[number];
+<<<<<<< HEAD
 <<<<<<< HEAD
 	for (int i = start; i-start < c.length; i++) {
 		c[i-start] = init[i % init.length];
@@ -151,6 +178,10 @@ public class ColorSampledSubgraph extends Transformation {
 	for (int i = 0; i < c.length; i++) {
 		c[i] = init[i % init.length];
 >>>>>>> First implementation of coloring the sampled subgraph
+=======
+	for (int i = start; i-start < c.length; i++) {
+		c[i-start] = init[i % init.length];
+>>>>>>> Color different sample properties in different colors. (if a node is sampled multiple times - the last set color will win!)
 	}
 	return c;
     }
@@ -163,10 +194,14 @@ public class ColorSampledSubgraph extends Transformation {
     @Override
     public boolean applicable(Graph g) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	return g.hasProperty(sampleKey);
 =======
 	return g.hasProperty("SAMPLE_0");
 >>>>>>> First implementation of coloring the sampled subgraph
+=======
+	return g.hasProperty(sampleKey);
+>>>>>>> Color different sample properties in different colors. (if a node is sampled multiple times - the last set color will win!)
     }
 
 }
