@@ -403,25 +403,37 @@ public class SamplingWorkflow {
 	    double scaledown, int dimension, boolean revisiting, Long randomSeed) {
 	Transformation sampling = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		null);
+		new Long(0));
 	Transformation sampling2 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		null);
+		new Long(0));
 	Transformation sampling3 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		null);
+		new Long(1));
 	Transformation sampling4 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		null);
+		new Long(1));
 	Transformation sampling5 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		null);
+		new Long(0));
+	Transformation sampling6 = SamplingAlgorithmFactory.getInstanceOf(
+		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
+		new Long(1));
+	Transformation sampling7 = SamplingAlgorithmFactory.getInstanceOf(
+		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
+		new Long(1));
+	Transformation sampling8 = SamplingAlgorithmFactory.getInstanceOf(
+		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
+		new Long(1));
+	Transformation sampling9 = SamplingAlgorithmFactory.getInstanceOf(
+		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
+		new Long(2));
 	
 //	Transformation subgraphing = new ExtractSampledSubgraph();
 //	Transformation subgraphing = new ColorSampledSubgraph();
 	Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
-	Transformation[] t1 = new Transformation[] { sampling, sampling2, sampling3, sampling4, sampling5, subgraphing};
+	Transformation[] t1 = new Transformation[] { sampling, subgraphing};
 	return t1;
     }
 
@@ -495,7 +507,7 @@ public class SamplingWorkflow {
 
     public static Network[] instantiateNetworkModels() {
 	Network nw1 = new ErdosRenyi(100, 3, false, null);
-	Network nw2 = new BarabasiAlbert(250, 5, null);
+	Network nw2 = new BarabasiAlbert(100, 5, null);
 	Network nw3 = new WattsStrogatz(5000, 6, 0.2, null);
 	Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
 
