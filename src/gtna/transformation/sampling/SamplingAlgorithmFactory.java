@@ -51,6 +51,7 @@ import gtna.transformation.sampling.walker.RandomWalkDegreeCorrectionWalker;
 >>>>>>> RandomWalk Walker with degree correction and entry for the sampling algorithm factory
 import gtna.transformation.sampling.walker.RandomWalkWalker;
 import gtna.transformation.sampling.walker.UniformRandomWalker;
+import gtna.transformation.sampling.walkercontroller.FrontierSamplingWalkerController;
 import gtna.transformation.sampling.walkercontroller.MultipleRandomWalkWalkerController;
 import gtna.transformation.sampling.walkercontroller.RandomWalkWalkerController;
 import gtna.transformation.sampling.walkercontroller.UniformSamplingWalkerController;
@@ -160,10 +161,25 @@ public class SamplingAlgorithmFactory {
 				mrw.setWalkerController(awc);
 			}
 			as.setWalkerController(awc);
-			
+		
 			algorithm = "MULTIPLE_RANDOM_WALK";
 			break;
+		case FRONTIERSAMPLING:
+			as = new VisitedNodeSampler();
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			for(int i = 0; i < dimension; i++){
+				cw.add(new RandomWalkWalker());
+			}
+			awc = new FrontierSamplingWalkerController(cw, cf);
+			for(AWalker mrw : cw){
+				mrw.setWalkerController(awc);
+			}
+			as.setWalkerController(awc);
 			
+			algorithm = "FRONTIER_SAMPLING";
+			break;	
 		case RANDOMSTROLL:
 			as = new RoundBasedVisitedNodeSampler(5);
 			aw = new RandomWalkWalker();
