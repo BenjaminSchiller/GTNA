@@ -40,25 +40,39 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+<<<<<<< HEAD
 import java.util.Map;
+=======
+>>>>>>> started BFS implementation. known bug:  java.lang.OutOfMemoryError: Java heap space @ resolveCandidates
 import java.util.Random;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
+<<<<<<< HEAD
 import gtna.transformation.sampling.sample.NetworkSample;
+=======
+>>>>>>> started BFS implementation. known bug:  java.lang.OutOfMemoryError: Java heap space @ resolveCandidates
 
 /**
  * @author Tim
  * 
  */
+<<<<<<< HEAD
 public class BFSWalker extends BFSBaseWalker {
 
     
+=======
+public class BFSWalker extends AWalker {
+
+    List<Node> nextQ;
+
+>>>>>>> started BFS implementation. known bug:  java.lang.OutOfMemoryError: Java heap space @ resolveCandidates
     /**
      * @param walker
      */
     public BFSWalker() {
+<<<<<<< HEAD
 	super("BFS_WALKER");
     }
 
@@ -71,4 +85,47 @@ public class BFSWalker extends BFSBaseWalker {
 	}
 
     
+=======
+	super("RANDOM_WALK_WALKER");
+	nextQ = new LinkedList<Node>();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
+     */
+    @Override
+    protected Node selectNextNode(Collection<Node> candidates) {
+	Iterator<Node> ci = candidates.iterator();
+	
+	if(ci.hasNext())
+	    return ci.next();
+
+	return null;
+    }
+
+    /**
+     * returns the list of neighbors as candidates
+     * 
+     * @param g
+     *            Graph
+     * @param n
+     *            Current node
+     * @return List of candidates
+     */
+    @Override
+    public Collection<Node> resolveCandidates(Graph g, Node n) {
+	int[] nids = n.getOutgoingEdges();
+	ArrayList<Node> nn = new ArrayList<Node>();
+	for (int i : nids) {
+	    nn.add(g.getNode(i));
+	}
+	nextQ.addAll(nn);
+	
+	return nextQ;
+    }
+
+>>>>>>> started BFS implementation. known bug:  java.lang.OutOfMemoryError: Java heap space @ resolveCandidates
 }
