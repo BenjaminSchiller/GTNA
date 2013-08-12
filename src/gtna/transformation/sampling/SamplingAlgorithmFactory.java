@@ -45,6 +45,7 @@ import gtna.transformation.sampling.walker.RandomWalkDegreeCorrectionWalker;
 import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
 import gtna.transformation.sampling.walker.RandomWalkWalker;
 import gtna.transformation.sampling.walker.UniformRandomWalker;
+import gtna.transformation.sampling.walkercontroller.FrontierSamplingWalkerController;
 import gtna.transformation.sampling.walkercontroller.MultipleRandomWalkWalkerController;
 import gtna.transformation.sampling.walkercontroller.RandomWalkWalkerController;
 import gtna.transformation.sampling.walkercontroller.UniformSamplingWalkerController;
@@ -144,7 +145,7 @@ public class SamplingAlgorithmFactory {
 				mrw.setWalkerController(awc);
 			}
 			as.setWalkerController(awc);
-			
+		
 			algorithm = "MULTIPLE_RANDOM_WALK";
 			break;
 		case RANDOMWALK_METROPOLIZED:
@@ -157,10 +158,25 @@ public class SamplingAlgorithmFactory {
 			awc = new RandomWalkWalkerController(cw, cf);
 			aw.setWalkerController(awc);
 			as.setWalkerController(awc);
+		case FRONTIERSAMPLING:
+			as = new VisitedNodeSampler();
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			for(int i = 0; i < dimension; i++){
+				cw.add(new RandomWalkWalker());
+			}
+			awc = new FrontierSamplingWalkerController(cw, cf);
+			for(AWalker mrw : cw){
+				mrw.setWalkerController(awc);
+			}
+			as.setWalkerController(awc);
 			
 			algorithm = "METROPOLIZED_RANDOM_WALK";
 			break;
 			
+			algorithm = "FRONTIER_SAMPLING";
+			break;	
 		case RANDOMSTROLL:
 			as = new RoundBasedVisitedNodeSampler(5);
 			aw = new RandomWalkWalker();
