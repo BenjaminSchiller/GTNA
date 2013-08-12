@@ -286,7 +286,7 @@ public class SamplingWorkflow {
 
 	// Sampling parameter
 	double scaledown = 0.25;
-	int dimension = 1;
+	int dimension = 5;
 	boolean revisiting = true;
 	Long rngSeed = new Long(0);
 
@@ -402,7 +402,7 @@ public class SamplingWorkflow {
     private static Transformation[] instantiateSamplingTransformation(
 	    double scaledown, int dimension, boolean revisiting, Long randomSeed) {
 	Transformation sampling = SamplingAlgorithmFactory.getInstanceOf(
-		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
+		SamplingAlgorithm.FRONTIERSAMPLING, scaledown, revisiting, dimension,
 		new Long(0));
 	Transformation sampling2 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
@@ -429,9 +429,9 @@ public class SamplingWorkflow {
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
 		new Long(2));
 	
-//	Transformation subgraphing = new ExtractSampledSubgraph();
+	Transformation subgraphing = new ExtractSampledSubgraph();
 //	Transformation subgraphing = new ColorSampledSubgraph();
-	Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
+//	Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
 	Transformation[] t1 = new Transformation[] { sampling, subgraphing};
 	return t1;
@@ -507,7 +507,7 @@ public class SamplingWorkflow {
 
     public static Network[] instantiateNetworkModels() {
 	Network nw1 = new ErdosRenyi(100, 3, false, null);
-	Network nw2 = new BarabasiAlbert(100, 5, null);
+	Network nw2 = new BarabasiAlbert(5000, 5, null);
 	Network nw3 = new WattsStrogatz(5000, 6, 0.2, null);
 	Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
 
