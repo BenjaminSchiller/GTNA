@@ -199,7 +199,7 @@ public class SamplingWorkflow {
     private static Transformation[] instantiateSamplingTransformation(
 	    double scaledown, int dimension, boolean revisiting, Long randomSeed) {
 	Transformation sampling = SamplingAlgorithmFactory.getInstanceOf(
-		SamplingAlgorithm.FRONTIERSAMPLING, scaledown, revisiting, dimension,
+		SamplingAlgorithm.BFS, scaledown, revisiting, dimension,
 		new Long(0));
 	Transformation sampling2 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
