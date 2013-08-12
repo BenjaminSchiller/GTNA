@@ -245,7 +245,8 @@ public abstract class AWalker extends Parameter {
     /**
      * Returns the current neighbors of current nodes of the walker
      * 
-     * @return Map: key: current node value: neighbors of the current node
+     * @return Map: 	<br><b>key</b>: current node 
+     * 			<br><b>value</b>: neighbors of the current node
      */
     public Map<Node, Collection<Node>> getCurrentCandidates() {
 	Map<Node, Collection<Node>> cn = new HashMap<Node, Collection<Node>>();
