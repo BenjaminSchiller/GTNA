@@ -42,9 +42,13 @@ import gtna.transformation.sampling.sampler.RoundBasedVisitedNodeSampler;
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
 =======
 =======
+=======
+import gtna.transformation.sampling.walker.BFSWalker;
+>>>>>>> started BFS implementation. known bug:  java.lang.OutOfMemoryError: Java heap space @ resolveCandidates
 import gtna.transformation.sampling.walker.RandomJumpWalker;
 >>>>>>> added entry for random jump algorithm to the sampling algorithm factory
 import gtna.transformation.sampling.walker.RandomWalkDegreeCorrectionWalker;
@@ -218,6 +222,19 @@ public class SamplingAlgorithmFactory {
 			as.setWalkerController(awc);
 			
 			algorithm = "RANDOM_JUMP";
+			break;
+		case BFS:
+			as = new VisitedNodeSampler();
+			aw = new BFSWalker();
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			cw.add(aw);
+			awc = new RandomWalkWalkerController(cw, cf);
+			aw.setWalkerController(awc);
+			as.setWalkerController(awc);
+			
+			algorithm = "BFS";
 			break;
 		default:
 			throw new IllegalArgumentException("Not supported algorithm");
