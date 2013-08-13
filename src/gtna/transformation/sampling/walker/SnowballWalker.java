@@ -193,12 +193,7 @@ public class SnowballWalker extends AWalker {
 
 			int m = Math.min(amountOfAddedNodesPerStep, temp.size());
 			for (int i = 0; i < m; i++) {
-				int ni = r.nextInt(temp.size());
-				while (q.contains(temp.get(ni))) {
-					ni = r.nextInt(temp.size());
-				}
-
-				q.add(temp.get(ni));
+				q.add(temp.get(i));
 			}
 		}
 		return q;
