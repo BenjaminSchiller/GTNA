@@ -88,7 +88,7 @@ public class SamplingWorkflow {
 		double scaledown = 0.25;
 		int dimension = 1;
 		boolean revisiting = false;
-		Long rngSeed = new Long(0);
+		Long rngSeed = null;
 
 		String folder = "./plots/network-plot/";
 
@@ -222,7 +222,7 @@ public class SamplingWorkflow {
 				SamplingAlgorithm.BFS, scaledown, revisiting, dimension,
 				randomSeed);
 		Transformation sampling8 = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
+				SamplingAlgorithm.RESPONDENTDRIVENSAMPLING, scaledown, revisiting, dimension,
 				randomSeed);
 		Transformation sampling9 = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
@@ -232,7 +232,7 @@ public class SamplingWorkflow {
 //		 Transformation subgraphing = new ColorSampledSubgraph();
 		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
-		Transformation[] t1 = new Transformation[] { sampling, subgraphing };
+		Transformation[] t1 = new Transformation[] { sampling, sampling8, subgraphing };
 		return t1;
 	}
 

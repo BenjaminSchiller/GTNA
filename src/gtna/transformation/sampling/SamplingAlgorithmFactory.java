@@ -41,6 +41,7 @@ import java.util.Collection;
 import gtna.transformation.sampling.sampler.RoundBasedVisitedNodeSampler;
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
 import gtna.transformation.sampling.walker.BFSWalker;
+import gtna.transformation.sampling.walker.RDSWalker;
 import gtna.transformation.sampling.walker.RandomJumpWalker;
 import gtna.transformation.sampling.walker.RandomWalkDegreeCorrectionWalker;
 import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
@@ -248,6 +249,19 @@ public class SamplingAlgorithmFactory {
 			as.setWalkerController(awc);
 			
 			algorithm = "SNOWBALL_SAMPLING";
+			break;
+		case RESPONDENTDRIVENSAMPLING:
+			as = new VisitedNodeSampler();
+			aw = new RDSWalker(3);
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			cw.add(aw);
+			awc = new RandomWalkWalkerController(cw, cf);
+			aw.setWalkerController(awc);
+			as.setWalkerController(awc);
+			
+			algorithm = "RESPONDENT_DRIVEN_SAMPLING";
 			break;
 		default:
 			throw new IllegalArgumentException("Not supported algorithm");
