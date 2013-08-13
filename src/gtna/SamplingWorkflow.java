@@ -311,7 +311,7 @@ public class SamplingWorkflow {
 		Network nw2 = new BarabasiAlbert(500, 2, null);
 		Network nw3 = new WattsStrogatz(5000, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
-		Network nw5 = new Regular(2000, 40, true, false, null);
+		Network nw5 = new Regular(500, 60, true, false, null);
 
 		// Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 
