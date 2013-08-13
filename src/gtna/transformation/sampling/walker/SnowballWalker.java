@@ -136,21 +136,44 @@ public class SnowballWalker extends AWalker {
 	private Collection<Node> chooseNodesToAddToQ(Collection<Node> cn) {
 		Collection<Node> q = new ArrayList<Node>();
 		ArrayList<Node> temp = new ArrayList<Node>();
+		Collection<Node> temp1 = new ArrayList<Node>();
 
 		temp.addAll(cn);
-		Random r = this.getRNG();
-		
-		int m = Math.min(amountOfAddedNodesPerStep, temp.size());
-		for (int i = 0; i < m; i++) {
-			int ni = r.nextInt(temp.size());
-			while(q.contains(temp.get(ni))){
-				ni = r.nextInt(temp.size());
-			}
-			
-			q.add(temp.get(ni));
-		}
+		temp1 = this.filterCandidates(temp);
+		if (temp1.size() <= amountOfAddedNodesPerStep) {
+			q.addAll(temp1);
 
+		} else {
+			temp.clear();
+			temp.addAll(temp1);
+			Random r = this.getRNG();
+
+			int m = Math.min(amountOfAddedNodesPerStep, temp.size());
+			for (int i = 0; i < m; i++) {
+				int ni = r.nextInt(temp.size());
+				while (q.contains(temp.get(ni))) {
+					ni = r.nextInt(temp.size());
+				}
+
+				q.add(temp.get(ni));
+			}
+		}
 		return q;
+	}
+
+	/**
+	 * @param node
+	 * @return
+	 */
+	private boolean alreadyContained(Node node) {
+		List<Node> nf = new ArrayList<Node>();
+		nf.add(node);
+		Collection<Node> f = this.filterCandidates(nf);
+
+		if (f.size() == 0)
+			return true;
+
+		return false;
 	}
 
 	/**
