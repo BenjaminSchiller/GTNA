@@ -40,11 +40,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
+import gtna.transformation.sampling.NetworkSample;
 
 /**
  * @author Tim
@@ -53,12 +55,13 @@ import gtna.transformation.sampling.AWalker;
 public class BFSWalker extends AWalker {
 
     List<Node> nextQ;
+    private int restartcounter = 0;
 
     /**
      * @param walker
      */
     public BFSWalker() {
-	super("RANDOM_WALK_WALKER");
+	super("BFS_WALKER");
 	nextQ = new LinkedList<Node>();
     }
 
@@ -70,12 +73,54 @@ public class BFSWalker extends AWalker {
      */
     @Override
     protected Node selectNextNode(Collection<Node> candidates) {
-	Iterator<Node> ci = candidates.iterator();
-	
-	if(ci.hasNext())
-	    return ci.next();
+	Node n = null;
+	List<Node> c = new ArrayList<Node>();
+	Collection<Node> cc = new ArrayList<Node>();
+	while (n == null) {
+	    if (nextQ.size() > 0) {
+		c.add(nextQ.get(0));
+		nextQ.remove(0);
+		cc = this.filterCandidates(c);
+		if (cc.size() > 0) {
+		    n = cc.toArray(new Node[0])[0];
+		}
+	    } else {
+		
+		System.err.println("NextQ empty, need a restart! (" + restartcounter  
+			+ ")");
+		restartcounter += 1;
+		cc = super.getRestartNodes();
+		n = cc.toArray(new Node[0])[0];
+		
+	    }
+	}
 
-	return null;
+	return n;
+    }
+
+    @Override
+    public void takeAStep(Graph g, NetworkSample ns) {
+	Map<Node, Collection<Node>> cc = this.getCurrentCandidates();
+	Collection<Node> c = new ArrayList<Node>();
+
+	// add new neighbors to the q
+	if (cc.size() > 0) {
+	    c = cc.keySet();
+	}
+	
+	    Collection<Collection<Node>> toQ = cc.values();
+	    for(Collection<Node> cn : toQ) {
+		nextQ.addAll(cn);
+	    }
+	    
+	    Node next = this.selectNextNode(new ArrayList<Node>());
+	    
+	    
+	    super.getCurrents().remove(cc.keySet().toArray(new Node[0])[0]);
+	    super.getCurrents().add(next);
+
+	
+
     }
 
     /**
@@ -94,9 +139,7 @@ public class BFSWalker extends AWalker {
 	for (int i : nids) {
 	    nn.add(g.getNode(i));
 	}
-	nextQ.addAll(nn);
-	
-	return nextQ;
+	return nn;
     }
 
 }
