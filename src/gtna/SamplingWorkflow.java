@@ -88,7 +88,7 @@ public class SamplingWorkflow {
 	double scaledown = 0.25;
 	int dimension = 1;
 	boolean revisiting = false;
-	Long rngSeed = new Long(1);
+	Long rngSeed = null;
 
 	String folder = "./plots/network-plot/";
 	
@@ -205,35 +205,35 @@ public class SamplingWorkflow {
 		SamplingAlgorithm.BFS, scaledown, revisiting, dimension,
 		randomSeed);
 	Transformation sampling2 = SamplingAlgorithmFactory.getInstanceOf(
-		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(0));
+		SamplingAlgorithm.RANDOMSTROLL, scaledown, revisiting, dimension,
+		randomSeed);
 	Transformation sampling3 = SamplingAlgorithmFactory.getInstanceOf(
-		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(1));
+		SamplingAlgorithm.RANDOMJUMP, scaledown, revisiting, dimension,
+		randomSeed);
 	Transformation sampling4 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(1));
+		randomSeed);
 	Transformation sampling5 = SamplingAlgorithmFactory.getInstanceOf(
-		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(0));
+		SamplingAlgorithm.RANDOMSTROLL_DEGREECORRECTION, scaledown, revisiting, dimension,
+		randomSeed);
 	Transformation sampling6 = SamplingAlgorithmFactory.getInstanceOf(
-		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(1));
+		SamplingAlgorithm.UNIFORMSAMPLING, scaledown, revisiting, dimension,
+		randomSeed);
 	Transformation sampling7 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(1));
+		randomSeed);
 	Transformation sampling8 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(1));
+		randomSeed);
 	Transformation sampling9 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(2));
+		randomSeed);
 	
 //	Transformation subgraphing = new ExtractSampledSubgraph();
-	Transformation subgraphing = new ColorSampledSubgraph();
-//	Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
+//	Transformation subgraphing = new ColorSampledSubgraph();
+	Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
-	Transformation[] t1 = new Transformation[] { sampling, subgraphing};
+	Transformation[] t1 = new Transformation[] { sampling, sampling2, sampling3, sampling4, sampling5, sampling6, subgraphing};
 	return t1;
     }
 
@@ -308,14 +308,14 @@ public class SamplingWorkflow {
 
     public static Network[] instantiateNetworkModels() {
 	Network nw1 = new ErdosRenyi(100, 3, false, null);
-	Network nw2 = new BarabasiAlbert(5000, 5, null);
+	Network nw2 = new BarabasiAlbert(500, 2, null);
 	Network nw3 = new WattsStrogatz(5000, 6, 0.2, null);
 	Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
 	Network nw5 = new Regular(20, 2, true, false, null);
 
 	// Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 
-	Network[] n = new Network[] { nw5 };
+	Network[] n = new Network[] { nw2 };
 	return n;
     }
 

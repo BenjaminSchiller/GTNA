@@ -54,7 +54,7 @@ import java.util.Set;
 public abstract class AWalker extends Parameter {
 
     private AWalkerController controller;
-    private Collection<Node> currents;
+    protected Collection<Node> currents;
   
     /**
      * create a walker instance
@@ -142,7 +142,7 @@ public abstract class AWalker extends Parameter {
      * 
      * @return collection of new start nodes
      */
-    private Collection<Node> getRestartNodes() {
+    protected Collection<Node> getRestartNodes() {
 	return this.controller.getRestartNodes();
     }
 
