@@ -52,7 +52,7 @@ import gtna.transformation.sampling.NetworkSample;
  * @author Tim
  * 
  */
-public class SnowballWalker extends AWalker {
+public class RDSWalker extends AWalker {
 
 	int amountOfAddedNodesPerStep = 1;
 	List<Node> nextQ;
@@ -61,15 +61,15 @@ public class SnowballWalker extends AWalker {
 	/**
 	 * @param walker
 	 */
-	public SnowballWalker() {
-		super("SNOWBALL_WALKER");
+	public RDSWalker() {
+		super("RDS_WALKER");
 		nextQ = new LinkedList<Node>();
 	}
 
 	/**
 	 * @param i
 	 */
-	public SnowballWalker(int i) {
+	public RDSWalker(int i) {
 		this();
 		amountOfAddedNodesPerStep = i;
 	}
@@ -150,7 +150,12 @@ public class SnowballWalker extends AWalker {
 
 			int m = Math.min(amountOfAddedNodesPerStep, temp.size());
 			for (int i = 0; i < m; i++) {
-				q.add(temp.get(i));
+				int ni = r.nextInt(temp.size());
+				while (q.contains(temp.get(ni))) {
+					ni = r.nextInt(temp.size());
+				}
+
+				q.add(temp.get(ni));
 			}
 		}
 		return q;
