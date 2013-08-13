@@ -96,6 +96,7 @@ import gtna.transformation.sampling.walker.BFSWalker;
 import gtna.transformation.sampling.walker.RandomJumpWalker;
 import gtna.transformation.sampling.walker.RandomWalkDegreeCorrectionWalker;
 import gtna.transformation.sampling.walker.RandomWalkWalker;
+import gtna.transformation.sampling.walker.SnowballWalker;
 import gtna.transformation.sampling.walker.UniformRandomWalker;
 import gtna.transformation.sampling.walkercontroller.FrontierSamplingWalkerController;
 import gtna.transformation.sampling.walkercontroller.MultipleRandomWalkWalkerController;
@@ -141,7 +142,12 @@ public class SamplingAlgorithmFactory {
      */
     @SuppressWarnings("javadoc")
     public enum SamplingAlgorithm {
-	UNIFORMSAMPLING, RANDOMWALK, RANDOMWALK_METROPOLIZED, RANDOMWALK_DEGREECORRECTION, RANDOMWALK_MULTIPLE, FRONTIERSAMPLING, RANDOMSTROLL, RANDOMSTROLL_DEGREECORRECTION, RANDOMJUMP, BFS, SNOWBALLSAMPLING, RESPONDENTDRIVENSAMPLING, FORESTFIRE, DFS
+    	UNIFORMSAMPLING, 
+    	RANDOMWALK, RANDOMWALK_METROPOLIZED, RANDOMWALK_DEGREECORRECTION, RANDOMWALK_MULTIPLE, FRONTIERSAMPLING, 
+    	RANDOMSTROLL, RANDOMSTROLL_DEGREECORRECTION, 
+    	RANDOMJUMP, 
+    	BFS, SNOWBALLSAMPLING, RESPONDENTDRIVENSAMPLING, FORESTFIRE, 
+    	DFS
     }
 <<<<<<< HEAD
     
@@ -539,6 +545,19 @@ public class SamplingAlgorithmFactory {
 			as.setWalkerController(awc);
 			
 			algorithm = "BFS";
+			break;
+		case SNOWBALLSAMPLING:
+			as = new VisitedNodeSampler();
+			aw = new SnowballWalker(3);
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			cw.add(aw);
+			awc = new RandomWalkWalkerController(cw, cf);
+			aw.setWalkerController(awc);
+			as.setWalkerController(awc);
+			
+			algorithm = "SNOWBALL_SAMPLING";
 			break;
 		default:
 			throw new IllegalArgumentException("Not supported algorithm");
