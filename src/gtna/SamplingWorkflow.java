@@ -40,10 +40,14 @@ import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 =======
+=======
+import gtna.id.plane.PlaneIdentifierSpaceSimple;
+>>>>>>> fixed bfs
 import gtna.io.graphReader.GraphReader;
 import gtna.io.graphReader.GtnaGraphReader;
 import gtna.io.graphWriter.GtnaGraphWriter;
@@ -55,6 +59,7 @@ import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
+import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
 >>>>>>> Workflow definition and implementation
 import gtna.networks.util.ReadableFile;
@@ -62,10 +67,14 @@ import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.util.Config;
 
 import java.util.ArrayList;
 =======
+=======
+import gtna.transformation.id.RandomPlaneIDSpaceSimple;
+>>>>>>> fixed bfs
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.transformation.sampling.subgraph.ColorSampledSubgraph;
@@ -286,9 +295,9 @@ public class SamplingWorkflow {
 
 	// Sampling parameter
 	double scaledown = 0.25;
-	int dimension = 5;
-	boolean revisiting = true;
-	Long rngSeed = new Long(0);
+	int dimension = 1;
+	boolean revisiting = false;
+	Long rngSeed = new Long(1);
 
 	String folder = "./plots/network-plot/";
 	
@@ -403,7 +412,7 @@ public class SamplingWorkflow {
 	    double scaledown, int dimension, boolean revisiting, Long randomSeed) {
 	Transformation sampling = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.BFS, scaledown, revisiting, dimension,
-		new Long(0));
+		randomSeed);
 	Transformation sampling2 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
 		new Long(0));
@@ -429,8 +438,8 @@ public class SamplingWorkflow {
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
 		new Long(2));
 	
-	Transformation subgraphing = new ExtractSampledSubgraph();
-//	Transformation subgraphing = new ColorSampledSubgraph();
+//	Transformation subgraphing = new ExtractSampledSubgraph();
+	Transformation subgraphing = new ColorSampledSubgraph();
 //	Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
 	Transformation[] t1 = new Transformation[] { sampling, subgraphing};
@@ -499,8 +508,9 @@ public class SamplingWorkflow {
      */
     private static Graph setIdSpace(Graph g) {
 	if (!g.hasProperty("ID_SPACE_0")) {
-	    Transformation tCRIdS = new ConsecutiveRingIDSpace(true);
-	    g = tCRIdS.transform(g);
+	    Transformation idS = new ConsecutiveRingIDSpace(true);
+//	    Transformation idS = new RandomPlaneIDSpaceSimple(2, 5, 5, false);
+	    g = idS.transform(g);
 	}
 	return g;
     }
@@ -510,10 +520,11 @@ public class SamplingWorkflow {
 	Network nw2 = new BarabasiAlbert(5000, 5, null);
 	Network nw3 = new WattsStrogatz(5000, 6, 0.2, null);
 	Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
+	Network nw5 = new Regular(20, 2, true, false, null);
 
-	// Network[] n = new Network[] { nw3/*nw1, nw2, nw3, nw4*/ };
+	// Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 
-	Network[] n = new Network[] { nw2 };
+	Network[] n = new Network[] { nw5 };
 	return n;
     }
 
