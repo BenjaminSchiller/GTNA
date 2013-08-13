@@ -39,6 +39,7 @@ import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
+import gtna.id.plane.PlaneIdentifierSpaceSimple;
 import gtna.io.graphReader.GraphReader;
 import gtna.io.graphReader.GtnaGraphReader;
 import gtna.io.graphWriter.GtnaGraphWriter;
@@ -50,11 +51,13 @@ import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
+import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
+import gtna.transformation.id.RandomPlaneIDSpaceSimple;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.transformation.sampling.subgraph.ColorSampledSubgraph;
@@ -83,9 +86,9 @@ public class SamplingWorkflow {
 
 	// Sampling parameter
 	double scaledown = 0.25;
-	int dimension = 5;
-	boolean revisiting = true;
-	Long rngSeed = new Long(0);
+	int dimension = 1;
+	boolean revisiting = false;
+	Long rngSeed = null;
 
 	String folder = "./plots/network-plot/";
 	
@@ -199,38 +202,38 @@ public class SamplingWorkflow {
     private static Transformation[] instantiateSamplingTransformation(
 	    double scaledown, int dimension, boolean revisiting, Long randomSeed) {
 	Transformation sampling = SamplingAlgorithmFactory.getInstanceOf(
-		SamplingAlgorithm.FRONTIERSAMPLING, scaledown, revisiting, dimension,
-		new Long(0));
+		SamplingAlgorithm.BFS, scaledown, revisiting, dimension,
+		randomSeed);
 	Transformation sampling2 = SamplingAlgorithmFactory.getInstanceOf(
-		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(0));
+		SamplingAlgorithm.RANDOMSTROLL, scaledown, revisiting, dimension,
+		randomSeed);
 	Transformation sampling3 = SamplingAlgorithmFactory.getInstanceOf(
-		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(1));
+		SamplingAlgorithm.RANDOMJUMP, scaledown, revisiting, dimension,
+		randomSeed);
 	Transformation sampling4 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(1));
+		randomSeed);
 	Transformation sampling5 = SamplingAlgorithmFactory.getInstanceOf(
-		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(0));
+		SamplingAlgorithm.RANDOMSTROLL_DEGREECORRECTION, scaledown, revisiting, dimension,
+		randomSeed);
 	Transformation sampling6 = SamplingAlgorithmFactory.getInstanceOf(
-		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(1));
+		SamplingAlgorithm.UNIFORMSAMPLING, scaledown, revisiting, dimension,
+		randomSeed);
 	Transformation sampling7 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(1));
+		randomSeed);
 	Transformation sampling8 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(1));
+		randomSeed);
 	Transformation sampling9 = SamplingAlgorithmFactory.getInstanceOf(
 		SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-		new Long(2));
+		randomSeed);
 	
-	Transformation subgraphing = new ExtractSampledSubgraph();
+//	Transformation subgraphing = new ExtractSampledSubgraph();
 //	Transformation subgraphing = new ColorSampledSubgraph();
-//	Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
+	Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
-	Transformation[] t1 = new Transformation[] { sampling, subgraphing};
+	Transformation[] t1 = new Transformation[] { sampling, sampling2, sampling3, sampling4, sampling5, sampling6, subgraphing};
 	return t1;
     }
 
@@ -296,19 +299,21 @@ public class SamplingWorkflow {
      */
     private static Graph setIdSpace(Graph g) {
 	if (!g.hasProperty("ID_SPACE_0")) {
-	    Transformation tCRIdS = new ConsecutiveRingIDSpace(true);
-	    g = tCRIdS.transform(g);
+	    Transformation idS = new ConsecutiveRingIDSpace(true);
+//	    Transformation idS = new RandomPlaneIDSpaceSimple(2, 5, 5, false);
+	    g = idS.transform(g);
 	}
 	return g;
     }
 
     public static Network[] instantiateNetworkModels() {
 	Network nw1 = new ErdosRenyi(100, 3, false, null);
-	Network nw2 = new BarabasiAlbert(5000, 5, null);
+	Network nw2 = new BarabasiAlbert(500, 2, null);
 	Network nw3 = new WattsStrogatz(5000, 6, 0.2, null);
 	Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
+	Network nw5 = new Regular(20, 2, true, false, null);
 
-	// Network[] n = new Network[] { nw3/*nw1, nw2, nw3, nw4*/ };
+	// Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 
 	Network[] n = new Network[] { nw2 };
 	return n;
