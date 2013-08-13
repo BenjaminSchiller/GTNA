@@ -116,8 +116,8 @@ public class BFSWalker extends AWalker {
 	    Node next = this.selectNextNode(new ArrayList<Node>());
 	    
 	    
-	    super.getCurrents().remove(cc.keySet().toArray(new Node[0])[0]);
-	    super.getCurrents().add(next);
+	    super.currents.remove(cc.keySet().toArray(new Node[0])[0]);
+	    super.currents.add(next);
 
 	
 
