@@ -46,23 +46,39 @@ import java.util.Random;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
+<<<<<<< HEAD
 import gtna.transformation.sampling.sample.NetworkSample;
+=======
+import gtna.transformation.sampling.NetworkSample;
+>>>>>>> added SnowballWalker
 
 /**
  * @author Tim
  * 
  */
+<<<<<<< HEAD
 public class SnowballWalker extends BFSBaseWalker {
 
 	int amountOfAddedNodesPerStep = 1;
 	
+=======
+public class SnowballWalker extends AWalker {
+
+	int amountOfAddedNodesPerStep = 1;
+	List<Node> nextQ;
+	private int restartcounter = 0;
+>>>>>>> added SnowballWalker
 
 	/**
 	 * @param walker
 	 */
 	public SnowballWalker() {
 		super("SNOWBALL_WALKER");
+<<<<<<< HEAD
 	
+=======
+		nextQ = new LinkedList<Node>();
+>>>>>>> added SnowballWalker
 	}
 
 	/**
@@ -73,11 +89,69 @@ public class SnowballWalker extends BFSBaseWalker {
 		amountOfAddedNodesPerStep = i;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
+	 */
+	@Override
+	protected Node selectNextNode(Collection<Node> candidates) {
+		Node n = null;
+		List<Node> c = new ArrayList<Node>();
+		Collection<Node> cc = new ArrayList<Node>();
+		while (n == null) {
+			if (nextQ.size() > 0) {
+				c.add(nextQ.get(0));
+				nextQ.remove(0);
+				cc = this.filterCandidates(c);
+				if (cc.size() > 0) {
+					n = cc.toArray(new Node[0])[0];
+				}
+			} else {
+
+				System.err.println("NextQ empty, need a restart! ("
+						+ restartcounter + ")");
+				restartcounter += 1;
+				cc = this.getRestartNodes();
+				n = cc.toArray(new Node[0])[0];
+
+			}
+		}
+
+		return n;
+	}
+
+	@Override
+	public void takeAStep(Graph g, NetworkSample ns) {
+		Map<Node, Collection<Node>> cc = this.getCurrentCandidates();
+		Collection<Node> c = new ArrayList<Node>();
+
+		// add new neighbors to the q
+		if (cc.size() > 0) {
+			c = cc.keySet();
+		}
+
+		Collection<Collection<Node>> toQ = cc.values();
+		for (Collection<Node> cn : toQ) {
+			nextQ.addAll(chooseNodesToAddToQ(cn));
+		}
+
+		Node next = this.selectNextNode(new ArrayList<Node>());
+
+		this.currents.remove(cc.keySet().toArray(new Node[0])[0]);
+		this.currents.add(next);
+
+	}
+>>>>>>> added SnowballWalker
 
 	/**
 	 * @param cn
 	 * @return
 	 */
+<<<<<<< HEAD
 	@Override
 	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> cn) {
 		Collection<Node> q = new ArrayList<Node>();
@@ -101,4 +175,45 @@ public class SnowballWalker extends BFSBaseWalker {
 		return q;
 	}
 
+=======
+	private Collection<Node> chooseNodesToAddToQ(Collection<Node> cn) {
+		Collection<Node> q = new ArrayList<Node>();
+		ArrayList<Node> temp = new ArrayList<Node>();
+
+		temp.addAll(cn);
+		Random r = this.getRNG();
+		
+		int m = Math.min(amountOfAddedNodesPerStep, temp.size());
+		for (int i = 0; i < m; i++) {
+			int ni = r.nextInt(temp.size());
+			while(q.contains(temp.get(ni))){
+				ni = r.nextInt(temp.size());
+			}
+			
+			q.add(temp.get(ni));
+		}
+
+		return q;
+	}
+
+	/**
+	 * returns the list of neighbors as candidates
+	 * 
+	 * @param g
+	 *            Graph
+	 * @param n
+	 *            Current node
+	 * @return List of candidates
+	 */
+	@Override
+	public Collection<Node> resolveCandidates(Graph g, Node n) {
+		int[] nids = n.getOutgoingEdges();
+		ArrayList<Node> nn = new ArrayList<Node>();
+		for (int i : nids) {
+			nn.add(g.getNode(i));
+		}
+		return nn;
+	}
+
+>>>>>>> added SnowballWalker
 }
