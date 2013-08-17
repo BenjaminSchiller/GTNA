@@ -47,7 +47,11 @@ import java.util.Random;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
+<<<<<<< HEAD
 import gtna.transformation.sampling.sample.NetworkSample;
+=======
+import gtna.transformation.sampling.NetworkSample;
+>>>>>>> added DFSWalker
 
 /**
  * @author Tim
@@ -88,8 +92,13 @@ public class DFSWalker extends AWalker {
 				}
 			} else {
 
+<<<<<<< HEAD
 //				System.err.println("NextQ empty, need a restart! ("
 //						+ restartcounter + ")");
+=======
+				System.err.println("NextQ empty, need a restart! ("
+						+ restartcounter + ")");
+>>>>>>> added DFSWalker
 				restartcounter += 1;
 				cc = super.getRestartNodes();
 				n = cc.toArray(new Node[0])[0];
