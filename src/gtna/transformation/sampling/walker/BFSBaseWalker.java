@@ -37,6 +37,7 @@ package gtna.transformation.sampling.walker;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,97 +52,96 @@ import gtna.transformation.sampling.NetworkSample;
 /**
  * @author Tim
  * 
+ * This class provides the base functionality of a bfs/dfs walker using a deque datastructure
+ * 
  */
 public abstract class BFSBaseWalker extends AWalker {
 
-    List<Node> nextQ;
-    private int restartcounter = 0;
+	Deque<Node> nextQ;
+	private int restartcounter = 0;
 
-    /**
-     * @param walker
-     */
-    public BFSBaseWalker(String key) {
-    	super(key);
-    	nextQ = new LinkedList<Node>();
-    }
+	/**
+	 * @param walker
+	 */
+	public BFSBaseWalker(String key) {
+		super(key);
+		nextQ = new LinkedList<Node>();
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
-     */
-    @Override
-    protected Node selectNextNode(Collection<Node> candidates) {
-	Node n = null;
-	List<Node> c = new ArrayList<Node>();
-	Collection<Node> cc = new ArrayList<Node>();
-	while (n == null) {
-	    if (nextQ.size() > 0) {
-		c.add(nextQ.get(0));
-		nextQ.remove(0);
-		cc = this.filterCandidates(c);
-		if (cc.size() > 0) {
-		    n = cc.toArray(new Node[0])[0];
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
+	 */
+	@Override
+	protected Node selectNextNode(Collection<Node> candidates) {
+		Node n = null;
+		List<Node> c = new ArrayList<Node>();
+		Collection<Node> cc = new ArrayList<Node>();
+		while (n == null) {
+			if (nextQ.size() > 0) {
+				c.add(nextQ.pollFirst());
+				cc = this.filterCandidates(c);
+				if (cc.size() > 0) {
+					n = cc.toArray(new Node[0])[0];
+				}
+			} else {
+
+				System.err.println("NextQ empty, need a restart! ("
+						+ restartcounter + ")");
+				restartcounter += 1;
+				cc = super.getRestartNodes();
+				n = cc.toArray(new Node[0])[0];
+
+			}
 		}
-	    } else {
-		
-		System.err.println("NextQ empty, need a restart! (" + restartcounter  
-			+ ")");
-		restartcounter += 1;
-		cc = super.getRestartNodes();
-		n = cc.toArray(new Node[0])[0];
-		
-	    }
+
+		return n;
 	}
 
-	return n;
-    }
+	@Override
+	public void takeAStep(Graph g, NetworkSample ns) {
+		Map<Node, Collection<Node>> cc = this.getCurrentCandidates();
+		Collection<Node> c = new ArrayList<Node>();
 
-    @Override
-    public void takeAStep(Graph g, NetworkSample ns) {
-	Map<Node, Collection<Node>> cc = this.getCurrentCandidates();
-	Collection<Node> c = new ArrayList<Node>();
+		// add new neighbors to the q
+		if (cc.size() > 0) {
+			c = cc.keySet();
+		}
 
-	// add new neighbors to the q
-	if (cc.size() > 0) {
-	    c = cc.keySet();
+		Collection<Collection<Node>> toQ = cc.values();
+		for (Collection<Node> cn : toQ) {
+			nextQ.addAll(chooseNodesToAddToQ(cn));
+		}
+
+		Node next = this.selectNextNode(new ArrayList<Node>());
+
+		super.currents.remove(cc.keySet().toArray(new Node[0])[0]);
+		super.currents.add(next);
+
 	}
-	
-	    Collection<Collection<Node>> toQ = cc.values();
-	    for(Collection<Node> cn : toQ) {
-	    	nextQ.addAll(chooseNodesToAddToQ(cn));
-	    }
-	    
-	    Node next = this.selectNextNode(new ArrayList<Node>());
-	    
-	    
-	    super.currents.remove(cc.keySet().toArray(new Node[0])[0]);
-	    super.currents.add(next);
 
-	
+	protected abstract Collection<Node> chooseNodesToAddToQ(
+			Collection<Node> toFilter);
 
-    }
-    
-    protected abstract Collection<Node> chooseNodesToAddToQ(Collection<Node> toFilter);
-
-    /**
-     * returns the list of neighbors as candidates
-     * 
-     * @param g
-     *            Graph
-     * @param n
-     *            Current node
-     * @return List of candidates
-     */
-    @Override
-    public Collection<Node> resolveCandidates(Graph g, Node n) {
-	int[] nids = n.getOutgoingEdges();
-	ArrayList<Node> nn = new ArrayList<Node>();
-	for (int i : nids) {
-	    nn.add(g.getNode(i));
+	/**
+	 * returns the list of neighbors as candidates
+	 * 
+	 * @param g
+	 *            Graph
+	 * @param n
+	 *            Current node
+	 * @return List of candidates
+	 */
+	@Override
+	public Collection<Node> resolveCandidates(Graph g, Node n) {
+		int[] nids = n.getOutgoingEdges();
+		ArrayList<Node> nn = new ArrayList<Node>();
+		for (int i : nids) {
+			nn.add(g.getNode(i));
+		}
+		return nn;
 	}
-	return nn;
-    }
 
 }
