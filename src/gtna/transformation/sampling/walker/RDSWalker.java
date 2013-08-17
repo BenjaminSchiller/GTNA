@@ -37,6 +37,7 @@ package gtna.transformation.sampling.walker;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,15 +56,13 @@ import gtna.transformation.sampling.NetworkSample;
 public class RDSWalker extends BFSBaseWalker {
 
 	int amountOfAddedNodesPerStep = 1;
-	List<Node> nextQ;
-	private int restartcounter = 0;
+	
 
 	/**
 	 * @param walker
 	 */
 	public RDSWalker() {
 		super("RDS_WALKER");
-		nextQ = new LinkedList<Node>();
 	}
 
 	/**
