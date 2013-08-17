@@ -227,12 +227,15 @@ public class SamplingWorkflow {
 		Transformation sampling9 = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.FORESTFIRE, scaledown, revisiting, dimension,
 				randomSeed);
+		Transformation sampling10 = SamplingAlgorithmFactory.getInstanceOf(
+				SamplingAlgorithm.DFS, scaledown, revisiting, dimension,
+				randomSeed);
 
 		// Transformation subgraphing = new ExtractSampledSubgraph();
 		 Transformation subgraphing = new ColorSampledSubgraph();
 //		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
-		Transformation[] t1 = new Transformation[] { sampling, sampling7, sampling8, sampling9, subgraphing };
+		Transformation[] t1 = new Transformation[] { sampling10, subgraphing };
 		return t1;
 	}
 
@@ -298,8 +301,8 @@ public class SamplingWorkflow {
 	 */
 	private static Graph setIdSpace(Graph g) {
 		if (!g.hasProperty("ID_SPACE_0")) {
-//			Transformation idS = new ConsecutiveRingIDSpace(true);
-			 Transformation idS = new RandomPlaneIDSpaceSimple(2, 5, 5, false);
+			Transformation idS = new ConsecutiveRingIDSpace(true);
+//			 Transformation idS = new RandomPlaneIDSpaceSimple(2, 5, 5, false);
 			g = idS.transform(g);
 		}
 		return g;
@@ -309,13 +312,13 @@ public class SamplingWorkflow {
 		Network nw1 = new ErdosRenyi(100, 3, false, null);
 		Network nw2 = new BarabasiAlbert(500, 2, null);
 		Network nw3 = new WattsStrogatz(500, 6, 0.2, null);
-		Network nw4 = new CondonAndKarp(750, 4, 0.4, 0.05, null);
-		Network nw5 = new Regular(500, 50, false, false, null);
+		Network nw4 = new CondonAndKarp(500, 3, 0.05, 0.0005, null);
+		Network nw5 = new Regular(100, 2, true, false, null);
 
 //		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 //		Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
 
-		Network[] n = new Network[] { nw5 };
+		Network[] n = new Network[] { nw4 };
 		return n;
 	}
 
