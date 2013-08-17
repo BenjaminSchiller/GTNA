@@ -50,9 +50,13 @@ import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
 import gtna.transformation.sampling.walker.BFSWalker;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> started BFS implementation. known bug:  java.lang.OutOfMemoryError: Java heap space @ resolveCandidates
 =======
 =======
+=======
+import gtna.transformation.sampling.walker.DFSWalker;
+>>>>>>> factory for dfs and small tests in the workflow
 import gtna.transformation.sampling.walker.FFWalker;
 >>>>>>> added ForestFireWalker
 import gtna.transformation.sampling.walker.RDSWalker;
@@ -288,6 +292,19 @@ public class SamplingAlgorithmFactory {
 			as.setWalkerController(awc);
 			
 			algorithm = "FOREST_FIRE_SAMPLING";
+			break;
+		case DFS:
+			as = new VisitedNodeSampler();
+			aw = new DFSWalker();
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			cw.add(aw);
+			awc = new RandomWalkWalkerController(cw, cf);
+			aw.setWalkerController(awc);
+			as.setWalkerController(awc);
+			
+			algorithm = "DFS_SAMPLING";
 			break;
 		default:
 			throw new IllegalArgumentException("Not supported algorithm");
