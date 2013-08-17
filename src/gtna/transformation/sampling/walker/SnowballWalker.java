@@ -55,15 +55,14 @@ import gtna.transformation.sampling.NetworkSample;
 public class SnowballWalker extends BFSBaseWalker {
 
 	int amountOfAddedNodesPerStep = 1;
-	List<Node> nextQ;
-	private int restartcounter = 0;
+	
 
 	/**
 	 * @param walker
 	 */
 	public SnowballWalker() {
 		super("SNOWBALL_WALKER");
-		nextQ = new LinkedList<Node>();
+	
 	}
 
 	/**
@@ -93,29 +92,13 @@ public class SnowballWalker extends BFSBaseWalker {
 		} else {
 			temp.clear();
 			temp.addAll(temp1);
-			Random r = this.getRNG();
-
+			
 			int m = Math.min(amountOfAddedNodesPerStep, temp.size());
 			for (int i = 0; i < m; i++) {
 				q.add(temp.get(i));
 			}
 		}
 		return q;
-	}
-
-	/**
-	 * @param node
-	 * @return
-	 */
-	private boolean alreadyContained(Node node) {
-		List<Node> nf = new ArrayList<Node>();
-		nf.add(node);
-		Collection<Node> f = this.filterCandidates(nf);
-
-		if (f.size() == 0)
-			return true;
-
-		return false;
 	}
 
 }

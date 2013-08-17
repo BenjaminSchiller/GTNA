@@ -60,7 +60,6 @@ public class BFSWalker extends BFSBaseWalker {
      */
     public BFSWalker() {
 	super("BFS_WALKER");
-	nextQ = new LinkedList<Node>();
     }
 
 	/* (non-Javadoc)
