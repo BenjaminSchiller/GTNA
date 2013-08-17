@@ -57,12 +57,16 @@ import gtna.transformation.sampling.NetworkSample;
  * 
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
 public class SnowballWalker extends BFSBaseWalker {
 
 	int amountOfAddedNodesPerStep = 1;
 	
 =======
 public class SnowballWalker extends AWalker {
+=======
+public class SnowballWalker extends BFSBaseWalker {
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 
 	int amountOfAddedNodesPerStep = 1;
 	List<Node> nextQ;
@@ -89,6 +93,7 @@ public class SnowballWalker extends AWalker {
 		amountOfAddedNodesPerStep = i;
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 	/*
@@ -146,11 +151,14 @@ public class SnowballWalker extends AWalker {
 
 	}
 >>>>>>> added SnowballWalker
+=======
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 
 	/**
 	 * @param cn
 	 * @return
 	 */
+<<<<<<< HEAD
 <<<<<<< HEAD
 	@Override
 	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> cn) {
@@ -177,6 +185,10 @@ public class SnowballWalker extends AWalker {
 
 =======
 	private Collection<Node> chooseNodesToAddToQ(Collection<Node> cn) {
+=======
+	@Override
+	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> cn) {
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 		Collection<Node> q = new ArrayList<Node>();
 		ArrayList<Node> temp = new ArrayList<Node>();
 		Collection<Node> temp1 = new ArrayList<Node>();
@@ -214,6 +226,7 @@ public class SnowballWalker extends AWalker {
 		return false;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * returns the list of neighbors as candidates
 	 * 
@@ -234,4 +247,6 @@ public class SnowballWalker extends AWalker {
 	}
 
 >>>>>>> added SnowballWalker
+=======
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 }

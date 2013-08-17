@@ -67,6 +67,7 @@ import gtna.transformation.sampling.NetworkSample;
  * 
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
 public class BFSWalker extends BFSBaseWalker {
 
     
@@ -77,6 +78,11 @@ public class BFSWalker extends AWalker {
     private int restartcounter = 0;
 
 >>>>>>> started BFS implementation. known bug:  java.lang.OutOfMemoryError: Java heap space @ resolveCandidates
+=======
+public class BFSWalker extends BFSBaseWalker {
+
+    
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
     /**
      * @param walker
      */
@@ -103,82 +109,17 @@ public class BFSWalker extends AWalker {
 	nextQ = new LinkedList<Node>();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
-     */
-    @Override
-    protected Node selectNextNode(Collection<Node> candidates) {
-	Node n = null;
-	List<Node> c = new ArrayList<Node>();
-	Collection<Node> cc = new ArrayList<Node>();
-	while (n == null) {
-	    if (nextQ.size() > 0) {
-		c.add(nextQ.get(0));
-		nextQ.remove(0);
-		cc = this.filterCandidates(c);
-		if (cc.size() > 0) {
-		    n = cc.toArray(new Node[0])[0];
-		}
-	    } else {
-		
-		System.err.println("NextQ empty, need a restart! (" + restartcounter  
-			+ ")");
-		restartcounter += 1;
-		cc = super.getRestartNodes();
-		n = cc.toArray(new Node[0])[0];
-		
-	    }
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.walker.BFSBaseWalker#chooseNodesToAddToQ(java.util.Collection)
+	 */
+	@Override
+	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> toFilter) {
+		return toFilter; // all nodes are added.
 	}
 
-	return n;
-    }
-
-    @Override
-    public void takeAStep(Graph g, NetworkSample ns) {
-	Map<Node, Collection<Node>> cc = this.getCurrentCandidates();
-	Collection<Node> c = new ArrayList<Node>();
-
-	// add new neighbors to the q
-	if (cc.size() > 0) {
-	    c = cc.keySet();
-	}
-	
-	    Collection<Collection<Node>> toQ = cc.values();
-	    for(Collection<Node> cn : toQ) {
-		nextQ.addAll(cn);
-	    }
-	    
-	    Node next = this.selectNextNode(new ArrayList<Node>());
-	    
-	    
-	    super.currents.remove(cc.keySet().toArray(new Node[0])[0]);
-	    super.currents.add(next);
-
-	
-
-    }
-
-    /**
-     * returns the list of neighbors as candidates
-     * 
-     * @param g
-     *            Graph
-     * @param n
-     *            Current node
-     * @return List of candidates
-     */
-    @Override
-    public Collection<Node> resolveCandidates(Graph g, Node n) {
-	int[] nids = n.getOutgoingEdges();
-	ArrayList<Node> nn = new ArrayList<Node>();
-	for (int i : nids) {
-	    nn.add(g.getNode(i));
-	}
-	return nn;
-    }
-
+<<<<<<< HEAD
 >>>>>>> started BFS implementation. known bug:  java.lang.OutOfMemoryError: Java heap space @ resolveCandidates
+=======
+    
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 }

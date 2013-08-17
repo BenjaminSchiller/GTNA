@@ -57,15 +57,18 @@ import gtna.transformation.sampling.NetworkSample;
  * 
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
 public class FFWalker extends BFSBaseWalker {
 
 	
     private double probability = 0.7;
 =======
 public class FFWalker extends AWalker {
+=======
+public class FFWalker extends BFSBaseWalker {
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 
-    List<Node> nextQ;
-    private int restartcounter = 0;
+	
     private double probability = 1.0;
 >>>>>>> added ForestFireWalker
 
@@ -87,12 +90,16 @@ public class FFWalker extends AWalker {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 	/* (non-Javadoc)
 	 * @see gtna.transformation.sampling.walker.BFSBaseWalker#chooseNodesToAddToQ(java.util.Collection)
 	 */
 	@Override
 	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> toFilter) {
 		Random r = this.getRNG();
+<<<<<<< HEAD
 =======
     /*
      * (non-Javadoc)
@@ -155,6 +162,8 @@ public class FFWalker extends AWalker {
     private Collection<Node> filterByProbability(Collection<Node> toFilter){
     	Random r = this.getRNG();
 >>>>>>> added ForestFireWalker
+=======
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
     	Collection<Node> filtered = new ArrayList<Node>();
     	double pn = 0.0;
     	for(Node n : toFilter){
@@ -165,6 +174,7 @@ public class FFWalker extends AWalker {
     	}
     	
     	return filtered;
+<<<<<<< HEAD
 <<<<<<< HEAD
 	}
 
@@ -191,5 +201,9 @@ public class FFWalker extends AWalker {
 	return nn;
     }
 >>>>>>> added ForestFireWalker
+=======
+	}
+
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 
 }

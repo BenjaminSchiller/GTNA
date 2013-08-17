@@ -61,12 +61,16 @@ import gtna.transformation.sampling.NetworkSample;
  * 
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
 public class RDSWalker extends BFSBaseWalker {
 
 	int amountOfAddedNodesPerStep = 1;
 	
 =======
 public class RDSWalker extends AWalker {
+=======
+public class RDSWalker extends BFSBaseWalker {
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 
 	int amountOfAddedNodesPerStep = 1;
 	List<Node> nextQ;
@@ -92,6 +96,7 @@ public class RDSWalker extends AWalker {
 		amountOfAddedNodesPerStep = i;
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	
 =======
@@ -151,16 +156,24 @@ public class RDSWalker extends AWalker {
 	}
 
 >>>>>>> implemented RDS
+=======
+	
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 	/**
 	 * @param cn
 	 * @return
 	 */
+<<<<<<< HEAD
 <<<<<<< HEAD
 	@Override
 	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> cn) {
 =======
 	private Collection<Node> chooseNodesToAddToQ(Collection<Node> cn) {
 >>>>>>> implemented RDS
+=======
+	@Override
+	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> cn) {
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 		Collection<Node> q = new ArrayList<Node>();
 		ArrayList<Node> temp = new ArrayList<Node>();
 		Collection<Node> temp1 = new ArrayList<Node>();
@@ -188,6 +201,7 @@ public class RDSWalker extends AWalker {
 		return q;
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	
 =======
@@ -225,5 +239,8 @@ public class RDSWalker extends AWalker {
 		return nn;
 	}
 >>>>>>> implemented RDS
+=======
+	
+>>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 
 }
