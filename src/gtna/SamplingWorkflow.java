@@ -229,10 +229,10 @@ public class SamplingWorkflow {
 				randomSeed);
 
 		// Transformation subgraphing = new ExtractSampledSubgraph();
-//		 Transformation subgraphing = new ColorSampledSubgraph();
-		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
+		 Transformation subgraphing = new ColorSampledSubgraph();
+//		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
-		Transformation[] t1 = new Transformation[] { sampling, sampling9, subgraphing };
+		Transformation[] t1 = new Transformation[] { sampling, sampling7, sampling8, sampling9, subgraphing };
 		return t1;
 	}
 
