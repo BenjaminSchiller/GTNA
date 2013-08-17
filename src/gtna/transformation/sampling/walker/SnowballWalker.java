@@ -62,6 +62,7 @@ public class SnowballWalker extends BFSBaseWalker {
 
 	int amountOfAddedNodesPerStep = 1;
 	
+<<<<<<< HEAD
 =======
 public class SnowballWalker extends AWalker {
 =======
@@ -72,6 +73,8 @@ public class SnowballWalker extends BFSBaseWalker {
 	List<Node> nextQ;
 	private int restartcounter = 0;
 >>>>>>> added SnowballWalker
+=======
+>>>>>>> removed unnecessary fields in child classes
 
 	/**
 	 * @param walker
@@ -79,10 +82,14 @@ public class SnowballWalker extends BFSBaseWalker {
 	public SnowballWalker() {
 		super("SNOWBALL_WALKER");
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
 =======
 		nextQ = new LinkedList<Node>();
 >>>>>>> added SnowballWalker
+=======
+	
+>>>>>>> removed unnecessary fields in child classes
 	}
 
 	/**
@@ -175,6 +182,7 @@ public class SnowballWalker extends BFSBaseWalker {
 			temp.clear();
 			temp.addAll(temp1);
 			
+<<<<<<< HEAD
 			int m = Math.min(amountOfAddedNodesPerStep, temp.size());
 			for (int i = 0; i < m; i++) {
 				q.add(temp.get(i));
@@ -203,6 +211,8 @@ public class SnowballWalker extends BFSBaseWalker {
 			temp.addAll(temp1);
 			Random r = this.getRNG();
 
+=======
+>>>>>>> removed unnecessary fields in child classes
 			int m = Math.min(amountOfAddedNodesPerStep, temp.size());
 			for (int i = 0; i < m; i++) {
 				q.add(temp.get(i));
@@ -211,6 +221,7 @@ public class SnowballWalker extends BFSBaseWalker {
 		return q;
 	}
 
+<<<<<<< HEAD
 	/**
 	 * @param node
 	 * @return
@@ -249,4 +260,6 @@ public class SnowballWalker extends BFSBaseWalker {
 >>>>>>> added SnowballWalker
 =======
 >>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
+=======
+>>>>>>> removed unnecessary fields in child classes
 }
