@@ -38,9 +38,13 @@ package gtna.transformation.sampling.walker;
 import java.util.ArrayList;
 import java.util.Collection;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.Deque;
 =======
 >>>>>>> implemented RDS
+=======
+import java.util.Deque;
+>>>>>>> removed unnecessary fields in child classes
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,6 +70,7 @@ public class RDSWalker extends BFSBaseWalker {
 
 	int amountOfAddedNodesPerStep = 1;
 	
+<<<<<<< HEAD
 =======
 public class RDSWalker extends AWalker {
 =======
@@ -76,6 +81,8 @@ public class RDSWalker extends BFSBaseWalker {
 	List<Node> nextQ;
 	private int restartcounter = 0;
 >>>>>>> implemented RDS
+=======
+>>>>>>> removed unnecessary fields in child classes
 
 	/**
 	 * @param walker
@@ -83,9 +90,12 @@ public class RDSWalker extends BFSBaseWalker {
 	public RDSWalker() {
 		super("RDS_WALKER");
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		nextQ = new LinkedList<Node>();
 >>>>>>> implemented RDS
+=======
+>>>>>>> removed unnecessary fields in child classes
 	}
 
 	/**

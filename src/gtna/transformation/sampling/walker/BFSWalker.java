@@ -105,8 +105,11 @@ public class BFSWalker extends BFSBaseWalker {
 	super("RANDOM_WALK_WALKER");
 =======
 	super("BFS_WALKER");
+<<<<<<< HEAD
 >>>>>>> fixed bfs
 	nextQ = new LinkedList<Node>();
+=======
+>>>>>>> removed unnecessary fields in child classes
     }
 
 	/* (non-Javadoc)
