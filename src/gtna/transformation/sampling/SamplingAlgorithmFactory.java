@@ -249,6 +249,19 @@ public class SamplingAlgorithmFactory {
 			
 			algorithm = "RESPONDENT_DRIVEN_SAMPLING";
 			break;
+		case FORESTFIRE:
+			as = new VisitedNodeSampler();
+			aw = new FFWalker(0.3);
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			cw.add(aw);
+			awc = new RandomWalkWalkerController(cw, cf);
+			aw.setWalkerController(awc);
+			as.setWalkerController(awc);
+			
+			algorithm = "RESPONDENT_DRIVEN_SAMPLING";
+			break;
 		default:
 			throw new IllegalArgumentException("Not supported algorithm");
 	}
