@@ -112,7 +112,10 @@ public abstract class BFSBaseWalker extends AWalker {
 
 		Collection<Collection<Node>> toQ = cc.values();
 		for (Collection<Node> cn : toQ) {
-			nextQ.addAll(chooseNodesToAddToQ(cn));
+			Collection<Node> a = chooseNodesToAddToQ(cn);
+			for(Node ai : a){
+				nextQ.addLast(ai);
+			}
 		}
 
 		Node next = this.selectNextNode(new ArrayList<Node>());
