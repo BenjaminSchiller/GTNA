@@ -52,14 +52,26 @@ import gtna.transformation.sampling.NetworkSample;
  * @author Tim
  * 
  */
-public class BFSWalker extends BFSBaseWalker {
+public class FFWalker extends BFSBaseWalker {
 
-    
+	
+    private double probability = 1.0;
+
     /**
      * @param walker
      */
-    public BFSWalker() {
-	super("BFS_WALKER");
+    public FFWalker() {
+	super("FF_WALKER");
+	nextQ = new LinkedList<Node>();
+    }
+    
+    /**
+     * Returns an instance of a ForestFire Walker, adding nodes with the given probability to the Q
+     * @param probability	probability of adding the neighbor-nodes to the Q, if 1.0 this is a BFSWalker	
+     */
+    public FFWalker(double probability){
+    	this();
+    	this.probability = probability;
     }
 
 	/* (non-Javadoc)
@@ -67,8 +79,18 @@ public class BFSWalker extends BFSBaseWalker {
 	 */
 	@Override
 	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> toFilter) {
-		return toFilter; // all nodes are added.
+		Random r = this.getRNG();
+    	Collection<Node> filtered = new ArrayList<Node>();
+    	double pn = 0.0;
+    	for(Node n : toFilter){
+    		pn = r.nextDouble();
+    		if(pn <= probability){
+    			filtered.add(n);
+    		}
+    	}
+    	
+    	return filtered;
 	}
 
-    
+
 }
