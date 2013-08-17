@@ -42,6 +42,7 @@ import gtna.transformation.sampling.sampler.RoundBasedVisitedNodeSampler;
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
 import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
 import gtna.transformation.sampling.walker.BFSWalker;
+import gtna.transformation.sampling.walker.DFSWalker;
 import gtna.transformation.sampling.walker.FFWalker;
 import gtna.transformation.sampling.walker.RDSWalker;
 import gtna.transformation.sampling.walker.RandomJumpWalker;
@@ -276,6 +277,19 @@ public class SamplingAlgorithmFactory {
 			as.setWalkerController(awc);
 			
 			algorithm = "FOREST_FIRE_SAMPLING";
+			break;
+		case DFS:
+			as = new VisitedNodeSampler();
+			aw = new DFSWalker();
+			cf = new CandidateFilter(revisiting);
+			sns = new StartNodeSelector("RANDOM");
+			cw = new ArrayList<AWalker>();
+			cw.add(aw);
+			awc = new RandomWalkWalkerController(cw, cf);
+			aw.setWalkerController(awc);
+			as.setWalkerController(awc);
+			
+			algorithm = "DFS_SAMPLING";
 			break;
 		default:
 			throw new IllegalArgumentException("Not supported algorithm");
