@@ -491,12 +491,15 @@ public class SamplingWorkflow {
 		Transformation sampling10 = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.DFS, scaledown, revisiting, dimension,
 				randomSeed);
+		Transformation sampling11 = SamplingAlgorithmFactory.getInstanceOf(
+				SamplingAlgorithm.RANDOMWALK_METROPOLIZED, scaledown, revisiting, dimension,
+				randomSeed);
 
 		// Transformation subgraphing = new ExtractSampledSubgraph();
 		 Transformation subgraphing = new ColorSampledSubgraph();
 //		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
-		Transformation[] t1 = new Transformation[] { sampling10, subgraphing };
+		Transformation[] t1 = new Transformation[] { sampling11, subgraphing };
 		return t1;
 	}
 
@@ -579,7 +582,7 @@ public class SamplingWorkflow {
 //		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 //		Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
 
-		Network[] n = new Network[] { nw4 };
+		Network[] n = new Network[] { nw1 };
 		return n;
 	}
 
