@@ -163,6 +163,10 @@ public abstract class AWalker extends Parameter {
     public Graph getGraph() {
 	return controller.getGraph();
     }
+    
+    public Collection<Node> getCurrentNodes(){
+    	return currents;
+    }
 
     /**
      * @param nodesToFilter
