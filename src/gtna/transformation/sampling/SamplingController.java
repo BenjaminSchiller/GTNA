@@ -235,21 +235,25 @@ public class SamplingController extends Transformation {
 	int round = 0;
 	walkerController.initialize(startNodes); // place walker(s) on start
 						    // node(s)
-	sampler.initialize(g, targetSampleSize, round); // initialize Sampler
+	Collection<Node> s = sampler.initialize(g, targetSampleSize, round); // initialize Sampler
+//	if(s.size() > 0)
+//		networkSample.addNodeToSample(s, round);
 
 
 	boolean running = true;
 	// walk -> sample loop as long new nodes are sampled
 	do {
-	    round++;
-	    // walk
-	    walkerController.walkOneStep();
+	    
 	    // eventually sample
 	    sampleOneStep(g, maxNodesInThisRound, round);
 
+	    // walk
+	    walkerController.walkOneStep();
+	    
 	    // calculate residual budget
 	    maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
 	    running = (maxNodesInThisRound > 0) ? true : false;
+	    round++;
 	} while (running);
 
 	return true;
