@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * VisitedNodeSampler.java
+ * RandomWalkWalkerController.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,42 +33,57 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.sampling.sampler;
+package gtna.transformation.sampling.walkercontroller;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 import gtna.graph.Node;
-import gtna.transformation.sampling.ASampler;
+import gtna.transformation.sampling.AWalker;
+import gtna.transformation.sampling.AWalkerController;
+import gtna.transformation.sampling.CandidateFilter;
 
 /**
  * @author Tim
- *
+ * 
  */
-public class VisitedNodeSampler extends ASampler {
+public class MultipleRandomWalkWalkerController extends AWalkerController {
 
-    /**
-     * @param key
-     * @param value
-     */
-    public VisitedNodeSampler() {
-	super("VISITED_NODE_SAMPLER");
-    }
+	public CandidateFilter cf;
+	Collection<AWalker> walkers;
 
-    /* (non-Javadoc)
-     * @see gtna.transformation.sampling.ASampler#sampleNodes(java.util.Map)
-     */
-    @Override
-    protected Collection<Node> sampleNodes(
-	    Map<Node, Collection<Node>> filteredCandidates, int round) {
-	
-	Collection<Node> selected = new ArrayList<Node>();
-	
-	// add keySet as we sample all visited nodes!
-	selected.addAll(filteredCandidates.keySet());
+	public MultipleRandomWalkWalkerController(Collection<AWalker> w, CandidateFilter cf) {
+		super(w.size() + "x_" + w.toArray(new AWalker[0])[0].getValue(), w, cf);
 
-	return selected;
-    }
+		this.walkers = w;
+		this.cf = cf; 
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.sampling.AWalkerController#initialize(gtna.graph.
+	 * Node[])
+	 */
+	@Override
+	public void initialize(Node[] startNodes) {
+		AWalker[] wa = walkers.toArray(new AWalker[0]);
+		for (int i = 0; i < walkers.size(); i++) {
+			// if #walkers > #startNodes assign startnodes with wraparound
+			int snid = i % startNodes.length;
+			wa[i].setStartNode(startNodes[snid]);
+		}
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.transformation.sampling.AWalkerController#getActiveWalkers()
+	 */
+	@Override
+	protected Collection<AWalker> getActiveWalkers() {
+		return walkers; // by definition only one walker
+	}
 
 }

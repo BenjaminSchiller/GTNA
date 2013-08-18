@@ -36,10 +36,12 @@
 package gtna.transformation.sampling;
 
 import java.util.Collection;
+import java.util.Random;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
+import gtna.util.DeterministicRandom;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
@@ -62,7 +64,20 @@ public class SamplingController extends Transformation {
     private double scaledown;
     @SuppressWarnings({ "unused" })
     private boolean revisiting;
+    private Node[] startNodes;
+    private Random rng;
 
+    
+    
+    public SamplingController(String algorithm, AWalkerController awc,
+	    ASampler as, StartNodeSelector asns, double scaledown,
+	    int dimension, boolean revisiting, Long randomSeed) {
+	this(algorithm, awc, as, asns, scaledown, dimension, revisiting);
+	if(randomSeed != null)
+	    this.setRng(new DeterministicRandom(randomSeed));
+
+    }
+    
     /**
      * @param algorithm
      *            name of the algorithm implemented with this instance
@@ -101,13 +116,14 @@ public class SamplingController extends Transformation {
 		    "Scaledown has to be in [0,1] but is: " + scaledown);
 	}
 
+	this.setRng(new Random());
 	this.scaledown = scaledown;
 	this.dimension = dimension;
 	this.revisiting = revisiting;
 	this.sampler = as;
 	this.walkerController = awc;
 	this.startNodeSelector = asns;
-	this.networkSample = new NetworkSample();
+	this.networkSample = new NetworkSample(algorithm, scaledown, dimension, revisiting);
 
     }
 
@@ -127,8 +143,25 @@ public class SamplingController extends Transformation {
 	    System.out.println("\n> Sampled " + networkSample.getSampleSize()
 		    + " out of " + g.getNodeCount() + " nodes.");
 	    System.out.println("\n\n> Mapping: \n" + networkSample.toString());
+	    
+	    int[] sn = collectStartNodeIndices();
+	    Sample s = new Sample(networkSample, sn, rng);
+	    g.addProperty(graph.getNextKey("SAMPLE"), s);
+	    
+	    networkSample = new NetworkSample();
 	    return g;
 	}
+    }
+
+    /**
+     * @return
+     */
+    private int[] collectStartNodeIndices() {
+	int[] sn = new int[startNodes.length];
+	for(int i = 0; i < sn.length; i++) {
+	sn[i] = startNodes[i].getIndex();
+	}
+	return sn;
     }
 
     /*
@@ -195,14 +228,14 @@ public class SamplingController extends Transformation {
      * @return true if ok
      */
     public boolean sampleGraph(Graph g) {
-	Node[] startNodes = startNodeSelector.selectStartNodes(g, dimension);
+	startNodes = startNodeSelector.selectStartNodes(g, dimension, rng);
 
 	int targetSampleSize = (int) Math.ceil(g.getNodeCount() * scaledown);
 	int maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
 	int round = 0;
 	walkerController.initialize(startNodes); // place walker(s) on start
 						    // node(s)
-	sampler.initialize(g, targetSampleSize); // initialize Sampler
+	sampler.initialize(g, targetSampleSize, round); // initialize Sampler
 
 
 	boolean running = true;
@@ -232,7 +265,7 @@ public class SamplingController extends Transformation {
      * @return true if at least one node is sampled, else false
      */
     private boolean sampleOneStep(Graph g, int maxNodesInThisRound, int round) {
-	Collection<Node> chosenNodes = sampler.sampleOneStep(maxNodesInThisRound);
+	Collection<Node> chosenNodes = sampler.sampleOneStep(maxNodesInThisRound, round);
 	if (chosenNodes.size() > 0)
 	    return networkSample.addNodeToSample(chosenNodes, round);
 
@@ -329,6 +362,20 @@ public class SamplingController extends Transformation {
      */
     public void setNetworkSample(NetworkSample networkSample) {
 	this.networkSample = networkSample;
+    }
+
+    /**
+     * @return the rng
+     */
+    public Random getRng() {
+	return rng;
+    }
+
+    /**
+     * @param rng the rng to set
+     */
+    public void setRng(Random rng) {
+	this.rng = rng;
     }
 
 }

@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * VisitedNodeSampler.java
+ * DeterministicRandom.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,42 +33,59 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.sampling.sampler;
+package gtna.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-
-import gtna.graph.Node;
-import gtna.transformation.sampling.ASampler;
+import java.util.Random;
 
 /**
  * @author Tim
  *
  */
-public class VisitedNodeSampler extends ASampler {
+public class DeterministicRandom extends Random {
+
+    private Long configuredSeed;
 
     /**
-     * @param key
-     * @param value
+     * Create a standard RNG without configured seed
      */
-    public VisitedNodeSampler() {
-	super("VISITED_NODE_SAMPLER");
+    public DeterministicRandom() {
+	super();
     }
-
-    /* (non-Javadoc)
-     * @see gtna.transformation.sampling.ASampler#sampleNodes(java.util.Map)
+    
+    /**
+     * Create a standard RNG and initialize with the given seed
+     * @param seed
      */
-    @Override
-    protected Collection<Node> sampleNodes(
-	    Map<Node, Collection<Node>> filteredCandidates, int round) {
-	
-	Collection<Node> selected = new ArrayList<Node>();
-	
-	// add keySet as we sample all visited nodes!
-	selected.addAll(filteredCandidates.keySet());
-
-	return selected;
+    public DeterministicRandom(Long seed) {
+	super();
+	if(seed != null) {
+	    this.setSeed(seed);
+	    this.configuredSeed = seed;
+	}
     }
-
+    
+    /**
+     * reset RNG with the saved seed, iff a seed was given earlier
+     */
+    public void resetSeed() {
+	if(configuredSeed != null)
+	    this.setSeed(configuredSeed);
+    }
+    
+    public void setNewSeed(Long seed) {
+	if(seed != null) {
+	    this.setSeed(seed);
+	    this.configuredSeed = seed;
+	}
+    }
+    
+    /**
+     * Returns the seed of the RNG
+     * @return	Seed or <b>NULL</b> of no seed is set
+     */
+    public Long getConfiguredSeed() {
+	return configuredSeed;
+    }
+    
+    
 }

@@ -42,7 +42,9 @@ import gtna.util.parameter.Parameter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -52,7 +54,7 @@ import java.util.Set;
 public abstract class AWalker extends Parameter {
 
     private AWalkerController controller;
-    private Collection<Node> currents;
+    protected Collection<Node> currents;
   
     /**
      * create a walker instance
@@ -76,7 +78,8 @@ public abstract class AWalker extends Parameter {
     /**
      * Returns the current neighbors of current nodes of the walker
      * 
-     * @return Map: key: current node value: neighbors of the current node
+     * @return Map: 	<br><b>key</b>: current node 
+     * 			<br><b>value</b>: neighbors of the current node
      */
     public Map<Node, Collection<Node>> getCurrentCandidates() {
 	Map<Node, Collection<Node>> cn = new HashMap<Node, Collection<Node>>();
@@ -139,7 +142,7 @@ public abstract class AWalker extends Parameter {
      * 
      * @return collection of new start nodes
      */
-    private Collection<Node> getRestartNodes() {
+    protected Collection<Node> getRestartNodes() {
 	return this.controller.getRestartNodes();
     }
 
@@ -163,6 +166,21 @@ public abstract class AWalker extends Parameter {
     
     public Collection<Node> getCurrentNodes(){
     	return currents;
+    }
+
+    /**
+     * @param nodesToFilter
+     * @return
+     */
+    public Collection<Node> filterCandidates(List<Node> nodesToFilter) {
+	return controller.filterCandidates(nodesToFilter);
+    }
+
+    /**
+     * @return
+     */
+    public Random getRNG() {
+	return controller.getRNG();
     }
 
 }

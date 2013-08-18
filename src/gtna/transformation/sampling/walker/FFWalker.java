@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * VisitedNodeSampler.java
+ * RandomWalkWalker.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,42 +33,64 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.sampling.sampler;
+package gtna.transformation.sampling.walker;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.transformation.sampling.ASampler;
+import gtna.transformation.sampling.AWalker;
+import gtna.transformation.sampling.NetworkSample;
 
 /**
  * @author Tim
- *
+ * 
  */
-public class VisitedNodeSampler extends ASampler {
+public class FFWalker extends BFSBaseWalker {
+
+	
+    private double probability = 1.0;
 
     /**
-     * @param key
-     * @param value
+     * @param walker
      */
-    public VisitedNodeSampler() {
-	super("VISITED_NODE_SAMPLER");
+    public FFWalker() {
+	super("FF_WALKER");
+	nextQ = new LinkedList<Node>();
+    }
+    
+    /**
+     * Returns an instance of a ForestFire Walker, adding nodes with the given probability to the Q
+     * @param probability	probability of adding the neighbor-nodes to the Q, if 1.0 this is a BFSWalker	
+     */
+    public FFWalker(double probability){
+    	this();
+    	this.probability = probability;
     }
 
-    /* (non-Javadoc)
-     * @see gtna.transformation.sampling.ASampler#sampleNodes(java.util.Map)
-     */
-    @Override
-    protected Collection<Node> sampleNodes(
-	    Map<Node, Collection<Node>> filteredCandidates, int round) {
-	
-	Collection<Node> selected = new ArrayList<Node>();
-	
-	// add keySet as we sample all visited nodes!
-	selected.addAll(filteredCandidates.keySet());
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.walker.BFSBaseWalker#chooseNodesToAddToQ(java.util.Collection)
+	 */
+	@Override
+	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> toFilter) {
+		Random r = this.getRNG();
+    	Collection<Node> filtered = new ArrayList<Node>();
+    	double pn = 0.0;
+    	for(Node n : toFilter){
+    		pn = r.nextDouble();
+    		if(pn <= probability){
+    			filtered.add(n);
+    		}
+    	}
+    	
+    	return filtered;
+	}
 
-	return selected;
-    }
 
 }

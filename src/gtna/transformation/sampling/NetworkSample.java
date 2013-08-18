@@ -52,6 +52,10 @@ public class NetworkSample extends Parameter {
 
     Map<Integer, List<Integer>> revisitFrequency;
     Map<Integer, Integer> sampleNodeMapping;
+    private String algorithm;
+    private double scaledown;
+    private int dimension;
+    private boolean revisiting;
 
     /**
      * @param key
@@ -62,6 +66,23 @@ public class NetworkSample extends Parameter {
 
 	sampleNodeMapping = new HashMap<Integer, Integer>();
 	revisitFrequency = new HashMap<Integer, List<Integer>>();
+    }
+
+    /**
+     * @param algorithm
+     * @param scaledown
+     * @param dimension
+     * @param revisiting
+     */
+    public NetworkSample(String algorithm, double scaledown, int dimension,
+	    boolean revisiting) {
+	super("Network_SAMPLE", "standard");
+	sampleNodeMapping = new HashMap<Integer, Integer>();
+	revisitFrequency = new HashMap<Integer, List<Integer>>();
+	this.algorithm = algorithm;
+	this.scaledown = scaledown;
+	this.dimension = dimension;
+	this.revisiting = revisiting;
     }
 
     /**
@@ -225,12 +246,100 @@ public class NetworkSample extends Parameter {
 
     private String printMapping() {
 	StringBuilder sb = new StringBuilder();
-	sb.append("Network Sample (NodeId-mapping): \n");
 	for (int n : sampleNodeMapping.keySet()) {
-	    sb.append("> " + n + "-> " + sampleNodeMapping.get(n) + "\n");
+	    Integer newId = sampleNodeMapping.get(n);
+	    String rf = getRevisitFrequencyString(revisitFrequency.get(n));
+	    
+	    sb.append(n + ";" + newId + ";" + rf + "\n");
 	}
 
 	return sb.toString();
+    }
+
+    /**
+     * @param list
+     * @return
+     */
+    private String getRevisitFrequencyString(List<Integer> list) {
+	String rf = "";
+	
+	for(Integer i : list) {
+	    if(rf.equals("")) {
+		rf = i.toString();
+	    } else {
+		rf = rf + "," + i.toString();
+	    }
+	    
+	}
+	
+	return rf;
+    }
+
+    /**
+     * @return the algorithm
+     */
+    public String getAlgorithm() {
+        return this.algorithm;
+    }
+
+    /**
+     * @param algorithm the algorithm to set
+     */
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    /**
+     * @return the scaledown
+     */
+    public double getScaledown() {
+        return this.scaledown;
+    }
+
+    /**
+     * @param scaledown the scaledown to set
+     */
+    public void setScaledown(double scaledown) {
+        this.scaledown = scaledown;
+    }
+
+    /**
+     * @return the dimension
+     */
+    public int getDimension() {
+        return this.dimension;
+    }
+
+    /**
+     * @param dimension the dimension to set
+     */
+    public void setDimension(int dimension) {
+        this.dimension = dimension;
+    }
+
+    /**
+     * @return the revisiting
+     */
+    public boolean isRevisiting() {
+        return this.revisiting;
+    }
+
+    /**
+     * @param revisiting the revisiting to set
+     */
+    public void setRevisiting(boolean revisiting) {
+        this.revisiting = revisiting;
+    }
+
+    /**
+     * @param oldId
+     * @param newId
+     * @param rf
+     */
+    public void addNodeEntry(int oldId, int newId, List<Integer> rf) {
+	sampleNodeMapping.put(oldId, newId);
+	revisitFrequency.put(oldId, rf);
+	
     }
 
 }

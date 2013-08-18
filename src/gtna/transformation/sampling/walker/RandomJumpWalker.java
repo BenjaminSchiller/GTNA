@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * UniformRandomWalker.java
+ * RandomWalkWalker.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -43,50 +43,65 @@ import java.util.Random;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
-import gtna.transformation.sampling.AWalkerController;
 
 /**
  * @author Tim
  *
  */
-public class UniformRandomWalker extends AWalker {
+public class RandomJumpWalker extends AWalker {
+    	
+    	double pJump;
+	/**
+	 * @param walker
+	 */
+	public RandomJumpWalker(double c) {
+		super("RANDOM_JUMP(" + c + ")_WALKER");
+		this.pJump = c;
+	}
 
-    /**
-     * @param key
-     * @param value
-     * @param awc
-     */
-    public UniformRandomWalker() {
-	super("UNIFORM_RANDOM_WALKER");
-    }
-
-    /* (non-Javadoc)
-     * @see gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
-     */
-    @Override
-    protected Node selectNextNode(Collection<Node> candidates) {
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
+	 */
+	@Override
+	protected Node selectNextNode(Collection<Node> candidates) {
+	    Random r = super.getRNG();
+	    
+	    double c = r.nextDouble();
+	    
+	    if(c > pJump) {		
+		int next = r.nextInt(candidates.size());
+		next = next % candidates.size();
+		System.err.println("Walking!");
+		return candidates.toArray(new Node[0])[next];
+	    }else {
+		Graph g = super.getGraph();
+		Collection<Node> fc = super.filterCandidates(Arrays.asList(g.getNodes()));
+		
+		int next = r.nextInt(fc.size());
+		
+		System.err.println("Jumping!");
+		return fc.toArray(new Node[0])[next];
+	    }
+	}
 	
 	
-	int next = super.getRNG().nextInt(candidates.size());
-	next = next % candidates.size();
-	return candidates.toArray(new Node[0])[next];
-	
-    }
-    
-    /**
-     * Returns all nodes of the graph as candidates
+	 /**
+     * returns the list of neighbors as candidates
+     * 
      * @param g
      *            Graph
      * @param n
      *            Current node
      * @return List of candidates
      */
-    @Override
-	public Collection<Node> resolveCandidates(Graph g, Node n){
-		Collection<Node> c = new ArrayList<Node>();
-		c.addAll(Arrays.asList(g.getNodes()));
-		
-		return c;
-	}
+	@Override
+    public Collection<Node> resolveCandidates(Graph g, Node n) {
+    	int[] nids = n.getOutgoingEdges();
+    	ArrayList<Node> nn = new ArrayList<Node>();
+    	for (int i : nids) {
+    		nn.add(g.getNode(i));
+    	}
+    	return nn;
+    }
 
 }

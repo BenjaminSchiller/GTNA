@@ -40,13 +40,16 @@ import java.util.Collection;
 
 import gtna.transformation.sampling.sampler.RoundBasedVisitedNodeSampler;
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
+<<<<<<< HEAD
 import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
+=======
 import gtna.transformation.sampling.walker.BFSWalker;
 import gtna.transformation.sampling.walker.DFSWalker;
 import gtna.transformation.sampling.walker.FFWalker;
 import gtna.transformation.sampling.walker.RDSWalker;
 import gtna.transformation.sampling.walker.RandomJumpWalker;
 import gtna.transformation.sampling.walker.RandomWalkDegreeCorrectionWalker;
+>>>>>>> develop
 import gtna.transformation.sampling.walker.RandomWalkWalker;
 import gtna.transformation.sampling.walker.SnowballWalker;
 import gtna.transformation.sampling.walker.UniformRandomWalker;
@@ -128,22 +131,15 @@ public class SamplingAlgorithmFactory {
 			
 			algorithm = "RANDOM_WALK";
 			break;
+<<<<<<< HEAD
 		case RANDOMWALK_METROPOLIZED:
 			as = new VisitedNodeSampler();
 			aw = new MetropolizedRandomWalkWalker();
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			cw.add(aw);
-			awc = new RandomWalkWalkerController(cw, cf);
-			aw.setWalkerController(awc);
-			as.setWalkerController(awc);
-			
-			algorithm = "METROPOLIZED_RANDOM_WALK";
-			break;
+=======
 		case RANDOMWALK_DEGREECORRECTION:
 			as = new VisitedNodeSampler();
 			aw = new RandomWalkDegreeCorrectionWalker();
+>>>>>>> develop
 			cf = new CandidateFilter(revisiting);
 			sns = new StartNodeSelector("RANDOM");
 			cw = new ArrayList<AWalker>();
@@ -152,6 +148,9 @@ public class SamplingAlgorithmFactory {
 			aw.setWalkerController(awc);
 			as.setWalkerController(awc);
 			
+<<<<<<< HEAD
+			algorithm = "METROPOLIZED_RANDOM_WALK";
+=======
 			algorithm = "RANDOM_WALK_WITH_DEGREE_CORRECTION";
 			break;
 		case RANDOMWALK_MULTIPLE:
@@ -290,6 +289,7 @@ public class SamplingAlgorithmFactory {
 			as.setWalkerController(awc);
 			
 			algorithm = "DFS_SAMPLING";
+>>>>>>> develop
 			break;
 		default:
 			throw new IllegalArgumentException("Not supported algorithm");

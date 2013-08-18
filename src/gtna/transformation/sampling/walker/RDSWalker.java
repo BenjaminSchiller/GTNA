@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * VisitedNodeSampler.java
+ * RandomWalkWalker.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,42 +33,80 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.sampling.sampler;
+package gtna.transformation.sampling.walker;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.transformation.sampling.ASampler;
+import gtna.transformation.sampling.AWalker;
+import gtna.transformation.sampling.NetworkSample;
 
 /**
  * @author Tim
- *
+ * 
  */
-public class VisitedNodeSampler extends ASampler {
+public class RDSWalker extends BFSBaseWalker {
 
-    /**
-     * @param key
-     * @param value
-     */
-    public VisitedNodeSampler() {
-	super("VISITED_NODE_SAMPLER");
-    }
-
-    /* (non-Javadoc)
-     * @see gtna.transformation.sampling.ASampler#sampleNodes(java.util.Map)
-     */
-    @Override
-    protected Collection<Node> sampleNodes(
-	    Map<Node, Collection<Node>> filteredCandidates, int round) {
+	int amountOfAddedNodesPerStep = 1;
 	
-	Collection<Node> selected = new ArrayList<Node>();
-	
-	// add keySet as we sample all visited nodes!
-	selected.addAll(filteredCandidates.keySet());
 
-	return selected;
-    }
+	/**
+	 * @param walker
+	 */
+	public RDSWalker() {
+		super("RDS_WALKER");
+	}
+
+	/**
+	 * @param i
+	 */
+	public RDSWalker(int i) {
+		this();
+		amountOfAddedNodesPerStep = i;
+	}
+
+	
+	/**
+	 * @param cn
+	 * @return
+	 */
+	@Override
+	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> cn) {
+		Collection<Node> q = new ArrayList<Node>();
+		ArrayList<Node> temp = new ArrayList<Node>();
+		Collection<Node> temp1 = new ArrayList<Node>();
+
+		temp.addAll(cn);
+		temp1 = this.filterCandidates(temp);
+		if (temp1.size() <= amountOfAddedNodesPerStep) {
+			q.addAll(temp1);
+
+		} else {
+			temp.clear();
+			temp.addAll(temp1);
+			Random r = this.getRNG();
+
+			int m = Math.min(amountOfAddedNodesPerStep, temp.size());
+			for (int i = 0; i < m; i++) {
+				int ni = r.nextInt(temp.size());
+				while (q.contains(temp.get(ni))) {
+					ni = r.nextInt(temp.size());
+				}
+
+				q.add(temp.get(ni));
+			}
+		}
+		return q;
+	}
+
+	
 
 }

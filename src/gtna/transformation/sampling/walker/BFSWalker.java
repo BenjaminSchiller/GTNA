@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * VisitedNodeSampler.java
+ * RandomWalkWalker.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -33,42 +33,42 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.sampling.sampler;
+package gtna.transformation.sampling.walker;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.transformation.sampling.ASampler;
+import gtna.transformation.sampling.AWalker;
+import gtna.transformation.sampling.NetworkSample;
 
 /**
  * @author Tim
- *
+ * 
  */
-public class VisitedNodeSampler extends ASampler {
+public class BFSWalker extends BFSBaseWalker {
 
+    
     /**
-     * @param key
-     * @param value
+     * @param walker
      */
-    public VisitedNodeSampler() {
-	super("VISITED_NODE_SAMPLER");
+    public BFSWalker() {
+	super("BFS_WALKER");
     }
 
-    /* (non-Javadoc)
-     * @see gtna.transformation.sampling.ASampler#sampleNodes(java.util.Map)
-     */
-    @Override
-    protected Collection<Node> sampleNodes(
-	    Map<Node, Collection<Node>> filteredCandidates, int round) {
-	
-	Collection<Node> selected = new ArrayList<Node>();
-	
-	// add keySet as we sample all visited nodes!
-	selected.addAll(filteredCandidates.keySet());
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.walker.BFSBaseWalker#chooseNodesToAddToQ(java.util.Collection)
+	 */
+	@Override
+	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> toFilter) {
+		return toFilter; // all nodes are added.
+	}
 
-	return selected;
-    }
-
+    
 }
