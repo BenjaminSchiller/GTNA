@@ -97,7 +97,7 @@ public abstract class AWalker extends Parameter {
      * @param candidates
      * @return
      */
-    protected abstract Node selectNextNode(Collection<Node> candidates, Node current);
+    protected abstract Node selectNextNode(Collection<Node> candidates);
 
     /**
      * Move walker one step
@@ -130,7 +130,7 @@ public abstract class AWalker extends Parameter {
 
 	    } while (candidates.size() == 0);
 
-	    Node next = this.selectNextNode(candidates, n);
+	    Node next = this.selectNextNode(candidates);
 
 	    currents.remove(n);
 	    currents.add(next);
