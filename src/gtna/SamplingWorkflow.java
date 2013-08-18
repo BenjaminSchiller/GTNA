@@ -346,9 +346,9 @@ public class SamplingWorkflow {
 
 		// Sampling parameter
 		double scaledown = 0.25;
-		int dimension = 1;
+		int dimension = 2;
 		boolean revisiting = false;
-		Long rngSeed = null;
+		Long rngSeed = new Long(0);
 
 		String folder = "./plots/network-plot/";
 
@@ -471,7 +471,7 @@ public class SamplingWorkflow {
 				SamplingAlgorithm.RANDOMJUMP, scaledown, revisiting, dimension,
 				randomSeed);
 		Transformation sampling4 = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
+				SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown, revisiting, dimension,
 				randomSeed);
 		Transformation sampling5 = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.RANDOMSTROLL_DEGREECORRECTION, scaledown,
@@ -495,11 +495,11 @@ public class SamplingWorkflow {
 				SamplingAlgorithm.RANDOMWALK_METROPOLIZED, scaledown, revisiting, dimension,
 				randomSeed);
 
-		// Transformation subgraphing = new ExtractSampledSubgraph();
+//		 Transformation subgraphing = new ExtractSampledSubgraph();
 		 Transformation subgraphing = new ColorSampledSubgraph();
 //		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
-		Transformation[] t1 = new Transformation[] { sampling11, subgraphing };
+		Transformation[] t1 = new Transformation[] { sampling4, subgraphing };
 		return t1;
 	}
 
@@ -577,12 +577,12 @@ public class SamplingWorkflow {
 		Network nw2 = new BarabasiAlbert(500, 2, null);
 		Network nw3 = new WattsStrogatz(500, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(500, 3, 0.05, 0.0005, null);
-		Network nw5 = new Regular(100, 2, true, false, null);
+		Network nw5 = new Regular(100, 1, true, false, null);
 
 //		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 //		Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
 
-		Network[] n = new Network[] { nw1 };
+		Network[] n = new Network[] { nw5 };
 		return n;
 	}
 
