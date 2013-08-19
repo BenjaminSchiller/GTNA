@@ -41,6 +41,7 @@ import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -50,22 +51,25 @@ import gtna.id.plane.PlaneIdentifierSpaceSimple;
 >>>>>>> fixed bfs
 import gtna.io.graphReader.GraphReader;
 import gtna.io.graphReader.GtnaGraphReader;
+=======
+>>>>>>> separated workflow and tester
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
-import gtna.metrics.basic.ClusteringCoefficient;
-import gtna.metrics.basic.DegreeDistribution;
-import gtna.metrics.basic.ShortestPaths;
 import gtna.networks.Network;
+<<<<<<< HEAD
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
 >>>>>>> Workflow definition and implementation
+=======
+>>>>>>> separated workflow and tester
 import gtna.networks.util.ReadableFile;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 import gtna.util.Config;
@@ -85,6 +89,11 @@ import gtna.util.Config;
 import java.util.ArrayList;
 import java.util.Arrays;
 >>>>>>> Workflow definition and implementation
+=======
+import gtna.util.Config;
+
+import java.util.ArrayList;
+>>>>>>> separated workflow and tester
 import java.util.Collection;
 
 /**
@@ -93,6 +102,7 @@ import java.util.Collection;
  */
 public class SamplingWorkflow {
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	
@@ -364,6 +374,9 @@ public class SamplingWorkflow {
 
 >>>>>>> added SnowballSampling to SamplingAlgorithmFactory
 	}
+=======
+	
+>>>>>>> separated workflow and tester
 
 	/**
 	 * @param times
@@ -459,49 +472,7 @@ public class SamplingWorkflow {
 		return sampledNetworks.toArray(new Graph[0]);
 	}
 
-	private static Transformation[] instantiateSamplingTransformation(
-			double scaledown, int dimension, boolean revisiting, Long randomSeed) {
-		Transformation sampling = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.SNOWBALLSAMPLING, scaledown, revisiting,
-				dimension, randomSeed);
-		Transformation sampling2 = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.RANDOMSTROLL, scaledown, revisiting,
-				dimension, randomSeed);
-		Transformation sampling3 = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.RANDOMJUMP, scaledown, revisiting, dimension,
-				randomSeed);
-		Transformation sampling4 = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown, revisiting, dimension,
-				randomSeed);
-		Transformation sampling5 = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.RANDOMSTROLL_DEGREECORRECTION, scaledown,
-				revisiting, dimension, randomSeed);
-		Transformation sampling6 = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.UNIFORMSAMPLING, scaledown, revisiting,
-				dimension, randomSeed);
-		Transformation sampling7 = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.BFS, scaledown, revisiting, dimension,
-				randomSeed);
-		Transformation sampling8 = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.RESPONDENTDRIVENSAMPLING, scaledown, revisiting, dimension,
-				randomSeed);
-		Transformation sampling9 = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.FORESTFIRE, scaledown, revisiting, dimension,
-				randomSeed);
-		Transformation sampling10 = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.DFS, scaledown, revisiting, dimension,
-				randomSeed);
-		Transformation sampling11 = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.RANDOMWALK_METROPOLIZED, scaledown, revisiting, dimension,
-				randomSeed);
-
-//		 Transformation subgraphing = new ExtractSampledSubgraph();
-		 Transformation subgraphing = new ColorSampledSubgraph();
-//		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
-
-		Transformation[] t1 = new Transformation[] { sampling4, subgraphing };
-		return t1;
-	}
+	
 
 	public static Network[] loadNetworks(String folder, String[] networkPaths) {
 		Collection<Network> nets = new ArrayList<Network>();
@@ -572,19 +543,7 @@ public class SamplingWorkflow {
 		return g;
 	}
 
-	public static Network[] instantiateNetworkModels() {
-		Network nw1 = new ErdosRenyi(100, 3, false, null);
-		Network nw2 = new BarabasiAlbert(500, 2, null);
-		Network nw3 = new WattsStrogatz(500, 6, 0.2, null);
-		Network nw4 = new CondonAndKarp(500, 3, 0.05, 0.0005, null);
-		Network nw5 = new Regular(100, 1, true, false, null);
-
-//		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
-//		Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
-
-		Network[] n = new Network[] { nw5 };
-		return n;
-	}
+	
 
 	public static void calculateNetworkMetricsAndWriteToFile(
 			boolean getOrGenerate, int times, Metric[] metrics, Network[] nets,
