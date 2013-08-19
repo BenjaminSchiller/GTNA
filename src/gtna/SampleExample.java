@@ -45,13 +45,19 @@ import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
+<<<<<<< HEAD
 import gtna.networks.model.ZhouMondragon;
+=======
+>>>>>>> separated workflow and tester
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.transformation.sampling.subgraph.ColorSampledSubgraph;
+<<<<<<< HEAD
 import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
 import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
+=======
+>>>>>>> separated workflow and tester
 import gtna.util.Config;
 
 /**
@@ -77,10 +83,17 @@ public class SampleExample {
 		int times = 1; // how many generations?
 
 		// Sampling parameter
+<<<<<<< HEAD
 		double scaledown = 1.0;
 		int dimension = 1;
 		boolean revisiting = false;
 		Long rngSeed = null;
+=======
+		double scaledown = 0.20;
+		int dimension = 6;
+		boolean revisiting = false;
+		Long rngSeed = new Long(0);
+>>>>>>> separated workflow and tester
 
 		String folder = "./plots/network-plot/";
 
@@ -140,7 +153,11 @@ public class SampleExample {
 		 Transformation subgraphing = new ColorSampledSubgraph();
 //		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
+<<<<<<< HEAD
 		Transformation[] t1 = new Transformation[] { rw, subgraphing };
+=======
+		Transformation[] t1 = new Transformation[] { mrw, subgraphing };
+>>>>>>> separated workflow and tester
 		return t1;
 	}
 	
@@ -149,6 +166,7 @@ public class SampleExample {
 		Network nw2 = new BarabasiAlbert(500, 2, null);
 		Network nw3 = new WattsStrogatz(500, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(500, 3, 0.05, 0.0005, null);
+<<<<<<< HEAD
 		Network nw5 = new Regular(100, 2, true, false, null);
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -163,6 +181,11 @@ public class SampleExample {
 >>>>>>> bugfix bc (1)
 //		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 		
+=======
+		Network nw5 = new Regular(1000, 5, true, false, null);
+
+//		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
+>>>>>>> separated workflow and tester
 //		Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
 
 		Network[] n = new Network[] { nw5 };
