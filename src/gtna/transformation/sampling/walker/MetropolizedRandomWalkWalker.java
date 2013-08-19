@@ -83,7 +83,7 @@ public class MetropolizedRandomWalkWalker extends AWalker {
 
 			double p = r.nextDouble();
 
-			if (d < p) {
+			if (p < d) {
 				return nextStepCandidate; // move the walker to the next node
 			} else {
 				System.err.println("Stay, no moving: deg(old)/deg(candidate) - " + cDegree + "/" + nscDegree);
