@@ -35,6 +35,12 @@
  */
 package gtna.io.graphReader;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -59,28 +65,54 @@ public class SnapGraphReader extends GraphReader {
      */
     @Override
     public Graph read(String filename) {
-	String sep1 = Config.get("GRAPH_WRITER_SEPARATOR_1");
-	String sep2 = Config.get("GRAPH_WRITER_SEPARATOR_2");
+	String sep1 = Config.get("SNAP_SEPARATOR_1");
+	String ffd = Config.get("FILESYSTEM_FOLDER_DELIMITER");
 	Filereader fr = new Filereader(filename);
 	try {
 		String line = null;
-		String name = fr.readLine();
-		int V = Integer.parseInt(fr.readLine());
-		int E = Integer.parseInt(fr.readLine());
+		String name = filename.substring(filename.lastIndexOf(ffd)-1);
+//		int V = Integer.parseInt(fr.readLine());
+//		int E = Integer.parseInt(fr.readLine());
 		Graph graph = new Graph(name);
-		Node[] nodes = Node.init(V, graph);
-		Edges edges = new Edges(nodes, E);
+		
+		Map<Integer, List<Integer>> outgoing = new HashMap<Integer, List<Integer>>();
+		Map<Integer, List<Integer>> incoming = new HashMap<Integer, List<Integer>>();
+		
 		while ((line = fr.readLine()) != null) {
 			String[] temp = line.split(sep1);
 			if (temp.length < 2 || temp[1].length() == 0) {
 				continue;
 			}
 			int src = Integer.parseInt(temp[0]);
-			String[] temp2 = temp[1].split(sep2);
-			for (String dst : temp2) {
-				edges.add(src, Integer.parseInt(dst));
+			int dst = Integer.parseInt(temp[1]);
+			
+			if(outgoing.containsKey(src)){
+				List<Integer> oe = outgoing.get(src);
+				oe.add(dst);
+				outgoing.put(src, oe);
+			} else {
+				List<Integer> oe = new ArrayList<Integer>();
+				oe.add(dst);
+				outgoing.put(src, oe);
+			}
+			if(incoming.containsKey(dst)){
+				List<Integer> ie = incoming.get(dst);
+				ie.add(src);
+				incoming.put(src, ie);
+			} else {
+				List<Integer> ie = new ArrayList<Integer>();
+				ie.add(src);
+				outgoing.put(src, ie);
 			}
 		}
+		
+		Map<Integer, Integer> idMapping = new HashMap<Integer, Integer>();
+		idMapping = calculateIdMapping(outgoing, incoming);
+		outgoing = mapIds(idMapping, outgoing);
+		incoming = mapIds(idMapping, incoming);
+		Node[] nodes = Node.init(idMapping.size(), graph);
+		Edges edges = new Edges(nodes, outgoing.size());
+		addEdges(edges, outgoing);
 		edges.fill();
 		graph.setNodes(nodes);
 		return graph;
@@ -93,7 +125,78 @@ public class SnapGraphReader extends GraphReader {
 	}
     }
 
-    /* (non-Javadoc)
+    /**
+	 * @param edges
+	 * @param outgoing
+	 */
+	private void addEdges(Edges edges, Map<Integer, List<Integer>> outgoing) {
+		for(Entry<Integer, List<Integer>> e : outgoing.entrySet()){
+			int src = e.getKey();
+			for(Integer dst : e.getValue()){
+				edges.add(src, dst);
+			}
+		}
+		
+	}
+
+	/**
+	 * @param idMapping
+	 * @param incoming
+	 * @return
+	 */
+	private Map<Integer, List<Integer>> mapIds(Map<Integer, Integer> idMapping,
+			Map<Integer, List<Integer>> toMap) {
+		Map<Integer, List<Integer>> mapped = new HashMap<Integer, List<Integer>>();
+		
+		for(Entry<Integer, List<Integer>> e : toMap.entrySet()){
+			List<Integer> ml = new ArrayList<Integer>();
+			for(Integer li : e.getValue()){
+				ml.add(idMapping.get(li));
+			}
+			int nk = idMapping.get(e.getKey());
+			
+			mapped.put(nk, ml);
+		}
+		
+		return mapped;
+	}
+
+	/**
+	 * @param outgoing
+	 * @param incoming
+	 * @return
+	 */
+	private Map<Integer, Integer> calculateIdMapping(
+			Map<Integer, List<Integer>> outgoing,
+			Map<Integer, List<Integer>> incoming) {
+		Map<Integer, Integer> ids = new HashMap<Integer, Integer>();
+		
+		for(Entry<Integer, List<Integer>> e : outgoing.entrySet()){
+			if(!ids.containsKey(e.getKey())){
+				ids.put(e.getKey(), ids.size());
+			}
+			for(Integer i : e.getValue()){
+				if(!ids.containsKey(i)){
+					ids.put(i, ids.size());
+				}
+			}
+		}
+		// should never set any condition true as all nodes in the incoming set should be added in the outgoing destination list
+		for(Entry<Integer, List<Integer>> e : incoming.entrySet()){
+			if(!ids.containsKey(e.getKey())){
+				ids.put(e.getKey(), ids.size());
+			}
+			for(Integer i : e.getValue()){
+				if(!ids.containsKey(i)){
+					ids.put(i, ids.size());
+				}
+			}
+		}
+		
+		return ids;
+	}
+
+	/* (non-Javadoc)
      * @see gtna.io.graphReader.GraphReader#nodes(java.lang.String)
      */
     @Override
