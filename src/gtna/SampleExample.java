@@ -54,10 +54,15 @@ import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.transformation.sampling.subgraph.ColorSampledSubgraph;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
 import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
 =======
 >>>>>>> separated workflow and tester
+=======
+import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
+import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
+>>>>>>> allow heat map coloring for a single sample -> division by 0 prevented
 import gtna.util.Config;
 
 /**
@@ -84,6 +89,7 @@ public class SampleExample {
 
 		// Sampling parameter
 <<<<<<< HEAD
+<<<<<<< HEAD
 		double scaledown = 1.0;
 		int dimension = 1;
 		boolean revisiting = false;
@@ -94,6 +100,12 @@ public class SampleExample {
 		boolean revisiting = false;
 		Long rngSeed = new Long(0);
 >>>>>>> separated workflow and tester
+=======
+		double scaledown = 0.5;
+		int dimension = 1;
+		boolean revisiting = false;
+		Long rngSeed = null;
+>>>>>>> allow heat map coloring for a single sample -> division by 0 prevented
 
 		String folder = "./plots/network-plot/";
 
@@ -150,14 +162,18 @@ public class SampleExample {
 				randomSeed);
 
 //		 Transformation subgraphing = new ExtractSampledSubgraph();
-		 Transformation subgraphing = new ColorSampledSubgraph();
-//		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
+//		 Transformation subgraphing = new ColorSampledSubgraph();
+		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 		Transformation[] t1 = new Transformation[] { rw, subgraphing };
 =======
 		Transformation[] t1 = new Transformation[] { mrw, subgraphing };
 >>>>>>> separated workflow and tester
+=======
+		Transformation[] t1 = new Transformation[] { rw, subgraphing };
+>>>>>>> allow heat map coloring for a single sample -> division by 0 prevented
 		return t1;
 	}
 	
@@ -166,6 +182,7 @@ public class SampleExample {
 		Network nw2 = new BarabasiAlbert(500, 2, null);
 		Network nw3 = new WattsStrogatz(500, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(500, 3, 0.05, 0.0005, null);
+<<<<<<< HEAD
 <<<<<<< HEAD
 		Network nw5 = new Regular(100, 2, true, false, null);
 <<<<<<< HEAD
@@ -183,6 +200,9 @@ public class SampleExample {
 		
 =======
 		Network nw5 = new Regular(1000, 5, true, false, null);
+=======
+		Network nw5 = new Regular(100, 2, true, false, null);
+>>>>>>> allow heat map coloring for a single sample -> division by 0 prevented
 
 //		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 >>>>>>> separated workflow and tester
