@@ -283,6 +283,7 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
      * @param number	number of colors to be calculated
      * @return		array of colors
      */
+<<<<<<< HEAD
     private Color[] getColors(int number) {
 	Color[] c = new Color[number];
 	
@@ -307,17 +308,30 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 	return hm;
     }
 
+=======
+>>>>>>> correct calculation of colors of sampled nodes. not sampled nodes are colored gray to highlight the sampling
     private Color[] getColors(int number) {
 	Color[] c = new Color[number];
-	for (int i = 0; i < c.length; i++) {
+	
+	c[0] = Color.LIGHT_GRAY;
+	
+	for(int i = 0; i < number-1; i++) {
 	    int r = base.getRed();
 	    int g = base.getGreen();	
 	    int b = base.getBlue();
 	    
+<<<<<<< HEAD
 	    g = g - (255/number)*i;
 	    c[i] = new Color(r, g, b);
 	}
 >>>>>>> count node occurrences in samples
+=======
+	    g = g - (255/(number-2))*i;
+	    
+	    c[i+1] = new Color(r, g, b);
+	}	
+
+>>>>>>> correct calculation of colors of sampled nodes. not sampled nodes are colored gray to highlight the sampling
 	return c;
     }
 
