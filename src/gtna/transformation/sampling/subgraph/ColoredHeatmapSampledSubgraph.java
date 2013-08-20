@@ -161,12 +161,13 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 	
 	c[0] = Color.LIGHT_GRAY;
 	
+	int parts = Math.max(number-2, 1);
 	for(int i = 0; i < number-1; i++) {
 	    int r = base.getRed();
 	    int g = base.getGreen();	
 	    int b = base.getBlue();
 	    
-	    g = g - (255/(number-2))*i;
+	    g = g - (255/parts)*i;
 	    
 	    c[i+1] = new Color(r, g, b);
 	}	
