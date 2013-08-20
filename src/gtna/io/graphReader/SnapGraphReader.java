@@ -35,12 +35,15 @@
  */
 package gtna.io.graphReader;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+=======
+>>>>>>> SNAP standard separator (tab)
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -65,6 +68,7 @@ public class SnapGraphReader extends GraphReader {
      */
     @Override
     public Graph read(String filename) {
+<<<<<<< HEAD
 	String sep1 = Config.get("SNAP_SEPARATOR_1");
 	String ffd = Config.get("FILESYSTEM_FOLDER_DELIMITER");
 	Filereader fr = new Filereader(filename);
@@ -80,11 +84,26 @@ public class SnapGraphReader extends GraphReader {
 		
 		while ((line = fr.readLine()) != null) {
 		    	line.trim();
+=======
+	String sep1 = Config.get("GRAPH_WRITER_SEPARATOR_1");
+	String sep2 = Config.get("GRAPH_WRITER_SEPARATOR_2");
+	Filereader fr = new Filereader(filename);
+	try {
+		String line = null;
+		String name = fr.readLine();
+		int V = Integer.parseInt(fr.readLine());
+		int E = Integer.parseInt(fr.readLine());
+		Graph graph = new Graph(name);
+		Node[] nodes = Node.init(V, graph);
+		Edges edges = new Edges(nodes, E);
+		while ((line = fr.readLine()) != null) {
+>>>>>>> SNAP standard separator (tab)
 			String[] temp = line.split(sep1);
 			if (temp.length < 2 || temp[1].length() == 0) {
 				continue;
 			}
 			int src = Integer.parseInt(temp[0]);
+<<<<<<< HEAD
 			int dst = Integer.parseInt(temp[1]);
 			
 			if(outgoing.containsKey(src)){
@@ -114,6 +133,13 @@ public class SnapGraphReader extends GraphReader {
 		Node[] nodes = Node.init(idMapping.size(), graph);
 		Edges edges = new Edges(nodes, outgoing.size());
 		addEdges(edges, outgoing);
+=======
+			String[] temp2 = temp[1].split(sep2);
+			for (String dst : temp2) {
+				edges.add(src, Integer.parseInt(dst));
+			}
+		}
+>>>>>>> SNAP standard separator (tab)
 		edges.fill();
 		graph.setNodes(nodes);
 		return graph;
@@ -126,6 +152,7 @@ public class SnapGraphReader extends GraphReader {
 	}
     }
 
+<<<<<<< HEAD
     /**
 	 * @param edges
 	 * @param outgoing
@@ -198,6 +225,9 @@ public class SnapGraphReader extends GraphReader {
 	}
 
 	/* (non-Javadoc)
+=======
+    /* (non-Javadoc)
+>>>>>>> SNAP standard separator (tab)
      * @see gtna.io.graphReader.GraphReader#nodes(java.lang.String)
      */
     @Override
