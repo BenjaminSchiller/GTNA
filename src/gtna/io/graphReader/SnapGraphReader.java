@@ -36,14 +36,20 @@
 package gtna.io.graphReader;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> complete implementation for importing snap networks. debugging necessary!
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+<<<<<<< HEAD
 =======
 >>>>>>> SNAP standard separator (tab)
+=======
+>>>>>>> complete implementation for importing snap networks. debugging necessary!
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -69,6 +75,7 @@ public class SnapGraphReader extends GraphReader {
     @Override
     public Graph read(String filename) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	String sep1 = Config.get("SNAP_SEPARATOR_1");
 	String ffd = Config.get("FILESYSTEM_FOLDER_DELIMITER");
 	Filereader fr = new Filereader(filename);
@@ -87,15 +94,21 @@ public class SnapGraphReader extends GraphReader {
 =======
 	String sep1 = Config.get("GRAPH_WRITER_SEPARATOR_1");
 	String sep2 = Config.get("GRAPH_WRITER_SEPARATOR_2");
+=======
+	String sep1 = Config.get("SNAP_SEPARATOR_1");
+	String ffd = Config.get("FILESYSTEM_FOLDER_DELIMITER");
+>>>>>>> complete implementation for importing snap networks. debugging necessary!
 	Filereader fr = new Filereader(filename);
 	try {
 		String line = null;
-		String name = fr.readLine();
-		int V = Integer.parseInt(fr.readLine());
-		int E = Integer.parseInt(fr.readLine());
+		String name = filename.substring(filename.lastIndexOf(ffd)-1);
+//		int V = Integer.parseInt(fr.readLine());
+//		int E = Integer.parseInt(fr.readLine());
 		Graph graph = new Graph(name);
-		Node[] nodes = Node.init(V, graph);
-		Edges edges = new Edges(nodes, E);
+		
+		Map<Integer, List<Integer>> outgoing = new HashMap<Integer, List<Integer>>();
+		Map<Integer, List<Integer>> incoming = new HashMap<Integer, List<Integer>>();
+		
 		while ((line = fr.readLine()) != null) {
 >>>>>>> SNAP standard separator (tab)
 			String[] temp = line.split(sep1);
@@ -104,6 +117,9 @@ public class SnapGraphReader extends GraphReader {
 			}
 			int src = Integer.parseInt(temp[0]);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> complete implementation for importing snap networks. debugging necessary!
 			int dst = Integer.parseInt(temp[1]);
 			
 			if(outgoing.containsKey(src)){
@@ -122,6 +138,7 @@ public class SnapGraphReader extends GraphReader {
 			} else {
 				List<Integer> ie = new ArrayList<Integer>();
 				ie.add(src);
+<<<<<<< HEAD
 				incoming.put(src, ie);
 			}
 		}
@@ -140,6 +157,19 @@ public class SnapGraphReader extends GraphReader {
 			}
 		}
 >>>>>>> SNAP standard separator (tab)
+=======
+				outgoing.put(src, ie);
+			}
+		}
+		
+		Map<Integer, Integer> idMapping = new HashMap<Integer, Integer>();
+		idMapping = calculateIdMapping(outgoing, incoming);
+		outgoing = mapIds(idMapping, outgoing);
+		incoming = mapIds(idMapping, incoming);
+		Node[] nodes = Node.init(idMapping.size(), graph);
+		Edges edges = new Edges(nodes, outgoing.size());
+		addEdges(edges, outgoing);
+>>>>>>> complete implementation for importing snap networks. debugging necessary!
 		edges.fill();
 		graph.setNodes(nodes);
 		return graph;
@@ -153,6 +183,9 @@ public class SnapGraphReader extends GraphReader {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> complete implementation for importing snap networks. debugging necessary!
     /**
 	 * @param edges
 	 * @param outgoing
@@ -225,9 +258,12 @@ public class SnapGraphReader extends GraphReader {
 	}
 
 	/* (non-Javadoc)
+<<<<<<< HEAD
 =======
     /* (non-Javadoc)
 >>>>>>> SNAP standard separator (tab)
+=======
+>>>>>>> complete implementation for importing snap networks. debugging necessary!
      * @see gtna.io.graphReader.GraphReader#nodes(java.lang.String)
      */
     @Override
