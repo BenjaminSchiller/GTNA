@@ -63,7 +63,7 @@ public class SnapReaderWriter {
 		
 
 		String folder = "/Users/Tim/Dropbox/Master-Thesis/SNAP-samples/";
-		String[] paths = new String[] { "p2p-Gnutella05.txt" };
+		String[] paths = new String[] { "p2p-Gnutella05.txt", "roadNet-CA.txt" };
 		Network[] net = loadNetworks(folder, paths);
 		
 		Collection<Graph> graphs = new ArrayList<Graph>();
@@ -71,7 +71,10 @@ public class SnapReaderWriter {
 		for(Network n : net){
 			graphs.add(n.generate());
 		}
-		System.out.println("Loaded " + net.length + " SNAP networks");
+		System.out.println("Loaded " + net.length + " SNAP networks with following node counts: \n");
+		for(Graph g : graphs) {
+		    System.out.println(g.getName() + " with " + g.getNodeCount() + " Nodes and " + g.getEdges().size() + " Edges.");
+		}
 
 	}
 	

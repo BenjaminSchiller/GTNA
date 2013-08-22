@@ -82,6 +82,7 @@ public class SnapGraphReader extends GraphReader {
 	try {
 		String line = null;
 		String name = filename.substring(filename.lastIndexOf(ffd)+1);
+<<<<<<< HEAD
 //		int V = Integer.parseInt(fr.readLine());
 //		int E = Integer.parseInt(fr.readLine());
 		Graph graph = new Graph(name);
@@ -102,6 +103,8 @@ public class SnapGraphReader extends GraphReader {
 	try {
 		String line = null;
 		String name = filename.substring(filename.lastIndexOf(ffd)-1);
+=======
+>>>>>>> added standard snap reader (with necessary bug fixes)
 //		int V = Integer.parseInt(fr.readLine());
 //		int E = Integer.parseInt(fr.readLine());
 		Graph graph = new Graph(name);
@@ -110,7 +113,11 @@ public class SnapGraphReader extends GraphReader {
 		Map<Integer, List<Integer>> incoming = new HashMap<Integer, List<Integer>>();
 		
 		while ((line = fr.readLine()) != null) {
+<<<<<<< HEAD
 >>>>>>> SNAP standard separator (tab)
+=======
+		    	line.trim();
+>>>>>>> added standard snap reader (with necessary bug fixes)
 			String[] temp = line.split(sep1);
 			if (temp.length < 2 || temp[1].length() == 0) {
 				continue;
@@ -139,6 +146,7 @@ public class SnapGraphReader extends GraphReader {
 				List<Integer> ie = new ArrayList<Integer>();
 				ie.add(src);
 <<<<<<< HEAD
+<<<<<<< HEAD
 				incoming.put(src, ie);
 			}
 		}
@@ -159,6 +167,9 @@ public class SnapGraphReader extends GraphReader {
 >>>>>>> SNAP standard separator (tab)
 =======
 				outgoing.put(src, ie);
+=======
+				incoming.put(src, ie);
+>>>>>>> added standard snap reader (with necessary bug fixes)
 			}
 		}
 		
