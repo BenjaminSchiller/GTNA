@@ -57,6 +57,7 @@ import gtna.util.parameter.Parameter;
  */
 public class SnapStandardFile extends Network {
 	private String filename;
+	private String filepath;
 
 	public SnapStandardFile(String name, String folder, String filename,
 			Transformation[] t) {
@@ -68,6 +69,7 @@ public class SnapStandardFile extends Network {
 		super(SnapStandardFile.key(folder, name), new SnapGraphReader()
 				.nodes(filename), parameters, t);
 		this.filename = filename;
+		this.filepath = folder + filename;
 		for (Parameter p : parameters) {
 			SnapStandardFile.parameterKey(folder, p.getKey(), p.getKey());
 		}
@@ -90,8 +92,8 @@ public class SnapStandardFile extends Network {
 	}
 
 	public Graph generate() {
-		Graph graph = new SnapGraphReader().readWithProperties(this.filename);
-		graph.setName(this.getDescription());
+		Graph graph = new SnapGraphReader().read(this.filepath);
+		graph.setName(this.filename);
 		return graph;
 	}
 }

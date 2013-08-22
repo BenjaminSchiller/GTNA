@@ -70,7 +70,7 @@ public class SnapGraphReader extends GraphReader {
 	Filereader fr = new Filereader(filename);
 	try {
 		String line = null;
-		String name = filename.substring(filename.lastIndexOf(ffd)-1);
+		String name = filename.substring(filename.lastIndexOf(ffd)+1);
 //		int V = Integer.parseInt(fr.readLine());
 //		int E = Integer.parseInt(fr.readLine());
 		Graph graph = new Graph(name);
@@ -79,6 +79,7 @@ public class SnapGraphReader extends GraphReader {
 		Map<Integer, List<Integer>> incoming = new HashMap<Integer, List<Integer>>();
 		
 		while ((line = fr.readLine()) != null) {
+		    	line.trim();
 			String[] temp = line.split(sep1);
 			if (temp.length < 2 || temp[1].length() == 0) {
 				continue;
@@ -102,7 +103,7 @@ public class SnapGraphReader extends GraphReader {
 			} else {
 				List<Integer> ie = new ArrayList<Integer>();
 				ie.add(src);
-				outgoing.put(src, ie);
+				incoming.put(src, ie);
 			}
 		}
 		
