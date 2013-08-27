@@ -57,7 +57,7 @@ import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
  * @author Tim
  * 
  */
-public class SamplingThesis {
+public class WFMetricCalc {
 
 	/**
 	 * @param args
@@ -78,43 +78,23 @@ public class SamplingThesis {
 		}
 		
 		for (String s : args) {
-			// parse sampling algorithm properties
-			if (s.startsWith("sampling=")) {
-				String sa = s.substring(9);
-				// TODO get sampling algorithm from enumeration
-			} else if (s.startsWith("dimension=")) {
-				dim = Integer.parseInt(s.substring(10));
-			} else if (s.startsWith("revisiting=")) {
-				if (s.equalsIgnoreCase("revisiting=true")) {
-					rev = true;
-				} else {
-					rev = false;
-				}
-			} else if (s.startsWith("scaledown=")){
-				sd = Double.parseDouble(s.substring(10));
-			} else if(s.startsWith("randomSeed=")){
-				String seedDate = s.substring(11);
-				seedDate.matches("[0-3][0-9]\\.[0-1][0-9]\\.[0-9][0-9][0-9][0-9]");
-				DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-	            Date seeddate =  df.parse(seedDate);
-	            seed = seeddate.getTime();
-			}
-			// parse network generation details
-			else if (s.startsWith("network=")){
-				String sn = s.substring(8);
-				// TODO get network from enumeration
-			} else if(s.startsWith("size=")){
-				size = Integer.parseInt(s.substring(5));
-			} else if (s.startsWith("p1=")){
-				p1 = Double.parseDouble(s.substring(3));
-			} else if (s.startsWith("p2=")){
-				p2 = Double.parseDouble(s.substring(3));
-			} else if (s.startsWith("bidirectional=")) {
-				if (s.equalsIgnoreCase("bidirectional=true")) {
-					uni = false;
-				} else {
-					uni = true;
-				}
+			
+			if (s.equalsIgnoreCase("DD")) {
+				//TODO instantiate metric
+			} else if(s.equalsIgnoreCase("CC")) {
+			    // TODO instantiate metric
+			}else if(s.equalsIgnoreCase("HP")) {
+			    // TODO instantiate metric
+			}else if(s.equalsIgnoreCase("DIAM")) {
+			    // TODO instantiate metric
+			}else if(s.equalsIgnoreCase("ECC")) {
+			    // TODO instantiate metric
+			}else if(s.equalsIgnoreCase("BC")) {
+			    // TODO instantiate metric
+			}else if(s.equalsIgnoreCase("PR")) {
+			    // TODO instantiate metric
+			}else if(s.equalsIgnoreCase("ASS")) {
+			    // TODO instantiate metric
 			}
 			// readable folder?
 			else if (s.startsWith("loadDir=")){
