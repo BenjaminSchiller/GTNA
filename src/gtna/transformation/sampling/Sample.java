@@ -112,7 +112,7 @@ public class Sample extends GraphProperty {
 
 	int size = sample.getSampleSize();
 
-	fw.writeln(sample.toString());
+	this.writeParameter(fw, "Sample node mapping: oldId;newId;round-i,round-i+n, ...", sample.toString());
 
 	return fw.close();
     }
