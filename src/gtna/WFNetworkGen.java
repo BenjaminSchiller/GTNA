@@ -35,6 +35,7 @@
  */
 package gtna;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,83 +60,180 @@ import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
  */
 public class WFNetworkGen {
 
+    private enum EnumNetworks {
+	ER, BA, CK, RC, WS, REG
+    };
+
+    private static EnumNetworks net;
+
+    private static int size = 0;
+    private static int startIndex = 1;
+    private static int endIndex = 1;
+    private static boolean uni = true;
+    private static String dir;
+
+    private static int degree = 0;
+
+    private static boolean ring = true;
+
+    private static double avgdegree = 0.0;
+
+    private static int edgespernode = 0;
+
+    private static int numberofcommunities = 0;
+
+    private static double pin = 0.0;
+
+    private static double pout = 0.0;
+
+    private static int successors = 0;
+
+    private static double p = 0.0;
+
     /**
      * @param args
      * @throws ParseException
      */
     public static void main(String[] args) throws ParseException {
 
-	int size, startIndex, endIndex;
-	boolean rev, uni;
-	double seed, p1, p2;
-
-	if (args.length == 1) {
-	    if (args[0].equalsIgnoreCase("help")) {
-		printHelp();
-		System.exit(0);
-	    }
+	if (args.length == 0
+		|| (args.length == 1 && args[0].equalsIgnoreCase("help"))) {
+	    printHelp();
+	    System.exit(0);
 	}
 
 	for (String s : args) {
-
-	    if (s.startsWith("randomSeed=")) {
-		String seedDate = s.substring(11);
-		seedDate.matches("[0-3][0-9]\\.[0-1][0-9]\\.[0-9][0-9][0-9][0-9]");
-		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-		Date seeddate = df.parse(seedDate);
-		seed = seeddate.getTime();
-	    }
-	    // parse network generation details
-	    else if (s.startsWith("network=")) {
-		String sn = s.substring(8);
-		// TODO get network from enumeration
-	    } else if (s.startsWith("size=")) {
-		size = Integer.parseInt(s.substring(5));
-	    } else if (s.startsWith("p1=")) {
-		p1 = Double.parseDouble(s.substring(3));
-	    } else if (s.startsWith("p2=")) {
-		p2 = Double.parseDouble(s.substring(3));
-	    } else if (s.startsWith("bidirectional=")) {
-		if (s.equalsIgnoreCase("bidirectional=true")) {
-		    uni = false;
-		} else {
-		    uni = true;
-		}
-	    
-	    } else if (s.startsWith("seq=")) {
-		String seq = s.substring(4);
-		String[] se = seq.split("-");
-		startIndex = Integer.parseInt(se[0]);
-		endIndex = Integer.parseInt(se[1]);
-	    } else {
-
-		printHelp();
-		System.exit(0);
-	    }
+	    matchArgument(s);
 	}
 
+	instantiateNetwork();
+
+	System.out.println("Building network: " + net + ", size= " + size
+		+ " (Seq: " + startIndex + " - " + endIndex + ")");
+
+    }
+
+    /**
+     * 
+     */
+    private static void instantiateNetwork() {
+	Network n;
+	switch (net) {
+	case BA:
+	    if (size == 0 || edgespernode == 0)
+		throw new IllegalArgumentException(
+			"For initializing a Barabasi-Albert network the parameters size and edgespernode have to be set!");
+	    n = new BarabasiAlbert(size, edgespernode, null);
+	    break;
+	case CK:
+	    if (size == 0 || numberofcommunities == 0 || pin == 0.0
+		    || pout == 0.0)
+		throw new IllegalArgumentException(
+			"For initializing a community network the parameters size, numberofcommunities, pin and pout have to be set!");
+	    n = new CondonAndKarp(size, numberofcommunities, pin, pout, null);
+	    break;
+	case ER:
+	    if (size == 0 || avgdegree == 0.0)
+		throw new IllegalArgumentException(
+			"For initializing a Erdos-Renyi network the parameters size and avgdegree have to be set!");
+	    n = new ErdosRenyi(size, avgdegree, uni, null);
+	    break;
+	case RC:
+	    throw new UnsupportedOperationException("Not yet implemented");
+	    // break;
+	case REG: 
+	    if(size == 0 || degree == 0) throw new IllegalArgumentException("For initializing a regular network the parameters size and degree have to be set!");
+	    n = new Regular(size, degree, ring, uni, null);
+	    break;
+	case WS:
+	    if(size == 0 || successors == 0 || p == 0.0) 
+		throw new IllegalArgumentException("For initializing a Watts-Strogatz network the parameters size, successors and p have to be set!");
+	    n = new WattsStrogatz(size, successors, p, null);
+	    break;
+	default:
+	    break;
+	}
+    }
+
+    /**
+     * @param s
+     * @throws ParseException
+     */
+    private static void matchArgument(String s) throws ParseException {
+
+	// parse network generation details
+	if (s.startsWith("network=")) {
+	    String sn = s.substring(8);
+	    net = matchNetwork(sn);
+	} else if (s.startsWith("size=")) {
+	    size = Integer.parseInt(s.substring(5));
+	} else if (s.startsWith("p=")) {
+	    p = Double.parseDouble(s.substring(2));
+	} else if (s.startsWith("pin=")) {
+	    pin = Double.parseDouble(s.substring(4));
+	} else if (s.startsWith("p=")) {
+	    pout = Double.parseDouble(s.substring(4));
+	} else if (s.startsWith("avgdegree=")) {
+	    avgdegree = Double.parseDouble(s.substring(10));
+	} else if (s.startsWith("degree=")) {
+	    degree = Integer.parseInt(s.substring(7));
+	} else if (s.startsWith("successors=")) {
+	    successors = Integer.parseInt(s.substring(11));
+	} else if (s.startsWith("edgespernode=")) {
+	    edgespernode = Integer.parseInt(s.substring(13));
+	} else if (s.startsWith("numberofcommunities=")) {
+	    numberofcommunities = Integer.parseInt(s.substring(20));
+	} else if (s.startsWith("bidirectional=")) {
+	    if (s.equalsIgnoreCase("bidirectional=true")) {
+		uni = false;
+	    } else {
+		uni = true;
+	    }
+	} else if (s.startsWith("ring=")) {
+	    if (s.equalsIgnoreCase("ring=true")) {
+		ring = true;
+	    } else {
+		ring = false;
+	    }
+	} else if (s.startsWith("dir=")) {
+	    dir = s.substring(4);
+	    File f = new File(dir);
+	    if (!f.isDirectory()) {
+		System.out.println("Directory has to be an existing directory");
+		System.exit(1);
+	    }
+	} else if (s.startsWith("seq=")) {
+	    String seq = s.substring(4);
+	    String[] se = seq.split("-");
+	    startIndex = Integer.parseInt(se[0]);
+	    endIndex = Integer.parseInt(se[1]);
+	} 
+    }
+
+    /**
+     * @param sn
+     * @return
+     */
+    private static EnumNetworks matchNetwork(String sn) {
+
+	for (EnumNetworks n : EnumNetworks.values()) {
+	    if (sn.equalsIgnoreCase(n.toString())) {
+		return n;
+	    }
+	}
+	System.out.println("Network unknown!");
+	System.exit(1);
+	return null;
     }
 
     private static void printHelp() {
 	System.out
 		.println("Usage:"
-			+ "randomSeed=<dd.mm.yyyy>"
-			+ "network=<synthetic network> size=<number of nodes> p1=<network_probability1> p2=<network_probability2> bidirectional=<true/false>"
-			+ "seq=startIndex-endIndex");
-    }
-
-    public static Network[] instantiateNetworkModels() {
-	Network nw1 = new ErdosRenyi(100, 3, false, null);
-	Network nw2 = new BarabasiAlbert(500, 2, null);
-	Network nw3 = new WattsStrogatz(500, 6, 0.2, null);
-	Network nw4 = new CondonAndKarp(500, 3, 0.05, 0.0005, null);
-	Network nw5 = new Regular(100, 2, true, false, null);
-
-	// Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
-	// Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
-
-	Network[] n = new Network[] { nw5 };
-	return n;
+			+ "randomSeed=<dd.mm.yyyy> \n"
+			+ "network=<synthetic network> size=<number of nodes> p1=<network_probability1> p2=<network_probability2> p3=<network_probability3> bidirectional=<true/false> \n"
+			+ "dir=directory"
+			+ "seq=startIndex-endIndex \n"
+			+ "(all arguments, except p1/p2/p3, are mandatory, for some types of networks the arguments p1-3 have to be provided too)");
     }
 
 }
