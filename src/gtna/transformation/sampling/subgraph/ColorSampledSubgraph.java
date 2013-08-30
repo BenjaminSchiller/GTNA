@@ -36,6 +36,7 @@
 package gtna.transformation.sampling.subgraph;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.drawing.NodeColors;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -53,15 +54,22 @@ import java.util.List;
 import java.util.Set;
 
 import apple.awt.ClientPropertyApplicator.Property;
+=======
+>>>>>>> debugging the WFSampling app...
 import gtna.drawing.NodeColors;
-import gtna.graph.Edge;
-import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.Sample;
+<<<<<<< HEAD
 >>>>>>> First implementation of coloring the sampled subgraph
+=======
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
+
+import java.awt.Color;
+import java.util.Set;
+>>>>>>> debugging the WFSampling app...
 
 /**
  * @author Tim
@@ -84,6 +92,7 @@ public class ColorSampledSubgraph extends Transformation {
      */
     public ColorSampledSubgraph() {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	super("SUBGRAPH", new Parameter[] {
 		new StringParameter("SUBGPRAPHFUNCTION", "colored")
 	});
@@ -99,6 +108,11 @@ public class ColorSampledSubgraph extends Transformation {
 =======
 	super("COLOR_SAMPLED_GRAPH");
 >>>>>>> First implementation of coloring the sampled subgraph
+=======
+	super("COLOR_SAMPLED_GRAPH", new Parameter[] {
+		new StringParameter("SUBGRAPH", "colored")
+	});
+>>>>>>> debugging the WFSampling app...
     }
     
     public String getSamplingKeyToColoredSample() {
