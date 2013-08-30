@@ -36,6 +36,7 @@
 package gtna.transformation.sampling.subgraph;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.drawing.NodeColors;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
@@ -63,14 +64,23 @@ import java.util.Map;
 import java.util.Set;
 
 import apple.awt.ClientPropertyApplicator.Property;
+=======
+>>>>>>> debugging the WFSampling app...
 import gtna.drawing.NodeColors;
-import gtna.graph.Edge;
-import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.Sample;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 >>>>>>> count node occurrences in samples
 /**
@@ -84,6 +94,7 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
      */
     public ColoredHeatmapSampledSubgraph() {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	super("SUBGRAPH", new Parameter[] {
 		new StringParameter("SUBGPRAPHFUNCTION", "heatmap") 
 	});
@@ -93,6 +104,11 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 
 =======
 	super("HEATMAP_SAMPLED_GRAPH");
+=======
+	super("HEATMAP_SAMPLED_GRAPH", new Parameter[] {
+		new StringParameter("SUBGPRAPH", "heatmap") 
+	});
+>>>>>>> debugging the WFSampling app...
     }
 <<<<<<< HEAD
     
