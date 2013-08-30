@@ -117,7 +117,7 @@ public class WFNetworkGen {
     }
     
     private static String writeGraphToFile(Graph g, String filename) {
-	new GtnaGraphWriter().writeWithProperties(g, filename);
+	new GtnaGraphWriter().writeWithProperties(g, filename+".gtna");
 	return filename;
 }
 
