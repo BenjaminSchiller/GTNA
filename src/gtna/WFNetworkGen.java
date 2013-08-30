@@ -35,24 +35,22 @@
  */
 package gtna;
 
-import java.io.File;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import gtna.data.Series;
+import gtna.drawing.Gephi;
+import gtna.graph.Graph;
+import gtna.id.IdentifierSpace;
+import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
-import gtna.transformation.Transformation;
-import gtna.transformation.sampling.SamplingAlgorithmFactory;
-import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
-import gtna.transformation.sampling.subgraph.ColorSampledSubgraph;
-import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
-import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
+
+import java.io.File;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author Tim
@@ -106,17 +104,28 @@ public class WFNetworkGen {
 	    matchArgument(s);
 	}
 
-	instantiateNetwork();
+	Network n = instantiateNetwork();
+	String wn;	
+	for(int i = startIndex; i < endIndex; i++) {
+	    wn = writeGraphToFile(n.generate(), dir+n.getKey()+"_"+i);
+	    System.out.println(wn);
+	}
 
 	System.out.println("Building network: " + net + ", size= " + size
 		+ " (Seq: " + startIndex + " - " + endIndex + ")");
 
     }
+    
+    private static String writeGraphToFile(Graph g, String filename) {
+	new GtnaGraphWriter().writeWithProperties(g, filename);
+	return filename;
+}
 
     /**
+     * @return 
      * 
      */
-    private static void instantiateNetwork() {
+    private static Network instantiateNetwork() {
 	Network n;
 	switch (net) {
 	case BA:
@@ -151,8 +160,11 @@ public class WFNetworkGen {
 	    n = new WattsStrogatz(size, successors, p, null);
 	    break;
 	default:
-	    break;
+	    throw new IllegalArgumentException("Network type " + net.toString() + " is not known!");
 	}
+	
+	
+	return n;
     }
 
     /**
