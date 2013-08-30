@@ -35,20 +35,16 @@
  */
 package gtna.transformation.sampling.subgraph;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import apple.awt.ClientPropertyApplicator.Property;
 import gtna.drawing.NodeColors;
-import gtna.graph.Edge;
-import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.Sample;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
+
+import java.awt.Color;
+import java.util.Set;
 
 /**
  * @author Tim
@@ -62,7 +58,9 @@ public class ColorSampledSubgraph extends Transformation {
      * @param key
      */
     public ColorSampledSubgraph() {
-	super("COLOR_SAMPLED_GRAPH");
+	super("COLOR_SAMPLED_GRAPH", new Parameter[] {
+		new StringParameter("SUBGRAPH", "colored")
+	});
     }
     
     public String getSamplingKeyToColoredSample() {

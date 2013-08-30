@@ -35,6 +35,8 @@
  */
 package gtna;
 
+import gtna.graph.Graph;
+import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.networks.util.ReadableFolder;
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
@@ -47,6 +49,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -66,6 +69,7 @@ public class WFSampling {
 	private static int endIndex;
 	private static String srcdir;
 	private static String suffix;
+	private static String targetdir;
 
 	/**
 	 * @param args
@@ -83,11 +87,13 @@ public class WFSampling {
 		for (String s : args) {
 		    matchArgument(s);
 		}
+		if(!initialized()) {
+		    System.out.println("You have to set all necessary params first!");
+		}
 		
-		Transformation[] samplingTransformation = new Transformation[1];
+		Transformation[] samplingTransformation = new Transformation[2];
 		samplingTransformation[0] = instantiateSamplingTransformation(samplingAlgorithm, scaledown, dim, rev, seed);
 		if(subgraph != null) {
-		    
 		    samplingTransformation[1] = subgraph;
 		}
 		
@@ -98,7 +104,26 @@ public class WFSampling {
 			rf.incIndex();
 		    }
 		}
+		
+		Graph g;
+		for(int j = startIndex; j < endIndex; j++) {
+		    g = rf.generate();
+		    if(g!=null) {
+		    g = samplingTransformation[0].transform(g); // sample graph
+		    g = samplingTransformation[1].transform(g);	// subgraph generation/coloring
+		    
+		    writeGraphToFile(g, targetdir+g.getName());
+		    }
+		}
 
+	}
+
+	/**
+	 * @return
+	 */
+	private static boolean initialized() {
+	    // TODO Auto-generated method stub
+	    return true;
 	}
 
 	private static void printHelp() {
@@ -154,15 +179,19 @@ public class WFSampling {
 		    dir = s.substring(4);
 		    File f = new File(dir);
 		    if (!f.isDirectory()) {
-			System.out.println("Directory has to be an existing directory");
-			System.exit(1);
+			f.mkdir();
 		    }
 		} else if (s.startsWith("srcdir=")) {
 		    srcdir = s.substring(7);
 		    File f = new File(srcdir);
 		    if (!f.isDirectory()) {
-			System.out.println("Directory has to be an existing directory");
-			System.exit(1);
+			f.mkdir();
+		    }
+		}else if (s.startsWith("targetdir=")) {
+		    targetdir = s.substring(10);
+		    File f = new File(targetdir);
+		    if (!f.isDirectory()) {
+			f.mkdir();
 		    }
 		} else if (s.startsWith("seq=")) {
 		    String seq = s.substring(4);
@@ -173,13 +202,24 @@ public class WFSampling {
 		
 	}
 
+	    
+	private static String writeGraphToFile(Graph g, String filename) {
+		new GtnaGraphWriter().writeWithProperties(g, filename);
+		return filename;
+	}
+	    
 	/**
 	 * @param sn
 	 * @return
 	 */
 	private static SamplingAlgorithm matchSamplingAlgorithm(String sn) {
-	    // TODO Auto-generated method stub
-	    return null;
+	   for(SamplingAlgorithm sa : SamplingAlgorithm.values()) {
+	       if(sn.equalsIgnoreCase(sa.name())) {
+		   return sa;
+	       }
+	   }
+	   
+	   throw new IllegalArgumentException("Sampling Algorithm unknown, please choose one of: " + Arrays.toString(SamplingAlgorithm.values()));    
 	}
 
 	/**
@@ -196,7 +236,7 @@ public class WFSampling {
 		    subgraph = new ColoredHeatmapSampledSubgraph();
 		} else {
 			throw new IllegalArgumentException(
-					"sg must be one of {subgraph, coloring, heatmap}");
+					"subgraph must be one of {subgraph, coloring, heatmap}");
 		}
 		
 		return subgraph;
