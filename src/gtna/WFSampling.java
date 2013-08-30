@@ -35,17 +35,7 @@
  */
 package gtna;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import gtna.networks.Network;
-import gtna.networks.model.BarabasiAlbert;
-import gtna.networks.model.CondonAndKarp;
-import gtna.networks.model.ErdosRenyi;
-import gtna.networks.model.Regular;
-import gtna.networks.model.WattsStrogatz;
+import gtna.networks.util.ReadableFolder;
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
@@ -53,60 +43,60 @@ import gtna.transformation.sampling.subgraph.ColorSampledSubgraph;
 import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
 import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
 
+import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @author Tim
  * 
  */
 public class WFSampling {
 
+	private static Transformation subgraph;
+	private static SamplingAlgorithm samplingAlgorithm;
+	private static double scaledown;
+	private static boolean rev;
+	private static int dim;
+	private static long seed;
+	private static String dir;
+	private static int startIndex;
+	private static int endIndex;
+	private static String srcdir;
+	private static String suffix;
+
 	/**
 	 * @param args
 	 * @throws ParseException 
 	 */
 	public static void main(String[] args) throws ParseException {
-		SamplingAlgorithm alg;
-		int dim, size;
-		boolean rev, uni;
-		double sd, seed, p1, p2;
-		String dir;
 		
-		if(args.length == 1){
-			if(args[0].equalsIgnoreCase("help")){
-				printHelp();
-				System.exit(0);
-			}
+		
+	    if (args.length == 0
+			|| (args.length == 1 && args[0].equalsIgnoreCase("help"))) {
+		    printHelp();
+		    System.exit(0);
+		}
+
+		for (String s : args) {
+		    matchArgument(s);
 		}
 		
-		for (String s : args) {
-			// parse sampling algorithm properties
-			if (s.startsWith("sampling=")) {
-				String sa = s.substring(9);
-				// TODO get sampling algorithm from enumeration
-			} else if (s.startsWith("dimension=")) {
-				dim = Integer.parseInt(s.substring(10));
-			} else if (s.startsWith("revisiting=")) {
-				if (s.equalsIgnoreCase("revisiting=true")) {
-					rev = true;
-				} else {
-					rev = false;
-				}
-			} else if (s.startsWith("scaledown=")){
-				sd = Double.parseDouble(s.substring(10));
-			} else if(s.startsWith("randomSeed=")){
-				String seedDate = s.substring(11);
-				seedDate.matches("[0-3][0-9]\\.[0-1][0-9]\\.[0-9][0-9][0-9][0-9]");
-				DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-	            Date seeddate =  df.parse(seedDate);
-	            seed = seeddate.getTime();
-			}
-			
-			// readable folder?
-			else if (s.startsWith("loadDir=")){
-				dir = s.substring(8);
-			} else {
-				printHelp();
-				System.exit(0);
-			}
+		Transformation[] samplingTransformation = new Transformation[1];
+		samplingTransformation[0] = instantiateSamplingTransformation(samplingAlgorithm, scaledown, dim, rev, seed);
+		if(subgraph != null) {
+		    
+		    samplingTransformation[1] = subgraph;
+		}
+		
+		ReadableFolder rf = new ReadableFolder(samplingAlgorithm.name(), dir, srcdir, suffix, samplingTransformation); 
+		// current index is 0!
+		if(startIndex > 0) {
+		    for(int i = 0; i < startIndex; i++) {
+			rf.incIndex();
+		    }
 		}
 
 	}
@@ -117,26 +107,99 @@ public class WFSampling {
 				+ "loadDir=<directory with prepared networks>");
 	}
 
-	private static Transformation[] instantiateSamplingTransformation(
-			SamplingAlgorithm alg, double scaledown, int dimension,
-			boolean revisiting, Long randomSeed, String subgraphing) {
+	private static Transformation instantiateSamplingTransformation(
+			SamplingAlgorithm alg, double sd, int dimension,
+			boolean revisiting, Long randomSeed) {
 		Transformation samplingalgorithm = SamplingAlgorithmFactory
-				.getInstanceOf(alg, scaledown, revisiting, dimension,
+				.getInstanceOf(alg, sd, revisiting, dimension,
 						randomSeed);
+		return samplingalgorithm;
+	}
+	
+	
+	/**
+	     * @param s
+	     * @throws ParseException
+	     */
+	    private static void matchArgument(String s) throws ParseException {
 
-		Transformation sg;
-		if (subgraphing.equalsIgnoreCase("subgraph")) {
-			sg = new ExtractSampledSubgraph();
-		} else if (subgraphing.equalsIgnoreCase("coloring")) {
-			sg = new ColorSampledSubgraph();
-		} else if (subgraphing.equalsIgnoreCase("heatmap")) {
-			sg = new ColoredHeatmapSampledSubgraph();
+		// parse network generation details
+		if (s.startsWith("sampling=")) {
+		    String sn = s.substring(9);
+		    samplingAlgorithm = matchSamplingAlgorithm(sn);
+		} else if (s.startsWith("scaledown=")) {
+		    scaledown = Double.parseDouble(s.substring(10));
+		} else if (s.startsWith("rev=")) {
+		    if(s.equalsIgnoreCase("rev=true")) {
+			rev = true;
+		    }else {
+			rev = false;
+		    }
+		} else if (s.startsWith("dim=")) {
+		    dim = Integer.parseInt(s.substring(4));
+		}else if (s.startsWith("suffix=")) {
+		    suffix = s.substring(7);
+		}  
+		else if (s.startsWith("subgraph=")) {
+		    String sg = s.substring(9);
+		    subgraph = matchSubgraph(sg);
+		}  else if(s.startsWith("randomSeed=")){
+			String seedDate = s.substring(11);
+			seedDate.matches("[0-3][0-9]\\.[0-1][0-9]\\.[0-9][0-9][0-9][0-9]");
+			DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+			Date seeddate =  df.parse(seedDate);
+			seed = seeddate.getTime();
+		} 
+		else if (s.startsWith("dir=")) {
+		    dir = s.substring(4);
+		    File f = new File(dir);
+		    if (!f.isDirectory()) {
+			System.out.println("Directory has to be an existing directory");
+			System.exit(1);
+		    }
+		} else if (s.startsWith("srcdir=")) {
+		    srcdir = s.substring(7);
+		    File f = new File(srcdir);
+		    if (!f.isDirectory()) {
+			System.out.println("Directory has to be an existing directory");
+			System.exit(1);
+		    }
+		} else if (s.startsWith("seq=")) {
+		    String seq = s.substring(4);
+		    String[] se = seq.split("-");
+		    startIndex = Integer.parseInt(se[0]);
+		    endIndex = Integer.parseInt(se[1]);
+		} 
+		
+	}
+
+	/**
+	 * @param sn
+	 * @return
+	 */
+	private static SamplingAlgorithm matchSamplingAlgorithm(String sn) {
+	    // TODO Auto-generated method stub
+	    return null;
+	}
+
+	/**
+	 * @param sg
+	 * @return
+	 */
+	private static Transformation matchSubgraph(String sg) {
+	    Transformation subgraph;
+		if (sg.equalsIgnoreCase("subgraph")) {
+		    subgraph = new ExtractSampledSubgraph();
+		} else if (sg.equalsIgnoreCase("coloring")) {
+		    subgraph = new ColorSampledSubgraph();
+		} else if (sg.equalsIgnoreCase("heatmap")) {
+		    subgraph = new ColoredHeatmapSampledSubgraph();
 		} else {
 			throw new IllegalArgumentException(
 					"sg must be one of {subgraph, coloring, heatmap}");
 		}
-		Transformation[] t1 = new Transformation[] { samplingalgorithm, sg };
-		return t1;
-	}
-	
+		
+		return subgraph;
+	} 
+
 }
