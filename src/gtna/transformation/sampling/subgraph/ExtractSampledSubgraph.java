@@ -57,7 +57,7 @@ public class ExtractSampledSubgraph extends Transformation {
      * @param key
      */
     public ExtractSampledSubgraph() {
-	super("GENERATE_SAMPLED_GRAPH", new Parameter[] {
+	super("SUBGRAPH", new Parameter[] {
 		new StringParameter("SUBGPRAPHFUNCTION", "extract")
 	});
     }
