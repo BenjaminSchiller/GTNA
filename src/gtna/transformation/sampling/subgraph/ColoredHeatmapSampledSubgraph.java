@@ -61,7 +61,7 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
      * @param key
      */
     public ColoredHeatmapSampledSubgraph() {
-	super("HEATMAP_SAMPLED_GRAPH", new Parameter[] {
+	super("SUBGRAPH", new Parameter[] {
 		new StringParameter("SUBGPRAPHFUNCTION", "heatmap") 
 	});
     }
