@@ -93,6 +93,7 @@ public class ColorSampledSubgraph extends Transformation {
     public ColorSampledSubgraph() {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	super("SUBGRAPH", new Parameter[] {
 		new StringParameter("SUBGPRAPHFUNCTION", "colored")
 	});
@@ -110,6 +111,9 @@ public class ColorSampledSubgraph extends Transformation {
 >>>>>>> First implementation of coloring the sampled subgraph
 =======
 	super("COLOR_SAMPLED_GRAPH", new Parameter[] {
+=======
+	super("SUBGRAPH", new Parameter[] {
+>>>>>>> Correct parameter for subgraph transformations
 		new StringParameter("SUBGPRAPHFUNCTION", "colored")
 	});
 >>>>>>> debugging the WFSampling app...
