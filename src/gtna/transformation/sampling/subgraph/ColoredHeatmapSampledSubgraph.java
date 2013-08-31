@@ -106,7 +106,7 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 	super("HEATMAP_SAMPLED_GRAPH");
 =======
 	super("HEATMAP_SAMPLED_GRAPH", new Parameter[] {
-		new StringParameter("SUBGPRAPH", "heatmap") 
+		new StringParameter("SUBGPRAPHFUNCTION", "heatmap") 
 	});
 >>>>>>> debugging the WFSampling app...
     }
