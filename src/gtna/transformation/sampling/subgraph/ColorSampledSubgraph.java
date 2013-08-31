@@ -58,7 +58,7 @@ public class ColorSampledSubgraph extends Transformation {
      * @param key
      */
     public ColorSampledSubgraph() {
-	super("COLOR_SAMPLED_GRAPH", new Parameter[] {
+	super("SUBGRAPH", new Parameter[] {
 		new StringParameter("SUBGPRAPHFUNCTION", "colored")
 	});
     }
