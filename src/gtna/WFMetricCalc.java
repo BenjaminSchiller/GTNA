@@ -35,11 +35,8 @@
  */
 package gtna;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import gtna.metrics.Metric;
+import gtna.metrics.basic.DegreeDistribution;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.CondonAndKarp;
@@ -53,22 +50,26 @@ import gtna.transformation.sampling.subgraph.ColorSampledSubgraph;
 import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
 import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * @author Tim
  * 
  */
 public class WFMetricCalc {
-
+    	
+    	private static Collection<Metric> metrics = new ArrayList<Metric>();
+	private static String dir;
+    
+    	
+    	
 	/**
 	 * @param args
 	 * @throws ParseException 
 	 */
 	public static void main(String[] args) throws ParseException {
-		SamplingAlgorithm alg;
-		int dim, size;
-		boolean rev, uni;
-		double sd, seed, p1, p2;
-		String dir;
 		
 		if(args.length == 1){
 			if(args[0].equalsIgnoreCase("help")){
@@ -80,21 +81,21 @@ public class WFMetricCalc {
 		for (String s : args) {
 			
 			if (s.equalsIgnoreCase("DD")) {
-				//TODO instantiate metric
+			    metrics.add(new DegreeDistribution());
 			} else if(s.equalsIgnoreCase("CC")) {
-			    // TODO instantiate metric
+			    metrics.add(new DegreeDistribution());
 			}else if(s.equalsIgnoreCase("HP")) {
-			    // TODO instantiate metric
+			    metrics.add(new DegreeDistribution());
 			}else if(s.equalsIgnoreCase("DIAM")) {
-			    // TODO instantiate metric
+			    metrics.add(new DegreeDistribution());
 			}else if(s.equalsIgnoreCase("ECC")) {
-			    // TODO instantiate metric
+			    metrics.add(new DegreeDistribution());
 			}else if(s.equalsIgnoreCase("BC")) {
-			    // TODO instantiate metric
+			    metrics.add(new DegreeDistribution());
 			}else if(s.equalsIgnoreCase("PR")) {
-			    // TODO instantiate metric
+			    metrics.add(new DegreeDistribution());
 			}else if(s.equalsIgnoreCase("ASS")) {
-			    // TODO instantiate metric
+			    metrics.add(new DegreeDistribution());
 			}
 			// readable folder?
 			else if (s.startsWith("loadDir=")){
@@ -112,42 +113,6 @@ public class WFMetricCalc {
 				+ "sampling=<samplingalgorithm> dimension=<how many walker> scaledown=<sample size in percentage> revisiting=<true/false> randomSeed=<dd.mm.yyyy>"
 				+ "loadDir=<directory with prepared networks>"
 				+ "network=<synthetic network> size=<number of nodes> p1=<network_probability1> p2=<network_probability2> bidirectional=<true/false>");
-	}
-
-	private static Transformation[] instantiateSamplingTransformation(
-			SamplingAlgorithm alg, double scaledown, int dimension,
-			boolean revisiting, Long randomSeed, String subgraphing) {
-		Transformation samplingalgorithm = SamplingAlgorithmFactory
-				.getInstanceOf(alg, scaledown, revisiting, dimension,
-						randomSeed);
-
-		Transformation sg;
-		if (subgraphing.equalsIgnoreCase("subgraph")) {
-			sg = new ExtractSampledSubgraph();
-		} else if (subgraphing.equalsIgnoreCase("coloring")) {
-			sg = new ColorSampledSubgraph();
-		} else if (subgraphing.equalsIgnoreCase("heatmap")) {
-			sg = new ColoredHeatmapSampledSubgraph();
-		} else {
-			throw new IllegalArgumentException(
-					"sg must be one of {subgraph, coloring, heatmap}");
-		}
-		Transformation[] t1 = new Transformation[] { samplingalgorithm, sg };
-		return t1;
-	}
-	
-	public static Network[] instantiateNetworkModels() {
-		Network nw1 = new ErdosRenyi(100, 3, false, null);
-		Network nw2 = new BarabasiAlbert(500, 2, null);
-		Network nw3 = new WattsStrogatz(500, 6, 0.2, null);
-		Network nw4 = new CondonAndKarp(500, 3, 0.05, 0.0005, null);
-		Network nw5 = new Regular(100, 2, true, false, null);
-
-//		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
-//		Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
-
-		Network[] n = new Network[] { nw5 };
-		return n;
 	}
 
 }
