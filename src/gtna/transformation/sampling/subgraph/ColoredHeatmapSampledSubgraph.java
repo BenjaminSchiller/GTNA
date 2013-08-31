@@ -95,6 +95,7 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
     public ColoredHeatmapSampledSubgraph() {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	super("SUBGRAPH", new Parameter[] {
 		new StringParameter("SUBGPRAPHFUNCTION", "heatmap") 
 	});
@@ -106,6 +107,9 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
 	super("HEATMAP_SAMPLED_GRAPH");
 =======
 	super("HEATMAP_SAMPLED_GRAPH", new Parameter[] {
+=======
+	super("SUBGRAPH", new Parameter[] {
+>>>>>>> Correct parameter for subgraph transformations
 		new StringParameter("SUBGPRAPHFUNCTION", "heatmap") 
 	});
 >>>>>>> debugging the WFSampling app...
