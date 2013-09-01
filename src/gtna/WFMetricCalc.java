@@ -35,21 +35,15 @@
  */
 package gtna;
 
+import gtna.data.Series;
 import gtna.metrics.Metric;
+import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
-import gtna.networks.Network;
-import gtna.networks.model.BarabasiAlbert;
-import gtna.networks.model.CondonAndKarp;
-import gtna.networks.model.ErdosRenyi;
-import gtna.networks.model.Regular;
-import gtna.networks.model.WattsStrogatz;
-import gtna.transformation.Transformation;
-import gtna.transformation.sampling.SamplingAlgorithmFactory;
-import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
-import gtna.transformation.sampling.subgraph.ColorSampledSubgraph;
-import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
-import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
+import gtna.metrics.basic.ShortestPaths;
+import gtna.networks.util.ReadableFolder;
+import gtna.plot.Plotting;
 
+import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,6 +56,11 @@ public class WFMetricCalc {
     	
     	private static Collection<Metric> metrics = new ArrayList<Metric>();
 	private static String dir;
+	private static String suffix;
+	private static String name;
+	private static int startIndex;
+	private static int endIndex;
+	private static String targetdir;
     
     	
     	
@@ -83,20 +82,40 @@ public class WFMetricCalc {
 			if (s.equalsIgnoreCase("DD")) {
 			    metrics.add(new DegreeDistribution());
 			} else if(s.equalsIgnoreCase("CC")) {
-			    metrics.add(new DegreeDistribution());
+			    metrics.add(new ClusteringCoefficient());
 			}else if(s.equalsIgnoreCase("HP")) {
-			    metrics.add(new DegreeDistribution());
+			    System.err.println("HopPlot is currentliy not supported. (not implemented now)");
+//			    metrics.add(new HopPlot());
 			}else if(s.equalsIgnoreCase("DIAM")) {
-			    metrics.add(new DegreeDistribution());
+			    metrics.add(new ShortestPaths());
 			}else if(s.equalsIgnoreCase("ECC")) {
-			    metrics.add(new DegreeDistribution());
+			    System.err.println("ECC is currentliy not supported. (not implemented now)");
+//			    metrics.add(new Eccentricity());  // Check BSc. Thesis implementation!
 			}else if(s.equalsIgnoreCase("BC")) {
-			    metrics.add(new DegreeDistribution());
+			    System.err.println("BetweennessCentrality is currentliy not supported. (not implemented now)");
+//			    metrics.add(new BetweennessCentrality());
 			}else if(s.equalsIgnoreCase("PR")) {
-			    metrics.add(new DegreeDistribution());
+			    System.err.println("PageRank is currentliy not supported. (not implemented now)");
+//			    metrics.add(new PageRankDistribution());
 			}else if(s.equalsIgnoreCase("ASS")) {
-			    metrics.add(new DegreeDistribution());
-			}
+			    System.err.println("Assortativity is currentliy not supported. (not implemented now)");
+//			    metrics.add(new Assortativity());
+			}else if (s.startsWith("suffix=")) {
+			    suffix = s.substring(7);
+			}else if (s.startsWith("name=")) {
+			    name = s.substring(5);
+			}else if (s.startsWith("seq=")) {
+			    String seq = s.substring(4);
+			    String[] se = seq.split("-");
+			    startIndex = Integer.parseInt(se[0]);
+			    endIndex = Integer.parseInt(se[1]);
+			}else if (s.startsWith("targetdir=")) {
+			    targetdir = s.substring(10);
+			    File f = new File(targetdir);
+			    if (!f.isDirectory()) {
+				f.mkdir();
+			    }
+			} 
 			// readable folder?
 			else if (s.startsWith("loadDir=")){
 				dir = s.substring(8);
@@ -105,6 +124,22 @@ public class WFMetricCalc {
 				System.exit(0);
 			}
 		}
+		
+		
+		ReadableFolder rf = new ReadableFolder(name, dir,
+			dir, suffix, null);
+		// current index is 0!
+		if (startIndex > 0) {
+		    for (int i = 0; i < startIndex; i++) {
+			rf.incIndex();
+		    }
+		}
+		
+		Series series = Series.generate(rf, metrics.toArray(new Metric[0]), endIndex-startIndex);
+		
+		Plotting.single(series,  metrics.toArray(new Metric[0]), targetdir + "/single/");
+
+		Plotting.multi(series,  metrics.toArray(new Metric[0]), targetdir + "/multi/");
 
 	}
 
