@@ -211,8 +211,7 @@ public class WFNetworkGen {
 	    dir = s.substring(4);
 	    File f = new File(dir);
 	    if (!f.isDirectory()) {
-		System.out.println("Directory has to be an existing directory");
-		System.exit(1);
+		f.mkdirs();
 	    }
 	} else if (s.startsWith("seq=")) {
 	    String seq = s.substring(4);
