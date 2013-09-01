@@ -42,6 +42,7 @@ import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
 import gtna.networks.util.ReadableFolder;
 import gtna.plot.Plotting;
+import gtna.util.Config;
 
 import java.io.File;
 import java.text.ParseException;
@@ -53,101 +54,108 @@ import java.util.Collection;
  * 
  */
 public class WFMetricCalc {
-    	
-    	private static Collection<Metric> metrics = new ArrayList<Metric>();
-	private static String dir;
-	private static String suffix;
-	private static String name;
-	private static int startIndex;
-	private static int endIndex;
-	private static String targetdir;
-    
-    	
-    	
-	/**
-	 * @param args
-	 * @throws ParseException 
-	 */
-	public static void main(String[] args) throws ParseException {
-		
-		if(args.length == 1){
-			if(args[0].equalsIgnoreCase("help")){
-				printHelp();
-				System.exit(0);
-			}
-		}
-		
-		for (String s : args) {
-			
-			if (s.equalsIgnoreCase("DD")) {
-			    metrics.add(new DegreeDistribution());
-			} else if(s.equalsIgnoreCase("CC")) {
-			    metrics.add(new ClusteringCoefficient());
-			}else if(s.equalsIgnoreCase("HP")) {
-			    System.err.println("HopPlot is currentliy not supported. (not implemented now)");
-//			    metrics.add(new HopPlot());
-			}else if(s.equalsIgnoreCase("DIAM")) {
-			    metrics.add(new ShortestPaths());
-			}else if(s.equalsIgnoreCase("ECC")) {
-			    System.err.println("ECC is currentliy not supported. (not implemented now)");
-//			    metrics.add(new Eccentricity());  // Check BSc. Thesis implementation!
-			}else if(s.equalsIgnoreCase("BC")) {
-			    System.err.println("BetweennessCentrality is currentliy not supported. (not implemented now)");
-//			    metrics.add(new BetweennessCentrality());
-			}else if(s.equalsIgnoreCase("PR")) {
-			    System.err.println("PageRank is currentliy not supported. (not implemented now)");
-//			    metrics.add(new PageRankDistribution());
-			}else if(s.equalsIgnoreCase("ASS")) {
-			    System.err.println("Assortativity is currentliy not supported. (not implemented now)");
-//			    metrics.add(new Assortativity());
-			}else if (s.startsWith("suffix=")) {
-			    suffix = s.substring(7);
-			}else if (s.startsWith("name=")) {
-			    name = s.substring(5);
-			}else if (s.startsWith("seq=")) {
-			    String seq = s.substring(4);
-			    String[] se = seq.split("-");
-			    startIndex = Integer.parseInt(se[0]);
-			    endIndex = Integer.parseInt(se[1]);
-			}else if (s.startsWith("targetdir=")) {
-			    targetdir = s.substring(10);
-			    File f = new File(targetdir);
-			    if (!f.isDirectory()) {
-				f.mkdir();
-			    }
-			} 
-			// readable folder?
-			else if (s.startsWith("loadDir=")){
-				dir = s.substring(8);
-			} else {
-				printHelp();
-				System.exit(0);
-			}
-		}
-		
-		
-		ReadableFolder rf = new ReadableFolder(name, dir,
-			dir, suffix, null);
-		// current index is 0!
-		if (startIndex > 0) {
-		    for (int i = 0; i < startIndex; i++) {
-			rf.incIndex();
-		    }
-		}
-		
-		Series series = Series.generate(rf, metrics.toArray(new Metric[0]), endIndex-startIndex);
-		
-		Plotting.single(series,  metrics.toArray(new Metric[0]), targetdir + "/single/");
 
-		Plotting.multi(series,  metrics.toArray(new Metric[0]), targetdir + "/multi/");
+    private static Collection<Metric> metrics = new ArrayList<Metric>();
+    private static String dir;
+    private static String suffix;
+    private static String name;
+    private static int startIndex;
+    private static int endIndex;
+    private static String targetdir;
 
+    /**
+     * @param args
+     * @throws ParseException
+     */
+    public static void main(String[] args) throws ParseException {
+	Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+
+	if (args.length == 1) {
+	    if (args[0].equalsIgnoreCase("help")) {
+		printHelp();
+		System.exit(0);
+	    }
 	}
 
-	private static void printHelp() {
-		System.out.println("Usage:"
-				+ "sampling=<samplingalgorithm> dimension=<how many walker> scaledown=<sample size in percentage> revisiting=<true/false> randomSeed=<dd.mm.yyyy>"
-				+ "loadDir=<directory with prepared networks>"
-				+ "network=<synthetic network> size=<number of nodes> p1=<network_probability1> p2=<network_probability2> bidirectional=<true/false>");
+	for (String s : args) {
+
+	    if (s.equalsIgnoreCase("DD")) {
+		metrics.add(new DegreeDistribution());
+	    } else if (s.equalsIgnoreCase("CC")) {
+		metrics.add(new ClusteringCoefficient());
+	    } else if (s.equalsIgnoreCase("HP")) {
+		System.err
+			.println("HopPlot is currentliy not supported. (not implemented now)");
+		// metrics.add(new HopPlot());
+	    } else if (s.equalsIgnoreCase("DIAM")) {
+		metrics.add(new ShortestPaths());
+	    } else if (s.equalsIgnoreCase("ECC")) {
+		System.err
+			.println("ECC is currentliy not supported. (not implemented now)");
+		// metrics.add(new Eccentricity()); // Check BSc. Thesis
+		// implementation!
+	    } else if (s.equalsIgnoreCase("BC")) {
+		System.err
+			.println("BetweennessCentrality is currentliy not supported. (not implemented now)");
+		// metrics.add(new BetweennessCentrality());
+	    } else if (s.equalsIgnoreCase("PR")) {
+		System.err
+			.println("PageRank is currentliy not supported. (not implemented now)");
+		// metrics.add(new PageRankDistribution());
+	    } else if (s.equalsIgnoreCase("ASS")) {
+		System.err
+			.println("Assortativity is currentliy not supported. (not implemented now)");
+		// metrics.add(new Assortativity());
+	    } else if (s.startsWith("suffix=")) {
+		suffix = s.substring(7);
+	    } else if (s.startsWith("name=")) {
+		name = s.substring(5);
+	    } else if (s.startsWith("seq=")) {
+		String seq = s.substring(4);
+		String[] se = seq.split("-");
+		startIndex = Integer.parseInt(se[0]);
+		endIndex = Integer.parseInt(se[1]);
+	    } else if (s.startsWith("targetdir=")) {
+		targetdir = s.substring(10);
+		File f = new File(targetdir);
+		if (!f.isDirectory()) {
+		    f.mkdir();
+		}
+	    }
+	    // readable folder?
+	    else if (s.startsWith("loaddir=")) {
+		dir = s.substring(8);
+	    } else {
+		printHelp();
+		System.exit(0);
+	    }
 	}
+
+	ReadableFolder rf = new ReadableFolder(name, dir, dir, suffix, null);
+	// current index is 0!
+	if (startIndex > 0) {
+	    for (int i = 0; i < startIndex; i++) {
+		rf.incIndex();
+	    }
+	}
+
+	Series series = Series.generate(rf, metrics.toArray(new Metric[0]),
+		endIndex - startIndex);
+
+	Plotting.single(series, metrics.toArray(new Metric[0]), targetdir
+		+ "/single/");
+
+	Plotting.multi(series, metrics.toArray(new Metric[0]), targetdir
+		+ "/multi/");
+
+    }
+
+    private static void printHelp() {
+	System.out
+		.println("Usage:"
+			+ "sampling=<samplingalgorithm> dimension=<how many walker> scaledown=<sample size in percentage> revisiting=<true/false> randomSeed=<dd.mm.yyyy>"
+			+ "loadDir=<directory with prepared networks>"
+			+ "network=<synthetic network> size=<number of nodes> p1=<network_probability1> p2=<network_probability2> bidirectional=<true/false>");
+    }
 
 }
