@@ -182,6 +182,7 @@ import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
+import gtna.networks.model.ZhouMondragon;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
@@ -686,7 +687,7 @@ public class Exploring {
 		
 		
 		boolean get = false; // get or generate
-		int times = 1;		// how many generations?
+		int times = 5;		// how many generations?
 		boolean b = false; // bidirectional
 		
 //		Transformation t = new Bidirectional();
@@ -706,18 +707,10 @@ public class Exploring {
 
 		boolean r = false;
 		
-		Network nw0 = new Regular(100, 4, r, b, null);
-		Network nw1 = new Regular(200, 4, r, b, null);
-		Network nw2 = new Regular(300, 4, r, b, null);
-		Network nw3 = new Regular(400, 4, r, b, null);
-		Network nw4 = new Regular(500, 4, r, b, null);
-		Network nw5 = new Regular(600, 4, r, b, null);
-		Network nw6 = new Regular(700, 4, r, b, null);
-		Network nw7 = new Regular(800, 4, r, b, null);
-		Network nw8 = new Regular(900, 4, r, b, null);
-		Network nw9 = new Regular(1000, 4, r, b, null);
+		Network nw0 = new ZhouMondragon(1000, 0.75, 0.05, null);
 		
-		Network[] n = new Network[] {nw0, nw1, nw2, nw3, nw4, nw5, nw6, nw7, nw8, nw9};
+		
+		Network[] n = new Network[] {nw0};
 		
 		Metric[] metrics = new Metric[] { 
 				new DegreeDistribution(),
@@ -744,8 +737,13 @@ public class Exploring {
 		Plotting.single(s, metrics, "example-s/");
 
 		Plotting.multi(s, metrics, "example-m/");
+<<<<<<< HEAD
 >>>>>>> Plotting-s/-m
 		 
+=======
+		
+		
+>>>>>>> first attempts creating rd-networks
 		 for(Network i : n){
 			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
 			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
