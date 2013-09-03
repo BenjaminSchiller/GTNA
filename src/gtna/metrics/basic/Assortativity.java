@@ -41,9 +41,13 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.io.DataWriter;
 =======
 >>>>>>> implementing assortativity (wip)
+=======
+import gtna.io.DataWriter;
+>>>>>>> Assortativity.properties + writeData
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.parameter.IntParameter;
@@ -410,6 +414,7 @@ public class Assortativity extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		boolean success = true;
 
 		// success &= DataWriter.writeWithIndex(new double[]{this.r},
@@ -420,6 +425,13 @@ public class Assortativity extends Metric {
 		// TODO Auto-generated method stub
 		return false;
 >>>>>>> implementing assortativity (wip)
+=======
+		boolean success = true;
+		
+		success &= DataWriter.writeWithIndex(new double[]{this.r}, "ASSORTATIVITY_ASSORTATIVITY_COEFFCIENT", folder);
+		
+		return success;
+>>>>>>> Assortativity.properties + writeData
 	}
 
 	/*
