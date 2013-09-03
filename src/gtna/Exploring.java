@@ -173,6 +173,7 @@ import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 >>>>>>> - refactoring
 import gtna.metrics.Metric;
+import gtna.metrics.basic.Assortativity;
 import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
@@ -182,7 +183,6 @@ import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
-import gtna.networks.model.ZhouMondragon;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
@@ -687,9 +687,10 @@ public class Exploring {
 		
 		
 		boolean get = false; // get or generate
-		int times = 5;		// how many generations?
+		int times = 1;		// how many generations?
 		boolean b = false; // bidirectional
 		
+<<<<<<< HEAD
 <<<<<<< HEAD
 //		Transformation t = new Bidirectional();
 >>>>>>> - refactoring
@@ -707,18 +708,30 @@ public class Exploring {
 =======
 >>>>>>> changed probabilities for adding a new edge. probability gets very (far to) small in later iterations as the destination degree is nearly stable whereas the network degree is growing fast!
 		
+=======
+//		Transformation t = new Bidirectional();
+>>>>>>> debugged calculation of the assortativity coefficient
 
-		boolean r = false;
+//		Network nw0 = new Regular(10, 2, true, false, null);
+//		Network nw1 = new ErdosRenyi(10, 3, false, null);
+//		Network nw2 = new BarabasiAlbert(10, 2, null);
+//		Network nw3 = new WattsStrogatz(10, 2, 0.2, null);
+//		Network nw4 = new CondonAndKarp(10, 2, 0.4, 0.05, null);
+//		Network nw5 = new Regular(100, 5, true, false, null);
+//		Network nw6 = new ErdosRenyi(100, 10, false, null);
+//		Network nw7 = new BarabasiAlbert(100, 10, null);
+//		Network nw8 = new WattsStrogatz(100, 6, 0.2, null);
+//		Network nw9 = new CondonAndKarp(100, 4, 0.4, 0.05, null);
 		
-		Network nw0 = new ZhouMondragon(1000, 0.25, null);
+
+		boolean r = true;
 		
+		Network nw0 = new BarabasiAlbert(10000, 5, null);
 		
 		Network[] n = new Network[] {nw0};
 		
 		Metric[] metrics = new Metric[] { 
-				new DegreeDistribution(),
-				new ShortestPaths(), 
-				new ClusteringCoefficient()
+				new Assortativity()
 				};
 		
 		
@@ -741,12 +754,16 @@ public class Exploring {
 
 		Plotting.multi(s, metrics, "example-m/");
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> Plotting-s/-m
 		 
 =======
 		
 		
 >>>>>>> first attempts creating rd-networks
+=======
+		 
+>>>>>>> debugged calculation of the assortativity coefficient
 		 for(Network i : n){
 			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
 			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
