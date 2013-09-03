@@ -41,6 +41,7 @@ import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
+import gtna.metrics.basic.Assortativity;
 import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
@@ -77,17 +78,19 @@ public class Exploring {
 		
 		
 
-		boolean r = false;
+		boolean r = true;
 		
+<<<<<<< HEAD
 		Network nw0 = new ZhouMondragon(1000, 0.25, null);
 		
+=======
+		Network nw0 = new BarabasiAlbert(10000, 5, null);
+>>>>>>> debugged calculation of the assortativity coefficient
 		
 		Network[] n = new Network[] {nw0};
 		
 		Metric[] metrics = new Metric[] { 
-				new DegreeDistribution(),
-				new ShortestPaths(), 
-				new ClusteringCoefficient()
+				new Assortativity()
 				};
 		
 		
