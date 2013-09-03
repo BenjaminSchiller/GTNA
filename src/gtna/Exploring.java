@@ -690,6 +690,7 @@ public class Exploring {
 		int times = 5;		// how many generations?
 		boolean b = false; // bidirectional
 		
+<<<<<<< HEAD
 //		Transformation t = new Bidirectional();
 >>>>>>> - refactoring
 
@@ -703,11 +704,13 @@ public class Exploring {
 //		Network nw7 = new BarabasiAlbert(100, 10, null);
 //		Network nw8 = new WattsStrogatz(100, 6, 0.2, null);
 //		Network nw9 = new CondonAndKarp(100, 4, 0.4, 0.05, null);
+=======
+>>>>>>> changed probabilities for adding a new edge. probability gets very (far to) small in later iterations as the destination degree is nearly stable whereas the network degree is growing fast!
 		
 
 		boolean r = false;
 		
-		Network nw0 = new ZhouMondragon(1000, 0.75, 0.05, null);
+		Network nw0 = new ZhouMondragon(1000, 0.25, null);
 		
 		
 		Network[] n = new Network[] {nw0};
