@@ -98,10 +98,19 @@ public class Assortativity extends Metric {
 		Edges E = g.getEdges();
 		Node[] V = g.getNodes();
 
-		int M = E.size();
+		double M = E.size();
 
-		double numerator = sumPairDegreeProduct(E, g) - (1/M)*sumSourceNodeDegree(E, g)*sumDestinationNodeDegree(E, g);
-		double denominator = Math.sqrt(sourceDenomPart(E, g, M) * destinationDenomPart(E, g, M));
+		double m1 = (double)1/M;
+		double ssnd = sumSourceNodeDegree(E, g);
+		double sdnd = sumDestinationNodeDegree(E, g);
+		double msdnd = m1* ssnd * sdnd;
+		double spdp = sumPairDegreeProduct(E, g);
+		double numerator = spdp - msdnd;
+		
+		double srcDen = sourceDenomPart(E, g, M);
+		double destDen = destinationDenomPart(E, g, M);
+		double den = srcDen * destDen;
+		double denominator = Math.sqrt(den);
 		
 		r = numerator / denominator;
 
@@ -116,12 +125,12 @@ public class Assortativity extends Metric {
 	 * @param m
 	 * @return
 	 */
-	private double destinationDenomPart(Edges e, Graph g, int M) {
+	private double destinationDenomPart(Edges e, Graph g, double m) {
 		double ssdnd = getSumSquaredDestinationDegree(e, g);
 		double sdnd = sumDestinationNodeDegree(e, g); 
 		sdnd = sdnd * sdnd;
 		
-		double ddp = ssdnd - (1/M)*sdnd;
+		double ddp = ssdnd - (1/m)*sdnd;
 		
 		// if 0 is returned the denominator will be 0 -> forbidden!
 		if(ddp != 0){
@@ -134,13 +143,13 @@ public class Assortativity extends Metric {
 	/**
 	 * @return
 	 */
-	private double sourceDenomPart(Edges e, Graph g, int M) {
+	private double sourceDenomPart(Edges e, Graph g, double m) {
 				
 		double sssnd = getSumSquaredSourceDegree(e, g);
 		double ssnd = sumSourceNodeDegree(e, g); 
 		ssnd = ssnd * ssnd;
 		
-		double sdp = sssnd - (1/M)*ssnd;
+		double sdp = sssnd - (1/m)*ssnd;
 		
 		// if 0 is returned the denominator will be 0 -> forbidden!
 		if(sdp != 0){
@@ -286,7 +295,7 @@ public class Assortativity extends Metric {
 			src_d = getSourceDegree(src);
 			dst_d = getDestinationDegree(dst);
 			
-			spdp = src_d * dst_d;
+			spdp += src_d * dst_d;
 			
 		}		
 		return spdp;
@@ -323,7 +332,7 @@ public class Assortativity extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 		
-		success &= DataWriter.writeWithIndex(new double[]{this.r}, "ASSORTATIVITY_ASSORTATIVITY_COEFFCIENT", folder);
+		//success &= DataWriter.writeWithIndex(new double[]{this.r}, "ASSORTATIVITY_ASSORTATIVITY_COEFFCIENT", folder);
 		
 		return success;
 	}
