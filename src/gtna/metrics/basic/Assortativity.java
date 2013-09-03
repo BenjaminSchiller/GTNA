@@ -61,6 +61,11 @@ public class Assortativity extends Metric {
 	public final static int OUT_OUT = 4;
 
 	private int type;
+	
+	/**
+	 * assortativitiy coefficient
+	 */
+	private double r;
 
 	/**
 	 * @param key
@@ -87,7 +92,7 @@ public class Assortativity extends Metric {
 	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		double r = 0.0; // assortativity coefficient
+		r = 0.0;
 
 		Edges E = g.getEdges();
 		Node[] V = g.getNodes();
@@ -95,7 +100,7 @@ public class Assortativity extends Metric {
 		int M = E.size();
 
 		double numerator = sumPairDegreeProduct(E, g) - (1/M)*sumSourceNodeDegree(E, g)*sumDestinationNodeDegree(E, g);
-		double denominator = 1;
+		double denominator = Math.sqrt(sourceDenomPart(E, g, M) * destinationDenomPart(E, g, M));
 		
 		r = numerator / denominator;
 
@@ -103,6 +108,109 @@ public class Assortativity extends Metric {
 	
 	
 	
+
+	/**
+	 * @param e
+	 * @param g
+	 * @param m
+	 * @return
+	 */
+	private double destinationDenomPart(Edges e, Graph g, int M) {
+		double ssdnd = getSumSquaredDestinationDegree(e, g);
+		double sdnd = sumDestinationNodeDegree(e, g); 
+		sdnd = sdnd * sdnd;
+		
+		double ddp = ssdnd - (1/M)*sdnd;
+		
+		// if 0 is returned the denominator will be 0 -> forbidden!
+		if(ddp != 0){
+			return ddp;
+		} else {
+			return 1;
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	private double sourceDenomPart(Edges e, Graph g, int M) {
+				
+		double sssnd = getSumSquaredSourceDegree(e, g);
+		double ssnd = sumSourceNodeDegree(e, g); 
+		ssnd = ssnd * ssnd;
+		
+		double sdp = sssnd - (1/M)*ssnd;
+		
+		// if 0 is returned the denominator will be 0 -> forbidden!
+		if(sdp != 0){
+			return sdp;
+		} else {
+			return 1;
+		}
+		
+	}
+
+	/**
+	 * @param e
+	 * @param g
+	 * @return
+	 */
+	private int getSumSquaredDestinationDegree(Edges e, Graph g) {
+		int ssdnd = 0;
+		int d;
+		Node dst;
+		
+		ArrayList<Edge> el = e.getEdges();
+		for(Edge p : el){
+			d = p.getSrc();
+			
+			dst = g.getNode(d);
+			
+			ssdnd += getSquaredDestinationNodeDegree(dst);
+		}
+		
+		return ssdnd;
+	}
+
+	/**
+	 * @param e
+	 * @param g
+	 * @return
+	 */
+	private int getSumSquaredSourceDegree(Edges e, Graph g) {
+		int sssnd = 0;
+		int s;
+		Node src;
+		
+		ArrayList<Edge> el = e.getEdges();
+		for(Edge p : el){
+			s = p.getSrc();
+			
+			src = g.getNode(s);
+			
+			sssnd += getSquaredSourceNodeDegree(src);
+		}
+		
+		return sssnd;
+	}
+
+	/**
+	 * @param src
+	 * @return
+	 */
+	private int getSquaredSourceNodeDegree(Node src) {
+		int sd = getSourceDegree(src);
+		return sd * sd;
+	}
+	
+	/**
+	 * @param dst
+	 * @return
+	 */
+	private int getSquaredDestinationNodeDegree(Node dst) {
+		int dd = getDestinationDegree(dst);
+		return dd * dd;
+	}
 
 	/**
 	 * @param e
@@ -223,8 +331,9 @@ public class Assortativity extends Metric {
 	 */
 	@Override
 	public Single[] getSingles() {
-		// TODO Auto-generated method stub
-		return null;
+		Single assortativityCoefficient = new Single("ASSORTATIVITY_ASSORTATIVITY_COEFFICIENT", this.r);
+		
+		return new Single[]{assortativityCoefficient};
 	}
 
 	/*
@@ -235,8 +344,7 @@ public class Assortativity extends Metric {
 	 */
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 }
