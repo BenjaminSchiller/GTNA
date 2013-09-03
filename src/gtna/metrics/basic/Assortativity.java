@@ -40,6 +40,7 @@ import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.parameter.IntParameter;
@@ -320,8 +321,11 @@ public class Assortativity extends Metric {
 	 */
 	@Override
 	public boolean writeData(String folder) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean success = true;
+		
+		success &= DataWriter.writeWithIndex(new double[]{this.r}, "ASSORTATIVITY_ASSORTATIVITY_COEFFCIENT", folder);
+		
+		return success;
 	}
 
 	/*
