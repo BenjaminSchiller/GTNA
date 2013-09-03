@@ -40,7 +40,10 @@ import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+<<<<<<< HEAD
 import gtna.io.DataWriter;
+=======
+>>>>>>> implementing assortativity (wip)
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.parameter.IntParameter;
@@ -52,9 +55,12 @@ import java.util.HashMap;
 /**
  * @author Tim
  * 
+<<<<<<< HEAD
  * 
  *  Calculate the Assortativity Coefficient according to
  *   Assortative Mixing in Networks (M.E.J. Newman, 2002, Eq 4)
+=======
+>>>>>>> implementing assortativity (wip)
  */
 public class Assortativity extends Metric {
 
@@ -67,6 +73,7 @@ public class Assortativity extends Metric {
 	private int type;
 
 	/**
+<<<<<<< HEAD
 	 * assortativitiy coefficient
 	 */
 	private double r;
@@ -74,6 +81,8 @@ public class Assortativity extends Metric {
 	private int edges;
 
 	/**
+=======
+>>>>>>> implementing assortativity (wip)
 	 * @param key
 	 */
 	public Assortativity() {
@@ -98,6 +107,7 @@ public class Assortativity extends Metric {
 	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
+<<<<<<< HEAD
 		
 		this.nodes = g.getNodeCount();
 		this.edges = g.getEdges().size();
@@ -160,6 +170,123 @@ public class Assortativity extends Metric {
 			return dst.getOutDegree();
 		default:
 			return dst.getDegree();
+=======
+		double r = 0.0; // assortativity coefficient
+
+		Edges E = g.getEdges();
+		Node[] V = g.getNodes();
+
+		int M = E.size();
+
+		double numerator = sumPairDegreeProduct(E, g) - (1/M)*sumSourceNodeDegree(E, g)*sumDestinationNodeDegree(E, g);
+		double denominator = 1;
+		
+		r = numerator / denominator;
+
+	}
+	
+	
+	
+
+	/**
+	 * @param e
+	 * @param g
+	 * @return
+	 */
+	private int sumDestinationNodeDegree(Edges e, Graph g) {
+		int sdnd = 0;
+		
+		ArrayList<Edge> el = e.getEdges();
+		
+		int d;
+		Node dst;
+		for(Edge p : el){
+			d = p.getDst();
+			
+			dst = g.getNode(d);
+			
+			sdnd += getDestinationDegree(dst);
+		}
+		
+		return sdnd;
+	}
+
+	/**
+	 * @param e
+	 * @param g
+	 * @return
+	 */
+	private int sumSourceNodeDegree(Edges e, Graph g) {
+		int ssnd = 0;
+		
+		ArrayList<Edge> el = e.getEdges();
+		
+		int s;
+		Node src;
+		for(Edge p : el){
+			s = p.getSrc();
+			
+			src = g.getNode(s);
+			
+			ssnd += getSourceDegree(src);
+		}
+		
+		
+		return ssnd;
+	}
+
+	/**
+	 * @param e
+	 * @return
+	 */
+	private int sumPairDegreeProduct(Edges e, Graph g) {
+		int spdp = 0;
+		
+		ArrayList<Edge> el = e.getEdges();
+		
+		int s;
+		int d;
+		Node src;
+		Node dst;
+		int src_d;
+		int dst_d;
+		
+		for(Edge p : el){
+			s = p.getSrc();
+			d = p.getDst();
+			
+			src = g.getNode(s);
+			dst = g.getNode(d);
+			
+			src_d = getSourceDegree(src);
+			dst_d = getDestinationDegree(dst);
+			
+			spdp = src_d * dst_d;
+			
+		}		
+		return spdp;
+	}
+	
+	private int getSourceDegree(Node src){
+		switch(type){
+			case NODE_NODE: return src.getDegree();
+			case IN_IN: return src.getInDegree();
+			case IN_OUT: return src.getInDegree();
+			case OUT_IN: return src.getOutDegree();
+			case OUT_OUT: return src.getOutDegree();
+			default: return src.getDegree();
+		}
+	}
+	
+	private int getDestinationDegree(Node dst){
+		switch(type){
+			case NODE_NODE: return dst.getDegree();
+			case IN_IN: return dst.getInDegree();
+			case IN_OUT: return dst.getOutDegree();
+			case OUT_IN: return dst.getInDegree();
+			case OUT_OUT: return dst.getOutDegree();
+			default: return dst.getDegree();
+>>>>>>> implementing assortativity (wip)
 		}
 	}
 
@@ -170,12 +297,17 @@ public class Assortativity extends Metric {
 	 */
 	@Override
 	public boolean writeData(String folder) {
+<<<<<<< HEAD
 		boolean success = true;
 
 		// success &= DataWriter.writeWithIndex(new double[]{this.r},
 		// "ASSORTATIVITY_ASSORTATIVITY_COEFFCIENT", folder);
 
 		return success;
+=======
+		// TODO Auto-generated method stub
+		return false;
+>>>>>>> implementing assortativity (wip)
 	}
 
 	/*
@@ -185,12 +317,17 @@ public class Assortativity extends Metric {
 	 */
 	@Override
 	public Single[] getSingles() {
+<<<<<<< HEAD
 		Single assortativityCoefficient = new Single(
 				"ASSORTATIVITY_ASSORTATIVITY_COEFFICIENT", this.r);
 		Single nodes = new Single("NODES", this.nodes);
 		Single edges = new Single("EDGES", this.edges);
 
 		return new Single[] { assortativityCoefficient };
+=======
+		// TODO Auto-generated method stub
+		return null;
+>>>>>>> implementing assortativity (wip)
 	}
 
 	/*
@@ -201,7 +338,12 @@ public class Assortativity extends Metric {
 	 */
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+<<<<<<< HEAD
 		return true;
+=======
+		// TODO Auto-generated method stub
+		return false;
+>>>>>>> implementing assortativity (wip)
 	}
 
 }
