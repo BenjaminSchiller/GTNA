@@ -75,23 +75,11 @@ public class Exploring {
 		int times = 5;		// how many generations?
 		boolean b = false; // bidirectional
 		
-//		Transformation t = new Bidirectional();
-
-//		Network nw0 = new Regular(10, 2, true, false, null);
-//		Network nw1 = new ErdosRenyi(10, 3, false, null);
-//		Network nw2 = new BarabasiAlbert(10, 2, null);
-//		Network nw3 = new WattsStrogatz(10, 2, 0.2, null);
-//		Network nw4 = new CondonAndKarp(10, 2, 0.4, 0.05, null);
-//		Network nw5 = new Regular(100, 5, true, false, null);
-//		Network nw6 = new ErdosRenyi(100, 10, false, null);
-//		Network nw7 = new BarabasiAlbert(100, 10, null);
-//		Network nw8 = new WattsStrogatz(100, 6, 0.2, null);
-//		Network nw9 = new CondonAndKarp(100, 4, 0.4, 0.05, null);
 		
 
 		boolean r = false;
 		
-		Network nw0 = new ZhouMondragon(1000, 0.75, 0.05, null);
+		Network nw0 = new ZhouMondragon(1000, 0.25, null);
 		
 		
 		Network[] n = new Network[] {nw0};
