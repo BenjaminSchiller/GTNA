@@ -54,11 +54,11 @@ import java.util.Stack;
 
 /**
  * 
- * The betweenness centrality is calculated using the fast algorithm of Ulrik Brandes, published in
- * "A Faster Algorithm for Betweenness Centrality" (2001)
+ * The betweenness centrality is calculated using the fast algorithm of Ulrik
+ * Brandes, published in "A Faster Algorithm for Betweenness Centrality" (2001)
  * 
  * @author Tim
- *
+ * 
  */
 public class BetweennessCentrality extends Metric {
 
@@ -78,8 +78,11 @@ public class BetweennessCentrality extends Metric {
 		// TODO Auto-generated constructor stub
 	} // TODO Remove?
 
-	/* (non-Javadoc)
-	 * @see gtna.metrics.Metric#computeData(gtna.graph.Graph, gtna.networks.Network, java.util.HashMap)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#computeData(gtna.graph.Graph,
+	 * gtna.networks.Network, java.util.HashMap)
 	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
@@ -87,7 +90,9 @@ public class BetweennessCentrality extends Metric {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.metrics.Metric#writeData(java.lang.String)
 	 */
 	@Override
@@ -96,7 +101,9 @@ public class BetweennessCentrality extends Metric {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.metrics.Metric#getSingles()
 	 */
 	@Override
@@ -105,101 +112,89 @@ public class BetweennessCentrality extends Metric {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.metrics.Metric#applicable(gtna.graph.Graph, gtna.networks.Network, java.util.HashMap)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#applicable(gtna.graph.Graph,
+	 * gtna.networks.Network, java.util.HashMap)
 	 */
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	
+
 	/**
 	 * Calculates the betweenness centrality array with the Brandes Algorithm
 	 * 
-	 * see: Algorithm 1: Betweenness centrality in unweighted graphs (A Faster Algorithm for Betweenness Centrality, Brandes, 2001)
+	 * see: Algorithm 1: Betweenness centrality in unweighted graphs (A Faster
+	 * Algorithm for Betweenness Centrality, Brandes, 2001)
+	 * 
 	 * @param g
 	 */
-	private void calculateBC(Graph g){
+	private void calculateBC(Graph g) {
 		int[] cb = new int[g.getNodeCount()];
-		Arrays.fill(cb, 0); // initialize with 0 as the nodes are initially included in 0 shortest paths
-		
+		Arrays.fill(cb, 0); // initialize with 0 as the nodes are initially
+							// included in 0 shortest paths
+
 		Node[] V = g.getNodes();
-		
-		for(Node s : V){
+
+		for (Node s : V) {
 			Stack<Node> S = new Stack<Node>();
 			Map<Node, List<Node>> P = new HashMap<Node, List<Node>>();
-			int[] sigma_t = new int[V.length]; Arrays.fill(sigma_t, 0); sigma_t[s.getIndex()] = 1;
-			int[] distance_t = new int[V.length]; Arrays.fill(distance_t, -1); distance_t[s.getIndex()] = 0;
-			
+			int[] sigma_t = new int[V.length];
+			Arrays.fill(sigma_t, 0);
+			sigma_t[s.getIndex()] = 1;
+			int[] distance_t = new int[V.length];
+			Arrays.fill(distance_t, -1);
+			distance_t[s.getIndex()] = 0;
+
 			Queue<Node> Q = new LinkedList<Node>();
 			Q.offer(s);
-			
-			while(!Q.isEmpty()){
+
+			while (!Q.isEmpty()) {
 				Node v = Q.poll();
 				S.push(v);
 				Node[] vNeighbors = getNeighborNodes(v, g);
-				for(Node w : vNeighbors){
+				for (Node w : vNeighbors) {
 					// w found first time?
-					if( distance_t[w.getIndex()] < 0){
+					if (distance_t[w.getIndex()] < 0) {
 						Q.offer(w);
-						distance_t[w.getIndex()] = distance_t[v.getIndex()]+1;
+						distance_t[w.getIndex()] = distance_t[v.getIndex()] + 1;
 					}
 					// shortest path to w via v?
-					if(distance_t[w.getIndex()] == (distance_t[v.getIndex()]+1)){
-						sigma_t[w.getIndex()] = sigma_t[w.getIndex()] + sigma_t[v.getIndex()];
+					if (distance_t[w.getIndex()] == (distance_t[v.getIndex()] + 1)) {
+						sigma_t[w.getIndex()] = sigma_t[w.getIndex()]
+								+ sigma_t[v.getIndex()];
 						List<Node> pw = P.get(w);
-						if(pw == null)
+						if (pw == null)
 							pw = new LinkedList<Node>();
-						
+
 						pw.add(v);
 						P.put(w, pw);
 					}
 				}
 			}
-			
-			int[] delta_v = new int[V.length]; Arrays.fill(delta_v, 0);
+
+			int[] delta_v = new int[V.length];
+			Arrays.fill(delta_v, 0);
 			// S returns nodes in order of non-increasing distance from s
-			while(!S.isEmpty()){
+			while (!S.isEmpty()) {
 				Node w = S.pop();
-				for(Node v : P.get(w)){
-					delta_v[v.getIndex()] = delta_v[v.getIndex()] + (sigma_t[v.getIndex()] / sigma_t[w.getIndex()] * (1 + delta_v[w.getIndex()]));
-					
-					if(w.getIndex() != s.getIndex()){
-						cb[w.getIndex()] = cb[w.getIndex()] + delta_v[w.getIndex()];
+				for (Node v : P.get(w)) {
+					delta_v[v.getIndex()] = delta_v[v.getIndex()]
+							+ (sigma_t[v.getIndex()] / sigma_t[w.getIndex()] * (1 + delta_v[w
+									.getIndex()]));
+
+					if (w.getIndex() != s.getIndex()) {
+						cb[w.getIndex()] = cb[w.getIndex()]
+								+ delta_v[w.getIndex()];
 					}
 				}
 			}
-			
-			
+
 		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
 	}
 
 	/**
@@ -208,30 +203,14 @@ public class BetweennessCentrality extends Metric {
 	 */
 	private Node[] getNeighborNodes(Node v, Graph g) {
 		Collection<Node> nv = new ArrayList<Node>();
-		
+
 		int[] oe = v.getOutgoingEdges();
-		
-		for(int n : oe){
+
+		for (int n : oe) {
 			nv.add(g.getNode(n));
 		}
-		
-		
+
 		return nv.toArray(new Node[0]);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 }
