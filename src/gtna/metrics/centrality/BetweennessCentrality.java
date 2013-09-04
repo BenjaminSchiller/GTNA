@@ -35,6 +35,7 @@
  */
 package gtna.metrics.centrality;
 
+<<<<<<< HEAD
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -73,6 +74,26 @@ public class BetweennessCentrality extends Metric {
 	private double bcMin;
 	private double bcMax;
 
+=======
+import java.util.HashMap;
+
+import gtna.data.Single;
+import gtna.graph.Graph;
+import gtna.metrics.Metric;
+import gtna.networks.Network;
+import gtna.util.parameter.Parameter;
+
+/**
+ * 
+ * The betweenness centrality is calculated using the fast algorithm of Ulrik Brandes, published in
+ * "A Faster Algorithm for Betweenness Centrality" (2001)
+ * 
+ * @author Tim
+ *
+ */
+public class BetweennessCentrality extends Metric {
+
+>>>>>>> body of the BetweennessCentrality and the .properties
 	/**
 	 * @param key
 	 */
@@ -86,6 +107,7 @@ public class BetweennessCentrality extends Metric {
 	 */
 	public BetweennessCentrality(String key, Parameter[] parameters) {
 		super(key, parameters);
+<<<<<<< HEAD
 
 	} // TODO Remove?
 
@@ -135,10 +157,26 @@ public class BetweennessCentrality extends Metric {
 	/*
 	 * (non-Javadoc)
 	 * 
+=======
+		// TODO Auto-generated constructor stub
+	} // TODO Remove?
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#computeData(gtna.graph.Graph, gtna.networks.Network, java.util.HashMap)
+	 */
+	@Override
+	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/* (non-Javadoc)
+>>>>>>> body of the BetweennessCentrality and the .properties
 	 * @see gtna.metrics.Metric#writeData(java.lang.String)
 	 */
 	@Override
 	public boolean writeData(String folder) {
+<<<<<<< HEAD
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(this.BC.getDistribution(),
 				"BETWEENNESS_CENTRALITY_DISTRIBUTION", folder);
@@ -149,10 +187,18 @@ public class BetweennessCentrality extends Metric {
 	/*
 	 * (non-Javadoc)
 	 * 
+=======
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+>>>>>>> body of the BetweennessCentrality and the .properties
 	 * @see gtna.metrics.Metric#getSingles()
 	 */
 	@Override
 	public Single[] getSingles() {
+<<<<<<< HEAD
 		Single nodes = new Single("BETWEENNESS_CENTRALITY_NODES", this.nodes);
 		Single edges = new Single("BETWEENNESS_CENTRALITY_EDGES", this.edges);
 
@@ -315,6 +361,19 @@ public class BetweennessCentrality extends Metric {
 		}
 
 		return median;
+=======
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#applicable(gtna.graph.Graph, gtna.networks.Network, java.util.HashMap)
+	 */
+	@Override
+	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+		// TODO Auto-generated method stub
+		return false;
+>>>>>>> body of the BetweennessCentrality and the .properties
 	}
 
 }
