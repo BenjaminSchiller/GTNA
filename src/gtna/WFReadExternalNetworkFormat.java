@@ -51,7 +51,7 @@ import java.util.List;
  * @author Tim
  * 
  */
-public class WFReadSnap {
+public class WFReadExternalNetworkFormat {
 
 	private static String path;
 	private static boolean snap = true;
