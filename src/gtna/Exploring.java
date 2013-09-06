@@ -45,20 +45,14 @@ import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
 import gtna.networks.Network;
-import gtna.networks.model.BarabasiAlbert;
-import gtna.networks.model.CondonAndKarp;
-import gtna.networks.model.ErdosRenyi;
-import gtna.networks.model.Regular;
-import gtna.networks.model.WattsStrogatz;
 import gtna.networks.model.ZhouMondragon;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
-import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
-import gtna.transformation.id.node.NodeIds;
 import gtna.util.Config;
+import gtna.util.Stats;
 
 /**
  * @author Tim
@@ -72,31 +66,28 @@ public class Exploring {
 		
 		
 		boolean get = false; // get or generate
-		int times = 5;		// how many generations?
+		int times = 1;		// how many generations?
 		boolean b = false; // bidirectional
 		
 		
 
 		boolean r = false;
 		
-		Network nw0 = new ZhouMondragon(1000, 0.25, null);
+		Network nw0 = new ZhouMondragon(10000, 0.25, 2, null);
 		
 		
 		Network[] n = new Network[] {nw0};
 		
 		Metric[] metrics = new Metric[] { 
-				new DegreeDistribution(),
-				new ShortestPaths(), 
-				new ClusteringCoefficient()
-				};
+				new DegreeDistribution() };
 		
 		
 		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
-
-		Plotting.single(s, metrics, "example-s/");
-
-		Plotting.multi(s, metrics, "example-m/");
 		
+		Plotting.single(s, metrics, "example-s/");
+//
+		Plotting.multi(s, metrics, "example-m/");
+//		
 		
 		 for(Network i : n){
 			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
