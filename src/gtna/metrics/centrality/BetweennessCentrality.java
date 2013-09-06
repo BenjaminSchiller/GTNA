@@ -111,9 +111,9 @@ public class BetweennessCentrality extends Metric {
 	    boolean success = true;
 		success &= DataWriter.writeWithIndex(
 				this.BC.getDistribution(),
-				"BETWEENNESS_CENTRALITY_BC_DISTRIBUTION", folder);
+				"BETWEENNESS_CENTRALITY_DISTRIBUTION", folder);
 		success &= DataWriter.writeWithIndex(this.BC.getCdf(),
-			"BETWEENNESS_CENTRALITY_BC_DISTRIBUTION_CDF", folder);
+			"BETWEENNESS_CENTRALITY_DISTRIBUTION_CDF", folder);
 		
 		return success;
 	}
