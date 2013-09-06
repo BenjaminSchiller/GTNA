@@ -41,22 +41,14 @@ import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
-import gtna.metrics.basic.ClusteringCoefficient;
-import gtna.metrics.basic.DegreeDistribution;
-import gtna.metrics.basic.ShortestPaths;
+import gtna.metrics.centrality.BetweennessCentrality;
 import gtna.networks.Network;
-import gtna.networks.model.BarabasiAlbert;
-import gtna.networks.model.CondonAndKarp;
-import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
-import gtna.networks.model.WattsStrogatz;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
-import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
-import gtna.transformation.id.node.NodeIds;
 import gtna.util.Config;
 
 /**
@@ -101,12 +93,10 @@ public class Exploring {
 		Network nw8 = new Regular(900, 4, r, b, null);
 		Network nw9 = new Regular(1000, 4, r, b, null);
 		
-		Network[] n = new Network[] {nw0, nw1, nw2, nw3, nw4, nw5, nw6, nw7, nw8, nw9};
+		Network[] n = new Network[] {nw0 /*, nw1, nw2, nw3, nw4, nw5, nw6, nw7, nw8, nw9*/};
 		
 		Metric[] metrics = new Metric[] { 
-				new DegreeDistribution(),
-				new ShortestPaths(), 
-				new ClusteringCoefficient()
+				new BetweennessCentrality()
 				};
 		
 		

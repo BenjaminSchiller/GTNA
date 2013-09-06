@@ -149,8 +149,9 @@ public class SampleExample {
 		Network nw3 = new WattsStrogatz(500, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(500, 3, 0.05, 0.0005, null);
 		Network nw5 = new Regular(100, 2, true, false, null);
-
+	
 //		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
+		
 //		Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
 
 		Network[] n = new Network[] { nw5 };
