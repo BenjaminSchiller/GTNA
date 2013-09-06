@@ -67,6 +67,7 @@ import java.util.Stack;
 public class BetweennessCentrality extends Metric {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	private int[] cbs;
 	private Distribution BC;
 	private int edges;
@@ -111,6 +112,9 @@ public class BetweennessCentrality extends Metric {
 >>>>>>> body of the BetweennessCentrality and the .properties
 =======
 	private double[] cbs;
+=======
+	private int[] cbs;
+>>>>>>> debugging bc (2)
 	private Distribution BC;
 	private int edges;
 	private int nodes;
@@ -193,10 +197,29 @@ public class BetweennessCentrality extends Metric {
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		this.calculateBC(g);
 		
-		BC = new Distribution(cbs);
+		int max = getMaxBc(cbs);
+		double[] cb = new double[max+1];
+		for(int d : cbs) {
+		    cb[d]++;
+		}
+		for(int i = 0; i < cb.length; i++) {
+		    cb[i] /= (double)g.getNodes().length;
+		}
+		BC = new Distribution(cb);
 		this.nodes = g.getNodes().length;
 		this.edges = g.getEdges().size();
 
+	}
+	
+	private int getMaxBc(int[] cbs2) {
+	    int m = 0;
+	    
+	    for(int i = 0; i < cbs2.length; i++) {
+		if(cbs2[i] > m)
+		    m = cbs2[i];
+	    }
+	    
+	    return m;
 	}
 
 <<<<<<< HEAD
@@ -457,7 +480,7 @@ public class BetweennessCentrality extends Metric {
 	 * @param g
 	 */
 	private void calculateBC(Graph g) {
-		cbs = new double[g.getNodeCount()];
+		cbs = new int[g.getNodeCount()];
 		Arrays.fill(cbs, 0); // initialize with 0 as the nodes are initially
 							// included in 0 shortest paths
 

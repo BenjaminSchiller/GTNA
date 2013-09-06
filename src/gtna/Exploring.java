@@ -724,7 +724,7 @@ public class Exploring {
 
 		boolean r = false;
 		
-		Network nw0 = new Regular(100, 4, r, b, null);
+		Network nw0 = new Regular(100, 1, r, b, null);
 		Network nw1 = new Regular(200, 4, r, b, null);
 		Network nw2 = new Regular(300, 4, r, b, null);
 		Network nw3 = new Regular(400, 4, r, b, null);
