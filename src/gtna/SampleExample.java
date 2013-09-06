@@ -45,7 +45,6 @@ import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
-import gtna.networks.model.ZhouMondragon;
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
@@ -77,7 +76,7 @@ public class SampleExample {
 		int times = 1; // how many generations?
 
 		// Sampling parameter
-		double scaledown = 1.0;
+		double scaledown = 0.5;
 		int dimension = 1;
 		boolean revisiting = false;
 		Long rngSeed = null;
@@ -137,8 +136,8 @@ public class SampleExample {
 				randomSeed);
 
 //		 Transformation subgraphing = new ExtractSampledSubgraph();
-		 Transformation subgraphing = new ColorSampledSubgraph();
-//		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
+//		 Transformation subgraphing = new ColorSampledSubgraph();
+		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
 		Transformation[] t1 = new Transformation[] { rw, subgraphing };
 		return t1;
@@ -150,12 +149,12 @@ public class SampleExample {
 		Network nw3 = new WattsStrogatz(500, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(500, 3, 0.05, 0.0005, null);
 		Network nw5 = new Regular(100, 2, true, false, null);
-		Network nw6 = new ZhouMondragon(100, 0.001, null);
-
+	
 //		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
+		
 //		Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
 
-		Network[] n = new Network[] { nw6 };
+		Network[] n = new Network[] { nw5 };
 		return n;
 	}
 	

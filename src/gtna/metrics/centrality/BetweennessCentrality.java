@@ -38,8 +38,10 @@ package gtna.metrics.centrality;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Distribution;
 import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
@@ -61,6 +63,11 @@ import java.util.Stack;
  * 
  */
 public class BetweennessCentrality extends Metric {
+
+	private double[] cbs;
+	private Distribution BC;
+	private int edges;
+	private int nodes;
 
 	/**
 	 * @param key
@@ -86,7 +93,11 @@ public class BetweennessCentrality extends Metric {
 	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		// TODO Auto-generated method stub
+		this.calculateBC(g);
+		
+		BC = new Distribution(cbs);
+		this.nodes = g.getNodes().length;
+		this.edges = g.getEdges().size();
 
 	}
 
@@ -97,8 +108,14 @@ public class BetweennessCentrality extends Metric {
 	 */
 	@Override
 	public boolean writeData(String folder) {
-		// TODO Auto-generated method stub
-		return false;
+	    boolean success = true;
+		success &= DataWriter.writeWithIndex(
+				this.BC.getDistribution(),
+				"BETWEENNESS_CENTRALITY_BC_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.BC.getCdf(),
+			"BETWEENNESS_CENTRALITY_BC_DISTRIBUTION_CDF", folder);
+		
+		return success;
 	}
 
 	/*
@@ -108,8 +125,16 @@ public class BetweennessCentrality extends Metric {
 	 */
 	@Override
 	public Single[] getSingles() {
-		// TODO Auto-generated method stub
-		return null;
+		Single nodes = new Single("BETWEENNESS_CENTRALITY_NODES", this.nodes);
+		Single edges = new Single("BETWEENNESS_CENTRALITY_EDGES", this.edges);
+		
+		Single bcMin = new Single("BETWEENNESS_CENTRALITY_MIN", BC.getMin());
+		Single bcMed = new Single("BETWEENNESS_CENTRALITY_MED", BC.getMedian());
+		Single bcAvg = new Single("BETWEENNESS_CENTRALITY_AVG", BC.getAverage());
+		Single bcMax = new Single("BETWEENNESS_CENTRALITY_MAX", BC.getMax());
+		
+		return new Single[] { nodes, edges, bcMin, bcMed, bcAvg, bcMax };
+		
 	}
 
 	/*
@@ -120,8 +145,7 @@ public class BetweennessCentrality extends Metric {
 	 */
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	/**
@@ -133,8 +157,8 @@ public class BetweennessCentrality extends Metric {
 	 * @param g
 	 */
 	private void calculateBC(Graph g) {
-		int[] cb = new int[g.getNodeCount()];
-		Arrays.fill(cb, 0); // initialize with 0 as the nodes are initially
+		cbs = new double[g.getNodeCount()];
+		Arrays.fill(cbs, 0); // initialize with 0 as the nodes are initially
 							// included in 0 shortest paths
 
 		Node[] V = g.getNodes();
@@ -181,15 +205,18 @@ public class BetweennessCentrality extends Metric {
 			// S returns nodes in order of non-increasing distance from s
 			while (!S.isEmpty()) {
 				Node w = S.pop();
-				for (Node v : P.get(w)) {
+				List<Node> pw = P.get(w);
+				if(pw != null) {
+				for (Node v : pw) {
 					delta_v[v.getIndex()] = delta_v[v.getIndex()]
 							+ (sigma_t[v.getIndex()] / sigma_t[w.getIndex()] * (1 + delta_v[w
 									.getIndex()]));
 
 					if (w.getIndex() != s.getIndex()) {
-						cb[w.getIndex()] = cb[w.getIndex()]
+						cbs[w.getIndex()] = cbs[w.getIndex()]
 								+ delta_v[w.getIndex()];
 					}
+				}
 				}
 			}
 
