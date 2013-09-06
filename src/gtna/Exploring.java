@@ -183,15 +183,18 @@ import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
+import gtna.networks.model.ZhouMondragon;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
-import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
-import gtna.transformation.id.node.NodeIds;
 import gtna.util.Config;
+<<<<<<< HEAD
 >>>>>>> exploring gtna functionality
+=======
+import gtna.util.Stats;
+>>>>>>> debugged rich-club generator.
 
 /**
  * @author Tim
@@ -726,16 +729,17 @@ public class Exploring {
 
 		boolean r = true;
 		
-		Network nw0 = new BarabasiAlbert(10000, 5, null);
+		Network nw0 = new ZhouMondragon(10000, 0.25, 2, null);
+		
 		
 		Network[] n = new Network[] {nw0};
 		
 		Metric[] metrics = new Metric[] { 
-				new Assortativity()
-				};
+				new DegreeDistribution() };
 		
 		
 		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 		if (!Plotting.single(s, metrics, "example-s/")) {
@@ -750,9 +754,13 @@ public class Exploring {
 >>>>>>> exploring gtna functionality
 =======
 =======
+=======
+		
+>>>>>>> debugged rich-club generator.
 		Plotting.single(s, metrics, "example-s/");
-
+//
 		Plotting.multi(s, metrics, "example-m/");
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> Plotting-s/-m
@@ -762,6 +770,10 @@ public class Exploring {
 		
 >>>>>>> first attempts creating rd-networks
 =======
+=======
+//		
+		
+>>>>>>> debugged rich-club generator.
 		 
 >>>>>>> debugged calculation of the assortativity coefficient
 		 for(Network i : n){

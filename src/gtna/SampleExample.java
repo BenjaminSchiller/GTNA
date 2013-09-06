@@ -46,9 +46,13 @@ import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.networks.model.ZhouMondragon;
 =======
 >>>>>>> separated workflow and tester
+=======
+import gtna.networks.model.ZhouMondragon;
+>>>>>>> debugged rich-club generator.
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
@@ -90,6 +94,7 @@ public class SampleExample {
 		// Sampling parameter
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		double scaledown = 1.0;
 		int dimension = 1;
 		boolean revisiting = false;
@@ -102,6 +107,9 @@ public class SampleExample {
 >>>>>>> separated workflow and tester
 =======
 		double scaledown = 0.5;
+=======
+		double scaledown = 1.0;
+>>>>>>> debugged rich-club generator.
 		int dimension = 1;
 		boolean revisiting = false;
 		Long rngSeed = null;
@@ -162,8 +170,8 @@ public class SampleExample {
 				randomSeed);
 
 //		 Transformation subgraphing = new ExtractSampledSubgraph();
-//		 Transformation subgraphing = new ColorSampledSubgraph();
-		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
+		 Transformation subgraphing = new ColorSampledSubgraph();
+//		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -202,13 +210,17 @@ public class SampleExample {
 		Network nw5 = new Regular(1000, 5, true, false, null);
 =======
 		Network nw5 = new Regular(100, 2, true, false, null);
+<<<<<<< HEAD
 >>>>>>> allow heat map coloring for a single sample -> division by 0 prevented
+=======
+		Network nw6 = new ZhouMondragon(100, 0.001, null);
+>>>>>>> debugged rich-club generator.
 
 //		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 >>>>>>> separated workflow and tester
 //		Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
 
-		Network[] n = new Network[] { nw5 };
+		Network[] n = new Network[] { nw6 };
 		return n;
 	}
 	
