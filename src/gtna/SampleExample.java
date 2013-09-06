@@ -47,12 +47,15 @@ import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.networks.model.ZhouMondragon;
 =======
 >>>>>>> separated workflow and tester
 =======
 import gtna.networks.model.ZhouMondragon;
 >>>>>>> debugged rich-club generator.
+=======
+>>>>>>> bugfix bc (1)
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
@@ -95,6 +98,7 @@ public class SampleExample {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		double scaledown = 1.0;
 		int dimension = 1;
 		boolean revisiting = false;
@@ -110,6 +114,9 @@ public class SampleExample {
 =======
 		double scaledown = 1.0;
 >>>>>>> debugged rich-club generator.
+=======
+		double scaledown = 0.5;
+>>>>>>> bugfix bc (1)
 		int dimension = 1;
 		boolean revisiting = false;
 		Long rngSeed = null;
@@ -170,8 +177,8 @@ public class SampleExample {
 				randomSeed);
 
 //		 Transformation subgraphing = new ExtractSampledSubgraph();
-		 Transformation subgraphing = new ColorSampledSubgraph();
-//		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
+//		 Transformation subgraphing = new ColorSampledSubgraph();
+		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -211,6 +218,7 @@ public class SampleExample {
 =======
 		Network nw5 = new Regular(100, 2, true, false, null);
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> allow heat map coloring for a single sample -> division by 0 prevented
 =======
 		Network nw6 = new ZhouMondragon(100, 0.001, null);
@@ -218,9 +226,14 @@ public class SampleExample {
 
 //		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 >>>>>>> separated workflow and tester
+=======
+	
+//		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
+		
+>>>>>>> bugfix bc (1)
 //		Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
 
-		Network[] n = new Network[] { nw6 };
+		Network[] n = new Network[] { nw5 };
 		return n;
 	}
 	
