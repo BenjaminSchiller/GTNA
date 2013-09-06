@@ -41,12 +41,18 @@ import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
+<<<<<<< HEAD
 import gtna.metrics.basic.Assortativity;
 import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
 import gtna.networks.Network;
 import gtna.networks.model.ZhouMondragon;
+=======
+import gtna.metrics.centrality.BetweennessCentrality;
+import gtna.networks.Network;
+import gtna.networks.model.Regular;
+>>>>>>> bugfix bc (1)
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
@@ -85,11 +91,18 @@ public class Exploring {
 		Network nw0 = new BarabasiAlbert(10000, 5, null);
 >>>>>>> debugged calculation of the assortativity coefficient
 		
+<<<<<<< HEAD
 		Network[] n = new Network[] {nw0};
 		
 		Metric[] metrics = new Metric[] { 
 <<<<<<< HEAD
 				new Assortativity()
+=======
+		Network[] n = new Network[] {nw0 /*, nw1, nw2, nw3, nw4, nw5, nw6, nw7, nw8, nw9*/};
+		
+		Metric[] metrics = new Metric[] { 
+				new BetweennessCentrality()
+>>>>>>> bugfix bc (1)
 				};
 =======
 				new DegreeDistribution() };
