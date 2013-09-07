@@ -91,12 +91,16 @@ public class Exploring {
 
 		boolean r = true;
 		
-		Network nw0 = new BarabasiAlbert(10000, 5, null);
+		Network nw0 = new ErdosRenyi(10000, 5, false, null);
+		Network nw1 = new ErdosRenyi(20000, 5, false, null);
+		Network nw2 = new ErdosRenyi(50000, 5, false, null);
+		Network nw3 = new ErdosRenyi(100000, 5, false, null);
 		
-		Network[] n = new Network[] {nw0};
+		Network[] n = new Network[] {nw0, nw1, nw2, nw3};
 		
 		Metric[] metrics = new Metric[] { 
-				new Assortativity()
+				new Assortativity(0)
+				, new ClusteringCoefficient()
 				};
 		
 		
@@ -106,10 +110,13 @@ public class Exploring {
 
 		Plotting.multi(s, metrics, "example-m/");
 		 
+		/*
 		 for(Network i : n){
 			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
 			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
 		 }
+		 */
+		
 	}
 	
 	
