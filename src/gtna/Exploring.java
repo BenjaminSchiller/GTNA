@@ -41,14 +41,23 @@ import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
-import gtna.metrics.centrality.BetweennessCentrality;
+import gtna.metrics.basic.Assortativity;
+import gtna.metrics.basic.ClusteringCoefficient;
+import gtna.metrics.basic.DegreeDistribution;
+import gtna.metrics.basic.ShortestPaths;
 import gtna.networks.Network;
+import gtna.networks.model.BarabasiAlbert;
+import gtna.networks.model.CondonAndKarp;
+import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
+import gtna.networks.model.WattsStrogatz;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
+import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
+import gtna.transformation.id.node.NodeIds;
 import gtna.util.Config;
 
 /**
@@ -80,23 +89,18 @@ public class Exploring {
 //		Network nw9 = new CondonAndKarp(100, 4, 0.4, 0.05, null);
 		
 
-		boolean r = false;
+		boolean r = true;
 		
-		Network nw0 = new Regular(100, 1, r, b, null);
-		Network nw1 = new Regular(200, 4, r, b, null);
-		Network nw2 = new Regular(300, 4, r, b, null);
-		Network nw3 = new Regular(400, 4, r, b, null);
-		Network nw4 = new Regular(500, 4, r, b, null);
-		Network nw5 = new Regular(600, 4, r, b, null);
-		Network nw6 = new Regular(700, 4, r, b, null);
-		Network nw7 = new Regular(800, 4, r, b, null);
-		Network nw8 = new Regular(900, 4, r, b, null);
-		Network nw9 = new Regular(1000, 4, r, b, null);
+		Network nw0 = new ErdosRenyi(10000, 5, false, null);
+		Network nw1 = new ErdosRenyi(20000, 5, false, null);
+		Network nw2 = new ErdosRenyi(50000, 5, false, null);
+		Network nw3 = new ErdosRenyi(100000, 5, false, null);
 		
-		Network[] n = new Network[] {nw0 /*, nw1, nw2, nw3, nw4, nw5, nw6, nw7, nw8, nw9*/};
+		Network[] n = new Network[] {nw0, nw1, nw2, nw3};
 		
 		Metric[] metrics = new Metric[] { 
-				new BetweennessCentrality()
+				new Assortativity(0)
+				, new ClusteringCoefficient()
 				};
 		
 		
@@ -106,10 +110,13 @@ public class Exploring {
 
 		Plotting.multi(s, metrics, "example-m/");
 		 
+		/*
 		 for(Network i : n){
 			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
 			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
 		 }
+		 */
+		
 	}
 	
 	
