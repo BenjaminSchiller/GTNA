@@ -139,12 +139,40 @@ public class PageRank extends Metric {
 	    }
 	}
 	
-	for(int i = 0; i < g.getNodeCount(); i++) {
-	    for(int j = 0; j < g.getNodeCount(); j++) {
-		S[i][j] = H[i][j] + A[i][j];
+	S = addMatrices(H, A);
+	double[][] alphaS = multiplyMatrix(S, alpha); 
+	double[][] jumpM = multiplyMatrix(ONE, 1/g.getNodeCount());
+	jumpM = multiplyMatrix(ONE, 1-alpha);
+	G = addMatrices(alphaS, jumpM);
+	
+    }
+
+
+    /**
+     * @param s2
+     * @param alpha2
+     * @return
+     */
+    private double[][] multiplyMatrix(double[][] s1, double alpha2) {
+	for(int i = 0; i < s1.length; i++) {
+	    for(int j = 0; j < s1[0].length; j++) {
+		s1[i][j] = s1[i][j] * alpha2;
 	    }
 	}
 	
+	return s1;
+    }
+
+
+    private double[][] addMatrices(double[][] s1, double[][] s2) {
+	double[][] t = new double[s1.length][s1[0].length];
+	for(int i = 0; i < s1.length; i++) {
+	    for(int j = 0; j < s1[0].length; j++) {
+		t[i][j] = s1[i][j] + s2[i][j];
+	    }
+	}
+	
+	return t;
     }
 
     /**
