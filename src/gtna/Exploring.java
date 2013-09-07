@@ -83,6 +83,7 @@ public class Exploring {
 		
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Network nw0 = new ZhouMondragon(1000, 0.25, null);
 =======
 		Network nw0 = new ZhouMondragon(10000, 0.25, 2, null);
@@ -118,6 +119,18 @@ public class Exploring {
 		Metric[] metrics = new Metric[] { 
 				new BetweennessCentrality()
 >>>>>>> bugfix bc (1)
+=======
+		Network nw0 = new ErdosRenyi(10000, 5, false, null);
+		Network nw1 = new ErdosRenyi(20000, 5, false, null);
+		Network nw2 = new ErdosRenyi(50000, 5, false, null);
+		Network nw3 = new ErdosRenyi(100000, 5, false, null);
+		
+		Network[] n = new Network[] {nw0, nw1, nw2, nw3};
+		
+		Metric[] metrics = new Metric[] { 
+				new Assortativity(0)
+				, new ClusteringCoefficient()
+>>>>>>> complete implementation: Assortativity coefficient (Newman, 2002, Assortative Mixing in Networks)
 				};
 =======
 				new DegreeDistribution() };
@@ -129,12 +142,19 @@ public class Exploring {
 		Plotting.single(s, metrics, "example-s/");
 //
 		Plotting.multi(s, metrics, "example-m/");
+<<<<<<< HEAD
 //		
 		
+=======
+		 
+		/*
+>>>>>>> complete implementation: Assortativity coefficient (Newman, 2002, Assortative Mixing in Networks)
 		 for(Network i : n){
 			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
 			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
 		 }
+		 */
+		
 	}
 	
 	
