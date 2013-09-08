@@ -91,6 +91,7 @@ public class Exploring {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Network nw0 = new ZhouMondragon(1000, 0.25, null);
 =======
 		Network nw0 = new ZhouMondragon(10000, 0.25, 2, null);
@@ -131,6 +132,9 @@ public class Exploring {
 =======
 		Network nw0 = new ErdosRenyi(20, 5, false, null);
 >>>>>>> calculate prVector
+=======
+		Network nw0 = new ErdosRenyi(200, 5, false, null);
+>>>>>>> debugging plotting of page rank metric
 		Network nw1 = new ErdosRenyi(20000, 5, false, null);
 		Network nw2 = new ErdosRenyi(50000, 5, false, null);
 		Network nw3 = new ErdosRenyi(100000, 5, false, null);
