@@ -70,7 +70,7 @@ public class Exploring {
 
 		boolean r = true;
 		
-		Network nw0 = new ErdosRenyi(20, 5, false, null);
+		Network nw0 = new ErdosRenyi(200, 5, false, null);
 		Network nw1 = new ErdosRenyi(20000, 5, false, null);
 		Network nw2 = new ErdosRenyi(50000, 5, false, null);
 		Network nw3 = new ErdosRenyi(100000, 5, false, null);

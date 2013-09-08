@@ -77,7 +77,7 @@ public class PageRank extends Metric {
      * @param key
      */
     public PageRank(double alpha) {
-	super("PAGERANK");
+	super("PAGERANK_DISTRIBUTION");
 	this.alpha = alpha;
     }
     
@@ -141,16 +141,16 @@ public class PageRank extends Metric {
      */
     @Override
     public Single[] getSingles() {
-	Single nodes = new Single("PAGERANK_NODES", this.nodes);
-	Single edges = new Single("PAGERANK_EDGES", this.edges);
+	Single nodes = new Single("PAGERANK_DISTRIBUTION_NODES", this.nodes);
+	Single edges = new Single("PAGERANK_DISTRIBUTION_EDGES", this.edges);
 
-	Single prMin = new Single("PAGERANK_PAGERANK_DISTRIBUTION_MIN",
+	Single prMin = new Single("PAGERANK_DISTRIBUTION_MIN",
 			this.pr.getMin());
-	Single prMed = new Single("PAGERANK_PAGERANK_DISTRIBUTION_MED",
+	Single prMed = new Single("PAGERANK_DISTRIBUTION_MED",
 			this.pr.getMedian());
-	Single prAvg = new Single("PAGERANK_PAGERANK_DISTRIBUTION_AVG",
+	Single prAvg = new Single("PAGERANK_DISTRIBUTION_AVG",
 			this.pr.getAverage());
-	Single prMax = new Single("PAGERANK_PAGERANK_DISTRIBUTION_MAX",
+	Single prMax = new Single("PAGERANK_DISTRIBUTION_MAX",
 			this.pr.getMax());
 	
 	return new Single[] { nodes, edges, prMin, prMed, prAvg, prMax };
