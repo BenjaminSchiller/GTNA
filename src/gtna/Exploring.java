@@ -40,7 +40,9 @@ import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
+import gtna.metric.centrality.PageRank;
 import gtna.metrics.Metric;
+<<<<<<< HEAD
 <<<<<<< HEAD
 import gtna.metrics.basic.Assortativity;
 import gtna.metrics.basic.ClusteringCoefficient;
@@ -53,6 +55,10 @@ import gtna.metrics.centrality.BetweennessCentrality;
 import gtna.networks.Network;
 import gtna.networks.model.Regular;
 >>>>>>> bugfix bc (1)
+=======
+import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
+>>>>>>> calculate prVector
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
@@ -81,6 +87,7 @@ public class Exploring {
 <<<<<<< HEAD
 		boolean r = true;
 		
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -121,16 +128,23 @@ public class Exploring {
 >>>>>>> bugfix bc (1)
 =======
 		Network nw0 = new ErdosRenyi(10000, 5, false, null);
+=======
+		Network nw0 = new ErdosRenyi(20, 5, false, null);
+>>>>>>> calculate prVector
 		Network nw1 = new ErdosRenyi(20000, 5, false, null);
 		Network nw2 = new ErdosRenyi(50000, 5, false, null);
 		Network nw3 = new ErdosRenyi(100000, 5, false, null);
 		
-		Network[] n = new Network[] {nw0, nw1, nw2, nw3};
+		Network[] n = new Network[] {nw0};
 		
 		Metric[] metrics = new Metric[] { 
+<<<<<<< HEAD
 				new Assortativity(0)
 				, new ClusteringCoefficient()
 >>>>>>> complete implementation: Assortativity coefficient (Newman, 2002, Assortative Mixing in Networks)
+=======
+			new PageRank()
+>>>>>>> calculate prVector
 				};
 =======
 				new DegreeDistribution() };
