@@ -46,6 +46,7 @@ import gtna.id.IdentifierSpace;
 <<<<<<< HEAD
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metric.centrality.PageRank;
+<<<<<<< HEAD
 =======
 >>>>>>> optimizing the PR metric
 =======
@@ -172,24 +173,16 @@ import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 >>>>>>> - refactoring
+=======
+>>>>>>> calculate prVector
 import gtna.metrics.Metric;
-import gtna.metrics.basic.Assortativity;
-import gtna.metrics.basic.ClusteringCoefficient;
-import gtna.metrics.basic.DegreeDistribution;
-import gtna.metrics.basic.ShortestPaths;
 import gtna.networks.Network;
-import gtna.networks.model.BarabasiAlbert;
-import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
-import gtna.networks.model.Regular;
-import gtna.networks.model.WattsStrogatz;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
-import gtna.transformation.id.RandomRingIDSpace;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
-import gtna.transformation.id.node.NodeIds;
 import gtna.util.Config;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -699,6 +692,7 @@ public class Exploring {
 		
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 //		Transformation t = new Bidirectional();
 >>>>>>> - refactoring
 
@@ -729,20 +723,21 @@ public class Exploring {
 //		Network nw7 = new BarabasiAlbert(100, 10, null);
 //		Network nw8 = new WattsStrogatz(100, 6, 0.2, null);
 //		Network nw9 = new CondonAndKarp(100, 4, 0.4, 0.05, null);
+=======
+>>>>>>> calculate prVector
 		
 
 		boolean r = true;
 		
-		Network nw0 = new ErdosRenyi(10000, 5, false, null);
+		Network nw0 = new ErdosRenyi(20, 5, false, null);
 		Network nw1 = new ErdosRenyi(20000, 5, false, null);
 		Network nw2 = new ErdosRenyi(50000, 5, false, null);
 		Network nw3 = new ErdosRenyi(100000, 5, false, null);
 		
-		Network[] n = new Network[] {nw0, nw1, nw2, nw3};
+		Network[] n = new Network[] {nw0};
 		
 		Metric[] metrics = new Metric[] { 
-				new Assortativity(0)
-				, new ClusteringCoefficient()
+			new PageRank()
 				};
 		
 		
