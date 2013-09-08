@@ -35,14 +35,16 @@
  */
 package gtna.metric.centrality;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Distribution;
+
+import java.util.Arrays;
+import java.util.HashMap;
 
 
 /**
@@ -61,6 +63,14 @@ public class PageRank extends Metric {
 
     private double[][] G;
 
+    private double[] prVector;
+
+    private Distribution pr;
+
+    private double nodes;
+
+    private double edges;
+
 
 
     /**
@@ -70,6 +80,10 @@ public class PageRank extends Metric {
 	super("PAGERANK");
 	this.alpha = alpha;
     }
+    
+    public PageRank() {
+	this(0.85); // usage of the standard value
+    }
 
 
     /* (non-Javadoc)
@@ -77,17 +91,49 @@ public class PageRank extends Metric {
      */
     @Override
     public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-	// TODO Auto-generated method stub
+	calculateBaseMatrices(g);
+	
+	prVector = initVector(G.length);
+	for(int j = 0; j < 20; j++) {
+	    prVector = calculateMatrixVectorProduct(G, prVector);
+	    
+	    System.out.println(Arrays.toString(prVector));
+	}
+	
+	pr = new Distribution(prVector);
+	nodes = g.getNodeCount();
+	edges = g.getEdges().size();
 
     }
+
+    /**
+     * @param length
+     * @return
+     */
+    private double[] initVector(int length) {
+	double[] t = new double[length];
+	Arrays.fill(t, 0.0);
+	
+	t[0] = 1.0;
+	
+	return t;
+    }
+
 
     /* (non-Javadoc)
      * @see gtna.metrics.Metric#writeData(java.lang.String)
      */
     @Override
     public boolean writeData(String folder) {
-	// TODO Auto-generated method stub
-	return false;
+	boolean success = true;
+	success &= DataWriter.writeWithIndex(
+		this.pr.getDistribution(),
+		"PAGERANK_PAGERANK_DISTRIBUTION", folder);
+	success &= DataWriter.writeWithIndex(
+		this.pr.getCdf(),
+		"PAGERANK_PAGERANK_DISTRIBUTION_CDF", folder);
+	return success;
+
     }
 
     /* (non-Javadoc)
@@ -95,8 +141,20 @@ public class PageRank extends Metric {
      */
     @Override
     public Single[] getSingles() {
-	// TODO Auto-generated method stub
-	return null;
+	Single nodes = new Single("PAGERANK_NODES", this.nodes);
+	Single edges = new Single("PAGERANK_EDGES", this.edges);
+
+	Single prMin = new Single("PAGERANK_PAGERANK_DISTRIBUTION_MIN",
+			this.pr.getMin());
+	Single prMed = new Single("PAGERANK_PAGERANK_DISTRIBUTION_MED",
+			this.pr.getMedian());
+	Single prAvg = new Single("PAGERANK_PAGERANK_DISTRIBUTION_AVG",
+			this.pr.getAverage());
+	Single prMax = new Single("PAGERANK_PAGERANK_DISTRIBUTION_MAX",
+			this.pr.getMax());
+	
+	return new Single[] { nodes, edges, prMin, prMed, prAvg, prMax };
+
     }
 
     /* (non-Javadoc)
@@ -104,8 +162,7 @@ public class PageRank extends Metric {
      */
     @Override
     public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-	// TODO Auto-generated method stub
-	return false;
+	return true;
     }
     
     
@@ -129,7 +186,7 @@ public class PageRank extends Metric {
 		double[] nch = H[ni];
 		int nod = n.getOutDegree();
 		for(int i : n.getOutgoingEdges()) {
-		    nch[i] = 1/nod;			// set Hij = 1/li
+		    nch[i] = (double)1/(double)nod;			// set Hij = 1/li
 		}
 		H[ni] = nch;
 	    } else { // fill A as no outgoing links are present
@@ -145,6 +202,23 @@ public class PageRank extends Metric {
 	jumpM = multiplyMatrix(ONE, 1-alpha);
 	G = addMatrices(alphaS, jumpM);
 	
+    }
+    
+    private double[] calculateMatrixVectorProduct(double[][] m, double[] v) {
+	if(m.length != v.length) {
+	    throw new IllegalArgumentException("m/v dimensions are incompatible for the Matrix-Vector Multiplication");
+	}
+	
+	double[] r = new double[v.length];
+	Arrays.fill(r, 0.0);
+	
+	for(int i = 0; i < v.length; i++) {
+	    for(int j = 0; j < v.length; j++) {
+		r[i] = r[i] + m[i][j] * v[j];
+	    }
+	}
+	
+	return r;
     }
 
 
