@@ -86,6 +86,7 @@ import gtna.metrics.sampling.SamplingModularity;
 >>>>>>> Sampling Modularity implemented
 import gtna.networks.Network;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.networks.model.ErdosRenyi;
 >>>>>>> calculate prVector
 =======
@@ -152,6 +153,10 @@ import gtna.metrics.centrality.BetweennessCentrality;
 import gtna.networks.Network;
 import gtna.networks.model.Regular;
 >>>>>>> plotting
+=======
+import gtna.networks.model.BarabasiAlbert;
+import gtna.networks.model.WattsStrogatz;
+>>>>>>> fully functional implementation of the PageRank metric. ToDo: normalization of PageRank (prVector)
 import gtna.plot.Plotting;
 >>>>>>> added relative eccentricity / effective diameter
 import gtna.transformation.Transformation;
@@ -687,7 +692,7 @@ public class Exploring {
 		
 		
 		boolean get = false; // get or generate
-		int times = 1;		// how many generations?
+		int times = 2;		// how many generations?
 		boolean b = false; // bidirectional
 		
 <<<<<<< HEAD
@@ -729,12 +734,12 @@ public class Exploring {
 
 		boolean r = true;
 		
-		Network nw0 = new ErdosRenyi(200, 5, false, null);
-		Network nw1 = new ErdosRenyi(20000, 5, false, null);
-		Network nw2 = new ErdosRenyi(50000, 5, false, null);
-		Network nw3 = new ErdosRenyi(100000, 5, false, null);
+		Network nw0 = new WattsStrogatz(4000, 5, 0.001, null);
+		Network nw1 = new WattsStrogatz(4000, 5, 0.003, null);
+		Network nw2 = new WattsStrogatz(4000, 5, 0.006, null);
+		Network nw3 = new WattsStrogatz(4000, 5, 0.009, null);
 		
-		Network[] n = new Network[] {nw0};
+		Network[] n = new Network[] {nw0, nw1, nw2, nw3};
 		
 		Metric[] metrics = new Metric[] { 
 			new PageRank()
