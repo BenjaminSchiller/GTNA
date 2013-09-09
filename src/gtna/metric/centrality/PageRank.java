@@ -94,16 +94,34 @@ public class PageRank extends Metric {
 	calculateBaseMatrices(g);
 	
 	prVector = initVector(G.length);
-	for(int j = 0; j < 20; j++) {
+	
+	double[] prOld = initVector(G.length);
+	for(int j = 0; j < 100; j++) {
+	    prOld = prVector;
 	    prVector = calculateMatrixVectorProduct(G, prVector);
-	    
-	    System.out.println(Arrays.toString(prVector));
+	    	    
+	    System.out.println(Arrays.toString(diffVector(prVector, prOld)));
 	}
 	
 	pr = new Distribution(prVector);
 	nodes = g.getNodeCount();
 	edges = g.getEdges().size();
 
+    }
+
+    /**
+     * @param prVector2
+     * @param prOld
+     * @return
+     */
+    private double[] diffVector(double[] prVector2, double[] prOld) {
+	double[] d = new double[prVector2.length];
+	
+	for(int i = 0; i < d.length; i++) {
+	    d[i] = prVector2[i] - prOld[i];
+	}
+	
+	return d;
     }
 
     /**
@@ -128,10 +146,10 @@ public class PageRank extends Metric {
 	boolean success = true;
 	success &= DataWriter.writeWithIndex(
 		this.pr.getDistribution(),
-		"PAGERANK_PAGERANK_DISTRIBUTION", folder);
+		"PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION", folder);
 	success &= DataWriter.writeWithIndex(
 		this.pr.getCdf(),
-		"PAGERANK_PAGERANK_DISTRIBUTION_CDF", folder);
+		"PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION_CDF", folder);
 	return success;
 
     }
