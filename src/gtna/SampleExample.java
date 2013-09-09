@@ -151,7 +151,12 @@ public class SampleExample {
 		Network nw4 = new CondonAndKarp(500, 3, 0.05, 0.0005, null);
 		Network nw5 = new Regular(100, 2, true, false, null);
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Network nw6 = new ZhouMondragon(100, 0.001, null);
+=======
+		
+//		Network nw6 = new ZhouMondragon(100, 0.001, null);
+>>>>>>> fully functional implementation of the PageRank metric. ToDo: normalization of PageRank (prVector)
 
 =======
 	
@@ -160,7 +165,7 @@ public class SampleExample {
 		
 //		Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
 
-		Network[] n = new Network[] { nw6 };
+		Network[] n = new Network[] { nw5 };
 		return n;
 	}
 	
