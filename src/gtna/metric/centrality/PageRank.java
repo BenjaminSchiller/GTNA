@@ -96,11 +96,12 @@ public class PageRank extends Metric {
 	prVector = initVector(G.length);
 	
 	double[] prOld = initVector(G.length);
-	for(int j = 0; j < 100; j++) {
+	for(int j = 0; j < 500; j++) {
 	    prOld = prVector;
 	    prVector = calculateMatrixVectorProduct(G, prVector);
+	    prVector = normalizeVector(prVector);
 	    	    
-	    System.out.println(Arrays.toString(diffVector(prVector, prOld)));
+	    System.out.println(Arrays.toString(prVector));
 	}
 	
 	pr = new Distribution(prVector);
@@ -110,6 +111,26 @@ public class PageRank extends Metric {
     }
 
     /**
+	 * @param vector
+	 * @return
+	 */
+	private double[] normalizeVector(double[] vector) {
+		double[] normalized = new double[vector.length];
+		double sumNorm = 0;
+		for(double d : vector){
+			sumNorm += Math.abs(d);
+		}
+		
+		for(int i = 0; i < vector.length; i++){
+			normalized[i] = vector[i]/sumNorm;
+		}
+		
+		return normalized;
+	}
+	
+	
+
+	/**
      * @param prVector2
      * @param prOld
      * @return
@@ -132,7 +153,7 @@ public class PageRank extends Metric {
 	double[] t = new double[length];
 	Arrays.fill(t, 0.0);
 	
-	t[0] = 1.0;
+	t[0] = 1000.0;
 	
 	return t;
     }
