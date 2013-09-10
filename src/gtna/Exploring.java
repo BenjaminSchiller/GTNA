@@ -43,8 +43,7 @@ import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metric.centrality.PageRank;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
-import gtna.networks.model.BarabasiAlbert;
-import gtna.networks.model.WattsStrogatz;
+import gtna.networks.model.Regular;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
@@ -71,12 +70,12 @@ public class Exploring {
 
 		boolean r = true;
 		
-		Network nw0 = new WattsStrogatz(4000, 5, 0.001, null);
-		Network nw1 = new WattsStrogatz(4000, 5, 0.003, null);
-		Network nw2 = new WattsStrogatz(4000, 5, 0.006, null);
-		Network nw3 = new WattsStrogatz(4000, 5, 0.009, null);
+		Network nw0 = new Regular(400, 5, true, false, null);
+		Network nw1 = new Regular(400, 5, false, false, null);
+		Network nw2 = new Regular(4000, 15, true, false, null);
+		Network nw3 = new Regular(4000, 20, true, false, null);
 		
-		Network[] n = new Network[] {nw0, nw1, nw2, nw3};
+		Network[] n = new Network[] {nw0, nw1};
 		
 		Metric[] metrics = new Metric[] { 
 			new PageRank()
