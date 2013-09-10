@@ -49,6 +49,7 @@ import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
 import gtna.networks.Network;
+<<<<<<< HEAD
 import gtna.networks.model.ZhouMondragon;
 =======
 import gtna.metrics.centrality.BetweennessCentrality;
@@ -64,6 +65,9 @@ import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.WattsStrogatz;
 >>>>>>> fully functional implementation of the PageRank metric. ToDo: normalization of PageRank (prVector)
+=======
+import gtna.networks.model.Regular;
+>>>>>>> normalization of the pr-vector
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
@@ -92,6 +96,7 @@ public class Exploring {
 <<<<<<< HEAD
 		boolean r = true;
 		
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -150,8 +155,14 @@ public class Exploring {
 		Network nw2 = new WattsStrogatz(4000, 5, 0.006, null);
 		Network nw3 = new WattsStrogatz(4000, 5, 0.009, null);
 >>>>>>> fully functional implementation of the PageRank metric. ToDo: normalization of PageRank (prVector)
+=======
+		Network nw0 = new Regular(400, 5, true, false, null);
+		Network nw1 = new Regular(400, 5, false, false, null);
+		Network nw2 = new Regular(4000, 15, true, false, null);
+		Network nw3 = new Regular(4000, 20, true, false, null);
+>>>>>>> normalization of the pr-vector
 		
-		Network[] n = new Network[] {nw0, nw1, nw2, nw3};
+		Network[] n = new Network[] {nw0, nw1};
 		
 		Metric[] metrics = new Metric[] { 
 <<<<<<< HEAD
