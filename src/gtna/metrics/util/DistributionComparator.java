@@ -58,8 +58,13 @@ public abstract class DistributionComparator extends Metric {
 		referenceMetric = refMetric;
 	}
 
+<<<<<<< HEAD
 	protected Metric referenceMetric = null;
 	protected Metric comparedMetric = null;
+=======
+	private Metric referenceMetric = null;
+	private Metric comparedMetric = null;
+>>>>>>> Abstract DistributionComparator
 	
 	
 	
