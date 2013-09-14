@@ -91,6 +91,7 @@ public class DegreeDistributionComparator extends DistributionComparator {
 		
 		
 <<<<<<< HEAD
+<<<<<<< HEAD
 		double[] diffAbsD = getAbsoluteErrorDistribution(refDD, comDD);
 		double[] diffAbsDi = getAbsoluteErrorDistribution(refDDi, comDDi);
 		double[] diffAbsDo = getAbsoluteErrorDistribution(refDDo, comDDo);
@@ -99,6 +100,11 @@ public class DegreeDistributionComparator extends DistributionComparator {
 		diffAbsDi = getAbsoluteErrorDistribution(refDDi, comDDi);
 		diffAbsDo = getAbsoluteErrorDistribution(refDDo, comDDo);
 >>>>>>> computation of the error distributions
+=======
+		double[] diffAbsD = getAbsoluteErrorDistribution(refDD, comDD);
+		double[] diffAbsDi = getAbsoluteErrorDistribution(refDDi, comDDi);
+		double[] diffAbsDo = getAbsoluteErrorDistribution(refDDo, comDDo);
+>>>>>>> var types
 		
 		diffAbsDD = new Distribution(diffAbsD);
 		diffAbsDDi = new Distribution(diffAbsDi);
