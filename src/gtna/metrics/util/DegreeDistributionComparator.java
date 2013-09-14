@@ -36,6 +36,7 @@
 package gtna.metrics.util;
 
 import gtna.data.Single;
+import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.util.Distribution;
@@ -59,8 +60,8 @@ public class DegreeDistributionComparator extends DistributionComparator {
 	 * @param key
 	 * @param refMetric
 	 */
-	public DegreeDistributionComparator(String key, Metric refMetric) {
-		super(key, refMetric);
+	public DegreeDistributionComparator(Metric refMetric) {
+		super("DEGREE_DISTRIBUTION_COMPARATOR", refMetric);
 	}
 
 	/* (non-Javadoc)
@@ -167,8 +168,36 @@ public class DegreeDistributionComparator extends DistributionComparator {
 	 */
 	@Override
 	public boolean writeData(String folder) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean success = true;
+		
+		success &= DataWriter.writeWithIndex(this.diffAbsDD.getDistribution(),
+				"DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.diffAbsDD.getCdf(),
+				"DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_DISTRIBUTION_CDF", folder);
+		success &= DataWriter.writeWithIndex(this.diffAbsDDi.getDistribution(),
+				"DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.diffAbsDDi.getCdf(),
+				"DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_DISTRIBUTION_CDF", folder);
+		success &= DataWriter.writeWithIndex(this.diffAbsDDo.getDistribution(),
+				"DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.diffAbsDDo.getCdf(),
+				"DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_DISTRIBUTION_CDF", folder);
+		
+		success &= DataWriter.writeWithIndex(this.diffRelDD.getDistribution(),
+				"DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.diffRelDD.getCdf(),
+				"DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_DISTRIBUTION_CDF", folder);
+		success &= DataWriter.writeWithIndex(this.diffRelDDi.getDistribution(),
+				"DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_IN_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.diffRelDDi.getCdf(),
+				"DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_IN_DISTRIBUTION_CDF", folder);
+		success &= DataWriter.writeWithIndex(this.diffRelDDo.getDistribution(),
+				"DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_OUT_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.diffRelDDo.getCdf(),
+				"DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_OUT_DISTRIBUTION_CDF", folder);
+		
+		return success;
+		
 	}
 
 	/* (non-Javadoc)
@@ -176,8 +205,66 @@ public class DegreeDistributionComparator extends DistributionComparator {
 	 */
 	@Override
 	public Single[] getSingles() {
-		// TODO Auto-generated method stub
-		return null;
+		Single ddAbsMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MIN",
+				this.diffAbsDD.getMin());
+		Single ddAbsMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MED",
+				this.diffAbsDD.getMedian());
+		Single ddAbsAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_AVG",
+				this.diffAbsDD.getAverage());
+		Single ddAbsMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MAX",
+				this.diffAbsDD.getMax());
+
+		Single ddiAbsMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_MIN",
+				this.diffAbsDDi.getMin());
+		Single ddiAbsMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_MED",
+				this.diffAbsDDi.getMedian());
+		Single ddiAbsAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_AVG",
+				this.diffAbsDDi.getAverage());
+		Single ddiAbsMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_MAX",
+				this.diffAbsDDi.getMax());
+
+		Single ddoAbsMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_MIN",
+				this.diffAbsDDo.getMin());
+		Single ddoAbsMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_MED",
+				this.diffAbsDDo.getMedian());
+		Single ddoAbsAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_AVG",
+				this.diffAbsDDo.getAverage());
+		Single ddoAbsMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_MAX",
+				this.diffAbsDDo.getMax());
+		
+		Single ddRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MIN",
+				this.diffRelDD.getMin());
+		Single ddRelMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MED",
+				this.diffRelDD.getMedian());
+		Single ddRelAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_AVG",
+				this.diffRelDD.getAverage());
+		Single ddRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MAX",
+				this.diffRelDD.getMax());
+
+		Single ddiRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_MIN",
+				this.diffRelDDi.getMin());
+		Single ddiRelMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_MED",
+				this.diffRelDDi.getMedian());
+		Single ddiRelAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_AVG",
+				this.diffRelDDi.getAverage());
+		Single ddiRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_MAX",
+				this.diffRelDDi.getMax());
+
+		Single ddoRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_MIN",
+				this.diffRelDDo.getMin());
+		Single ddoRelMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_MED",
+				this.diffRelDDo.getMedian());
+		Single ddoRelAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_AVG",
+				this.diffRelDDo.getAverage());
+		Single ddoRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_MAX",
+				this.diffRelDDo.getMax());
+
+		return new Single[] { ddAbsMin, ddAbsMed, ddAbsAvg, ddAbsMax, 
+				ddiAbsMin, ddiAbsMed, ddiAbsAvg, ddiAbsMax, 
+				ddoAbsMin, ddoAbsMed, ddoAbsAvg, ddoAbsMax,
+				ddRelMin, ddRelMed, ddRelAvg, ddRelMax, 
+				ddiRelMin, ddiRelMed, ddiRelAvg, ddiRelMax, 
+				ddoRelMin, ddoRelMed, ddoRelAvg, ddoRelMax};
 	}
 
 }
