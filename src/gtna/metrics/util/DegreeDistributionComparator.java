@@ -36,7 +36,10 @@
 package gtna.metrics.util;
 
 import gtna.data.Single;
+<<<<<<< HEAD
 import gtna.io.DataWriter;
+=======
+>>>>>>> computation of the error distributions
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.util.Distribution;
@@ -60,8 +63,13 @@ public class DegreeDistributionComparator extends DistributionComparator {
 	 * @param key
 	 * @param refMetric
 	 */
+<<<<<<< HEAD
 	public DegreeDistributionComparator(Metric refMetric) {
 		super("DEGREE_DISTRIBUTION_COMPARATOR", refMetric);
+=======
+	public DegreeDistributionComparator(String key, Metric refMetric) {
+		super(key, refMetric);
+>>>>>>> computation of the error distributions
 	}
 
 	/* (non-Javadoc)
@@ -82,9 +90,15 @@ public class DegreeDistributionComparator extends DistributionComparator {
 		Distribution comDDo = ((DegreeDistribution)comparedMetric).getOutDegreeDistribution();
 		
 		
+<<<<<<< HEAD
 		double[] diffAbsD = getAbsoluteErrorDistribution(refDD, comDD);
 		double[] diffAbsDi = getAbsoluteErrorDistribution(refDDi, comDDi);
 		double[] diffAbsDo = getAbsoluteErrorDistribution(refDDo, comDDo);
+=======
+		diffAbsD = getAbsoluteErrorDistribution(refDD, comDD);
+		diffAbsDi = getAbsoluteErrorDistribution(refDDi, comDDi);
+		diffAbsDo = getAbsoluteErrorDistribution(refDDo, comDDo);
+>>>>>>> computation of the error distributions
 		
 		diffAbsDD = new Distribution(diffAbsD);
 		diffAbsDDi = new Distribution(diffAbsDi);
@@ -168,6 +182,7 @@ public class DegreeDistributionComparator extends DistributionComparator {
 	 */
 	@Override
 	public boolean writeData(String folder) {
+<<<<<<< HEAD
 		boolean success = true;
 		
 		success &= DataWriter.writeWithIndex(this.diffAbsDD.getDistribution(),
@@ -198,6 +213,10 @@ public class DegreeDistributionComparator extends DistributionComparator {
 		
 		return success;
 		
+=======
+		// TODO Auto-generated method stub
+		return false;
+>>>>>>> computation of the error distributions
 	}
 
 	/* (non-Javadoc)
@@ -205,6 +224,7 @@ public class DegreeDistributionComparator extends DistributionComparator {
 	 */
 	@Override
 	public Single[] getSingles() {
+<<<<<<< HEAD
 		Single ddAbsMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MIN",
 				this.diffAbsDD.getMin());
 		Single ddAbsMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MED",
@@ -265,6 +285,10 @@ public class DegreeDistributionComparator extends DistributionComparator {
 				ddRelMin, ddRelMed, ddRelAvg, ddRelMax, 
 				ddiRelMin, ddiRelMed, ddiRelAvg, ddiRelMax, 
 				ddoRelMin, ddoRelMed, ddoRelAvg, ddoRelMax};
+=======
+		// TODO Auto-generated method stub
+		return null;
+>>>>>>> computation of the error distributions
 	}
 
 }
