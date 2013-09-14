@@ -81,9 +81,9 @@ public class DegreeDistributionComparator extends DistributionComparator {
 		Distribution comDDo = ((DegreeDistribution)comparedMetric).getOutDegreeDistribution();
 		
 		
-		diffAbsD = getAbsoluteErrorDistribution(refDD, comDD);
-		diffAbsDi = getAbsoluteErrorDistribution(refDDi, comDDi);
-		diffAbsDo = getAbsoluteErrorDistribution(refDDo, comDDo);
+		double[] diffAbsD = getAbsoluteErrorDistribution(refDD, comDD);
+		double[] diffAbsDi = getAbsoluteErrorDistribution(refDDi, comDDi);
+		double[] diffAbsDo = getAbsoluteErrorDistribution(refDDo, comDDo);
 		
 		diffAbsDD = new Distribution(diffAbsD);
 		diffAbsDDi = new Distribution(diffAbsDi);
