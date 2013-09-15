@@ -232,31 +232,31 @@ public class DegreeDistributionComparator extends DistributionComparator {
 		Single ddoAbsMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_MAX",
 				this.diffAbsDDo.getMax());
 		
-		Single ddRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MIN",
+		Single ddRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_MIN",
 				this.diffRelDD.getMin());
-		Single ddRelMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MED",
+		Single ddRelMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_MED",
 				this.diffRelDD.getMedian());
-		Single ddRelAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_AVG",
+		Single ddRelAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_AVG",
 				this.diffRelDD.getAverage());
-		Single ddRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MAX",
+		Single ddRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_MAX",
 				this.diffRelDD.getMax());
 
-		Single ddiRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_MIN",
+		Single ddiRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_IN_MIN",
 				this.diffRelDDi.getMin());
-		Single ddiRelMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_MED",
+		Single ddiRelMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_IN_MED",
 				this.diffRelDDi.getMedian());
-		Single ddiRelAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_AVG",
+		Single ddiRelAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_IN_AVG",
 				this.diffRelDDi.getAverage());
-		Single ddiRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_IN_MAX",
+		Single ddiRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_IN_MAX",
 				this.diffRelDDi.getMax());
 
-		Single ddoRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_MIN",
+		Single ddoRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_OUT_MIN",
 				this.diffRelDDo.getMin());
-		Single ddoRelMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_MED",
+		Single ddoRelMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_OUT_MED",
 				this.diffRelDDo.getMedian());
-		Single ddoRelAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_AVG",
+		Single ddoRelAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_OUT_AVG",
 				this.diffRelDDo.getAverage());
-		Single ddoRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_MAX",
+		Single ddoRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_OUT_MAX",
 				this.diffRelDDo.getMax());
 
 		return new Single[] { ddAbsMin, ddAbsMed, ddAbsAvg, ddAbsMax, 
