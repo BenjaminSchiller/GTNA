@@ -38,7 +38,10 @@ package gtna.metrics.sampling;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
+<<<<<<< HEAD
 import gtna.io.DataWriter;
+=======
+>>>>>>> count sampled nodes in multiple sample runs
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.transformation.sampling.Sample;
@@ -57,10 +60,13 @@ public class SamplingBias extends Metric {
 	private Integer edges;
 	private Integer nodes;
 	private Distribution biasd;
+<<<<<<< HEAD
 	private double sbAvg;
 	private double sbMed;
 	private double sbMin;
 	private double sbMax;
+=======
+>>>>>>> count sampled nodes in multiple sample runs
 
 	/**
 	 * @param key
@@ -90,6 +96,7 @@ public class SamplingBias extends Metric {
 			}
 		}
 		
+<<<<<<< HEAD
 		double[] sb = new double[samples.length+1];
 		for(double d : nodesampling){
 			sb[(int)d]++;
@@ -104,6 +111,11 @@ public class SamplingBias extends Metric {
 		this.sbMin = getMin(sb);
 		this.sbMed = getMed(sb);
 		this.sbAvg = getAvg(sb);
+=======
+		biasd = new Distribution(nodesampling);
+		nodes = g.getNodeCount();
+		edges = g.getEdges().size();
+>>>>>>> count sampled nodes in multiple sample runs
 	}
 
 	/* (non-Javadoc)
@@ -111,6 +123,7 @@ public class SamplingBias extends Metric {
 	 */
 	@Override
 	public boolean writeData(String folder) {
+<<<<<<< HEAD
 		boolean success = true;
 		
 		success &= DataWriter.writeWithIndex(
@@ -120,6 +133,10 @@ public class SamplingBias extends Metric {
 
 		
 		return success;
+=======
+		// TODO Auto-generated method stub
+		return false;
+>>>>>>> count sampled nodes in multiple sample runs
 	}
 
 	/* (non-Javadoc)
@@ -127,6 +144,7 @@ public class SamplingBias extends Metric {
 	 */
 	@Override
 	public Single[] getSingles() {
+<<<<<<< HEAD
 		Single nodes = new Single("SAMPLING_BIAS_NODES", this.nodes);
 		Single edges = new Single("SAMPLING_BIAS_EDGES", this.edges);
 		
@@ -136,6 +154,10 @@ public class SamplingBias extends Metric {
 		Single sbMax = new Single("SAMPLING_BIAS_MAX", this.sbMax);
 		
 		return new Single[] { nodes, edges, sbMin, sbMed, sbAvg, sbMax };
+=======
+		// TODO Auto-generated method stub
+		return null;
+>>>>>>> count sampled nodes in multiple sample runs
 	}
 
 	/* (non-Javadoc)
@@ -143,6 +165,7 @@ public class SamplingBias extends Metric {
 	 */
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+<<<<<<< HEAD
 		// at least 1 sample necessary
 		if(g.getProperties("SAMPLE").length > 0) {
 			return true;
@@ -198,6 +221,10 @@ public class SamplingBias extends Metric {
 		}
 
 		return median;
+=======
+		// TODO Auto-generated method stub
+		return false;
+>>>>>>> count sampled nodes in multiple sample runs
 	}
 
 }
