@@ -38,6 +38,7 @@ package gtna.metrics.sampling;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
+import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.transformation.sampling.Sample;
@@ -95,8 +96,18 @@ public class SamplingBias extends Metric {
 	 */
 	@Override
 	public boolean writeData(String folder) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean success = true;
+		
+		success &= DataWriter.writeWithIndex(
+				this.biasd.getDistribution(), 
+				"SAMPLING_BIAS_DISTRIBUTION", 
+				folder);
+		success &= DataWriter.writeWithIndex(
+				this.biasd.getCdf(), 
+				"SAMPLING_BIAS_DISTRIBUTION_CDF", 
+				folder);
+		
+		return success;
 	}
 
 	/* (non-Javadoc)
@@ -104,8 +115,15 @@ public class SamplingBias extends Metric {
 	 */
 	@Override
 	public Single[] getSingles() {
-		// TODO Auto-generated method stub
-		return null;
+		Single nodes = new Single("SAMPLING_BIAS_NODES", this.nodes);
+		Single edges = new Single("SAMPLING_BIAS_EDGES", this.edges);
+		
+		Single sbMin = new Single("SAMPLING_BIAS_MIN", biasd.getMin());
+		Single sbMed = new Single("SAMPLING_BIAS_MED", biasd.getMedian());
+		Single sbAvg = new Single("SAMPLING_BIAS_AVG", biasd.getAverage());
+		Single sbMax = new Single("SAMPLING_BIAS_MAX", biasd.getMax());
+		
+		return new Single[] { nodes, edges, sbMin, sbMed, sbAvg, sbMax };
 	}
 
 	/* (non-Javadoc)
@@ -113,8 +131,11 @@ public class SamplingBias extends Metric {
 	 */
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-		// TODO Auto-generated method stub
-		return false;
+		if(g.hasProperty("SAMPLE_0")){ // at least 1 sample necessary
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }
