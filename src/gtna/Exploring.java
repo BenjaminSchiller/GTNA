@@ -45,6 +45,7 @@ import gtna.id.IdentifierSpace;
 <<<<<<< HEAD
 <<<<<<< HEAD
 import gtna.io.graphWriter.GtnaGraphWriter;
+<<<<<<< HEAD
 import gtna.metric.centrality.PageRank;
 <<<<<<< HEAD
 =======
@@ -150,7 +151,12 @@ import gtna.networks.model.ErdosRenyi;
 =======
 import gtna.metrics.Metric;
 import gtna.metrics.centrality.BetweennessCentrality;
+=======
+import gtna.metrics.Metric;
+import gtna.metrics.sampling.SamplingBias;
+>>>>>>> SamplingBias properties
 import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
 <<<<<<< HEAD
 >>>>>>> plotting
@@ -168,7 +174,10 @@ import gtna.transformation.id.RandomPlaneIDSpaceSimple;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
+<<<<<<< HEAD
 import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
+=======
+>>>>>>> SamplingBias properties
 import gtna.util.Config;
 import gtna.util.Stats;
 
@@ -220,11 +229,28 @@ public class Exploring {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		int times = 2;		// how many generations?
+=======
+		int times = 1;		// how many generations?
+>>>>>>> SamplingBias properties
 		boolean b = false; // bidirectional
 		
+//		Transformation t = new Bidirectional();
+
+//		Network nw0 = new Regular(10, 2, true, false, null);
+//		Network nw1 = new ErdosRenyi(10, 3, false, null);
+//		Network nw2 = new BarabasiAlbert(10, 2, null);
+//		Network nw3 = new WattsStrogatz(10, 2, 0.2, null);
+//		Network nw4 = new CondonAndKarp(10, 2, 0.4, 0.05, null);
+//		Network nw5 = new Regular(100, 5, true, false, null);
+//		Network nw6 = new ErdosRenyi(100, 10, false, null);
+//		Network nw7 = new BarabasiAlbert(100, 10, null);
+//		Network nw8 = new WattsStrogatz(100, 6, 0.2, null);
+//		Network nw9 = new CondonAndKarp(100, 4, 0.4, 0.05, null);
 		
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 		boolean r = true;
 		
@@ -311,6 +337,51 @@ public class Exploring {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+		boolean r = false;
+		
+		
+		Transformation[] t = new Transformation[]{
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
+				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null)
+		};
+		
+>>>>>>> SamplingBias properties
 		Network nw0 = new ErdosRenyi(1000, 25, false, t);
 		Network nw1 = new ErdosRenyi(500, 25, false, t);
 		Network nw2 = new Regular(300, 4, r, b, null);
@@ -321,6 +392,7 @@ public class Exploring {
 		Network nw7 = new Regular(800, 4, r, b, null);
 		Network nw8 = new Regular(900, 4, r, b, null);
 		Network nw9 = new Regular(1000, 4, r, b, null);
+<<<<<<< HEAD
 >>>>>>> debugging bc (2)
 		
 <<<<<<< HEAD
@@ -356,10 +428,13 @@ public class Exploring {
 		Network nw2 = new Regular(4000, 15, true, false, null);
 		Network nw3 = new Regular(4000, 20, true, false, null);
 >>>>>>> normalization of the pr-vector
+=======
+>>>>>>> SamplingBias properties
 		
-		Network[] n = new Network[] {nw0, nw1};
+		Network[] n = new Network[] {nw0, nw1 /*, nw2, nw3, nw4, nw5, nw6, nw7, nw8, nw9*/};
 		
 		Metric[] metrics = new Metric[] { 
+<<<<<<< HEAD
 <<<<<<< HEAD
 				new Assortativity(0)
 				, new ClusteringCoefficient()
@@ -479,11 +554,15 @@ public class Exploring {
 <<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> optimizing the PR metric
+=======
+				new SamplingBias()
+>>>>>>> SamplingBias properties
 				};
 =======
 				new DegreeDistribution() };
 >>>>>>> debugged rich-club generator.
 		
+<<<<<<< HEAD
 <<<<<<< HEAD
 		
 		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
@@ -552,6 +631,9 @@ public class Exploring {
 =======
 =======
 >>>>>>> added relative eccentricity / effective diameter
+=======
+//		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
+>>>>>>> SamplingBias properties
 		Series[] s = Series.generate(n, metrics, times);
 
 		Plotting.single(s, metrics, "example-s/");
@@ -794,6 +876,7 @@ public class Exploring {
 >>>>>>> bugfix bc (1)
 		 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> debugged calculation of the assortativity coefficient
 =======
 		/*
@@ -804,6 +887,12 @@ public class Exploring {
 		 }
 		 */
 		
+=======
+//		 for(Network i : n){
+//			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
+//			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
+//		 }
+>>>>>>> SamplingBias properties
 	}
 	
 	
