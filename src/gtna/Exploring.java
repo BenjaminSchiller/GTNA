@@ -35,6 +35,8 @@
  */
 package gtna;
 
+import java.util.Arrays;
+
 import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
@@ -43,8 +45,7 @@ import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
 import gtna.metrics.sampling.SamplingBias;
 import gtna.networks.Network;
-import gtna.networks.model.ErdosRenyi;
-import gtna.networks.model.Regular;
+import gtna.networks.model.BarabasiAlbert;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
@@ -85,59 +86,20 @@ public class Exploring {
 
 		boolean r = false;
 		
+		SamplingAlgorithm a = SamplingAlgorithm.UNIFORMSAMPLING;
+		double sc = 0.75;
 		
-		Transformation[] t = new Transformation[]{
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null),
-				SamplingAlgorithmFactory.getInstanceOf(SamplingAlgorithm.RANDOMWALK, 0.2, false, 1, null)
-		};
+		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, false, 1, null);
+		Transformation[] t = new Transformation[100];
 		
-		Network nw0 = new ErdosRenyi(1000, 25, false, t);
-		Network nw1 = new ErdosRenyi(500, 25, false, t);
-		Network nw2 = new Regular(300, 4, r, b, null);
-		Network nw3 = new Regular(400, 4, r, b, null);
-		Network nw4 = new Regular(500, 4, r, b, null);
-		Network nw5 = new Regular(600, 4, r, b, null);
-		Network nw6 = new Regular(700, 4, r, b, null);
-		Network nw7 = new Regular(800, 4, r, b, null);
-		Network nw8 = new Regular(900, 4, r, b, null);
-		Network nw9 = new Regular(1000, 4, r, b, null);
+		Arrays.fill(t, sa);
 		
-		Network[] n = new Network[] {nw0, nw1 /*, nw2, nw3, nw4, nw5, nw6, nw7, nw8, nw9*/};
+		Network nw0 = new BarabasiAlbert(10000, 50, t);
+		Network nw1 = new BarabasiAlbert(10000, 100, t);
+		Network nw2 = new BarabasiAlbert(10000, 150, t);
+		Network nw3 = new BarabasiAlbert(10000, 200, t);
+		
+		Network[] n = new Network[] {nw0 /*, nw1, nw2, nw3*/};
 		
 		Metric[] metrics = new Metric[] { 
 				new SamplingBias()
@@ -150,7 +112,7 @@ public class Exploring {
 
 		Plotting.multi(s, metrics, "example-m/");
 		 
-//		 for(Network i : n){
+//		 f#or(Network i : n){
 //			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
 //			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
 //		 }
