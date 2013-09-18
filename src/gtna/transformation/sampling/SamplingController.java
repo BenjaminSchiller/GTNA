@@ -72,9 +72,15 @@ public class SamplingController extends Transformation {
 	private Random rng;
 
 	public SamplingController(String algorithm, AWalkerController awc,
+<<<<<<< HEAD
 			ASampler as, StartNodeSelector asns, NetworkSample ns, double scaledown,
 			int dimension, boolean revisiting, Long randomSeed) {
 		this(algorithm, awc, as, asns, ns, scaledown, dimension, revisiting);
+=======
+			ASampler as, StartNodeSelector asns, double scaledown,
+			int dimension, boolean revisiting, Long randomSeed) {
+		this(algorithm, awc, as, asns, scaledown, dimension, revisiting);
+>>>>>>> small improvements using sampling bias
 		if (randomSeed != null)
 			this.setRng(new DeterministicRandom(randomSeed));
 
@@ -97,7 +103,11 @@ public class SamplingController extends Transformation {
 	 *            revisiting algorithm
 	 */
 	public SamplingController(String algorithm, AWalkerController awc,
+<<<<<<< HEAD
 			ASampler as, StartNodeSelector asns, NetworkSample ns, double scaledown,
+=======
+			ASampler as, StartNodeSelector asns, double scaledown,
+>>>>>>> small improvements using sampling bias
 			int dimension, boolean revisiting) {
 		super("SAMPLING", new Parameter[] {
 				new StringParameter("ALGORITHM", algorithm), awc, as, asns,
@@ -125,13 +135,19 @@ public class SamplingController extends Transformation {
 		this.sampler = as;
 		this.walkerController = awc;
 		this.startNodeSelector = asns;
+<<<<<<< HEAD
 		this.networkSample = ns;
+=======
+		this.networkSample = new NetworkSample(algorithm, scaledown, dimension,
+				revisiting);
+>>>>>>> small improvements using sampling bias
 
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
+<<<<<<< HEAD
 =======
 =======
 import java.util.Collection;
@@ -208,6 +224,30 @@ public class SamplingController extends Transformation {
 	if (dimension < 1) {
 	    throw new IllegalArgumentException(
 		    "Dimension has to be at least 1 but is: " + dimension);
+=======
+	 * @see gtna.transformation.Transformation#transform(gtna.graph.Graph)
+	 */
+	@Override
+	public Graph transform(Graph g) {
+		if (!initialized()) {
+			return g;
+		} else {
+			this.setGraph(g);
+			sampleGraph(g);
+			// TEST
+			System.out.println("\n> Sampled " + networkSample.getSampleSize()
+					+ " out of " + g.getNodeCount() + " nodes.");
+			System.out.println("\n\n> Mapping: \n" + networkSample.toString());
+
+			int[] sn = collectStartNodeIndices();
+			Sample s = new Sample(networkSample, sn, rng);
+			g.addProperty(g.getNextKey("SAMPLE"), s);
+
+			networkSample = new NetworkSample();
+			this.setGraph(null);
+			return g;
+		}
+>>>>>>> small improvements using sampling bias
 	}
 <<<<<<< HEAD
 	
@@ -320,6 +360,7 @@ public class SamplingController extends Transformation {
 
 		int originalSize = g.getNodeCount();
 
+<<<<<<< HEAD
 		return (int) Math.ceil(originalSize * scaledown);
 	}
 
@@ -540,42 +581,75 @@ public class SamplingController extends Transformation {
 	    networkSample = new NetworkSample();
 	    return g;
 >>>>>>> SamplingController.applicable is checking the availability of the necessary submodules.
+=======
+	/**
+	 * @return
+	 */
+	private int[] collectStartNodeIndices() {
+		int[] sn = new int[startNodes.length];
+		for (int i = 0; i < sn.length; i++) {
+			sn[i] = startNodes[i].getIndex();
+		}
+		return sn;
 	}
-    }
 
-    /**
-     * @return
-     */
-    private int[] collectStartNodeIndices() {
-	int[] sn = new int[startNodes.length];
-	for(int i = 0; i < sn.length; i++) {
-	sn[i] = startNodes[i].getIndex();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.transformation.Transformation#applicable(gtna.graph.Graph)
+	 */
+	@Override
+	public boolean applicable(Graph g) {
+		if (!initialized()) {
+			System.out.println("Sampling is not initialized:");
+			if (dimension <= 0)
+				System.out.println("> Dimension is < 0");
+			if (networkSample == null)
+				System.out.println("> Network Sample is not initialized");
+			if (walkerController == null || !walkerController.isInitialized())
+				System.out.println("> Walker Controller is not initilized");
+			if (sampler == null || !sampler.isInitialized())
+				System.out.println("> Sampler is not initialized");
+			if (startNodeSelector == null)
+				System.out.println("> Startnode selector is not initialized");
+
+			return false;
+		}
+		return true;
+>>>>>>> small improvements using sampling bias
 	}
-	return sn;
-    }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see gtna.transformation.Transformation#applicable(gtna.graph.Graph)
-     */
-    @Override
-    public boolean applicable(Graph g) {
-	if (!initialized()) {
-	    System.out.println("Sampling is not initialized:");
-	    if (dimension <= 0)
-		System.out.println("> Dimension is < 0");
-	    if (networkSample == null)
-		System.out.println("> Network Sample is not initialized");
-	    if (walkerController == null || !walkerController.isInitialized())
-		System.out.println("> Walker Controller is not initilized");
-	    if (sampler == null || !sampler.isInitialized())
-		System.out.println("> Sampler is not initialized");
-	    if (startNodeSelector == null)
-		System.out.println("> Startnode selector is not initialized");
+	/**
+	 * checks the initialization of the sampling controller
+	 * 
+	 * @return true if ok, else false
+	 */
+	private boolean initialized() {
+		if (dimension <= 0 || networkSample == null || walkerController == null
+				|| !walkerController.isInitialized() || sampler == null
+				|| !sampler.isInitialized() || startNodeSelector == null) {
+			return false;
+		}
 
-	    return false;
+		return true;
 	}
+
+	/**
+	 * 
+	 * Calculates the sample size
+	 * 
+	 * @param g
+	 *            Graph
+	 * 
+	 * @return number of nodes in the sampled graph
+	 */
+	public int calculateTargetedSampleSize(Graph g) {
+
+		int originalSize = g.getNodeCount();
+
+		return (int) Math.ceil(originalSize * scaledown);
+	}
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 	public boolean sampleGraph(Graph g, int targetSampleSize) {
@@ -590,10 +664,33 @@ public class SamplingController extends Transformation {
 
 		// eventually sample startnodes
 		sampleOneStep(maxNodesInThisRound, round);
+=======
+
+	/**
+	 * Start the sampling algorithm on the given graph
+	 * 
+	 * @param g
+	 *            original graph
+	 * @return true if ok
+	 */
+	public boolean sampleGraph(Graph g) {
+		startNodes = startNodeSelector.selectStartNodes(g, dimension, rng);
+
+		int targetSampleSize = (int) Math.ceil(g.getNodeCount() * scaledown);
+		int maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
+		int round = 0;
+		walkerController.initialize(startNodes); // place walker(s) on start
+		// node(s)
+		Collection<Node> s = sampler.initialize(g, targetSampleSize, round); // initialize
+																				// Sampler
+		// if(s.size() > 0)
+		// networkSample.addNodeToSample(s, round);
+>>>>>>> small improvements using sampling bias
 
 		boolean running = true;
 		// walk -> sample loop as long new nodes are sampled
 		do {
+<<<<<<< HEAD
 			round++;
 			// walk
 			walkerController.walkOneStep();
@@ -601,11 +698,25 @@ public class SamplingController extends Transformation {
 			sampleOneStep(maxNodesInThisRound, round);
 			maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
 			running = (maxNodesInThisRound > 0) ? true : false;
+=======
+
+			// eventually sample
+			sampleOneStep(g, maxNodesInThisRound, round);
+
+			// walk
+			walkerController.walkOneStep();
+
+			// calculate residual budget
+			maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
+			running = (maxNodesInThisRound > 0) ? true : false;
+			round++;
+>>>>>>> small improvements using sampling bias
 		} while (running);
 
 		return true;
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> Class Structure
 =======
@@ -618,10 +729,25 @@ public class SamplingController extends Transformation {
 	private boolean sampleOneStep(int maxNodesInThisRound, int round) {
 		Collection<Node> chosenNodes = sampler
 				.sampleOneStepNodes(maxNodesInThisRound);
+=======
+	/**
+	 * Sample eventually nodes in the specified round
+	 * 
+	 * @param maxNodesInThisRound
+	 *            number of maximal added nodes
+	 * @param round
+	 *            current round
+	 * @return true if at least one node is sampled, else false
+	 */
+	private boolean sampleOneStep(Graph g, int maxNodesInThisRound, int round) {
+		Collection<Node> chosenNodes = sampler.sampleOneStep(
+				maxNodesInThisRound, round);
+>>>>>>> small improvements using sampling bias
 		if (chosenNodes.size() > 0)
 			return networkSample.addNodeToSample(chosenNodes, round);
 
 		return false;
+<<<<<<< HEAD
 =======
 	return true;
     }
@@ -637,99 +763,118 @@ public class SamplingController extends Transformation {
 		|| !sampler.isInitialized() || startNodeSelector == null) {
 	    return false;
 >>>>>>> SamplingController.applicable is checking the availability of the necessary submodules.
+=======
 	}
 
-	return true;
-    }
-
-    /**
-     * 
-     * Calculates the sample size
-     * 
-     * @param g
-     *            Graph
-     * 
-     * @return number of nodes in the sampled graph
-     */
-    public int calculateTargetedSampleSize(Graph g) {
-
-	int originalSize = g.getNodeCount();
-
-	return (int) Math.ceil(originalSize * scaledown);
-    }
-
-    /**
-     * Start the sampling algorithm on the given graph
-     * 
-     * @param g
-     *            original graph
-     * @return true if ok
-     */
-    public boolean sampleGraph(Graph g) {
-	startNodes = startNodeSelector.selectStartNodes(g, dimension, rng);
-
-	int targetSampleSize = (int) Math.ceil(g.getNodeCount() * scaledown);
-	int maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
-	int round = 0;
-	walkerController.initialize(startNodes); // place walker(s) on start
-						    // node(s)
-	Collection<Node> s = sampler.initialize(g, targetSampleSize, round); // initialize Sampler
-//	if(s.size() > 0)
-//		networkSample.addNodeToSample(s, round);
-
-
-	boolean running = true;
-	// walk -> sample loop as long new nodes are sampled
-	do {
-	    
-	    // eventually sample
-	    sampleOneStep(g, maxNodesInThisRound, round);
-
-	    // walk
-	    walkerController.walkOneStep();
-	    
-	    // calculate residual budget
-	    maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
-	    running = (maxNodesInThisRound > 0) ? true : false;
-	    round++;
-	} while (running);
-
-	return true;
-    }
-
-    /**
-     * Sample eventually nodes in the specified round
-     * 
-     * @param maxNodesInThisRound
-     *            number of maximal added nodes
-     * @param round
-     *            current round
-     * @return true if at least one node is sampled, else false
-     */
-    private boolean sampleOneStep(Graph g, int maxNodesInThisRound, int round) {
-	Collection<Node> chosenNodes = sampler.sampleOneStep(maxNodesInThisRound, round);
-	if (chosenNodes.size() > 0)
-	    return networkSample.addNodeToSample(chosenNodes, round);
-
-	return false;
-    }
-
-    /**
-     * Calculates the residual sampling budget based on the targeted size and
-     * the current size of the sample
-     * 
-     * @param targetSampleSize
-     *            target size
-     * @return residual Budget
-     */
-    private int calculateResidualBudget(int targetSampleSize) {
-	int currentSampleSize = networkSample.getSampleSize();
-	int residualBudget = targetSampleSize - currentSampleSize;
-	if (residualBudget > 0) {
-	    return residualBudget;
-	} else {
-	    return 0;
+	/**
+	 * Calculates the residual sampling budget based on the targeted size and
+	 * the current size of the sample
+	 * 
+	 * @param targetSampleSize
+	 *            target size
+	 * @return residual Budget
+	 */
+	private int calculateResidualBudget(int targetSampleSize) {
+		int currentSampleSize = networkSample.getSampleSize();
+		int residualBudget = targetSampleSize - currentSampleSize;
+		if (residualBudget > 0) {
+			return residualBudget;
+		} else {
+			return 0;
+		}
 	}
+
+	/**
+	 * @return the walkerController
+	 */
+	public AWalkerController getWalkerController() {
+		return this.walkerController;
+	}
+
+	/**
+	 * @param walkerController
+	 *            the walkerController to set
+	 */
+	public void setWalkerController(AWalkerController walkerController) {
+		this.walkerController = walkerController;
+	}
+
+	/**
+	 * @return the sampler
+	 */
+	public ASampler getSampler() {
+		return this.sampler;
+	}
+
+	/**
+	 * @param sampler
+	 *            the sampler to set
+	 */
+	public void setSampler(ASampler sampler) {
+		this.sampler = sampler;
+	}
+
+	/**
+	 * @return the startNodeSelector
+	 */
+	public StartNodeSelector getStartNodeSelector() {
+		return this.startNodeSelector;
+	}
+
+	/**
+	 * @param startNodeSelector
+	 *            the startNodeSelector to set
+	 */
+	public void setStartNodeSelector(StartNodeSelector startNodeSelector) {
+		this.startNodeSelector = startNodeSelector;
+	}
+
+	/**
+	 * @return the networkSample
+	 */
+	public NetworkSample getNetworkSample() {
+		return this.networkSample;
+	}
+
+	/**
+	 * @return the graph
+	 */
+	public Graph getGraph() {
+		return graph;
+	}
+
+	/**
+	 * @param graph
+	 *            the graph to set
+	 */
+	public void setGraph(Graph graph) {
+		this.graph = graph;
+	}
+
+	/**
+	 * @param networkSample
+	 *            the networkSample to set
+	 */
+	public void setNetworkSample(NetworkSample networkSample) {
+		this.networkSample = networkSample;
+	}
+
+	/**
+	 * @return the rng
+	 */
+	public Random getRng() {
+		return rng;
+>>>>>>> small improvements using sampling bias
+	}
+
+	/**
+	 * @param rng
+	 *            the rng to set
+	 */
+	public void setRng(Random rng) {
+		this.rng = rng;
+	}
+<<<<<<< HEAD
     }
 
 <<<<<<< HEAD
@@ -825,6 +970,8 @@ public class SamplingController extends Transformation {
     public void setRng(Random rng) {
 	this.rng = rng;
     }
+=======
+>>>>>>> small improvements using sampling bias
 
 >>>>>>> usage, persisting, loading of the deterministic-rng possible
 }
