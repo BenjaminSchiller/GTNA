@@ -61,7 +61,7 @@ public class Sample extends GraphProperty {
 	 * 
 	 */
     public Sample() {
-	this.sample = new NetworkSample();
+	this.setSample(new NetworkSample());
     }
 
     /**
@@ -69,7 +69,7 @@ public class Sample extends GraphProperty {
      * @param startNodeIndices
      */
     public Sample(NetworkSample s, int[] startNodeIndices) {
-	this.sample = s;
+	this.setSample(s);
 	this.startnodes = startNodeIndices;
     }
 
@@ -79,7 +79,7 @@ public class Sample extends GraphProperty {
      * @param rng
      */
     public Sample(NetworkSample s, int[] startNodeIndices, Random rng) {
-	this.sample = s;
+	this.setSample(s);
 	this.startnodes = startNodeIndices;
 	this.rng = rng;
     }
@@ -95,11 +95,11 @@ public class Sample extends GraphProperty {
 
 	this.writeHeader(fw, this.getClass(), key);
 
-	this.writeParameter(fw, "Sample algorithm", sample.getAlgorithm());
-	this.writeParameter(fw, "Sample scaledown", sample.getScaledown());
-	this.writeParameter(fw, "Sample size", sample.getSampleSize());
-	this.writeParameter(fw, "Sample dimension", sample.getDimension());
-	this.writeParameter(fw, "Sample revisiting", sample.isRevisiting());
+	this.writeParameter(fw, "Sample algorithm", getSample().getAlgorithm());
+	this.writeParameter(fw, "Sample scaledown", getSample().getScaledown());
+	this.writeParameter(fw, "Sample size", getSample().getSampleSize());
+	this.writeParameter(fw, "Sample dimension", getSample().getDimension());
+	this.writeParameter(fw, "Sample revisiting", getSample().isRevisiting());
 	this.writeParameter(fw, "Sample startnodes", Arrays
 		.toString(startnodes).replace("[", "").replace("]", ""));
 	if (rng instanceof DeterministicRandom
@@ -110,9 +110,9 @@ public class Sample extends GraphProperty {
 	    this.writeParameter(fw, "Sample randomseed", "-");
 	}
 
-	int size = sample.getSampleSize();
+	int size = getSample().getSampleSize();
 
-	this.writeParameter(fw, "Sample node mapping: oldId;newId;round-i,round-i+n, ...", sample.toString());
+	this.writeParameter(fw, "Sample node mapping: oldId;newId;round-i,round-i+n, ...", getSample().toString());
 
 	return fw.close();
     }
@@ -136,7 +136,7 @@ public class Sample extends GraphProperty {
 	int[] startnodes = this.readIntArray(fr);
 	rng = this.readRNG(fr);
 
-	sample = new NetworkSample(algorithm, scaledown, dimension, revisiting);
+	setSample(new NetworkSample(algorithm, scaledown, dimension, revisiting));
 	for (int i = 0; i < size; i++) {
 	    String l = fr.readLine();
 
@@ -146,7 +146,7 @@ public class Sample extends GraphProperty {
 	    List<Integer> rf = parseRevisitFrequencyString(sampledNode[2]
 		    .trim());
 
-	    sample.addNodeEntry(oldId, newId, rf);
+	    getSample().addNodeEntry(oldId, newId, rf);
 	}
 
 	fr.close();
@@ -209,7 +209,7 @@ public class Sample extends GraphProperty {
      *         integer < 0 if not sampled
      */
     public int getOldNodeId(int newId) {
-	Map<Integer, Integer> nodeIdMapping = sample.getSampleNodeMapping();
+	Map<Integer, Integer> nodeIdMapping = getSample().getSampleNodeMapping();
 
 	if (nodeIdMapping.containsValue(newId)) {
 	    for (Map.Entry<Integer, Integer> e : nodeIdMapping.entrySet()) {
@@ -232,7 +232,7 @@ public class Sample extends GraphProperty {
      *         integer < 0 if not sampled
      */
     public int getNewNodeId(int oldId) {
-	return sample.getNewIndexOfSampledNode(oldId);
+	return getSample().getNewIndexOfSampledNode(oldId);
 
     }
 
@@ -242,7 +242,21 @@ public class Sample extends GraphProperty {
      * @return Set of Integers
      */
     public Set<Integer> getSampledIds() {
-	return sample.getSampleNodeMapping().keySet();
+	return getSample().getSampleNodeMapping().keySet();
     }
+
+	/**
+	 * @return the sample
+	 */
+	public NetworkSample getSample() {
+		return sample;
+	}
+
+	/**
+	 * @param sample the sample to set
+	 */
+	public void setSample(NetworkSample sample) {
+		this.sample = sample;
+	}
 
 }
