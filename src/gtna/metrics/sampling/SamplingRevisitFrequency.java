@@ -37,6 +37,7 @@ package gtna.metrics.sampling;
 
 import gtna.data.Single;
 import gtna.graph.Graph;
+import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.transformation.sampling.Sample;
@@ -54,6 +55,9 @@ public class SamplingRevisitFrequency extends Metric {
 
 	private int samplingIndex = 0;
 	private Distribution revisitFrequency;
+	private int numberOfRounds;
+	private int edges;
+	private int nodes;
 
 	/**
 	 * @param key
@@ -95,6 +99,9 @@ public class SamplingRevisitFrequency extends Metric {
 		
 		
 		revisitFrequency = new Distribution(rounds);
+		nodes = g.getNodes().length;
+		edges = g.getEdges().size();
+		numberOfRounds = s.getSample().getNumberOfRounds();
 
 	}
 
@@ -103,8 +110,11 @@ public class SamplingRevisitFrequency extends Metric {
 	 */
 	@Override
 	public boolean writeData(String folder) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean success = true;
+		success &= DataWriter.writeWithIndex(this.revisitFrequency.getDistribution(),
+				"SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION", folder);
+		
+		return success;
 	}
 
 	/* (non-Javadoc)
@@ -112,8 +122,18 @@ public class SamplingRevisitFrequency extends Metric {
 	 */
 	@Override
 	public Single[] getSingles() {
-		// TODO Auto-generated method stub
-		return null;
+		Single nodes = new Single("SAMPLING_REVISIT_FREQUENCY_NODES", this.nodes);
+		Single edges = new Single("SAMPLING_REVISIT_FREQUENCY_EDGES", this.edges);
+		Single rounds = new Single("SAMPLING_REVISIT_FREQUENCY_ROUNDS", this.numberOfRounds);
+		
+		Single rfMin = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MIN", this.revisitFrequency.getMin());
+		Single rfMed = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MED", this.revisitFrequency.getMedian());
+		Single rfAvg = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_AVG", this.revisitFrequency.getAverage());
+		Single rfMax = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MAX", this.revisitFrequency.getMax());
+		
+		return new Single[] { 
+				nodes, edges, rounds, 
+				rfMin, rfMed, rfAvg, rfMax };
 	}
 
 	/* (non-Javadoc)
