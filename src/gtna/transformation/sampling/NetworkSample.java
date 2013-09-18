@@ -56,6 +56,7 @@ public class NetworkSample extends Parameter {
     private double scaledown;
     private int dimension;
     private boolean revisiting;
+	private int numberOfRounds = 0;
 
     /**
      * @param key
@@ -121,6 +122,8 @@ public class NetworkSample extends Parameter {
 		revisitFrequency.put(n.getIndex(), rF);
 	    }
 	}
+	
+	numberOfRounds++;
 
 	return true;
     }
@@ -341,5 +344,12 @@ public class NetworkSample extends Parameter {
 	revisitFrequency.put(oldId, rf);
 	
     }
+
+	/**
+	 * @return the numberOfRounds
+	 */
+	public int getNumberOfRounds() {
+		return numberOfRounds;
+	}
 
 }
