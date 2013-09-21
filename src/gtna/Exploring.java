@@ -35,20 +35,24 @@
  */
 package gtna;
 
+import java.util.Arrays;
+
 import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
-import gtna.metrics.centrality.BetweennessCentrality;
+import gtna.metrics.sampling.SamplingBias;
 import gtna.networks.Network;
-import gtna.networks.model.Regular;
+import gtna.networks.model.BarabasiAlbert;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
+import gtna.transformation.sampling.SamplingAlgorithmFactory;
+import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.util.Config;
 
 /**
@@ -82,34 +86,36 @@ public class Exploring {
 
 		boolean r = false;
 		
-		Network nw0 = new Regular(100, 1, r, b, null);
-		Network nw1 = new Regular(200, 4, r, b, null);
-		Network nw2 = new Regular(300, 4, r, b, null);
-		Network nw3 = new Regular(400, 4, r, b, null);
-		Network nw4 = new Regular(500, 4, r, b, null);
-		Network nw5 = new Regular(600, 4, r, b, null);
-		Network nw6 = new Regular(700, 4, r, b, null);
-		Network nw7 = new Regular(800, 4, r, b, null);
-		Network nw8 = new Regular(900, 4, r, b, null);
-		Network nw9 = new Regular(1000, 4, r, b, null);
+		SamplingAlgorithm a = SamplingAlgorithm.UNIFORMSAMPLING;
+		double sc = 0.75;
 		
-		Network[] n = new Network[] {nw0 /*, nw1, nw2, nw3, nw4, nw5, nw6, nw7, nw8, nw9*/};
+		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, false, 1, null);
+		Transformation[] t = new Transformation[100];
+		
+		Arrays.fill(t, sa);
+		
+		Network nw0 = new BarabasiAlbert(10000, 50, t);
+		Network nw1 = new BarabasiAlbert(10000, 100, t);
+		Network nw2 = new BarabasiAlbert(10000, 150, t);
+		Network nw3 = new BarabasiAlbert(10000, 200, t);
+		
+		Network[] n = new Network[] {nw0 /*, nw1, nw2, nw3*/};
 		
 		Metric[] metrics = new Metric[] { 
-				new BetweennessCentrality()
+				new SamplingBias()
 				};
 		
-		
-		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
+//		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
+		Series[] s = Series.generate(n, metrics, times);
 
 		Plotting.single(s, metrics, "example-s/");
 
 		Plotting.multi(s, metrics, "example-m/");
 		 
-		 for(Network i : n){
-			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
-			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
-		 }
+//		 f#or(Network i : n){
+//			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
+//			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
+//		 }
 	}
 	
 	
