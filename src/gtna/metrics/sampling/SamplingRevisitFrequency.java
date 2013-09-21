@@ -44,8 +44,10 @@ import gtna.transformation.sampling.Sample;
 import gtna.util.Distribution;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tim
@@ -58,6 +60,7 @@ public class SamplingRevisitFrequency extends Metric {
 	private int numberOfRounds;
 	private int edges;
 	private int nodes;
+	private Distribution samplingEfficiency;
 
 	/**
 	 * @param key
@@ -96,8 +99,25 @@ public class SamplingRevisitFrequency extends Metric {
 		}
 		
 		
+		Set<Double> seenIndices = new HashSet<Double>();
+		double[] efficiency = new double[rounds.length];
+		double ci;
+		double currentSampleSize = 0;
+		for(int i = 0; i < rounds.length; i++) {
+		    ci = rounds[i];
+		    if(!seenIndices.contains(ci)) {
+			seenIndices.add(ci);
+			currentSampleSize++;
+			efficiency[i] = currentSampleSize;
+		    }else {
+			efficiency[i] = currentSampleSize;
+		    }
+		    
+		}
 		
 		
+		
+		samplingEfficiency = new Distribution(efficiency);
 		revisitFrequency = new Distribution(rounds);
 		nodes = g.getNodes().length;
 		edges = g.getEdges().size();
@@ -113,6 +133,8 @@ public class SamplingRevisitFrequency extends Metric {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(this.revisitFrequency.getDistribution(),
 				"SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.samplingEfficiency.getDistribution(), 
+			"SAMPLING_REVISIT_FREQUENCY_EFFICIENCY", folder);
 		
 		return success;
 	}
