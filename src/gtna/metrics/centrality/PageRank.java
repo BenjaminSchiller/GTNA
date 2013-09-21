@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.metric.centrality;
+package gtna.metrics.centrality;
 
 import gtna.data.Single;
 import gtna.graph.Graph;
