@@ -59,9 +59,14 @@ import java.util.Map;
 import java.util.Set;
 =======
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+<<<<<<< HEAD
 >>>>>>> computation of the basic revisit frequency
+=======
+import java.util.Set;
+>>>>>>> Added distribution for showing the efficiency
 
 /**
  * @author Tim
@@ -77,6 +82,7 @@ public class SamplingRevisitFrequency extends Metric {
 	private int edges;
 	private int nodes;
 	private Distribution samplingEfficiency;
+<<<<<<< HEAD
 	private double rfMax;
 	private double rfMin;
 	private double rfAvg;
@@ -88,6 +94,8 @@ public class SamplingRevisitFrequency extends Metric {
 	private int edges;
 	private int nodes;
 >>>>>>> SRF properties
+=======
+>>>>>>> Added distribution for showing the efficiency
 
 	/**
 	 * @param key
@@ -127,6 +135,9 @@ public class SamplingRevisitFrequency extends Metric {
 		
 		
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Added distribution for showing the efficiency
 		Set<Double> seenIndices = new HashSet<Double>();
 		double[] efficiency = new double[rounds.length];
 		double ci;
@@ -191,6 +202,8 @@ public class SamplingRevisitFrequency extends Metric {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(this.revisitFrequency.getDistribution(),
 				"SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.samplingEfficiency.getDistribution(), 
+			"SAMPLING_REVISIT_FREQUENCY_EFFICIENCY", folder);
 		
 		return success;
 >>>>>>> SRF properties
