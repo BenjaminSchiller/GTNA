@@ -46,313 +46,258 @@ import gtna.util.Distribution;
 import java.util.Arrays;
 import java.util.HashMap;
 
+
 /**
  * @author Tim
- * 
+ *
  */
 public class PageRank extends Metric {
 
-	private double alpha = 0.85; // initialized with the Brin/Page proposed
-									// value
+    private double alpha = 0.85; // initialized with the Brin/Page proposed value
 
-	private double[][] H; // hyperlink matrix
-	private double[][] A;
-	private double[][] S;
+    private double[][] H;	// hyperlink matrix
+    private double[][] A;
+    private double[][] S;
 
-	private double[][] ONE;
+    private double[][] ONE;
 
-	private double[][] G;
+    private double[][] G;
 
-	private double[] prVector;
+    private double[] prVector;
 
-	private Distribution pr;
+    private Distribution pr;
 
-	private double nodes;
+    private double nodes;
 
-	private double edges;
+    private double edges;
 
-	private double prMax;
 
-	private double prMin;
 
-	private double prMed;
+    /**
+     * @param key
+     */
+    public PageRank(double alpha) {
+	super("PAGERANK_DISTRIBUTION");
+	this.alpha = alpha;
+    }
+    
+    public PageRank() {
+	this(0.85); // usage of the standard value
+    }
 
-	private double prAvg;
 
-	/**
-	 * @param key
-	 */
-	public PageRank(double alpha) {
-		super("PAGERANK_DISTRIBUTION");
-		this.alpha = alpha;
+    /* (non-Javadoc)
+     * @see gtna.metrics.Metric#computeData(gtna.graph.Graph, gtna.networks.Network, java.util.HashMap)
+     */
+    @Override
+    public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
+	calculateBaseMatrices(g);
+	
+	prVector = initVector(G.length);
+	
+	double[] prOld = initVector(G.length);
+	for(int j = 0; j < 500; j++) {
+	    prOld = prVector;
+	    prVector = calculateMatrixVectorProduct(G, prVector);
+	    prVector = normalizeVector(prVector);
+	    	    
+	    System.out.println(Arrays.toString(prVector));
 	}
+	
+	pr = new Distribution(prVector);
+	nodes = g.getNodeCount();
+	edges = g.getEdges().size();
 
-	public PageRank() {
-		this(0.85); // usage of the standard value
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.metrics.Metric#computeData(gtna.graph.Graph,
-	 * gtna.networks.Network, java.util.HashMap)
-	 */
-	@Override
-	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-		calculateBaseMatrices(g);
-
-		prVector = initVector(G.length);
-
-		double[] prOld = initVector(G.length);
-		for (int j = 0; j < 50; j++) {
-			prOld = prVector;
-			prVector = calculateMatrixVectorProduct(G, prVector);
-			prVector = normalizeVector(prVector);
-		}
-		Arrays.sort(prVector);
-		pr = new Distribution(prVector);
-		nodes = g.getNodeCount();
-		edges = g.getEdges().size();
-
-		this.prMax = getMax(prVector);
-		this.prMin = getMin(prVector);
-		this.prMed = getMed(prVector);
-		this.prAvg = getAvg(prVector);
-
-	}
-
-	/**
+    /**
 	 * @param vector
 	 * @return
 	 */
 	private double[] normalizeVector(double[] vector) {
 		double[] normalized = new double[vector.length];
 		double sumNorm = 0;
-		for (double d : vector) {
+		for(double d : vector){
 			sumNorm += Math.abs(d);
 		}
-
-		for (int i = 0; i < vector.length; i++) {
-			normalized[i] = vector[i] / sumNorm;
+		
+		for(int i = 0; i < vector.length; i++){
+			normalized[i] = vector[i]/sumNorm;
 		}
-
+		
 		return normalized;
 	}
+	
+	
 
 	/**
-	 * @param prVector2
-	 * @param prOld
-	 * @return
-	 */
-	private double[] diffVector(double[] prVector2, double[] prOld) {
-		double[] d = new double[prVector2.length];
+     * @param prVector2
+     * @param prOld
+     * @return
+     */
+    private double[] diffVector(double[] prVector2, double[] prOld) {
+	double[] d = new double[prVector2.length];
+	
+	for(int i = 0; i < d.length; i++) {
+	    d[i] = prVector2[i] - prOld[i];
+	}
+	
+	return d;
+    }
 
-		for (int i = 0; i < d.length; i++) {
-			d[i] = prVector2[i] - prOld[i];
+    /**
+     * @param length
+     * @return
+     */
+    private double[] initVector(int length) {
+	double[] t = new double[length];
+	Arrays.fill(t, 0.0);
+	
+	t[0] = 1000.0;
+	
+	return t;
+    }
+
+
+    /* (non-Javadoc)
+     * @see gtna.metrics.Metric#writeData(java.lang.String)
+     */
+    @Override
+    public boolean writeData(String folder) {
+	boolean success = true;
+	success &= DataWriter.writeWithIndex(
+		this.pr.getDistribution(),
+		"PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION", folder);
+	success &= DataWriter.writeWithIndex(
+		this.pr.getCdf(),
+		"PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION_CDF", folder);
+	return success;
+
+    }
+
+    /* (non-Javadoc)
+     * @see gtna.metrics.Metric#getSingles()
+     */
+    @Override
+    public Single[] getSingles() {
+	Single nodes = new Single("PAGERANK_DISTRIBUTION_NODES", this.nodes);
+	Single edges = new Single("PAGERANK_DISTRIBUTION_EDGES", this.edges);
+
+	Single prMin = new Single("PAGERANK_DISTRIBUTION_MIN",
+			this.pr.getMin());
+	Single prMed = new Single("PAGERANK_DISTRIBUTION_MED",
+			this.pr.getMedian());
+	Single prAvg = new Single("PAGERANK_DISTRIBUTION_AVG",
+			this.pr.getAverage());
+	Single prMax = new Single("PAGERANK_DISTRIBUTION_MAX",
+			this.pr.getMax());
+	
+	return new Single[] { nodes, edges, prMin, prMed, prAvg, prMax };
+
+    }
+
+    /* (non-Javadoc)
+     * @see gtna.metrics.Metric#applicable(gtna.graph.Graph, gtna.networks.Network, java.util.HashMap)
+     */
+    @Override
+    public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+	return true;
+    }
+    
+    
+    private void calculateBaseMatrices(Graph g) {
+	H = new double[g.getNodeCount()][g.getNodeCount()];
+	A = new double[g.getNodeCount()][g.getNodeCount()];
+	S = new double[g.getNodeCount()][g.getNodeCount()];
+	G = new double[g.getNodeCount()][g.getNodeCount()];
+	ONE = new double[g.getNodeCount()][g.getNodeCount()];
+	
+	initializeMatrix(H, 0);
+	initializeMatrix(A, 0);
+	initializeMatrix(S, 0);
+	initializeMatrix(G, 0);
+	initializeMatrix(ONE, 1);
+	
+	Node[] nodes = g.getNodes();
+	for(Node n : nodes) {
+	    int ni = n.getIndex();
+	    if(n.getOutDegree() > 0) { // fill H as some outgoing links are present
+		double[] nch = H[ni];
+		int nod = n.getOutDegree();
+		for(int i : n.getOutgoingEdges()) {
+		    nch[i] = (double)1/(double)nod;			// set Hij = 1/li
 		}
-
-		return d;
+		H[ni] = nch;
+	    } else { // fill A as no outgoing links are present
+		double[] nca = A[ni];
+		Arrays.fill(nca, 1/g.getNodeCount());
+		A[ni] = nca;
+	    }
 	}
-
-	/**
-	 * @param length
-	 * @return
-	 */
-	private double[] initVector(int length) {
-		double[] t = new double[length];
-		Arrays.fill(t, 0.0);
-
-		t[0] = 1000.0;
-
-		return t;
+	
+	S = addMatrices(H, A);
+	double[][] alphaS = multiplyMatrix(S, alpha); 
+	double[][] jumpM = multiplyMatrix(ONE, 1/g.getNodeCount());
+	jumpM = multiplyMatrix(ONE, 1-alpha);
+	G = addMatrices(alphaS, jumpM);
+	
+    }
+    
+    private double[] calculateMatrixVectorProduct(double[][] m, double[] v) {
+	if(m.length != v.length) {
+	    throw new IllegalArgumentException("m/v dimensions are incompatible for the Matrix-Vector Multiplication");
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.metrics.Metric#writeData(java.lang.String)
-	 */
-	@Override
-	public boolean writeData(String folder) {
-		boolean success = true;
-		success &= DataWriter.writeWithIndex(this.pr.getDistribution(),
-				"PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION", folder);
-		return success;
-
+	
+	double[] r = new double[v.length];
+	Arrays.fill(r, 0.0);
+	
+	for(int i = 0; i < v.length; i++) {
+	    for(int j = 0; j < v.length; j++) {
+		r[i] = r[i] + m[i][j] * v[j];
+	    }
 	}
+	
+	return r;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.metrics.Metric#getSingles()
-	 */
-	@Override
-	public Single[] getSingles() {
-		Single nodes = new Single("PAGERANK_DISTRIBUTION_NODES", this.nodes);
-		Single edges = new Single("PAGERANK_DISTRIBUTION_EDGES", this.edges);
 
-		Single prMin = new Single("PAGERANK_DISTRIBUTION_MIN", this.prMin);
-		Single prMed = new Single("PAGERANK_DISTRIBUTION_MED", this.prMed);
-		Single prAvg = new Single("PAGERANK_DISTRIBUTION_AVG", this.prAvg);
-		Single prMax = new Single("PAGERANK_DISTRIBUTION_MAX", this.prMax);
-
-		return new Single[] { nodes, edges, prMin, prMed, prAvg, prMax };
-
+    /**
+     * @param s2
+     * @param alpha2
+     * @return
+     */
+    private double[][] multiplyMatrix(double[][] s1, double alpha2) {
+	for(int i = 0; i < s1.length; i++) {
+	    for(int j = 0; j < s1[0].length; j++) {
+		s1[i][j] = s1[i][j] * alpha2;
+	    }
 	}
+	
+	return s1;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.metrics.Metric#applicable(gtna.graph.Graph,
-	 * gtna.networks.Network, java.util.HashMap)
-	 */
-	@Override
-	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-		return true;
+
+    private double[][] addMatrices(double[][] s1, double[][] s2) {
+	double[][] t = new double[s1.length][s1[0].length];
+	for(int i = 0; i < s1.length; i++) {
+	    for(int j = 0; j < s1[0].length; j++) {
+		t[i][j] = s1[i][j] + s2[i][j];
+	    }
 	}
+	
+	return t;
+    }
 
-	private void calculateBaseMatrices(Graph g) {
-		H = new double[g.getNodeCount()][g.getNodeCount()];
-		A = new double[g.getNodeCount()][g.getNodeCount()];
-		S = new double[g.getNodeCount()][g.getNodeCount()];
-		G = new double[g.getNodeCount()][g.getNodeCount()];
-		ONE = new double[g.getNodeCount()][g.getNodeCount()];
-
-		initializeMatrix(H, 0);
-		initializeMatrix(A, 0);
-		initializeMatrix(S, 0);
-		initializeMatrix(G, 0);
-		initializeMatrix(ONE, 1);
-
-		Node[] nodes = g.getNodes();
-		for (Node n : nodes) {
-			int ni = n.getIndex();
-			if (n.getOutDegree() > 0) { // fill H as some outgoing links are
-										// present
-				double[] nch = H[ni];
-				int nod = n.getOutDegree();
-				for (int i : n.getOutgoingEdges()) {
-					nch[i] = (double) 1 / (double) nod; // set Hij = 1/li
-				}
-				H[ni] = nch;
-			} else { // fill A as no outgoing links are present
-				double[] nca = A[ni];
-				Arrays.fill(nca, 1 / g.getNodeCount());
-				A[ni] = nca;
-			}
-		}
-
-		S = addMatrices(H, A);
-		double[][] alphaS = multiplyMatrix(S, alpha);
-		double[][] jumpM = multiplyMatrix(ONE, 1 / g.getNodeCount());
-		jumpM = multiplyMatrix(ONE, 1 - alpha);
-		G = addMatrices(alphaS, jumpM);
-
+    /**
+     * @param a2
+     * @param i
+     */
+    private void initializeMatrix(double[][] M, int initValue) {
+	for(int i = 0; i < M.length; i++) {
+	   double[] mi = M[i];
+	   Arrays.fill(mi, initValue);
+	   M[i] = mi;
 	}
-
-	private double[] calculateMatrixVectorProduct(double[][] m, double[] v) {
-		if (m.length != v.length) {
-			throw new IllegalArgumentException(
-					"m/v dimensions are incompatible for the Matrix-Vector Multiplication");
-		}
-
-		double[] r = new double[v.length];
-		Arrays.fill(r, 0.0);
-
-		for (int i = 0; i < v.length; i++) {
-			for (int j = 0; j < v.length; j++) {
-				r[i] = r[i] + m[i][j] * v[j];
-			}
-		}
-
-		return r;
-	}
-
-	/**
-	 * @param s2
-	 * @param alpha2
-	 * @return
-	 */
-	private double[][] multiplyMatrix(double[][] s1, double alpha2) {
-		for (int i = 0; i < s1.length; i++) {
-			for (int j = 0; j < s1[0].length; j++) {
-				s1[i][j] = s1[i][j] * alpha2;
-			}
-		}
-
-		return s1;
-	}
-
-	private double[][] addMatrices(double[][] s1, double[][] s2) {
-		double[][] t = new double[s1.length][s1[0].length];
-		for (int i = 0; i < s1.length; i++) {
-			for (int j = 0; j < s1[0].length; j++) {
-				t[i][j] = s1[i][j] + s2[i][j];
-			}
-		}
-
-		return t;
-	}
-
-	/**
-	 * @param a2
-	 * @param i
-	 */
-	private void initializeMatrix(double[][] M, int initValue) {
-		for (int i = 0; i < M.length; i++) {
-			double[] mi = M[i];
-			Arrays.fill(mi, initValue);
-			M[i] = mi;
-		}
-	}
-
-	private double getMax(double[] dis) {
-		double max = 0;
-
-		for (double d : dis) {
-			max = Math.max(max, d);
-		}
-
-		return max;
-	}
-
-	private double getMin(double[] dis) {
-		double min = Double.MAX_VALUE;
-
-		for (double d : dis) {
-			min = Math.min(min, d);
-		}
-
-		return min;
-	}
-
-	private double getAvg(double[] dis) {
-		double sum = 0;
-
-		for (double d : dis) {
-			sum += d;
-		}
-
-		return sum / dis.length;
-	}
-
-	private double getMed(double[] dis) {
-		double[] s = dis;
-		double median;
-		Arrays.sort(s);
-
-		if (s.length % 2 != 0) {
-			// odd number of entries
-			median = dis[(int) Math.floor(dis.length / 2)];
-		} else {
-			// even number of entries
-			double umed = dis[(int) dis.length / 2 - 1];
-			double omed = dis[(int) dis.length / 2];
-
-			median = umed + (omed - umed) / 2;
-		}
-
-		return median;
-	}
+    }
 
 }
