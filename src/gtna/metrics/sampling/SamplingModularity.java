@@ -37,6 +37,7 @@ package gtna.metrics.sampling;
 
 import gtna.data.Single;
 import gtna.graph.Graph;
+<<<<<<< HEAD
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.io.DataWriter;
@@ -46,6 +47,13 @@ import gtna.transformation.sampling.Sample;
 import gtna.util.Distribution;
 
 import java.util.Arrays;
+=======
+import gtna.graph.Node;
+import gtna.metrics.Metric;
+import gtna.networks.Network;
+import gtna.transformation.sampling.Sample;
+
+>>>>>>> basic implementation of the computation of the sampling modularity
 import java.util.HashMap;
 import java.util.Set;
 
@@ -55,6 +63,7 @@ import java.util.Set;
  */
 public class SamplingModularity extends Metric {
 
+<<<<<<< HEAD
 	private int sampleIndex;
 	private double sampleModularity;
 	private double sampleEdges;
@@ -233,5 +242,102 @@ public class SamplingModularity extends Metric {
 			return false;
 		}
 	}
+=======
+    private int sampleIndex;
+    private double sampleModularity;
+
+    /**
+     * @param key
+     */
+    public SamplingModularity() {
+	super("SAMPLING_MODULARITY");
+	this.sampleIndex = 0;
+    }
+
+    /**
+     * @param key
+     * @param parameters
+     */
+    public SamplingModularity(int i) {
+	this();
+	this.sampleIndex = i;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gtna.metrics.Metric#computeData(gtna.graph.Graph,
+     * gtna.networks.Network, java.util.HashMap)
+     */
+    @Override
+    public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
+	Sample s = this.getSampleProperty(g);
+	
+	double sumDegrees = 0;
+	double withinEdgeSum = 0;
+	
+	Set<Integer> sample = s.getSampledIds();
+	for(Integer nodeId : sample) {
+	    Node node = g.getNode(nodeId);
+	    
+	    sumDegrees += node.getOutDegree();
+	    // count incoming edges? (incoming into the sample-community) TODO
+	    
+	    // count edges within the sample-community
+	    for(Integer outEdge : node.getOutgoingEdges()) {
+		if(sample.contains(outEdge)) {
+		    withinEdgeSum++;
+		}
+	    }
+	}
+	
+	sampleModularity = withinEdgeSum / sumDegrees;
+	
+	
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gtna.metrics.Metric#writeData(java.lang.String)
+     */
+    @Override
+    public boolean writeData(String folder) {
+	// TODO Auto-generated method stub
+	return false;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gtna.metrics.Metric#getSingles()
+     */
+    @Override
+    public Single[] getSingles() {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see gtna.metrics.Metric#applicable(gtna.graph.Graph,
+     * gtna.networks.Network, java.util.HashMap)
+     */
+    @Override
+    public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+	if (g.hasProperty("SAMPLE_" + sampleIndex)) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+    
+    
+    private Sample getSampleProperty(Graph g) {
+	return (Sample)g.getProperty("SAMPLE" + sampleIndex);
+    }
+>>>>>>> basic implementation of the computation of the sampling modularity
 
 }
