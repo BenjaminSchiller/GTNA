@@ -35,8 +35,6 @@
  */
 package gtna;
 
-import java.util.Arrays;
-
 import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
@@ -44,6 +42,7 @@ import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metric.centrality.PageRank;
 import gtna.metrics.Metric;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -65,6 +64,9 @@ import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
 >>>>>>> bugfix bc (1)
 =======
+=======
+import gtna.metrics.sampling.SamplingModularity;
+>>>>>>> Sampling Modularity implemented
 import gtna.networks.Network;
 <<<<<<< HEAD
 import gtna.networks.model.ErdosRenyi;
@@ -78,7 +80,11 @@ import gtna.networks.model.Regular;
 >>>>>>> normalization of the pr-vector
 =======
 import gtna.networks.model.BarabasiAlbert;
+<<<<<<< HEAD
 >>>>>>> small improvements using sampling bias
+=======
+import gtna.networks.model.ErdosRenyi;
+>>>>>>> Sampling Modularity implemented
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
@@ -88,6 +94,8 @@ import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.util.Config;
 import gtna.util.Stats;
+
+import java.util.Arrays;
 
 /**
  * @author Tim
@@ -101,6 +109,7 @@ public class Exploring {
 		
 		
 		boolean get = false; // get or generate
+<<<<<<< HEAD
 		int times = 2;		// how many generations?
 		boolean b = false; // bidirectional
 		
@@ -129,15 +138,21 @@ public class Exploring {
 		Network[] n = new Network[] {nw0};
 =======
 		boolean r = false;
+=======
+		int times = 1;		// how many generations?
+		boolean b = false; // bidirectional?
+		boolean r = false; // ring?
+>>>>>>> Sampling Modularity implemented
 		
 		SamplingAlgorithm a = SamplingAlgorithm.UNIFORMSAMPLING;
-		double sc = 0.75;
+		double sc = 0.2;
 		
 		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, false, 1, null);
-		Transformation[] t = new Transformation[100];
+		Transformation[] t = new Transformation[1];
 		
 		Arrays.fill(t, sa);
 		
+<<<<<<< HEAD
 <<<<<<< HEAD
 		Network nw0 = new ErdosRenyi(1000, 25, false, t);
 		Network nw1 = new ErdosRenyi(500, 25, false, t);
@@ -199,6 +214,9 @@ public class Exploring {
 		Network[] n = new Network[] {nw0, nw1 /*, nw2, nw3, nw4, nw5, nw6, nw7, nw8, nw9*/};
 =======
 		Network nw0 = new BarabasiAlbert(10000, 50, t);
+=======
+		Network nw0 = new BarabasiAlbert(100, 2, t);
+>>>>>>> Sampling Modularity implemented
 		Network nw1 = new BarabasiAlbert(10000, 100, t);
 		Network nw2 = new BarabasiAlbert(10000, 150, t);
 		Network nw3 = new BarabasiAlbert(10000, 200, t);
@@ -207,8 +225,12 @@ public class Exploring {
 >>>>>>> small improvements using sampling bias
 		
 		Metric[] metrics = new Metric[] { 
+<<<<<<< HEAD
 				new SamplingBias()
 >>>>>>> SamplingBias properties
+=======
+				new SamplingModularity()
+>>>>>>> Sampling Modularity implemented
 				};
 =======
 				new DegreeDistribution() };
@@ -226,6 +248,7 @@ public class Exploring {
 		Plotting.single(s, metrics, "example-s/");
 //
 		Plotting.multi(s, metrics, "example-m/");
+<<<<<<< HEAD
 <<<<<<< HEAD
 //		
 		
@@ -246,6 +269,10 @@ public class Exploring {
 =======
 //		 f#or(Network i : n){
 >>>>>>> small improvements using sampling bias
+=======
+//		 
+//		 for(Network i : n){
+>>>>>>> Sampling Modularity implemented
 //			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
 //			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
 //		 }
