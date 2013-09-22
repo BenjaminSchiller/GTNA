@@ -245,6 +245,10 @@ public class SamplingModularity extends Metric {
 =======
     private int sampleIndex;
     private double sampleModularity;
+    private double sampleEdges;
+    private int edges;
+    private int sampleNodes;
+    private int nodes;
 
     /**
      * @param key
@@ -291,6 +295,11 @@ public class SamplingModularity extends Metric {
 	    }
 	}
 	
+//	nodes = g.getNodeCount();
+//	sampleNodes = sample.size();
+//	edges = g.getEdges().size();
+//	sampleEdges = Math.abs(sumDegrees);
+	
 	sampleModularity = withinEdgeSum / sumDegrees;
 	
 	
@@ -304,8 +313,8 @@ public class SamplingModularity extends Metric {
      */
     @Override
     public boolean writeData(String folder) {
-	// TODO Auto-generated method stub
-	return false;
+	boolean success = true;
+	return success;
     }
 
     /*
@@ -315,8 +324,9 @@ public class SamplingModularity extends Metric {
      */
     @Override
     public Single[] getSingles() {
-	// TODO Auto-generated method stub
-	return null;
+	Single smSampleModularity = new Single("SAMPLING_MODULARITY_SAMPLING_MODULARITY", sampleModularity);
+	
+	return new Single[] {smSampleModularity};
     }
 
     /*
@@ -336,7 +346,7 @@ public class SamplingModularity extends Metric {
     
     
     private Sample getSampleProperty(Graph g) {
-	return (Sample)g.getProperty("SAMPLE" + sampleIndex);
+	return (Sample)g.getProperty("SAMPLE_" + sampleIndex);
     }
 >>>>>>> basic implementation of the computation of the sampling modularity
 
