@@ -35,17 +35,16 @@
  */
 package gtna;
 
-import java.util.Arrays;
-
 import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
-import gtna.metrics.sampling.SamplingBias;
+import gtna.metrics.sampling.SamplingModularity;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
+import gtna.networks.model.ErdosRenyi;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
@@ -54,6 +53,8 @@ import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.util.Config;
+
+import java.util.Arrays;
 
 /**
  * @author Tim
@@ -68,33 +69,18 @@ public class Exploring {
 		
 		boolean get = false; // get or generate
 		int times = 1;		// how many generations?
-		boolean b = false; // bidirectional
-		
-//		Transformation t = new Bidirectional();
-
-//		Network nw0 = new Regular(10, 2, true, false, null);
-//		Network nw1 = new ErdosRenyi(10, 3, false, null);
-//		Network nw2 = new BarabasiAlbert(10, 2, null);
-//		Network nw3 = new WattsStrogatz(10, 2, 0.2, null);
-//		Network nw4 = new CondonAndKarp(10, 2, 0.4, 0.05, null);
-//		Network nw5 = new Regular(100, 5, true, false, null);
-//		Network nw6 = new ErdosRenyi(100, 10, false, null);
-//		Network nw7 = new BarabasiAlbert(100, 10, null);
-//		Network nw8 = new WattsStrogatz(100, 6, 0.2, null);
-//		Network nw9 = new CondonAndKarp(100, 4, 0.4, 0.05, null);
-		
-
-		boolean r = false;
+		boolean b = false; // bidirectional?
+		boolean r = false; // ring?
 		
 		SamplingAlgorithm a = SamplingAlgorithm.UNIFORMSAMPLING;
-		double sc = 0.75;
+		double sc = 0.2;
 		
 		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, false, 1, null);
-		Transformation[] t = new Transformation[100];
+		Transformation[] t = new Transformation[1];
 		
 		Arrays.fill(t, sa);
 		
-		Network nw0 = new BarabasiAlbert(10000, 50, t);
+		Network nw0 = new BarabasiAlbert(100, 2, t);
 		Network nw1 = new BarabasiAlbert(10000, 100, t);
 		Network nw2 = new BarabasiAlbert(10000, 150, t);
 		Network nw3 = new BarabasiAlbert(10000, 200, t);
@@ -102,7 +88,7 @@ public class Exploring {
 		Network[] n = new Network[] {nw0 /*, nw1, nw2, nw3*/};
 		
 		Metric[] metrics = new Metric[] { 
-				new SamplingBias()
+				new SamplingModularity()
 				};
 		
 //		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
@@ -111,8 +97,8 @@ public class Exploring {
 		Plotting.single(s, metrics, "example-s/");
 
 		Plotting.multi(s, metrics, "example-m/");
-		 
-//		 f#or(Network i : n){
+//		 
+//		 for(Network i : n){
 //			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
 //			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
 //		 }
