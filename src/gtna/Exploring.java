@@ -35,13 +35,13 @@
  */
 package gtna;
 
-import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metric.centrality.PageRank;
 import gtna.metrics.Metric;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -86,6 +86,12 @@ import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.ErdosRenyi;
 >>>>>>> Sampling Modularity implemented
 import gtna.plot.Plotting;
+=======
+import gtna.metrics.basic.DegreeDistribution;
+import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
+import gtna.networks.model.GeneralizedCondonAndKarp;
+>>>>>>> testing different configurations for the generalized community model
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
@@ -152,6 +158,7 @@ public class Exploring {
 		
 		Arrays.fill(t, sa);
 		
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 		Network nw0 = new ErdosRenyi(1000, 25, false, t);
@@ -231,6 +238,19 @@ public class Exploring {
 =======
 				new SamplingModularity()
 >>>>>>> Sampling Modularity implemented
+=======
+//		Network nw1 = new Regular(30, 10, true, false, null);
+		Network nw1 = new ErdosRenyi(150, 7, false, null);
+		
+		Network[] nw = new Network[4];
+		Arrays.fill(nw, nw1);
+		Network nw0 = new GeneralizedCondonAndKarp(nw, 0.00005, t);
+		
+		Network[] n = new Network[] {nw0 /*, nw1*/};
+		
+		Metric[] metrics = new Metric[] { 
+				new DegreeDistribution()
+>>>>>>> testing different configurations for the generalized community model
 				};
 =======
 				new DegreeDistribution() };
@@ -242,6 +262,7 @@ public class Exploring {
 		
 =======
 //		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
+<<<<<<< HEAD
 		Series[] s = Series.generate(n, metrics, times);
 
 >>>>>>> SamplingBias properties
@@ -258,10 +279,19 @@ public class Exploring {
 <<<<<<< HEAD
 		/*
 >>>>>>> complete implementation: Assortativity coefficient (Newman, 2002, Assortative Mixing in Networks)
+=======
+//		Series[] s = Series.generate(n, metrics, times);
+//
+//		Plotting.single(s, metrics, "example-s/");
+//
+//		Plotting.multi(s, metrics, "example-m/");
+////		 
+>>>>>>> testing different configurations for the generalized community model
 		 for(Network i : n){
 			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
 			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
 		 }
+<<<<<<< HEAD
 		 */
 		
 =======
@@ -277,6 +307,8 @@ public class Exploring {
 //			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
 //		 }
 >>>>>>> SamplingBias properties
+=======
+>>>>>>> testing different configurations for the generalized community model
 	}
 	
 	
