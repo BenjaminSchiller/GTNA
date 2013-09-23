@@ -35,9 +35,12 @@
  */
 package gtna;
 
+<<<<<<< HEAD
 import gtna.data.Series;
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+>>>>>>> testing different configurations for the generalized community model
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
@@ -54,6 +57,7 @@ import gtna.metric.centrality.PageRank;
 import gtna.io.graphWriter.GtnaGraphWriter;
 >>>>>>> fixes:
 import gtna.metrics.Metric;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -180,6 +184,12 @@ import gtna.networks.model.ErdosRenyi;
 >>>>>>> Sampling Modularity implemented
 import gtna.plot.Plotting;
 >>>>>>> added relative eccentricity / effective diameter
+=======
+import gtna.metrics.basic.DegreeDistribution;
+import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
+import gtna.networks.model.GeneralizedCondonAndKarp;
+>>>>>>> testing different configurations for the generalized community model
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
@@ -369,6 +379,7 @@ public class Exploring {
 		
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> SamplingBias properties
 		Network nw0 = new ErdosRenyi(1000, 25, false, t);
 		Network nw1 = new ErdosRenyi(500, 25, false, t);
@@ -470,6 +481,16 @@ public class Exploring {
 		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
 		
 		Network[] ws1 = ZhouMondragon.get(50, new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6}, 7, null);
+=======
+//		Network nw1 = new Regular(30, 10, true, false, null);
+		Network nw1 = new ErdosRenyi(150, 7, false, null);
+		
+		Network[] nw = new Network[4];
+		Arrays.fill(nw, nw1);
+		Network nw0 = new GeneralizedCondonAndKarp(nw, 0.00005, t);
+		
+		Network[] n = new Network[] {nw0 /*, nw1*/};
+>>>>>>> testing different configurations for the generalized community model
 		
 		Network[] nw = new Network[2];
 		Arrays.fill(nw, nw1);
@@ -534,6 +555,7 @@ public class Exploring {
 =======
 		Metric[] metrics = new Metric[] { 
 <<<<<<< HEAD
+<<<<<<< HEAD
 //				new DegreeDistribution(),
 //				new ClusteringCoefficient(),
 <<<<<<< HEAD
@@ -558,6 +580,9 @@ public class Exploring {
 =======
 				new SamplingModularity()
 >>>>>>> Sampling Modularity implemented
+=======
+				new DegreeDistribution()
+>>>>>>> testing different configurations for the generalized community model
 				};
 =======
 				new DegreeDistribution() };
@@ -634,6 +659,7 @@ public class Exploring {
 >>>>>>> added relative eccentricity / effective diameter
 =======
 //		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
+<<<<<<< HEAD
 >>>>>>> SamplingBias properties
 		Series[] s = Series.generate(n, metrics, times);
 
@@ -884,10 +910,19 @@ public class Exploring {
 =======
 		/*
 >>>>>>> complete implementation: Assortativity coefficient (Newman, 2002, Assortative Mixing in Networks)
+=======
+//		Series[] s = Series.generate(n, metrics, times);
+//
+//		Plotting.single(s, metrics, "example-s/");
+//
+//		Plotting.multi(s, metrics, "example-m/");
+////		 
+>>>>>>> testing different configurations for the generalized community model
 		 for(Network i : n){
 			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
 			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
 		 }
+<<<<<<< HEAD
 		 */
 		
 =======
@@ -903,6 +938,8 @@ public class Exploring {
 //			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
 //		 }
 >>>>>>> SamplingBias properties
+=======
+>>>>>>> testing different configurations for the generalized community model
 	}
 	
 	
