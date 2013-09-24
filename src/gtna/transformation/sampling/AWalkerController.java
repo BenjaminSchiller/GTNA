@@ -43,6 +43,7 @@ import java.util.Random;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.transformation.sampling.sample.NetworkSample;
 import gtna.util.parameter.Parameter;
 
 /**
