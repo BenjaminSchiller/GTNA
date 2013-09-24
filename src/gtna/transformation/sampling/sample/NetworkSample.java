@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.transformation.sampling;
+package gtna.transformation.sampling.sample;
 
 import gtna.graph.Node;
 import gtna.util.parameter.Parameter;

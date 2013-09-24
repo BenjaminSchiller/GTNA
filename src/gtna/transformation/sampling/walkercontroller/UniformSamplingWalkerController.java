@@ -44,8 +44,8 @@ import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 import gtna.transformation.sampling.AWalkerController;
 import gtna.transformation.sampling.CandidateFilter;
-import gtna.transformation.sampling.NetworkSample;
 import gtna.transformation.sampling.StartNodeSelector;
+import gtna.transformation.sampling.sample.NetworkSample;
 
 /**
  * @author Tim
