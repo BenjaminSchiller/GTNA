@@ -41,6 +41,7 @@ import java.util.Random;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
+import gtna.transformation.sampling.sample.NetworkSample;
 import gtna.util.DeterministicRandom;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;

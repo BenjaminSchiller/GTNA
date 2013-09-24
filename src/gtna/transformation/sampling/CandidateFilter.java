@@ -36,6 +36,7 @@
 package gtna.transformation.sampling;
 
 import gtna.graph.Node;
+import gtna.transformation.sampling.sample.NetworkSample;
 
 import java.util.ArrayList;
 import java.util.Collection;
