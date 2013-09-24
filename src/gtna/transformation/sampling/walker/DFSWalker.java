@@ -48,10 +48,14 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.transformation.sampling.sample.NetworkSample;
 =======
 import gtna.transformation.sampling.NetworkSample;
 >>>>>>> added DFSWalker
+=======
+import gtna.transformation.sampling.sample.NetworkSample;
+>>>>>>> refactoring to allow multiple types of sample
 
 /**
  * @author Tim

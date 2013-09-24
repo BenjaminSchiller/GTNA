@@ -44,6 +44,9 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> refactoring to allow multiple types of sample
 import gtna.transformation.sampling.sample.NetworkSample;
 import gtna.util.DeterministicRandom;
 import gtna.util.parameter.BooleanParameter;

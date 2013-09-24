@@ -41,6 +41,9 @@ import gtna.graph.GraphProperty;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> refactoring to allow multiple types of sample
 import gtna.transformation.sampling.sample.NetworkSample;
 import gtna.util.DeterministicRandom;
 

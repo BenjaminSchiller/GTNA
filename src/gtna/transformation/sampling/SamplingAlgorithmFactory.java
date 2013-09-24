@@ -89,6 +89,7 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import gtna.transformation.sampling.sample.NetworkSample;
 import gtna.transformation.sampling.sampler.RoundBasedVisitedNodeSampler;
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
 import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;

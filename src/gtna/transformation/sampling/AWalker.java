@@ -41,10 +41,13 @@ package gtna.transformation.sampling;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.sample.NetworkSample;
+<<<<<<< HEAD
 =======
 import gtna.graph.Graph;
 import gtna.graph.Node;
 >>>>>>> Default implementation awalker
+=======
+>>>>>>> refactoring to allow multiple types of sample
 import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
