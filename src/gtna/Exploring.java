@@ -89,15 +89,19 @@ import gtna.plot.Plotting;
 =======
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.networks.Network;
-import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GeneralizedCondonAndKarp;
+<<<<<<< HEAD
 >>>>>>> testing different configurations for the generalized community model
+=======
+import gtna.networks.model.Regular;
+>>>>>>> small fixes to allow tests of the new sampling model
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
+import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
 import gtna.util.Config;
 import gtna.util.Stats;
 
@@ -150,13 +154,20 @@ public class Exploring {
 		boolean r = false; // ring?
 >>>>>>> Sampling Modularity implemented
 		
-		SamplingAlgorithm a = SamplingAlgorithm.UNIFORMSAMPLING;
-		double sc = 0.2;
+		SamplingAlgorithm a = SamplingAlgorithm.BFS;
+		double sc = 0.8;
 		
-		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, false, 1, null);
-		Transformation[] t = new Transformation[1];
+		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, false, 1, new Long(0), true);
+		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, false, 1, new Long(0), false);
+		Transformation[] t = new Transformation[3];
+		
+		
 		
 		Arrays.fill(t, sa);
+		t[0] = sa;
+		t[1] = sa2;
+		t[2] = new ColoredHeatmapSampledSubgraph();
+		
 		
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -240,9 +251,9 @@ public class Exploring {
 >>>>>>> Sampling Modularity implemented
 =======
 //		Network nw1 = new Regular(30, 10, true, false, null);
-		Network nw1 = new ErdosRenyi(150, 7, false, null);
+		Network nw1 = new Regular(20, 2, true, false, t);
 		
-		Network[] nw = new Network[4];
+		Network[] nw = new Network[2];
 		Arrays.fill(nw, nw1);
 		Network nw0 = new GeneralizedCondonAndKarp(nw, 0.00005, t);
 		
@@ -289,7 +300,7 @@ public class Exploring {
 >>>>>>> testing different configurations for the generalized community model
 		 for(Network i : n){
 			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
-			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times);
+			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times, t);
 		 }
 <<<<<<< HEAD
 		 */
@@ -312,7 +323,7 @@ public class Exploring {
 	}
 	
 	
-	public static void plot(Network nw, String filename, int times) {
+	public static void plot(Network nw, String filename, int times, Transformation[] t) {
 		Transformation t_rpid = new RandomPlaneIDSpaceSimple(1, 100, 100, true);
 		Transformation t_rrid = new RandomRingIDSpaceSimple(true);
 		Transformation t_crid = new ConsecutiveRingIDSpace(true);
@@ -340,6 +351,10 @@ public class Exploring {
 			String graphFilename = filename;
 			
 			Graph g = nw.generate();
+			
+			for(Transformation ti : t){
+				g = ti.transform(g);
+			}
 			
 			g = t_nid.transform(g);
 	
