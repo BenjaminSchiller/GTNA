@@ -76,6 +76,7 @@ public class SamplingController extends Transformation {
 
 	public SamplingController(String algorithm, AWalkerController awc,
 <<<<<<< HEAD
+<<<<<<< HEAD
 			ASampler as, StartNodeSelector asns, NetworkSample ns, double scaledown,
 			int dimension, boolean revisiting, Long randomSeed) {
 		this(algorithm, awc, as, asns, ns, scaledown, dimension, revisiting);
@@ -84,6 +85,11 @@ public class SamplingController extends Transformation {
 			int dimension, boolean revisiting, Long randomSeed) {
 		this(algorithm, awc, as, asns, scaledown, dimension, revisiting);
 >>>>>>> small improvements using sampling bias
+=======
+			ASampler as, StartNodeSelector asns, NetworkSample ns, double scaledown,
+			int dimension, boolean revisiting, Long randomSeed) {
+		this(algorithm, awc, as, asns, ns, scaledown, dimension, revisiting);
+>>>>>>> implementation of the NetworkSampleWithNeighborSet
 		if (randomSeed != null)
 			this.setRng(new DeterministicRandom(randomSeed));
 
@@ -107,10 +113,14 @@ public class SamplingController extends Transformation {
 	 */
 	public SamplingController(String algorithm, AWalkerController awc,
 <<<<<<< HEAD
+<<<<<<< HEAD
 			ASampler as, StartNodeSelector asns, NetworkSample ns, double scaledown,
 =======
 			ASampler as, StartNodeSelector asns, double scaledown,
 >>>>>>> small improvements using sampling bias
+=======
+			ASampler as, StartNodeSelector asns, NetworkSample ns, double scaledown,
+>>>>>>> implementation of the NetworkSampleWithNeighborSet
 			int dimension, boolean revisiting) {
 		super("SAMPLING", new Parameter[] {
 				new StringParameter("ALGORITHM", algorithm), awc, as, asns,
@@ -139,11 +149,15 @@ public class SamplingController extends Transformation {
 		this.walkerController = awc;
 		this.startNodeSelector = asns;
 <<<<<<< HEAD
+<<<<<<< HEAD
 		this.networkSample = ns;
 =======
 		this.networkSample = new NetworkSample(algorithm, scaledown, dimension,
 				revisiting);
 >>>>>>> small improvements using sampling bias
+=======
+		this.networkSample = ns;
+>>>>>>> implementation of the NetworkSampleWithNeighborSet
 
 	}
 
@@ -237,16 +251,12 @@ public class SamplingController extends Transformation {
 		} else {
 			this.setGraph(g);
 			sampleGraph(g);
-			// TEST
-			System.out.println("\n> Sampled " + networkSample.getSampleSize()
-					+ " out of " + g.getNodeCount() + " nodes.");
-			System.out.println("\n\n> Mapping: \n" + networkSample.toString());
-
 			int[] sn = collectStartNodeIndices();
+
 			Sample s = new Sample(networkSample, sn, rng);
 			g.addProperty(g.getNextKey("SAMPLE"), s);
 
-			networkSample = new NetworkSample();
+			networkSample = networkSample.cleanInstance();
 			this.setGraph(null);
 			return g;
 		}
@@ -716,9 +726,12 @@ public class SamplingController extends Transformation {
 >>>>>>> small improvements using sampling bias
 		} while (running);
 
+		networkSample.finalize(g);
+		
 		return true;
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> Class Structure
@@ -733,6 +746,10 @@ public class SamplingController extends Transformation {
 		Collection<Node> chosenNodes = sampler
 				.sampleOneStepNodes(maxNodesInThisRound);
 =======
+=======
+	
+
+>>>>>>> implementation of the NetworkSampleWithNeighborSet
 	/**
 	 * Sample eventually nodes in the specified round
 	 * 
