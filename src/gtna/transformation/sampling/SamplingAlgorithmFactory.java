@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import gtna.transformation.sampling.sample.NetworkSample;
+import gtna.transformation.sampling.sample.NetworkSampleWithNeighborSet;
 import gtna.transformation.sampling.sampler.RoundBasedVisitedNodeSampler;
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
 import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
@@ -90,7 +91,7 @@ public class SamplingAlgorithmFactory {
      * @return
      */
     public static SamplingController getInstanceOf(SamplingAlgorithm sg,
-	    double scaledown, boolean revisiting, int dimension, Long randomSeed) {
+	    double scaledown, boolean revisiting, int dimension, Long randomSeed, boolean standardSampling) {
 	SamplingController sc;
 	ASampler as;
 	AWalker aw;
@@ -295,7 +296,12 @@ public class SamplingAlgorithmFactory {
 		default:
 			throw new IllegalArgumentException("Not supported algorithm");
 	}
-	sc = new SamplingController(algorithm, awc, as, sns, scaledown,
+	
+	if(standardSampling){
+	ns = new NetworkSample(algorithm, scaledown, dimension,
+			revisiting);}else{ns = new NetworkSampleWithNeighborSet(algorithm, scaledown, dimension,
+					revisiting);}
+	sc = new SamplingController(algorithm, awc, as, sns, ns, scaledown,
 		dimension, revisiting, randomSeed);
 	
 	awc.setSamplingController(sc);
