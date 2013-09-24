@@ -38,6 +38,7 @@ package gtna.transformation.sampling;
 import gtna.graph.GraphProperty;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
+import gtna.transformation.sampling.sample.NetworkSample;
 import gtna.util.DeterministicRandom;
 
 import java.util.ArrayList;
