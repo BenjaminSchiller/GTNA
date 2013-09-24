@@ -69,9 +69,9 @@ public class SamplingController extends Transformation {
 	private Random rng;
 
 	public SamplingController(String algorithm, AWalkerController awc,
-			ASampler as, StartNodeSelector asns, double scaledown,
+			ASampler as, StartNodeSelector asns, NetworkSample ns, double scaledown,
 			int dimension, boolean revisiting, Long randomSeed) {
-		this(algorithm, awc, as, asns, scaledown, dimension, revisiting);
+		this(algorithm, awc, as, asns, ns, scaledown, dimension, revisiting);
 		if (randomSeed != null)
 			this.setRng(new DeterministicRandom(randomSeed));
 
@@ -94,7 +94,7 @@ public class SamplingController extends Transformation {
 	 *            revisiting algorithm
 	 */
 	public SamplingController(String algorithm, AWalkerController awc,
-			ASampler as, StartNodeSelector asns, double scaledown,
+			ASampler as, StartNodeSelector asns, NetworkSample ns, double scaledown,
 			int dimension, boolean revisiting) {
 		super("SAMPLING", new Parameter[] {
 				new StringParameter("ALGORITHM", algorithm), awc, as, asns,
@@ -122,8 +122,7 @@ public class SamplingController extends Transformation {
 		this.sampler = as;
 		this.walkerController = awc;
 		this.startNodeSelector = asns;
-		this.networkSample = new NetworkSample(algorithm, scaledown, dimension,
-				revisiting);
+		this.networkSample = ns;
 
 	}
 
@@ -139,16 +138,12 @@ public class SamplingController extends Transformation {
 		} else {
 			this.setGraph(g);
 			sampleGraph(g);
-			// TEST
-			System.out.println("\n> Sampled " + networkSample.getSampleSize()
-					+ " out of " + g.getNodeCount() + " nodes.");
-			System.out.println("\n\n> Mapping: \n" + networkSample.toString());
-
 			int[] sn = collectStartNodeIndices();
+
 			Sample s = new Sample(networkSample, sn, rng);
 			g.addProperty(g.getNextKey("SAMPLE"), s);
 
-			networkSample = new NetworkSample();
+			networkSample = networkSample.cleanInstance();
 			this.setGraph(null);
 			return g;
 		}
@@ -257,8 +252,12 @@ public class SamplingController extends Transformation {
 			round++;
 		} while (running);
 
+		networkSample.finalize(g);
+		
 		return true;
 	}
+
+	
 
 	/**
 	 * Sample eventually nodes in the specified round
