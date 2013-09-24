@@ -58,6 +58,7 @@ import gtna.transformation.sampling.AWalkerController;
 import gtna.transformation.sampling.CandidateFilter;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.transformation.sampling.StartNodeSelector;
 import gtna.transformation.sampling.sample.NetworkSample;
 
@@ -126,6 +127,10 @@ import gtna.transformation.sampling.NetworkSample;
 =======
 import gtna.transformation.sampling.StartNodeSelector;
 >>>>>>> testing & bugfixing (2)
+=======
+import gtna.transformation.sampling.StartNodeSelector;
+import gtna.transformation.sampling.sample.NetworkSample;
+>>>>>>> refactoring to allow multiple types of sample
 
 /**
  * @author Tim

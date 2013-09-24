@@ -55,12 +55,16 @@ import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.transformation.sampling.sample.NetworkSample;
 =======
 >>>>>>> started BFS implementation. known bug:  java.lang.OutOfMemoryError: Java heap space @ resolveCandidates
 =======
 import gtna.transformation.sampling.NetworkSample;
 >>>>>>> fixed bfs
+=======
+import gtna.transformation.sampling.sample.NetworkSample;
+>>>>>>> refactoring to allow multiple types of sample
 
 /**
  * @author Tim

@@ -55,10 +55,14 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.transformation.sampling.sample.NetworkSample;
 =======
 import gtna.transformation.sampling.NetworkSample;
 >>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
+=======
+import gtna.transformation.sampling.sample.NetworkSample;
+>>>>>>> refactoring to allow multiple types of sample
 
 /**
  * @author Tim

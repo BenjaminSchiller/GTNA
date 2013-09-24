@@ -39,9 +39,12 @@ package gtna.transformation.sampling;
 <<<<<<< HEAD
 import gtna.graph.Node;
 import gtna.transformation.sampling.sample.NetworkSample;
+<<<<<<< HEAD
 =======
 import gtna.graph.Node;
 >>>>>>> CandidateFilter default implementation
+=======
+>>>>>>> refactoring to allow multiple types of sample
 
 import java.util.ArrayList;
 import java.util.Collection;
