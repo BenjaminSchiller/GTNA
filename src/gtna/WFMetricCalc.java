@@ -130,6 +130,9 @@ public class WFMetricCalc {
 		System.exit(0);
 	    }
 	}
+	
+	Config.overwrite("MAIN_DATA_FOLDER", targetdir + "data/");
+	Config.overwrite("MAIN_PLOT_FOLDER", targetdir + "plots/");
 
 	ReadableFolder rf = new ReadableFolder(name, dir, dir, suffix, null);
 	// current index is 0!
