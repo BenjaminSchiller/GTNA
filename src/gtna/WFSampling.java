@@ -35,15 +35,21 @@
  */
 package gtna;
 
+import gtna.drawing.Gephi;
 import gtna.graph.Graph;
+import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.networks.util.ReadableFolder;
 import gtna.transformation.Transformation;
+import gtna.transformation.id.ConsecutiveRingIDSpace;
+import gtna.transformation.id.RandomPlaneIDSpaceSimple;
+import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.transformation.sampling.subgraph.ColorSampledSubgraph;
 import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
 import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
+import gtna.util.Config;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -70,6 +76,8 @@ public class WFSampling {
     private static String srcdir;
     private static String suffix = "";
     private static String targetdir;
+    private static boolean withNeigborSet;
+    private static boolean plotting = false;
 
     /**
      * @param args
@@ -115,9 +123,58 @@ public class WFSampling {
 		g = samplingTransformation[1].transform(g); // subgraph
 							    // generation/coloring
 
-		writeGraphToFile(g, targetdir + g.getName() + "_" + j);
+		writeGraphToFile(g, targetdir , g.getName() + "_" + j);
+		if (plotting)
+		    plotGraph(g, targetdir + "plots/", g.getName() + "_" + j);
 	    }
 	}
+
+    }
+
+    /**
+     * @param g
+     * @param string
+     */
+    private static void plotGraph(Graph g, String dir, String filename) {
+	
+	File d = new File(dir);
+	if(!d.exists() || !d.isDirectory()) {
+	    d.mkdirs();
+	}
+	
+	filename = dir + filename;
+	
+	Transformation t_rpid = new RandomPlaneIDSpaceSimple(1, 100, 100, true);
+	Transformation t_rrid = new RandomRingIDSpaceSimple(true);
+	Transformation t_crid = new ConsecutiveRingIDSpace(true);
+
+	Transformation t_nid = t_crid;
+
+	Gephi gephi = new Gephi();
+	if (t_nid == t_rpid) {
+	    Config.overwrite("GEPHI_RING_RADIUS", "1");
+	    Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.01");
+	    Config.overwrite("GEPHI_EDGE_SCALE", "0.001");
+	    Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
+	    Config.overwrite("GEPHI_NODE_SIZE", "0.1");
+	} else if (t_nid == t_rrid || t_nid == t_crid) {
+	    Config.overwrite("GEPHI_RING_RADIUS", "50");
+	    Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.01");
+	    Config.overwrite("GEPHI_EDGE_SCALE", "0.001");
+	    Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
+	    Config.overwrite("GEPHI_NODE_SIZE", "0.001");
+	}
+
+	
+
+	g = t_nid.transform(g);
+
+	IdentifierSpace ids = (IdentifierSpace) g.getProperty("ID_SPACE_0");
+
+	// new GtnaGraphWriter().writeWithProperties(g, graphFilename+".txt");
+	// // writing is already done
+
+	gephi.plot(g, ids, filename + ".pdf");
 
     }
 
@@ -126,10 +183,8 @@ public class WFSampling {
      */
     private static boolean initialized() {
 
-	if (dim == null || dim > 1 || dir == null ||
-		srcdir == null || 
-		targetdir == null||  
-		scaledown == null) {
+	if (dim == null || dim > 1 || dir == null || srcdir == null
+		|| targetdir == null || scaledown == null) {
 	    return false;
 	}
 
@@ -148,7 +203,9 @@ public class WFSampling {
 	    SamplingAlgorithm alg, double sd, int dimension,
 	    boolean revisiting, Long randomSeed) {
 	Transformation samplingalgorithm = SamplingAlgorithmFactory
-		.getInstanceOf(alg, sd, revisiting, dimension, randomSeed);
+		.getInstanceOf(alg, sd, revisiting, dimension, randomSeed,
+			!withNeigborSet);
+
 	return samplingalgorithm;
     }
 
@@ -169,6 +226,12 @@ public class WFSampling {
 		rev = true;
 	    } else {
 		rev = false;
+	    }
+	} else if (s.startsWith("sampleNeighborSet=")) {
+	    if (s.equalsIgnoreCase("sampleNeighborSet=true")) {
+		withNeigborSet = true;
+	    } else {
+		withNeigborSet = false;
 	    }
 	} else if (s.startsWith("dim=")) {
 	    dim = Integer.parseInt(s.substring(4));
@@ -206,11 +269,23 @@ public class WFSampling {
 	    String[] se = seq.split("-");
 	    startIndex = Integer.parseInt(se[0]);
 	    endIndex = Integer.parseInt(se[1]);
+	} else if (s.startsWith("plot=")) {
+	    if (s.equalsIgnoreCase("plot=true")) {
+		plotting = true;
+	    } else {
+		plotting = false;
+	    }
 	}
 
     }
 
-    private static String writeGraphToFile(Graph g, String filename) {
+    private static String writeGraphToFile(Graph g, String dir, String filename) {
+	File d = new File(dir);
+	if(!d.exists() || !d.isDirectory()) {
+	    d.mkdirs();
+	}
+	
+	filename = dir + filename;
 	new GtnaGraphWriter().writeWithProperties(g, filename);
 	return filename;
     }
