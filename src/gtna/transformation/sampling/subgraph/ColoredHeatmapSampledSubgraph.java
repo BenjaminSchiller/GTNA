@@ -35,24 +35,21 @@
  */
 package gtna.transformation.sampling.subgraph;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import apple.awt.ClientPropertyApplicator.Property;
 import gtna.drawing.NodeColors;
-import gtna.graph.Edge;
-import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.Sample;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Tim
@@ -64,7 +61,9 @@ public class ColoredHeatmapSampledSubgraph extends Transformation {
      * @param key
      */
     public ColoredHeatmapSampledSubgraph() {
-	super("HEATMAP_SAMPLED_GRAPH");
+	super("SUBGRAPH", new Parameter[] {
+		new StringParameter("SUBGPRAPHFUNCTION", "heatmap") 
+	});
     }
 
     private Color base = Color.YELLOW;

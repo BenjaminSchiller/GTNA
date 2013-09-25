@@ -35,18 +35,17 @@
  */
 package gtna.transformation.sampling.subgraph;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import apple.awt.ClientPropertyApplicator.Property;
-import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.Sample;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Tim
@@ -58,7 +57,9 @@ public class ExtractSampledSubgraph extends Transformation {
      * @param key
      */
     public ExtractSampledSubgraph() {
-	super("GENERATE_SAMPLED_GRAPH");
+	super("SUBGRAPH", new Parameter[] {
+		new StringParameter("SUBGPRAPHFUNCTION", "extract")
+	});
     }
 
     /*
