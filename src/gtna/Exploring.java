@@ -35,15 +35,24 @@
  */
 package gtna;
 
+import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
+import gtna.metrics.basic.Assortativity;
+import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
+import gtna.metrics.basic.ShortestPaths;
+import gtna.metrics.centrality.BetweennessCentrality;
+import gtna.metrics.centrality.PageRank;
+import gtna.metrics.sampling.SamplingBias;
+import gtna.metrics.sampling.SamplingModularity;
 import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GeneralizedCondonAndKarp;
-import gtna.networks.model.Regular;
+import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
@@ -87,29 +96,36 @@ public class Exploring {
 		
 		
 //		Network nw1 = new Regular(30, 10, true, false, null);
-		Network nw1 = new Regular(20, 2, true, false, t);
+		Network nw1 = new ErdosRenyi(2000, 10, false, t);
 		
 		Network[] nw = new Network[2];
 		Arrays.fill(nw, nw1);
 		Network nw0 = new GeneralizedCondonAndKarp(nw, 0.00005, t);
 		
-		Network[] n = new Network[] {nw0 /*, nw1*/};
+		Network[] n = new Network[] {nw1 /*, nw1*/};
 		
 		Metric[] metrics = new Metric[] { 
-				new DegreeDistribution()
+				new DegreeDistribution(),
+				new ClusteringCoefficient(),
+				new ShortestPaths(),
+				new BetweennessCentrality(),
+				new Assortativity(),
+				new SamplingBias(),
+				new PageRank(),
+				new SamplingModularity()
 				};
 		
 //		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
-//		Series[] s = Series.generate(n, metrics, times);
-//
-//		Plotting.single(s, metrics, "example-s/");
-//
-//		Plotting.multi(s, metrics, "example-m/");
+		Series[] s = Series.generate(n, metrics, times);
+
+		Plotting.single(s, metrics, "example-s/");
+
+		Plotting.multi(s, metrics, "example-m/");
 ////		 
-		 for(Network i : n){
-			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
-			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times, t);
-		 }
+//		 for(Network i : n){
+//			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
+//			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times, t);
+//		 }
 	}
 	
 	
