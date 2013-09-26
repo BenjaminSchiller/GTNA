@@ -35,12 +35,14 @@
  */
 package gtna;
 
+import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metric.centrality.PageRank;
 import gtna.metrics.Metric;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -87,14 +89,28 @@ import gtna.networks.model.ErdosRenyi;
 >>>>>>> Sampling Modularity implemented
 import gtna.plot.Plotting;
 =======
+=======
+import gtna.metrics.basic.Assortativity;
+import gtna.metrics.basic.ClusteringCoefficient;
+>>>>>>> plotting for example plots
 import gtna.metrics.basic.DegreeDistribution;
+import gtna.metrics.basic.ShortestPaths;
+import gtna.metrics.centrality.BetweennessCentrality;
+import gtna.metrics.centrality.PageRank;
+import gtna.metrics.sampling.SamplingBias;
+import gtna.metrics.sampling.SamplingModularity;
 import gtna.networks.Network;
+import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GeneralizedCondonAndKarp;
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> testing different configurations for the generalized community model
 =======
 import gtna.networks.model.Regular;
 >>>>>>> small fixes to allow tests of the new sampling model
+=======
+import gtna.plot.Plotting;
+>>>>>>> plotting for example plots
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
@@ -251,17 +267,28 @@ public class Exploring {
 >>>>>>> Sampling Modularity implemented
 =======
 //		Network nw1 = new Regular(30, 10, true, false, null);
-		Network nw1 = new Regular(20, 2, true, false, t);
+		Network nw1 = new ErdosRenyi(2000, 10, false, t);
 		
 		Network[] nw = new Network[2];
 		Arrays.fill(nw, nw1);
 		Network nw0 = new GeneralizedCondonAndKarp(nw, 0.00005, t);
 		
-		Network[] n = new Network[] {nw0 /*, nw1*/};
+		Network[] n = new Network[] {nw1 /*, nw1*/};
 		
 		Metric[] metrics = new Metric[] { 
+<<<<<<< HEAD
 				new DegreeDistribution()
 >>>>>>> testing different configurations for the generalized community model
+=======
+				new DegreeDistribution(),
+				new ClusteringCoefficient(),
+				new ShortestPaths(),
+				new BetweennessCentrality(),
+				new Assortativity(),
+				new SamplingBias(),
+				new PageRank(),
+				new SamplingModularity()
+>>>>>>> plotting for example plots
 				};
 =======
 				new DegreeDistribution() };
@@ -273,6 +300,7 @@ public class Exploring {
 		
 =======
 //		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
+<<<<<<< HEAD
 <<<<<<< HEAD
 		Series[] s = Series.generate(n, metrics, times);
 
@@ -320,6 +348,18 @@ public class Exploring {
 >>>>>>> SamplingBias properties
 =======
 >>>>>>> testing different configurations for the generalized community model
+=======
+		Series[] s = Series.generate(n, metrics, times);
+
+		Plotting.single(s, metrics, "example-s/");
+
+		Plotting.multi(s, metrics, "example-m/");
+////		 
+//		 for(Network i : n){
+//			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
+//			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times, t);
+//		 }
+>>>>>>> plotting for example plots
 	}
 	
 	
