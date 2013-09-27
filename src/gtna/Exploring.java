@@ -39,7 +39,6 @@ import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
-import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.Assortativity;
 import gtna.metrics.basic.ClusteringCoefficient;
@@ -49,9 +48,13 @@ import gtna.metrics.centrality.BetweennessCentrality;
 import gtna.metrics.centrality.PageRank;
 import gtna.metrics.sampling.SamplingBias;
 import gtna.metrics.sampling.SamplingModularity;
+import gtna.metrics.sampling.SamplingRevisitFrequency;
+import gtna.metrics.util.DegreeDistributionComparator;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GeneralizedCondonAndKarp;
+import gtna.networks.model.WattsStrogatz;
+import gtna.networks.model.ZhouMondragon;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
@@ -76,15 +79,15 @@ public class Exploring {
 		
 		
 		boolean get = false; // get or generate
-		int times = 1;		// how many generations?
+		int times = 5;		// how many generations?
 		boolean b = false; // bidirectional?
 		boolean r = false; // ring?
 		
 		SamplingAlgorithm a = SamplingAlgorithm.BFS;
-		double sc = 0.8;
+		double sc = 0.2;
 		
-		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, false, 1, new Long(0), true);
-		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, false, 1, new Long(0), false);
+		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null, true);
+		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, new Long(0), false);
 		Transformation[] t = new Transformation[3];
 		
 		
@@ -92,27 +95,38 @@ public class Exploring {
 		Arrays.fill(t, sa);
 		t[0] = sa;
 		t[1] = sa2;
-		t[2] = new ColoredHeatmapSampledSubgraph();
+		t[t.length-1] = new ColoredHeatmapSampledSubgraph();
 		
 		
 //		Network nw1 = new Regular(30, 10, true, false, null);
-		Network nw1 = new ErdosRenyi(2000, 10, false, t);
+		Network nw3 = new ErdosRenyi(1000, 10, false, t);
+		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
+		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
+		
+		Network[] ws1 = ZhouMondragon.get(50, new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6}, 7, null);
 		
 		Network[] nw = new Network[2];
 		Arrays.fill(nw, nw1);
 		Network nw0 = new GeneralizedCondonAndKarp(nw, 0.00005, t);
 		
-		Network[] n = new Network[] {nw1 /*, nw1*/};
+		Network[] n = new Network[] {nw3};
+//		Network[] n = ws1;
+		
+		DegreeDistribution m = new DegreeDistribution();
+		m.computeData(nw3.generate(), nw3, null);
+		
 		
 		Metric[] metrics = new Metric[] { 
-				new DegreeDistribution(),
-				new ClusteringCoefficient(),
-				new ShortestPaths(),
-				new BetweennessCentrality(),
-				new Assortativity(),
-				new SamplingBias(),
-				new PageRank(),
-				new SamplingModularity()
+//				new DegreeDistribution(),
+//				new ClusteringCoefficient(),
+//				new ShortestPaths(),
+//				new BetweennessCentrality(),
+//				new Assortativity(),
+//				new SamplingBias(),
+				new PageRank()
+//				new SamplingModularity(),
+//				new DegreeDistributionComparator(m),
+//				new SamplingRevisitFrequency()
 				};
 		
 //		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
@@ -121,10 +135,10 @@ public class Exploring {
 		Plotting.single(s, metrics, "example-s/");
 
 		Plotting.multi(s, metrics, "example-m/");
-////		 
+		
 //		 for(Network i : n){
 //			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
-//			 plot(i, "./plots/network-plot/n-"+i.getKey() + "-" + i.getNodes(), times, t);
+//			 plot(i, "./plots/network-plot/n-"+i.getDescription(), times, new Transformation[] {});
 //		 }
 	}
 	
@@ -167,7 +181,7 @@ public class Exploring {
 			IdentifierSpace ids = (IdentifierSpace) g
 					.getProperty("ID_SPACE_0");
 	
-			new GtnaGraphWriter().writeWithProperties(g, graphFilename+".txt");
+//			new GtnaGraphWriter().writeWithProperties(g, graphFilename+".txt");
 			
 			gephi.plot(g, ids, graphFilename+".pdf");
 			
