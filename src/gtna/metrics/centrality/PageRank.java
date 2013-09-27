@@ -100,10 +100,8 @@ public class PageRank extends Metric {
 	    prOld = prVector;
 	    prVector = calculateMatrixVectorProduct(G, prVector);
 	    prVector = normalizeVector(prVector);
-	    	    
-	    System.out.println(Arrays.toString(prVector));
 	}
-	
+	Arrays.sort(prVector);
 	pr = new Distribution(prVector);
 	nodes = g.getNodeCount();
 	edges = g.getEdges().size();
