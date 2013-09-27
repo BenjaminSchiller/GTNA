@@ -166,9 +166,6 @@ public class PageRank extends Metric {
 	success &= DataWriter.writeWithIndex(
 		this.pr.getDistribution(),
 		"PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION", folder);
-	success &= DataWriter.writeWithIndex(
-		this.pr.getCdf(),
-		"PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION_CDF", folder);
 	return success;
 
     }
