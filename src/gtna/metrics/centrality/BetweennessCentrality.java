@@ -103,6 +103,7 @@ public class BetweennessCentrality extends Metric {
 		for(int i = 0; i < cb.length; i++) {
 		    cb[i] /= (double)g.getNodes().length;
 		}
+		Arrays.sort(cb);
 		BC = new Distribution(cb);
 		this.nodes = g.getNodes().length;
 		this.edges = g.getEdges().size();
