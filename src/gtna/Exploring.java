@@ -51,6 +51,7 @@ import gtna.metrics.Metric;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.metrics.basic.Assortativity;
 import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
@@ -98,14 +99,11 @@ import gtna.metrics.basic.ClusteringCoefficient;
 >>>>>>> plotting for example plots
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
+=======
+import gtna.metrics.basic.DegreeDistribution;
+>>>>>>> sorting the PR
 import gtna.metrics.centrality.BetweennessCentrality;
-import gtna.metrics.centrality.PageRank;
-import gtna.metrics.sampling.SamplingBias;
-import gtna.metrics.sampling.SamplingModularity;
-import gtna.metrics.sampling.SamplingRevisitFrequency;
-import gtna.metrics.util.DegreeDistributionComparator;
 import gtna.networks.Network;
-import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GeneralizedCondonAndKarp;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -281,7 +279,7 @@ public class Exploring {
 >>>>>>> Sampling Modularity implemented
 =======
 //		Network nw1 = new Regular(30, 10, true, false, null);
-		Network nw3 = new ErdosRenyi(1000, 10, false, t);
+		Network nw3 = new WattsStrogatz(1000, 10, 0.5, t);
 		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
 		
@@ -317,10 +315,10 @@ public class Exploring {
 //				new DegreeDistribution(),
 //				new ClusteringCoefficient(),
 //				new ShortestPaths(),
-//				new BetweennessCentrality(),
+				new BetweennessCentrality()
 //				new Assortativity(),
 //				new SamplingBias(),
-				new PageRank()
+//				new PageRank(),
 //				new SamplingModularity(),
 //				new DegreeDistributionComparator(m),
 //				new SamplingRevisitFrequency()
