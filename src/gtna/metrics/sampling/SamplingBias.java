@@ -86,7 +86,13 @@ public class SamplingBias extends Metric {
 			}
 		}
 		
-		biasd = new Distribution(nodesampling);
+		double[] sb = new double[samples.length+1];
+		for(double d : nodesampling){
+			sb[(int)d]++;
+		}
+		
+		
+		biasd = new Distribution(sb);
 		nodes = g.getNodeCount();
 		edges = g.getEdges().size();
 	}
@@ -102,10 +108,7 @@ public class SamplingBias extends Metric {
 				this.biasd.getDistribution(), 
 				"SAMPLING_BIAS_DISTRIBUTION", 
 				folder);
-		success &= DataWriter.writeWithIndex(
-				this.biasd.getCdf(), 
-				"SAMPLING_BIAS_DISTRIBUTION_CDF", 
-				folder);
+
 		
 		return success;
 	}
