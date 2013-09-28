@@ -101,6 +101,9 @@ public class SamplingBias extends Metric {
 		}
 		
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Sampling Bias without CDF as its useless for this metric
 		double[] sb = new double[samples.length+1];
 		for(double d : nodesampling){
 			sb[(int)d]++;
@@ -108,6 +111,7 @@ public class SamplingBias extends Metric {
 		
 		
 		biasd = new Distribution(sb);
+<<<<<<< HEAD
 		nodes = g.getNodeCount();
 		edges = g.getEdges().size();
 		
@@ -117,6 +121,8 @@ public class SamplingBias extends Metric {
 		this.sbAvg = getAvg(sb);
 =======
 		biasd = new Distribution(nodesampling);
+=======
+>>>>>>> Sampling Bias without CDF as its useless for this metric
 		nodes = g.getNodeCount();
 		edges = g.getEdges().size();
 >>>>>>> count sampled nodes in multiple sample runs
@@ -138,6 +144,7 @@ public class SamplingBias extends Metric {
 				"SAMPLING_BIAS_DISTRIBUTION", 
 				folder);
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 		
 		return success;
@@ -150,6 +157,9 @@ public class SamplingBias extends Metric {
 				this.biasd.getCdf(), 
 				"SAMPLING_BIAS_DISTRIBUTION_CDF", 
 				folder);
+=======
+
+>>>>>>> Sampling Bias without CDF as its useless for this metric
 		
 		return success;
 >>>>>>> SamplingBias properties
