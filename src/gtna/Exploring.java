@@ -104,6 +104,7 @@ import gtna.metrics.basic.DegreeDistribution;
 >>>>>>> sorting the PR
 import gtna.metrics.centrality.BetweennessCentrality;
 import gtna.networks.Network;
+import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.GeneralizedCondonAndKarp;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -145,6 +146,7 @@ public class Exploring {
 		boolean get = false; // get or generate
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		int times = 2;		// how many generations?
 		boolean b = false; // bidirectional
 		
@@ -178,6 +180,9 @@ public class Exploring {
 =======
 		int times = 5;		// how many generations?
 >>>>>>> optimizing the PR metric
+=======
+		int times = 2;		// how many generations?
+>>>>>>> optimized BC
 		boolean b = false; // bidirectional?
 		boolean r = false; // ring?
 >>>>>>> Sampling Modularity implemented
@@ -279,7 +284,7 @@ public class Exploring {
 >>>>>>> Sampling Modularity implemented
 =======
 //		Network nw1 = new Regular(30, 10, true, false, null);
-		Network nw3 = new WattsStrogatz(1000, 10, 0.5, t);
+		Network nw3 = new BarabasiAlbert(1000, 10, null);
 		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
 		
@@ -315,9 +320,9 @@ public class Exploring {
 //				new DegreeDistribution(),
 //				new ClusteringCoefficient(),
 //				new ShortestPaths(),
-				new BetweennessCentrality()
+//				new BetweennessCentrality(),
 //				new Assortativity(),
-//				new SamplingBias(),
+				new SamplingBias()
 //				new PageRank(),
 //				new SamplingModularity(),
 //				new DegreeDistributionComparator(m),
