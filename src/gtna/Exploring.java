@@ -104,6 +104,7 @@ import gtna.metrics.sampling.SamplingModularity;
 import gtna.networks.Network;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.networks.model.ErdosRenyi;
 >>>>>>> calculate prVector
 =======
@@ -141,6 +142,9 @@ import gtna.metrics.sampling.SamplingBias;
 >>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
 import gtna.networks.Network;
 <<<<<<< HEAD
+=======
+import gtna.networks.model.BarabasiAlbert;
+>>>>>>> optimized BC
 import gtna.networks.model.GeneralizedCondonAndKarp;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -285,6 +289,7 @@ public class Exploring {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		int times = 2;		// how many generations?
 =======
 		int times = 1;		// how many generations?
@@ -344,6 +349,9 @@ public class Exploring {
 =======
 		int times = 5;		// how many generations?
 >>>>>>> optimizing the PR metric
+=======
+		int times = 2;		// how many generations?
+>>>>>>> optimized BC
 		boolean b = false; // bidirectional?
 		boolean r = false; // ring?
 >>>>>>> Sampling Modularity implemented
@@ -524,7 +532,7 @@ public class Exploring {
 		Network[] ws1 = ZhouMondragon.get(50, new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6}, 7, null);
 =======
 //		Network nw1 = new Regular(30, 10, true, false, null);
-		Network nw3 = new WattsStrogatz(1000, 10, 0.5, t);
+		Network nw3 = new BarabasiAlbert(1000, 10, null);
 		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
 		
@@ -644,9 +652,9 @@ public class Exploring {
 //				new DegreeDistribution(),
 //				new ClusteringCoefficient(),
 //				new ShortestPaths(),
-				new BetweennessCentrality()
+//				new BetweennessCentrality(),
 //				new Assortativity(),
-//				new SamplingBias(),
+				new SamplingBias()
 //				new PageRank(),
 //				new SamplingModularity(),
 //				new DegreeDistributionComparator(m),
