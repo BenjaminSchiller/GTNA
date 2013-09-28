@@ -96,13 +96,13 @@ public class BetweennessCentrality extends Metric {
 		this.calculateBC(g);
 		
 		int max = getMaxBc(cbs);
-		double[] cb = new double[max+1];
-		for(int d : cbs) {
-		    cb[d]++;
+		double[] cb = new double[cbs.length]; // was max + 1
+		for(int i = 0; i < cbs.length; i++) {
+		    cb[i] = (double) cbs[i];
 		}
-		for(int i = 0; i < cb.length; i++) {
-		    cb[i] /= (double)g.getNodes().length;
-		}
+//		for(int i = 0; i < cb.length; i++) {
+//		    cb[i] /= (double)g.getNodes().length;
+//		}
 		Arrays.sort(cb);
 		BC = new Distribution(cb);
 		this.nodes = g.getNodes().length;
@@ -132,8 +132,6 @@ public class BetweennessCentrality extends Metric {
 		success &= DataWriter.writeWithIndex(
 				this.BC.getDistribution(),
 				"BETWEENNESS_CENTRALITY_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(this.BC.getCdf(),
-			"BETWEENNESS_CENTRALITY_DISTRIBUTION_CDF", folder);
 		
 		return success;
 	}
