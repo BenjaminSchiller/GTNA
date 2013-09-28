@@ -43,6 +43,7 @@ import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.centrality.BetweennessCentrality;
 import gtna.networks.Network;
+import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.GeneralizedCondonAndKarp;
 import gtna.networks.model.WattsStrogatz;
 import gtna.networks.model.ZhouMondragon;
@@ -70,7 +71,7 @@ public class Exploring {
 		
 		
 		boolean get = false; // get or generate
-		int times = 5;		// how many generations?
+		int times = 2;		// how many generations?
 		boolean b = false; // bidirectional?
 		boolean r = false; // ring?
 		
@@ -90,7 +91,7 @@ public class Exploring {
 		
 		
 //		Network nw1 = new Regular(30, 10, true, false, null);
-		Network nw3 = new WattsStrogatz(1000, 10, 0.5, t);
+		Network nw3 = new BarabasiAlbert(1000, 10, null);
 		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
 		
@@ -111,9 +112,9 @@ public class Exploring {
 //				new DegreeDistribution(),
 //				new ClusteringCoefficient(),
 //				new ShortestPaths(),
-				new BetweennessCentrality()
+//				new BetweennessCentrality(),
 //				new Assortativity(),
-//				new SamplingBias(),
+				new SamplingBias()
 //				new PageRank(),
 //				new SamplingModularity(),
 //				new DegreeDistributionComparator(m),
