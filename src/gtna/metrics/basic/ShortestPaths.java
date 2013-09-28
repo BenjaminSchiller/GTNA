@@ -62,6 +62,10 @@ public class ShortestPaths extends Metric {
 
 	private double connectivity;
 
+	private Distribution hopPlot;
+
+	private double ecc90;
+
 	public ShortestPaths() {
 		super("SHORTEST_PATHS");
 	}
@@ -83,6 +87,44 @@ public class ShortestPaths extends Metric {
 		this.connectivity = (double) Util.sum(SPL)
 				/ (double) ((double) graph.getNodes().length * (double) (graph
 						.getNodes().length - 1));
+		
+		this.hopPlot = new Distribution(computeHP(SPL, graph));
+		
+		this.ecc90 = calculateEccentricity(hopPlot.getCdf(), graph, 0.90);
+		
+		
+	}
+
+	/**
+	 * @param hpCDF	hopplot cdf
+	 * @param graph	graph
+	 * @param q		reachable quantile
+	 * @return
+	 */
+	private double calculateEccentricity(double[] hpCDF, Graph graph,
+			double q) {
+		double qNodes = graph.getNodeCount() * q;
+		
+		for(int i = 0; i < hpCDF.length; i++){
+			if(hpCDF[i] >= qNodes){
+				return i;
+			}
+		}
+		
+		return -1;
+	}
+
+	/**
+	 * @param sPL
+	 * @return
+	 */
+	private double[] computeHP(long[] SPL, Graph g) {
+		double[] hp = new double[SPL.length];
+		for(int i = 0; i < hp.length; i++){
+			hp[i] = (double) SPL[i] / (double) g.getNodeCount();
+		}
+		
+		return hp;
 	}
 
 	private double[] computeShortestPathLengthDistribution(long[] SPL) {
@@ -154,6 +196,12 @@ public class ShortestPaths extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(
+				this.hopPlot.getDistribution(),
+				"SHORTEST_PATHS_HOP_PLOT", folder);
+		success &= DataWriter.writeWithIndex(
+				this.hopPlot.getCdf(),
+				"SHORTEST_PATHS_HOP_PLOT_CDF", folder);
+		success &= DataWriter.writeWithIndex(
 				this.shortestPathLengthDistribution.getDistribution(),
 				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION", folder);
 		success &= DataWriter.writeWithIndex(
@@ -184,9 +232,11 @@ public class ShortestPaths extends Metric {
 				this.shortestPathLengthDistribution.getMax());
 		Single connectivity = new Single("SHORTEST_PATHS_CONNECTIVITY",
 				this.connectivity);
+		Single ecc = new Single("SHORTEST_PATHS_EFFECTIVE_DIAMETER_ECC_90QUANTIL",
+				this.ecc90);
 		return new Single[] { averageShortestPathLength,
 				medianShortestPathLength, maximumShortestPathLength,
-				connectivity };
+				connectivity, ecc };
 	}
 
 	/**
