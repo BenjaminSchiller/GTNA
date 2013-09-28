@@ -41,7 +41,8 @@ import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
-import gtna.metrics.centrality.BetweennessCentrality;
+import gtna.metrics.basic.ShortestPaths;
+import gtna.metrics.sampling.SamplingBias;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.GeneralizedCondonAndKarp;
@@ -80,18 +81,18 @@ public class Exploring {
 		
 		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null, true);
 		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, new Long(0), false);
-		Transformation[] t = new Transformation[3];
+		Transformation[] t = new Transformation[2];
 		
 		
 		
 		Arrays.fill(t, sa);
 		t[0] = sa;
-		t[1] = sa2;
+//		t[1] = sa2;
 		t[t.length-1] = new ColoredHeatmapSampledSubgraph();
 		
 		
 //		Network nw1 = new Regular(30, 10, true, false, null);
-		Network nw3 = new BarabasiAlbert(1000, 10, null);
+		Network nw3 = new WattsStrogatz(200, 10, 0.001, null);
 		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
 		
@@ -111,10 +112,10 @@ public class Exploring {
 		Metric[] metrics = new Metric[] { 
 //				new DegreeDistribution(),
 //				new ClusteringCoefficient(),
-//				new ShortestPaths(),
+				new ShortestPaths()
 //				new BetweennessCentrality(),
 //				new Assortativity(),
-				new SamplingBias()
+//				new SamplingBias()
 //				new PageRank(),
 //				new SamplingModularity(),
 //				new DegreeDistributionComparator(m),
