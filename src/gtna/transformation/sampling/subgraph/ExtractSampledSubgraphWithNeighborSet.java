@@ -99,7 +99,26 @@ public class ExtractSampledSubgraphWithNeighborSet extends Transformation {
 	}
 	
 	for(Node n : neighborSet.keySet()){
+		int newIndexN = sampledNodes.size();
+		List<Integer> neighborsN = neighborSet.get(n);
+		List<Integer> inE = new ArrayList<Integer>();
+		int[] inEdges;
+		int[] outEdges = new int[0]; // we haven't visited the neighborhoodset nodes, we don't know anything
 		
+		for(Integer i : neighborsN){
+			inE.add(sample.getNewNodeId(i));
+		}
+		
+		inEdges = new int[inE.size()];
+		for(int i = 0; i < inEdges.length; i++){
+			inEdges[i] = inE.get(i);
+		}
+		
+		
+		n.setIndex(newIndexN);
+		n.setIncomingEdges(inEdges);
+		n.setOutgoingEdges(outEdges);
+		sampledNodes.add(n);
 	}
 	
 	
