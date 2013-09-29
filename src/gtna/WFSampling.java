@@ -203,8 +203,7 @@ public class WFSampling {
 	    SamplingAlgorithm alg, double sd, int dimension,
 	    boolean revisiting, Long randomSeed) {
 	Transformation samplingalgorithm = SamplingAlgorithmFactory
-		.getInstanceOf(alg, sd, revisiting, dimension, randomSeed,
-			!withNeigborSet);
+		.getInstanceOf(alg, sd, revisiting, dimension, randomSeed);
 
 	return samplingalgorithm;
     }

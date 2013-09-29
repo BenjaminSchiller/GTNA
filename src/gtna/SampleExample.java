@@ -149,40 +149,40 @@ public class SampleExample {
 			double scaledown, int dimension, boolean revisiting, Long randomSeed) {
 		Transformation ss = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.SNOWBALLSAMPLING, scaledown, revisiting,
-				dimension, randomSeed, true);
+				dimension, randomSeed);
 		Transformation rs = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.RANDOMSTROLL, scaledown, revisiting,
-				dimension, randomSeed, true);
+				dimension, randomSeed);
 		Transformation rj = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.RANDOMJUMP, scaledown, revisiting, dimension,
-				randomSeed, true);
+				randomSeed);
 		Transformation mrw = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown, revisiting, dimension,
-				randomSeed, true);
+				randomSeed);
 		Transformation rsdc = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.RANDOMSTROLL_DEGREECORRECTION, scaledown,
-				revisiting, dimension, randomSeed, true);
+				revisiting, dimension, randomSeed);
 		Transformation us = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.UNIFORMSAMPLING, scaledown, revisiting,
-				dimension, randomSeed, true);
+				dimension, randomSeed);
 		Transformation bfs = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.BFS, scaledown, revisiting, dimension,
-				randomSeed, true);
+				randomSeed);
 		Transformation rds = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.RESPONDENTDRIVENSAMPLING, scaledown, revisiting, dimension,
-				randomSeed, true);
+				randomSeed);
 		Transformation ff = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.FORESTFIRE, scaledown, revisiting, dimension,
-				randomSeed, true);
+				randomSeed);
 		Transformation dfs = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.DFS, scaledown, revisiting, dimension,
-				randomSeed, true);
+				randomSeed);
 		Transformation rwm = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.RANDOMWALK_METROPOLIZED, scaledown, revisiting, dimension,
-				randomSeed, true);
+				randomSeed);
 		Transformation rw = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
-				randomSeed, true);
+				randomSeed);
 
 //		 Transformation subgraphing = new ExtractSampledSubgraph();
 		 Transformation subgraphing = new ColorSampledSubgraph();
