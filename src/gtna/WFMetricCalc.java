@@ -37,17 +37,20 @@ package gtna;
 
 import gtna.data.Series;
 import gtna.metrics.Metric;
+import gtna.metrics.basic.Assortativity;
 import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
+import gtna.metrics.centrality.BetweennessCentrality;
+import gtna.metrics.centrality.PageRank;
 import gtna.networks.util.ReadableFolder;
 import gtna.plot.Plotting;
 import gtna.util.Config;
 
 import java.io.File;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Tim
@@ -55,7 +58,7 @@ import java.util.Collection;
  */
 public class WFMetricCalc {
 
-    private static Collection<Metric> metrics = new ArrayList<Metric>();
+    private static Set<Metric> metrics = new HashSet<Metric>();
     private static String dir;
     private static String suffix;
     private static String name;
@@ -84,40 +87,30 @@ public class WFMetricCalc {
 	    } else if (s.equalsIgnoreCase("CC")) {
 		metrics.add(new ClusteringCoefficient());
 	    } else if (s.equalsIgnoreCase("HP")) {
-		System.err
-			.println("HopPlot is currentliy not supported. (not implemented now)");
-		// metrics.add(new HopPlot());
+		
+		 metrics.add(new ShortestPaths());
 	    } else if (s.equalsIgnoreCase("DIAM")) {
 		metrics.add(new ShortestPaths());
 	    } else if (s.equalsIgnoreCase("ECC")) {
-		System.err
-			.println("ECC is currentliy not supported. (not implemented now)");
-		// metrics.add(new Eccentricity()); // Check BSc. Thesis
-		// implementation!
+	    	metrics.add(new ShortestPaths());
 	    } else if (s.equalsIgnoreCase("BC")) {
-		System.err
-			.println("BetweennessCentrality is currentliy not supported. (not implemented now)");
-		// metrics.add(new BetweennessCentrality());
+	    	metrics.add(new BetweennessCentrality());
 	    } else if (s.equalsIgnoreCase("PR")) {
-		System.err
-			.println("PageRank is currentliy not supported. (not implemented now)");
-		// metrics.add(new PageRankDistribution());
+	    	metrics.add(new PageRank());
 	    } else if (s.equalsIgnoreCase("ASS")) {
-		System.err
-			.println("Assortativity is currentliy not supported. (not implemented now)");
-		// metrics.add(new Assortativity());
+	    	metrics.add(new Assortativity());
 	    } else if (s.startsWith("suffix=")) {
-		suffix = s.substring(7);
+	    	suffix = s.substring(7);
 	    } else if (s.startsWith("name=")) {
-		name = s.substring(5);
+	    	name = s.substring(5);
 	    } else if (s.startsWith("seq=")) {
-		String seq = s.substring(4);
-		String[] se = seq.split("-");
-		startIndex = Integer.parseInt(se[0]);
-		endIndex = Integer.parseInt(se[1]);
+	    	String seq = s.substring(4);
+	    	String[] se = seq.split("-");
+	    	startIndex = Integer.parseInt(se[0]);
+	    	endIndex = Integer.parseInt(se[1]);
 	    } else if (s.startsWith("targetdir=")) {
-		targetdir = s.substring(10);
-		File f = new File(targetdir);
+	    	targetdir = s.substring(10);
+	    	File f = new File(targetdir);
 		if (!f.isDirectory()) {
 		    f.mkdir();
 		}
