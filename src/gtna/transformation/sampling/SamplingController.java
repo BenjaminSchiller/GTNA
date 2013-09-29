@@ -394,6 +394,7 @@ public class SamplingController extends Transformation {
 		// node(s)
 		Collection<Node> s = sampler.initialize(g, targetSampleSize, round); // initialize
 																				// Sampler
+<<<<<<< HEAD
 
 		boolean running = true;
 		// walk -> sample loop as long new nodes are sampled
@@ -699,10 +700,13 @@ public class SamplingController extends Transformation {
 		// if(s.size() > 0)
 		// networkSample.addNodeToSample(s, round);
 >>>>>>> small improvements using sampling bias
+=======
+>>>>>>> .
 
 		boolean running = true;
 		// walk -> sample loop as long new nodes are sampled
 		do {
+<<<<<<< HEAD
 <<<<<<< HEAD
 			round++;
 			// walk
@@ -713,6 +717,8 @@ public class SamplingController extends Transformation {
 			running = (maxNodesInThisRound > 0) ? true : false;
 =======
 
+=======
+>>>>>>> .
 			// eventually sample
 			sampleOneStep(g, maxNodesInThisRound, round);
 
