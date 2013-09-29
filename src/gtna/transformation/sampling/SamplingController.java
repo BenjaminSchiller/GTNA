@@ -725,8 +725,6 @@ public class SamplingController extends Transformation {
 			round++;
 >>>>>>> small improvements using sampling bias
 		} while (running);
-
-		networkSample.finalize(g);
 		
 		return true;
 	}

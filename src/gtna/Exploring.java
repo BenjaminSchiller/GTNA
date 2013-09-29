@@ -37,6 +37,7 @@ package gtna;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.data.Series;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -45,6 +46,8 @@ import gtna.data.Series;
 =======
 import gtna.data.Series;
 >>>>>>> plotting for example plots
+=======
+>>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
@@ -81,6 +84,7 @@ import gtna.metrics.basic.Assortativity;
 import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -219,17 +223,25 @@ import gtna.metrics.basic.DegreeDistribution;
 >>>>>>> sorting the PR
 import gtna.metrics.centrality.BetweennessCentrality;
 import gtna.networks.Network;
+=======
+import gtna.networks.Network;
+>>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
 import gtna.networks.model.GeneralizedCondonAndKarp;
+import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
 import gtna.networks.model.ZhouMondragon;
+<<<<<<< HEAD
 import gtna.plot.Plotting;
 >>>>>>> plotting for example plots
+=======
+>>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
@@ -260,6 +272,10 @@ import gtna.transformation.id.RandomRingIDSpaceSimple;
 =======
 import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
 >>>>>>> small fixes to allow tests of the new sampling model
+=======
+import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
+import gtna.transformation.sampling.subgraph.ExtractSampledSubgraphWithNeighborSet;
+>>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
 import gtna.util.Config;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -287,6 +303,7 @@ public class Exploring {
 		
 <<<<<<< HEAD
 		boolean get = false; // get or generate
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -356,6 +373,9 @@ public class Exploring {
 =======
 		int times = 2;		// how many generations?
 >>>>>>> optimized BC
+=======
+		int times = 1;		// how many generations?
+>>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
 		boolean b = false; // bidirectional?
 		boolean r = false; // ring?
 >>>>>>> Sampling Modularity implemented
@@ -418,8 +438,8 @@ public class Exploring {
 		SamplingAlgorithm a = SamplingAlgorithm.BFS;
 		double sc = 0.2;
 		
-		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null, true);
-		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, new Long(0), false);
+		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, new Long(0));
+		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, new Long(0));
 		Transformation[] t = new Transformation[2];
 		
 		
@@ -427,7 +447,7 @@ public class Exploring {
 		Arrays.fill(t, sa);
 		t[0] = sa;
 //		t[1] = sa2;
-		t[t.length-1] = new ColoredHeatmapSampledSubgraph();
+		t[t.length-1] = new ExtractSampledSubgraphWithNeighborSet();
 		
 		
 <<<<<<< HEAD
@@ -536,7 +556,7 @@ public class Exploring {
 		Network[] ws1 = ZhouMondragon.get(50, new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6}, 7, null);
 =======
 //		Network nw1 = new Regular(30, 10, true, false, null);
-		Network nw3 = new WattsStrogatz(200, 10, 0.001, null);
+		Network nw3 = new Regular(100, 10, true, false, null);
 		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
 		
@@ -751,6 +771,7 @@ public class Exploring {
 >>>>>>> added relative eccentricity / effective diameter
 =======
 //		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> SamplingBias properties
 		Series[] s = Series.generate(n, metrics, times);
@@ -1003,11 +1024,14 @@ public class Exploring {
 		/*
 >>>>>>> complete implementation: Assortativity coefficient (Newman, 2002, Assortative Mixing in Networks)
 =======
+=======
+>>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
 //		Series[] s = Series.generate(n, metrics, times);
 //
 //		Plotting.single(s, metrics, "example-s/");
 //
 //		Plotting.multi(s, metrics, "example-m/");
+<<<<<<< HEAD
 ////		 
 >>>>>>> testing different configurations for the generalized community model
 		 for(Network i : n){
@@ -1044,6 +1068,13 @@ public class Exploring {
 //			 plot(i, "./plots/network-plot/n-"+i.getDescription(), times, new Transformation[] {});
 //		 }
 >>>>>>> plotting for example plots
+=======
+		
+		 for(Network i : n){
+			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
+			 plot(i, "./plots/network-plot/"+i.getDescriptionShort(), times, t);
+		 }
+>>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
 	}
 	
 	
@@ -1087,6 +1118,7 @@ public class Exploring {
 	
 //			new GtnaGraphWriter().writeWithProperties(g, graphFilename+".txt");
 			
+			System.out.println("Plotting > " + g.getNodeCount() + " nodes");
 			gephi.plot(g, ids, graphFilename+".pdf");
 			
 			System.out.println(filename);
