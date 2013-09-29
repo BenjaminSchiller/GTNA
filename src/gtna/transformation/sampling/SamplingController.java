@@ -233,13 +233,10 @@ public class SamplingController extends Transformation {
 		// node(s)
 		Collection<Node> s = sampler.initialize(g, targetSampleSize, round); // initialize
 																				// Sampler
-		// if(s.size() > 0)
-		// networkSample.addNodeToSample(s, round);
 
 		boolean running = true;
 		// walk -> sample loop as long new nodes are sampled
 		do {
-
 			// eventually sample
 			sampleOneStep(g, maxNodesInThisRound, round);
 

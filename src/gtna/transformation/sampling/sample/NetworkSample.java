@@ -35,7 +35,6 @@
  */
 package gtna.transformation.sampling.sample;
 
-import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.util.parameter.Parameter;
 
@@ -399,5 +398,6 @@ public class NetworkSample extends Parameter {
 		numberOfRounds = 0;
 		
 	}
+	
 
 }
