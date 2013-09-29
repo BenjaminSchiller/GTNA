@@ -380,12 +380,6 @@ public class NetworkSample extends Parameter {
 		return numberOfRounds;
 	}
 
-	/**
-	 * finalizes the sample. <b>does nothing in this basic implementation</b>
-	 */
-	public void finalize(Graph g) {
-		// nothing todo in this implementation
-	}
 
 	/**
 	 * @return

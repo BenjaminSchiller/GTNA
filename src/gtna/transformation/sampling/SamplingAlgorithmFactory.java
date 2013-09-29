@@ -35,17 +35,13 @@
  */
 package gtna.transformation.sampling;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import gtna.transformation.sampling.sample.NetworkSample;
-import gtna.transformation.sampling.sample.NetworkSampleWithNeighborSet;
 import gtna.transformation.sampling.sampler.RoundBasedVisitedNodeSampler;
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
-import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
 import gtna.transformation.sampling.walker.BFSWalker;
 import gtna.transformation.sampling.walker.DFSWalker;
 import gtna.transformation.sampling.walker.FFWalker;
+import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
 import gtna.transformation.sampling.walker.RDSWalker;
 import gtna.transformation.sampling.walker.RandomJumpWalker;
 import gtna.transformation.sampling.walker.RandomWalkDegreeCorrectionWalker;
@@ -56,7 +52,9 @@ import gtna.transformation.sampling.walkercontroller.FrontierSamplingWalkerContr
 import gtna.transformation.sampling.walkercontroller.MultipleRandomWalkWalkerController;
 import gtna.transformation.sampling.walkercontroller.RandomWalkWalkerController;
 import gtna.transformation.sampling.walkercontroller.UniformSamplingWalkerController;
-import gtna.transformation.sampling.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author Tim
@@ -91,7 +89,7 @@ public class SamplingAlgorithmFactory {
      * @return
      */
     public static SamplingController getInstanceOf(SamplingAlgorithm sg,
-	    double scaledown, boolean revisiting, int dimension, Long randomSeed, boolean standardSampling) {
+	    double scaledown, boolean revisiting, int dimension, Long randomSeed) {
 	SamplingController sc;
 	ASampler as;
 	AWalker aw;
@@ -297,10 +295,9 @@ public class SamplingAlgorithmFactory {
 			throw new IllegalArgumentException("Not supported algorithm");
 	}
 	
-	if(standardSampling){
+	
 	ns = new NetworkSample(algorithm, scaledown, dimension,
-			revisiting);}else{ns = new NetworkSampleWithNeighborSet(algorithm, scaledown, dimension,
-					revisiting);}
+			revisiting);
 	sc = new SamplingController(algorithm, awc, as, sns, ns, scaledown,
 		dimension, revisiting, randomSeed);
 	
