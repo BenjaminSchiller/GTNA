@@ -35,27 +35,25 @@
  */
 package gtna;
 
-import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
-import gtna.metrics.sampling.SamplingBias;
 import gtna.networks.Network;
-import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.GeneralizedCondonAndKarp;
+import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
 import gtna.networks.model.ZhouMondragon;
-import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
 import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
-import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
+import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
+import gtna.transformation.sampling.subgraph.ExtractSampledSubgraphWithNeighborSet;
 import gtna.util.Config;
 
 import java.util.Arrays;
@@ -72,15 +70,15 @@ public class Exploring {
 		
 		
 		boolean get = false; // get or generate
-		int times = 2;		// how many generations?
+		int times = 1;		// how many generations?
 		boolean b = false; // bidirectional?
 		boolean r = false; // ring?
 		
 		SamplingAlgorithm a = SamplingAlgorithm.BFS;
 		double sc = 0.2;
 		
-		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null, true);
-		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, new Long(0), false);
+		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, new Long(0));
+		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, new Long(0));
 		Transformation[] t = new Transformation[2];
 		
 		
@@ -88,11 +86,11 @@ public class Exploring {
 		Arrays.fill(t, sa);
 		t[0] = sa;
 //		t[1] = sa2;
-		t[t.length-1] = new ColoredHeatmapSampledSubgraph();
+		t[t.length-1] = new ExtractSampledSubgraphWithNeighborSet();
 		
 		
 //		Network nw1 = new Regular(30, 10, true, false, null);
-		Network nw3 = new WattsStrogatz(200, 10, 0.001, null);
+		Network nw3 = new Regular(100, 10, true, false, null);
 		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
 		
@@ -123,16 +121,16 @@ public class Exploring {
 				};
 		
 //		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
-		Series[] s = Series.generate(n, metrics, times);
-
-		Plotting.single(s, metrics, "example-s/");
-
-		Plotting.multi(s, metrics, "example-m/");
+//		Series[] s = Series.generate(n, metrics, times);
+//
+//		Plotting.single(s, metrics, "example-s/");
+//
+//		Plotting.multi(s, metrics, "example-m/");
 		
-//		 for(Network i : n){
-//			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
-//			 plot(i, "./plots/network-plot/n-"+i.getDescription(), times, new Transformation[] {});
-//		 }
+		 for(Network i : n){
+			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
+			 plot(i, "./plots/network-plot/"+i.getDescriptionShort(), times, t);
+		 }
 	}
 	
 	
@@ -176,6 +174,7 @@ public class Exploring {
 	
 //			new GtnaGraphWriter().writeWithProperties(g, graphFilename+".txt");
 			
+			System.out.println("Plotting > " + g.getNodeCount() + " nodes");
 			gephi.plot(g, ids, graphFilename+".pdf");
 			
 			System.out.println(filename);

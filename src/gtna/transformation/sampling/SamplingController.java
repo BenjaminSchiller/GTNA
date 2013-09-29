@@ -251,8 +251,6 @@ public class SamplingController extends Transformation {
 			running = (maxNodesInThisRound > 0) ? true : false;
 			round++;
 		} while (running);
-
-		networkSample.finalize(g);
 		
 		return true;
 	}
