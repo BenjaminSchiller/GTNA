@@ -35,13 +35,10 @@
  */
 package gtna.transformation.sampling;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import gtna.transformation.sampling.sample.NetworkSample;
-import gtna.transformation.sampling.sample.NetworkSampleWithNeighborSet;
 import gtna.transformation.sampling.sampler.RoundBasedVisitedNodeSampler;
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -49,6 +46,8 @@ import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
 =======
 =======
 =======
+=======
+>>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
 import gtna.transformation.sampling.walker.BFSWalker;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -60,7 +59,11 @@ import gtna.transformation.sampling.walker.BFSWalker;
 import gtna.transformation.sampling.walker.DFSWalker;
 >>>>>>> factory for dfs and small tests in the workflow
 import gtna.transformation.sampling.walker.FFWalker;
+<<<<<<< HEAD
 >>>>>>> added ForestFireWalker
+=======
+import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
+>>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
 import gtna.transformation.sampling.walker.RDSWalker;
 >>>>>>> implemented RDS
 import gtna.transformation.sampling.walker.RandomJumpWalker;
@@ -74,7 +77,9 @@ import gtna.transformation.sampling.walkercontroller.FrontierSamplingWalkerContr
 import gtna.transformation.sampling.walkercontroller.MultipleRandomWalkWalkerController;
 import gtna.transformation.sampling.walkercontroller.RandomWalkWalkerController;
 import gtna.transformation.sampling.walkercontroller.UniformSamplingWalkerController;
-import gtna.transformation.sampling.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author Tim
@@ -109,7 +114,7 @@ public class SamplingAlgorithmFactory {
      * @return
      */
     public static SamplingController getInstanceOf(SamplingAlgorithm sg,
-	    double scaledown, boolean revisiting, int dimension, Long randomSeed, boolean standardSampling) {
+	    double scaledown, boolean revisiting, int dimension, Long randomSeed) {
 	SamplingController sc;
 	ASampler as;
 	AWalker aw;
@@ -312,10 +317,9 @@ public class SamplingAlgorithmFactory {
 			throw new IllegalArgumentException("Not supported algorithm");
 	}
 	
-	if(standardSampling){
+	
 	ns = new NetworkSample(algorithm, scaledown, dimension,
-			revisiting);}else{ns = new NetworkSampleWithNeighborSet(algorithm, scaledown, dimension,
-					revisiting);}
+			revisiting);
 	sc = new SamplingController(algorithm, awc, as, sns, ns, scaledown,
 		dimension, revisiting, randomSeed);
 	
