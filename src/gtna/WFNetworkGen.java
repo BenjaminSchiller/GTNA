@@ -46,6 +46,7 @@ import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
+import gtna.networks.model.ZhouMondragon;
 
 import java.io.File;
 import java.text.ParseException;
@@ -108,10 +109,10 @@ public class WFNetworkGen {
 	String wn;	
 	for(int i = startIndex; i < endIndex; i++) {
 	    wn = writeGraphToFile(n.generate(), dir+n.getKey()+"_"+i);
-	    System.out.println(wn);
+//	    System.out.println(wn);
 	}
 
-	System.out.println("Building network: " + net + ", size= " + size
+	System.out.println("Built network(s): " + net + ", size= " + size
 		+ " (Seq: " + startIndex + " - " + endIndex + ")");
 
     }
@@ -148,8 +149,8 @@ public class WFNetworkGen {
 	    n = new ErdosRenyi(size, avgdegree, uni, null);
 	    break;
 	case RC:
-	    throw new UnsupportedOperationException("Not yet implemented");
-	    // break;
+	    n = new ZhouMondragon(size, pin, edgespernode, null);
+	    break;
 	case REG: 
 	    if(size == 0 || degree == 0) throw new IllegalArgumentException("For initializing a regular network the parameters size and degree have to be set!");
 	    n = new Regular(size, degree, ring, uni, null);
