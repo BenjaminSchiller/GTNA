@@ -122,19 +122,27 @@ public class FrontierSamplingWalkerController extends AWalkerController {
 		if (currentP < p) {
 		    active = w.getKey();
 <<<<<<< HEAD
+<<<<<<< HEAD
 //		    System.err.println("Found active walker! " + w.getKey().getCurrentCandidates().keySet().toString()); // TODO remove
 =======
 		    System.err.println("Found active walker! " + w.getKey().getCurrentCandidates().keySet().toString()); // TODO remove
 >>>>>>> added: FrontierSamplingWalkerController to calculate the active walker of a frontier sampling algorithm
+=======
+//		    System.err.println("Found active walker! " + w.getKey().getCurrentCandidates().keySet().toString()); // TODO remove
+>>>>>>> no system.out
 		}
 	    }
 	    if (active == null) {
 		p = r.nextDouble();
 <<<<<<< HEAD
+<<<<<<< HEAD
 //		System.err.println("No active Walker found! new p = " + p); // TODO remove
 =======
 		System.err.println("No active Walker found! new p = " + p); // TODO remove
 >>>>>>> added: FrontierSamplingWalkerController to calculate the active walker of a frontier sampling algorithm
+=======
+//		System.err.println("No active Walker found! new p = " + p); // TODO remove
+>>>>>>> no system.out
 	    } else {
 		break;
 	    }
