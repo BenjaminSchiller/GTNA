@@ -121,12 +121,12 @@ public class FrontierSamplingWalkerController extends AWalkerController {
 
 		if (currentP < p) {
 		    active = w.getKey();
-		    System.err.println("Found active walker! " + w.getKey().getCurrentCandidates().keySet().toString()); // TODO remove
+//		    System.err.println("Found active walker! " + w.getKey().getCurrentCandidates().keySet().toString()); // TODO remove
 		}
 	    }
 	    if (active == null) {
 		p = r.nextDouble();
-		System.err.println("No active Walker found! new p = " + p); // TODO remove
+//		System.err.println("No active Walker found! new p = " + p); // TODO remove
 	    } else {
 		break;
 	    }
