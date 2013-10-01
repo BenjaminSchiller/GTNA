@@ -88,8 +88,8 @@ public class DFSWalker extends AWalker {
 				}
 			} else {
 
-				System.err.println("NextQ empty, need a restart! ("
-						+ restartcounter + ")");
+//				System.err.println("NextQ empty, need a restart! ("
+//						+ restartcounter + ")");
 				restartcounter += 1;
 				cc = super.getRestartNodes();
 				n = cc.toArray(new Node[0])[0];
