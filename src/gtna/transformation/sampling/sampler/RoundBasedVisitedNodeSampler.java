@@ -70,11 +70,11 @@ public class RoundBasedVisitedNodeSampler extends ASampler {
 
 		int m = currentRound % round;
 		if(m != 0){
-			System.err.println("<> ROUND WITHOUT SAMPLING");
+//			System.err.println("<> ROUND WITHOUT SAMPLING");
 			return new ArrayList<Node>();
 		}
 		
-		System.err.println("<> ROUND WITH SAMPLING");
+//		System.err.println("<> ROUND WITH SAMPLING");
 		Collection<Node> selected = new ArrayList<Node>();
 
 		// add keySet as we sample all visited nodes!
