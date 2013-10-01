@@ -123,9 +123,10 @@ public class WFSampling {
 		g = samplingTransformation[1].transform(g); // subgraph
 							    // generation/coloring
 
-		writeGraphToFile(g, targetdir , g.getName() + "_" + j);
+
+		writeGraphToFile(g, targetdir , g.toString() + "_" + j);
 		if (plotting)
-		    plotGraph(g, targetdir + "plots/", g.getName() + "_" + j);
+		    plotGraph(g, targetdir + "plots/", g.toString() + "_" + j);
 	    }
 	}
 
@@ -183,7 +184,7 @@ public class WFSampling {
      */
     private static boolean initialized() {
 
-	if (dim == null || dim > 1 || dir == null || srcdir == null
+	if (dim == null || dim < 1 || dir == null || srcdir == null
 		|| targetdir == null || scaledown == null) {
 	    return false;
 	}
@@ -286,6 +287,7 @@ public class WFSampling {
 	
 	filename = dir + filename;
 	new GtnaGraphWriter().writeWithProperties(g, filename);
+	new GtnaGraphWriter().write(g, filename + ".gtna");
 	return filename;
     }
 
