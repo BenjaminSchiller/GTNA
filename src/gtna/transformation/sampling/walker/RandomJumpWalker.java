@@ -71,7 +71,7 @@ public class RandomJumpWalker extends AWalker {
 	    if(c > pJump) {		
 		int next = r.nextInt(candidates.size());
 		next = next % candidates.size();
-		System.err.println("Walking!");
+//		System.err.println("Walking!");
 		return candidates.toArray(new Node[0])[next];
 	    }else {
 		Graph g = super.getGraph();
@@ -79,7 +79,7 @@ public class RandomJumpWalker extends AWalker {
 		
 		int next = r.nextInt(fc.size());
 		
-		System.err.println("Jumping!");
+//		System.err.println("Jumping!");
 		return fc.toArray(new Node[0])[next];
 	    }
 	}
