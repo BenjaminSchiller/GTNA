@@ -184,8 +184,8 @@ public class WFNetworkGen {
 	    p = Double.parseDouble(s.substring(2));
 	} else if (s.startsWith("pin=")) {
 	    pin = Double.parseDouble(s.substring(4));
-	} else if (s.startsWith("p=")) {
-	    pout = Double.parseDouble(s.substring(4));
+	} else if (s.startsWith("pout=")) {
+	    pout = Double.parseDouble(s.substring(5));
 	} else if (s.startsWith("avgdegree=")) {
 	    avgdegree = Double.parseDouble(s.substring(10));
 	} else if (s.startsWith("degree=")) {
