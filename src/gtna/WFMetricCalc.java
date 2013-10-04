@@ -152,11 +152,9 @@ public class WFMetricCalc {
 		} else {
 			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 			Series series = Series.generate(rf, metrics.toArray(new Metric[0]), startIndex, endIndex);
-			Plotting.single(series, metrics.toArray(new Metric[0]), targetdir
-				+ "/single/");
+			Plotting.single(series, metrics.toArray(new Metric[0]), "/single/");  // main path to plots is set by Config.overwrite
 
-			Plotting.multi(series, metrics.toArray(new Metric[0]), targetdir
-				+ "/multi/");
+			Plotting.multi(series, metrics.toArray(new Metric[0]), "/multi/"); // main path to plots is set by Config.overwrite
 		
 		}
 
