@@ -398,10 +398,14 @@ public class SamplingAlgorithmFactory {
      * @param dimension
      *            IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> refactoring and cleanup after debugging (1)
 =======
      * @param randomSeed 
 >>>>>>> usage, persisting, loading of the deterministic-rng possible
+=======
+     * @param randomSeed - can be <b>null</b> to use a standard RNG
+>>>>>>> fixes:
      * @return
      */
     public static SamplingController getInstanceOf(SamplingAlgorithm sg,
