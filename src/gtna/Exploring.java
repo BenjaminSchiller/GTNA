@@ -55,6 +55,7 @@ import gtna.id.IdentifierSpace;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.io.graphWriter.GtnaGraphWriter;
 <<<<<<< HEAD
 import gtna.metric.centrality.PageRank;
@@ -66,6 +67,9 @@ import gtna.io.graphWriter.GtnaGraphWriter;
 >>>>>>> fixes:
 =======
 >>>>>>> optimizing the PR metric
+=======
+import gtna.io.graphWriter.GtnaGraphWriter;
+>>>>>>> fixes:
 import gtna.metrics.Metric;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -286,6 +290,7 @@ import gtna.util.Stats;
 =======
 >>>>>>> bugfix bc (1)
 
+import java.io.File;
 import java.util.Arrays;
 
 /**
@@ -301,6 +306,7 @@ public class Exploring {
 <<<<<<< HEAD
 		
 		
+<<<<<<< HEAD
 <<<<<<< HEAD
 		boolean get = false; // get or generate
 <<<<<<< HEAD
@@ -436,18 +442,26 @@ public class Exploring {
 >>>>>>> Sampling Modularity implemented
 		
 		SamplingAlgorithm a = SamplingAlgorithm.BFS;
+=======
+//		boolean get = false; // get or generate
+//		int times = 1;		// how many generations?
+//		boolean b = false; // bidirectional?
+//		boolean r = false; // ring?
+//		
+		SamplingAlgorithm a = SamplingAlgorithm.UNIFORMSAMPLING;
+>>>>>>> fixes:
 		double sc = 0.2;
 		
-		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, new Long(0));
-		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, new Long(0));
-		Transformation[] t = new Transformation[2];
+		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
+		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
+		Transformation[] t = new Transformation[3];
 		
 		
 		
 		Arrays.fill(t, sa);
 		t[0] = sa;
-//		t[1] = sa2;
-		t[t.length-1] = new ExtractSampledSubgraphWithNeighborSet();
+		t[1] = sa2;
+		t[t.length-1] = new ExtractSampledSubgraph();
 		
 		
 <<<<<<< HEAD
@@ -556,6 +570,7 @@ public class Exploring {
 		Network[] ws1 = ZhouMondragon.get(50, new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6}, 7, null);
 =======
 //		Network nw1 = new Regular(30, 10, true, false, null);
+<<<<<<< HEAD
 		Network nw3 = new Regular(100, 10, true, false, null);
 		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
@@ -615,6 +630,9 @@ public class Exploring {
 =======
 		Network nw3 = new Regular(1000, 5, true, false, t);
 >>>>>>> plotting
+=======
+		Network nw3 = new Regular(1000, 10, true, false, null);
+>>>>>>> fixes:
 //		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 //		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
 //		
@@ -624,7 +642,11 @@ public class Exploring {
 //		Arrays.fill(nw, nw1);
 //		Network nw0 = new GeneralizedCondonAndKarp(nw, 0.00005, t);
 //		
+<<<<<<< HEAD
 		Network[] n = new Network[] {nw3};
+=======
+//		Network[] n = new Network[] {nw3};
+>>>>>>> fixes:
 ////		Network[] n = ws1;
 //		
 //		DegreeDistribution m = new DegreeDistribution();
@@ -632,10 +654,14 @@ public class Exploring {
 //		
 //		
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> fixes:
 //		Metric[] metrics = new Metric[] { 
 ////				new DegreeDistribution(),
 ////				new ClusteringCoefficient(),
 //				new ShortestPaths()
+<<<<<<< HEAD
 >>>>>>> fixes:
 =======
 		Metric[] metrics = new Metric[] { 
@@ -650,6 +676,8 @@ public class Exploring {
 =======
 				new BetweennessCentrality()
 >>>>>>> plotting
+=======
+>>>>>>> fixes:
 //				new BetweennessCentrality(),
 //				new Assortativity(),
 //				new SamplingBias()
@@ -657,6 +685,7 @@ public class Exploring {
 //				new SamplingModularity(),
 //				new DegreeDistributionComparator(m),
 //				new SamplingRevisitFrequency()
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> optimizing the PR metric
@@ -709,6 +738,9 @@ public class Exploring {
 >>>>>>> plotting for example plots
 				};
 >>>>>>> added relative eccentricity / effective diameter
+=======
+//				};
+>>>>>>> fixes:
 		
 =======
 //		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
@@ -1070,12 +1102,77 @@ public class Exploring {
 >>>>>>> plotting for example plots
 =======
 		
+<<<<<<< HEAD
 		 for(Network i : n){
 			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
 			 plot(i, "./plots/network-plot/"+i.getDescriptionShort(), times, t);
 		 }
 >>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
+=======
+		Graph g = nw3.generate();
+		g = t[0].transform(g);
+		g = t[1].transform(g);
+		
+		new GtnaGraphWriter().writeWithProperties(g, "./plots/network-plot/" + "base.txt");
+		for(int si = 0; si < 2; si++) {
+		    ((ExtractSampledSubgraph) t[2]).setIndex(si);
+		    Graph gi = t[2].transform(g);
+		    
+		    new GtnaGraphWriter().write(gi, "./plots/network-plot/" + "sample_" +si + ".txt");
+		    plotGraph(gi, "./plots/network-plot/", gi.toString() + "_"
+			+ si);
+		}	
+		 
+		
+		
+//		for(Network i : n){
+//			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
+//			 plot(i, "./plots/network-plot/"+i.getDescriptionShort(), times, t);
+//		 }
+>>>>>>> fixes:
 	}
+	
+	
+	private static void plotGraph(Graph g, String dir, String filename) {
+
+		File d = new File(dir);
+		if (!d.exists() || !d.isDirectory()) {
+		    d.mkdirs();
+		}
+
+		filename = dir + filename;
+
+		Transformation t_rpid = new RandomPlaneIDSpaceSimple(1, 100, 100, true);
+		Transformation t_rrid = new RandomRingIDSpaceSimple(true);
+		Transformation t_crid = new ConsecutiveRingIDSpace(true);
+
+		Transformation t_nid = t_crid;
+
+		Gephi gephi = new Gephi();
+		if (t_nid == t_rpid) {
+		    Config.overwrite("GEPHI_RING_RADIUS", "1");
+		    Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.01");
+		    Config.overwrite("GEPHI_EDGE_SCALE", "0.001");
+		    Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
+		    Config.overwrite("GEPHI_NODE_SIZE", "0.1");
+		} else if (t_nid == t_rrid || t_nid == t_crid) {
+		    Config.overwrite("GEPHI_RING_RADIUS", "50");
+		    Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.01");
+		    Config.overwrite("GEPHI_EDGE_SCALE", "0.001");
+		    Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
+		    Config.overwrite("GEPHI_NODE_SIZE", "0.001");
+		}
+
+		g = t_nid.transform(g);
+
+		IdentifierSpace ids = (IdentifierSpace) g.getProperty("ID_SPACE_0");
+
+		// new GtnaGraphWriter().writeWithProperties(g, graphFilename+".txt");
+		// // writing is already done
+
+		gephi.plot(g, ids, filename + ".pdf");
+
+	    }
 	
 	
 	public static void plot(Network nw, String filename, int times, Transformation[] t) {

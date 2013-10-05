@@ -37,6 +37,7 @@ package gtna.transformation.sampling.subgraph;
 
 import gtna.graph.Edges;
 import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.Sample;
@@ -45,6 +46,7 @@ import gtna.util.parameter.StringParameter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -52,6 +54,8 @@ import java.util.Set;
  * 
  */
 public class ExtractSampledSubgraph extends Transformation {
+
+    private int index = 0;
 
     /**
      * @param key
@@ -69,10 +73,19 @@ public class ExtractSampledSubgraph extends Transformation {
      */
     @Override
     public Graph transform(Graph g) {
-	Sample sample = (Sample) g.getProperty("SAMPLE_0");
+	Graph gi = new Graph(g.getName() + " (SAMPLED)");
 
+	Sample sample = (Sample) g.getProperty("SAMPLE_" + this.index);
+	
+	Node[] ni = Node.init(sample.getSampledIds().size(), gi);
+	Edges e = new Edges(ni, g.computeNumberOfEdges());
+	
+	gi.setNodes(ni);
+	
+	
+	
 	Set<Integer> oldIds = sample.getSampledIds();
-	Edges edges = g.getEdges();
+	
 
 	List<Node> sampledNodes = new ArrayList<Node>();
 
@@ -82,22 +95,31 @@ public class ExtractSampledSubgraph extends Transformation {
 	}
 
 	for (Node n : sampledNodes) {
-	    setNewOutgoingEdges(g, sample, oldIds, n);
-	    setNewIncomingEdges(g, sample, oldIds, n);
-	    n.setIndex(sample.getNewNodeId(n.getIndex()));
+	    Node giN = gi.getNode(sample.getNewNodeId(n.getIndex()));
+	    setNewOutgoingEdges(gi, sample, oldIds, n, giN);
+	    setNewIncomingEdges(gi, sample, oldIds, n, giN);
+//	    n.setIndex(sample.getNewNodeId(n.getIndex()));
 	}
 	
 	// set new Nodearray
-	Node[] newNodes = new Node[sampledNodes.size()];
-	for(Node n : sampledNodes) {
-	    newNodes[n.getIndex()] = n;
+//	Node[] newNodes = new Node[sampledNodes.size()];
+//	for(Node n : sampledNodes) {
+//	    newNodes[n.getIndex()] = n;
+//	}
+//	gi.setNodes(newNodes);
+	
+	for(Node nin : ni) {
+	    for(int i : nin.getOutgoingEdges()) {
+		e.add(nin.getIndex(), i);
+	    }
 	}
-	g.setNodes(newNodes);
-
-	g.setName(g.getName() + " (SAMPLED)");
+	
+	gi.setNodes(ni);
+	e.fill();
+	gi.setName(g.getName() + " (SAMPLED)");
 	
 	
-	return g;
+	return gi;
     }
 
     /**
@@ -107,7 +129,7 @@ public class ExtractSampledSubgraph extends Transformation {
      * @param n
      */
     private void setNewIncomingEdges(Graph g, Sample sample,
-	    Set<Integer> oldIds, Node n) {
+	    Set<Integer> oldIds, Node n, Node newN) {
 	int[] nIn = n.getIncomingEdges();
 	List<Integer> newIn = new ArrayList<Integer>();
 	
@@ -124,7 +146,7 @@ public class ExtractSampledSubgraph extends Transformation {
 	    nIn[i] = newIn.get(i);
 	}
 	
-	n.setIncomingEdges(nIn);
+	newN.setIncomingEdges(nIn);
 
     }
 
@@ -135,7 +157,7 @@ public class ExtractSampledSubgraph extends Transformation {
      * @param n
      */
     private void setNewOutgoingEdges(Graph g, Sample sample,
-	    Set<Integer> oldIds, Node n) {
+	    Set<Integer> oldIds, Node n, Node newN) {
 	int[] nOut = n.getOutgoingEdges();
 	List<Integer> newOut = new ArrayList<Integer>();
 	
@@ -151,7 +173,7 @@ public class ExtractSampledSubgraph extends Transformation {
 	for (int i = 0; i < newOut.size(); i++) {
 	    nOut[i] = newOut.get(i);
 	}
-	n.setOutgoingEdges(nOut);
+	newN.setOutgoingEdges(nOut);
     }
 
     /*
@@ -161,7 +183,11 @@ public class ExtractSampledSubgraph extends Transformation {
      */
     @Override
     public boolean applicable(Graph g) {
-	return g.hasProperty("SAMPLE_0");
+	return g.hasProperty("SAMPLE_" + this.index);
+    }
+    
+    public void setIndex(int i) {
+	this.index = i;
     }
 
 }
