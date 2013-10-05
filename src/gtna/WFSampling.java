@@ -78,6 +78,8 @@ public class WFSampling {
     private static String targetdir;
     private static boolean withNeigborSet;
     private static boolean plotting = false;
+    private static int samplingEndIndex;
+    private static int samplingStartIndex;
 
     /**
      * @param args
@@ -116,17 +118,19 @@ public class WFSampling {
 	}
 
 	Graph g;
-	for (int j = startIndex; j < endIndex; j++) {
+	for (int j = startIndex; j <= endIndex; j++) {
 	    g = rf.generate();
 	    if (g != null) {
-		g = samplingTransformation[0].transform(g); // sample graph
-		g = samplingTransformation[1].transform(g); // subgraph
-							    // generation/coloring
-
-
-		writeGraphToFile(g, targetdir , g.toString() + "_" + j);
-		if (plotting)
-		    plotGraph(g, targetdir + "plots/", g.toString() + "_" + j);
+		for (int si = samplingStartIndex; si < samplingEndIndex; si++) {
+		    Graph gi = samplingTransformation[0].transform(g); // sample graph
+		    gi = samplingTransformation[1].transform(gi); // subgraph
+								// generation/coloring
+		    
+		    writeGraphToFile(gi, targetdir + j + "/", gi.toString() +  "_" + si);
+		    if (plotting)
+			plotGraph(g, targetdir + j + "/" + "plots/", gi.toString() + "_"
+				+ si);
+		}
 	    }
 	}
 
@@ -137,14 +141,14 @@ public class WFSampling {
      * @param string
      */
     private static void plotGraph(Graph g, String dir, String filename) {
-	
+
 	File d = new File(dir);
-	if(!d.exists() || !d.isDirectory()) {
+	if (!d.exists() || !d.isDirectory()) {
 	    d.mkdirs();
 	}
-	
+
 	filename = dir + filename;
-	
+
 	Transformation t_rpid = new RandomPlaneIDSpaceSimple(1, 100, 100, true);
 	Transformation t_rrid = new RandomRingIDSpaceSimple(true);
 	Transformation t_crid = new ConsecutiveRingIDSpace(true);
@@ -165,8 +169,6 @@ public class WFSampling {
 	    Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
 	    Config.overwrite("GEPHI_NODE_SIZE", "0.001");
 	}
-
-	
 
 	g = t_nid.transform(g);
 
@@ -264,11 +266,16 @@ public class WFSampling {
 	    if (!f.isDirectory()) {
 		f.mkdir();
 	    }
-	} else if (s.startsWith("seq=")) {
-	    String seq = s.substring(4);
+	} else if (s.startsWith("srcseq=")) {
+	    String seq = s.substring(7);
 	    String[] se = seq.split("-");
 	    startIndex = Integer.parseInt(se[0]);
 	    endIndex = Integer.parseInt(se[1]);
+	} else if (s.startsWith("seq=")) {
+	    String seq = s.substring(4);
+	    String[] se = seq.split("-");
+	    samplingStartIndex = Integer.parseInt(se[0]);
+	    samplingEndIndex = Integer.parseInt(se[1]);
 	} else if (s.startsWith("plot=")) {
 	    if (s.equalsIgnoreCase("plot=true")) {
 		plotting = true;
@@ -281,12 +288,12 @@ public class WFSampling {
 
     private static String writeGraphToFile(Graph g, String dir, String filename) {
 	File d = new File(dir);
-	if(!d.exists() || !d.isDirectory()) {
+	if (!d.exists() || !d.isDirectory()) {
 	    d.mkdirs();
 	}
-	
+
 	filename = dir + filename;
-	new GtnaGraphWriter().writeWithProperties(g, filename);
+//	new GtnaGraphWriter().writeWithProperties(g, filename);
 	new GtnaGraphWriter().write(g, filename + ".gtna");
 	return filename;
     }
