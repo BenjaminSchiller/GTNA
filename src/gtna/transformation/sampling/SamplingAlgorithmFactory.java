@@ -85,7 +85,7 @@ public class SamplingAlgorithmFactory {
      * @param revisiting
      * @param dimension
      *            IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
-     * @param randomSeed 
+     * @param randomSeed - can be <b>null</b> to use a standard RNG
      * @return
      */
     public static SamplingController getInstanceOf(SamplingAlgorithm sg,
