@@ -37,11 +37,15 @@ package gtna.metrics.sampling;
 
 import gtna.data.Single;
 import gtna.graph.Graph;
+import gtna.graph.GraphProperty;
 import gtna.graph.Node;
+import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.transformation.sampling.Sample;
+import gtna.util.Distribution;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -51,110 +55,183 @@ import java.util.Set;
  */
 public class SamplingModularity extends Metric {
 
-    private int sampleIndex;
-    private double sampleModularity;
-    private double sampleEdges;
-    private int edges;
-    private int sampleNodes;
-    private int nodes;
+	private int sampleIndex;
+	private double sampleModularity;
+	private double sampleEdges;
+	private int edges;
+	private int sampleNodes;
+	private int nodes;
+	private Distribution samplemodularity;
+	private double smMax;
+	private double smMin;
+	private double smMed;
+	private double smAvg;
 
-    /**
-     * @param key
-     */
-    public SamplingModularity() {
-	super("SAMPLING_MODULARITY");
-	this.sampleIndex = 0;
-    }
+	/**
+	 * @param key
+	 */
+	public SamplingModularity() {
+		super("SAMPLING_MODULARITY");
+	}
 
-    /**
-     * @param key
-     * @param parameters
-     */
-    public SamplingModularity(int i) {
-	this();
-	this.sampleIndex = i;
-    }
+	/*
+	 * 
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#computeData(gtna.graph.Graph,
+	 * gtna.networks.Network, java.util.HashMap)
+	 */
+	@Override
+	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
+		Sample[] samples = this.getSampleProperties(g);
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see gtna.metrics.Metric#computeData(gtna.graph.Graph,
-     * gtna.networks.Network, java.util.HashMap)
-     */
-    @Override
-    public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
-	Sample s = this.getSampleProperty(g);
-	
-	double sumDegrees = 0;
-	double withinEdgeSum = 0;
-	
-	Set<Integer> sample = s.getSampledIds();
-	for(Integer nodeId : sample) {
-	    Node node = g.getNode(nodeId);
-	    
-	    sumDegrees += node.getOutDegree();
-	    // count incoming edges? (incoming into the sample-community) TODO
-	    
-	    // count edges within the sample-community
-	    for(Integer outEdge : node.getOutgoingEdges()) {
-		if(sample.contains(outEdge)) {
-		    withinEdgeSum++;
+		double[] sm = new double[samples.length];
+
+		for (int i = 0; i < samples.length; i++) {
+			Sample s = samples[i];
+			double sumDegrees = 0;
+			double withinEdgeSum = 0;
+
+			Set<Integer> sample = s.getSampledIds();
+			for (Integer nodeId : sample) {
+				Node node = g.getNode(nodeId);
+
+				sumDegrees += node.getOutDegree();
+				// count incoming edges? (incoming into the sample-community)
+				// TODO
+
+				// count edges within the sample-community
+				for (Integer outEdge : node.getOutgoingEdges()) {
+					if (sample.contains(outEdge)) {
+						withinEdgeSum++;
+					}
+				}
+			}
+
+			sampleModularity = withinEdgeSum / sumDegrees;
+			sampleNodes = sample.size();
+
+			sm[i] = sampleModularity;
+
 		}
-	    }
+
+		this.samplemodularity = new Distribution(sm);
+		this.smMax = getMax(sm);
+		this.smMin = getMin(sm);
+		this.smMed = getMed(sm);
+		this.smAvg = getAvg(sm);
 	}
-	
-//	nodes = g.getNodeCount();
-//	sampleNodes = sample.size();
-//	edges = g.getEdges().size();
-//	sampleEdges = Math.abs(sumDegrees);
-	
-	sampleModularity = withinEdgeSum / sumDegrees;
-	
-	
 
-    }
+	private double getMax(double[] dis) {
+		double max = 0;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see gtna.metrics.Metric#writeData(java.lang.String)
-     */
-    @Override
-    public boolean writeData(String folder) {
-	boolean success = true;
-	return success;
-    }
+		for (double d : dis) {
+			max = Math.max(max, d);
+		}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see gtna.metrics.Metric#getSingles()
-     */
-    @Override
-    public Single[] getSingles() {
-	Single smSampleModularity = new Single("SAMPLING_MODULARITY_SAMPLING_MODULARITY", sampleModularity);
-	
-	return new Single[] {smSampleModularity};
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see gtna.metrics.Metric#applicable(gtna.graph.Graph,
-     * gtna.networks.Network, java.util.HashMap)
-     */
-    @Override
-    public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-	if (g.hasProperty("SAMPLE_" + sampleIndex)) {
-	    return true;
-	} else {
-	    return false;
+		return max;
 	}
-    }
-    
-    
-    private Sample getSampleProperty(Graph g) {
-	return (Sample)g.getProperty("SAMPLE_" + sampleIndex);
-    }
+
+	private double getMin(double[] dis) {
+		double min = Double.MAX_VALUE;
+
+		for (double d : dis) {
+			min = Math.min(min, d);
+		}
+
+		return min;
+	}
+
+	private double getAvg(double[] dis) {
+		double sum = 0;
+
+		for (double d : dis) {
+			sum += d;
+		}
+
+		return sum / dis.length;
+	}
+
+	private double getMed(double[] dis) {
+		double[] s = dis;
+		double median;
+		Arrays.sort(s);
+
+		if (s.length % 2 != 0) {
+			// odd number of entries
+			median = dis[(int) Math.floor(dis.length / 2)];
+		} else {
+			// even number of entries
+			double umed = dis[(int) dis.length / 2 - 1];
+			double omed = dis[(int) dis.length / 2];
+
+			median = umed + (omed - umed) / 2;
+		}
+
+		return median;
+	}
+
+	/**
+	 * @param g
+	 * @return
+	 */
+	private Sample[] getSampleProperties(Graph g) {
+		GraphProperty[] p = g.getProperties("SAMPLE");
+		Sample[] s = new Sample[p.length];
+
+		for (int i = 0; i < s.length; i++) {
+			s[i] = (Sample) p[i];
+		}
+
+		return s;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#writeData(java.lang.String)
+	 */
+	@Override
+	public boolean writeData(String folder) {
+		boolean success = true;
+		success &= DataWriter.writeWithIndex(
+				this.samplemodularity.getDistribution(),
+				"SAMPLING_MODULARITY_DISTRIBUTION", folder);
+		return success;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#getSingles()
+	 */
+	@Override
+	public Single[] getSingles() {
+		Single smMax = new Single("SAMPLING_MODULARITY_MAX",
+				this.smMax);
+		Single smMin = new Single("SAMPLING_MODULARITY_MIN",
+				this.smMin);
+		Single smAvg = new Single("SAMPLING_MODULARITY_AVG",
+				this.smAvg);
+		Single smMed = new Single("SAMPLING_MODULARITY_MED",
+				this.smMed);
+
+		return new Single[] { smMax, smMin, smAvg, smMed };
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#applicable(gtna.graph.Graph,
+	 * gtna.networks.Network, java.util.HashMap)
+	 */
+	@Override
+	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+		if (g.getProperties("SAMPLE").length > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 }
