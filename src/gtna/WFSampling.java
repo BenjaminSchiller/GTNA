@@ -122,15 +122,22 @@ public class WFSampling {
 	    g = rf.generate();
 	    if (g != null) {
 		for (int si = samplingStartIndex; si < samplingEndIndex; si++) {
-		    Graph gi = samplingTransformation[0].transform(g); // sample graph
+		    Graph gi = samplingTransformation[0].transform(g); // sample
+								       // graph
 		    gi = samplingTransformation[1].transform(gi); // subgraph
-								// generation/coloring
-		    
-		    writeGraphToFile(gi, targetdir + j + "/", gi.toString() +  "_" + si);
+								  // generation/coloring
+
+		    writeGraphToFile(gi, targetdir + j + "/", gi.toString()
+			    + "_" + si);
+
 		    if (plotting)
-			plotGraph(g, targetdir + j + "/" + "plots/", gi.toString() + "_"
-				+ si);
+			plotGraph(gi, targetdir + j + "/" + "plots/",
+				gi.toString() + "_" + si);
 		}
+		writeOriginalGraphWithPropertiesToFile(g, targetdir + j
+			+ "/original-with-props/", g.toString());
+		if (plotting)
+		    plotGraph(g, targetdir + j + "/plots/", g.toString());
 	    }
 	}
 
@@ -244,10 +251,14 @@ public class WFSampling {
 	    subgraph = matchSubgraph(sg);
 	} else if (s.startsWith("randomSeed=")) {
 	    String seedDate = s.substring(11);
-	    seedDate.matches("[0-3][0-9]\\.[0-1][0-9]\\.[0-9][0-9][0-9][0-9]");
-	    DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-	    Date seeddate = df.parse(seedDate);
-	    seed = seeddate.getTime();
+	    if (!seedDate.isEmpty()) {
+		seedDate.matches("[0-3][0-9]\\.[0-1][0-9]\\.[0-9][0-9][0-9][0-9]");
+		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+		Date seeddate = df.parse(seedDate);
+		seed = seeddate.getTime();
+	    } else {
+		seed = null;
+	    }
 	} else if (s.startsWith("dir=")) {
 	    dir = s.substring(4);
 	    File f = new File(dir);
@@ -293,9 +304,29 @@ public class WFSampling {
 	}
 
 	filename = dir + filename;
-//	new GtnaGraphWriter().writeWithProperties(g, filename);
+	// new GtnaGraphWriter().writeWithProperties(g, filename);
 	new GtnaGraphWriter().write(g, filename + ".gtna");
 	return filename;
+    }
+
+    /**
+     * @param g
+     * @param string
+     * @param string2
+     * @return
+     */
+    private static String writeOriginalGraphWithPropertiesToFile(Graph g,
+	    String dir, String filename) {
+	File d = new File(dir);
+	if (!d.exists() || !d.isDirectory()) {
+	    d.mkdirs();
+	}
+
+	filename = dir + filename;
+	new GtnaGraphWriter().writeWithProperties(g, filename);
+	// new GtnaGraphWriter().write(g, filename + ".gtna");
+	return filename;
+
     }
 
     /**
