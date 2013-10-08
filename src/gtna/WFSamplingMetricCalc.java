@@ -86,7 +86,8 @@ public class WFSamplingMetricCalc {
 		
 
 		Set<Metric> metrics = new HashSet<Metric>();
-
+		ArrayList<Metric> rfMetr = new ArrayList<Metric>();
+ 
 		if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("help")) {
 				printHelp();
@@ -162,7 +163,9 @@ public class WFSamplingMetricCalc {
 		
 		if(samplingRevisitFrequency) {
 		    for(int i = 0; i < instances; i++) {
-			metrics.add(new SamplingRevisitFrequency(i));
+		    	SamplingRevisitFrequency rf = new SamplingRevisitFrequency(i);
+			metrics.add(rf);
+			rfMetr.add(rf);
 		    }
 		}
 		
@@ -184,15 +187,25 @@ public class WFSamplingMetricCalc {
 //			    series[i] = Series.generate(rfa[i], metrics.toArray(new Metric[0]), startIndex, endIndex);
 //			}
 		} else {
-			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
+			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 			int t = endIndex-startIndex;
 			System.out.println("S: " + startIndex + " E: " + endIndex + " E-S: " + t);
 			Series[] series = new Series[rfa.length];
 			for(int i = 0; i < rfa.length; i++)
 				series[i] = Series.generate(rfa[i], metrics.toArray(new Metric[0]), 1);
 			
+			
+			metrics.removeAll(rfMetr);
+			
 			Plotting.single(series, metrics.toArray(new Metric[0]), "/single/");  // main path to plots is set by Config.overwrite
 			Plotting.multi(series, metrics.toArray(new Metric[0]), "/multi/"); // main path to plots is set by Config.overwrite
+			
+		
+			for(int i = 0; i < rfMetr.size(); i++){
+				Metric m = rfMetr.get(i);
+				Plotting.single(series, new Metric[]{m}, "/single/rf_" + i + "/");
+				Plotting.multi(series, new Metric[]{m}, "/multi/rf_" + i + "/");
+			}
 		
 		}
 
