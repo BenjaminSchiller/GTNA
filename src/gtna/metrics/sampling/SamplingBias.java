@@ -57,6 +57,10 @@ public class SamplingBias extends Metric {
 	private Integer edges;
 	private Integer nodes;
 	private Distribution biasd;
+	private double sbAvg;
+	private double sbMed;
+	private double sbMin;
+	private double sbMax;
 
 	/**
 	 * @param key
@@ -95,6 +99,11 @@ public class SamplingBias extends Metric {
 		biasd = new Distribution(sb);
 		nodes = g.getNodeCount();
 		edges = g.getEdges().size();
+		
+		this.sbMax = getMax(sb);
+		this.sbMin = getMin(sb);
+		this.sbMed = getMed(sb);
+		this.sbAvg = getAvg(sb);
 	}
 
 	/* (non-Javadoc)
@@ -121,10 +130,10 @@ public class SamplingBias extends Metric {
 		Single nodes = new Single("SAMPLING_BIAS_NODES", this.nodes);
 		Single edges = new Single("SAMPLING_BIAS_EDGES", this.edges);
 		
-		Single sbMin = new Single("SAMPLING_BIAS_MIN", biasd.getMin());
-		Single sbMed = new Single("SAMPLING_BIAS_MED", biasd.getMedian());
-		Single sbAvg = new Single("SAMPLING_BIAS_AVG", biasd.getAverage());
-		Single sbMax = new Single("SAMPLING_BIAS_MAX", biasd.getMax());
+		Single sbMin = new Single("SAMPLING_BIAS_MIN", this.sbMin);
+		Single sbMed = new Single("SAMPLING_BIAS_MED", this.sbMed);
+		Single sbAvg = new Single("SAMPLING_BIAS_AVG", this.sbAvg);
+		Single sbMax = new Single("SAMPLING_BIAS_MAX", this.sbMax);
 		
 		return new Single[] { nodes, edges, sbMin, sbMed, sbAvg, sbMax };
 	}
@@ -140,6 +149,55 @@ public class SamplingBias extends Metric {
 		} else {
 			return false;
 		}
+	}
+	
+	private double getMax(double[] dis) {
+		double max = 0;
+
+		for (double d : dis) {
+			max = Math.max(max, d);
+		}
+
+		return max;
+	}
+
+	private double getMin(double[] dis) {
+		double min = Double.MAX_VALUE;
+
+		for (double d : dis) {
+			min = Math.min(min, d);
+		}
+
+		return min;
+	}
+
+	private double getAvg(double[] dis) {
+		double sum = 0;
+
+		for (double d : dis) {
+			sum += d;
+		}
+
+		return sum / dis.length;
+	}
+
+	private double getMed(double[] dis) {
+		double[] s = dis;
+		double median;
+		Arrays.sort(s);
+
+		if (s.length % 2 != 0) {
+			// odd number of entries
+			median = dis[(int) Math.floor(dis.length / 2)];
+		} else {
+			// even number of entries
+			double umed = dis[(int) dis.length / 2 - 1];
+			double omed = dis[(int) dis.length / 2];
+
+			median = umed + (omed - umed) / 2;
+		}
+
+		return median;
 	}
 
 }

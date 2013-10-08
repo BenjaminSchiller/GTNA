@@ -68,6 +68,10 @@ public class BetweennessCentrality extends Metric {
 	private Distribution BC;
 	private int edges;
 	private int nodes;
+	private double bcMed;
+	private double bcAvg;
+	private double bcMin;
+	private double bcMax;
 
 	/**
 	 * @param key
@@ -108,6 +112,11 @@ public class BetweennessCentrality extends Metric {
 		BC = new Distribution(cb);
 		this.nodes = g.getNodes().length;
 		this.edges = g.getEdges().size();
+		
+		this.bcMax = getMax(cb);
+		this.bcMin = getMin(cb);
+		this.bcAvg = getAvg(cb);
+		this.bcMed = getMed(cb);
 
 	}
 	
@@ -147,10 +156,10 @@ public class BetweennessCentrality extends Metric {
 		Single nodes = new Single("BETWEENNESS_CENTRALITY_NODES", this.nodes);
 		Single edges = new Single("BETWEENNESS_CENTRALITY_EDGES", this.edges);
 		
-		Single bcMin = new Single("BETWEENNESS_CENTRALITY_MIN", this.BC.getMin());
-		Single bcMed = new Single("BETWEENNESS_CENTRALITY_MED", this.BC.getMedian());
-		Single bcAvg = new Single("BETWEENNESS_CENTRALITY_AVG", this.BC.getAverage());
-		Single bcMax = new Single("BETWEENNESS_CENTRALITY_MAX", this.BC.getMax());
+		Single bcMin = new Single("BETWEENNESS_CENTRALITY_MIN", this.bcMin);
+		Single bcMed = new Single("BETWEENNESS_CENTRALITY_MED", this.bcMed);
+		Single bcAvg = new Single("BETWEENNESS_CENTRALITY_AVG", this.bcAvg);
+		Single bcMax = new Single("BETWEENNESS_CENTRALITY_MAX", this.bcMax);
 		
 		return new Single[] { nodes, edges, bcMin, bcMed, bcAvg, bcMax };
 		
@@ -257,6 +266,56 @@ public class BetweennessCentrality extends Metric {
 		}
 
 		return nv.toArray(new Node[0]);
+	}
+	
+	
+	private double getMax(double[] dis) {
+		double max = 0;
+
+		for (double d : dis) {
+			max = Math.max(max, d);
+		}
+
+		return max;
+	}
+
+	private double getMin(double[] dis) {
+		double min = Double.MAX_VALUE;
+
+		for (double d : dis) {
+			min = Math.min(min, d);
+		}
+
+		return min;
+	}
+
+	private double getAvg(double[] dis) {
+		double sum = 0;
+
+		for (double d : dis) {
+			sum += d;
+		}
+
+		return sum / dis.length;
+	}
+
+	private double getMed(double[] dis) {
+		double[] s = dis;
+		double median;
+		Arrays.sort(s);
+
+		if (s.length % 2 != 0) {
+			// odd number of entries
+			median = dis[(int) Math.floor(dis.length / 2)];
+		} else {
+			// even number of entries
+			double umed = dis[(int) dis.length / 2 - 1];
+			double omed = dis[(int) dis.length / 2];
+
+			median = umed + (omed - umed) / 2;
+		}
+
+		return median;
 	}
 
 }
