@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author Tim
@@ -376,7 +377,19 @@ public class NetworkSample extends Parameter {
 	 * @return the numberOfRounds
 	 */
 	public int getNumberOfRounds() {
-		return numberOfRounds;
+		
+		int nor = 0;
+		
+		for(Entry<Integer, List<Integer>> e : revisitFrequency.entrySet()){
+			for(Integer r : e.getValue()){
+				nor = Math.max(nor, r);
+			}
+		}
+		
+		
+		
+		
+		return nor;
 	}
 
 
