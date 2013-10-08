@@ -95,10 +95,11 @@ public class BetweennessCentrality extends Metric {
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		this.calculateBC(g);
 		
-		int max = getMaxBc(cbs);
+		int sumSP = getSumSP(cbs);
 		double[] cb = new double[cbs.length]; // was max + 1
 		for(int i = 0; i < cbs.length; i++) {
-		    cb[i] = (double) cbs[i];
+//		    System.out.println("BC: " + i + " : " + cbs[i] + " : " + sumSP + " = " + cbs[i]/sumSP);
+		    cb[i] = (double) cbs[i]/(double) sumSP;
 		}
 //		for(int i = 0; i < cb.length; i++) {
 //		    cb[i] /= (double)g.getNodes().length;
@@ -110,12 +111,12 @@ public class BetweennessCentrality extends Metric {
 
 	}
 	
-	private int getMaxBc(int[] cbs2) {
+	private int getSumSP(int[] cbs2) {
 	    int m = 0;
 	    
 	    for(int i = 0; i < cbs2.length; i++) {
 		if(cbs2[i] > m)
-		    m = cbs2[i];
+		    m += cbs2[i];
 	    }
 	    
 	    return m;
@@ -146,10 +147,10 @@ public class BetweennessCentrality extends Metric {
 		Single nodes = new Single("BETWEENNESS_CENTRALITY_NODES", this.nodes);
 		Single edges = new Single("BETWEENNESS_CENTRALITY_EDGES", this.edges);
 		
-		Single bcMin = new Single("BETWEENNESS_CENTRALITY_MIN", BC.getMin());
-		Single bcMed = new Single("BETWEENNESS_CENTRALITY_MED", BC.getMedian());
-		Single bcAvg = new Single("BETWEENNESS_CENTRALITY_AVG", BC.getAverage());
-		Single bcMax = new Single("BETWEENNESS_CENTRALITY_MAX", BC.getMax());
+		Single bcMin = new Single("BETWEENNESS_CENTRALITY_MIN", this.BC.getMin());
+		Single bcMed = new Single("BETWEENNESS_CENTRALITY_MED", this.BC.getMedian());
+		Single bcAvg = new Single("BETWEENNESS_CENTRALITY_AVG", this.BC.getAverage());
+		Single bcMax = new Single("BETWEENNESS_CENTRALITY_MAX", this.BC.getMax());
 		
 		return new Single[] { nodes, edges, bcMin, bcMed, bcAvg, bcMax };
 		
