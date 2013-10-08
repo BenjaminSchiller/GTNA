@@ -45,6 +45,7 @@ import gtna.metrics.centrality.BetweennessCentrality;
 import gtna.metrics.centrality.PageRank;
 import gtna.metrics.sampling.SamplingBias;
 import gtna.metrics.sampling.SamplingModularity;
+import gtna.metrics.sampling.SamplingRevisitFrequency;
 import gtna.networks.Network;
 import gtna.networks.util.ReadableFolder;
 import gtna.plot.Gnuplot.Style;
@@ -65,7 +66,7 @@ import java.util.Set;
  * @author Tim
  * 
  */
-public class WFMetricCalc {
+public class WFSamplingMetricCalc {
 
 	private static String dir;
 	private static String suffix;
@@ -77,6 +78,10 @@ public class WFMetricCalc {
 	private static LinkedList<String> dirs = new LinkedList<String>();
 	private static String orgdir = "";
 	private static Network rfo;
+	private static boolean samplingModularity;
+	private static boolean samplingBias;
+	private static boolean samplingRevisitFrequency;
+	private static int instances;
 
 	/**
 	 * @param args
@@ -98,33 +103,23 @@ public class WFMetricCalc {
 
 		for (String s : args) {
 
-			if (s.equalsIgnoreCase("DD")) {
-				metrics.add(new DegreeDistribution());
-			} else if (s.equalsIgnoreCase("CC")) {
-				metrics.add(new ClusteringCoefficient());
-			} else if (s.equalsIgnoreCase("HP")) {
-				metrics.add(new ShortestPaths());
-			} else if (s.equalsIgnoreCase("DIAM")) {
-				metrics.add(new ShortestPaths());
-			} else if (s.equalsIgnoreCase("ECC")) {
-				metrics.add(new ShortestPaths());
-			} else if (s.equalsIgnoreCase("BC")) {
-				metrics.add(new BetweennessCentrality());
-			} else if (s.equalsIgnoreCase("PR")) {
-				metrics.add(new PageRank());
-			} else if (s.equalsIgnoreCase("ASS")) {
-				metrics.add(new Assortativity());
-//			}else if (s.equalsIgnoreCase("SB")) {		// has to be computed in an extra run as it needs the original graph with sampling properties
-//				metrics.add(new SamplingBias());
-//			}else if (s.equalsIgnoreCase("SM")) {		// has to be computed in an extra run as it needs the original graph with sampling properties
-//				metrics.add(new SamplingModularity());
-//			}else if (s.equalsIgnoreCase("SRF")) {		// has to be computed in an extra run as it needs the original graph with sampling properties
-//				metrics.add(new SamplingRevisitFrequency());
+			if (s.equalsIgnoreCase("SB")) {		// has to be computed in an extra run as it needs the original graph with sampling properties
+				samplingBias = true;
+			    
+			}else if (s.equalsIgnoreCase("SM")) {		// has to be computed in an extra run as it needs the original graph with sampling properties
+				samplingModularity = true;
+			    
+			}else if (s.equalsIgnoreCase("SRF")) {		// has to be computed in an extra run as it needs the original graph with sampling properties
+				samplingRevisitFrequency = true;
+			    
 			}
 			else if (s.startsWith("suffix=")) {
 				suffix = s.substring(7);
 			} else if (s.startsWith("name=")) {
 				name = s.substring(5);
+			}else if (s.startsWith("instances=")) {
+				instances = Integer.parseInt(s.substring(10));
+				
 			} else if (s.startsWith("seq=")) {
 				String seq = s.substring(4);
 				String[] se = seq.split("-");
@@ -151,6 +146,7 @@ public class WFMetricCalc {
 			else if (s.startsWith("origdir=")) {
 				orgdir = s.substring(8);
 			}else {
+			    	System.out.print(">> " + s);
 				printHelp();
 				System.exit(0);
 			}
@@ -159,6 +155,21 @@ public class WFMetricCalc {
 		Config.overwrite("MAIN_DATA_FOLDER", targetdir + "data/");
 		Config.overwrite("MAIN_PLOT_FOLDER", targetdir + "plots/");
 		
+		if(samplingBias)
+		    metrics.add(new SamplingBias());
+		
+		if(samplingModularity) {
+		    for(int i = 0; i < instances; i++) {
+			metrics.add(new SamplingModularity(i));
+		    }
+		}
+		    
+		
+		if(samplingRevisitFrequency) {
+		    for(int i = 0; i < instances; i++) {
+			metrics.add(new SamplingRevisitFrequency(i));
+		    }
+		}
 		
 		Collection<ReadableFolder> rfc = new ArrayList<ReadableFolder>();
 		for(String dir : dirs.toArray(new String[0])) {
