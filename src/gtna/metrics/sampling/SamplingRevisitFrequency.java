@@ -43,6 +43,7 @@ import gtna.networks.Network;
 import gtna.transformation.sampling.Sample;
 import gtna.util.Distribution;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +62,10 @@ public class SamplingRevisitFrequency extends Metric {
 	private int edges;
 	private int nodes;
 	private Distribution samplingEfficiency;
+	private double rfMax;
+	private double rfMin;
+	private double rfAvg;
+	private double rfMed;
 
 	/**
 	 * @param key
@@ -122,6 +127,11 @@ public class SamplingRevisitFrequency extends Metric {
 		nodes = g.getNodes().length;
 		edges = g.getEdges().size();
 		numberOfRounds = s.getSample().getNumberOfRounds();
+		
+		this.rfMax = getMax(rounds);
+		this.rfMin = getMin(rounds);
+		this.rfAvg = getAvg(rounds);
+		this.rfMed = getMed(rounds);
 
 	}
 
@@ -148,10 +158,10 @@ public class SamplingRevisitFrequency extends Metric {
 		Single edges = new Single("SAMPLING_REVISIT_FREQUENCY_EDGES", this.edges);
 		Single rounds = new Single("SAMPLING_REVISIT_FREQUENCY_ROUNDS", this.numberOfRounds);
 		
-		Single rfMin = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MIN", this.revisitFrequency.getMin());
-		Single rfMed = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MED", this.revisitFrequency.getMedian());
-		Single rfAvg = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_AVG", this.revisitFrequency.getAverage());
-		Single rfMax = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MAX", this.revisitFrequency.getMax());
+		Single rfMin = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MIN", this.rfMin);
+		Single rfMed = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MED", this.rfMed);
+		Single rfAvg = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_AVG", this.rfAvg);
+		Single rfMax = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MAX", this.rfMax);
 		
 		return new Single[] { 
 				nodes, edges, rounds, 
@@ -168,6 +178,55 @@ public class SamplingRevisitFrequency extends Metric {
 		} else {
 			return false;
 		}
+	}
+	
+	private double getMax(double[] dis) {
+		double max = 0;
+
+		for (double d : dis) {
+			max = Math.max(max, d);
+		}
+
+		return max;
+	}
+
+	private double getMin(double[] dis) {
+		double min = Double.MAX_VALUE;
+
+		for (double d : dis) {
+			min = Math.min(min, d);
+		}
+
+		return min;
+	}
+
+	private double getAvg(double[] dis) {
+		double sum = 0;
+
+		for (double d : dis) {
+			sum += d;
+		}
+
+		return sum / dis.length;
+	}
+
+	private double getMed(double[] dis) {
+		double[] s = dis;
+		double median;
+		Arrays.sort(s);
+
+		if (s.length % 2 != 0) {
+			// odd number of entries
+			median = dis[(int) Math.floor(dis.length / 2)];
+		} else {
+			// even number of entries
+			double umed = dis[(int) dis.length / 2 - 1];
+			double omed = dis[(int) dis.length / 2];
+
+			median = umed + (omed - umed) / 2;
+		}
+
+		return median;
 	}
 
 }
