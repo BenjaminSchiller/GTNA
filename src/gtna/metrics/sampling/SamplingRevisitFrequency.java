@@ -51,6 +51,7 @@ import gtna.transformation.sampling.Sample;
 import gtna.util.Distribution;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,6 +59,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 =======
+=======
+import java.util.Arrays;
+>>>>>>> min/max/avg/med calculation
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -83,10 +87,14 @@ public class SamplingRevisitFrequency extends Metric {
 	private int nodes;
 	private Distribution samplingEfficiency;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> min/max/avg/med calculation
 	private double rfMax;
 	private double rfMin;
 	private double rfAvg;
 	private double rfMed;
+<<<<<<< HEAD
 =======
 >>>>>>> computation of the basic revisit frequency
 =======
@@ -96,6 +104,8 @@ public class SamplingRevisitFrequency extends Metric {
 >>>>>>> SRF properties
 =======
 >>>>>>> Added distribution for showing the efficiency
+=======
+>>>>>>> min/max/avg/med calculation
 
 	/**
 	 * @param key
@@ -166,6 +176,7 @@ public class SamplingRevisitFrequency extends Metric {
 		this.rfMin = getMin(rounds);
 		this.rfAvg = getAvg(rounds);
 		this.rfMed = getMed(rounds);
+<<<<<<< HEAD
 =======
 		
 		
@@ -177,6 +188,8 @@ public class SamplingRevisitFrequency extends Metric {
 		edges = g.getEdges().size();
 		numberOfRounds = s.getSample().getNumberOfRounds();
 >>>>>>> SRF properties
+=======
+>>>>>>> min/max/avg/med calculation
 
 	}
 
@@ -223,16 +236,22 @@ public class SamplingRevisitFrequency extends Metric {
 		Single rounds = new Single("SAMPLING_REVISIT_FREQUENCY_ROUNDS", this.numberOfRounds);
 		
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> min/max/avg/med calculation
 		Single rfMin = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MIN", this.rfMin);
 		Single rfMed = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MED", this.rfMed);
 		Single rfAvg = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_AVG", this.rfAvg);
 		Single rfMax = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MAX", this.rfMax);
+<<<<<<< HEAD
 =======
 		Single rfMin = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MIN", this.revisitFrequency.getMin());
 		Single rfMed = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MED", this.revisitFrequency.getMedian());
 		Single rfAvg = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_AVG", this.revisitFrequency.getAverage());
 		Single rfMax = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MAX", this.revisitFrequency.getMax());
 >>>>>>> SRF properties
+=======
+>>>>>>> min/max/avg/med calculation
 		
 		return new Single[] { 
 				nodes, edges, rounds, 
@@ -258,6 +277,9 @@ public class SamplingRevisitFrequency extends Metric {
 		}
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> min/max/avg/med calculation
 	
 	private double getMax(double[] dis) {
 		double max = 0;
@@ -307,7 +329,10 @@ public class SamplingRevisitFrequency extends Metric {
 
 		return median;
 	}
+<<<<<<< HEAD
 =======
 >>>>>>> computation of the basic revisit frequency
+=======
+>>>>>>> min/max/avg/med calculation
 
 }
