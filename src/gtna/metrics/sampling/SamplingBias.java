@@ -205,11 +205,16 @@ public class SamplingBias extends Metric {
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// at least 1 sample necessary
 		if(g.getProperties("SAMPLE").length > 0) {
 =======
 		if(g.hasProperty("SAMPLE_0")){ // at least 1 sample necessary
 >>>>>>> SamplingBias properties
+=======
+		// at least 1 sample necessary
+		if(g.getProperties("SAMPLE").length > 0) {
+>>>>>>> changes in plotting, sampling etc
 			return true;
 		} else {
 			return false;
