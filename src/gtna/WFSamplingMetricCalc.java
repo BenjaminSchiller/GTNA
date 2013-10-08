@@ -37,16 +37,11 @@ package gtna;
 
 import gtna.data.Series;
 import gtna.metrics.Metric;
-import gtna.metrics.basic.Assortativity;
-import gtna.metrics.basic.ClusteringCoefficient;
-import gtna.metrics.basic.DegreeDistribution;
-import gtna.metrics.basic.ShortestPaths;
-import gtna.metrics.centrality.BetweennessCentrality;
-import gtna.metrics.centrality.PageRank;
 import gtna.metrics.sampling.SamplingBias;
 import gtna.metrics.sampling.SamplingModularity;
 import gtna.metrics.sampling.SamplingRevisitFrequency;
 import gtna.networks.Network;
+import gtna.networks.util.ReadableFile;
 import gtna.networks.util.ReadableFolder;
 import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
@@ -115,6 +110,9 @@ public class WFSamplingMetricCalc {
 			}
 			else if (s.startsWith("suffix=")) {
 				suffix = s.substring(7);
+				if(suffix.isEmpty()){
+					suffix = "";
+				}
 			} else if (s.startsWith("name=")) {
 				name = s.substring(5);
 			}else if (s.startsWith("instances=")) {
@@ -141,12 +139,10 @@ public class WFSamplingMetricCalc {
 			// readable folder?
 			else if (s.startsWith("loaddir=")) {
 				dirs.add(s.substring(8));
-			} 
-			// readable folder?
-			else if (s.startsWith("origdir=")) {
-				orgdir = s.substring(8);
+			
+		
 			}else {
-			    	System.out.print(">> " + s);
+			    	System.out.print("WRONG PARAMETER: >> " + s);
 				printHelp();
 				System.exit(0);
 			}
@@ -159,9 +155,8 @@ public class WFSamplingMetricCalc {
 		    metrics.add(new SamplingBias());
 		
 		if(samplingModularity) {
-		    for(int i = 0; i < instances; i++) {
-			metrics.add(new SamplingModularity(i));
-		    }
+			metrics.add(new SamplingModularity());
+		   
 		}
 		    
 		
@@ -171,65 +166,32 @@ public class WFSamplingMetricCalc {
 		    }
 		}
 		
-		Collection<ReadableFolder> rfc = new ArrayList<ReadableFolder>();
-		for(String dir : dirs.toArray(new String[0])) {
-		    ReadableFolder rf = new ReadableFolder(name, name, dir, suffix, null);
-		    
-		 // current index is 0!
-//			if (startIndex > 0) {
-//				for (int i = 0; i < startIndex; i++) {
-//					rf.incIndex();
-//				}
-//			}
-		    
-		    rfc.add(rf);
-		    
+//	    ReadableFile rf = new ReadableFile(name, dir, "RANDOMWALK (Nodes = 1000) (1000)", null);
+		
+		ArrayList<ReadableFolder> rfc = new ArrayList<ReadableFolder>();
+		for(String d : dirs){
+			ReadableFolder rf = new ReadableFolder(name, "", d, "", null);
+			rfc.add(rf);
 		}
 		
-		if(!orgdir.equalsIgnoreCase("")) {
-		    rfo = new ReadableFolder(name, name, orgdir, suffix, null);
-		}
-//		
-		
-//		
-		Network[] rfa = rfc.toArray(new ReadableFolder[0]);
-		
+		ReadableFolder[] rfa = rfc.toArray(new ReadableFolder[0]);
 		if(!aggregate){	
-			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
-						
-			Series[] series = new Series[rfa.length];
-			
-			for(int i = 0; i < rfa.length; i++) {
-			    series[i] = Series.generate(rfa[i], metrics.toArray(new Metric[0]), startIndex, endIndex);
-			}	
-		
-			if(rfo != null) {
-			    Series so = Series.generate(rfo, metrics.toArray(new Metric[0]), 1);
-			    Series[] ser = new Series[series.length+1];
-			    for(int i = 0; i < series.length; i++) {
-				ser[i] = series[i];
-			    }
-			    ser[ser.length-1] = so;
-			}
+//			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
+//						
+//			Series[] series = new Series[rfa.length];
+//			
+//			for(int i = 0; i < rfa.length; i++) {
+//			    series[i] = Series.generate(rfa[i], metrics.toArray(new Metric[0]), startIndex, endIndex);
+//			}
 		} else {
 			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 			int t = endIndex-startIndex;
 			System.out.println("S: " + startIndex + " E: " + endIndex + " E-S: " + t);
 			Series[] series = new Series[rfa.length];
-			for(int i = 0; i < rfa.length; i++) {
-			    series[i] = Series.generate(rfa[i], metrics.toArray(new Metric[0]), startIndex, endIndex);
-			}	
-			if(rfo != null) {
-			    Series so = Series.generate(rfo, metrics.toArray(new Metric[0]), 1);
-			    Series[] ser = new Series[series.length+1];
-			    for(int i = 0; i < series.length; i++) {
-				ser[i] = series[i];
-			    }
-			    ser[ser.length-1] = so;
-			    series = ser;
-			}
+			for(int i = 0; i < rfa.length; i++)
+				series[i] = Series.generate(rfa[i], metrics.toArray(new Metric[0]), 1);
+			
 			Plotting.single(series, metrics.toArray(new Metric[0]), "/single/");  // main path to plots is set by Config.overwrite
-
 			Plotting.multi(series, metrics.toArray(new Metric[0]), "/multi/"); // main path to plots is set by Config.overwrite
 		
 		}
