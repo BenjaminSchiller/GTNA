@@ -38,6 +38,7 @@ package gtna;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.data.Series;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -48,6 +49,9 @@ import gtna.data.Series;
 >>>>>>> plotting for example plots
 =======
 >>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
+=======
+import gtna.data.Series;
+>>>>>>> added relative eccentricity / effective diameter
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
@@ -82,11 +86,14 @@ import gtna.metrics.Metric;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> plotting for example plots
 import gtna.metrics.basic.Assortativity;
 import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
+=======
+>>>>>>> added relative eccentricity / effective diameter
 import gtna.metrics.basic.ShortestPaths;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -215,6 +222,7 @@ import gtna.plot.Plotting;
 =======
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.networks.Network;
+<<<<<<< HEAD
 import gtna.networks.model.GeneralizedCondonAndKarp;
 <<<<<<< HEAD
 >>>>>>> testing different configurations for the generalized community model
@@ -239,6 +247,10 @@ import gtna.plot.Plotting;
 >>>>>>> plotting for example plots
 =======
 >>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
+=======
+import gtna.networks.model.ErdosRenyi;
+import gtna.plot.Plotting;
+>>>>>>> added relative eccentricity / effective diameter
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
@@ -278,8 +290,11 @@ import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
 >>>>>>> small fixes to allow tests of the new sampling model
 =======
 import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
+<<<<<<< HEAD
 import gtna.transformation.sampling.subgraph.ExtractSampledSubgraphWithNeighborSet;
 >>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
+=======
+>>>>>>> added relative eccentricity / effective diameter
 import gtna.util.Config;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -444,10 +459,11 @@ public class Exploring {
 		SamplingAlgorithm a = SamplingAlgorithm.BFS;
 =======
 //		boolean get = false; // get or generate
-//		int times = 1;		// how many generations?
+		int times = 1;		// how many generations?
 //		boolean b = false; // bidirectional?
 //		boolean r = false; // ring?
 //		
+<<<<<<< HEAD
 		SamplingAlgorithm a = SamplingAlgorithm.UNIFORMSAMPLING;
 >>>>>>> fixes:
 		double sc = 0.2;
@@ -463,6 +479,22 @@ public class Exploring {
 		t[1] = sa2;
 		t[t.length-1] = new ExtractSampledSubgraph();
 		
+=======
+//		SamplingAlgorithm a = SamplingAlgorithm.RANDOMWALK;
+//		double sc = 0.2;
+//		
+//		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
+//		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
+//		Transformation[] t = new Transformation[3];
+//		
+//		
+//		
+//		Arrays.fill(t, sa);
+//		t[0] = sa;
+//		t[1] = sa2;
+//		t[t.length-1] = new ExtractSampledSubgraph();
+//		
+>>>>>>> added relative eccentricity / effective diameter
 		
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -571,6 +603,7 @@ public class Exploring {
 =======
 //		Network nw1 = new Regular(30, 10, true, false, null);
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Network nw3 = new Regular(100, 10, true, false, null);
 		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
@@ -633,6 +666,9 @@ public class Exploring {
 =======
 		Network nw3 = new Regular(1000, 10, true, false, null);
 >>>>>>> fixes:
+=======
+		Network nw3 = new ErdosRenyi(1000, 6.0, true, null);
+>>>>>>> added relative eccentricity / effective diameter
 //		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 //		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
 //		
@@ -643,16 +679,21 @@ public class Exploring {
 //		Network nw0 = new GeneralizedCondonAndKarp(nw, 0.00005, t);
 //		
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Network[] n = new Network[] {nw3};
 =======
 //		Network[] n = new Network[] {nw3};
 >>>>>>> fixes:
+=======
+		Network[] n = new Network[] {nw3};
+>>>>>>> added relative eccentricity / effective diameter
 ////		Network[] n = ws1;
 //		
 //		DegreeDistribution m = new DegreeDistribution();
 //		m.computeData(nw3.generate(), nw3, null);
 //		
 //		
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -678,6 +719,12 @@ public class Exploring {
 >>>>>>> plotting
 =======
 >>>>>>> fixes:
+=======
+		Metric[] metrics = new Metric[] { 
+//				new DegreeDistribution(),
+//				new ClusteringCoefficient(),
+				new ShortestPaths()
+>>>>>>> added relative eccentricity / effective diameter
 //				new BetweennessCentrality(),
 //				new Assortativity(),
 //				new SamplingBias()
@@ -685,6 +732,7 @@ public class Exploring {
 //				new SamplingModularity(),
 //				new DegreeDistributionComparator(m),
 //				new SamplingRevisitFrequency()
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -741,9 +789,13 @@ public class Exploring {
 =======
 //				};
 >>>>>>> fixes:
+=======
+				};
+>>>>>>> added relative eccentricity / effective diameter
 		
 =======
 //		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1089,11 +1141,14 @@ public class Exploring {
 =======
 >>>>>>> testing different configurations for the generalized community model
 =======
+=======
+>>>>>>> added relative eccentricity / effective diameter
 		Series[] s = Series.generate(n, metrics, times);
 
 		Plotting.single(s, metrics, "example-s/");
 
 		Plotting.multi(s, metrics, "example-m/");
+<<<<<<< HEAD
 		
 //		 for(Network i : n){
 //			 System.out.println("Plotting network - " + i.getKey() + " @ " + i.getNodes() + " nodes");
@@ -1112,16 +1167,22 @@ public class Exploring {
 		Graph g = nw3.generate();
 		g = t[0].transform(g);
 		g = t[1].transform(g);
+=======
+>>>>>>> added relative eccentricity / effective diameter
 		
-		new GtnaGraphWriter().writeWithProperties(g, "./plots/network-plot/" + "base.txt");
-		for(int si = 0; si < 2; si++) {
-		    ((ExtractSampledSubgraph) t[2]).setIndex(si);
-		    Graph gi = t[2].transform(g);
-		    
-		    new GtnaGraphWriter().write(gi, "./plots/network-plot/" + "sample_" +si + ".txt");
-		    plotGraph(gi, "./plots/network-plot/", gi.toString() + "_"
-			+ si);
-		}	
+//		Graph g = nw3.generate();
+//		g = t[0].transform(g);
+//		g = t[1].transform(g);
+//		
+//		new GtnaGraphWriter().writeWithProperties(g, "./plots/network-plot/" + "base.txt");
+//		for(int si = 0; si < 2; si++) {
+//		    ((ExtractSampledSubgraph) t[2]).setIndex(si);
+//		    Graph gi = t[2].transform(g);
+//		    
+//		    new GtnaGraphWriter().write(gi, "./plots/network-plot/" + "sample_" +si + ".txt");
+//		    plotGraph(gi, "./plots/network-plot/", gi.toString() + "_"
+//			+ si);
+//		}	
 		 
 		
 		
