@@ -44,226 +44,237 @@ import gtna.networks.Network;
 import gtna.util.Distribution;
 import gtna.util.Util;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
 // TODO problem with averages for big networks (> 40.000)
 public class ShortestPaths extends Metric {
-	// TODO add LCPL => binning?!?
-	// TODO add distribution of LCPL?!?
-	// TODO remove computation of distribution
+    // TODO add LCPL => binning?!?
+    // TODO add distribution of LCPL?!?
+    // TODO remove computation of distribution
 
-	private Distribution shortestPathLengthDistribution;
+    private Distribution shortestPathLengthDistribution;
 
-	private Distribution shortestPathLengthDistributionAbsolute;
+    private Distribution shortestPathLengthDistributionAbsolute;
 
-	private double[] localCharacteristicPathLength;
+    private double[] localCharacteristicPathLength;
 
-	private double connectivity;
+    private double connectivity;
 
-	private Distribution hopPlot;
+    private Distribution hopPlot;
 
-	private double ecc90;
+    private double ecc90;
 
-	public ShortestPaths() {
-		super("SHORTEST_PATHS");
+    private double eccRelative90;
+
+    public ShortestPaths() {
+	super("SHORTEST_PATHS");
+    }
+
+    @Override
+    public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+	return true;
+    }
+
+    @Override
+    public void computeData(Graph graph, Network nw,
+	    HashMap<String, Metric> metrics) {
+	this.localCharacteristicPathLength = new double[graph.getNodes().length];
+	long[] SPL = this.computeShortestPathLengths(graph.getNodes());
+	this.shortestPathLengthDistribution = new Distribution(
+		this.computeShortestPathLengthDistribution(SPL));
+	this.shortestPathLengthDistributionAbsolute = new Distribution(
+		this.computeShortestPathLengthDistributionAbsolute(SPL, graph));
+	this.connectivity = (double) Util.sum(SPL)
+		/ (double) ((double) graph.getNodes().length * (double) (graph
+			.getNodes().length - 1));
+
+	this.hopPlot = new Distribution(computeHP(SPL, graph));
+
+	this.ecc90 = calculateEccentricity(this.shortestPathLengthDistributionAbsolute.getCdf(), graph, 0.90);
+	this.eccRelative90 = calculateEccentricity(this.shortestPathLengthDistribution.getCdf(), graph, 0.90);
+
+	System.out.println("\nSPR: " + Arrays.toString(shortestPathLengthDistribution.getCdf()));
+	System.out.println("SPA: " + Arrays.toString(shortestPathLengthDistributionAbsolute.getCdf()));
+	System.out.println("HP: " + Arrays.toString(hopPlot.getCdf()));
+    }
+
+    
+    
+    
+    
+    
+    /**
+     * @param spCdf
+     *            hopplot cdf
+     * @param graph
+     *            graph
+     * @param q
+     *            reachable quantile
+     * @return
+     */
+    private double calculateEccentricity(double[] spCdf, Graph graph, double q) {
+	for (int i = 0; i < spCdf.length; i++) {
+	    if (spCdf[i] >= q) {
+		return i;
+	    }
 	}
 
-	@Override
-	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-		return true;
+	return -1;
+    }
+
+    /**
+     * @param sPL
+     * @return
+     */
+    private double[] computeHP(long[] SPL, Graph g) {
+	double[] hp = new double[SPL.length];
+	for (int i = 0; i < hp.length; i++) {
+	    hp[i] = (double) SPL[i] / (double) g.getNodeCount();
 	}
 
-	@Override
-	public void computeData(Graph graph, Network nw,
-			HashMap<String, Metric> metrics) {
-		this.localCharacteristicPathLength = new double[graph.getNodes().length];
-		long[] SPL = this.computeShortestPathLengths(graph.getNodes());
-		this.shortestPathLengthDistribution = new Distribution(
-				this.computeShortestPathLengthDistribution(SPL));
-		this.shortestPathLengthDistributionAbsolute = new Distribution(
-				this.computeShortestPathLengthDistributionAbsolute(SPL, graph));
-		this.connectivity = (double) Util.sum(SPL)
-				/ (double) ((double) graph.getNodes().length * (double) (graph
-						.getNodes().length - 1));
-		
-		this.hopPlot = new Distribution(computeHP(SPL, graph));
-		
-		this.ecc90 = calculateEccentricity(hopPlot.getCdf(), graph, 0.90);
-		
-		
-	}
+	return hp;
+    }
 
-	/**
-	 * @param hpCDF	hopplot cdf
-	 * @param graph	graph
-	 * @param q		reachable quantile
-	 * @return
-	 */
-	private double calculateEccentricity(double[] hpCDF, Graph graph,
-			double q) {
-		double qNodes = graph.getNodeCount() * q;
-		
-		for(int i = 0; i < hpCDF.length; i++){
-			if(hpCDF[i] >= qNodes){
-				return i;
-			}
+    private double[] computeShortestPathLengthDistribution(long[] SPL) {
+	long sum = Util.sum(SPL);
+	double[] spld = new double[SPL.length];
+	for (int i = 0; i < SPL.length; i++) {
+	    spld[i] = (double) SPL[i] / sum;
+	}
+	return spld;
+    }
+
+    private double[] computeShortestPathLengthDistributionAbsolute(long[] SPL,
+	    Graph graph) {
+	long sum = (long) graph.getNodes().length
+		* (long) (graph.getNodes().length - 1);
+	double[] spld = new double[SPL.length];
+	for (int i = 0; i < SPL.length; i++) {
+	    spld[i] = (double) SPL[i] / sum;
+	}
+	return spld;
+    }
+
+    private long[] computeShortestPathLengths(Node[] nodes) {
+	long[] SPL = new long[1];
+	for (Node n : nodes) {
+	    SPL = this.computeSPL(nodes, n, SPL);
+	}
+	return SPL;
+    }
+
+    private long[] computeSPL(Node[] nodes, Node start, long[] SPL) {
+	Queue<Integer> queue = new LinkedList<Integer>();
+	int[] spl = Util.initIntArray(nodes.length, -1);
+	long sum = 0;
+	int found = 0;
+	queue.add(start.getIndex());
+	spl[start.getIndex()] = 0;
+	while (!queue.isEmpty()) {
+	    Node current = nodes[queue.poll()];
+	    for (int outIndex : current.getOutgoingEdges()) {
+		if (spl[outIndex] != -1) {
+		    continue;
 		}
-		
-		return -1;
+		spl[outIndex] = spl[current.getIndex()] + 1;
+		queue.add(outIndex);
+		found++;
+		sum += spl[outIndex];
+		SPL = this.inc(SPL, spl[outIndex]);
+	    }
 	}
+	this.localCharacteristicPathLength[start.getIndex()] = (double) sum
+		/ (double) found;
+	return SPL;
+    }
 
-	/**
-	 * @param sPL
-	 * @return
-	 */
-	private double[] computeHP(long[] SPL, Graph g) {
-		double[] hp = new double[SPL.length];
-		for(int i = 0; i < hp.length; i++){
-			hp[i] = (double) SPL[i] / (double) g.getNodeCount();
-		}
-		
-		return hp;
+    private long[] inc(long[] values, int index) {
+	try {
+	    values[index]++;
+	    return values;
+	} catch (ArrayIndexOutOfBoundsException e) {
+	    long[] valuesNew = new long[index + 1];
+	    System.arraycopy(values, 0, valuesNew, 0, values.length);
+	    valuesNew[index] = 1;
+	    return valuesNew;
 	}
+    }
 
-	private double[] computeShortestPathLengthDistribution(long[] SPL) {
-		long sum = Util.sum(SPL);
-		double[] spld = new double[SPL.length];
-		for (int i = 0; i < SPL.length; i++) {
-			spld[i] = (double) SPL[i] / sum;
-		}
-		return spld;
-	}
+    @Override
+    public boolean writeData(String folder) {
+	boolean success = true;
+	success &= DataWriter.writeWithIndex(this.hopPlot.getDistribution(),
+		"SHORTEST_PATHS_HOP_PLOT", folder);
+	success &= DataWriter.writeWithIndex(this.hopPlot.getCdf(),
+		"SHORTEST_PATHS_HOP_PLOT_CDF", folder);
+	success &= DataWriter.writeWithIndex(
+		this.shortestPathLengthDistribution.getDistribution(),
+		"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION", folder);
+	success &= DataWriter.writeWithIndex(
+		this.shortestPathLengthDistribution.getCdf(),
+		"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_CDF", folder);
+	success &= DataWriter.writeWithIndex(
+		this.shortestPathLengthDistributionAbsolute.getDistribution(),
+		"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE",
+		folder);
+	success &= DataWriter
+		.writeWithIndex(
+			this.shortestPathLengthDistributionAbsolute.getCdf(),
+			"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE_CDF",
+			folder);
+	return success;
+    }
 
-	private double[] computeShortestPathLengthDistributionAbsolute(long[] SPL,
-			Graph graph) {
-		long sum = (long) graph.getNodes().length
-				* (long) (graph.getNodes().length - 1);
-		double[] spld = new double[SPL.length];
-		for (int i = 0; i < SPL.length; i++) {
-			spld[i] = (double) SPL[i] / sum;
-		}
-		return spld;
-	}
+    @Override
+    public Single[] getSingles() {
+	Single averageShortestPathLength = new Single(
+		"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_AVG",
+		this.shortestPathLengthDistribution.getAverage());
+	Single medianShortestPathLength = new Single(
+		"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_MED",
+		this.shortestPathLengthDistribution.getMedian());
+	Single maximumShortestPathLength = new Single(
+		"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_MAX",
+		this.shortestPathLengthDistribution.getMax());
+	Single connectivity = new Single("SHORTEST_PATHS_CONNECTIVITY",
+		this.connectivity);
+	Single ecc = new Single(
+		"SHORTEST_PATHS_EFFECTIVE_DIAMETER_ECC_90QUANTIL", this.ecc90);
+	Single eccRel = new Single(
+		"SHORTEST_PATHS_RELATIVE_EFFECTIVE_DIAMETER_ECC_90QUANTIL", this.eccRelative90);
+	return new Single[] { averageShortestPathLength,
+		medianShortestPathLength, maximumShortestPathLength,
+		connectivity, ecc, eccRel };
+    }
 
-	private long[] computeShortestPathLengths(Node[] nodes) {
-		long[] SPL = new long[1];
-		for (Node n : nodes) {
-			SPL = this.computeSPL(nodes, n, SPL);
-		}
-		return SPL;
-	}
+    /**
+     * @return the shortestPathLengthDistribution
+     */
+    public Distribution getShortestPathLengthDistribution() {
+	return this.shortestPathLengthDistribution;
+    }
 
-	private long[] computeSPL(Node[] nodes, Node start, long[] SPL) {
-		Queue<Integer> queue = new LinkedList<Integer>();
-		int[] spl = Util.initIntArray(nodes.length, -1);
-		long sum = 0;
-		int found = 0;
-		queue.add(start.getIndex());
-		spl[start.getIndex()] = 0;
-		while (!queue.isEmpty()) {
-			Node current = nodes[queue.poll()];
-			for (int outIndex : current.getOutgoingEdges()) {
-				if (spl[outIndex] != -1) {
-					continue;
-				}
-				spl[outIndex] = spl[current.getIndex()] + 1;
-				queue.add(outIndex);
-				found++;
-				sum += spl[outIndex];
-				SPL = this.inc(SPL, spl[outIndex]);
-			}
-		}
-		this.localCharacteristicPathLength[start.getIndex()] = (double) sum
-				/ (double) found;
-		return SPL;
-	}
+    /**
+     * @return the shortestPathLengthDistributionAbsolute
+     */
+    public Distribution getShortestPathLengthDistributionAbsolute() {
+	return this.shortestPathLengthDistributionAbsolute;
+    }
 
-	private long[] inc(long[] values, int index) {
-		try {
-			values[index]++;
-			return values;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			long[] valuesNew = new long[index + 1];
-			System.arraycopy(values, 0, valuesNew, 0, values.length);
-			valuesNew[index] = 1;
-			return valuesNew;
-		}
-	}
+    /**
+     * @return the localCharacteristicPathLength
+     */
+    public double[] getLocalCharacteristicPathLength() {
+	return this.localCharacteristicPathLength;
+    }
 
-	@Override
-	public boolean writeData(String folder) {
-		boolean success = true;
-		success &= DataWriter.writeWithIndex(
-				this.hopPlot.getDistribution(),
-				"SHORTEST_PATHS_HOP_PLOT", folder);
-		success &= DataWriter.writeWithIndex(
-				this.hopPlot.getCdf(),
-				"SHORTEST_PATHS_HOP_PLOT_CDF", folder);
-		success &= DataWriter.writeWithIndex(
-				this.shortestPathLengthDistribution.getDistribution(),
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(
-				this.shortestPathLengthDistribution.getCdf(),
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_CDF", folder);
-		success &= DataWriter.writeWithIndex(
-				this.shortestPathLengthDistributionAbsolute.getDistribution(),
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE",
-				folder);
-		success &= DataWriter
-				.writeWithIndex(
-						this.shortestPathLengthDistributionAbsolute.getCdf(),
-						"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE_CDF",
-						folder);
-		return success;
-	}
-
-	@Override
-	public Single[] getSingles() {
-		Single averageShortestPathLength = new Single(
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_AVG",
-				this.shortestPathLengthDistribution.getAverage());
-		Single medianShortestPathLength = new Single(
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_MED",
-				this.shortestPathLengthDistribution.getMedian());
-		Single maximumShortestPathLength = new Single(
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_MAX",
-				this.shortestPathLengthDistribution.getMax());
-		Single connectivity = new Single("SHORTEST_PATHS_CONNECTIVITY",
-				this.connectivity);
-		Single ecc = new Single("SHORTEST_PATHS_EFFECTIVE_DIAMETER_ECC_90QUANTIL",
-				this.ecc90);
-		return new Single[] { averageShortestPathLength,
-				medianShortestPathLength, maximumShortestPathLength,
-				connectivity, ecc };
-	}
-
-	/**
-	 * @return the shortestPathLengthDistribution
-	 */
-	public Distribution getShortestPathLengthDistribution() {
-		return this.shortestPathLengthDistribution;
-	}
-
-	/**
-	 * @return the shortestPathLengthDistributionAbsolute
-	 */
-	public Distribution getShortestPathLengthDistributionAbsolute() {
-		return this.shortestPathLengthDistributionAbsolute;
-	}
-
-	/**
-	 * @return the localCharacteristicPathLength
-	 */
-	public double[] getLocalCharacteristicPathLength() {
-		return this.localCharacteristicPathLength;
-	}
-
-	/**
-	 * @return the connectivity
-	 */
-	public double getConnectivity() {
-		return this.connectivity;
-	}
+    /**
+     * @return the connectivity
+     */
+    public double getConnectivity() {
+	return this.connectivity;
+    }
 }
