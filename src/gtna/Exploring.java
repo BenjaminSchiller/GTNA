@@ -35,18 +35,16 @@
  */
 package gtna;
 
+import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
-import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
 import gtna.networks.Network;
-import gtna.networks.model.GeneralizedCondonAndKarp;
-import gtna.networks.model.Regular;
-import gtna.networks.model.WattsStrogatz;
-import gtna.networks.model.ZhouMondragon;
+import gtna.networks.model.ErdosRenyi;
+import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
 import gtna.transformation.id.RandomPlaneIDSpaceSimple;
@@ -54,7 +52,6 @@ import gtna.transformation.id.RandomRingIDSpaceSimple;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
-import gtna.transformation.sampling.subgraph.ExtractSampledSubgraphWithNeighborSet;
 import gtna.util.Config;
 
 import java.io.File;
@@ -72,27 +69,27 @@ public class Exploring {
 		
 		
 //		boolean get = false; // get or generate
-//		int times = 1;		// how many generations?
+		int times = 1;		// how many generations?
 //		boolean b = false; // bidirectional?
 //		boolean r = false; // ring?
 //		
-		SamplingAlgorithm a = SamplingAlgorithm.UNIFORMSAMPLING;
-		double sc = 0.2;
-		
-		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
-		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
-		Transformation[] t = new Transformation[3];
-		
-		
-		
-		Arrays.fill(t, sa);
-		t[0] = sa;
-		t[1] = sa2;
-		t[t.length-1] = new ExtractSampledSubgraph();
-		
+//		SamplingAlgorithm a = SamplingAlgorithm.RANDOMWALK;
+//		double sc = 0.2;
+//		
+//		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
+//		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
+//		Transformation[] t = new Transformation[3];
+//		
+//		
+//		
+//		Arrays.fill(t, sa);
+//		t[0] = sa;
+//		t[1] = sa2;
+//		t[t.length-1] = new ExtractSampledSubgraph();
+//		
 		
 //		Network nw1 = new Regular(30, 10, true, false, null);
-		Network nw3 = new Regular(1000, 10, true, false, null);
+		Network nw3 = new ErdosRenyi(1000, 6.0, true, null);
 //		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 //		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
 //		
@@ -102,17 +99,17 @@ public class Exploring {
 //		Arrays.fill(nw, nw1);
 //		Network nw0 = new GeneralizedCondonAndKarp(nw, 0.00005, t);
 //		
-//		Network[] n = new Network[] {nw3};
+		Network[] n = new Network[] {nw3};
 ////		Network[] n = ws1;
 //		
 //		DegreeDistribution m = new DegreeDistribution();
 //		m.computeData(nw3.generate(), nw3, null);
 //		
 //		
-//		Metric[] metrics = new Metric[] { 
-////				new DegreeDistribution(),
-////				new ClusteringCoefficient(),
-//				new ShortestPaths()
+		Metric[] metrics = new Metric[] { 
+//				new DegreeDistribution(),
+//				new ClusteringCoefficient(),
+				new ShortestPaths()
 //				new BetweennessCentrality(),
 //				new Assortativity(),
 //				new SamplingBias()
@@ -120,28 +117,28 @@ public class Exploring {
 //				new SamplingModularity(),
 //				new DegreeDistributionComparator(m),
 //				new SamplingRevisitFrequency()
-//				};
+				};
 		
 //		Series[] s = get ? Series.get(n, metrics) : Series.generate(n, metrics, times);
-//		Series[] s = Series.generate(n, metrics, times);
-//
-//		Plotting.single(s, metrics, "example-s/");
-//
-//		Plotting.multi(s, metrics, "example-m/");
+		Series[] s = Series.generate(n, metrics, times);
+
+		Plotting.single(s, metrics, "example-s/");
+
+		Plotting.multi(s, metrics, "example-m/");
 		
-		Graph g = nw3.generate();
-		g = t[0].transform(g);
-		g = t[1].transform(g);
-		
-		new GtnaGraphWriter().writeWithProperties(g, "./plots/network-plot/" + "base.txt");
-		for(int si = 0; si < 2; si++) {
-		    ((ExtractSampledSubgraph) t[2]).setIndex(si);
-		    Graph gi = t[2].transform(g);
-		    
-		    new GtnaGraphWriter().write(gi, "./plots/network-plot/" + "sample_" +si + ".txt");
-		    plotGraph(gi, "./plots/network-plot/", gi.toString() + "_"
-			+ si);
-		}	
+//		Graph g = nw3.generate();
+//		g = t[0].transform(g);
+//		g = t[1].transform(g);
+//		
+//		new GtnaGraphWriter().writeWithProperties(g, "./plots/network-plot/" + "base.txt");
+//		for(int si = 0; si < 2; si++) {
+//		    ((ExtractSampledSubgraph) t[2]).setIndex(si);
+//		    Graph gi = t[2].transform(g);
+//		    
+//		    new GtnaGraphWriter().write(gi, "./plots/network-plot/" + "sample_" +si + ".txt");
+//		    plotGraph(gi, "./plots/network-plot/", gi.toString() + "_"
+//			+ si);
+//		}	
 		 
 		
 		
