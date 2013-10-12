@@ -96,9 +96,9 @@ public class ShortestPaths extends Metric {
 	this.ecc90 = calculateEccentricity(this.shortestPathLengthDistributionAbsolute.getCdf(), graph, 0.90);
 	this.eccRelative90 = calculateEccentricity(this.shortestPathLengthDistribution.getCdf(), graph, 0.90);
 
-	System.out.println("\nSPR: " + Arrays.toString(shortestPathLengthDistribution.getCdf()));
-	System.out.println("SPA: " + Arrays.toString(shortestPathLengthDistributionAbsolute.getCdf()));
-	System.out.println("HP: " + Arrays.toString(hopPlot.getCdf()));
+//	System.out.println("\nSPR: " + Arrays.toString(shortestPathLengthDistribution.getCdf()));
+//	System.out.println("SPA: " + Arrays.toString(shortestPathLengthDistributionAbsolute.getCdf()));
+//	System.out.println("HP: " + Arrays.toString(hopPlot.getCdf()));
     }
 
     
