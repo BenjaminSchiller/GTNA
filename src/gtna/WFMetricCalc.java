@@ -184,8 +184,8 @@ public class WFMetricCalc {
 		Network[] rfa = rfc.toArray(new ReadableFolder[0]);
 		
 		if(!aggregate){	
-			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
-						
+			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+			Config.overwrite("AGGREGATE_ALL_AVAILABLE_RUNS", "false");
 			Series[] series = new Series[rfa.length];
 			
 			for(int i = 0; i < rfa.length; i++) {
@@ -203,7 +203,7 @@ public class WFMetricCalc {
 		} else {
 			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 			int t = endIndex-startIndex;
-			System.out.println("S: " + startIndex + " E: " + endIndex + " E-S: " + t);
+//			System.out.println("S: " + startIndex + " E: " + endIndex + " E-S: " + t);
 			Series[] series = new Series[rfa.length];
 			for(int i = 0; i < rfa.length; i++) {
 			    series[i] = Series.generate(rfa[i], metrics.toArray(new Metric[0]), startIndex, endIndex);
