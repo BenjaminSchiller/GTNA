@@ -176,7 +176,7 @@ public class WFMetricCalc {
 		}
 		
 		if(!orgdir.equalsIgnoreCase("")) {
-		    rfo = new ReadableFolder(name, name, orgdir, suffix, null);
+		    rfo = new ReadableFolder(name+"_O", name+"_O", orgdir, suffix, null);
 		}
 //		
 		
@@ -205,21 +205,29 @@ public class WFMetricCalc {
 			int t = endIndex-startIndex;
 //			System.out.println("S: " + startIndex + " E: " + endIndex + " E-S: " + t);
 			Series[] series = new Series[rfa.length];
+			Series[][] s = new Series[1][1];
 			for(int i = 0; i < rfa.length; i++) {
 			    series[i] = Series.generate(rfa[i], metrics.toArray(new Metric[0]), startIndex, endIndex);
+			    s[0] = series;
+			    
 			}	
 			if(rfo != null) {
 			    Series so = Series.generate(rfo, metrics.toArray(new Metric[0]), 1);
 			    Series[] ser = new Series[series.length+1];
 			    for(int i = 0; i < series.length; i++) {
-				ser[i] = series[i];
+			    	ser[i] = series[i];
 			    }
 			    ser[ser.length-1] = so;
 			    series = ser;
+			    
+			    s = new Series[1][2];
+			    s[0][0] = series[0];
+			    s[0][1] = series[1];
+			    
 			}
-			Plotting.single(series, metrics.toArray(new Metric[0]), "/single/");  // main path to plots is set by Config.overwrite
+			Plotting.single(s, metrics.toArray(new Metric[0]), "/single/", Type.confidence1, Style.candlesticks);  // main path to plots is set by Config.overwrite
 
-			Plotting.multi(series, metrics.toArray(new Metric[0]), "/multi/"); // main path to plots is set by Config.overwrite
+			Plotting.multi(s, metrics.toArray(new Metric[0]), "/multi/", Type.confidence1, Style.candlesticks); // main path to plots is set by Config.overwrite
 		
 		}
 
