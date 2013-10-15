@@ -134,6 +134,7 @@ public class BetweennessCentrality extends Metric {
 	public BetweennessCentrality(String key, Parameter[] parameters) {
 		super(key, parameters);
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	} // TODO Remove?
 
@@ -185,6 +186,9 @@ public class BetweennessCentrality extends Metric {
 	 * 
 =======
 		// TODO Auto-generated constructor stub
+=======
+	
+>>>>>>> plotting
 	} // TODO Remove?
 
 	/*

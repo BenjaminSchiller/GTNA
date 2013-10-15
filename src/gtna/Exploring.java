@@ -60,6 +60,7 @@ import gtna.id.IdentifierSpace;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import gtna.io.graphWriter.GtnaGraphWriter;
 <<<<<<< HEAD
 import gtna.metric.centrality.PageRank;
@@ -140,6 +141,12 @@ import gtna.networks.model.BarabasiAlbert;
 =======
 import gtna.networks.model.ErdosRenyi;
 >>>>>>> Sampling Modularity implemented
+=======
+import gtna.metrics.Metric;
+import gtna.metrics.centrality.BetweennessCentrality;
+import gtna.networks.Network;
+import gtna.networks.model.Regular;
+>>>>>>> plotting
 import gtna.plot.Plotting;
 =======
 =======
@@ -410,6 +417,7 @@ public class Exploring {
 //		
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		SamplingAlgorithm a = SamplingAlgorithm.UNIFORMSAMPLING;
 >>>>>>> fixes:
 		double sc = 0.2;
@@ -482,17 +490,21 @@ public class Exploring {
 =======
 //		SamplingAlgorithm a = SamplingAlgorithm.RANDOMWALK;
 //		double sc = 0.2;
+=======
+		SamplingAlgorithm a = SamplingAlgorithm.RANDOMWALK;
+		double sc = 0.2;
+>>>>>>> plotting
 //		
-//		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
+		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
 //		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
-//		Transformation[] t = new Transformation[3];
+		Transformation[] t = new Transformation[2];
 //		
 //		
 //		
-//		Arrays.fill(t, sa);
-//		t[0] = sa;
+		Arrays.fill(t, sa);
+		t[0] = sa;
 //		t[1] = sa2;
-//		t[t.length-1] = new ExtractSampledSubgraph();
+		t[t.length-1] = new ExtractSampledSubgraph();
 //		
 >>>>>>> added relative eccentricity / effective diameter
 		
@@ -595,6 +607,7 @@ public class Exploring {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		Network nw3 = new Regular(100, 10, true, false, null);
 		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
@@ -669,6 +682,9 @@ public class Exploring {
 =======
 		Network nw3 = new ErdosRenyi(1000, 6.0, true, null);
 >>>>>>> added relative eccentricity / effective diameter
+=======
+		Network nw3 = new Regular(1000, 5, true, false, t);
+>>>>>>> plotting
 //		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 //		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
 //		
@@ -712,6 +728,7 @@ public class Exploring {
 //				new DegreeDistribution(),
 //				new ClusteringCoefficient(),
 <<<<<<< HEAD
+<<<<<<< HEAD
 				new ShortestPaths()
 >>>>>>> added relative eccentricity / effective diameter
 =======
@@ -725,6 +742,9 @@ public class Exploring {
 //				new ClusteringCoefficient(),
 				new ShortestPaths()
 >>>>>>> added relative eccentricity / effective diameter
+=======
+				new BetweennessCentrality()
+>>>>>>> plotting
 //				new BetweennessCentrality(),
 //				new Assortativity(),
 //				new SamplingBias()
