@@ -39,11 +39,10 @@ import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
-import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
-import gtna.metrics.basic.ShortestPaths;
+import gtna.metrics.centrality.BetweennessCentrality;
 import gtna.networks.Network;
-import gtna.networks.model.ErdosRenyi;
+import gtna.networks.model.Regular;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.transformation.id.ConsecutiveRingIDSpace;
@@ -73,23 +72,23 @@ public class Exploring {
 //		boolean b = false; // bidirectional?
 //		boolean r = false; // ring?
 //		
-//		SamplingAlgorithm a = SamplingAlgorithm.RANDOMWALK;
-//		double sc = 0.2;
+		SamplingAlgorithm a = SamplingAlgorithm.RANDOMWALK;
+		double sc = 0.2;
 //		
-//		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
+		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
 //		Transformation sa2 = SamplingAlgorithmFactory.getInstanceOf(a, sc, true, 1, null);
-//		Transformation[] t = new Transformation[3];
+		Transformation[] t = new Transformation[2];
 //		
 //		
 //		
-//		Arrays.fill(t, sa);
-//		t[0] = sa;
+		Arrays.fill(t, sa);
+		t[0] = sa;
 //		t[1] = sa2;
-//		t[t.length-1] = new ExtractSampledSubgraph();
+		t[t.length-1] = new ExtractSampledSubgraph();
 //		
 		
 //		Network nw1 = new Regular(30, 10, true, false, null);
-		Network nw3 = new ErdosRenyi(1000, 6.0, true, null);
+		Network nw3 = new Regular(1000, 5, true, false, t);
 //		Network nw1 = new WattsStrogatz(1000, 10, 0.1, null);
 //		Network nw2 = new WattsStrogatz(1000, 10, 0.01, null);
 //		
@@ -109,7 +108,7 @@ public class Exploring {
 		Metric[] metrics = new Metric[] { 
 //				new DegreeDistribution(),
 //				new ClusteringCoefficient(),
-				new ShortestPaths()
+				new BetweennessCentrality()
 //				new BetweennessCentrality(),
 //				new Assortativity(),
 //				new SamplingBias()
