@@ -86,7 +86,7 @@ public class BetweennessCentrality extends Metric {
 	 */
 	public BetweennessCentrality(String key, Parameter[] parameters) {
 		super(key, parameters);
-		// TODO Auto-generated constructor stub
+	
 	} // TODO Remove?
 
 	/*
