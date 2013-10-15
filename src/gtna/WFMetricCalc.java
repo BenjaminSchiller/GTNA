@@ -184,7 +184,7 @@ public class WFMetricCalc {
 		Network[] rfa = rfc.toArray(new ReadableFolder[0]);
 		
 		if(!aggregate){	
-			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 			Config.overwrite("AGGREGATE_ALL_AVAILABLE_RUNS", "false");
 			Series[] series = new Series[rfa.length];
 			

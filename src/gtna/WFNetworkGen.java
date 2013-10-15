@@ -42,6 +42,7 @@ import gtna.id.IdentifierSpace;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
+import gtna.networks.model.Clique;
 import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
@@ -60,7 +61,7 @@ import java.util.Collection;
 public class WFNetworkGen {
 
     private enum EnumNetworks {
-	ER, BA, CK, RC, WS, REG
+	ER, BA, CK, RC, WS, REG, CL
     };
 
     private static EnumNetworks net;
@@ -159,6 +160,11 @@ public class WFNetworkGen {
 	    if(size == 0 || successors == 0 || p == 0.0) 
 		throw new IllegalArgumentException("For initializing a Watts-Strogatz network the parameters size, successors and p have to be set!");
 	    n = new WattsStrogatz(size, successors, p, null);
+	    break;
+	case CL:
+	    if(size == 0)
+		throw new IllegalArgumentException("For initializing a Clique network the parameter size haS to be set!");
+	    n = new Clique(size, null);
 	    break;
 	default:
 	    throw new IllegalArgumentException("Network type " + net.toString() + " is not known!");
