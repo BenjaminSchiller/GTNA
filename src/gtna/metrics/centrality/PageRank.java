@@ -104,7 +104,7 @@ public class PageRank extends Metric {
 		prVector = initVector(G.length);
 
 		double[] prOld = initVector(G.length);
-		for (int j = 0; j < 500; j++) {
+		for (int j = 0; j < 50; j++) {
 			prOld = prVector;
 			prVector = calculateMatrixVectorProduct(G, prVector);
 			prVector = normalizeVector(prVector);
