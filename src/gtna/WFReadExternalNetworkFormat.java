@@ -42,6 +42,7 @@ import gtna.io.graphReader.SnapGraphReader;
 import gtna.io.graphWriter.GtnaGraphWriter;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,20 +61,26 @@ public class WFReadExternalNetworkFormat {
 	/**
 	 * @param args
 	 * @throws ParseException
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) throws ParseException {
+	public static void main(String[] args) throws ParseException, IOException {
 
 
 		for (String s : args) {
 			matchArgument(s);
 		}
 		GraphReader gr = null;
+		
+		System.out.print("initialize with Reader: ");
 		if(snap){
+		    	System.out.println("SNAP");
 			gr = new SnapGraphReader();
 		} else if (caida){
-			gr = new CaidaGraphReader();
+		    System.out.println("CAIDA");
+		    gr = new CaidaGraphReader();
 		}
-			
+		
+		System.out.println("Reader: " + gr.hashCode());
 		
 		File f = new File(path);
 		
@@ -82,16 +89,20 @@ public class WFReadExternalNetworkFormat {
 		ArrayList<String> names = new ArrayList<String>();
 		for(File fi : lof){
 			if(fi.isFile() && !fi.isHidden()){
+			    	System.out.println("Path: " + fi.getAbsolutePath());
+			    	System.out.println("Name: " + fi.getName());
 				alof.add(fi);
 				names.add(fi.getName());
 			}
 		}
-		File[] arlof = alof.toArray(new File[0]);
-		String[] gNames = names.toArray(new String[0]);
+//		File[] arlof = alof.toArray(new File[0]);
+//		String[] gNames = names.toArray(new String[0]);
 		
-		for(int i = 0; i < arlof.length; i++){
-			Graph g = gr.read(arlof[i].getAbsolutePath());
-			writeGraphToFile(g, path + "/" + gNames[i]);
+		for(int i = 0; i < alof.size(); i++){
+		    	String p = alof.get(i).getAbsolutePath();
+		    	System.out.println("Trying to read: " + p);
+			Graph g = gr.read(p);
+			writeGraphToFile(g, path + "/" + names.get(i));
 			g = null;
 		}
 	}
