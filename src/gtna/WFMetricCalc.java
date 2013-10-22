@@ -187,7 +187,7 @@ public class WFMetricCalc {
 			}	
 		
 			if(rfo != null) {
-			    Series so = Series.generate(rfo, metrics.toArray(new Metric[0]), 1);
+			    Series so = Series.generate(rfo, metrics.toArray(new Metric[0]), 0, 0);
 			    Series[] ser = new Series[series.length+1];
 			    for(int i = 0; i < series.length; i++) {
 				ser[i] = series[i];
@@ -202,11 +202,13 @@ public class WFMetricCalc {
 			Series[][] s = new Series[1][1];
 			for(int i = 0; i < rfa.length; i++) {
 			    series[i] = Series.generate(rfa[i], metrics.toArray(new Metric[0]), startIndex, endIndex);
-			    s[0] = series;
+			    
 			    
 			}	
+			s[0] = series;
+			
 			if(rfo != null) {
-			    Series so = Series.generate(rfo, metrics.toArray(new Metric[0]), 1);
+			    Series so = Series.generate(rfo, metrics.toArray(new Metric[0]), 0, 0);
 			    Series[] ser = new Series[series.length+1];
 			    for(int i = 0; i < series.length; i++) {
 			    	ser[i] = series[i];
@@ -214,9 +216,11 @@ public class WFMetricCalc {
 			    ser[ser.length-1] = so;
 			    series = ser;
 			    
-			    s = new Series[1][2];
-			    s[0][0] = series[0];
-			    s[0][1] = series[1];
+			    Series[][] si = new Series[2][1];
+			    si[0] = s[0];
+			    si[1] = new Series[] {so};
+			    
+			    s = si;
 			    
 			}
 			Plotting.single(s, metrics.toArray(new Metric[0]), "/single/", Type.confidence1, Style.candlesticks);  // main path to plots is set by Config.overwrite
