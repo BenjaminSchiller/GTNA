@@ -94,7 +94,7 @@ public class WFMetricCalc {
 			}
 		}
 		
-		System.out.println("> PARAMS: " + Arrays.toString(args));
+//		System.out.println("> PARAMS: " + Arrays.toString(args));
 
 		for (String s : args) {
 
@@ -114,12 +114,6 @@ public class WFMetricCalc {
 				metrics.add(new PageRank());
 			} else if (s.equalsIgnoreCase("ASS")) {
 				metrics.add(new Assortativity());
-//			}else if (s.equalsIgnoreCase("SB")) {		// has to be computed in an extra run as it needs the original graph with sampling properties
-//				metrics.add(new SamplingBias());
-//			}else if (s.equalsIgnoreCase("SM")) {		// has to be computed in an extra run as it needs the original graph with sampling properties
-//				metrics.add(new SamplingModularity());
-//			}else if (s.equalsIgnoreCase("SRF")) {		// has to be computed in an extra run as it needs the original graph with sampling properties
-//				metrics.add(new SamplingRevisitFrequency());
 			}
 			else if (s.startsWith("suffix=")) {
 				suffix = s.substring(7);
@@ -184,7 +178,7 @@ public class WFMetricCalc {
 		Network[] rfa = rfc.toArray(new ReadableFolder[0]);
 		
 		if(!aggregate){	
-			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
+			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
 			Config.overwrite("AGGREGATE_ALL_AVAILABLE_RUNS", "false");
 			Series[] series = new Series[rfa.length];
 			
