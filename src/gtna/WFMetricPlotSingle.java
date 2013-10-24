@@ -150,7 +150,7 @@ public class WFMetricPlotSingle {
 		    String di = dir + "/0." + j + "/" + i + "/";
 		    if (new File(di).isDirectory()) {
 			
-			ReadableFolder rf = new ReadableFolder(name + "_" + i,
+			ReadableFolder rf = new ReadableFolder(name + "-" + i,
 				name, di, suffix, null);
 			System.out.println("RF: " + di + " \t with (" + rf.getFiles().length + ") networks");
 			if (rf != null) {
@@ -182,10 +182,10 @@ public class WFMetricPlotSingle {
 
 	if (!orgdir.equalsIgnoreCase("")) {
 	    for(int j = 1; j <= 9; j++) {
-		String od = orgdir + "/" +  new Integer((int) (500 * Double.parseDouble("0." + j)));
+		String od = orgdir + "/" +  new Integer((int) (10000 * Double.parseDouble("0." + j)));
 		if(new File(od).isDirectory()) {
 		    
-		    ReadableFolder rfo = new ReadableFolder(name + "_sg", name, od, suffix, null);
+		    ReadableFolder rfo = new ReadableFolder(name, name, od, suffix, null);
 		    System.out.println("RF: " + od + " \t with (" + rfo.getFiles().length + ") networks");
 		    rfO.add(rfo);
 		} else {

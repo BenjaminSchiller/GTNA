@@ -170,7 +170,7 @@ public class WFMetricCalc {
 		}
 		
 		if(!orgdir.equalsIgnoreCase("")) {
-		    rfo = new ReadableFolder(name+"_O", name+"_O", orgdir, suffix, null);
+		    rfo = new ReadableFolder(name, name, orgdir, suffix, null);
 		}
 //		
 		
@@ -187,7 +187,7 @@ public class WFMetricCalc {
 			}	
 		
 			if(rfo != null) {
-			    Series so = Series.generate(rfo, metrics.toArray(new Metric[0]), 0, 0);
+			    Series so = Series.generate(rfo, metrics.toArray(new Metric[0]), 1);
 			    Series[] ser = new Series[series.length+1];
 			    for(int i = 0; i < series.length; i++) {
 				ser[i] = series[i];
@@ -196,8 +196,6 @@ public class WFMetricCalc {
 			}
 		} else {
 			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
-			int t = endIndex-startIndex;
-//			System.out.println("S: " + startIndex + " E: " + endIndex + " E-S: " + t);
 			Series[] series = new Series[rfa.length];
 			Series[][] s = new Series[1][1];
 			for(int i = 0; i < rfa.length; i++) {
@@ -208,7 +206,7 @@ public class WFMetricCalc {
 			s[0] = series;
 			
 			if(rfo != null) {
-			    Series so = Series.generate(rfo, metrics.toArray(new Metric[0]), 0, 0);
+			    Series so = Series.generate(rfo, metrics.toArray(new Metric[0]), 1);
 			    Series[] ser = new Series[series.length+1];
 			    for(int i = 0; i < series.length; i++) {
 			    	ser[i] = series[i];
