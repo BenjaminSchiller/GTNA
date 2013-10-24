@@ -146,7 +146,7 @@ public class WFMetricPlotMulti {
 		String di = dir + "/" + i + "/" ;
 		if (new File(di).isDirectory()) {
 		    System.out.println("RF: " + di);
-		    ReadableFolder rf = new ReadableFolder(name + "_" + i, name, di, suffix, null);
+		    ReadableFolder rf = new ReadableFolder(name + "-" + i, name, di, suffix, null);
 
 		    if (rf != null)
 			rfc.add(rf);
