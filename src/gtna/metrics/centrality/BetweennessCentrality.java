@@ -534,9 +534,10 @@ public class BetweennessCentrality extends Metric {
 					}
 					// shortest path to w via v?
 					if (distance[w.getIndex()] == (distance[v.getIndex()] + 1)) {
-						sigma[w.getIndex()] = sigma[w.getIndex()] + sigma[v.getIndex()];
+						sigma[w.getIndex()] = sigma[w.getIndex()]
+								+ sigma[v.getIndex()];
 						List<Node> pw = PredecessorsOnShortestPaths.get(w);
-						if (pw == null){
+						if (pw == null) {
 							pw = new LinkedList<Node>();
 						}
 						pw.add(v);
@@ -554,14 +555,14 @@ public class BetweennessCentrality extends Metric {
 				if (pw != null) {
 					for (Node y : pw) { // = v in the paper
 						delta[y.getIndex()] = delta[y.getIndex()]
-								+ ((sigma[y.getIndex()] / sigma[y.getIndex()]) 
-								* (1 + delta[x.getIndex()]));
-
-						if (x.getIndex() != s.getIndex()) {
-							cbs[x.getIndex()] = cbs[x.getIndex()]
-									+ delta[x.getIndex()];
-						}
+								+ ((sigma[y.getIndex()] / sigma[x.getIndex()]) 
+										* (1 + delta[x.getIndex()]));
 					}
+					if (x.getIndex() != s.getIndex()) {
+						cbs[x.getIndex()] = cbs[x.getIndex()]
+								+ delta[x.getIndex()];
+					}
+
 				}
 			}
 
