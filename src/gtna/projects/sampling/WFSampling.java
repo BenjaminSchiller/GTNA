@@ -94,12 +94,6 @@ public class WFSampling {
 	 */
 	public static void main(String[] args) throws ParseException {
 
-		if (args.length == 0
-				|| (args.length == 1 && args[0].equalsIgnoreCase("help"))) {
-			printHelp();
-			System.exit(1);
-		}
-
 		for (String s : args) {
 			matchArgument(s);
 		}
@@ -109,7 +103,7 @@ public class WFSampling {
 		if (!f.isDirectory()) {
 			throw new IllegalArgumentException("Source path " + srcdir + " not found");
 		}
-		targetdir = dir + "/samples/"+ size + "/" + net.name() + "/";
+		targetdir = dir + "/samples/"+ size + "/" + net.name() + "/" + scaledown + "/";
 		f = new File(targetdir);
 		if (!f.isDirectory()) {
 			f.mkdirs();
