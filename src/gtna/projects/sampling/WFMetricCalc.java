@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna;
+package gtna.projects.sampling;
 
 import gtna.data.Series;
 import gtna.metrics.Metric;
