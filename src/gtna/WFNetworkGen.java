@@ -110,7 +110,7 @@ public class WFNetworkGen {
 	String wn;	
 	for(int i = startIndex; i < endIndex; i++) {
 	    wn = writeGraphToFile(n.generate(), dir+n.getKey()+"_"+i);
-//	    System.out.println(wn);
+	    System.out.println(wn);
 	}
 
 	System.out.println("Built network(s): " + net + ", size= " + size

@@ -135,6 +135,7 @@ public class BetweennessCentrality extends Metric {
 		super(key, parameters);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	} // TODO Remove?
 
@@ -189,6 +190,9 @@ public class BetweennessCentrality extends Metric {
 =======
 	
 >>>>>>> plotting
+=======
+
+>>>>>>> trying to fix the div by 0 when calculating the BC on clique/regularrings
 	} // TODO Remove?
 
 	/*
@@ -200,37 +204,38 @@ public class BetweennessCentrality extends Metric {
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		this.calculateBC(g);
-		
+
 		int sumSP = getSumSP(cbs);
 		double[] cb = new double[cbs.length]; // was max + 1
-		for(int i = 0; i < cbs.length; i++) {
-//		    System.out.println("BC: " + i + " : " + cbs[i] + " : " + sumSP + " = " + cbs[i]/sumSP);
-		    cb[i] = (double) cbs[i]/(double) sumSP;
+		for (int i = 0; i < cbs.length; i++) {
+			// System.out.println("BC: " + i + " : " + cbs[i] + " : " + sumSP +
+			// " = " + cbs[i]/sumSP);
+			cb[i] = (double) cbs[i] / (double) sumSP;
 		}
-//		for(int i = 0; i < cb.length; i++) {
-//		    cb[i] /= (double)g.getNodes().length;
-//		}
+		// for(int i = 0; i < cb.length; i++) {
+		// cb[i] /= (double)g.getNodes().length;
+		// }
 		Arrays.sort(cb);
 		BC = new Distribution(cb);
 		this.nodes = g.getNodes().length;
 		this.edges = g.getEdges().size();
-		
+
 		this.bcMax = getMax(cb);
 		this.bcMin = getMin(cb);
 		this.bcAvg = getAvg(cb);
 		this.bcMed = getMed(cb);
 
 	}
-	
+
 	private int getSumSP(int[] cbs2) {
-	    int m = 0;
-	    
-	    for(int i = 0; i < cbs2.length; i++) {
-		if(cbs2[i] > m)
-		    m += cbs2[i];
-	    }
-	    
-	    return m;
+		int m = 0;
+
+		for (int i = 0; i < cbs2.length; i++) {
+			if (cbs2[i] > m)
+				m += cbs2[i];
+		}
+
+		return m;
 	}
 
 <<<<<<< HEAD
@@ -245,6 +250,7 @@ public class BetweennessCentrality extends Metric {
 	 */
 	@Override
 	public boolean writeData(String folder) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 		boolean success = true;
@@ -264,8 +270,12 @@ public class BetweennessCentrality extends Metric {
 	    boolean success = true;
 		success &= DataWriter.writeWithIndex(
 				this.BC.getDistribution(),
+=======
+		boolean success = true;
+		success &= DataWriter.writeWithIndex(this.BC.getDistribution(),
+>>>>>>> trying to fix the div by 0 when calculating the BC on clique/regularrings
 				"BETWEENNESS_CENTRALITY_DISTRIBUTION", folder);
-		
+
 		return success;
 >>>>>>> bugfix bc (1)
 	}
@@ -452,15 +462,19 @@ public class BetweennessCentrality extends Metric {
 =======
 		Single nodes = new Single("BETWEENNESS_CENTRALITY_NODES", this.nodes);
 		Single edges = new Single("BETWEENNESS_CENTRALITY_EDGES", this.edges);
-		
+
 		Single bcMin = new Single("BETWEENNESS_CENTRALITY_MIN", this.bcMin);
 		Single bcMed = new Single("BETWEENNESS_CENTRALITY_MED", this.bcMed);
 		Single bcAvg = new Single("BETWEENNESS_CENTRALITY_AVG", this.bcAvg);
 		Single bcMax = new Single("BETWEENNESS_CENTRALITY_MAX", this.bcMax);
-		
+
 		return new Single[] { nodes, edges, bcMin, bcMed, bcAvg, bcMax };
+<<<<<<< HEAD
 		
 >>>>>>> bugfix bc (1)
+=======
+
+>>>>>>> trying to fix the div by 0 when calculating the BC on clique/regularrings
 	}
 
 	/*
@@ -491,19 +505,19 @@ public class BetweennessCentrality extends Metric {
 	private void calculateBC(Graph g) {
 		cbs = new int[g.getNodeCount()];
 		Arrays.fill(cbs, 0); // initialize with 0 as the nodes are initially
-							// included in 0 shortest paths
+								// included in 0 shortest paths
 
 		Node[] V = g.getNodes();
 
 		for (Node s : V) {
 			Stack<Node> S = new Stack<Node>();
-			Map<Node, List<Node>> P = new HashMap<Node, List<Node>>();
-			int[] sigma_t = new int[V.length];
-			Arrays.fill(sigma_t, 0);
-			sigma_t[s.getIndex()] = 1;
-			int[] distance_t = new int[V.length];
-			Arrays.fill(distance_t, -1);
-			distance_t[s.getIndex()] = 0;
+			Map<Node, List<Node>> PredecessorsOnShortestPaths = new HashMap<Node, List<Node>>();
+			int[] sigma = new int[V.length];
+			Arrays.fill(sigma, 0);
+			sigma[s.getIndex()] = 1;
+			int[] distance = new int[V.length];
+			Arrays.fill(distance, -1);
+			distance[s.getIndex()] = 0;
 
 			Queue<Node> Q = new LinkedList<Node>();
 			Q.offer(s);
@@ -514,41 +528,40 @@ public class BetweennessCentrality extends Metric {
 				Node[] vNeighbors = getNeighborNodes(v, g);
 				for (Node w : vNeighbors) {
 					// w found first time?
-					if (distance_t[w.getIndex()] < 0) {
+					if (distance[w.getIndex()] < 0) {
 						Q.offer(w);
-						distance_t[w.getIndex()] = distance_t[v.getIndex()] + 1;
+						distance[w.getIndex()] = distance[v.getIndex()] + 1;
 					}
 					// shortest path to w via v?
-					if (distance_t[w.getIndex()] == (distance_t[v.getIndex()] + 1)) {
-						sigma_t[w.getIndex()] = sigma_t[w.getIndex()]
-								+ sigma_t[v.getIndex()];
-						List<Node> pw = P.get(w);
-						if (pw == null)
+					if (distance[w.getIndex()] == (distance[v.getIndex()] + 1)) {
+						sigma[w.getIndex()] = sigma[w.getIndex()] + sigma[v.getIndex()];
+						List<Node> pw = PredecessorsOnShortestPaths.get(w);
+						if (pw == null){
 							pw = new LinkedList<Node>();
-
+						}
 						pw.add(v);
-						P.put(w, pw);
+						PredecessorsOnShortestPaths.put(w, pw);
 					}
 				}
 			}
 
-			int[] delta_v = new int[V.length];
-			Arrays.fill(delta_v, 0);
+			int[] delta = new int[V.length];
+			Arrays.fill(delta, 0);
 			// S returns nodes in order of non-increasing distance from s
 			while (!S.isEmpty()) {
-				Node w = S.pop();
-				List<Node> pw = P.get(w);
-				if(pw != null) {
-				for (Node v : pw) {
-					delta_v[v.getIndex()] = delta_v[v.getIndex()]
-							+ (sigma_t[v.getIndex()] / sigma_t[w.getIndex()] * (1 + delta_v[w
-									.getIndex()]));
+				Node x = S.pop(); // = w in the paper
+				List<Node> pw = PredecessorsOnShortestPaths.get(x);
+				if (pw != null) {
+					for (Node y : pw) { // = v in the paper
+						delta[y.getIndex()] = delta[y.getIndex()]
+								+ ((sigma[y.getIndex()] / sigma[y.getIndex()]) 
+								* (1 + delta[x.getIndex()]));
 
-					if (w.getIndex() != s.getIndex()) {
-						cbs[w.getIndex()] = cbs[w.getIndex()]
-								+ delta_v[w.getIndex()];
+						if (x.getIndex() != s.getIndex()) {
+							cbs[x.getIndex()] = cbs[x.getIndex()]
+									+ delta[x.getIndex()];
+						}
 					}
-				}
 				}
 			}
 
@@ -571,8 +584,7 @@ public class BetweennessCentrality extends Metric {
 
 		return nv.toArray(new Node[0]);
 	}
-	
-	
+
 	private double getMax(double[] dis) {
 		double max = 0;
 

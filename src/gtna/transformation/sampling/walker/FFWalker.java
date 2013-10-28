@@ -73,8 +73,12 @@ public class FFWalker extends BFSBaseWalker {
 >>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 
 	
+<<<<<<< HEAD
     private double probability = 1.0;
 >>>>>>> added ForestFireWalker
+=======
+    private double probability = 0.7;
+>>>>>>> trying to fix the div by 0 when calculating the BC on clique/regularrings
 
     /**
      * @param walker
