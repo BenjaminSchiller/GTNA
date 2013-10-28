@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna;
+package gtna.projects.sampling;
 
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
