@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna;
+package gtna.projects.sampling;
 
 import gtna.data.Series;
 import gtna.drawing.Gephi;
@@ -61,7 +61,7 @@ import java.util.Collection;
 public class WFNetworkGen {
 
     private enum EnumNetworks {
-	ER, BA, CK, RC, WS, REG, CL
+	ER, BA, CK, RC, WS, REG, CL, RING
     };
 
     private static EnumNetworks net;
@@ -72,23 +72,23 @@ public class WFNetworkGen {
     private static boolean uni = true;
     private static String dir;
 
-    private static int degree = 0;
+    private static int degree = 10;
 
-    private static boolean ring = true;
+    private static boolean ring = false;
 
-    private static double avgdegree = 0.0;
+    private static double avgdegree = 10.0;
 
-    private static int edgespernode = 0;
+    private static int edgespernode = 10;
 
-    private static int numberofcommunities = 0;
+    private static int numberofcommunities = 5;
 
-    private static double pin = 0.0;
+    private static double pin = 0.005;
 
-    private static double pout = 0.0;
+    private static double pout = 0.0005;
 
-    private static int successors = 0;
+    private static int successors = 10;
 
-    private static double p = 0.0;
+    private static double p = 0.3;
 
     /**
      * @param args
@@ -109,7 +109,7 @@ public class WFNetworkGen {
 	Network n = instantiateNetwork();
 	String wn;	
 	for(int i = startIndex; i < endIndex; i++) {
-	    wn = writeGraphToFile(n.generate(), dir+n.getKey()+"_"+i);
+	    wn = writeGraphToFile(n.generate(), dir + size + "/" + net.toString() + "/" + net.toString() + "_" + i);
 	    System.out.println(wn);
 	}
 
@@ -150,11 +150,15 @@ public class WFNetworkGen {
 	    n = new ErdosRenyi(size, avgdegree, uni, null);
 	    break;
 	case RC:
-	    n = new ZhouMondragon(size, pin, edgespernode, null);
+	    n = new ZhouMondragon(size, p, edgespernode, null);
 	    break;
 	case REG: 
 	    if(size == 0 || degree == 0) throw new IllegalArgumentException("For initializing a regular network the parameters size and degree have to be set!");
-	    n = new Regular(size, degree, ring, uni, null);
+	    n = new Regular(size, degree, false, !uni, null);
+	    break;
+	case RING: 
+	    if(size == 0 || degree == 0) throw new IllegalArgumentException("For initializing a regular network the parameters size and degree have to be set!");
+	    n = new Regular(size, degree, true, !uni, null);
 	    break;
 	case WS:
 	    if(size == 0 || successors == 0 || p == 0.0) 
