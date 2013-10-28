@@ -55,7 +55,7 @@ import gtna.transformation.sampling.sample.NetworkSample;
 public class FFWalker extends BFSBaseWalker {
 
 	
-    private double probability = 1.0;
+    private double probability = 0.7;
 
     /**
      * @param walker
