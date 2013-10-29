@@ -95,6 +95,7 @@ public class WFMetricCalc {
 		}
 
 		for (String s : args) {
+			System.out.println(s);
 			// parse network generation details
 			if (s.startsWith("sampling=")) {
 				sampling.add(s.substring(9));
@@ -165,6 +166,9 @@ public class WFMetricCalc {
 			name = net.get(i) + "-" + sampling.get(i).trim() + "-" + size.get(i) + "-"
 					+ scaledown.get(i);
 			ReadableFolder rf = new ReadableFolder(name, net.get(0), d, suffix, null);
+			
+			System.out.println("RF: " + d + " - size:" + rf.getFiles().length);
+			
 			DescriptionWrapper dwrf = new DescriptionWrapper(rf, name);
 			rfc.add(dwrf);
 		}
@@ -177,8 +181,7 @@ public class WFMetricCalc {
 			Series[] series = new Series[rfa.length];
 
 			for (int i = 0; i < rfa.length; i++) {
-				Config.overwrite("MAIN_DATA_FOLDER", targetdir + net.get(i)
-						+ "/" + sampling.get(i) + "/" + rfa[i].getNodes()
+				Config.overwrite("MAIN_DATA_FOLDER", targetdir  + sampling.get(i) + "/" + rfa[i].getNodes()
 						+ "/data/");
 				series[i] = Series.generate(rfa[i],
 						metrics.toArray(new Metric[0]), startIndex.get(i),
@@ -190,21 +193,51 @@ public class WFMetricCalc {
 			Series[] series = new Series[rfa.length];
 			for (int i = 0; i < rfa.length; i++) {
 				Config.overwrite("MAIN_DATA_FOLDER",
-						targetdir + net.get(i) + "/" + sampling.get(i)
+						targetdir + sampling.get(i)
 								+ "/" + rfa[i].getNodes() + "/data/");
+		
+				
+				if(rfa[i].getNodes() == size.get(i)){
+					Config.overwrite("MAIN_DATA_FOLDER",
+							targetdir.replaceAll("/[0-9]/", "/") + sampling.get(i)
+									+ "/" + rfa[i].getNodes() + "/data/");
+					
+					System.out.println("DATA-FOLDER ORIGINAL: " + targetdir.replaceAll("/[0-9]/", "/") + sampling.get(i)
+									+ "/" + rfa[i].getNodes() + "/data/");
+				}
+				
 				series[i] = Series.generate(rfa[i],
 						metrics.toArray(new Metric[0]), startIndex.get(i),
 						endIndex.get(i));
 			}
 			
-			Config.overwrite("MAIN_PLOT_FOLDER", plotdir + "/plots/");
-			Config.overwrite("TEMP_FOLDER", plotdir + "/temp/");
-			Plotting.single(series, metrics.toArray(new Metric[0]), "/single/",
+			
+			File p = new File(plotdir+"plots/");
+			File t = new File(plotdir+"temp/");
+			
+			if(!p.isDirectory()){
+				p.mkdirs();
+			}
+			if(!t.isDirectory()){
+				t.mkdirs();
+			}
+			
+			
+			Config.overwrite("MAIN_PLOT_FOLDER", plotdir + "plots/");
+			Config.overwrite("TEMP_FOLDER", plotdir + "temp/");
+			
+			
+			System.out.println("RFA: " + rfa.length);
+			System.out.println("Series: " + series.length);
+			System.out.println("Metrics: " + metrics.size());
+			
+			
+			Plotting.single(series, metrics.toArray(new Metric[0]), "single/",
 					Type.confidence1, Style.candlesticks); // main path to plots
 															// is set by
 															// Config.overwrite
 
-			Plotting.multi(series, metrics.toArray(new Metric[0]), "/multi/",
+			Plotting.multi(series, metrics.toArray(new Metric[0]), "multi/",
 					Type.confidence1, Style.candlesticks); // main path to plots
 															// is set by
 															// Config.overwrite
