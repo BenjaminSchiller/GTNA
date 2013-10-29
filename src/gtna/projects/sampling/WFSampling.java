@@ -103,7 +103,7 @@ public class WFSampling {
 		if (!f.isDirectory()) {
 			throw new IllegalArgumentException("Source path " + srcdir + " not found");
 		}
-		targetdir = dir + "/samples/"+ size + "/" + net.name() + "/" + scaledown + "/";
+		targetdir = dir + "/samples/"+ size + "/" + net.name() + "/" + scaledown + "/" + samplingAlgorithm + "/";
 		f = new File(targetdir);
 		if (!f.isDirectory()) {
 			f.mkdirs();
