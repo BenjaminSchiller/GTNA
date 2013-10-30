@@ -169,6 +169,9 @@ public class SamplingAlgorithmFactory {
 			awc = new RandomWalkWalkerController(cw, cf);
 			aw.setWalkerController(awc);
 			as.setWalkerController(awc);
+			algorithm = "METROPOLIZED_RANDOM_WALK";
+			break;
+			
 		case FRONTIERSAMPLING:
 			as = new VisitedNodeSampler();
 			cf = new CandidateFilter(revisiting);
@@ -182,10 +185,7 @@ public class SamplingAlgorithmFactory {
 				mrw.setWalkerController(awc);
 			}
 			as.setWalkerController(awc);
-			
-			algorithm = "METROPOLIZED_RANDOM_WALK";
-			break;
-			
+
 			algorithm = "FRONTIER_SAMPLING";
 			break;	
 		case RANDOMSTROLL:
