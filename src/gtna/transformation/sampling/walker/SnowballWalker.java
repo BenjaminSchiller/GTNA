@@ -21,90 +21,84 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * RingIDSpace.java
+ * RandomWalkWalker.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: benni;
+ * Original Author: Tim;
  * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
  *
  */
-package gtna.id.ring;
+package gtna.transformation.sampling.walker;
 
-import gtna.id.DoubleIdentifierSpace;
-import gtna.id.Identifier;
-import gtna.io.Filereader;
-import gtna.io.Filewriter;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
+import gtna.graph.Graph;
+import gtna.graph.Node;
+import gtna.transformation.sampling.AWalker;
+import gtna.transformation.sampling.sample.NetworkSample;
+
 /**
- * @author benni
+ * @author Tim
  * 
  */
-public class RingIdentifierSpace extends DoubleIdentifierSpace {
+public class SnowballWalker extends BFSBaseWalker {
 
-	boolean wrapAround;
-
-	/**
-	 * 
-	 * @param partitions
-	 * @param wrapAround
-	 */
-	public RingIdentifierSpace(RingPartition[] partitions, boolean wrapAround) {
-		super(partitions);
-	}
-
-	/**
-	 * 
-	 */
-	public RingIdentifierSpace() {
-		this(null, false);
-	}
-
-	@Override
-	public double getMaxDistance() {
-		if (this.wrapAround)
-			return 0.5;
-
-		return 1.0;
-	}
-
-	@Override
-	protected void writeParameters(Filewriter fw) {
-		this.writeParameter(fw, "Wrap around", this.wrapAround);
-	}
-
-	@Override
-	protected void readParameters(Filereader fr) {
-		this.wrapAround = this.readBoolean(fr);
-	}
-
-	@Override
-	public Identifier getRandomIdentifier(Random rand) {
-		return new RingIdentifier(rand.nextDouble(), this.wrapAround);
-	}
+	int amountOfAddedNodesPerStep = 1;
 	
-	public Identifier getConsecutiveIdentifier(double id){
-		return new RingIdentifier(id, this.wrapAround);
+
+	/**
+	 * @param walker
+	 */
+	public SnowballWalker() {
+		super("SNOWBALL_WALKER");
+	
 	}
 
 	/**
-	 * @return the wrapAround
+	 * @param i
 	 */
-	public boolean isWrapAround() {
-		return this.wrapAround;
+	public SnowballWalker(int i) {
+		this();
+		amountOfAddedNodesPerStep = i;
 	}
 
+
 	/**
-	 * @param wrapAround
-	 *            the wrapAround to set
+	 * @param cn
+	 * @return
 	 */
-	public void setWrapAround(boolean wrapAround) {
-		this.wrapAround = wrapAround;
+	@Override
+	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> cn) {
+		Collection<Node> q = new ArrayList<Node>();
+		ArrayList<Node> temp = new ArrayList<Node>();
+		Collection<Node> temp1 = new ArrayList<Node>();
+
+		temp.addAll(cn);
+		temp1 = this.filterCandidates(temp);
+		if (temp1.size() <= amountOfAddedNodesPerStep) {
+			q.addAll(temp1);
+
+		} else {
+			temp.clear();
+			temp.addAll(temp1);
+			
+			int m = Math.min(amountOfAddedNodesPerStep, temp.size());
+			for (int i = 0; i < m; i++) {
+				q.add(temp.get(i));
+			}
+		}
+		return q;
 	}
+
 }
