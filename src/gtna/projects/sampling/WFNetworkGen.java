@@ -109,7 +109,7 @@ public class WFNetworkGen {
 	Network n = instantiateNetwork();
 	String wn;	
 	for(int i = startIndex; i < endIndex; i++) {
-	    wn = writeGraphToFile(n.generate(), dir + size + "/" + net.toString() + "/" + net.toString() + "_" + i);
+	    wn = writeGraphToFile(n.generate(), dir + size + "/" + net.toString() + "/"  + i + "/"+ net.toString() + "_" + i);
 	    System.out.println(wn);
 	}
 

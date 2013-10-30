@@ -98,7 +98,7 @@ public class WFSampling {
 			matchArgument(s);
 		}
 		
-		srcdir = dir + "/networks/" + size + "/" + net.name() + "/";
+		srcdir = dir + "/networks/" + size + "/" + net.name() + "/" + startIndex + "/";
 		File f = new File(srcdir);
 		if (!f.isDirectory()) {
 			throw new IllegalArgumentException("Source path " + srcdir + " not found");
@@ -129,11 +129,11 @@ public class WFSampling {
 				net.name() + "-" + samplingAlgorithm.name(), srcdir,
 				suffix, null);
 		// current index is 0!
-		if (startIndex > 0) {
-			for (int i = 0; i < startIndex; i++) {
-				rf.incIndex();
-			}
-		}
+//		if (startIndex > 0) {
+//			for (int i = 0; i < startIndex; i++) {
+//				rf.incIndex();
+//			}
+//		}
 
 		Graph g;
 		for (int j = startIndex; j <= endIndex; j++) {
