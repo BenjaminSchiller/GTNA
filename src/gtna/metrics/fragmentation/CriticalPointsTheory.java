@@ -67,7 +67,9 @@ public class CriticalPointsTheory extends Metric {
 
 	private double p;
 	private double deg;
+	private Timer runtime;
 	private Selection selection;
+	private static double epsilon = 0.0005;
 
 	public CriticalPointsTheory(boolean directed, Selection selection) {
 		super("CRITICAL_POINTS", new Parameter[] {
@@ -85,6 +87,7 @@ public class CriticalPointsTheory extends Metric {
 	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
+		this.runtime = new Timer();
 		Node[] nodes = g.getNodes();
 		if (this.dir) {
 			int maxOut = 0;
@@ -168,6 +171,7 @@ public class CriticalPointsTheory extends Metric {
 			this.p = res[0];
 			this.deg = res[1];
 		}
+		this.runtime.end();
 	}
 
 	/*
@@ -189,7 +193,9 @@ public class CriticalPointsTheory extends Metric {
 	public Single[] getSingles() {
 		Single pR = new Single("CRITICAL_POINTS_CP", this.p);
 		Single degR = new Single("CRITICAL_POINTS_DEG", this.deg);
-		return new Single[] { pR, degR };
+		Single runtime = new Single("CRITICAL_POINTS_RUNTIME",
+				this.runtime.getRuntime());
+		return new Single[] { pR, degR, runtime };
 	}
 
 	/*
@@ -251,7 +257,33 @@ public class CriticalPointsTheory extends Metric {
 				k0 = getk0(distN, j - 1);
 				fpN = 1 - 1 / (k0 - 1);
 				if (edgef > fpN) {
-					return new double[] { p, j };
+					if (dist[j] < epsilon){
+						return new double[] { p, j };
+					}
+					double cup = dist[j];
+					double clow = 0;
+					p = p - dist[j]; 
+					edgef = edgef - dist[j] * j / (av);
+					while (cup-clow > epsilon){
+						double cmed = (clow+cup)/2;
+						double p2 = p + cmed;
+						double edgef2 = edgef + cmed * j / (av);
+						distN[j] = 1- cmed;
+						for (int i = 0; i < j+1; i++) {
+							distN[i] = dist[i] / (1 - p2);
+						}
+						for (int i = j+1; i < dist.length; i++) {
+							distN[i] = 0;
+						}
+						k0 = getk0(distN, j - 1);
+						fpN = 1 - 1 / (k0 - 1);
+						if (edgef2 > fpN){
+							cup = cmed;
+						} else {
+							clow = cmed;
+						}
+					}
+					return new double[] { p+cup, j };
 				}
 			}
 		}
@@ -259,100 +291,225 @@ public class CriticalPointsTheory extends Metric {
 	}
 
 	public static double[] getCPDirectedLargest(double[][] dist) {
-		double av = 0;
+				double av = 0;
 		int max = 0;
+		double av2 = 0;
 		for (int i = 0; i < dist.length; i++) {
 			for (int j = 0; j < dist[i].length; j++) {
 				av = av + i * dist[i][j];
+				av2 = av2 + i*j*dist[i][j];
 			}
 			if (dist[i].length - 1 + i > max) {
 				max = dist[i].length - 1 + i;
 			}
 		}
-		double p = 0;
+		double e2 = 0;
 		double out = 0;
 		double in = 0;
-		double fpN;
-		double k0;
+		double p = 0;
 		for (int j = max; j > 0; j--) {
+			double pj = 0;
+			double e2j = 0;
+			double inj = 0;
+			double outj = 0;
 			for (int i = 0; i < j; i++) {
 				if (i < dist.length && dist[i].length > j - i) {
-					p = p + dist[i][j - i];
-					out = out + dist[i][j - i] * i / av;
-					in = in + dist[i][j - i] * (j - i) / av;
+					e2j = e2j + i*(j-i)*dist[i][j - i];
+					outj = outj + dist[i][j - i] * i / av;
+					inj = inj + dist[i][j - i] * (j - i) / av;
+					pj = pj + dist[i][j - i];
 				}
 			}
 
-			double[] r = getk0Directed(dist, j, Integer.MAX_VALUE,
-					Integer.MAX_VALUE);
-			fpN = (1 - out) * (1 - in) * 2 * r[0] - (1 - in) * r[1] - (1 - out)
-					* r[2];
-			if (fpN < 0) {
-				return new double[] { p, j - 1 };
+			double c = (1-in-inj)*(1-out-outj)*(av2-av-e2-e2j);
+			if (c < 0){
+				double pup = 1;
+				double plow = 0;
+				while ((pup - plow)*pj > epsilon){
+					double pmed = (pup+plow)/2;
+					e2j = 0;
+					inj = 0;
+					outj = 0;
+					pj = 0;
+					for (int i = 0; i < j; i++) {
+						if (i < dist.length && dist[i].length > j - i) {
+							e2j = e2j + i*(j-i)*dist[i][j - i]*pmed;
+							outj = outj + dist[i][j - i] * i / av*pmed;
+							inj = inj + dist[i][j - i] * (j - i) / av*pmed;
+							pj = pj + dist[i][j - i]*pmed;
+						}
+					}
+					c = (1-in-inj)*(1-out-outj)*(av2-av-e2-e2j);
+					if (c < 0){
+						pup = pmed;
+						
+					} else {
+						plow = pmed;
+						c = -1;
+					}
+				}
 			}
-
+            p = p + pj;
+            e2 = e2 + e2j;
+            in = in + inj;
+            out = out + outj;
+            if (c < 0){
+            	return new double[]{p,j};
+            }
 		}
 		return new double[] { 1, 1 };
 	}
 
 	public static double[] getCPDirectedLargestOut(double[][] dist) {
 		double av = 0;
+		double av2 = 0;
 		for (int i = 0; i < dist.length; i++) {
 			for (int j = 0; j < dist[i].length; j++) {
 				av = av + i * dist[i][j];
+				av2 = av2 + i*j*dist[i][j];
 			}
+			
 		}
-		double p = 0;
+		double e2 = 0;
 		double out = 0;
 		double in = 0;
-		double fpN;
-		double k0;
-		for (int j = dist.length - 1; j > 0; j--) {
-			for (int i = 0; i < dist[j].length; i++) {
-				p = p + dist[j][i];
-				out = out + dist[j][i] * j / (av);
-				in = in + dist[j][i] * i / av;
+		double p = 0;
+		for (int j = dist.length-1; j > 0; j--) {
+			for (int i = dist[j].length-1; i > -1; i--) {
+				double pj = 0;
+				double e2j = 0;
+				double inj = 0;
+				double outj = 0;
+				e2j = e2j + i*j*dist[j][i];
+					outj = outj + dist[j][i] * j / av;
+					inj = inj + dist[j][i] * i / av;
+					pj = pj + dist[j][i];
+			double c = (1-in-inj)*(1-out-outj)*(av2-av-e2-e2j);
+			if (c < 0){
+				double pup = 1;
+				double plow = 0;
+				
+				while ((pup - plow)*pj > epsilon){
+					double pmed = (pup+plow)/2;
+					e2j = 0;
+					inj = 0;
+					outj = 0;
+					pj = 0;
+					e2j = e2j + i*j*dist[j][i]*pmed;
+					outj = outj + dist[j][i] * j / av*pmed;
+					inj = inj + dist[j][i] * i / av*pmed;
+					pj = pj + dist[j][i]*pmed;
+					c = (1-in-inj)*(1-out-outj)*(av2-av-e2-e2j);
+					if (c < 0){
+						pup = pmed;
+						
+					} else {
+						plow = pmed;
+						c = -1;
+					}
+				}
 			}
-			double[] r = getk0Directed(dist, Integer.MAX_VALUE, j,
-					Integer.MAX_VALUE);
-			fpN = (1 - out) * (1 - in) * 2 * r[0] - (1 - in) * r[1] - (1 - out)
-					* r[2];
-			if (fpN < 0) {
-				return new double[] { p, j - 1 };
+            p = p + pj;
+            e2 = e2 + e2j;
+            in = in + inj;
+            out = out + outj;
+           
+            if (c < 0){
+            	return new double[]{p,j};
+            }
 			}
 		}
 		return new double[] { 1, 1 };
+//		double av = 0;
+//		for (int i = 0; i < dist.length; i++) {
+//			for (int j = 0; j < dist[i].length; j++) {
+//				av = av + i * dist[i][j];
+//			}
+//		}
+//		double p = 0;
+//		double out = 0;
+//		double in = 0;
+//		double fpN;
+//		double k0;
+//		for (int j = dist.length - 1; j > 0; j--) {
+//			for (int i = 0; i < dist[j].length; i++) {
+//				p = p + dist[j][i];
+//				out = out + dist[j][i] * j / (av);
+//				in = in + dist[j][i] * i / av;
+//			}
+//			double[] r = getk0Directed(dist, Integer.MAX_VALUE, j,
+//					Integer.MAX_VALUE);
+//			fpN = (1 - out) * (1 - in) * 2 * r[0] - (1 - in) * r[1] - (1 - out)
+//					* r[2];
+//			if (fpN < 0) {
+//				return new double[] { p, j - 1 };
+//			}
+//		}
+//		return new double[] { 1, 1 };
 	}
 
 	public static double[] getCPDirectedLargestIn(double[][] dist) {
 		double av = 0;
-		int max = 0;
+		double av2 = 0;
+		int max = dist[0].length;
 		for (int i = 0; i < dist.length; i++) {
 			for (int j = 0; j < dist[i].length; j++) {
-				av = av + j * dist[i][j];
-			}
-			if (dist[i].length - 1 > max) {
-				max = dist[i].length - 1;
-			}
-		}
-		double p = 0;
-		double out = 0;
-		double in = 0;
-		double fpN;
-		for (int j = max; j > 0; j--) {
-			for (int i = 0; i < dist.length; i++) {
-				if (j < dist[i].length) {
-					p = p + dist[i][j];
-					out = out + dist[i][j] * i / (av);
-					in = in + dist[i][j] * j / av;
+				av = av + i * dist[i][j];
+				av2 = av2 + i*j*dist[i][j];
+				if (dist[i].length > max){
+					max = dist[i].length;
 				}
 			}
-			double[] r = getk0Directed(dist, Integer.MAX_VALUE,
-					Integer.MAX_VALUE, j);
-			fpN = (1 - out) * (1 - in) * 2 * r[0] - (1 - in) * r[1] - (1 - out)
-					* r[2];
-			if (fpN < 0) {
-				return new double[] { p, j - 1 };
+			
+		}
+		double e2 = 0;
+		double out = 0;
+		double in = 0;
+		double p = 0;
+		for (int i = max-1; i > 0; i--) {
+			for (int j = dist.length-1; j > -1; j--) {
+				if (dist[j].length <= i) continue;
+				double pj = 0;
+				double e2j = 0;
+				double inj = 0;
+				double outj = 0;
+				e2j = e2j + i*j*dist[j][i];
+					outj = outj + dist[j][i] * j / av;
+					inj = inj + dist[j][i] * i / av;
+					pj = pj + dist[j][i];
+			double c = (1-in-inj)*(1-out-outj)*(av2-av-e2-e2j);
+			if (c < 0){
+				double pup = 1;
+				double plow = 0;
+				
+				while ((pup - plow)*pj > epsilon){
+					double pmed = (pup+plow)/2;
+					e2j = 0;
+					inj = 0;
+					outj = 0;
+					pj = 0;
+					e2j = e2j + i*j*dist[j][i]*pmed;
+					outj = outj + dist[j][i] * j / av*pmed;
+					inj = inj + dist[j][i] * i / av*pmed;
+					pj = pj + dist[j][i]*pmed;
+					c = (1-in-inj)*(1-out-outj)*(av2-av-e2-e2j);
+					if (c < 0){
+						pup = pmed;
+						
+					} else {
+						plow = pmed;
+						c = -1;
+					}
+				}
+			}
+            p = p + pj;
+            e2 = e2 + e2j;
+            in = in + inj;
+            out = out + outj;
+           
+            if (c < 0){
+            	return new double[]{p,j};
+            }
 			}
 		}
 		return new double[] { 1, 1 };
