@@ -109,7 +109,7 @@ public class MakiDemo1Comparisson extends MakiDemo {
 		 * Reading CAIDA graph from source file
 		 */
 		Graph caidaGraph = null;
-		String src = "data/caida-2007-09-13.txt";
+		String src = "resources/caida-2007-09-13.txt";
 		if (readWrite) {
 			GraphReader reader = new CaidaGraphReader();
 			System.out.println("reading CAIDA graph from " + src);
@@ -178,7 +178,9 @@ public class MakiDemo1Comparisson extends MakiDemo {
 					"multi/SHORTEST_PATHS/sp-shortestPathLengthDistribution",
 					"multi/DEGREE_DISTRIBUTION/dd-degreeDistribution-cdf" });
 			Thread.sleep(1000);
-			open(new String[] { dst, src });
+			open(new String[] { src});
+			Thread.sleep(1000);
+			open(new String[] { dst });
 		}
 
 		stats.end();

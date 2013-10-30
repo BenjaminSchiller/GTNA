@@ -64,6 +64,7 @@ public class MakiDemo {
 	}
 
 	protected static void open(String location) {
+		System.out.println(">>> opening " + location);
 		Execute.exec("open " + location);
 	}
 

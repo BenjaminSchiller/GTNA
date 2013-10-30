@@ -84,7 +84,7 @@ public class MakiDemo2Visualization extends MakiDemo {
 	protected static boolean plot = true;
 
 	// 27 / 9 sec
-	protected static boolean draw = false;
+	protected static boolean draw = true;
 
 	protected static boolean open = true;
 
@@ -132,12 +132,11 @@ public class MakiDemo2Visualization extends MakiDemo {
 		 * Creating network instances
 		 */
 		Network hotspotPlacement = hotspotPlacement(800, 16, 500, 500, 60, t);
-		Network darmstadt = wifi("resources/_wifi/source/darmstadt_all.txt",
-				"darmstadt", "Darmstadt", 50, t);
-		Network manhattan = wifi("resources/_wifi/source/manhattan.txt",
-				"manhattan", "Manhattan", 50, t);
-		Network google = wifi("resources/_wifi/source/google.txt", "google",
-				"Google", 50, t);
+		Network darmstadt = wifi("resources/darmstadt_all.txt", "darmstadt",
+				"Darmstadt", 50, t);
+		Network manhattan = wifi("resources/manhattan.txt", "manhattan",
+				"Manhattan", 50, t);
+		Network google = wifi("resources/google.txt", "google", "Google", 50, t);
 
 		Network[] nw = new Network[] { hotspotPlacement, darmstadt, manhattan,
 				google };
@@ -177,7 +176,7 @@ public class MakiDemo2Visualization extends MakiDemo {
 			open(new String[] { Config.get("MAIN_DATA_FOLDER"),
 					Config.get("MAIN_PLOT_FOLDER") });
 			Thread.sleep(1000);
-			
+
 			openPlots(new String[] { "multi/ROLES-WSN/max",
 					"multi/COMMUNITIES/adjacent-communities",
 					"multi/COMMUNITIES/community-size-fraction",
@@ -265,12 +264,12 @@ public class MakiDemo2Visualization extends MakiDemo {
 
 			ge.plot(g, idSpace, (NodeColors) colors[i], filename1);
 
-			Execute.exec("/usr/local/bin/convert " + filename1 + " "
+			Execute.exec("/opt/local/bin/convert " + filename1 + " "
 					+ filename2);
 			Execute.exec("rm " + filename1);
-//			if (i >= 0) {
-//				break;
-//			}
+			// if (i >= 0) {
+			// break;
+			// }
 		}
 	}
 

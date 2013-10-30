@@ -61,7 +61,7 @@ import gtna.util.Stats;
  */
 public class MakiDemo3Routing extends MakiDemo {
 
-	protected static int times = 50;
+	protected static int times = 5;
 
 	// 47 sec
 	protected static boolean generate = true;
