@@ -54,6 +54,7 @@ import gtna.util.Config;
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -95,7 +96,7 @@ public class WFMetricCalc {
 		}
 
 		for (String s : args) {
-			System.out.println(s);
+//			System.out.println(s);
 			// parse network generation details
 			if (s.startsWith("sampling=")) {
 				sampling.add(s.substring(9));
@@ -167,7 +168,7 @@ public class WFMetricCalc {
 					+ scaledown.get(i);
 			ReadableFolder rf = new ReadableFolder(name, net.get(0), d, suffix, null);
 			
-			System.out.println("RF: " + d + " - size:" + rf.getFiles().length);
+//			System.out.println("RF: " + d + " - size:" + rf.getFiles().length);
 			
 			DescriptionWrapper dwrf = new DescriptionWrapper(rf, name);
 			rfc.add(dwrf);
@@ -186,29 +187,36 @@ public class WFMetricCalc {
 				series[i] = Series.generate(rfa[i],
 						metrics.toArray(new Metric[0]), startIndex.get(i),
 						endIndex.get(i));
+				System.out.println(series[i].getFolder());
+				System.out.println(Arrays.toString(series[i].getRunFolders()));
 			}
 
 		} else {
 			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 			Series[] series = new Series[rfa.length];
 			for (int i = 0; i < rfa.length; i++) {
-				Config.overwrite("MAIN_DATA_FOLDER",
-						targetdir + sampling.get(i)
-								+ "/" + rfa[i].getNodes() + "/data/");
+				String path = targetdir + sampling.get(i)
+						+ "/" + rfa[i].getNodes() + "/data/";
+				
+//				System.out.println(path);
+				Config.overwrite("MAIN_DATA_FOLDER", path);
 		
 				
-				if(rfa[i].getNodes() == size.get(i)){
-					Config.overwrite("MAIN_DATA_FOLDER",
-							targetdir.replaceAll("/[0-9]/", "/") + sampling.get(i)
-									+ "/" + rfa[i].getNodes() + "/data/");
-					
-					System.out.println("DATA-FOLDER ORIGINAL: " + targetdir.replaceAll("/[0-9]/", "/") + sampling.get(i)
-									+ "/" + rfa[i].getNodes() + "/data/");
-				}
+//				if(rfa[i].getNodes() == size.get(i)){
+//					path = targetdir + sampling.get(i)
+//					+ "/" + rfa[i].getNodes() + "/data/";
+//					Config.overwrite("MAIN_DATA_FOLDER",
+//							path);
+//					System.out.println("Changed path: " + path);
+//					
+//				}
 				
 				series[i] = Series.generate(rfa[i],
 						metrics.toArray(new Metric[0]), startIndex.get(i),
 						endIndex.get(i));
+				
+				System.out.println(series[i].getFolder());
+				System.out.println(Arrays.toString(series[i].getRunFolders()));
 			}
 			
 			
@@ -225,12 +233,6 @@ public class WFMetricCalc {
 			
 			Config.overwrite("MAIN_PLOT_FOLDER", plotdir + "plots/");
 			Config.overwrite("TEMP_FOLDER", plotdir + "temp/");
-			
-			
-			System.out.println("RFA: " + rfa.length);
-			System.out.println("Series: " + series.length);
-			System.out.println("Metrics: " + metrics.size());
-			
 			
 			Plotting.single(series, metrics.toArray(new Metric[0]), "single/",
 					Type.confidence1, Style.candlesticks); // main path to plots
