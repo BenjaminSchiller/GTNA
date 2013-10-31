@@ -116,8 +116,13 @@ public class SamplingBias extends Metric {
 		}
 		
 		
+<<<<<<< HEAD
 		biasd = new Distribution(sb);
 <<<<<<< HEAD
+=======
+		Arrays.sort(nodesampling);
+		biasd = new Distribution(nodesampling);
+>>>>>>> - sample for calculating sampling algorithm related metrics
 		nodes = g.getNodeCount();
 		edges = g.getEdges().size();
 		

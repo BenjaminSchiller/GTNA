@@ -63,7 +63,7 @@ import java.util.Date;
  * @author Tim
  * 
  */
-public class WFSampling {
+public class WFSamplingForSamplingMetrics {
 
 	private enum EnumNetworks {
 		ER, BA, CK, RC, WS, REG, CL, RING
@@ -98,12 +98,12 @@ public class WFSampling {
 			matchArgument(s);
 		}
 		
-		srcdir = dir + "/networks/" + size + "/" + net.name() + "/";
+		srcdir = dir + "/networks/" + size + "/" + net.name() + "/" + startIndex + "/";
 		File f = new File(srcdir);
 		if (!f.isDirectory()) {
 			throw new IllegalArgumentException("Source path " + srcdir + " not found");
 		}
-		targetdir = dir + "/samples/"+ size + "/" + net.name() + "/" + scaledown + "/" + samplingAlgorithm + "/";
+		targetdir = dir + "/samplemetrics-samples/"+ size + "/" + net.name() + "/" + scaledown + "/" + samplingAlgorithm + "/";
 		f = new File(targetdir);
 		if (!f.isDirectory()) {
 			f.mkdirs();
@@ -147,8 +147,8 @@ public class WFSampling {
 					gi = samplingTransformation[1].transform(gi); // subgraph
 					// generation/coloring
 
-					writeGraphToFile(gi, targetdir + j + "/", net.name()+"-"+samplingAlgorithm.name()
-							+ "_" + si);
+//					writeGraphToFile(gi, targetdir + j + "/", net.name()+"-"+samplingAlgorithm.name()
+//							+ "_" + si);
 
 					if (plotting)
 						plotGraph(gi, targetdir + j + "/" + "plots/",
