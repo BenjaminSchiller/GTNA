@@ -101,7 +101,7 @@ public class WFSamplingMetricCalc {
 //		}
 
 		for (String s : args) {
-			 System.out.println(s);
+//			 System.out.println(s);
 			// parse network generation details
 			if (s.startsWith("sampling=")) {
 				sampling.add(s.substring(9));
@@ -213,8 +213,8 @@ public class WFSamplingMetricCalc {
 				series[i] = Series.generate(rfa[i],
 						metrics.toArray(new Metric[0]), startIndex.get(i),
 						endIndex.get(i));
-				System.out.println(series[i].getFolder());
-				System.out.println(Arrays.toString(series[i].getRunFolders()));
+//				System.out.println(series[i].getFolder());
+//				System.out.println(Arrays.toString(series[i].getRunFolders()));
 			}
 
 		} else {
@@ -240,8 +240,8 @@ public class WFSamplingMetricCalc {
 						metrics.toArray(new Metric[0]), startIndex.get(i),
 						endIndex.get(i));
 
-				System.out.println(series[i].getFolder());
-				System.out.println(Arrays.toString(series[i].getRunFolders()));
+//				System.out.println(series[i].getFolder());
+//				System.out.println(Arrays.toString(series[i].getRunFolders()));
 			}
 
 			File p = new File(plotdir + scaledown.get(0) + "/" + "plots/");
