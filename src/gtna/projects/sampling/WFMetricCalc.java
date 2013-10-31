@@ -187,8 +187,8 @@ public class WFMetricCalc {
 				series[i] = Series.generate(rfa[i],
 						metrics.toArray(new Metric[0]), startIndex.get(i),
 						endIndex.get(i));
-				System.out.println(series[i].getFolder());
-				System.out.println(Arrays.toString(series[i].getRunFolders()));
+//				System.out.println(series[i].getFolder());
+//				System.out.println(Arrays.toString(series[i].getRunFolders()));
 			}
 
 		} else {
@@ -215,8 +215,8 @@ public class WFMetricCalc {
 						metrics.toArray(new Metric[0]), startIndex.get(i),
 						endIndex.get(i));
 				
-				System.out.println(series[i].getFolder());
-				System.out.println(Arrays.toString(series[i].getRunFolders()));
+//				System.out.println(series[i].getFolder());
+//				System.out.println(Arrays.toString(series[i].getRunFolders()));
 			}
 			
 			
