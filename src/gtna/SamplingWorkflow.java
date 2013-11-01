@@ -57,8 +57,6 @@ import java.util.Collection;
  */
 public class SamplingWorkflow {
 
-	
-
 	/**
 	 * @param times
 	 * @param scaledown
@@ -153,8 +151,6 @@ public class SamplingWorkflow {
 		return sampledNetworks.toArray(new Graph[0]);
 	}
 
-	
-
 	public static Network[] loadNetworks(String folder, String[] networkPaths) {
 		Collection<Network> nets = new ArrayList<Network>();
 
@@ -218,13 +214,12 @@ public class SamplingWorkflow {
 	private static Graph setIdSpace(Graph g) {
 		if (!g.hasProperty("ID_SPACE_0")) {
 			Transformation idS = new ConsecutiveRingIDSpace(true);
-//			 Transformation idS = new RandomPlaneIDSpaceSimple(2, 5, 5, false);
+			// Transformation idS = new RandomPlaneIDSpaceSimple(2, 5, 5,
+			// false);
 			g = idS.transform(g);
 		}
 		return g;
 	}
-
-	
 
 	public static void calculateNetworkMetricsAndWriteToFile(
 			boolean getOrGenerate, int times, Metric[] metrics, Network[] nets,
