@@ -46,39 +46,16 @@ import java.util.Random;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
-<<<<<<< HEAD
-<<<<<<< HEAD
 import gtna.transformation.sampling.sample.NetworkSample;
-=======
-import gtna.transformation.sampling.NetworkSample;
->>>>>>> added ForestFireWalker
-=======
-import gtna.transformation.sampling.sample.NetworkSample;
->>>>>>> refactoring to allow multiple types of sample
 
 /**
  * @author Tim
  * 
  */
-<<<<<<< HEAD
-<<<<<<< HEAD
 public class FFWalker extends BFSBaseWalker {
 
 	
     private double probability = 0.7;
-=======
-public class FFWalker extends AWalker {
-=======
-public class FFWalker extends BFSBaseWalker {
->>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
-
-	
-<<<<<<< HEAD
-    private double probability = 1.0;
->>>>>>> added ForestFireWalker
-=======
-    private double probability = 0.7;
->>>>>>> trying to fix the div by 0 when calculating the BC on clique/regularrings
 
     /**
      * @param walker
@@ -97,81 +74,12 @@ public class FFWalker extends BFSBaseWalker {
     	this.probability = probability;
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 	/* (non-Javadoc)
 	 * @see gtna.transformation.sampling.walker.BFSBaseWalker#chooseNodesToAddToQ(java.util.Collection)
 	 */
 	@Override
 	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> toFilter) {
 		Random r = this.getRNG();
-<<<<<<< HEAD
-=======
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
-     */
-    @Override
-    protected Node selectNextNode(Collection<Node> candidates) {
-	Node n = null;
-	List<Node> c = new ArrayList<Node>();
-	Collection<Node> cc = new ArrayList<Node>();
-	while (n == null) {
-	    if (nextQ.size() > 0) {
-		c.add(nextQ.get(0));
-		nextQ.remove(0);
-		cc = this.filterCandidates(c);
-		if (cc.size() > 0) {
-		    n = cc.toArray(new Node[0])[0];
-		}
-	    } else {
-		
-		System.err.println("NextQ empty, need a restart! (" + restartcounter  
-			+ ")");
-		restartcounter += 1;
-		cc = super.getRestartNodes();
-		n = cc.toArray(new Node[0])[0];
-		
-	    }
-	}
-
-	return n;
-    }
-
-    @Override
-    public void takeAStep(Graph g, NetworkSample ns) {
-	Map<Node, Collection<Node>> cc = this.getCurrentCandidates();
-	Collection<Node> c = new ArrayList<Node>();
-
-	// add new neighbors to the q
-	if (cc.size() > 0) {
-	    c = cc.keySet();
-	}
-	
-	    Collection<Collection<Node>> toQ = cc.values();
-	    for(Collection<Node> cn : toQ) {
-		nextQ.addAll(filterByProbability(cn));
-	    }
-	    
-	    Node next = this.selectNextNode(new ArrayList<Node>());
-	    
-	    
-	    super.currents.remove(cc.keySet().toArray(new Node[0])[0]);
-	    super.currents.add(next);
-
-	
-
-    }
-    
-    private Collection<Node> filterByProbability(Collection<Node> toFilter){
-    	Random r = this.getRNG();
->>>>>>> added ForestFireWalker
-=======
->>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
     	Collection<Node> filtered = new ArrayList<Node>();
     	double pn = 0.0;
     	for(Node n : toFilter){
@@ -182,36 +90,7 @@ public class FFWalker extends BFSBaseWalker {
     	}
     	
     	return filtered;
-<<<<<<< HEAD
-<<<<<<< HEAD
 	}
 
-=======
-    	
-    }
-
-    /**
-     * returns the list of neighbors as candidates
-     * 
-     * @param g
-     *            Graph
-     * @param n
-     *            Current node
-     * @return List of candidates
-     */
-    @Override
-    public Collection<Node> resolveCandidates(Graph g, Node n) {
-	int[] nids = n.getOutgoingEdges();
-	ArrayList<Node> nn = new ArrayList<Node>();
-	for (int i : nids) {
-	    nn.add(g.getNode(i));
-	}
-	return nn;
-    }
->>>>>>> added ForestFireWalker
-=======
-	}
-
->>>>>>> added a BaseWalker for BFS-like Sampling algorithms as the differences between BFS, FF, RDS and SB are very small
 
 }

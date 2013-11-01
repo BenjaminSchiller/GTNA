@@ -37,40 +37,18 @@ package gtna.metrics.sampling;
 
 import gtna.data.Single;
 import gtna.graph.Graph;
-<<<<<<< HEAD
-<<<<<<< HEAD
 import gtna.io.DataWriter;
-=======
->>>>>>> computation of the basic revisit frequency
-=======
-import gtna.io.DataWriter;
->>>>>>> SRF properties
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.transformation.sampling.Sample;
 import gtna.util.Distribution;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-=======
-=======
-import java.util.Arrays;
->>>>>>> min/max/avg/med calculation
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-<<<<<<< HEAD
->>>>>>> computation of the basic revisit frequency
-=======
-import java.util.Set;
->>>>>>> Added distribution for showing the efficiency
 
 /**
  * @author Tim
@@ -80,32 +58,14 @@ public class SamplingRevisitFrequency extends Metric {
 
 	private int samplingIndex = 0;
 	private Distribution revisitFrequency;
-<<<<<<< HEAD
-<<<<<<< HEAD
 	private int numberOfRounds;
 	private int edges;
 	private int nodes;
 	private Distribution samplingEfficiency;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> min/max/avg/med calculation
 	private double rfMax;
 	private double rfMin;
 	private double rfAvg;
 	private double rfMed;
-<<<<<<< HEAD
-=======
->>>>>>> computation of the basic revisit frequency
-=======
-	private int numberOfRounds;
-	private int edges;
-	private int nodes;
->>>>>>> SRF properties
-=======
->>>>>>> Added distribution for showing the efficiency
-=======
->>>>>>> min/max/avg/med calculation
 
 	/**
 	 * @param key
@@ -144,10 +104,6 @@ public class SamplingRevisitFrequency extends Metric {
 		}
 		
 		
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> Added distribution for showing the efficiency
 		Set<Double> seenIndices = new HashSet<Double>();
 		double[] efficiency = new double[rounds.length];
 		double ci;
@@ -176,20 +132,6 @@ public class SamplingRevisitFrequency extends Metric {
 		this.rfMin = getMin(rounds);
 		this.rfAvg = getAvg(rounds);
 		this.rfMed = getMed(rounds);
-<<<<<<< HEAD
-=======
-		
-		
-		revisitFrequency = new Distribution(rounds);
-<<<<<<< HEAD
->>>>>>> computation of the basic revisit frequency
-=======
-		nodes = g.getNodes().length;
-		edges = g.getEdges().size();
-		numberOfRounds = s.getSample().getNumberOfRounds();
->>>>>>> SRF properties
-=======
->>>>>>> min/max/avg/med calculation
 
 	}
 
@@ -198,8 +140,6 @@ public class SamplingRevisitFrequency extends Metric {
 	 */
 	@Override
 	public boolean writeData(String folder) {
-<<<<<<< HEAD
-<<<<<<< HEAD
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(this.revisitFrequency.getDistribution(),
 				"SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION", folder);
@@ -207,19 +147,6 @@ public class SamplingRevisitFrequency extends Metric {
 			"SAMPLING_REVISIT_FREQUENCY_EFFICIENCY", folder);
 		
 		return success;
-=======
-		// TODO Auto-generated method stub
-		return false;
->>>>>>> computation of the basic revisit frequency
-=======
-		boolean success = true;
-		success &= DataWriter.writeWithIndex(this.revisitFrequency.getDistribution(),
-				"SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(this.samplingEfficiency.getDistribution(), 
-			"SAMPLING_REVISIT_FREQUENCY_EFFICIENCY", folder);
-		
-		return success;
->>>>>>> SRF properties
 	}
 
 	/* (non-Javadoc)
@@ -227,42 +154,18 @@ public class SamplingRevisitFrequency extends Metric {
 	 */
 	@Override
 	public Single[] getSingles() {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> SRF properties
 		Single nodes = new Single("SAMPLING_REVISIT_FREQUENCY_NODES", this.nodes);
 		Single edges = new Single("SAMPLING_REVISIT_FREQUENCY_EDGES", this.edges);
 		Single rounds = new Single("SAMPLING_REVISIT_FREQUENCY_ROUNDS", this.numberOfRounds);
 		
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> min/max/avg/med calculation
 		Single rfMin = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MIN", this.rfMin);
 		Single rfMed = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MED", this.rfMed);
 		Single rfAvg = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_AVG", this.rfAvg);
 		Single rfMax = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MAX", this.rfMax);
-<<<<<<< HEAD
-=======
-		Single rfMin = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MIN", this.revisitFrequency.getMin());
-		Single rfMed = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MED", this.revisitFrequency.getMedian());
-		Single rfAvg = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_AVG", this.revisitFrequency.getAverage());
-		Single rfMax = new Single("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MAX", this.revisitFrequency.getMax());
->>>>>>> SRF properties
-=======
->>>>>>> min/max/avg/med calculation
 		
 		return new Single[] { 
 				nodes, edges, rounds, 
 				rfMin, rfMed, rfAvg, rfMax };
-<<<<<<< HEAD
-=======
-		// TODO Auto-generated method stub
-		return null;
->>>>>>> computation of the basic revisit frequency
-=======
->>>>>>> SRF properties
 	}
 
 	/* (non-Javadoc)
@@ -276,10 +179,6 @@ public class SamplingRevisitFrequency extends Metric {
 			return false;
 		}
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> min/max/avg/med calculation
 	
 	private double getMax(double[] dis) {
 		double max = 0;
@@ -329,10 +228,5 @@ public class SamplingRevisitFrequency extends Metric {
 
 		return median;
 	}
-<<<<<<< HEAD
-=======
->>>>>>> computation of the basic revisit frequency
-=======
->>>>>>> min/max/avg/med calculation
 
 }

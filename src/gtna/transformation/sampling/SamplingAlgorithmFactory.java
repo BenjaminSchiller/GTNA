@@ -35,63 +35,6 @@
  */
 package gtna.transformation.sampling;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-import gtna.transformation.sampling.sample.NetworkSample;
-import gtna.transformation.sampling.sampler.RoundBasedVisitedNodeSampler;
-import gtna.transformation.sampling.sampler.VisitedNodeSampler;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
-=======
-=======
-=======
-=======
->>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
-import gtna.transformation.sampling.walker.BFSWalker;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> started BFS implementation. known bug:  java.lang.OutOfMemoryError: Java heap space @ resolveCandidates
-=======
-=======
-=======
-import gtna.transformation.sampling.walker.DFSWalker;
->>>>>>> factory for dfs and small tests in the workflow
-import gtna.transformation.sampling.walker.FFWalker;
-<<<<<<< HEAD
->>>>>>> added ForestFireWalker
-=======
-import gtna.transformation.sampling.walker.MetropolizedRandomWalkWalker;
->>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
-import gtna.transformation.sampling.walker.RDSWalker;
->>>>>>> implemented RDS
-import gtna.transformation.sampling.walker.RandomJumpWalker;
->>>>>>> added entry for random jump algorithm to the sampling algorithm factory
-import gtna.transformation.sampling.walker.RandomWalkDegreeCorrectionWalker;
->>>>>>> RandomWalk Walker with degree correction and entry for the sampling algorithm factory
-import gtna.transformation.sampling.walker.RandomWalkWalker;
-import gtna.transformation.sampling.walker.SnowballWalker;
-import gtna.transformation.sampling.walker.UniformRandomWalker;
-import gtna.transformation.sampling.walkercontroller.FrontierSamplingWalkerController;
-import gtna.transformation.sampling.walkercontroller.MultipleRandomWalkWalkerController;
-import gtna.transformation.sampling.walkercontroller.RandomWalkWalkerController;
-import gtna.transformation.sampling.walkercontroller.UniformSamplingWalkerController;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
-/**
- * @author Tim
- * 
-=======
-import java.util.ArrayList;
-import java.util.Collection;
-
-=======
->>>>>>> removed finalize method and functionality to insert the neighbor set into the sample directly as it would result in wrong subgraphs
 import gtna.transformation.sampling.sample.NetworkSample;
 import gtna.transformation.sampling.sampler.RoundBasedVisitedNodeSampler;
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
@@ -115,19 +58,12 @@ import java.util.Collection;
 
 /**
  * @author Tim
-<<<<<<< HEAD
- *
->>>>>>> SamplingAlgorithmFactory
-=======
  * 
->>>>>>> refactoring and cleanup after debugging (1)
  */
 public class SamplingAlgorithmFactory {
 
     /**
      * Enumeration of by default supported sampling algorithms
-<<<<<<< HEAD
-<<<<<<< HEAD
      * 
      * @author Tim
      * 
@@ -142,270 +78,14 @@ public class SamplingAlgorithmFactory {
     	DFS
     }
 
-=======
-=======
-     * 
->>>>>>> refactoring and cleanup after debugging (1)
-     * @author Tim
-     * 
-     */
-    @SuppressWarnings("javadoc")
-    public enum SamplingAlgorithm {
-    	UNIFORMSAMPLING, 
-    	RANDOMWALK, RANDOMWALK_METROPOLIZED, RANDOMWALK_DEGREECORRECTION, RANDOMWALK_MULTIPLE, FRONTIERSAMPLING, 
-    	RANDOMSTROLL, RANDOMSTROLL_DEGREECORRECTION, 
-    	RANDOMJUMP, 
-    	BFS, SNOWBALLSAMPLING, RESPONDENTDRIVENSAMPLING, FORESTFIRE, 
-    	DFS
-    }
-<<<<<<< HEAD
-    
->>>>>>> SamplingAlgorithmFactory
-=======
-
->>>>>>> refactoring and cleanup after debugging (1)
     /**
      * build an instance of a default sampling transformation
      * 
      * @param sg
      * @param revisiting
-<<<<<<< HEAD
-<<<<<<< HEAD
      * @param dimension
      *            IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
      * @param randomSeed - can be <b>null</b> to use a standard RNG
-     * @return
-     */
-    public static SamplingController getInstanceOf(SamplingAlgorithm sg,
-	    double scaledown, boolean revisiting, int dimension, Long randomSeed) {
-	SamplingController sc;
-	ASampler as;
-	AWalker aw;
-	Collection<AWalker> cw;
-	AWalkerController awc;
-	CandidateFilter cf;
-	StartNodeSelector sns;
-	String algorithm;
-	@SuppressWarnings("unused")
-	NetworkSample ns;
-
-	switch (sg) {
-		case UNIFORMSAMPLING:
-			as = new VisitedNodeSampler();
-			aw = new UniformRandomWalker();
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			cw.add(aw);
-			awc = new UniformSamplingWalkerController(cw, cf);
-			aw.setWalkerController(awc);
-			as.setWalkerController(awc);
-
-			algorithm = "UNIFORM_SAMPLING";
-			break;
-		case RANDOMWALK:
-			as = new VisitedNodeSampler();
-			aw = new RandomWalkWalker();
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			cw.add(aw);
-			awc = new RandomWalkWalkerController(cw, cf);
-			aw.setWalkerController(awc);
-			as.setWalkerController(awc);
-			
-			algorithm = "RANDOM_WALK";
-			break;
-<<<<<<< HEAD
-		case RANDOMWALK_METROPOLIZED:
-			as = new VisitedNodeSampler();
-			aw = new MetropolizedRandomWalkWalker();
-=======
-		case RANDOMWALK_DEGREECORRECTION:
-			as = new VisitedNodeSampler();
-			aw = new RandomWalkDegreeCorrectionWalker();
->>>>>>> RandomWalk Walker with degree correction and entry for the sampling algorithm factory
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			cw.add(aw);
-			awc = new RandomWalkWalkerController(cw, cf);
-			aw.setWalkerController(awc);
-			as.setWalkerController(awc);
-			
-<<<<<<< HEAD
-			algorithm = "METROPOLIZED_RANDOM_WALK";
-=======
-			algorithm = "RANDOM_WALK_WITH_DEGREE_CORRECTION";
->>>>>>> RandomWalk Walker with degree correction and entry for the sampling algorithm factory
-			break;
-		case RANDOMWALK_MULTIPLE:
-			as = new VisitedNodeSampler();
-			
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			for(int i = 0; i < dimension; i++){
-				cw.add(new RandomWalkWalker());
-			}
-			awc = new MultipleRandomWalkWalkerController(cw, cf);
-			for(AWalker mrw : cw){
-				mrw.setWalkerController(awc);
-			}
-			as.setWalkerController(awc);
-		
-			algorithm = "MULTIPLE_RANDOM_WALK";
-			break;
-		case FRONTIERSAMPLING:
-			as = new VisitedNodeSampler();
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			for(int i = 0; i < dimension; i++){
-				cw.add(new RandomWalkWalker());
-			}
-			awc = new FrontierSamplingWalkerController(cw, cf);
-			for(AWalker mrw : cw){
-				mrw.setWalkerController(awc);
-			}
-			as.setWalkerController(awc);
-			
-			algorithm = "FRONTIER_SAMPLING";
-			break;	
-		case RANDOMSTROLL:
-			as = new RoundBasedVisitedNodeSampler(5);
-			aw = new RandomWalkWalker();
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			cw.add(aw);
-			awc = new RandomWalkWalkerController(cw, cf);
-			aw.setWalkerController(awc);
-			as.setWalkerController(awc);
-			
-			algorithm = "RANDOM_STROLL";
-			break;
-		case RANDOMSTROLL_DEGREECORRECTION:
-			as = new RoundBasedVisitedNodeSampler(5);
-			aw = new RandomWalkDegreeCorrectionWalker();
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			cw.add(aw);
-			awc = new RandomWalkWalkerController(cw, cf);
-			aw.setWalkerController(awc);
-			as.setWalkerController(awc);
-			
-			algorithm = "RANDOM_STROLL_WITH_DEGREE_CORRECTION";
-			break;
-		case RANDOMJUMP:
-			as = new VisitedNodeSampler();
-			aw = new RandomJumpWalker(0.15);
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			cw.add(aw);
-			awc = new RandomWalkWalkerController(cw, cf);
-			aw.setWalkerController(awc);
-			as.setWalkerController(awc);
-			
-			algorithm = "RANDOM_JUMP";
-			break;
-		case BFS:
-			as = new VisitedNodeSampler();
-			aw = new BFSWalker();
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			cw.add(aw);
-			awc = new RandomWalkWalkerController(cw, cf);
-			aw.setWalkerController(awc);
-			as.setWalkerController(awc);
-			
-			algorithm = "BFS";
-			break;
-		case SNOWBALLSAMPLING:
-			as = new VisitedNodeSampler();
-			aw = new SnowballWalker(3);
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			cw.add(aw);
-			awc = new RandomWalkWalkerController(cw, cf);
-			aw.setWalkerController(awc);
-			as.setWalkerController(awc);
-			
-			algorithm = "SNOWBALL_SAMPLING";
-			break;
-		case RESPONDENTDRIVENSAMPLING:
-			as = new VisitedNodeSampler();
-			aw = new RDSWalker(3);
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			cw.add(aw);
-			awc = new RandomWalkWalkerController(cw, cf);
-			aw.setWalkerController(awc);
-			as.setWalkerController(awc);
-			
-			algorithm = "RESPONDENT_DRIVEN_SAMPLING";
-			break;
-		case FORESTFIRE:
-			as = new VisitedNodeSampler();
-			aw = new FFWalker(0.3);
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			cw.add(aw);
-			awc = new RandomWalkWalkerController(cw, cf);
-			aw.setWalkerController(awc);
-			as.setWalkerController(awc);
-			
-			algorithm = "FOREST_FIRE_SAMPLING";
-			break;
-		case DFS:
-			as = new VisitedNodeSampler();
-			aw = new DFSWalker();
-			cf = new CandidateFilter(revisiting);
-			sns = new StartNodeSelector("RANDOM");
-			cw = new ArrayList<AWalker>();
-			cw.add(aw);
-			awc = new RandomWalkWalkerController(cw, cf);
-			aw.setWalkerController(awc);
-			as.setWalkerController(awc);
-			
-			algorithm = "DFS_SAMPLING";
-			break;
-		default:
-			throw new IllegalArgumentException("Not supported algorithm");
-	}
-	
-	
-	ns = new NetworkSample(algorithm, scaledown, dimension,
-			revisiting);
-	sc = new SamplingController(algorithm, awc, as, sns, ns, scaledown,
-		dimension, revisiting, randomSeed);
-	
-	awc.setSamplingController(sc);
-	as.setSamplingController(sc);
-	return sc;
-    }
-    
-    
-=======
-     * @param dimension IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
-=======
-     * @param dimension
-     *            IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> refactoring and cleanup after debugging (1)
-=======
-     * @param randomSeed 
->>>>>>> usage, persisting, loading of the deterministic-rng possible
-=======
-     * @param randomSeed - can be <b>null</b> to use a standard RNG
->>>>>>> fixes:
      * @return
      */
     public static SamplingController getInstanceOf(SamplingAlgorithm sg,
@@ -625,10 +305,6 @@ public class SamplingAlgorithmFactory {
 	as.setSamplingController(sc);
 	return sc;
     }
-<<<<<<< HEAD
->>>>>>> SamplingAlgorithmFactory
-=======
     
     
->>>>>>> .
 }

@@ -36,14 +36,7 @@
 package gtna.metrics.util;
 
 import gtna.data.Single;
-<<<<<<< HEAD
-<<<<<<< HEAD
 import gtna.io.DataWriter;
-=======
->>>>>>> computation of the error distributions
-=======
-import gtna.io.DataWriter;
->>>>>>> create Single/Multi values
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.util.Distribution;
@@ -67,18 +60,8 @@ public class DegreeDistributionComparator extends DistributionComparator {
 	 * @param key
 	 * @param refMetric
 	 */
-<<<<<<< HEAD
-<<<<<<< HEAD
 	public DegreeDistributionComparator(Metric refMetric) {
 		super("DEGREE_DISTRIBUTION_COMPARATOR", refMetric);
-=======
-	public DegreeDistributionComparator(String key, Metric refMetric) {
-		super(key, refMetric);
->>>>>>> computation of the error distributions
-=======
-	public DegreeDistributionComparator(Metric refMetric) {
-		super("DEGREE_DISTRIBUTION_COMPARATOR", refMetric);
->>>>>>> create Single/Multi values
 	}
 
 	/* (non-Javadoc)
@@ -99,21 +82,9 @@ public class DegreeDistributionComparator extends DistributionComparator {
 		Distribution comDDo = ((DegreeDistribution)comparedMetric).getOutDegreeDistribution();
 		
 		
-<<<<<<< HEAD
-<<<<<<< HEAD
 		double[] diffAbsD = getAbsoluteErrorDistribution(refDD, comDD);
 		double[] diffAbsDi = getAbsoluteErrorDistribution(refDDi, comDDi);
 		double[] diffAbsDo = getAbsoluteErrorDistribution(refDDo, comDDo);
-=======
-		diffAbsD = getAbsoluteErrorDistribution(refDD, comDD);
-		diffAbsDi = getAbsoluteErrorDistribution(refDDi, comDDi);
-		diffAbsDo = getAbsoluteErrorDistribution(refDDo, comDDo);
->>>>>>> computation of the error distributions
-=======
-		double[] diffAbsD = getAbsoluteErrorDistribution(refDD, comDD);
-		double[] diffAbsDi = getAbsoluteErrorDistribution(refDDi, comDDi);
-		double[] diffAbsDo = getAbsoluteErrorDistribution(refDDo, comDDo);
->>>>>>> var types
 		
 		diffAbsDD = new Distribution(diffAbsD);
 		diffAbsDDi = new Distribution(diffAbsDi);
@@ -197,10 +168,6 @@ public class DegreeDistributionComparator extends DistributionComparator {
 	 */
 	@Override
 	public boolean writeData(String folder) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> create Single/Multi values
 		boolean success = true;
 		
 		success &= DataWriter.writeWithIndex(this.diffAbsDD.getDistribution(),
@@ -231,13 +198,6 @@ public class DegreeDistributionComparator extends DistributionComparator {
 		
 		return success;
 		
-<<<<<<< HEAD
-=======
-		// TODO Auto-generated method stub
-		return false;
->>>>>>> computation of the error distributions
-=======
->>>>>>> create Single/Multi values
 	}
 
 	/* (non-Javadoc)
@@ -245,10 +205,6 @@ public class DegreeDistributionComparator extends DistributionComparator {
 	 */
 	@Override
 	public Single[] getSingles() {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> create Single/Multi values
 		Single ddAbsMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MIN",
 				this.diffAbsDD.getMin());
 		Single ddAbsMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MED",
@@ -276,8 +232,6 @@ public class DegreeDistributionComparator extends DistributionComparator {
 		Single ddoAbsMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_MAX",
 				this.diffAbsDDo.getMax());
 		
-<<<<<<< HEAD
-<<<<<<< HEAD
 		Single ddRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_MIN",
 				this.diffRelDD.getMin());
 		Single ddRelMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_MED",
@@ -303,40 +257,6 @@ public class DegreeDistributionComparator extends DistributionComparator {
 		Single ddoRelAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_OUT_AVG",
 				this.diffRelDDo.getAverage());
 		Single ddoRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_OUT_MAX",
-=======
-		Single ddRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_MIN",
-=======
-		Single ddRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_MIN",
->>>>>>> Properties
-				this.diffRelDD.getMin());
-		Single ddRelMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_MED",
-				this.diffRelDD.getMedian());
-		Single ddRelAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_AVG",
-				this.diffRelDD.getAverage());
-		Single ddRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_MAX",
-				this.diffRelDD.getMax());
-
-		Single ddiRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_IN_MIN",
-				this.diffRelDDi.getMin());
-		Single ddiRelMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_IN_MED",
-				this.diffRelDDi.getMedian());
-		Single ddiRelAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_IN_AVG",
-				this.diffRelDDi.getAverage());
-		Single ddiRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_IN_MAX",
-				this.diffRelDDi.getMax());
-
-		Single ddoRelMin = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_OUT_MIN",
-				this.diffRelDDo.getMin());
-		Single ddoRelMed = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_OUT_MED",
-				this.diffRelDDo.getMedian());
-		Single ddoRelAvg = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_OUT_AVG",
-				this.diffRelDDo.getAverage());
-<<<<<<< HEAD
-		Single ddoRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_ABSOLUTE_OUT_MAX",
->>>>>>> create Single/Multi values
-=======
-		Single ddoRelMax = new Single("DEGREE_DISTRIBUTION_COMPARATOR_RELATIVE_OUT_MAX",
->>>>>>> Properties
 				this.diffRelDDo.getMax());
 
 		return new Single[] { ddAbsMin, ddAbsMed, ddAbsAvg, ddAbsMax, 
@@ -345,13 +265,6 @@ public class DegreeDistributionComparator extends DistributionComparator {
 				ddRelMin, ddRelMed, ddRelAvg, ddRelMax, 
 				ddiRelMin, ddiRelMed, ddiRelAvg, ddiRelMax, 
 				ddoRelMin, ddoRelMed, ddoRelAvg, ddoRelMax};
-<<<<<<< HEAD
-=======
-		// TODO Auto-generated method stub
-		return null;
->>>>>>> computation of the error distributions
-=======
->>>>>>> create Single/Multi values
 	}
 
 }

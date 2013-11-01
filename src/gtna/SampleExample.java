@@ -45,35 +45,12 @@ import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-import gtna.networks.model.ZhouMondragon;
-=======
->>>>>>> separated workflow and tester
-=======
-import gtna.networks.model.ZhouMondragon;
->>>>>>> debugged rich-club generator.
-=======
->>>>>>> bugfix bc (1)
-=======
-import gtna.networks.model.ZhouMondragon;
->>>>>>> fully functional implementation of the PageRank metric. ToDo: normalization of PageRank (prVector)
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.SamplingAlgorithmFactory;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.transformation.sampling.subgraph.ColorSampledSubgraph;
-<<<<<<< HEAD
-<<<<<<< HEAD
 import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
 import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
-=======
->>>>>>> separated workflow and tester
-=======
-import gtna.transformation.sampling.subgraph.ColoredHeatmapSampledSubgraph;
-import gtna.transformation.sampling.subgraph.ExtractSampledSubgraph;
->>>>>>> allow heat map coloring for a single sample -> division by 0 prevented
 import gtna.util.Config;
 
 /**
@@ -99,36 +76,10 @@ public class SampleExample {
 		int times = 1; // how many generations?
 
 		// Sampling parameter
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-		double scaledown = 1.0;
+		double scaledown = 0.5;
 		int dimension = 1;
 		boolean revisiting = false;
 		Long rngSeed = null;
-=======
-		double scaledown = 0.20;
-		int dimension = 6;
-		boolean revisiting = false;
-		Long rngSeed = new Long(0);
->>>>>>> separated workflow and tester
-=======
-		double scaledown = 0.5;
-=======
-		double scaledown = 1.0;
->>>>>>> debugged rich-club generator.
-=======
-		double scaledown = 0.5;
->>>>>>> bugfix bc (1)
-=======
-		double scaledown = 1.0;
->>>>>>> fully functional implementation of the PageRank metric. ToDo: normalization of PageRank (prVector)
-		int dimension = 1;
-		boolean revisiting = false;
-		Long rngSeed = null;
->>>>>>> allow heat map coloring for a single sample -> division by 0 prevented
 
 		String folder = "./plots/network-plot/";
 
@@ -185,18 +136,10 @@ public class SampleExample {
 				randomSeed);
 
 //		 Transformation subgraphing = new ExtractSampledSubgraph();
-		 Transformation subgraphing = new ColorSampledSubgraph();
-//		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
+//		 Transformation subgraphing = new ColorSampledSubgraph();
+		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 		Transformation[] t1 = new Transformation[] { rw, subgraphing };
-=======
-		Transformation[] t1 = new Transformation[] { mrw, subgraphing };
->>>>>>> separated workflow and tester
-=======
-		Transformation[] t1 = new Transformation[] { rw, subgraphing };
->>>>>>> allow heat map coloring for a single sample -> division by 0 prevented
 		return t1;
 	}
 	
@@ -205,47 +148,10 @@ public class SampleExample {
 		Network nw2 = new BarabasiAlbert(500, 2, null);
 		Network nw3 = new WattsStrogatz(500, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(500, 3, 0.05, 0.0005, null);
-<<<<<<< HEAD
-<<<<<<< HEAD
 		Network nw5 = new Regular(100, 2, true, false, null);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-		Network nw6 = new ZhouMondragon(100, 0.001, null);
-=======
-		
-//		Network nw6 = new ZhouMondragon(100, 0.001, null);
->>>>>>> fully functional implementation of the PageRank metric. ToDo: normalization of PageRank (prVector)
-
-=======
-	
->>>>>>> bugfix bc (1)
-//		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
-		
-=======
-		Network nw5 = new Regular(1000, 5, true, false, null);
-=======
-		Network nw5 = new Regular(100, 2, true, false, null);
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> allow heat map coloring for a single sample -> division by 0 prevented
-=======
-		Network nw6 = new ZhouMondragon(100, 0.001, null);
->>>>>>> debugged rich-club generator.
-
-//		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
->>>>>>> separated workflow and tester
-=======
 	
 //		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
 		
->>>>>>> bugfix bc (1)
-=======
-		
-//		Network nw6 = new ZhouMondragon(100, 0.001, null);
-
-//		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
->>>>>>> fully functional implementation of the PageRank metric. ToDo: normalization of PageRank (prVector)
 //		Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
 
 		Network[] n = new Network[] { nw5 };

@@ -63,22 +63,7 @@ public class ShortestPaths extends Metric {
 
     private double connectivity;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     private Distribution hopPlot;
-=======
-	private Distribution hopPlot;
-=======
-    private Distribution hopPlot;
->>>>>>> added relative eccentricity / effective diameter
-
-    private double ecc90;
-
-<<<<<<< HEAD
-	public ShortestPaths() {
-		super("SHORTEST_PATHS");
-	}
->>>>>>> Sampling Bias without CDF as its useless for this metric
 
     private double ecc90;
 
@@ -106,7 +91,6 @@ public class ShortestPaths extends Metric {
 		/ (double) ((double) graph.getNodes().length * (double) (graph
 			.getNodes().length - 1));
 
-<<<<<<< HEAD
 	this.hopPlot = new Distribution(computeHP(SPL, graph));
 
 	this.ecc90 = calculateEccentricity(this.shortestPathLengthDistributionAbsolute.getCdf(), graph, 0.90);
@@ -136,96 +120,6 @@ public class ShortestPaths extends Metric {
 	    if (spCdf[i] >= q) {
 		return i;
 	    }
-=======
-	@Override
-	public void computeData(Graph graph, Network nw,
-			HashMap<String, Metric> metrics) {
-		this.localCharacteristicPathLength = new double[graph.getNodes().length];
-		long[] SPL = this.computeShortestPathLengths(graph.getNodes());
-		this.shortestPathLengthDistribution = new Distribution(
-				this.computeShortestPathLengthDistribution(SPL));
-		this.shortestPathLengthDistributionAbsolute = new Distribution(
-				this.computeShortestPathLengthDistributionAbsolute(SPL, graph));
-		this.connectivity = (double) Util.sum(SPL)
-				/ (double) ((double) graph.getNodes().length * (double) (graph
-						.getNodes().length - 1));
-		
-		this.hopPlot = new Distribution(computeHP(SPL, graph));
-		
-		this.ecc90 = calculateEccentricity(hopPlot.getCdf(), graph, 0.90);
-		
-		
-	}
-=======
-    private double eccRelative90;
-
-    public ShortestPaths() {
-	super("SHORTEST_PATHS");
-    }
-
-    @Override
-    public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-	return true;
-    }
->>>>>>> added relative eccentricity / effective diameter
-
-    @Override
-    public void computeData(Graph graph, Network nw,
-	    HashMap<String, Metric> metrics) {
-	this.localCharacteristicPathLength = new double[graph.getNodes().length];
-	long[] SPL = this.computeShortestPathLengths(graph.getNodes());
-	this.shortestPathLengthDistribution = new Distribution(
-		this.computeShortestPathLengthDistribution(SPL));
-	this.shortestPathLengthDistributionAbsolute = new Distribution(
-		this.computeShortestPathLengthDistributionAbsolute(SPL, graph));
-	this.connectivity = (double) Util.sum(SPL)
-		/ (double) ((double) graph.getNodes().length * (double) (graph
-			.getNodes().length - 1));
-
-<<<<<<< HEAD
-	/**
-	 * @param sPL
-	 * @return
-	 */
-	private double[] computeHP(long[] SPL, Graph g) {
-		double[] hp = new double[SPL.length];
-		for(int i = 0; i < hp.length; i++){
-			hp[i] = (double) SPL[i] / (double) g.getNodeCount();
-		}
-		
-		return hp;
->>>>>>> Sampling Bias without CDF as its useless for this metric
-=======
-	this.hopPlot = new Distribution(computeHP(SPL, graph));
-
-	this.ecc90 = calculateEccentricity(this.shortestPathLengthDistributionAbsolute.getCdf(), graph, 0.90);
-	this.eccRelative90 = calculateEccentricity(this.shortestPathLengthDistribution.getCdf(), graph, 0.90);
-
-//	System.out.println("\nSPR: " + Arrays.toString(shortestPathLengthDistribution.getCdf()));
-//	System.out.println("SPA: " + Arrays.toString(shortestPathLengthDistributionAbsolute.getCdf()));
-//	System.out.println("HP: " + Arrays.toString(hopPlot.getCdf()));
-    }
-
-    
-    
-    
-    
-    
-    /**
-     * @param spCdf
-     *            hopplot cdf
-     * @param graph
-     *            graph
-     * @param q
-     *            reachable quantile
-     * @return
-     */
-    private double calculateEccentricity(double[] spCdf, Graph graph, double q) {
-	for (int i = 0; i < spCdf.length; i++) {
-	    if (spCdf[i] >= q) {
-		return i;
-	    }
->>>>>>> added relative eccentricity / effective diameter
 	}
 
 	return -1;
@@ -297,10 +191,6 @@ public class ShortestPaths extends Metric {
 	return SPL;
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> added relative eccentricity / effective diameter
     private long[] inc(long[] values, int index) {
 	try {
 	    values[index]++;
@@ -310,43 +200,9 @@ public class ShortestPaths extends Metric {
 	    System.arraycopy(values, 0, valuesNew, 0, values.length);
 	    valuesNew[index] = 1;
 	    return valuesNew;
-<<<<<<< HEAD
-=======
-	@Override
-	public boolean writeData(String folder) {
-		boolean success = true;
-		success &= DataWriter.writeWithIndex(
-				this.hopPlot.getDistribution(),
-				"SHORTEST_PATHS_HOP_PLOT", folder);
-		success &= DataWriter.writeWithIndex(
-				this.hopPlot.getCdf(),
-				"SHORTEST_PATHS_HOP_PLOT_CDF", folder);
-		success &= DataWriter.writeWithIndex(
-				this.shortestPathLengthDistribution.getDistribution(),
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(
-				this.shortestPathLengthDistribution.getCdf(),
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_CDF", folder);
-		success &= DataWriter.writeWithIndex(
-				this.shortestPathLengthDistributionAbsolute.getDistribution(),
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE",
-				folder);
-		success &= DataWriter
-				.writeWithIndex(
-						this.shortestPathLengthDistributionAbsolute.getCdf(),
-						"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE_CDF",
-						folder);
-		return success;
->>>>>>> Sampling Bias without CDF as its useless for this metric
 	}
     }
 
-<<<<<<< HEAD
-=======
-	}
-    }
-
->>>>>>> added relative eccentricity / effective diameter
     @Override
     public boolean writeData(String folder) {
 	boolean success = true;
@@ -371,30 +227,6 @@ public class ShortestPaths extends Metric {
 			folder);
 	return success;
     }
-<<<<<<< HEAD
-=======
-	@Override
-	public Single[] getSingles() {
-		Single averageShortestPathLength = new Single(
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_AVG",
-				this.shortestPathLengthDistribution.getAverage());
-		Single medianShortestPathLength = new Single(
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_MED",
-				this.shortestPathLengthDistribution.getMedian());
-		Single maximumShortestPathLength = new Single(
-				"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_MAX",
-				this.shortestPathLengthDistribution.getMax());
-		Single connectivity = new Single("SHORTEST_PATHS_CONNECTIVITY",
-				this.connectivity);
-		Single ecc = new Single("SHORTEST_PATHS_EFFECTIVE_DIAMETER_ECC_90QUANTIL",
-				this.ecc90);
-		return new Single[] { averageShortestPathLength,
-				medianShortestPathLength, maximumShortestPathLength,
-				connectivity, ecc };
-	}
->>>>>>> Sampling Bias without CDF as its useless for this metric
-=======
->>>>>>> added relative eccentricity / effective diameter
 
     @Override
     public Single[] getSingles() {

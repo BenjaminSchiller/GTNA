@@ -38,14 +38,7 @@ package gtna.metrics.sampling;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
-<<<<<<< HEAD
-<<<<<<< HEAD
 import gtna.io.DataWriter;
-=======
->>>>>>> count sampled nodes in multiple sample runs
-=======
-import gtna.io.DataWriter;
->>>>>>> SamplingBias properties
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.transformation.sampling.Sample;
@@ -64,19 +57,10 @@ public class SamplingBias extends Metric {
 	private Integer edges;
 	private Integer nodes;
 	private Distribution biasd;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> min/max/avg/med calculation
 	private double sbAvg;
 	private double sbMed;
 	private double sbMin;
 	private double sbMax;
-<<<<<<< HEAD
-=======
->>>>>>> count sampled nodes in multiple sample runs
-=======
->>>>>>> min/max/avg/med calculation
 
 	/**
 	 * @param key
@@ -106,23 +90,14 @@ public class SamplingBias extends Metric {
 			}
 		}
 		
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> Sampling Bias without CDF as its useless for this metric
 		double[] sb = new double[samples.length+1];
 		for(double d : nodesampling){
 			sb[(int)d]++;
 		}
 		
 		
-<<<<<<< HEAD
-		biasd = new Distribution(sb);
-<<<<<<< HEAD
-=======
 		Arrays.sort(nodesampling);
 		biasd = new Distribution(nodesampling);
->>>>>>> - sample for calculating sampling algorithm related metrics
 		nodes = g.getNodeCount();
 		edges = g.getEdges().size();
 		
@@ -130,16 +105,6 @@ public class SamplingBias extends Metric {
 		this.sbMin = getMin(sb);
 		this.sbMed = getMed(sb);
 		this.sbAvg = getAvg(sb);
-<<<<<<< HEAD
-=======
-		biasd = new Distribution(nodesampling);
-=======
->>>>>>> Sampling Bias without CDF as its useless for this metric
-		nodes = g.getNodeCount();
-		edges = g.getEdges().size();
->>>>>>> count sampled nodes in multiple sample runs
-=======
->>>>>>> min/max/avg/med calculation
 	}
 
 	/* (non-Javadoc)
@@ -147,36 +112,15 @@ public class SamplingBias extends Metric {
 	 */
 	@Override
 	public boolean writeData(String folder) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> SamplingBias properties
 		boolean success = true;
 		
 		success &= DataWriter.writeWithIndex(
 				this.biasd.getDistribution(), 
 				"SAMPLING_BIAS_DISTRIBUTION", 
 				folder);
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 		
 		return success;
-=======
-		// TODO Auto-generated method stub
-		return false;
->>>>>>> count sampled nodes in multiple sample runs
-=======
-		success &= DataWriter.writeWithIndex(
-				this.biasd.getCdf(), 
-				"SAMPLING_BIAS_DISTRIBUTION_CDF", 
-				folder);
-=======
-
->>>>>>> Sampling Bias without CDF as its useless for this metric
-		
-		return success;
->>>>>>> SamplingBias properties
 	}
 
 	/* (non-Javadoc)
@@ -184,8 +128,6 @@ public class SamplingBias extends Metric {
 	 */
 	@Override
 	public Single[] getSingles() {
-<<<<<<< HEAD
-<<<<<<< HEAD
 		Single nodes = new Single("SAMPLING_BIAS_NODES", this.nodes);
 		Single edges = new Single("SAMPLING_BIAS_EDGES", this.edges);
 		
@@ -195,21 +137,6 @@ public class SamplingBias extends Metric {
 		Single sbMax = new Single("SAMPLING_BIAS_MAX", this.sbMax);
 		
 		return new Single[] { nodes, edges, sbMin, sbMed, sbAvg, sbMax };
-=======
-		// TODO Auto-generated method stub
-		return null;
->>>>>>> count sampled nodes in multiple sample runs
-=======
-		Single nodes = new Single("SAMPLING_BIAS_NODES", this.nodes);
-		Single edges = new Single("SAMPLING_BIAS_EDGES", this.edges);
-		
-		Single sbMin = new Single("SAMPLING_BIAS_MIN", this.sbMin);
-		Single sbMed = new Single("SAMPLING_BIAS_MED", this.sbMed);
-		Single sbAvg = new Single("SAMPLING_BIAS_AVG", this.sbAvg);
-		Single sbMax = new Single("SAMPLING_BIAS_MAX", this.sbMax);
-		
-		return new Single[] { nodes, edges, sbMin, sbMed, sbAvg, sbMax };
->>>>>>> SamplingBias properties
 	}
 
 	/* (non-Javadoc)
@@ -217,78 +144,12 @@ public class SamplingBias extends Metric {
 	 */
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 		// at least 1 sample necessary
 		if(g.getProperties("SAMPLE").length > 0) {
-=======
-		if(g.hasProperty("SAMPLE_0")){ // at least 1 sample necessary
->>>>>>> SamplingBias properties
-=======
-		// at least 1 sample necessary
-		if(g.getProperties("SAMPLE").length > 0) {
->>>>>>> changes in plotting, sampling etc
 			return true;
 		} else {
 			return false;
 		}
-<<<<<<< HEAD
-	}
-	
-	private double getMax(double[] dis) {
-		double max = 0;
-
-		for (double d : dis) {
-			max = Math.max(max, d);
-		}
-
-		return max;
-	}
-
-	private double getMin(double[] dis) {
-		double min = Double.MAX_VALUE;
-
-		for (double d : dis) {
-			min = Math.min(min, d);
-		}
-
-		return min;
-	}
-
-	private double getAvg(double[] dis) {
-		double sum = 0;
-
-		for (double d : dis) {
-			sum += d;
-		}
-
-		return sum / dis.length;
-	}
-
-	private double getMed(double[] dis) {
-		double[] s = dis;
-		double median;
-		Arrays.sort(s);
-
-		if (s.length % 2 != 0) {
-			// odd number of entries
-			median = dis[(int) Math.floor(dis.length / 2)];
-		} else {
-			// even number of entries
-			double umed = dis[(int) dis.length / 2 - 1];
-			double omed = dis[(int) dis.length / 2];
-
-			median = umed + (omed - umed) / 2;
-		}
-
-		return median;
-=======
-		// TODO Auto-generated method stub
-		return false;
->>>>>>> count sampled nodes in multiple sample runs
-=======
->>>>>>> SamplingBias properties
 	}
 	
 	private double getMax(double[] dis) {
