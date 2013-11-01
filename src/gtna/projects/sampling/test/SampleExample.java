@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna;
+package gtna.projects.sampling.test;
 
 import gtna.metrics.Metric;
 import gtna.metrics.basic.ClusteringCoefficient;
