@@ -35,9 +35,6 @@
  */
 package gtna.transformation.sampling;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -50,14 +47,12 @@ import gtna.util.parameter.Parameter;
 /**
  * @author Tim
  * 
-<<<<<<< HEAD
  */
 public abstract class ASampler extends Parameter {
 
     private AWalkerController walkerController;
     private Graph graph;
     private SamplingController samplingController;
-<<<<<<< HEAD
 
     /**
      * 
@@ -151,205 +146,6 @@ public abstract class ASampler extends Parameter {
      */
     protected abstract Collection<Node> sampleNodes(
 	    Map<Node, Collection<Node>> filteredCandidates, int round);
-
-
-
-
-    /**
-     * @return the graph
-     */
-    public Graph getGraph() {
-	return graph;
-    }
-
-
-
-
-    /**
-     * @param graph the graph to set
-     */
-    public void setGraph(Graph graph) {
-	this.graph = graph;
-    }
-
-
-
-
-    /**
-     * @param sc
-     */
-    public void setSamplingController(SamplingController sc) {
-	this.samplingController = sc;
-	
-    }
-
-=======
-=======
-=======
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-
-import gtna.graph.Node;
->>>>>>> ASampler default implementation
-import gtna.util.parameter.Parameter;
-
->>>>>>> SamplingController is a Transformation
-/**
- * @author Tim
- *
-=======
->>>>>>> refactoring and cleanup after debugging (1)
- */
-<<<<<<< HEAD
-<<<<<<< HEAD
-public class ASampler {
->>>>>>> Class Structure
-=======
-public class ASampler extends Parameter {
->>>>>>> SamplingController is a Transformation
-=======
-public abstract class ASampler extends Parameter {
-
-    private AWalkerController walkerController;
-=======
->>>>>>> refactoring (2)
-
-    /**
-     * 
-     * @param sampler
-     */
-    public ASampler(String sampler) {
-	super("SAMPLER", sampler);
-    }
-    
-    
-
-
-    /**
-     * Initializes the ASampler implementation
-     * 
-     * This default implementation calls sampleOneStepNodes to sample the
-     * startnode(s)!
-     * 
-     * This default implementation calls setGraph, you don't have to take care about
-     * setting the graph after calling this method.
-     * 
-     * @param targetSampleSize
-     *            max nodes sampled in this round
-     * @param walkerController
-     * 
-     */
-    public Collection<Node> initialize(Graph g, int maxNodes, int round) {
-    	this.setGraph(g);
-    	return sampleOneStep(maxNodes, round);
-    }
-
-    /**
-     * Set the used walker controller instance
-     * 
-     * @param awc
-     */
-    public void setWalkerController(AWalkerController awc) {
-	this.walkerController = awc;
-    }
-
-    /**
-     * Checks the initialization of the sampler instance
-     * 
-     * @return true if ok, else false
-     */
-    public boolean isInitialized() {
-	if (walkerController == null) {
-	    return false;
-	}
-<<<<<<< HEAD
-	/**
-	 * @return
-	 */
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-	public abstract boolean sampleNodes();
->>>>>>> Implementing the SamplingController - coarse structure
-=======
-	public abstract boolean sampleOneStepNodes();
->>>>>>> SamplingController: applicable, sampling-loop
-=======
-	public Collection<Node> sampleOneStepNodes(int maxNodes){
-=======
-	public Collection<Node> sampleOneStepNodes(Graph g, NetworkSample ns, int maxNodes){
->>>>>>> testing & bugfixing (1)
-		Collection<AWalker> walkers = walkerController.getActiveWalkers();
-		Collection<Node> sampled = new LinkedList<Node>();
-		
-		for(AWalker w : walkers){
-			Map<Node, Collection<Node>> wcc = w.getCurrentCandidates(g);
-			Map<Node, Collection<Node>> fc = walkerController.filterCandidates(wcc, ns);
-			sampled.addAll(sampleNodes(fc));
-		}	
-		System.out.println("Sampled " + sampled.size() + " nodes.");
-		return sampled;
-		
-	}
-	
-	
-<<<<<<< HEAD
-	protected abstract Collection<Node> sampleNodes(Collection<Node> filteredCandidates);
->>>>>>> ASampler default implementation
-=======
-	protected abstract Collection<Node> sampleNodes(Map<Node, Collection<Node>> filteredCandidates);
->>>>>>> code style, minor changes in method-/class-design
-=======
-
-	return true;
-    }
-
-    /**
-     * Sample nodes of the current step
-     * 
-     * @param g
-     *            graph
-     * @param ns
-     *            current network sample
-     * @param maxNodes
-     *            sample max maxNodes nodes in this step
-     * @return
-     */
-    public Collection<Node> sampleOneStep(int maxNodes, int round) {
-	Collection<AWalker> walkers = walkerController.getActiveWalkers();
-	LinkedList<Node> sampled = new LinkedList<Node>();
-
-	for (AWalker w : walkers) {
-	    Map<Node, Collection<Node>> wcc = w.getCurrentCandidates();
-	    Map<Node, Collection<Node>> fc = walkerController.filterCandidates(
-		    wcc);
-	    sampled.addAll(sampleNodes(fc, round));
-	}
-	
-	Random r = samplingController.getRng();
-	while(sampled.size() > maxNodes){
-		int i = r.nextInt(sampled.size()-1);
-		sampled.remove(i);
-	}
-	return sampled;
-
-    }
-
-    /**
-     * Select the sampled node out of the filtered candidates
-     * 
-     * @param filteredCandidates
-     *            candidate nodes
-     * @return collection of selected nodes
-     */
-    protected abstract Collection<Node> sampleNodes(
-<<<<<<< HEAD
-	    Map<Node, Collection<Node>> filteredCandidates);
->>>>>>> refactoring and cleanup after debugging (1)
-=======
-	    Map<Node, Collection<Node>> filteredCandidates, int round);
->>>>>>> RoundBasedVisitedNodeSampler, round is now a parameter for samplenodes method
 
 
 

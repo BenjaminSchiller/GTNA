@@ -49,34 +49,16 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
-<<<<<<< HEAD
-<<<<<<< HEAD
  * Implements the so-called Rich Club network described by Zhou and Mondragon in
  * their publication "The Rich-Club Phenomenon In The Internet" (2003)
  * 
  * Parameters are the initial network size and the probabilities for adding a
  * new node, a new edge or both
-=======
- * Implements the so-called Rich Club network described by Zhou and Mondragon
- * in their publication 
- * "The Rich-Club Phenomenon In The Internet" (2003)
- * 
- * Parameters are the initial network size and the probabilities for adding a new node, a new edge or both
->>>>>>> first attempts creating rd-networks
-=======
- * Implements the so-called Rich Club network described by Zhou and Mondragon in
- * their publication "The Rich-Club Phenomenon In The Internet" (2003)
- * 
- * Parameters are the initial network size and the probabilities for adding a
- * new node, a new edge or both
->>>>>>> changed probabilities for adding a new edge. probability gets very (far to) small in later iterations as the destination degree is nearly stable whereas the network degree is growing fast!
  * 
  * @author tim
  * 
  */
 public class ZhouMondragon extends Network {
-<<<<<<< HEAD
-<<<<<<< HEAD
     private int INIT_NETWORK_SIZE = 10;
 
     private double p;
@@ -204,178 +186,4 @@ public class ZhouMondragon extends Network {
 
 	return edges;
     }
-=======
-	private int INIT_NETWORK_SIZE = 10;
-=======
-    private int INIT_NETWORK_SIZE = 10;
->>>>>>> debugged rich-club generator.
-
-    private double p;
-    private int epn;
-
-    private Random rng;
-
-    public static ZhouMondragon[] get(int nodes, double[] newEdgeProbability,
-	    int edgesPerNode, Transformation[] t) {
-	int non = newEdgeProbability.length;
-	ZhouMondragon[] nw = new ZhouMondragon[non];
-	for (int i = 0; i < non; i++) {
-	    nw[i] = new ZhouMondragon(nodes, newEdgeProbability[i],
-		    edgesPerNode, t);
-	}
-	return nw;
-    }
-
-    public static ZhouMondragon[] get(int[] nodes, double newEdgeProbability,
-	    int edgesPerNode, Transformation[] t) {
-	ZhouMondragon[] nw = new ZhouMondragon[nodes.length];
-	for (int i = 0; i < nodes.length; i++) {
-	    nw[i] = new ZhouMondragon(nodes[i], newEdgeProbability,
-		    edgesPerNode, t);
-	}
-	return nw;
-    }
-
-    /**
-     * @param nodes
-     * @param newEdgeProbability
-     * @param edgesPerNode
-     */
-    public ZhouMondragon(int nodes, double newEdgeProbability,
-	    int edgesPerNode, Transformation[] t) {
-	super("ZHOU_MONDRAGON", nodes, new Parameter[] {
-		new DoubleParameter("EDGE_PROBABILITY", newEdgeProbability),
-		new IntParameter("EDGES_PER_NODE", edgesPerNode) }, t);
-	this.p = newEdgeProbability;
-	this.epn = edgesPerNode;
-
-    }
-
-    public Graph generate() {
-	Graph graph = new Graph(this.getDescription());
-	rng = new DeterministicRandom(System.currentTimeMillis());
-	Node[] nodes = Node.init(this.getNodes(), graph);
-
-	Graph temp = new BarabasiAlbert(this.getNodes(), epn, null).generate();
-	Edges edges = new Edges(nodes, nodes.length);
-
-	int[] in = new int[this.getNodes()];
-	int[] out = new int[this.getNodes()];
-
-	Arrays.fill(in, 0);
-	Arrays.fill(out, 0);
-
-	for (int i = 0; i < temp.getNodes().length; i++) {
-	    in[i] = temp.getNodes()[i].getInDegree();
-	    out[i] = temp.getNodes()[i].getOutDegree();
-	    int[] Out = temp.getNodes()[i].getOutgoingEdges();
-	    for (int j = 0; j < Out.length; j++) {
-		edges.add(i, Out[j]);
-	    }
-	}
-
-	boolean addedNode = false;
-	double c;
-
-	for (int i = 0; i < nodes.length; i++) {
-
-	    c = rng.nextDouble();
-	    if (c < (p)) {
-		int s = rng.nextInt(Math.max(i, 1));
-		edges = addNewEdge(s, in, out, c, edges);
-	    }
-
-	}
-
-	edges.fill();
-
-	graph.setNodes(nodes);
-	return graph;
-    }
-
-   
-    /**
-     * 
-     * @param s
-     *            index of the <b>source</b> of the new edge
-     * @param out
-     * @param in
-     * @param dn
-     *            networkdegree
-     * @param edges
-     *            current edges of the graph
-     * @return
-     */
-    private Edges addNewEdge(int s, int[] in, int[] out, double c, Edges edges) {
-	int dn = edges.size(); // network degree
-
-	int i = 0;
-	while (i < in.length) {
-
-	    int d = rng.nextInt(this.getNodes());
-	    int dd = in[d] + out[d]; // (potential) destination degree
-
-	    if (s != d && !edges.contains(s, d)) {
-		double np = (double) dd / (double) dn;
-		if (c < np) {
-		    edges.add(s, d);
-		    edges.add(d, s);
-//		    System.out.println("Added edge: " + s + " -> " + d);
-		    in[s]++;
-		    out[s]++;
-		    in[d]++;
-		    out[d]++;
-		    return edges;
-		} else {
-		    i++;
-		}
-	    }
-
-	}
-
-<<<<<<< HEAD
-	/**
-	 * 
-	 * @param s
-	 *            index of the <b>source</b> of the new edge
-	 * @param out
-	 * @param in
-	 * @param dn
-	 *            networkdegree
-	 * @param edges
-	 *            current edges of the graph
-	 * @return
-	 */
-	private Edges addNewEdge(int s, int[] in, int[] out, double c, Edges edges) {
-		int dn = edges.size(); // network degree
-
-		int i = 0;
-		while (true) {
-			if (i < in.length) {
-				int d = rng.nextInt(s);
-				int dd = in[d]+out[d]; // (potential) destination degree
-
-				if (s != d && !edges.contains(s, d)) {
-					double np = (double) dd / (double) dn;
-					if (c < np) {
-						edges.add(s, d);
-						out[s]++;
-						in[d]++;
-						return edges;
-					} else {
-						i++;
-					}
-				}
-			} else {
-				i = 0;
-				c = rng.nextDouble();
-				System.err.println("Choosen new c for adding a new Edge: " + c);
-			}
-		}
-	}
->>>>>>> first attempts creating rd-networks
-=======
-	return edges;
-    }
->>>>>>> debugged rich-club generator.
 }

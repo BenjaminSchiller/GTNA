@@ -43,36 +43,15 @@ import java.util.Random;
  */
 public class DeterministicRandom extends Random {
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     private Long configuredSeed;
 
     /**
      * Create a standard RNG without configured seed
      */
-=======
-    private long seed;
-
->>>>>>> provides a configurable random number generator
-=======
-    private Long seed;
-=======
-    private Long configuredSeed;
->>>>>>> usage, persisting, loading of the deterministic-rng possible
-
-    /**
-     * Create a standard RNG without configured seed
-     */
->>>>>>> null checks
     public DeterministicRandom() {
 	super();
     }
     
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> null checks
     /**
      * Create a standard RNG and initialize with the given seed
      * @param seed
@@ -81,8 +60,6 @@ public class DeterministicRandom extends Random {
 	super();
 	if(seed != null) {
 	    this.setSeed(seed);
-<<<<<<< HEAD
-<<<<<<< HEAD
 	    this.configuredSeed = seed;
 	}
     }
@@ -100,62 +77,14 @@ public class DeterministicRandom extends Random {
 	    this.setSeed(seed);
 	    this.configuredSeed = seed;
 	}
-=======
-    public DeterministicRandom(long seed) {
-	super(seed);
-	this.seed = seed;
-=======
-	    this.seed = seed;
-=======
-	    this.configuredSeed = seed;
->>>>>>> usage, persisting, loading of the deterministic-rng possible
-	}
->>>>>>> null checks
-    }
-    
-    /**
-     * reset RNG with the saved seed, iff a seed was given earlier
-     */
-    public void resetSeed() {
-	if(configuredSeed != null)
-	    this.setSeed(configuredSeed);
-    }
-    
-<<<<<<< HEAD
-    public void setNewSeed(long seed) {
-	this.setSeed(seed);
->>>>>>> provides a configurable random number generator
-=======
-    public void setNewSeed(Long seed) {
-	if(seed != null) {
-	    this.setSeed(seed);
-	    this.configuredSeed = seed;
-	}
->>>>>>> null checks
     }
     
     /**
      * Returns the seed of the RNG
-<<<<<<< HEAD
-<<<<<<< HEAD
      * @return	Seed or <b>NULL</b> of no seed is set
      */
     public Long getConfiguredSeed() {
 	return configuredSeed;
-=======
-     * @return	Seed or <b>null<b> of no seed is set
-=======
-     * @return	Seed or <b>NULL</b> of no seed is set
->>>>>>> null checks
-     */
-<<<<<<< HEAD
-    public long getSeed() {
-	return seed;
->>>>>>> provides a configurable random number generator
-=======
-    public Long getConfiguredSeed() {
-	return configuredSeed;
->>>>>>> usage, persisting, loading of the deterministic-rng possible
     }
     
     

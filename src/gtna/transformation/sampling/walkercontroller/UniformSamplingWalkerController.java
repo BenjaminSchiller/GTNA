@@ -35,30 +35,15 @@
  */
 package gtna.transformation.sampling.walkercontroller;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> pull up second filterCandidates method
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-=======
-import java.util.Collection;
-<<<<<<< HEAD
-import java.util.HashMap;
-import java.util.Map;
->>>>>>> StartNode initialization
-=======
->>>>>>> code format
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 import gtna.transformation.sampling.AWalkerController;
 import gtna.transformation.sampling.CandidateFilter;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 import gtna.transformation.sampling.StartNodeSelector;
 import gtna.transformation.sampling.sample.NetworkSample;
 
@@ -119,103 +104,5 @@ public class UniformSamplingWalkerController extends AWalkerController {
 	}
 	
 	
-=======
-=======
-import gtna.transformation.sampling.NetworkSample;
-<<<<<<< HEAD
->>>>>>> set parameter values
-=======
-import gtna.transformation.sampling.StartNodeSelector;
->>>>>>> testing & bugfixing (2)
-=======
-import gtna.transformation.sampling.StartNodeSelector;
-import gtna.transformation.sampling.sample.NetworkSample;
->>>>>>> refactoring to allow multiple types of sample
-
-/**
- * @author Tim
- * 
- */
-public class UniformSamplingWalkerController extends AWalkerController {
-
-	CandidateFilter cf;
-	Collection<AWalker> walkers;
-
-	/**
-	 * @param key
-	 * @param value
-	 * @param w
-	 * @param cf
-	 */
-	public UniformSamplingWalkerController(Collection<AWalker> w,
-			CandidateFilter cf) {
-		super(w.size() + "x_" + w.toArray(new AWalker[0])[0].getValue(), w, cf);
-		if (w.size() != 1) {
-			throw new IllegalArgumentException(
-					"This Walker Controller is defined for single dimensional usage.");
-		}
-		this.walkers = w;
-		this.cf = cf;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * gtna.transformation.sampling.AWalkerController#initialize(gtna.graph.
-	 * Graph, gtna.graph.Node[])
-	 */
-	@Override
-	public void initialize(Node[] startNodes) {
-		AWalker[] wa = walkers.toArray(new AWalker[0]);
-		for (int i = 0; i < walkers.size(); i++) {
-			// if #walkers > #startNodes assign startnodes with wraparound
-			int snid = i % startNodes.length;
-
-			wa[i].setStartNode(startNodes[snid]);
-
-		}
-
-	}
-
-<<<<<<< HEAD
-    /* (non-Javadoc)
-     * @see gtna.transformation.sampling.AWalkerController#filterCandidates(java.util.Collection)
-     */
-    @Override
-    public Collection<Node> filterCandidates(Collection<Node> candidates) {
-	
-	return cf.filterCandidates(candidates, super.getNetworkSample());
-    }
->>>>>>> StartNode initialization
-=======
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.transformation.sampling.AWalkerController#getActiveWalkers()
-	 */
-	@Override
-	protected Collection<AWalker> getActiveWalkers() {
-		return walkers;
-	}
-<<<<<<< HEAD
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * gtna.transformation.sampling.AWalkerController#filterCandidates(java.
-	 * util.Collection)
-	 */
-	@Override
-	public Collection<Node> filterCandidates(Collection<Node> candidates) {
-
-		return cf.filterCandidates(candidates, super.getNetworkSample());
-	}
->>>>>>> code format
-=======
-	
-	
->>>>>>> pull up second filterCandidates method
 
 }

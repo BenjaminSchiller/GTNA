@@ -35,23 +35,11 @@
  */
 package gtna.transformation.sampling.walker;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> push down method resolveCandidates(Graph,Node) as the actual implementation depends on the concrete Walker implementation
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
 import gtna.graph.Graph;
-<<<<<<< HEAD
-=======
-import java.util.Collection;
-import java.util.Random;
-
->>>>>>> added RandomWalkWalker
-=======
->>>>>>> push down method resolveCandidates(Graph,Node) as the actual implementation depends on the concrete Walker implementation
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 
@@ -64,64 +52,21 @@ public class RandomWalkWalker extends AWalker {
 	/**
 	 * @param walker
 	 */
-<<<<<<< HEAD
-<<<<<<< HEAD
 	public RandomWalkWalker() {
 		super("RANDOM_WALK_WALKER");
-=======
-	public RandomWalkWalker(String walker) {
-		super(walker);
->>>>>>> added RandomWalkWalker
-=======
-	public RandomWalkWalker() {
-		super("RANDOM_WALK_WALKER");
->>>>>>> RandomWalkWalkerController
 	}
 
 	/* (non-Javadoc)
 	 * @see gtna.transformation.sampling.AWalker#selectNextNode(java.util.Collection)
 	 */
 	@Override
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-	protected Node selectNextNode(Collection<Node> candidates, Node current) {
-		Random r = new Random();
-		
-		int next = r.nextInt(candidates.size());
-=======
 	protected Node selectNextNode(Collection<Node> candidates) {
 			
 		int next = super.getRNG().nextInt(candidates.size());
->>>>>>> Usage of the deterministic-rng
-=======
-	protected Node selectNextNode(Collection<Node> candidates) {
-=======
-=======
->>>>>>> Usage of the deterministic-rng
-	protected Node selectNextNode(Collection<Node> candidates, Node current) {
->>>>>>> Metropolized Random Walk Walker + Entry for SamplingAlgorithmFactory
-		Random r = new Random();
-		
-		int next = r.nextInt(candidates.size());
-<<<<<<< HEAD
->>>>>>> added RandomWalkWalker
-=======
-=======
-	protected Node selectNextNode(Collection<Node> candidates) {
-			
-		int next = super.getRNG().nextInt(candidates.size());
->>>>>>> Usage of the deterministic-rng
->>>>>>> Usage of the deterministic-rng
 		next = next % candidates.size();
 		
 		return candidates.toArray(new Node[0])[next];
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> push down method resolveCandidates(Graph,Node) as the actual implementation depends on the concrete Walker implementation
 	
 	
 	 /**
@@ -142,10 +87,5 @@ public class RandomWalkWalker extends AWalker {
     	}
     	return nn;
     }
-<<<<<<< HEAD
-=======
->>>>>>> added RandomWalkWalker
-=======
->>>>>>> push down method resolveCandidates(Graph,Node) as the actual implementation depends on the concrete Walker implementation
 
 }

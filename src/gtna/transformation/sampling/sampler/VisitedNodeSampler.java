@@ -52,18 +52,8 @@ public class VisitedNodeSampler extends ASampler {
      * @param key
      * @param value
      */
-<<<<<<< HEAD
-<<<<<<< HEAD
     public VisitedNodeSampler() {
 	super("VISITED_NODE_SAMPLER");
-=======
-    public VisitedNodeSampler(String key, String value) {
-	super(key, value);
->>>>>>> package structure
-=======
-    public VisitedNodeSampler() {
-	super("VISITED_NODE_SAMPLER");
->>>>>>> set parameter values
     }
 
     /* (non-Javadoc)
@@ -71,26 +61,11 @@ public class VisitedNodeSampler extends ASampler {
      */
     @Override
     protected Collection<Node> sampleNodes(
-<<<<<<< HEAD
-<<<<<<< HEAD
 	    Map<Node, Collection<Node>> filteredCandidates, int round) {
 	
 	Collection<Node> selected = new ArrayList<Node>();
 	
 	// add keySet as we sample all visited nodes!
-=======
-	    Map<Node, Collection<Node>> filteredCandidates) {
-=======
-	    Map<Node, Collection<Node>> filteredCandidates, int round) {
->>>>>>> RoundBasedVisitedNodeSampler, round is now a parameter for samplenodes method
-	
-	Collection<Node> selected = new ArrayList<Node>();
-	
-<<<<<<< HEAD
->>>>>>> package structure
-=======
-	// add keySet as we sample all visited nodes!
->>>>>>> refactoring (2)
 	selected.addAll(filteredCandidates.keySet());
 
 	return selected;

@@ -127,44 +127,13 @@ public class GeneralizedCondonAndKarp extends Network {
 		for(int i = 0; i < nodes.length; i++) {
 		    for(int j = 0; j < nodes.length; j++) {
 			if(!sameCommunity(i, j, communitySizes)) {
-<<<<<<< HEAD
-<<<<<<< HEAD
 			    if(Math.random() < pout) {
 				edges.add(i, j);
 			    }
-=======
-			    
->>>>>>> first steps implementing a generalized community model based on the CondonAndKarp.java Model
-=======
-			    if(Math.random() < pout) {
-				edges.add(i, j);
-			    }
->>>>>>> implementation and properties
 			}
 		    }
 		}
 		
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-		
-		for (int i = 0; i < getNodes(); i++) {
-			for (int j = 0; j < getNodes(); j++) {
-				if (i == j)
-					continue;
-
-				if (i / nodesPerCom == j / nodesPerCom) {
-					if (Math.random() < pin)
-						edges.add(i, j);
-				} else if (Math.random() < pout)
-					edges.add(i, j);
-			}
-
-		}
-
->>>>>>> first steps implementing a generalized community model based on the CondonAndKarp.java Model
-=======
->>>>>>> implementation and properties
 		edges.fill();
 		graph.setNodes(nodes);
 		return graph;

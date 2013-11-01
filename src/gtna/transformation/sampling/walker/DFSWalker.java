@@ -47,15 +47,7 @@ import java.util.Random;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
-<<<<<<< HEAD
-<<<<<<< HEAD
 import gtna.transformation.sampling.sample.NetworkSample;
-=======
-import gtna.transformation.sampling.NetworkSample;
->>>>>>> added DFSWalker
-=======
-import gtna.transformation.sampling.sample.NetworkSample;
->>>>>>> refactoring to allow multiple types of sample
 
 /**
  * @author Tim
@@ -96,18 +88,8 @@ public class DFSWalker extends AWalker {
 				}
 			} else {
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 //				System.err.println("NextQ empty, need a restart! ("
 //						+ restartcounter + ")");
-=======
-				System.err.println("NextQ empty, need a restart! ("
-						+ restartcounter + ")");
->>>>>>> added DFSWalker
-=======
-//				System.err.println("NextQ empty, need a restart! ("
-//						+ restartcounter + ")");
->>>>>>> no system.out
 				restartcounter += 1;
 				cc = super.getRestartNodes();
 				n = cc.toArray(new Node[0])[0];
