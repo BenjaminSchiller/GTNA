@@ -55,7 +55,7 @@ import gtna.util.Config;
 
 /**
  * @author Tim
- *
+ * 
  */
 public class SampleExample {
 
@@ -91,11 +91,11 @@ public class SampleExample {
 
 		Network[] networks = instantiateNetworkModels();
 
-		SamplingWorkflow.runWorkflow(times, metrics, sampling, networks, folder);
+		SamplingWorkflow
+				.runWorkflow(times, metrics, sampling, networks, folder);
 
 	}
-	
-	
+
 	private static Transformation[] instantiateSamplingTransformation(
 			double scaledown, int dimension, boolean revisiting, Long randomSeed) {
 		Transformation ss = SamplingAlgorithmFactory.getInstanceOf(
@@ -108,8 +108,8 @@ public class SampleExample {
 				SamplingAlgorithm.RANDOMJUMP, scaledown, revisiting, dimension,
 				randomSeed);
 		Transformation mrw = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown, revisiting, dimension,
-				randomSeed);
+				SamplingAlgorithm.RANDOMWALK_MULTIPLE, scaledown, revisiting,
+				dimension, randomSeed);
 		Transformation rsdc = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.RANDOMSTROLL_DEGREECORRECTION, scaledown,
 				revisiting, dimension, randomSeed);
@@ -120,8 +120,8 @@ public class SampleExample {
 				SamplingAlgorithm.BFS, scaledown, revisiting, dimension,
 				randomSeed);
 		Transformation rds = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.RESPONDENTDRIVENSAMPLING, scaledown, revisiting, dimension,
-				randomSeed);
+				SamplingAlgorithm.RESPONDENTDRIVENSAMPLING, scaledown,
+				revisiting, dimension, randomSeed);
 		Transformation ff = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.FORESTFIRE, scaledown, revisiting, dimension,
 				randomSeed);
@@ -129,35 +129,33 @@ public class SampleExample {
 				SamplingAlgorithm.DFS, scaledown, revisiting, dimension,
 				randomSeed);
 		Transformation rwm = SamplingAlgorithmFactory.getInstanceOf(
-				SamplingAlgorithm.RANDOMWALK_METROPOLIZED, scaledown, revisiting, dimension,
-				randomSeed);
+				SamplingAlgorithm.RANDOMWALK_METROPOLIZED, scaledown,
+				revisiting, dimension, randomSeed);
 		Transformation rw = SamplingAlgorithmFactory.getInstanceOf(
 				SamplingAlgorithm.RANDOMWALK, scaledown, revisiting, dimension,
 				randomSeed);
 
-//		 Transformation subgraphing = new ExtractSampledSubgraph();
-//		 Transformation subgraphing = new ColorSampledSubgraph();
+		// Transformation subgraphing = new ExtractSampledSubgraph();
+		// Transformation subgraphing = new ColorSampledSubgraph();
 		Transformation subgraphing = new ColoredHeatmapSampledSubgraph();
 
 		Transformation[] t1 = new Transformation[] { rw, subgraphing };
 		return t1;
 	}
-	
+
 	public static Network[] instantiateNetworkModels() {
 		Network nw1 = new ErdosRenyi(100, 3, false, null);
 		Network nw2 = new BarabasiAlbert(500, 2, null);
 		Network nw3 = new WattsStrogatz(500, 6, 0.2, null);
 		Network nw4 = new CondonAndKarp(500, 3, 0.05, 0.0005, null);
 		Network nw5 = new Regular(100, 2, true, false, null);
-	
-//		 Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
-		
-//		Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
+
+		// Network[] n = new Network[] { nw1, nw2, nw3, nw4, nw5 };
+
+		// Network[] n = new Network[] { nw2, nw3, nw4, nw5 };
 
 		Network[] n = new Network[] { nw5 };
 		return n;
 	}
-	
-	
 
 }

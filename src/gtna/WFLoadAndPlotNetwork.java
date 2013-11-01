@@ -62,98 +62,96 @@ import java.util.Map.Entry;
  */
 public class WFLoadAndPlotNetwork {
 
-    static Collection<String> networks = new ArrayList<String>();
+	static Collection<String> networks = new ArrayList<String>();
 
-    /**
-     * @param args
-     * @throws IOException 
-     */
-    public static void main(String[] args) throws IOException {
-	for (String s : args) {
-	    matchArgument(s);
+	/**
+	 * @param args
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws IOException {
+		for (String s : args) {
+			matchArgument(s);
+		}
+
+		Map<String, Network> mp = new HashMap<String, Network>();
+
+		for (String s : networks) {
+			ReadableFile net = new ReadableFile(new File(s).getName(),
+					new File(s).getCanonicalPath(), s, null);
+
+			mp.put(s, net);
+		}
+
+		plotNetworks(mp);
 	}
 
-	Map<String, Network> mp = new HashMap<String, Network>();
+	/**
+	 * @param mp
+	 */
+	private static void plotNetworks(Map<String, Network> mp) {
 
-	for(String s : networks) {
-	    ReadableFile net = new ReadableFile(new File(s).getName(), new File(s).getCanonicalPath(), s, null);
-	    
-	    mp.put(s, net);
+		for (Entry<String, Network> n : mp.entrySet()) {
+			File p = new File(n.getKey());
+			String dir = p.getParent();
+
+			File d = new File(dir);
+			if (!d.exists() || !d.isDirectory()) {
+				d.mkdirs();
+			}
+
+			Graph g = n.getValue().generate();
+
+			String filename = p.getName();
+
+			Transformation t_rpid = new RandomPlaneIDSpaceSimple(3,
+					g.getNodeCount(), 1.5 * g.getNodeCount(), true);
+			Transformation t_rrid = new RandomRingIDSpaceSimple(true);
+			Transformation t_crid = new ConsecutiveRingIDSpace(true);
+
+			Transformation t_nid = t_rpid;
+
+			Gephi gephi = new Gephi();
+			if (t_nid == t_rpid) {
+				Config.overwrite("GEPHI_RING_RADIUS", "1");
+				Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.001");
+				Config.overwrite("GEPHI_EDGE_SCALE", "0.0001");
+				Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
+				Config.overwrite("GEPHI_NODE_SIZE", "0.01");
+			} else if (t_nid == t_rrid || t_nid == t_crid) {
+				Config.overwrite("GEPHI_RING_RADIUS", "50");
+				Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.01");
+				Config.overwrite("GEPHI_EDGE_SCALE", "0.001");
+				Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
+				Config.overwrite("GEPHI_NODE_SIZE", "0.001");
+			}
+
+			g = t_nid.transform(g);
+
+			IdentifierSpace ids = (IdentifierSpace) g.getProperty("ID_SPACE_0");
+
+			// new GtnaGraphWriter().writeWithProperties(g,
+			// graphFilename+".txt");
+			// // writing is already done
+
+			CsvGraphWriter cgw = new CsvGraphWriter();
+			cgw.write(g, p.getParent() + "/" + filename + ".csv");
+
+			gephi.plot(g, ids, p.getParent() + "/" + filename + ".pdf");
+		}
 	}
-	
-	
-	
-	plotNetworks(mp);
-    }
 
-    /**
-     * @param mp
-     */
-    private static void plotNetworks(Map<String, Network> mp) {
-
-	for (Entry<String, Network> n : mp.entrySet()) {
-	    File p = new File(n.getKey());
-	    String dir = p.getParent();
-
-	    File d = new File(dir);
-	    if (!d.exists() || !d.isDirectory()) {
-		d.mkdirs();
-	    }
-
-	    
-	    Graph g = n.getValue().generate();
-	    
-	   String filename = p.getName();
-
-	    Transformation t_rpid = new RandomPlaneIDSpaceSimple(3, g.getNodeCount(), 1.5*g.getNodeCount(),
-		    true);
-	    Transformation t_rrid = new RandomRingIDSpaceSimple(true);
-	    Transformation t_crid = new ConsecutiveRingIDSpace(true);
-
-	    Transformation t_nid = t_rpid;
-
-	    Gephi gephi = new Gephi();
-	    if (t_nid == t_rpid) {
-		Config.overwrite("GEPHI_RING_RADIUS", "1");
-		Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.001");
-		Config.overwrite("GEPHI_EDGE_SCALE", "0.0001");
-		Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
-		Config.overwrite("GEPHI_NODE_SIZE", "0.01");
-	    } else if (t_nid == t_rrid || t_nid == t_crid) {
-		Config.overwrite("GEPHI_RING_RADIUS", "50");
-		Config.overwrite("GEPHI_NODE_BORDER_WIDTH", "0.01");
-		Config.overwrite("GEPHI_EDGE_SCALE", "0.001");
-		Config.overwrite("GEPHI_DRAW_CURVED_EDGES", "false");
-		Config.overwrite("GEPHI_NODE_SIZE", "0.001");
-	    }
-
-	    g = t_nid.transform(g);
-
-	    IdentifierSpace ids = (IdentifierSpace) g.getProperty("ID_SPACE_0");
-
-	    // new GtnaGraphWriter().writeWithProperties(g,
-	    // graphFilename+".txt");
-	    // // writing is already done
-	    
-	    CsvGraphWriter cgw = new CsvGraphWriter();
-	    cgw.write(g, p.getParent() + "/" + filename + ".csv");
-
-	    gephi.plot(g, ids, p.getParent() + "/" + filename + ".pdf");
+	/**
+	 * @param s
+	 * @throws ParseException
+	 */
+	private static void matchArgument(String s) {
+		if (s.startsWith("path=")) {
+			String dir = s.substring(5);
+			File f = new File(dir);
+			if (f.isFile()) {
+				networks.add(dir);
+			}
+		}
 	}
-    }
-
-    /**
-     * @param s
-     * @throws ParseException
-     */
-    private static void matchArgument(String s) {
-	if (s.startsWith("path=")) {
-	    String dir = s.substring(5);
-	    File f = new File(dir);
-	    if (f.isFile()) {
-		networks.add(dir);
-	    }
-	}
-    }
 
 }
