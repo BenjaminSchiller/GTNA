@@ -58,15 +58,15 @@ public class StrongConnectivityPartition extends Transformation {
 
 	@Override
 	public Graph transform(Graph g) {
-		Partition p = getStrongPartition(g);
-
+		Partition p = this.getStrongPartition(g);
+		
 		g.addProperty(g.getNextKey("STRONG_CONNECTIVITY_PARTITION"), p);
 		g.addProperty(g.getNextKey("PARTITION"), p);
-
+		
 		return g;
 	}
 
-	public static Partition getStrongPartition(Graph g) {
+	public static Partition getStrongPartition(Graph g, boolean[] seen) {
 		ArrayList<ArrayList<Integer>> components = new ArrayList<ArrayList<Integer>>();
 		int[] indexes = Util.initIntArray(g.getNodes().length, -1);
 		int[] lowlink = new int[g.getNodes().length];
@@ -74,17 +74,21 @@ public class StrongConnectivityPartition extends Transformation {
 		index = 0;
 
 		for (int v = 0; v < g.getNodes().length; v++) {
-			if (indexes[v] == -1) {
-				strongConnect(v, g, indexes, lowlink, S, components);
+			if (!seen[v] && indexes[v] == -1) {
+				strongConnect(v, g, indexes, lowlink, S, components,seen);
 			}
 		}
 
 		return new Partition(components);
 	}
 
+	public static Partition getStrongPartition(Graph g) {
+		return getStrongPartition(g, new boolean[g.getNodes().length]);
+	}
+
 	private static void strongConnect(int v, Graph g, int[] indexes,
 			int[] lowlink, Stack<Integer> S,
-			ArrayList<ArrayList<Integer>> components) {
+			ArrayList<ArrayList<Integer>> components, boolean[] seen) {
 		// Set the depth index for v to the smallest unused index
 		indexes[v] = index;
 		lowlink[v] = index;
@@ -93,9 +97,10 @@ public class StrongConnectivityPartition extends Transformation {
 
 		// Consider successors of v
 		for (int w : g.getNode(v).getOutgoingEdges()) {
+			if (seen[w]) continue;
 			if (indexes[w] == -1) {
 				// Successor w has not yet been visited; recurse on it
-				strongConnect(w, g, indexes, lowlink, S, components);
+				strongConnect(w, g, indexes, lowlink, S, components,seen);
 				lowlink[v] = Math.min(lowlink[v], lowlink[w]);
 			} else if (S.contains(w)) {
 				// Successor w is in stack S and hence in the current SCC

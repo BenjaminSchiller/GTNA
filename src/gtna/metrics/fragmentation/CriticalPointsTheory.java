@@ -210,15 +210,34 @@ public class CriticalPointsTheory extends Metric {
 	}
 
 	private double[] getCPDirectedRandom(double[][] dist) {
-		int degR = dist.length + dist[0].length;
-		double[] r = getk0Directed(dist);
-		double pR;
-		if (r[0] - r[1] <= 0) {
-			pR = 0;
-		} else {
-			pR = (r[0] - r[1]) / r[0];
+		// int degR = dist.length + dist[0].length;
+		// double[] r = getk0Directed(dist);
+		// double pR;
+		// System.out.println(r[0] + " " + r[1]);
+		// if (r[0] - r[1] <= 0) {
+		// pR = 0;
+		// } else {
+		// pR = (r[0] - r[1]) / r[0];
+		// }
+		// return new double[] { pR, degR };
+		double av = 0;
+		int max = 0;
+		double av2 = 0;
+		for (int i = 1; i < dist.length; i++) {
+			for (int j = 0; j < dist[i].length; j++) {
+				av = av + i * dist[i][j];
+				av2 = av2 + i * j * dist[i][j];
+			}
+			if (dist[i].length - 1 + i > max) {
+				max = dist[i].length - 1 + i;
+			}
 		}
-		return new double[] { pR, degR };
+		// System.out.println(av2 + " " + av);
+		double p = 0;
+		if (av2 - av > 0) {
+			p = 1 - av / (av2);
+		}
+		return new double[] { p, max };
 	}
 
 	private double[] getCPUndirectedRandom(double[] dd) {
@@ -257,33 +276,33 @@ public class CriticalPointsTheory extends Metric {
 				k0 = getk0(distN, j - 1);
 				fpN = 1 - 1 / (k0 - 1);
 				if (edgef > fpN) {
-					if (dist[j] < epsilon){
+					if (dist[j] < epsilon) {
 						return new double[] { p, j };
 					}
 					double cup = dist[j];
 					double clow = 0;
-					p = p - dist[j]; 
+					p = p - dist[j];
 					edgef = edgef - dist[j] * j / (av);
-					while (cup-clow > epsilon){
-						double cmed = (clow+cup)/2;
+					while (cup - clow > epsilon) {
+						double cmed = (clow + cup) / 2;
 						double p2 = p + cmed;
 						double edgef2 = edgef + cmed * j / (av);
-						distN[j] = 1- cmed;
-						for (int i = 0; i < j+1; i++) {
+						distN[j] = 1 - cmed;
+						for (int i = 0; i < j + 1; i++) {
 							distN[i] = dist[i] / (1 - p2);
 						}
-						for (int i = j+1; i < dist.length; i++) {
+						for (int i = j + 1; i < dist.length; i++) {
 							distN[i] = 0;
 						}
 						k0 = getk0(distN, j - 1);
 						fpN = 1 - 1 / (k0 - 1);
-						if (edgef2 > fpN){
+						if (edgef2 > fpN) {
 							cup = cmed;
 						} else {
 							clow = cmed;
 						}
 					}
-					return new double[] { p+cup, j };
+					return new double[] { p + cup, j };
 				}
 			}
 		}
@@ -291,18 +310,19 @@ public class CriticalPointsTheory extends Metric {
 	}
 
 	public static double[] getCPDirectedLargest(double[][] dist) {
-				double av = 0;
+		double av = 0;
 		int max = 0;
 		double av2 = 0;
 		for (int i = 0; i < dist.length; i++) {
 			for (int j = 0; j < dist[i].length; j++) {
 				av = av + i * dist[i][j];
-				av2 = av2 + i*j*dist[i][j];
+				av2 = av2 + i * j * dist[i][j];
 			}
 			if (dist[i].length - 1 + i > max) {
 				max = dist[i].length - 1 + i;
 			}
 		}
+		// System.out.println(av2 +" " + av);
 		double e2 = 0;
 		double out = 0;
 		double in = 0;
@@ -314,48 +334,51 @@ public class CriticalPointsTheory extends Metric {
 			double outj = 0;
 			for (int i = 0; i < j; i++) {
 				if (i < dist.length && dist[i].length > j - i) {
-					e2j = e2j + i*(j-i)*dist[i][j - i];
+					e2j = e2j + i * (j - i) * dist[i][j - i];
 					outj = outj + dist[i][j - i] * i / av;
 					inj = inj + dist[i][j - i] * (j - i) / av;
 					pj = pj + dist[i][j - i];
 				}
 			}
 
-			double c = (1-in-inj)*(1-out-outj)*(av2-av-e2-e2j);
-			if (c < 0){
+			double c = (1 - in - inj) * (1 - out - outj)
+					* (av2 - av - e2 - e2j);
+			// System.out.println("j= " + j + " pj " + pj + " c " + c);
+			if (c < 0) {
 				double pup = 1;
 				double plow = 0;
-				while ((pup - plow)*pj > epsilon){
-					double pmed = (pup+plow)/2;
+				while ((pup - plow) * pj > epsilon) {
+					double pmed = (pup + plow) / 2;
 					e2j = 0;
 					inj = 0;
 					outj = 0;
 					pj = 0;
 					for (int i = 0; i < j; i++) {
 						if (i < dist.length && dist[i].length > j - i) {
-							e2j = e2j + i*(j-i)*dist[i][j - i]*pmed;
-							outj = outj + dist[i][j - i] * i / av*pmed;
-							inj = inj + dist[i][j - i] * (j - i) / av*pmed;
-							pj = pj + dist[i][j - i]*pmed;
+							e2j = e2j + i * (j - i) * dist[i][j - i] * pmed;
+							outj = outj + dist[i][j - i] * i / av * pmed;
+							inj = inj + dist[i][j - i] * (j - i) / av * pmed;
+							pj = pj + dist[i][j - i] * pmed;
 						}
 					}
-					c = (1-in-inj)*(1-out-outj)*(av2-av-e2-e2j);
-					if (c < 0){
+					c = (1 - in - inj) * (1 - out - outj)
+							* (av2 - av - e2 - e2j);
+					if (c < 0) {
 						pup = pmed;
-						
+
 					} else {
 						plow = pmed;
 						c = -1;
 					}
 				}
 			}
-            p = p + pj;
-            e2 = e2 + e2j;
-            in = in + inj;
-            out = out + outj;
-            if (c < 0){
-            	return new double[]{p,j};
-            }
+			p = p + pj;
+			e2 = e2 + e2j;
+			in = in + inj;
+			out = out + outj;
+			if (c < 0) {
+				return new double[] { p, j };
+			}
 		}
 		return new double[] { 1, 1 };
 	}
@@ -366,86 +389,88 @@ public class CriticalPointsTheory extends Metric {
 		for (int i = 0; i < dist.length; i++) {
 			for (int j = 0; j < dist[i].length; j++) {
 				av = av + i * dist[i][j];
-				av2 = av2 + i*j*dist[i][j];
+				av2 = av2 + i * j * dist[i][j];
 			}
-			
+
 		}
 		double e2 = 0;
 		double out = 0;
 		double in = 0;
 		double p = 0;
-		for (int j = dist.length-1; j > 0; j--) {
-			for (int i = dist[j].length-1; i > -1; i--) {
+		for (int j = dist.length - 1; j > 0; j--) {
+			for (int i = dist[j].length - 1; i > -1; i--) {
 				double pj = 0;
 				double e2j = 0;
 				double inj = 0;
 				double outj = 0;
-				e2j = e2j + i*j*dist[j][i];
-					outj = outj + dist[j][i] * j / av;
-					inj = inj + dist[j][i] * i / av;
-					pj = pj + dist[j][i];
-			double c = (1-in-inj)*(1-out-outj)*(av2-av-e2-e2j);
-			if (c < 0){
-				double pup = 1;
-				double plow = 0;
-				
-				while ((pup - plow)*pj > epsilon){
-					double pmed = (pup+plow)/2;
-					e2j = 0;
-					inj = 0;
-					outj = 0;
-					pj = 0;
-					e2j = e2j + i*j*dist[j][i]*pmed;
-					outj = outj + dist[j][i] * j / av*pmed;
-					inj = inj + dist[j][i] * i / av*pmed;
-					pj = pj + dist[j][i]*pmed;
-					c = (1-in-inj)*(1-out-outj)*(av2-av-e2-e2j);
-					if (c < 0){
-						pup = pmed;
-						
-					} else {
-						plow = pmed;
-						c = -1;
+				e2j = e2j + i * j * dist[j][i];
+				outj = outj + dist[j][i] * j / av;
+				inj = inj + dist[j][i] * i / av;
+				pj = pj + dist[j][i];
+				double c = (1 - in - inj) * (1 - out - outj)
+						* (av2 - av - e2 - e2j);
+				if (c < 0) {
+					double pup = 1;
+					double plow = 0;
+
+					while ((pup - plow) * pj > epsilon) {
+						double pmed = (pup + plow) / 2;
+						e2j = 0;
+						inj = 0;
+						outj = 0;
+						pj = 0;
+						e2j = e2j + i * j * dist[j][i] * pmed;
+						outj = outj + dist[j][i] * j / av * pmed;
+						inj = inj + dist[j][i] * i / av * pmed;
+						pj = pj + dist[j][i] * pmed;
+						c = (1 - in - inj) * (1 - out - outj)
+								* (av2 - av - e2 - e2j);
+						if (c < 0) {
+							pup = pmed;
+
+						} else {
+							plow = pmed;
+							c = -1;
+						}
 					}
 				}
-			}
-            p = p + pj;
-            e2 = e2 + e2j;
-            in = in + inj;
-            out = out + outj;
-           
-            if (c < 0){
-            	return new double[]{p,j};
-            }
+				p = p + pj;
+				e2 = e2 + e2j;
+				in = in + inj;
+				out = out + outj;
+
+				if (c < 0) {
+					return new double[] { p, j };
+				}
 			}
 		}
 		return new double[] { 1, 1 };
-//		double av = 0;
-//		for (int i = 0; i < dist.length; i++) {
-//			for (int j = 0; j < dist[i].length; j++) {
-//				av = av + i * dist[i][j];
-//			}
-//		}
-//		double p = 0;
-//		double out = 0;
-//		double in = 0;
-//		double fpN;
-//		double k0;
-//		for (int j = dist.length - 1; j > 0; j--) {
-//			for (int i = 0; i < dist[j].length; i++) {
-//				p = p + dist[j][i];
-//				out = out + dist[j][i] * j / (av);
-//				in = in + dist[j][i] * i / av;
-//			}
-//			double[] r = getk0Directed(dist, Integer.MAX_VALUE, j,
-//					Integer.MAX_VALUE);
-//			fpN = (1 - out) * (1 - in) * 2 * r[0] - (1 - in) * r[1] - (1 - out)
-//					* r[2];
-//			if (fpN < 0) {
-//				return new double[] { p, j - 1 };
-//			}
-//		}
-//		return new double[] { 1, 1 };
+		// double av = 0;
+		// for (int i = 0; i < dist.length; i++) {
+		// for (int j = 0; j < dist[i].length; j++) {
+		// av = av + i * dist[i][j];
+		// }
+		// }
+		// double p = 0;
+		// double out = 0;
+		// double in = 0;
+		// double fpN;
+		// double k0;
+		// for (int j = dist.length - 1; j > 0; j--) {
+		// for (int i = 0; i < dist[j].length; i++) {
+		// p = p + dist[j][i];
+		// out = out + dist[j][i] * j / (av);
+		// in = in + dist[j][i] * i / av;
+		// }
+		// double[] r = getk0Directed(dist, Integer.MAX_VALUE, j,
+		// Integer.MAX_VALUE);
+		// fpN = (1 - out) * (1 - in) * 2 * r[0] - (1 - in) * r[1] - (1 - out)
+		// * r[2];
+		// if (fpN < 0) {
+		// return new double[] { p, j - 1 };
+		// }
+		// }
+		// return new double[] { 1, 1 };
 	}
 
 	public static double[] getCPDirectedLargestIn(double[][] dist) {
@@ -455,61 +480,64 @@ public class CriticalPointsTheory extends Metric {
 		for (int i = 0; i < dist.length; i++) {
 			for (int j = 0; j < dist[i].length; j++) {
 				av = av + i * dist[i][j];
-				av2 = av2 + i*j*dist[i][j];
-				if (dist[i].length > max){
+				av2 = av2 + i * j * dist[i][j];
+				if (dist[i].length > max) {
 					max = dist[i].length;
 				}
 			}
-			
+
 		}
 		double e2 = 0;
 		double out = 0;
 		double in = 0;
 		double p = 0;
-		for (int i = max-1; i > 0; i--) {
-			for (int j = dist.length-1; j > -1; j--) {
-				if (dist[j].length <= i) continue;
+		for (int i = max - 1; i > 0; i--) {
+			for (int j = dist.length - 1; j > -1; j--) {
+				if (dist[j].length <= i)
+					continue;
 				double pj = 0;
 				double e2j = 0;
 				double inj = 0;
 				double outj = 0;
-				e2j = e2j + i*j*dist[j][i];
-					outj = outj + dist[j][i] * j / av;
-					inj = inj + dist[j][i] * i / av;
-					pj = pj + dist[j][i];
-			double c = (1-in-inj)*(1-out-outj)*(av2-av-e2-e2j);
-			if (c < 0){
-				double pup = 1;
-				double plow = 0;
-				
-				while ((pup - plow)*pj > epsilon){
-					double pmed = (pup+plow)/2;
-					e2j = 0;
-					inj = 0;
-					outj = 0;
-					pj = 0;
-					e2j = e2j + i*j*dist[j][i]*pmed;
-					outj = outj + dist[j][i] * j / av*pmed;
-					inj = inj + dist[j][i] * i / av*pmed;
-					pj = pj + dist[j][i]*pmed;
-					c = (1-in-inj)*(1-out-outj)*(av2-av-e2-e2j);
-					if (c < 0){
-						pup = pmed;
-						
-					} else {
-						plow = pmed;
-						c = -1;
+				e2j = e2j + i * j * dist[j][i];
+				outj = outj + dist[j][i] * j / av;
+				inj = inj + dist[j][i] * i / av;
+				pj = pj + dist[j][i];
+				double c = (1 - in - inj) * (1 - out - outj)
+						* (av2 - av - e2 - e2j);
+				if (c < 0) {
+					double pup = 1;
+					double plow = 0;
+
+					while ((pup - plow) * pj > epsilon) {
+						double pmed = (pup + plow) / 2;
+						e2j = 0;
+						inj = 0;
+						outj = 0;
+						pj = 0;
+						e2j = e2j + i * j * dist[j][i] * pmed;
+						outj = outj + dist[j][i] * j / av * pmed;
+						inj = inj + dist[j][i] * i / av * pmed;
+						pj = pj + dist[j][i] * pmed;
+						c = (1 - in - inj) * (1 - out - outj)
+								* (av2 - av - e2 - e2j);
+						if (c < 0) {
+							pup = pmed;
+
+						} else {
+							plow = pmed;
+							c = -1;
+						}
 					}
 				}
-			}
-            p = p + pj;
-            e2 = e2 + e2j;
-            in = in + inj;
-            out = out + outj;
-           
-            if (c < 0){
-            	return new double[]{p,j};
-            }
+				p = p + pj;
+				e2 = e2 + e2j;
+				in = in + inj;
+				out = out + outj;
+
+				if (c < 0) {
+					return new double[] { p, j };
+				}
 			}
 		}
 		return new double[] { 1, 1 };
@@ -565,12 +593,13 @@ public class CriticalPointsTheory extends Metric {
 		double jk = 0;
 		double j = 0;
 		double k = 0;
-		for (int i = 1; i < Math.min(Math.min(dist.length, bound), boundOut); i++) {
-			for (int i2 = 1; i2 < Math.min(Math.min(dist[i].length, bound - i),
+		for (int i = 0; i < Math.min(Math.min(dist.length, bound), boundOut); i++) {
+			for (int i2 = 0; i2 < Math.min(Math.min(dist[i].length, bound - i),
 					boundIn); i2++) {
 				jk = jk + i * i2 * dist[i][i2];
 				j = j + i * dist[i][i2];
 				k = k + i2 * dist[i][i2];
+				// System.out.println("")
 			}
 		}
 		return new double[] { jk, j, k };
