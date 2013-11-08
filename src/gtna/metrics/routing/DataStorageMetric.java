@@ -53,56 +53,110 @@ import java.util.HashMap;
  */
 public class DataStorageMetric extends Metric {
 
-	private Distribution dataItemsDistribution;
+	private Distribution totalDataItems;
+
+	private Distribution sourceDataItems;
+
+	private Distribution replicaDataItems;
 
 	public DataStorageMetric() {
 		super("DATA_STORAGE_METRIC");
 
-		this.dataItemsDistribution = new Distribution(new double[] { -1 });
+		this.totalDataItems = new Distribution(new double[] { -1 });
+		this.sourceDataItems = new Distribution(new double[] { -1 });
+		this.replicaDataItems = new Distribution(new double[] { -1 });
 	}
 
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		DataStoreList dsl = (DataStoreList) g.getProperty("DATA_STORAGE_0");
 
-		int max = 0;
+		int max_total = 0;
+		int max_source = 0;
+		int max_replica = 0;
 		for (DataStore ds : dsl.getList()) {
-			// System.out.println("DS.size = " + ds.size());
-			if (ds.sizeOfStore() > max) {
-				max = ds.sizeOfStore();
+			if (ds.sizeOfStore() > max_total) {
+				max_total = ds.sizeOfStore();
+			}
+			if (ds.sizeOfSourceStore() > max_source) {
+				max_source = ds.sizeOfSourceStore();
+			}
+			if (ds.sizeOfReplicaStore() > max_replica) {
+				max_replica = ds.sizeOfReplicaStore();
 			}
 		}
 
-		double[] distr = new double[max + 1];
+		double[] total = new double[max_total + 1];
+		double[] source = new double[max_source + 1];
+		double[] replica = new double[max_replica + 1];
 		for (DataStore ds : dsl.getList()) {
-			distr[ds.sizeOfStore()]++;
+			total[ds.sizeOfStore()]++;
+			source[ds.sizeOfSourceStore()]++;
+			replica[ds.sizeOfReplicaStore()]++;
 		}
-		ArrayUtils.divide(distr, dsl.getList().length);
+		ArrayUtils.divide(total, dsl.getList().length);
+		ArrayUtils.divide(source, dsl.getList().length);
+		ArrayUtils.divide(replica, dsl.getList().length);
 
-		this.dataItemsDistribution = new Distribution(distr);
+		this.totalDataItems = new Distribution(total);
+		this.sourceDataItems = new Distribution(source);
+		this.replicaDataItems = new Distribution(replica);
 	}
 
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
+
 		success &= DataWriter.writeWithIndex(
-				this.dataItemsDistribution.getDistribution(),
-				"DATA_STORAGE_METRIC_DATA_ITEM_DISTRIBUTION", folder);
+				this.totalDataItems.getDistribution(),
+				"DATA_STORAGE_METRIC_TOTAL_DATA_ITEM_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.totalDataItems.getCdf(),
+				"DATA_STORAGE_METRIC_TOTAL_DATA_ITEM_DISTRIBUTION_CDF", folder);
+
 		success &= DataWriter.writeWithIndex(
-				this.dataItemsDistribution.getCdf(),
-				"DATA_STORAGE_METRIC_DATA_ITEM_DISTRIBUTION_CDF", folder);
+				this.sourceDataItems.getDistribution(),
+				"DATA_STORAGE_METRIC_SOURCE_DATA_ITEM_DISTRIBUTION", folder);
+		success &= DataWriter
+				.writeWithIndex(
+						this.sourceDataItems.getCdf(),
+						"DATA_STORAGE_METRIC_SOURCE_DATA_ITEM_DISTRIBUTION_CDF",
+						folder);
+
+		success &= DataWriter.writeWithIndex(
+				this.replicaDataItems.getDistribution(),
+				"DATA_STORAGE_METRIC_REPLICA_DATA_ITEM_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.replicaDataItems.getCdf(),
+				"DATA_STORAGE_METRIC_REPLICA_DATA_ITEM_DISTRIBUTION_CDF",
+				folder);
+
 		return success;
 	}
 
 	@Override
 	public Single[] getSingles() {
-		Single avg = new Single("DATA_STORAGE_METRIC_"
-				+ "NUMBER_OF_DATA_ITEMS_AVG",
-				this.dataItemsDistribution.getAverage());
-		Single med = new Single("DATA_STORAGE_METRIC_"
-				+ "NUMBER_OF_DATA_ITEMS_MED",
-				this.dataItemsDistribution.getMedian());
-		return new Single[] { avg, med };
+
+		Single avg1 = new Single("DATA_STORAGE_METRIC_"
+				+ "NUMBER_OF_TOTAL_DATA_ITEMS_AVG",
+				this.totalDataItems.getAverage());
+		Single med1 = new Single("DATA_STORAGE_METRIC_"
+				+ "NUMBER_OF_TOTAL_DATA_ITEMS_MED",
+				this.totalDataItems.getMedian());
+
+		Single avg2 = new Single("DATA_STORAGE_METRIC_"
+				+ "NUMBER_OF_SOURCE_DATA_ITEMS_AVG",
+				this.sourceDataItems.getAverage());
+		Single med2 = new Single("DATA_STORAGE_METRIC_"
+				+ "NUMBER_OF_SOURCE_DATA_ITEMS_MED",
+				this.sourceDataItems.getMedian());
+
+		Single avg3 = new Single("DATA_STORAGE_METRIC_"
+				+ "NUMBER_OF_REPLICA_DATA_ITEMS_AVG",
+				this.replicaDataItems.getAverage());
+		Single med3 = new Single("DATA_STORAGE_METRIC_"
+				+ "NUMBER_OF_REPLICA_DATA_ITEMS_MED",
+				this.replicaDataItems.getMedian());
+
+		return new Single[] { avg1, med1, avg2, med2, avg3, med3 };
 	}
 
 	@Override
