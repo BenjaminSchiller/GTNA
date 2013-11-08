@@ -55,6 +55,10 @@ public class NodeIdentifierSpace extends DoubleIdentifierSpace {
 		super(partitions);
 	}
 
+	public NodeIdentifierSpace() {
+		this(new NodePartition[0]);
+	}
+
 	@Override
 	public double getMaxDistance() {
 		return 0;

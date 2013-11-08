@@ -50,6 +50,10 @@ public class NodeRoutingTable extends RoutingTable {
 
 	private static final String delimiter = ";";
 
+	public NodeRoutingTable() {
+		this(-1, new int[0]);
+	}
+
 	public NodeRoutingTable(int node, int[] nextHop) {
 		this.node = node;
 		this.nextHop = nextHop;

@@ -49,6 +49,10 @@ public class RoutingTables extends GraphProperty {
 
 	public static final int noRoute = -1;
 
+	public RoutingTables() {
+		this(new RoutingTable[0]);
+	}
+
 	public RoutingTables(RoutingTable[] tables) {
 		this.tables = tables;
 	}
@@ -91,6 +95,7 @@ public class RoutingTables extends GraphProperty {
 			try {
 				RoutingTable rt = (RoutingTable) routingTableClass
 						.newInstance();
+				rt.fromString(fr.readLine());
 				this.tables[i] = rt;
 			} catch (InstantiationException e) {
 				e.printStackTrace();
