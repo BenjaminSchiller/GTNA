@@ -47,8 +47,8 @@ import gtna.transformation.partition.StrongConnectivityPartition;
  */
 public class StrongFragmentation extends Fragmentation {
 
-	public StrongFragmentation(NodeSorter sorter, Resolution resolution) {
-		super(Fragmentation.Type.STRONG, sorter, resolution);
+	public StrongFragmentation(NodeSorter sorter, Resolution resolution, boolean bidirectional) {
+		super(Fragmentation.Type.STRONG, sorter, resolution, bidirectional);
 	}
 
 	@Override
