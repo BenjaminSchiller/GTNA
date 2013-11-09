@@ -21,12 +21,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * Fragmentation.java
+ * FragmentationRecompute.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: benni;
+ * Original Author: stefanie;
  * Contributors:    -;
  *
  * Changes since 2011-05-17
@@ -43,7 +43,6 @@ import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.NodeSorterUpdate;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
-import gtna.metrics.fragmentation.FragmentationRecompute.Resolution;
 import gtna.networks.Network;
 import gtna.util.Config;
 import gtna.util.Timer;
@@ -54,13 +53,14 @@ import java.util.HashMap;
 import java.util.Random;
 
 /**
- * @author benni
+ * @author stefanie
  * 
  */
-public abstract class Fragmentation extends Metric {
+public abstract class FragmentationRecompute extends Metric {
 	protected NodeSorter sorter;
 
 	protected Resolution resolution;
+	protected boolean bidirectional;
 
 	public static enum Type {
 		STRONG, WEAK
@@ -70,7 +70,8 @@ public abstract class Fragmentation extends Metric {
 		SINGLE, PERCENT
 	};
 
-	public Fragmentation(Type type, NodeSorter sorter, Resolution resolution, boolean bidirectional) {
+	public FragmentationRecompute(Type type, NodeSorter sorter,
+			Resolution resolution, boolean bidirectional) {
 		super("FRAGMENTATION", new Parameter[] {
 				new StringParameter("TYPE", type.toString()),
 				new StringParameter("SORTER", sorter.getKey()),
@@ -104,7 +105,7 @@ public abstract class Fragmentation extends Metric {
 	private double[] criticalPoints;
 
 	private int[] cpts;
-	
+
 	private double[][] degDist;
 
 	protected int[][] degs;
@@ -116,8 +117,6 @@ public abstract class Fragmentation extends Metric {
 	private double threshold;
 	
 	private double thresholdfraction;
-	
-	private boolean bidirectional;
 
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
@@ -243,65 +242,6 @@ public abstract class Fragmentation extends Metric {
 			}
 		}
 		this.runtime.end();
-//		int[] excludeFirst = this.getExcludeFirst(g.getNodes().length);
-//		this.isolatedComponentSizeAvg = new double[excludeFirst.length];
-//		this.isolatedComponentSizeMax = new double[excludeFirst.length];
-//		this.isolatedComponentSizeMed = new double[excludeFirst.length];
-//		this.isolatedComponentSizeMin = new double[excludeFirst.length];
-//		this.numberOfIsolatedComponents = new double[excludeFirst.length];
-//		this.largestComponentSize = new double[excludeFirst.length];
-//		this.largestComponentSizeFraction = new double[excludeFirst.length];
-//		this.criticalPoint = 1.0;
-//		this.cpts = this.getCriticalPointThreshold();
-//		this.criticalPoints = new double[this.cpts.length];
-//		for (int i = 0; i < this.criticalPoints.length; i++) {
-//			this.criticalPoints[i] = 1.0;
-//		}
-//		Random rand = new Random();
-//		this.addCriticalPointConfigs();
-//		Node[] sorted = this.sorter.sort(g, rand);
-//		for (int i = 0; i < excludeFirst.length; i++) {
-//			boolean[] exclude = this.getExclude(sorted, excludeFirst[i]);
-//			Partition p = this.partition(g, sorted, exclude);
-//
-//			this.numberOfIsolatedComponents[i] = p.getComponents().length - 1;
-//			this.largestComponentSize[i] = p.getLargestComponent().length;
-//			this.largestComponentSizeFraction[i] = (double) p
-//					.getLargestComponent().length
-//					/ (double) g.getNodes().length;
-//
-//			if (this.numberOfIsolatedComponents[i] == 0) {
-//				this.isolatedComponentSizeAvg[i] = 0;
-//				this.isolatedComponentSizeMax[i] = 0;
-//				this.isolatedComponentSizeMed[i] = 0;
-//				this.isolatedComponentSizeMin[i] = 0;
-//			} else {
-//				this.isolatedComponentSizeAvg[i] = this.avgIsolatedSize(p);
-//				this.isolatedComponentSizeMax[i] = p.getComponents()[p
-//						.getComponents().length - 2].length;
-//				this.isolatedComponentSizeMed[i] = p.getComponents()[(int) Math
-//						.floor(p.getComponents().length / 2)].length;
-//				this.isolatedComponentSizeMin[i] = p.getComponents()[p
-//						.getComponents().length - 1].length;
-//			}
-//
-//			if (this.largestComponentSize[i] < 0.5 * (g.getNodes().length - excludeFirst[i])
-//					&& (double) excludeFirst[i] / (double) g.getNodes().length < this.criticalPoint) {
-//				this.criticalPoint = (double) excludeFirst[i]
-//						/ (double) g.getNodes().length;
-//			}
-//
-//			for (int j = 0; j < criticalPoints.length; j++) {
-//				double cpt = (double) this.cpts[j] / 100;
-//				if (this.largestComponentSize[i] < cpt
-//						* (g.getNodes().length - excludeFirst[i])
-//						&& (double) excludeFirst[i]
-//								/ (double) g.getNodes().length < this.criticalPoints[j]) {
-//					this.criticalPoints[j] = (double) excludeFirst[i]
-//							/ (double) g.getNodes().length;
-//				}
-//			}
-//		}
 	}
 
 	private int[] getCriticalPointThreshold() {
@@ -374,13 +314,6 @@ public abstract class Fragmentation extends Metric {
 		}
 	}
 
-//	private boolean[] getExclude(Node[] sorted, int excludeFirst) {
-//		boolean[] exclude = new boolean[sorted.length];
-//		for (int i = 0; i < excludeFirst; i++) {
-//			exclude[sorted[i].getIndex()] = true;
-//		}
-//		return exclude;
-//	}
 	private boolean[] getExclude(Node[] sorted, boolean[] exclude,
 			int excludeFirst, int startExclude, Random rand) {
 		for (int i = startExclude; i < excludeFirst; i++) {
@@ -425,22 +358,6 @@ public abstract class Fragmentation extends Metric {
 		}
 		return exclude;
 	}
-	
-	private double getC() {
-		double c = 0;
-		if (this.bidirectional) {
-			for (int i = 0; i < this.degDist.length; i++) {
-				c = c + i * (i - 2) * this.degDist[i][0];
-			}
-		} else {
-			for (int k = 0; k < this.degDist.length; k++) {
-				for (int j = 0; j < this.degDist[k].length; j++) {
-					c = c + (2 * k * j - k - j) * this.degDist[k][j];
-				}
-			}
-		}
-		return c;
-	}
 
 	@Override
 	public boolean writeData(String folder) {
@@ -484,5 +401,21 @@ public abstract class Fragmentation extends Metric {
 
 	protected abstract Partition partition(Graph g, Node[] sorted,
 			boolean[] exclude);
+
+	private double getC() {
+		double c = 0;
+		if (this.bidirectional) {
+			for (int i = 0; i < this.degDist.length; i++) {
+				c = c + i * (i - 2) * this.degDist[i][0];
+			}
+		} else {
+			for (int k = 0; k < this.degDist.length; k++) {
+				for (int j = 0; j < this.degDist[k].length; j++) {
+					c = c + (2 * k * j - k - j) * this.degDist[k][j];
+				}
+			}
+		}
+		return c;
+	}
 
 }

@@ -21,12 +21,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * FragmentationWeakConnectivity.java
+ * WeakFragmentationRecompute.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: benni;
+ * Original Author: stef;
  * Contributors:    -;
  *
  * Changes since 2011-05-17
@@ -39,17 +39,19 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.partition.Partition;
 import gtna.graph.sorting.NodeSorter;
+import gtna.graph.sorting.NodeSorterUpdate;
+import gtna.metrics.fragmentation.FragmentationRecompute.Resolution;
 import gtna.transformation.partition.WeakConnectivityPartition;
 
 /**
- * @author benni
- * 
+ * @author stef
+ *
  */
-public class WeakFragmentation extends Fragmentation {
-
-	public WeakFragmentation(NodeSorter sorter,
-			Resolution resolution, boolean bidirectional) {
-		super(Fragmentation.Type.WEAK, sorter, resolution, bidirectional);
+public class WeakFragmentationRecompute extends FragmentationRecompute {
+	
+	public WeakFragmentationRecompute(NodeSorterUpdate sorter,
+			Resolution resolution,boolean bi) {
+		super(FragmentationRecompute.Type.WEAK, sorter, resolution,bi);
 	}
 
 	@Override
