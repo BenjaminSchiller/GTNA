@@ -390,11 +390,13 @@ public abstract class Fragmentation extends Metric {
 						.getIndex()][0]][0] - 1 / (double) sorted.length;
 				int[] in = sorted[i].getIncomingEdges();
 				for (int k = 0; k < in.length; k++) {
+					if (!exclude[in[k]]){
 					this.degDist[degs[in[k]][0]][0] = this.degDist[degs[in[k]][0]][0]
 							- 1 / (double) sorted.length;
 					degs[in[k]][0]--;
 					this.degDist[degs[in[k]][0]][0] = this.degDist[degs[in[k]][0]][0]
 							+ 1 / (double) sorted.length;
+					}
 				}
 
 			} else {
@@ -405,19 +407,23 @@ public abstract class Fragmentation extends Metric {
 						/ (double) sorted.length;
 				int[] in = sorted[i].getIncomingEdges();
 				for (int k = 0; k < in.length; k++) {
+					if (!exclude[in[k]]){
 					this.degDist[degs[in[k]][0]][degs[in[k]][1]] = this.degDist[degs[in[k]][0]][degs[in[k]][1]]
 							- 1 / (double) sorted.length;
 					degs[in[k]][1]--;
 					this.degDist[degs[in[k]][0]][degs[in[k]][1]] = this.degDist[degs[in[k]][0]][degs[in[k]][1]]
 							+ 1 / (double) sorted.length;
+					}
 				}
 				int[] out = sorted[i].getOutgoingEdges();
 				for (int k = 0; k < out.length; k++) {
+					if (!exclude[out[k]]){
 					this.degDist[degs[out[k]][0]][degs[out[k]][1]] = this.degDist[degs[out[k]][0]][degs[out[k]][1]]
 							- 1 / (double) sorted.length;
 					degs[out[k]][0]--;
 					this.degDist[degs[out[k]][0]][degs[out[k]][1]] = this.degDist[degs[out[k]][0]][degs[out[k]][1]]
 							+ 1 / (double) sorted.length;
+					}
 				}
 			}
 			if (this.sorter instanceof NodeSorterUpdate)

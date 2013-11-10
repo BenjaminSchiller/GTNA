@@ -51,6 +51,11 @@ public class WeakFragmentation extends Fragmentation {
 			Resolution resolution, boolean bidirectional) {
 		super(Fragmentation.Type.WEAK, sorter, resolution, bidirectional);
 	}
+	
+	public WeakFragmentation(NodeSorter sorter,
+			Resolution resolution) {
+		super(Fragmentation.Type.WEAK, sorter, resolution, false);
+	}
 
 	@Override
 	protected Partition partition(Graph g, Node[] sorted, boolean[] exclude) {
