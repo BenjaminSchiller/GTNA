@@ -21,45 +21,39 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * FragmentationWeakConnectivity.java
+ * NodeSorterUpdate.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: benni;
+ * Original Author: stefanie;
  * Contributors:    -;
  *
  * Changes since 2011-05-17
  * ---------------------------------------
  *
  */
-package gtna.metrics.fragmentation;
+package gtna.graph.sorting;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.graph.partition.Partition;
-import gtna.graph.sorting.NodeSorter;
-import gtna.transformation.partition.WeakConnectivityPartition;
+
+import java.util.Random;
 
 /**
- * @author benni
- * 
+ * @author stefanie
+ *
  */
-public class WeakFragmentation extends Fragmentation {
+public abstract class NodeSorterUpdate extends NodeSorter {
 
-	public WeakFragmentation(NodeSorter sorter,
-			Resolution resolution, boolean bidirectional) {
-		super(Fragmentation.Type.WEAK, sorter, resolution, bidirectional);
-	}
-	
-	public WeakFragmentation(NodeSorter sorter,
-			Resolution resolution) {
-		super(Fragmentation.Type.WEAK, sorter, resolution, false);
+	/**
+	 * @param key
+	 * @param mode
+	 */
+	public NodeSorterUpdate(String key, NodeSorterMode mode) {
+		super(key, mode);
 	}
 
-	@Override
-	protected Partition partition(Graph g, Node[] sorted, boolean[] exclude) {
-		return WeakConnectivityPartition.getWeakPartition(g, exclude);
-	}
+	public abstract Node[] update(boolean[] deleted, int index, Random rand);
 
 }

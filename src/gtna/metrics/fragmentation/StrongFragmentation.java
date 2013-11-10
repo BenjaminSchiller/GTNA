@@ -39,6 +39,7 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.partition.Partition;
 import gtna.graph.sorting.NodeSorter;
+import gtna.transformation.partition.StrongConnectivityPartition;
 
 /**
  * @author benni
@@ -46,14 +47,13 @@ import gtna.graph.sorting.NodeSorter;
  */
 public class StrongFragmentation extends Fragmentation {
 
-	public StrongFragmentation(NodeSorter sorter, Resolution resolution) {
-		super(Fragmentation.Type.STRONG, sorter, resolution);
+	public StrongFragmentation(NodeSorter sorter, Resolution resolution, boolean bidirectional) {
+		super(Fragmentation.Type.STRONG, sorter, resolution, bidirectional);
 	}
 
 	@Override
 	protected Partition partition(Graph g, Node[] sorted, boolean[] exclude) {
-		// TODO Auto-generated method stub
-		return null;
+		return StrongConnectivityPartition.getStrongPartition(g,exclude);
 	}
 
 }
