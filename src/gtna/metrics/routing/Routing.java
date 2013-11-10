@@ -38,6 +38,8 @@ package gtna.metrics.routing;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.id.Identifier;
+import gtna.id.IdentifierSpace;
+import gtna.id.data.DataStoreList;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -47,6 +49,7 @@ import gtna.routing.selection.source.ConsecutiveSourceSelection;
 import gtna.routing.selection.source.SourceSelection;
 import gtna.routing.selection.target.RepresentativeIdTargetSelection;
 import gtna.routing.selection.target.TargetSelection;
+import gtna.util.ArrayUtils;
 import gtna.util.Config;
 import gtna.util.Distribution;
 import gtna.util.parameter.Parameter;
@@ -68,6 +71,8 @@ public class Routing extends Metric {
 	private Distribution hopDistributionAbsolute;
 
 	private double[] betweennessCentrality;
+	private Distribution sourceCount;
+	private Distribution targetCount;
 
 	private double successRate;
 	private double failureRate;
@@ -104,6 +109,8 @@ public class Routing extends Metric {
 		this.hopDistribution = new Distribution(new double[] { -1 });
 		this.hopDistributionAbsolute = new Distribution(new double[] { -1 });
 		this.betweennessCentrality = new double[] { -1 };
+		this.sourceCount = new Distribution(new double[] { -1 });
+		this.targetCount = new Distribution(new double[] { -1 });
 		this.routes = new Route[0];
 		this.successRate = -1;
 		this.failureRate = -1;
@@ -115,7 +122,6 @@ public class Routing extends Metric {
 				&& this.targetSelection.applicable(g);
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public void computeData(Graph graph, Network network,
 			HashMap<String, Metric> metrics) {
@@ -128,12 +134,21 @@ public class Routing extends Metric {
 		this.routes = new Route[graph.getNodes().length * routesPerNode];
 		int index = 0;
 
+		int[] countSources = new int[graph.getNodeCount()];
+		HashMap<Identifier, Integer> countTargets = new HashMap<Identifier, Integer>();
+
 		// int parallel = Config.getInt("PARALLEL_ROUTINGS");
 		// if (parallel == 1) {
 		for (int n = 0; n < graph.getNodeCount(); n++) {
 			for (int i = 0; i < routesPerNode; i++) {
 				int start = this.sourceSelection.getNextSource();
+				countSources[start]++;
 				Identifier target = this.targetSelection.getNextTarget();
+				if (!countTargets.containsKey(target)) {
+					countTargets.put(target, 1);
+				} else {
+					countTargets.put(target, countTargets.get(target) + 1);
+				}
 				Route r = this.ra.routeToTarget(graph, start, target, rand);
 				this.routes[index++] = r;
 			}
@@ -171,8 +186,50 @@ public class Routing extends Metric {
 		this.betweennessCentrality = this.computeBetweennessCentrality(graph
 				.getNodes().length);
 
+		this.sourceCount = this.generateSourceCount(countSources);
+
+		int identifierCount = 0;
+		if (graph.hasProperty("DATA_STORAGE_0")) {
+			DataStoreList dsl = (DataStoreList) graph
+					.getProperty("DATA_STORAGE_0");
+			identifierCount = dsl.getDataItems().size();
+		} else {
+			identifierCount = countTargets.size();
+		}
+		this.targetCount = this.generateTargetCount(countTargets,
+				identifierCount);
+
 		this.successRate = this.computeSuccessRate();
 		this.failureRate = 1 - this.successRate;
+	}
+
+	private Distribution generateTargetCount(
+			HashMap<Identifier, Integer> countTargets, int identifierCount) {
+		int max = 0;
+		for (int value : countTargets.values()) {
+			if (value > max) {
+				max = value;
+			}
+		}
+		double[] targetCount = new double[max + 1];
+		int total = 0;
+		for (int value : countTargets.values()) {
+			targetCount[value]++;
+			total += value;
+		}
+		targetCount[0] = identifierCount - countTargets.size();
+		ArrayUtils.divide(targetCount, (double) identifierCount);
+		return new Distribution(targetCount);
+	}
+
+	private Distribution generateSourceCount(int[] countSources) {
+		int max = ArrayUtils.getMaxInt(countSources);
+		double[] sourceCount = new double[max + 1];
+		for (int i = 0; i < countSources.length; i++) {
+			sourceCount[countSources[i]]++;
+		}
+		ArrayUtils.divide(sourceCount, (double) countSources.length);
+		return new Distribution(sourceCount);
 	}
 
 	private double computeSuccessRate() {
@@ -253,6 +310,16 @@ public class Routing extends Metric {
 				"ROUTING_HOP_DISTRIBUTION_ABSOLUTE_CDF", folder);
 		success &= DataWriter.writeWithIndex(this.betweennessCentrality,
 				"ROUTING_BETWEENNESS_CENTRALITY", folder);
+		success &= DataWriter.writeWithIndex(
+				this.sourceCount.getDistribution(),
+				"ROUTING_SOURCE_COUNT_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.sourceCount.getCdf(),
+				"ROUTING_SOURCE_COUNT_DISTRIBUTION_CDF", folder);
+		success &= DataWriter.writeWithIndex(
+				this.targetCount.getDistribution(),
+				"ROUTING_TARGET_COUNT_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.targetCount.getCdf(),
+				"ROUTING_TARGET_COUNT_DISTRIBUTION_CDF", folder);
 		return success;
 	}
 
