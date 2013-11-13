@@ -43,6 +43,7 @@ import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.fragmentation.CriticalPointsTheory;
 import gtna.metrics.fragmentation.Fragmentation.Resolution;
+import gtna.metrics.fragmentation.StrongFragmentation;
 import gtna.metrics.fragmentation.WeakFragmentation;
 import gtna.networks.Network;
 import gtna.networks.util.DescriptionWrapper;
@@ -78,8 +79,8 @@ public class Analysis {
 	// directed graphs (WOT)
 	public static Metric[] m_d = new Metric[] {
 			new DegreeDistribution(),
-			new WeakFragmentation(new RandomNodeSorter(), Resolution.PERCENT),
-			new WeakFragmentation(new DegreeNodeSorter(NodeSorterMode.DESC),
+			new StrongFragmentation(new RandomNodeSorter(), Resolution.PERCENT),
+			new StrongFragmentation(new DegreeNodeSorter(NodeSorterMode.DESC),
 					Resolution.PERCENT),
 			new CriticalPointsTheory(true,
 					CriticalPointsTheory.Selection.RANDOM),
@@ -87,7 +88,7 @@ public class Analysis {
 					CriticalPointsTheory.Selection.LARGEST) };
 
 	public static void main(String[] args) {
-//		generateData("spi", m_u, SampleGeneration.times);
+		// generateData("spi", m_u, SampleGeneration.times);
 		generateData("wot", m_d, SampleGeneration.times);
 	}
 

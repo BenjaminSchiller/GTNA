@@ -54,7 +54,7 @@ public class Models {
 
 	public static final int times = 1;
 
-	public static final int nodes = 50000;
+	public static final int nodes = 1000;
 
 	public static int[] edges = new int[] { 1, 2, 3, 4, 5, 10, 20, 50 };
 
@@ -73,13 +73,13 @@ public class Models {
 		ws(0.1);
 		ws(0.5);
 		ws(1.0);
-		ba();
-		er(true);
-		er(false);
-		pl(true);
-		pl(false);
-		reg(true, true);
-		reg(true, false);
+		// ba();
+		// er(true);
+		// er(false);
+		// pl(true);
+		// pl(false);
+		// reg(true, true);
+		// reg(true, false);
 		// reg(false, true);
 		// reg(false, false);
 	}
