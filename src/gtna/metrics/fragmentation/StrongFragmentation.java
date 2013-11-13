@@ -47,13 +47,13 @@ import gtna.transformation.partition.StrongConnectivityPartition;
  */
 public class StrongFragmentation extends Fragmentation {
 
-	public StrongFragmentation(NodeSorter sorter, Resolution resolution, boolean bidirectional) {
-		super(Fragmentation.Type.STRONG, sorter, resolution, bidirectional);
+	public StrongFragmentation(NodeSorter sorter, Resolution resolution) {
+		super(Fragmentation.Type.STRONG, sorter, resolution, false);
 	}
 
 	@Override
 	protected Partition partition(Graph g, Node[] sorted, boolean[] exclude) {
-		return StrongConnectivityPartition.getStrongPartition(g,exclude);
+		return StrongConnectivityPartition.getStrongPartition(g, exclude);
 	}
 
 }
