@@ -52,6 +52,10 @@ public class MetricDescriptionWrapper extends Metric {
 
 	private Metric metric;
 
+	public Metric getMetric() {
+		return this.metric;
+	}
+
 	private String description;
 
 	private int run;
