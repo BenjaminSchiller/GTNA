@@ -202,7 +202,8 @@ public class Series {
 	 */
 	public static Series generate(Network nw, Metric[] metrics, int startRun,
 			int endRun) {
-		for (int i = 0; i < Config.getInt("TIMES_TO_CALL_GC_BEFORE_EACH_SERIES"); i++)
+		for (int i = 0; i < Config
+				.getInt("TIMES_TO_CALL_GC_BEFORE_EACH_SERIES"); i++)
 			System.gc();
 		System.out.println("series (" + startRun + " - " + endRun + ") for "
 				+ nw.getDescriptionShort());
@@ -321,7 +322,12 @@ public class Series {
 			SingleList singleList = new SingleList(m, m.getSingles());
 			singleList.write(s.getSinglesFilenameRun(run, m));
 			metrics.put(m.getKey(), m);
-			metrics.put(m.getFolder(), m);
+			int index = 0;
+			while (metrics.containsKey(m.getKey() + "_" + index)) {
+				index++;
+			}
+			metrics.put(m.getKey() + "_" + index, m);
+			metrics.put(m.getFolderName(), m);
 		}
 
 		SingleList rt = new SingleList(null, runtimes);
