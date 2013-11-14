@@ -66,6 +66,13 @@ public class BetweennessCentrality extends Metric {
 
 	private int[] cbs;
 	private Distribution BC;
+
+	private double[] betweennessCentrality;
+
+	public double[] getBetweennessCentrality() {
+		return this.betweennessCentrality;
+	}
+
 	private int edges;
 	private int nodes;
 	private double bcMed;
@@ -89,12 +96,6 @@ public class BetweennessCentrality extends Metric {
 
 	} // TODO Remove?
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gtna.metrics.Metric#computeData(gtna.graph.Graph,
-	 * gtna.networks.Network, java.util.HashMap)
-	 */
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		this.calculateBC(g);
@@ -102,13 +103,10 @@ public class BetweennessCentrality extends Metric {
 		int sumSP = getSumSP(cbs);
 		double[] cb = new double[cbs.length]; // was max + 1
 		for (int i = 0; i < cbs.length; i++) {
-			// System.out.println("BC: " + i + " : " + cbs[i] + " : " + sumSP +
-			// " = " + cbs[i]/sumSP);
 			cb[i] = (double) cbs[i] / (double) sumSP;
 		}
-		// for(int i = 0; i < cb.length; i++) {
-		// cb[i] /= (double)g.getNodes().length;
-		// }
+		this.betweennessCentrality = new double[cb.length];
+		System.arraycopy(cb, 0, this.betweennessCentrality, 0, cb.length);
 		Arrays.sort(cb);
 		BC = new Distribution(cb);
 		this.nodes = g.getNodes().length;
@@ -237,8 +235,8 @@ public class BetweennessCentrality extends Metric {
 				if (pw != null) {
 					for (Node y : pw) { // = v in the paper
 						delta[y.getIndex()] = delta[y.getIndex()]
-								+ ((sigma[y.getIndex()] / sigma[x.getIndex()]) 
-										* (1 + delta[x.getIndex()]));
+								+ ((sigma[y.getIndex()] / sigma[x.getIndex()]) * (1 + delta[x
+										.getIndex()]));
 					}
 					if (x.getIndex() != s.getIndex()) {
 						cbs[x.getIndex()] = cbs[x.getIndex()]

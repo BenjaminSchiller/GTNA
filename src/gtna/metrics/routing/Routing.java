@@ -71,6 +71,12 @@ public class Routing extends Metric {
 	private Distribution hopDistributionAbsolute;
 
 	private double[] betweennessCentrality;
+	private double[] betweennessCentralitySorted;
+
+	public double[] getBC() {
+		return this.betweennessCentrality;
+	}
+
 	private Distribution sourceCount;
 	private Distribution targetCount;
 
@@ -109,6 +115,7 @@ public class Routing extends Metric {
 		this.hopDistribution = new Distribution(new double[] { -1 });
 		this.hopDistributionAbsolute = new Distribution(new double[] { -1 });
 		this.betweennessCentrality = new double[] { -1 };
+		this.betweennessCentralitySorted = new double[] { -1 };
 		this.sourceCount = new Distribution(new double[] { -1 });
 		this.targetCount = new Distribution(new double[] { -1 });
 		this.routes = new Route[0];
@@ -185,6 +192,11 @@ public class Routing extends Metric {
 		this.hopDistributionAbsolute = this.computeHopDistributionAbsolute();
 		this.betweennessCentrality = this.computeBetweennessCentrality(graph
 				.getNodes().length);
+		this.betweennessCentralitySorted = new double[this.betweennessCentrality.length];
+		System.arraycopy(this.betweennessCentrality, 0,
+				this.betweennessCentralitySorted, 0,
+				this.betweennessCentrality.length);
+		Arrays.sort(this.betweennessCentralitySorted);
 
 		this.sourceCount = this.generateSourceCount(countSources);
 
@@ -249,7 +261,6 @@ public class Routing extends Metric {
 				bc[route.getRoute()[i]]++;
 			}
 		}
-		Arrays.sort(bc);
 		for (int i = 0; i < bc.length; i++) {
 			bc[i] /= (double) this.routes.length;
 		}
@@ -308,7 +319,7 @@ public class Routing extends Metric {
 		success &= DataWriter.writeWithIndex(
 				this.hopDistributionAbsolute.getCdf(),
 				"ROUTING_HOP_DISTRIBUTION_ABSOLUTE_CDF", folder);
-		success &= DataWriter.writeWithIndex(this.betweennessCentrality,
+		success &= DataWriter.writeWithIndex(this.betweennessCentralitySorted,
 				"ROUTING_BETWEENNESS_CENTRALITY", folder);
 		success &= DataWriter.writeWithIndex(
 				this.sourceCount.getDistribution(),
