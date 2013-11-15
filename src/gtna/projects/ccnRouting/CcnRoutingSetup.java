@@ -82,14 +82,14 @@ public class CcnRoutingSetup {
 	public static final String graphFolder = folder + "graphs/";
 
 	// name of the input graph to read (GTNA format!)
-	public static final String graphName = "ws-100-5";
+	public static final String graphName = "er-100-5";
 	public static final String graphFilename = graphName + ".gtna";
 	public static final String graphFilenameTransformed = "transformed--"
 			+ graphFilename;
 
 	public static final boolean skip = false;
 	// total repititions of the whole simulation
-	public static final int times = 100;
+	public static final int times = 1;
 
 	// how many routing requests to send per node
 	public static final int routesPerNode = 5;
@@ -187,8 +187,11 @@ public class CcnRoutingSetup {
 
 		Series s = Series.generate(nw, metrics, times);
 		Plotting.multi(s, metrics, "multi/");
+		Plotting.single(s, metrics, "single/");
 		Config.overwrite("MAIN_PLOT_FOLDER", plotFolderConf);
 		Plotting.multi(s, metrics, "multi/", Type.confidence1,
+				Style.candlesticks);
+		Plotting.multi(s, metrics, "single/", Type.confidence1,
 				Style.candlesticks);
 	}
 

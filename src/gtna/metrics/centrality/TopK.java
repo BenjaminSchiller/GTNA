@@ -66,6 +66,8 @@ public class TopK extends Metric {
 
 	private double[] fraction;
 
+	private double pearsonsCorrelationCoefficient;
+
 	private String routingKey;
 
 	public void setRoutingKey(String routingKey) {
@@ -97,6 +99,21 @@ public class TopK extends Metric {
 
 		SortableElement[] e1 = this.getValues(g, m, this.t1);
 		SortableElement[] e2 = this.getValues(g, m, this.t2);
+
+		double sum_xy = sumOfProducts(e1, e2);
+		double sum_x = sum(e1);
+		double sum_y = sum(e2);
+		double sum_xx = sumOfProducts(e1, e1);
+		double sum_yy = sumOfProducts(e2, e2);
+		double n_ = g.getNodeCount();
+
+		double c_numerator = n_ * sum_xy - sum_x * sum_y;
+		double c_denominator = (n_ * sum_xx - sum_x * sum_x)
+				* (n_ * sum_yy - sum_y * sum_y);
+
+		this.pearsonsCorrelationCoefficient = c_numerator
+				/ Math.sqrt(c_denominator);
+
 		Arrays.sort(e1);
 		Arrays.sort(e2);
 
@@ -120,6 +137,23 @@ public class TopK extends Metric {
 		}
 	}
 
+	private static double sum(SortableElement[] values) {
+		double sum = 0;
+		for (SortableElement value : values) {
+			sum += value.getValue();
+		}
+		return sum;
+	}
+
+	private static double sumOfProducts(SortableElement[] v1,
+			SortableElement[] v2) {
+		double product = 0;
+		for (int i = 0; i < v1.length; i++) {
+			product += v1[i].getValue() * v2[i].getValue();
+		}
+		return product;
+	}
+
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
@@ -130,7 +164,9 @@ public class TopK extends Metric {
 
 	@Override
 	public Single[] getSingles() {
-		return new Single[] {};
+		Single pcc = new Single("TOPK_PEARSONS_CORRELATION_COEFFICIENT",
+				this.pearsonsCorrelationCoefficient);
+		return new Single[] { pcc };
 	}
 
 	@Override
