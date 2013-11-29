@@ -114,7 +114,12 @@ public abstract class RoutingAlgorithm extends ParameterList {
 		if (this.dataStorageList == null) {
 			return false;
 		}
-		return this.dataStorageList.getStorageForNode(node).contains(id);
+		if (this.dataStorageList.getStorageForNode(node).contains(id)) {
+			this.dataStorageList.getStorageForNode(node).access(id);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public boolean isResponsibleForIdentifier(int node, Identifier id) {
