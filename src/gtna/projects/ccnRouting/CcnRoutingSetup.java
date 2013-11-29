@@ -37,7 +37,9 @@ package gtna.projects.ccnRouting;
 
 import gtna.data.Series;
 import gtna.graph.Graph;
-import gtna.id.data.LruDataStore;
+import gtna.id.data.DataStore;
+import gtna.id.data.FifoDataStore;
+import gtna.id.data.LfuDataStore;
 import gtna.io.graphWriter.GraphWriter;
 import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
@@ -50,9 +52,8 @@ import gtna.metrics.routing.Routing;
 import gtna.networks.Network;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.networks.util.ReadableFile;
-import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
-import gtna.plot.data.Data.Type;
+import gtna.routing.routingTable.CcnRouting;
 import gtna.routing.routingTable.RoutingTableRouting;
 import gtna.routing.selection.source.ConsecutiveSourceSelection;
 import gtna.routing.selection.source.RandomSourceSelection;
@@ -82,7 +83,7 @@ public class CcnRoutingSetup {
 	public static final String graphFolder = folder + "graphs/";
 
 	// name of the input graph to read (GTNA format!)
-	public static final String graphName = "er-100-5";
+	public static final String graphName = "AS_7018";
 	public static final String graphFilename = graphName + ".gtna";
 	public static final String graphFilenameTransformed = "transformed--"
 			+ graphFilename;
@@ -92,16 +93,20 @@ public class CcnRoutingSetup {
 	public static final int times = 1;
 
 	// how many routing requests to send per node
-	public static final int routesPerNode = 5;
+	public static final int routesPerNode = 50;
 	// iterations of the CCN routing (routerPerNode for each turn)
-	public static final int turns = 2;
+	public static final int turns = 5;
 
 	// data items per node
-	public static final int itemsPerNode = 100;
+	public static final int itemsPerNode = 10;
 	// cache size at each node
-	public static final int cacheSize = 10;
+	public static final int cacheSize = 100;
+	// data store to use (lru, lfu, fifo)
+	// public static final DataStore dataStore = new LruDataStore(0, cacheSize);
+	// public static final DataStore dataStore = new LfuDataStore(0, cacheSize);
+	public static final DataStore dataStore = new FifoDataStore(0, cacheSize);
 	// alpha parameter of the zipf popularity distribution
-	public static final double alpha = 0.9;
+	public static final double alpha = 0.8;
 
 	// random selectin of start node
 	public static final SourceSelection ssRandom = new RandomSourceSelection();
@@ -128,38 +133,45 @@ public class CcnRoutingSetup {
 		t1 = new LargestWeaklyConnectedComponent();
 		t2 = new NodeIds();
 		t3 = new NodeIdsRoutingTable();
-		t4 = new NodeIdsDataStorage(new LruDataStore(0, cacheSize),
-				itemsPerNode);
+		t4 = new NodeIdsDataStorage(dataStore, itemsPerNode);
 		Transformation[] t = new Transformation[] { t0, t1, t2, t3, t4 };
 
 		Network rf = new ReadableFile(graphName, graphName, graphFolder
 				+ graphFilename, t);
 		Network nw = new DescriptionWrapper(rf, graphName);
 
-		Metric[] topk = new Metric[7];
+		Metric[] topk = new Metric[2];
+		// topk[0] = new MetricDescriptionWrapper(new TopK(
+		// TopK.Type.BETWEENNESS_CENTRALITY, TopK.Type.DEGREE_CENTRALITY),
+		// "B/D");
+		// topk[1] = new MetricDescriptionWrapper(new TopK(
+		// TopK.Type.BETWEENNESS_CENTRALITY,
+		// TopK.Type.ROUTING_BETWEENNESS, "ROUTING_" + turns), "B/R (CCN)");
+		// topk[2] = new MetricDescriptionWrapper(new TopK(
+		// TopK.Type.DEGREE_CENTRALITY, TopK.Type.ROUTING_BETWEENNESS,
+		// "ROUTING_" + turns), "D/R (CCN)");
+		// topk[3] = new MetricDescriptionWrapper(new TopK(
+		// TopK.Type.BETWEENNESS_CENTRALITY,
+		// TopK.Type.ROUTING_BETWEENNESS, "ROUTING_0"),
+		// "B/R (GREEDY before)");
+		// topk[4] = new MetricDescriptionWrapper(new TopK(
+		// TopK.Type.DEGREE_CENTRALITY, TopK.Type.ROUTING_BETWEENNESS,
+		// "ROUTING_0"), "D/R (GREEDY before)");
+		// topk[5] = new MetricDescriptionWrapper(new TopK(
+		// TopK.Type.BETWEENNESS_CENTRALITY,
+		// TopK.Type.ROUTING_BETWEENNESS, "ROUTING_" + (turns + 1)),
+		// "B/R (GREEDY after)");
+		// topk[6] = new MetricDescriptionWrapper(new TopK(
+		// TopK.Type.DEGREE_CENTRALITY, TopK.Type.ROUTING_BETWEENNESS,
+		// "ROUTING_" + (turns + 1)), "D/R (GREEDY after)");
 		topk[0] = new MetricDescriptionWrapper(new TopK(
-				TopK.Type.BETWEENNESS_CENTRALITY, TopK.Type.DEGREE_CENTRALITY),
-				"B/D");
-		topk[1] = new MetricDescriptionWrapper(new TopK(
-				TopK.Type.BETWEENNESS_CENTRALITY,
-				TopK.Type.ROUTING_BETWEENNESS, "ROUTING_" + turns), "B/R (CCN)");
-		topk[2] = new MetricDescriptionWrapper(new TopK(
-				TopK.Type.DEGREE_CENTRALITY, TopK.Type.ROUTING_BETWEENNESS,
-				"ROUTING_" + turns), "D/R (CCN)");
-		topk[3] = new MetricDescriptionWrapper(new TopK(
 				TopK.Type.BETWEENNESS_CENTRALITY,
 				TopK.Type.ROUTING_BETWEENNESS, "ROUTING_0"),
 				"B/R (GREEDY before)");
-		topk[4] = new MetricDescriptionWrapper(new TopK(
-				TopK.Type.DEGREE_CENTRALITY, TopK.Type.ROUTING_BETWEENNESS,
-				"ROUTING_0"), "D/R (GREEDY before)");
-		topk[5] = new MetricDescriptionWrapper(new TopK(
+		topk[1] = new MetricDescriptionWrapper(new TopK(
 				TopK.Type.BETWEENNESS_CENTRALITY,
 				TopK.Type.ROUTING_BETWEENNESS, "ROUTING_" + (turns + 1)),
-				"B/R (GREEDY after)");
-		topk[6] = new MetricDescriptionWrapper(new TopK(
-				TopK.Type.DEGREE_CENTRALITY, TopK.Type.ROUTING_BETWEENNESS,
-				"ROUTING_" + (turns + 1)), "D/R (GREEDY after)");
+				"D/R (GREEDY after)");
 
 		Metric[] metrics = new Metric[4 + turns * 2 + 2 + topk.length];
 		metrics[0] = new DegreeDistribution();
@@ -171,7 +183,7 @@ public class CcnRoutingSetup {
 
 		for (int i = 0; i < turns; i++) {
 			metrics[4 + i * 2] = new MetricDescriptionWrapper(new Routing(
-					new RoutingTableRouting(), ss, ts), "NDN-" + (i + 1), i + 1);
+					new CcnRouting(), ss, ts), "NDN-" + (i + 1), i + 1);
 			metrics[4 + i * 2 + 1] = new MetricDescriptionWrapper(
 					new DataStorageMetric(), "NDN-" + (i + 1), i + 1);
 		}
@@ -187,12 +199,12 @@ public class CcnRoutingSetup {
 
 		Series s = Series.generate(nw, metrics, times);
 		Plotting.multi(s, metrics, "multi/");
-		Plotting.single(s, metrics, "single/");
-		Config.overwrite("MAIN_PLOT_FOLDER", plotFolderConf);
-		Plotting.multi(s, metrics, "multi/", Type.confidence1,
-				Style.candlesticks);
-		Plotting.multi(s, metrics, "single/", Type.confidence1,
-				Style.candlesticks);
+		// Plotting.single(s, metrics, "single/");
+		// Config.overwrite("MAIN_PLOT_FOLDER", plotFolderConf);
+		// Plotting.multi(s, metrics, "multi/", Type.confidence1,
+		// Style.candlesticks);
+		// Plotting.multi(s, metrics, "single/", Type.confidence1,
+		// Style.candlesticks);
 	}
 
 	public static void generateProperties() {
@@ -203,7 +215,7 @@ public class CcnRoutingSetup {
 		t3 = new NodeIdsRoutingTable();
 		// cache size: 10 files for all
 		// files: 100 per host
-		t4 = new NodeIdsDataStorage(new LruDataStore(0, cacheSize),
+		t4 = new NodeIdsDataStorage(new LfuDataStore(0, cacheSize),
 				itemsPerNode);
 
 		Transformation[] t = new Transformation[] { t0, t1, t2, t3, t4 };
