@@ -83,7 +83,7 @@ public class CcnRoutingSetup {
 	public static final String graphFolder = folder + "graphs/";
 
 	// name of the input graph to read (GTNA format!)
-	public static final String graphName = "AS_7018";
+	public static final String graphName = "ws-100-10";
 	public static final String graphFilename = graphName + ".gtna";
 	public static final String graphFilenameTransformed = "transformed--"
 			+ graphFilename;
