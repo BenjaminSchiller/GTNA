@@ -66,6 +66,10 @@ public class TopK extends Metric {
 
 	private double[] fraction;
 
+	private double[] sorted1;
+
+	private double[] sorted2;
+
 	private double pearsonsCorrelationCoefficient;
 
 	private String routingKey;
@@ -87,6 +91,8 @@ public class TopK extends Metric {
 		this.t2 = t2;
 		this.routingKey = routingKey;
 		this.fraction = new double[0];
+		this.sorted1 = new double[0];
+		this.sorted2 = new double[0];
 	}
 
 	@Override
@@ -135,6 +141,13 @@ public class TopK extends Metric {
 			}
 			this.fraction[i + 1] = count / denominator;
 		}
+
+		this.sorted1 = new double[g.getNodeCount()];
+		this.sorted2 = new double[g.getNodeCount()];
+		for (int i = 0; i < g.getNodeCount(); i++) {
+			this.sorted1[i] = e2[e1[i].getIndex()].getValue();
+			this.sorted2[i] = e1[e2[i].getIndex()].getValue();
+		}
 	}
 
 	private static double sum(SortableElement[] values) {
@@ -158,6 +171,10 @@ public class TopK extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(this.fraction, "TOPK_FRACTION",
+				folder);
+		success &= DataWriter.writeWithIndex(this.sorted1, "TOPK_SORTED1",
+				folder);
+		success &= DataWriter.writeWithIndex(this.sorted2, "TOPK_SORTED2",
 				folder);
 		return success;
 	}
@@ -232,9 +249,9 @@ public class TopK extends Metric {
 		@Override
 		public int compareTo(SortableElement o) {
 			if (o.getValue() - this.getValue() < 0) {
-				return 1;
-			} else if (o.getValue() - this.getValue() > 0) {
 				return -1;
+			} else if (o.getValue() - this.getValue() > 0) {
+				return 1;
 			} else {
 				return 0;
 			}

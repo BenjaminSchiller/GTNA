@@ -171,7 +171,7 @@ public class CcnRoutingSetup {
 		topk[1] = new MetricDescriptionWrapper(new TopK(
 				TopK.Type.BETWEENNESS_CENTRALITY,
 				TopK.Type.ROUTING_BETWEENNESS, "ROUTING_" + (turns + 1)),
-				"D/R (GREEDY after)");
+				"B/R (GREEDY after)");
 
 		Metric[] metrics = new Metric[4 + turns * 2 + 2 + topk.length];
 		metrics[0] = new DegreeDistribution();
