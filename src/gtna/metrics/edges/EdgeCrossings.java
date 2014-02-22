@@ -31,10 +31,12 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-03 : readData, getNodeValueLists, getDistributions (Tim Grube)
  *
  */
 package gtna.metrics.edges;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
@@ -94,8 +96,8 @@ public class EdgeCrossings extends Metric {
 		for (int i = 0; i < maxCrossingNumber + 1; i++) {
 			finalCD[i] = cd[i] / edges.length;
 		}
-		this.completeCrossingDistribution = new Distribution(finalCD);
-		this.crossingsOnlyDistribution = new Distribution(Arrays.copyOfRange(
+		this.completeCrossingDistribution = new Distribution("EDGE_CROSSINGS_COMPLETE_DISTRIBUTION", finalCD);
+		this.crossingsOnlyDistribution = new Distribution("EDGE_CROSSINGS_CROSSINGSONLY_DISTRIBUTION", Arrays.copyOfRange(
 				finalCD, 1, finalCD.length));
 	}
 
@@ -429,7 +431,28 @@ public class EdgeCrossings extends Metric {
 				this.completeCrossingDistribution.getAverage());
 		return new Single[] { ecAVG };
 	}
+	
+	@Override
+	public Distribution[] getDistributions(){
+		return new Distribution[]{completeCrossingDistribution, crossingsOnlyDistribution};
+	}
+	
+	@Override
+	public NodeValueList[] getNodeValueLists(){
+		return new NodeValueList[]{};
+	}
 
+	@Override
+	public boolean readData(String folder){
+		
+		/* DISTRIBUTIONS */
+		completeCrossingDistribution = new Distribution("EDGE_CROSSINGS_COMPLETE_DISTRIBUTION", readDistribution(folder, "EDGE_CROSSINGS_COMPLETE_DISTRIBUTION"));
+		crossingsOnlyDistribution = new Distribution("EDGE_CROSSINGS_CROSSINGSONLY_DISTRIBUTION", readDistribution(folder, "EDGE_CROSSINGS_CROSSINGSONLY_DISTRIBUTION"));
+		
+		return true;
+	}
+	
+	
 	private class PlaneEdge {
 		double startX, startY, endX, endY;
 

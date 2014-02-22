@@ -36,12 +36,18 @@
 package gtna.transformation.sampling.sample;
 
 import gtna.graph.Node;
+import gtna.util.Timer;
 import gtna.util.parameter.Parameter;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -52,13 +58,15 @@ import java.util.Map.Entry;
 public class NetworkSample extends Parameter {
 
 	Map<Integer, List<Integer>> revisitFrequency;
-	Map<Integer, Integer> sampleNodeMapping;
+	HashMap<Integer, Integer> sampleNodeMapping;
+	Deque<Integer> sampleNodeMapping1;
 	String algorithm;
 	double scaledown;
 	int dimension;
 	boolean revisiting;
 	int numberOfRounds = 0;
 	String type;
+	private double addingRuntime;
 
 	/**
 	 * @param key
@@ -89,6 +97,7 @@ public class NetworkSample extends Parameter {
 			boolean revisiting) {
 		super("Network_SAMPLE", type);
 		sampleNodeMapping = new HashMap<Integer, Integer>();
+		sampleNodeMapping1 = new ArrayDeque<Integer>(25000); // TODO
 		revisitFrequency = new HashMap<Integer, List<Integer>>();
 		this.type = type;
 		this.algorithm = algorithm;
@@ -106,6 +115,7 @@ public class NetworkSample extends Parameter {
 		super("NETWORK_SAMPLE", type);
 		this.type = type;
 		sampleNodeMapping = new HashMap<Integer, Integer>();
+		sampleNodeMapping1 = new ArrayDeque<Integer>(25000); // TODO
 		revisitFrequency = new HashMap<Integer, List<Integer>>();
 
 	}
@@ -120,6 +130,7 @@ public class NetworkSample extends Parameter {
 	 * @return true if added
 	 */
 	public boolean addNodeToSample(Collection<Node> nodes, int round) {
+		Timer t = new Timer();
 		if (!initialized()) {
 			throw new IllegalStateException("NetworkSample is not initialized!");
 		}
@@ -129,15 +140,18 @@ public class NetworkSample extends Parameter {
 							+ " was already seen");
 		}
 
+		
 		for (Node n : nodes) {
-			if (!sampleNodeMapping.containsKey(n.getIndex())) {
+			if (!sampleNodeMapping1.contains(n.getIndex())) {
+//			if (!sampleNodeMapping.containsKey(n.getIndex())) { // TODO
 				// add node to the sample and initialize the RF for this node
-				int newId = sampleNodeMapping.size();
-				sampleNodeMapping.put(n.getIndex(), newId);
+//				int newId = sampleNodeMapping.size();
+//				sampleNodeMapping.put(n.getIndex(), newId); // TODO
+				sampleNodeMapping1.add(n.getIndex()); // add old index, the new index is the index within the list
 
-				List<Integer> rF = new LinkedList<Integer>();
-				rF.add(round);
-				revisitFrequency.put(n.getIndex(), rF);
+//				List<Integer> rF = new LinkedList<Integer>();
+//				rF.add(round);
+//				revisitFrequency.put(n.getIndex(), rF);
 			} else {
 				// no need to add the node to the sample again, just add it to
 				// the RF
@@ -148,6 +162,11 @@ public class NetworkSample extends Parameter {
 		}
 
 		numberOfRounds++;
+		
+		t.end();
+		addingRuntime += t.getMsec();
+//		System.out.println("This adding took " + t.getRuntime() + "s, all in all: " + addingRuntime + "s");
+//		System.out.println("Adding of a node took " + addingRuntime/numberOfRounds + "ms/node (Round: " + numberOfRounds + ")");
 
 		return true;
 	}
@@ -160,7 +179,8 @@ public class NetworkSample extends Parameter {
 	 * @return true if contained, else false
 	 */
 	public boolean contains(Node n) {
-		if (sampleNodeMapping.containsKey(n.getIndex())) {
+//		if (sampleNodeMapping.containsKey(n.getIndex())) { // TODO
+		if (sampleNodeMapping1.contains(n.getIndex())) {
 			return true;
 		} else {
 			return false;
@@ -200,7 +220,23 @@ public class NetworkSample extends Parameter {
 	 * @return
 	 */
 	public Map<Integer, Integer> getSampleNodeMapping() {
-		return sampleNodeMapping;
+		
+		Map<Integer, Integer> map = new HashMap<Integer, Integer>(sampleNodeMapping1.size());
+		
+		Iterator<Integer> li = sampleNodeMapping1.iterator();
+		int i = 0;
+		while(li.hasNext()){
+			int newIndex = i;
+			int oldIndex = li.next();
+			
+			map.put(oldIndex, newIndex);
+			i++;
+		}
+		
+		
+		return map;
+		
+//		return sampleNodeMapping; // TODO
 	}
 
 	/**
@@ -209,7 +245,8 @@ public class NetworkSample extends Parameter {
 	 * @return
 	 */
 	public int getSampleSize() {
-		return sampleNodeMapping.size();
+		return sampleNodeMapping1.size();
+//		return sampleNodeMapping.size(); // TODO
 	}
 
 	/**
@@ -218,7 +255,8 @@ public class NetworkSample extends Parameter {
 	 * @return
 	 */
 	private boolean initialized() {
-		if (sampleNodeMapping != null && revisitFrequency != null) {
+		if (sampleNodeMapping1 != null && revisitFrequency != null) {
+//			if (sampleNodeMapping != null && revisitFrequency != null) {
 			return true;
 		}
 
@@ -261,7 +299,20 @@ public class NetworkSample extends Parameter {
 	 * @return nodeId in the sampled graph
 	 */
 	public int getNewIndexOfSampledNode(int n) {
-		return sampleNodeMapping.get(n);
+		
+		Iterator<Integer> li = sampleNodeMapping1.iterator();
+		int i = 0;
+		while(li.hasNext()){
+			if(li.next() == n){
+				return i;
+			}
+			i++;
+		}
+		
+		return -1;
+		
+		
+//		return sampleNodeMapping.get(n); // TODO
 	}
 
 	/**
@@ -273,12 +324,25 @@ public class NetworkSample extends Parameter {
 
 	private String printMapping() {
 		StringBuilder sb = new StringBuilder();
-		for (int n : sampleNodeMapping.keySet()) {
-			Integer newId = sampleNodeMapping.get(n);
-			String rf = getRevisitFrequencyString(revisitFrequency.get(n));
-
-			sb.append(n + ";" + newId + ";" + rf + "\n");
+		
+		Iterator<Integer> li = sampleNodeMapping1.iterator();
+		int i = 0;
+		while(li.hasNext()){
+			int newId = i;
+			int oldId = li.next();
+			
+			String rf = getRevisitFrequencyString(revisitFrequency.get(oldId));
+			
+			sb.append(oldId + ";" + newId + ";" + rf + "\n");
+			i++;
 		}
+		
+//		for (int n : sampleNodeMapping.keySet()) {
+//			Integer newId = sampleNodeMapping.get(n);
+//			String rf = getRevisitFrequencyString(revisitFrequency.get(n));
+//
+//			sb.append(n + ";" + newId + ";" + rf + "\n");
+//		}
 
 		return sb.toString();
 	}
@@ -368,7 +432,8 @@ public class NetworkSample extends Parameter {
 	 * @param rf
 	 */
 	public void addNodeEntry(int oldId, int newId, List<Integer> rf) {
-		sampleNodeMapping.put(oldId, newId);
+//		sampleNodeMapping.put(oldId, newId); // TODO
+		sampleNodeMapping1.add(oldId);
 		revisitFrequency.put(oldId, rf);
 
 	}
@@ -406,7 +471,8 @@ public class NetworkSample extends Parameter {
 	 */
 	private void clear() {
 
-		sampleNodeMapping = new HashMap<Integer, Integer>();
+//		sampleNodeMapping = new HashMap<Integer, Integer>(); // TODO
+		sampleNodeMapping1 = new LinkedList<Integer>();
 		revisitFrequency = new HashMap<Integer, List<Integer>>();
 		numberOfRounds = 0;
 		

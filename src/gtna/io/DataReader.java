@@ -125,4 +125,53 @@ public class DataReader {
 		}
 		return array;
 	}
+	
+	/**
+	 * Reads a two-dimensional array of double values from the specified file.
+	 * Each array entry represents the content of a single line which are
+	 * separated using the delimiter DATA_WRITER_DELIMITER.
+	 * 
+	 * @param filename
+	 *            file to read from
+	 * @return two-dimensional String array of the values read from the
+	 *         specified file
+	 */
+	public static String[][] readSingleValues(String filename) {
+		ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
+		Filereader fr = new Filereader(filename);
+		String line;
+		int index = -1;
+		String delimiter = Config.get("DATA_WRITER_DELIMITER");
+		while ((line = fr.readLine()) != null) {
+			String[] key = line.trim().split("=");
+			String[] elements = key[1].trim().split(delimiter);
+			list.add(new ArrayList<String>(elements.length));
+			index++;
+			list.get(index).add(key[0]);
+			for (int j = 0; j < elements.length; j++) {
+				list.get(index).add(elements[j]);
+			}
+			
+		}
+		fr.close();
+		return toString2D(list);
+	}
+	
+	/**
+	 * Generates a two-dimensional double array from the given ArrayList object.
+	 * 
+	 * @param list
+	 *            ArrayList to transform
+	 * @return transformed two-dimensional double array
+	 */
+	private static String[][] toString2D(ArrayList<ArrayList<String>> list) {
+		String[][] array = new String[list.size()][];
+		for (int i = 0; i < list.size(); i++) {
+			array[i] = new String[list.get(i).size()];
+			for (int j = 0; j < list.get(i).size(); j++) {
+				array[i][j] = list.get(i).get(j);
+			}
+		}
+		return array;
+	}
 }

@@ -31,10 +31,11 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- *
+ * 2014-02-05: readData, getDistributions, getNodeValueLists (Tim Grube)
  */
 package gtna.metrics.id;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -46,6 +47,7 @@ import gtna.id.plane.PlanePartitionSimple;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Distribution;
 import gtna.util.Statistics;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
@@ -130,9 +132,33 @@ public class PlaneIdentifierSpaceDistancesToCenter extends Metric {
 	}
 
 	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[]{};
+	}
+
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[]{};
+	}
+	
+	@Override
+	public boolean readData(String folder) {
+		/* 2D Values */
+		
+		this.distanceToCenterDistribution = read2DValues(folder, "PLANE_IDENTIFIER_SPACE_DISTANCES_TO_CENTER_"
+						+ "DISTANCE_TO_CENTER_DISTRIBUTION");
+		this.distanceToCenterDistributionCdf = read2DValues(folder, "PLANE_IDENTIFIER_SPACE_DISTANCES_TO_CENTER_"
+				+ "DISTANCE_TO_CENTER_DISTRIBUTION_CDF");
+		
+		return true;
+	}
+
+	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 		return g.hasProperty("ID_SPACE_0")
 				&& g.getProperty("ID_SPACE_0") instanceof PlaneIdentifierSpaceSimple;
 	}
+
+	
 
 }

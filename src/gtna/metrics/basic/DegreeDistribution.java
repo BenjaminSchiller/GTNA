@@ -32,17 +32,21 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-03 : readData (Tim Grube)
  */
 package gtna.metrics.basic;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Distribution;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class DegreeDistribution extends Metric {
@@ -85,9 +89,9 @@ public class DegreeDistribution extends Metric {
 			ddo[i] /= (double) graph.getNodes().length;
 		}
 
-		this.degreeDistribution = new Distribution(dd);
-		this.inDegreeDistribution = new Distribution(ddi);
-		this.outDegreeDistribution = new Distribution(ddo);
+		this.degreeDistribution = new Distribution("DEGREE_DISTRIBUTION_DEGREE_DISTRIBUTION", dd);
+		this.inDegreeDistribution = new Distribution("DEGREE_DISTRIBUTION_IN_DEGREE_DISTRIBUTION", ddi);
+		this.outDegreeDistribution = new Distribution("DEGREE_DISTRIBUTION_OUT_DEGREE_DISTRIBUTION", ddo);
 
 		this.nodes = graph.getNodes().length;
 		this.edges = graph.generateEdges().length;
@@ -152,6 +156,16 @@ public class DegreeDistribution extends Metric {
 				degreeMax, inDegreeMin, inDegreeMed, inDegreeAvg, inDegreeMax,
 				outDegreeMin, outDegreeMed, outDegreeAvg, outDegreeMax };
 	}
+	
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[] {degreeDistribution, inDegreeDistribution, outDegreeDistribution};
+	}
+
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[0];
+	}
 
 	public boolean writeData(String folder) {
 		boolean success = true;
@@ -174,6 +188,8 @@ public class DegreeDistribution extends Metric {
 				"DEGREE_DISTRIBUTION_OUT_DEGREE_DISTRIBUTION_CDF", folder);
 		return success;
 	}
+	
+	
 
 	/**
 	 * @return the degreeDistribution
@@ -209,4 +225,39 @@ public class DegreeDistribution extends Metric {
 	public int getEdges() {
 		return this.edges;
 	}
+	
+	
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#readData(java.lang.String)
+	 */
+	@Override
+	public boolean readData(String folder) {
+
+		/* SINGLES */
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+				if("DEGREE_DISTRIBUTION_NODES".equals(single[0])){
+					this.nodes = (int) Math.round(Double.valueOf(single[1]));
+				} else if("DEGREE_DISTRIBUTION_EDGES".equals(single[0])){
+					this.edges = (int) Math.round(Double.valueOf(single[1]));
+				} 
+			}
+		}
+		
+		
+		/* DISTRIBUTIONS */
+		
+		degreeDistribution = new Distribution("DEGREE_DISTRIBUTION_DEGREE_DISTRIBUTION", readDistribution(folder, "DEGREE_DISTRIBUTION_DEGREE_DISTRIBUTION"));
+		inDegreeDistribution = new Distribution("DEGREE_DISTRIBUTION_IN_DEGREE_DISTRIBUTION", readDistribution(folder, "DEGREE_DISTRIBUTION_IN_DEGREE_DISTRIBUTION"));
+		outDegreeDistribution = new Distribution("DEGREE_DISTRIBUTION_OUT_DEGREE_DISTRIBUTION", readDistribution(folder, "DEGREE_DISTRIBUTION_OUT_DEGREE_DISTRIBUTION"));
+		
+		
+		
+		
+		return true;
+	}
+
+
 }

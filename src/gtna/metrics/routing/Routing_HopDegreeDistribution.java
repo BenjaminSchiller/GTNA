@@ -31,10 +31,12 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-05: readData, getDistributions, getNodeValueLists (Tim Grube)
  *
  */
 package gtna.metrics.routing;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
@@ -44,6 +46,8 @@ import gtna.routing.Route;
 import gtna.util.Config;
 import gtna.util.Distribution;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Routing_HopDegreeDistribution extends Metric {
@@ -104,7 +108,7 @@ public class Routing_HopDegreeDistribution extends Metric {
 
 		this.hopDegree = new Distribution[hopSteps + 1];
 		for (int i = 0; i <= hopSteps; i++) {
-			this.hopDegree[i] = new Distribution(degrees[i], counter[i]);
+			this.hopDegree[i] = new Distribution("ROUTING_HOP_DEGREE_DISTRIBUTION_DISTRIBUTION_HOP_" + i, degrees[i], counter[i]);
 		}
 	}
 
@@ -248,7 +252,7 @@ public class Routing_HopDegreeDistribution extends Metric {
 		this.hopSteps = -1;
 		this.hopDegree = new Distribution[hopSteps + 1];
 		for (int i = 0; i <= hopSteps; i++) {
-			this.hopDegree[i] = new Distribution(new double[] { 0 });
+			this.hopDegree[i] = new Distribution("ROUTING_HOP_DEGREE_DISTRIBUTION_DISTRIBUTION_HOP_" + i, new double[] { 0 });
 		}
 	}
 
@@ -295,5 +299,32 @@ public class Routing_HopDegreeDistribution extends Metric {
 					+ i + "_MIN", this.hopDegree[i].getMin());
 		}
 		return result;
+	}
+	
+	@Override
+	public Distribution[] getDistributions(){
+		return hopDegree;
+	}
+	
+	@Override
+	public NodeValueList[] getNodeValueLists(){
+		return new NodeValueList[] {};
+	}
+	
+	@Override
+	public boolean readData(String folder){
+		/* SINGLES */
+		// singles are derived from distributions, we read the distribution only
+		
+		/* DISTRIBUTIONS */
+		ArrayList<Distribution> hd = new ArrayList<Distribution>();
+		int i = 0;
+		while((new File(DataWriter.filename("ROUTING_HOP_DEGREE_DISTRIBUTION_DISTRIBUTION_HOP_" + i, folder)).canRead())){
+			hd.add(new Distribution("ROUTING_HOP_DEGREE_DISTRIBUTION_DISTRIBUTION_HOP_" + i, 
+					readDistribution(folder, "ROUTING_HOP_DEGREE_DISTRIBUTION_DISTRIBUTION_HOP_" + i)));
+		}
+		hopDegree = hd.toArray(new Distribution[0]);
+		
+		return true;
 	}
 }

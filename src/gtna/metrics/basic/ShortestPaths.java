@@ -32,12 +32,15 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-03 : readData, getDistributions, getNodeValueLists (Tim Grube)
  */
 package gtna.metrics.basic;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -83,22 +86,19 @@ public class ShortestPaths extends Metric {
 	    HashMap<String, Metric> metrics) {
 	this.localCharacteristicPathLength = new double[graph.getNodes().length];
 	long[] SPL = this.computeShortestPathLengths(graph.getNodes());
-	this.shortestPathLengthDistribution = new Distribution(
+	this.shortestPathLengthDistribution = new Distribution("SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION",
 		this.computeShortestPathLengthDistribution(SPL));
-	this.shortestPathLengthDistributionAbsolute = new Distribution(
+	this.shortestPathLengthDistributionAbsolute = new Distribution("SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE",
 		this.computeShortestPathLengthDistributionAbsolute(SPL, graph));
 	this.connectivity = (double) Util.sum(SPL)
 		/ (double) ((double) graph.getNodes().length * (double) (graph
 			.getNodes().length - 1));
 
-	this.hopPlot = new Distribution(computeHP(SPL, graph));
+	this.hopPlot = new Distribution("SHORTEST_PATHS_HOP_PLOT", computeHP(SPL, graph));
 
 	this.ecc90 = calculateEccentricity(this.shortestPathLengthDistributionAbsolute.getCdf(), graph, 0.90);
 	this.eccRelative90 = calculateEccentricity(this.shortestPathLengthDistribution.getCdf(), graph, 0.90);
 
-//	System.out.println("\nSPR: " + Arrays.toString(shortestPathLengthDistribution.getCdf()));
-//	System.out.println("SPA: " + Arrays.toString(shortestPathLengthDistributionAbsolute.getCdf()));
-//	System.out.println("HP: " + Arrays.toString(hopPlot.getCdf()));
     }
 
     
@@ -249,6 +249,16 @@ public class ShortestPaths extends Metric {
 		medianShortestPathLength, maximumShortestPathLength,
 		connectivity, ecc, eccRel };
     }
+    
+    @Override
+	public Distribution[] getDistributions() {
+		return new Distribution[] {this.shortestPathLengthDistribution, this.shortestPathLengthDistributionAbsolute, this.hopPlot};
+	}
+
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[0];
+	}
 
     /**
      * @return the shortestPathLengthDistribution
@@ -277,4 +287,37 @@ public class ShortestPaths extends Metric {
     public double getConnectivity() {
 	return this.connectivity;
     }
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#readData(java.lang.String)
+	 */
+	@Override
+	public boolean readData(String folder) {
+		
+		/* SINGLES */
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+				if("SHORTEST_PATHS_CONNECTIVITY".equals(single[0])){
+					this.connectivity = Double.valueOf(single[1]);
+				} else if("SHORTEST_PATHS_EFFECTIVE_DIAMETER_ECC_90QUANTIL".equals(single[0])){
+					this.ecc90 = Double.valueOf(single[1]);
+				} else if("SHORTEST_PATHS_RELATIVE_EFFECTIVE_DIAMETER_ECC_90QUANTIL".equals(single[0])){
+					this.eccRelative90 = Double.valueOf(single[1]);
+				} 
+			}
+		}
+		
+		
+		/* DISTRIBUTIONS */
+		
+		shortestPathLengthDistributionAbsolute = new Distribution("SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE", readDistribution(folder, "SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE"));
+		shortestPathLengthDistribution = new Distribution("SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION", readDistribution(folder, "SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION"));
+		hopPlot = new Distribution("SHORTEST_PATHS_HOP_PLOT", readDistribution(folder, "SHORTEST_PATHS_HOP_PLOT"));
+
+		return true;
+	}
+
+	
 }

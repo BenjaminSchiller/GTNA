@@ -44,6 +44,7 @@ import gtna.metrics.basic.ShortestPaths;
 import gtna.metrics.centrality.BetweennessCentrality;
 import gtna.metrics.centrality.PageRank;
 import gtna.networks.Network;
+import gtna.networks.util.DescriptionWrapper;
 import gtna.networks.util.ReadableFolder;
 import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
@@ -64,187 +65,185 @@ import java.util.Set;
  * 
  */
 public class WFMetricPlotSingle {
-    private static String suffix;
-    private static String name;
-    private static int startIndex;
-    private static int endIndex;
+	private static String suffix = ".gtna";
+	private static String name;
+	private static LinkedList<Integer> startIndex = new LinkedList<Integer>();
+	private static LinkedList<Integer> endIndex = new LinkedList<Integer>();
+	private static String targetdir;
+	private static boolean aggregate = false;
+	private static LinkedList<String> dirs = new LinkedList<String>();
+	private static LinkedList<Integer> size = new LinkedList<Integer>();
+	private static LinkedList<Double> scaledown = new LinkedList<Double>();
+	private static LinkedList<String> sampling = new LinkedList<String>();
+	private static LinkedList<String> instances = new LinkedList<String>();
+	private static LinkedList<String> net = new LinkedList<String>();
+	private static String plotdir;
+	private static String skipping = "false";
 
-    private static LinkedList<String> dirs = new LinkedList<String>();
-    private static String orgdir = "";
-    private static String dataDir;
-    private static String plotDir;
+	/**
+	 * @param args
+	 * @throws ParseException
+	 */
+	public static void main(String[] args) throws ParseException {
+		Set<Metric> metrics = new HashSet<Metric>();
 
-    private static Collection<ReadableFolder> rf0 = new ArrayList<ReadableFolder>();
-    private static Collection<ReadableFolder> rf1 = new ArrayList<ReadableFolder>();
-    private static Collection<ReadableFolder> rf2 = new ArrayList<ReadableFolder>();
-    private static Collection<ReadableFolder> rf3 = new ArrayList<ReadableFolder>();
-    private static Collection<ReadableFolder> rf4 = new ArrayList<ReadableFolder>();
-    private static Collection<ReadableFolder> rfO = new ArrayList<ReadableFolder>();
-
-    /**
-     * @param args
-     * @throws ParseException
-     */
-    public static void main(String[] args) throws ParseException {
-
-	Set<Metric> metrics = new HashSet<Metric>();
-
-	System.out.println("> PARAMS: " + Arrays.toString(args));
-
-	for (String s : args) {
-
-	    if (s.equalsIgnoreCase("DD")) {
-		metrics.add(new DegreeDistribution());
-	    } else if (s.equalsIgnoreCase("CC")) {
-		metrics.add(new ClusteringCoefficient());
-	    } else if (s.equalsIgnoreCase("HP")) {
-		metrics.add(new ShortestPaths());
-	    } else if (s.equalsIgnoreCase("DIAM")) {
-		metrics.add(new ShortestPaths());
-	    } else if (s.equalsIgnoreCase("ECC")) {
-		metrics.add(new ShortestPaths());
-	    } else if (s.equalsIgnoreCase("BC")) {
-		metrics.add(new BetweennessCentrality());
-	    } else if (s.equalsIgnoreCase("PR")) {
-		metrics.add(new PageRank());
-	    } else if (s.equalsIgnoreCase("ASS")) {
-		metrics.add(new Assortativity());
-	    } else if (s.startsWith("suffix=")) {
-		suffix = s.substring(7);
-	    } else if (s.startsWith("name=")) {
-		name = s.substring(5);
-	    } else if (s.startsWith("seq=")) {
-		String seq = s.substring(4);
-		String[] se = seq.split("-");
-		startIndex = Integer.parseInt(se[0]);
-		endIndex = Integer.parseInt(se[1]);
-	    } else if (s.startsWith("plotdir=")) {
-		plotDir = s.substring(8);
-		File f = new File(plotDir);
-		if (!f.isDirectory()) {
-		    f.mkdir();
+		if (args.length == 1) {
+			if (args[0].equalsIgnoreCase("help")) {
+				printHelp();
+				System.exit(0);
+			}
 		}
-	    } else if (s.startsWith("datadir=")) {
-		dataDir = s.substring(8);
-		File f = new File(dataDir);
-		if (!f.isDirectory()) {
-		    f.mkdir();
+
+		// System.out.println("> PARAMS: " + Arrays.toString(args));
+
+		for (String s : args) {
+			// System.out.println(s);
+			// parse network generation details
+			if (s.startsWith("sampling=")) {
+				sampling.add(s.substring(9));
+				// parse network generation details
+			} else if (s.startsWith("network=")) {
+				net.add(s.substring(8));
+			} else if (s.startsWith("scaledown=")) {
+				scaledown.add(Double.parseDouble(s.substring(10)));
+			} else if (s.startsWith("size=")) {
+				size.add(Integer.parseInt(s.substring(5)));
+			} else if (s.equalsIgnoreCase("DD")) {
+				metrics.add(new DegreeDistribution());
+			} else if (s.equalsIgnoreCase("CC")) {
+				metrics.add(new ClusteringCoefficient());
+			} else if (s.equalsIgnoreCase("HP") || s.equalsIgnoreCase("DIAM")
+					|| s.equalsIgnoreCase("ECC")) {
+				metrics.add(new ShortestPaths());
+			} else if (s.equalsIgnoreCase("BC")) {
+				metrics.add(new BetweennessCentrality());
+			} else if (s.equalsIgnoreCase("PR")) {
+				metrics.add(new PageRank());
+			} else if (s.equalsIgnoreCase("ASS")) {
+				metrics.add(new Assortativity());
+			} else if (s.startsWith("suffix=")) {
+				suffix = s.substring(7);
+			} else if (s.startsWith("seq=")) {
+				String seq = s.substring(4);
+				String[] se = seq.split("-");
+				startIndex.add(Integer.parseInt(se[0]));
+				endIndex.add(Integer.parseInt(se[1]));
+			} else if (s.startsWith("instance=")) {
+				instances.add(s.substring(9));
+			} else if (s.startsWith("dstDir=")) {
+				targetdir = s.substring(7);
+				File f = new File(targetdir);
+				if (!f.isDirectory()) {
+					f.mkdir();
+				}
+			} else if (s.startsWith("plotDir=")) {
+				plotdir = s.substring(8);
+				File f = new File(plotdir);
+				if (!f.isDirectory()) {
+					f.mkdir();
+				}
+			} else if (s.startsWith("aggregate=")) {
+				if (s.equals("aggregate=true")) {
+					aggregate = true;
+				} else {
+					aggregate = false;
+				}
+			} else if (s.startsWith("skip=")) {
+				if (s.equals("skip=true")) {
+					skipping = "true";
+				} else {
+					skipping = "false";
+				}
+			}
+			// readable folder?
+			else if (s.startsWith("loaddir=")) {
+				dirs.add(s.substring(8));
+			} else {
+				printHelp();
+				System.exit(0);
+			}
 		}
-	    }
-	    // readable folder?
-	    else if (s.startsWith("loaddir=")) {
-		dirs.add(s.substring(8));
-	    }
-	    // readable folder?
-	    else if (s.startsWith("origdir=")) {
-		orgdir = s.substring(8);
-	    }
-	}
 
-	Config.overwrite("MAIN_PLOT_FOLDER",
-		plotDir);
+		Config.overwrite("MAIN_PLOT_FOLDER", plotdir + "plots-bySize/");
 
-	for (String dir : dirs) {
-	    for (int i = 0; i < 5; i++) {
-		for (int j = 1; j <= 9; j++) {
-		    String di = dir + "/0." + j + "/" + i + "/";
-		    if (new File(di).isDirectory()) {
-			
-			ReadableFolder rf = new ReadableFolder(name + "-" + i,
-				name, di, suffix, null);
-			System.out.println("RF: " + di + " \t with (" + rf.getFiles().length + ") networks");
-			if (rf != null) {
-			    switch (i) {
-			    case 0:
-				rf0.add(rf);
-				break;
-			    case 1:
-				rf1.add(rf);
-				break;
-			    case 2:
-				rf2.add(rf);
-				break;
-			    case 3:
-				rf3.add(rf);
-				break;
-			    case 4:
-				rf4.add(rf);
-				break;
-			    }
+		Collection<Network> rfc = new ArrayList<Network>();
+
+		String[] dir = dirs.toArray(new String[0]);
+		for (int i = 0; i < dir.length; i++) {
+			String d = dirs.get(i);
+			name = net.get(i) + "-" + sampling.get(i).trim() + "-"
+					+ instances.get(i) + "-" + scaledown.get(i);
+			ReadableFolder rf = new ReadableFolder(name, net.get(0), d, suffix,
+					null);
+
+			System.out.println("RF: " + d + " - size:" + rf.getFiles().length);
+
+			DescriptionWrapper dwrf = new DescriptionWrapper(rf, name);
+			rfc.add(dwrf);
+
+		}
+		Network[] rfa = rfc.toArray(new Network[0]);
+
+		if (!aggregate) {
+			System.err
+					.println("This jar-File should be used to replot already calculated metrics. The aggregate property has to be set true");
+		} else {
+			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
+			Series series;
+			Series[][] s = new Series[6][9];
+			int j = 0;
+
+			for (int i = 0; i < rfa.length; i++) {
+				
+
+				Config.overwrite("MAIN_DATA_FOLDER",
+						targetdir + instances.get(i) + "/" + sampling.get(i)
+								+ "/" + rfa[i].getNodes() + "/data/");
+				series = Series.generate(rfa[i],
+						metrics.toArray(new Metric[0]), startIndex.get(i),
+						endIndex.get(i));
+				
+				
+				int seq = i%6;
+				
+				if (seq == 0 && i > 0)
+					j++;
+				
+				
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> i=" + seq + "(" + i + ")" 
+						+ "; j=" + j);
+				
+				s[seq][j] = series;
+				
+
 			}
 
-		    } else {
-			System.out.println("No RF: " + di);
-		    }
+			for (int i = 0; i < s.length; i++) {
+				for (int j1 = 0; j1 < s[0].length; j1++) {
+					if(s[i][j1] == null){
+						System.out.println(i + ":" + j1 + "->"
+								+ "null!");
+					}else{
+					System.out.println(i + ":" + j1 + "->"
+							+ s[i][j1].getNetwork().getDescription());
+					}
+				}
+			}
+			
+			Config.overwrite("RUNTIME_PLOTS_GENERATE", "false");
+			Config.overwrite("ETC_PLOTS_GENERATE", "false");
+
+			Plotting.single(s, metrics.toArray(new Metric[0]), "/single/",
+					Type.confidence1, Style.candlesticks); // main path to plots
+			// is set by
+			// Config.overwrite
+
 		}
-	    }
+
 	}
 
-	if (!orgdir.equalsIgnoreCase("")) {
-	    for(int j = 1; j <= 9; j++) {
-		String od = orgdir + "/" +  new Integer((int) (10000 * Double.parseDouble("0." + j)));
-		if(new File(od).isDirectory()) {
-		    
-		    ReadableFolder rfo = new ReadableFolder(name, name, od, suffix, null);
-		    System.out.println("RF: " + od + " \t with (" + rfo.getFiles().length + ") networks");
-		    rfO.add(rfo);
-		} else {
-		    System.out.println("NO RF: " + od);
-		    System.exit(0);
-		}
-		
-	    }
+	private static void printHelp() {
+		System.out.println("Wrong parameter settings!");
 	}
-
-	Network[] rfa0 = rf0.toArray(new ReadableFolder[0]);
-	Network[] rfa1 = rf1.toArray(new ReadableFolder[0]);
-	Network[] rfa2 = rf2.toArray(new ReadableFolder[0]);
-	Network[] rfa3 = rf3.toArray(new ReadableFolder[0]);
-	Network[] rfa4 = rf4.toArray(new ReadableFolder[0]);
-	Network[] rfaO = rfO.toArray(new ReadableFolder[0]);
-
-	Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
-
-	Series[][] s = new Series[6][9];
-
-	for (int j = 0; j < 9; j++) {
-	    Config.overwrite("MAIN_DATA_FOLDER", dataDir + "0" + "/data/");
-	    s[0][j] = Series.generate(rfa0[j], metrics.toArray(new Metric[0]),
-		    startIndex, endIndex);
-	}
-	for (int j = 0; j < 9; j++) {
-	    Config.overwrite("MAIN_DATA_FOLDER", dataDir + "1" + "/data/");
-	    s[1][j] = Series.generate(rfa1[j], metrics.toArray(new Metric[0]),
-		    startIndex, endIndex);
-	}
-	for (int j = 0; j < 9; j++) {
-	    Config.overwrite("MAIN_DATA_FOLDER", dataDir + "2" + "/data/");
-	    s[2][j] = Series.generate(rfa2[j], metrics.toArray(new Metric[0]),
-		    startIndex, endIndex);
-	}
-	for (int j = 0; j < 9; j++) {
-	    Config.overwrite("MAIN_DATA_FOLDER", dataDir + "3" + "/data/");
-	    s[3][j] = Series.generate(rfa3[j], metrics.toArray(new Metric[0]),
-		    startIndex, endIndex);
-	}
-	for (int j = 0; j < 9; j++) {
-	    Config.overwrite("MAIN_DATA_FOLDER", dataDir + "4" + "/data/");
-	    s[4][j] = Series.generate(rfa4[j], metrics.toArray(new Metric[0]),
-		    startIndex, endIndex);
-	}
-	if (rfaO != null) {
-	    Config.overwrite("MAIN_DATA_FOLDER", dataDir + "data/");
-	    for (int j = 0; j < 9; j++) {
-		s[5][j] = Series.generate(rfaO[j], metrics.toArray(new Metric[0]),
-			startIndex, endIndex);
-	    }
-	}
-	
-	
-	Plotting.single(s, metrics.toArray(new Metric[0]), "/single/",
-		Type.confidence1, Style.candlesticks); // main path to plots
-	
-
-    }
 
 }

@@ -26,27 +26,32 @@
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Tim;
+ * Original Author: Tim Grube;
  * Contributors:    -;
  *
- * Changes since 2011-05-17
+ * Changes since 2013-05-17
  * ---------------------------------------
- *
+ * 2014-02-03 : readData (Tim Grube)
  */
 package gtna.metrics.basic;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Config;
+import gtna.util.Distribution;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -108,24 +113,28 @@ public class Assortativity extends Metric {
 		int dSource = 0;				// Degree of the Source
 		int dDestination = 0;			// Degree of the Destination
 
-		double sumk1k2mult = 0.0; 		// Sum{dSource*dDestination}
-		double sumk1k2add = 0.0; 		// Sum{dSource+dDestination}
-		double sumk1k2squareadd = 0.0; 	// Sum{dSource^2+dDestination^2}
-		double M = edges.size();		// Number of Edges
+		double sumMultSourceDestination = 0.0; 			// Sum{dSource*dDestination}
+		double sumAddSourceDestination = 0.0; 			// Sum{dSource+dDestination}
+		double sumAddSquaredSourceDestination = 0.0; 	// Sum{dSource^2+dDestination^2}
+		double M = edges.size();						// Number of Edges
 
 		for (Edge e : edges) {
 			dSource = this.getSourceDegree(g.getNode(e.getSrc()));
 			dDestination = this.getDestinationDegree(g.getNode(e.getDst()));
-			sumk1k2mult += (dSource * dDestination);
-			sumk1k2add += dSource + dDestination;
-			sumk1k2squareadd += (dSource * dSource) + (dDestination * dDestination);
+			sumMultSourceDestination += (dSource * dDestination);
+			sumAddSourceDestination += 0.5 * (dSource + dDestination);
+			sumAddSquaredSourceDestination += 0.5 * ((dSource * dSource) + (dDestination * dDestination));
 		}
 
-		double numerator = (1 / M * sumk1k2mult)
-				- (Math.pow(1 / M * 0.5 * sumk1k2add, 2));
-		double denominator = (1 / M * 0.5 * sumk1k2squareadd)
-				- (Math.pow(1 / M * 0.5 * sumk1k2add, 2));
-
+		double numerator = ( (1/M) * sumMultSourceDestination)
+				- (Math.pow( (1/M) * sumAddSourceDestination, 2));
+		double denominator = ( (1/M) * sumAddSquaredSourceDestination)
+				- (Math.pow( (1/M) * sumAddSourceDestination, 2));
+		
+		if(denominator == numerator){ // special case: a ring network will result in 0/0. The resulting NaN is wrong, it has to be 1
+			this.r = 1;
+			return;
+		}
 		this.r = numerator / denominator;
 	}
 
@@ -202,6 +211,43 @@ public class Assortativity extends Metric {
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#readData(java.lang.String)
+	 */
+	@Override
+	public boolean readData(String folder) {
+	
+		
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+				if("ASSORTATIVITY_ASSORTATIVITY_COEFFICIENT".equals(single[0])){
+					this.r = Double.valueOf(single[1]);
+				}
+			}
+		}
+	
+		
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getDistributions()
+	 */
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[0];
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getNodeValueLists()
+	 */
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[0];
 	}
 
 }

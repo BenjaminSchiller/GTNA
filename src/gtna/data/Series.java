@@ -50,6 +50,8 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class Series {
+	private static int currentRun;
+
 	private Network network;
 
 	private Metric[] metrics;
@@ -174,6 +176,8 @@ public class Series {
 						+ nw.getDescriptionShort());
 				return null;
 			}
+			m.readData(s.getFolder(m));
+			System.out.println("Read from folder: " + s.getFolder(m));
 		}
 		return s;
 	}
@@ -252,6 +256,7 @@ public class Series {
 
 	private static boolean generateRun(Series s, int run) {
 		System.out.println("\n" + run + ":");
+		setCurrentRun(run);
 		ArrayList<Single> runtimes = new ArrayList<Single>();
 		ArrayList<Single> etc = new ArrayList<Single>();
 		File folder = new File(s.getSeriesFolderRun(run));
@@ -368,5 +373,19 @@ public class Series {
 			s[i] = Series.generate(nw[i], metrics, times);
 		}
 		return s;
+	}
+
+	/**
+	 * @return the currentRun
+	 */
+	public static int getCurrentRun() {
+		return currentRun;
+	}
+
+	/**
+	 * @param currentRun the currentRun to set
+	 */
+	public static void setCurrentRun(int currentRun) {
+		Series.currentRun = currentRun;
 	}
 }

@@ -277,9 +277,11 @@ public class Plotting {
 		String output = pre + Config.get(plotKey + "_PLOT_FILENAME")
 				+ Config.get("PLOT_EXTENSION");
 		Plot plot = new Plot(data, terminal, output);
-		plot.setTitle(Config.get(plotKey + "_PLOT_TITLE"));
+		plot.setTitle(Config.get(plotKey + "_PLOT_TITLE")); 
+//		plot.setTitle(" ");TODO
 		plot.setxLabel(xLabel);
-		plot.setyLabel(Config.get(plotKey + "_PLOT_Y"));
+		plot.setyLabel(Config.get(plotKey + "_PLOT_Y")); 
+//		plot.setyLabel(" ");TODO
 		for (String cfg : config) {
 			plot.addConfig(cfg);
 		}
@@ -475,10 +477,14 @@ public class Plotting {
 		String output = pre + Config.get(plotKey + "_PLOT_FILENAME")
 				+ Config.get("PLOT_EXTENSION");
 		Plot plot = new Plot(data, terminal, output);
-		plot.setTitle(Config.get(plotKey + "_PLOT_TITLE"));
-		plot.setxLabel(Config.get(plotKey + "_PLOT_X"));
-		plot.setyLabel(Config.get(plotKey + "_PLOT_Y"));
+//		plot.setTitle(Config.get(plotKey + "_PLOT_TITLE"));
+//		plot.setxLabel(Config.get(plotKey + "_PLOT_X"));
+//		plot.setyLabel(Config.get(plotKey + "_PLOT_Y"));
+		plot.setxLabel(" "); // TODO
+		plot.setyLabel(" ");
+		plot.setTitle(" ");
 
+		
 		if (Config.containsKey(plotKey + "_PLOT_OFFSET_X")
 				&& Config.get(plotKey + "_PLOT_OFFSET_X").length() > 0) {
 			plot.setOffsetX(Config.getDouble(plotKey + "_PLOT_OFFSET_X"));

@@ -31,22 +31,26 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- *
+ * 2014-02-05: readData, getDistributions, getNodeValueLists (Tim Grube) 
  */
 package gtna.metrics.fragmentation;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.graph.partition.Partition;
 import gtna.graph.sorting.NodeSorter;
+import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.Config;
+import gtna.util.Distribution;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -81,19 +85,19 @@ public abstract class Fragmentation extends Metric {
 		return true;
 	}
 
-	private double[] isolatedComponentSizeAvg;
+	private NodeValueList isolatedComponentSizeAvg;
 
-	private double[] isolatedComponentSizeMax;
+	private NodeValueList isolatedComponentSizeMax;
 
-	private double[] isolatedComponentSizeMed;
+	private NodeValueList isolatedComponentSizeMed;
 
-	private double[] isolatedComponentSizeMin;
+	private NodeValueList isolatedComponentSizeMin;
 
-	private double[] numberOfIsolatedComponents;
+	private NodeValueList numberOfIsolatedComponents;
 
-	private double[] largestComponentSize;
+	private NodeValueList largestComponentSize;
 
-	private double[] largestComponentSizeFraction;
+	private NodeValueList largestComponentSizeFraction;
 
 	private double criticalPoint;
 
@@ -104,13 +108,13 @@ public abstract class Fragmentation extends Metric {
 	@Override
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		int[] excludeFirst = this.getExcludeFirst(g.getNodes().length);
-		this.isolatedComponentSizeAvg = new double[excludeFirst.length];
-		this.isolatedComponentSizeMax = new double[excludeFirst.length];
-		this.isolatedComponentSizeMed = new double[excludeFirst.length];
-		this.isolatedComponentSizeMin = new double[excludeFirst.length];
-		this.numberOfIsolatedComponents = new double[excludeFirst.length];
-		this.largestComponentSize = new double[excludeFirst.length];
-		this.largestComponentSizeFraction = new double[excludeFirst.length];
+		double[] isolatedComponentSizeAvgArray = new double[excludeFirst.length];
+		double[] isolatedComponentSizeMaxArray = new double[excludeFirst.length];
+		double[] isolatedComponentSizeMedArray = new double[excludeFirst.length];
+		double[] isolatedComponentSizeMinArray = new double[excludeFirst.length];
+		double[] numberOfIsolatedComponentsArray = new double[excludeFirst.length];
+		double[] largestComponentSizeArray = new double[excludeFirst.length];
+		double[] largestComponentSizeFractionArray = new double[excludeFirst.length];
 		this.criticalPoint = 1.0;
 		this.cpts = this.getCriticalPointThreshold();
 		this.criticalPoints = new double[this.cpts.length];
@@ -124,28 +128,28 @@ public abstract class Fragmentation extends Metric {
 			boolean[] exclude = this.getExclude(sorted, excludeFirst[i]);
 			Partition p = this.partition(g, sorted, exclude);
 
-			this.numberOfIsolatedComponents[i] = p.getComponents().length - 1;
-			this.largestComponentSize[i] = p.getLargestComponent().length;
-			this.largestComponentSizeFraction[i] = (double) p
+			numberOfIsolatedComponentsArray[i] = p.getComponents().length - 1;
+			largestComponentSizeArray[i] = p.getLargestComponent().length;
+			largestComponentSizeFractionArray[i] = (double) p
 					.getLargestComponent().length
 					/ (double) g.getNodes().length;
 
-			if (this.numberOfIsolatedComponents[i] == 0) {
-				this.isolatedComponentSizeAvg[i] = 0;
-				this.isolatedComponentSizeMax[i] = 0;
-				this.isolatedComponentSizeMed[i] = 0;
-				this.isolatedComponentSizeMin[i] = 0;
+			if (numberOfIsolatedComponentsArray[i] == 0) {
+				isolatedComponentSizeAvgArray[i] = 0;
+				isolatedComponentSizeMaxArray[i] = 0;
+				isolatedComponentSizeMedArray[i] = 0;
+				isolatedComponentSizeMinArray[i] = 0;
 			} else {
-				this.isolatedComponentSizeAvg[i] = this.avgIsolatedSize(p);
-				this.isolatedComponentSizeMax[i] = p.getComponents()[p
+				isolatedComponentSizeAvgArray[i] = this.avgIsolatedSize(p);
+				isolatedComponentSizeMaxArray[i] = p.getComponents()[p
 						.getComponents().length - 2].length;
-				this.isolatedComponentSizeMed[i] = p.getComponents()[(int) Math
+				isolatedComponentSizeMedArray[i] = p.getComponents()[(int) Math
 						.floor(p.getComponents().length / 2)].length;
-				this.isolatedComponentSizeMin[i] = p.getComponents()[p
+				isolatedComponentSizeMinArray[i] = p.getComponents()[p
 						.getComponents().length - 1].length;
 			}
 
-			if (this.largestComponentSize[i] < 0.5 * (g.getNodes().length - excludeFirst[i])
+			if (largestComponentSizeArray[i] < 0.5 * (g.getNodes().length - excludeFirst[i])
 					&& (double) excludeFirst[i] / (double) g.getNodes().length < this.criticalPoint) {
 				this.criticalPoint = (double) excludeFirst[i]
 						/ (double) g.getNodes().length;
@@ -153,7 +157,7 @@ public abstract class Fragmentation extends Metric {
 
 			for (int j = 0; j < criticalPoints.length; j++) {
 				double cpt = (double) this.cpts[j] / 100;
-				if (this.largestComponentSize[i] < cpt
+				if (largestComponentSizeArray[i] < cpt
 						* (g.getNodes().length - excludeFirst[i])
 						&& (double) excludeFirst[i]
 								/ (double) g.getNodes().length < this.criticalPoints[j]) {
@@ -162,6 +166,14 @@ public abstract class Fragmentation extends Metric {
 				}
 			}
 		}
+		
+		isolatedComponentSizeAvg = new NodeValueList("FRAGMENTATION_ISOLATED_COMPONENT_SIZE_AVG", isolatedComponentSizeAvgArray);
+		isolatedComponentSizeMax = new NodeValueList("FRAGMENTATION_ISOLATED_COMPONENT_SIZE_MAX", isolatedComponentSizeMaxArray);
+		isolatedComponentSizeMed = new NodeValueList("FRAGMENTATION_ISOLATED_COMPONENT_SIZE_MED", isolatedComponentSizeMedArray);
+		isolatedComponentSizeMin = new NodeValueList("FRAGMENTATION_ISOLATED_COMPONENT_SIZE_MIN", isolatedComponentSizeMinArray);
+		numberOfIsolatedComponents = new NodeValueList("FRAGMENTATION_NUMBER_OF_ISOLATED_COMPONENTS", numberOfIsolatedComponentsArray);
+		largestComponentSize = new NodeValueList("FRAGMENTATION_LARGEST_COMPONENT_SIZE", largestComponentSizeArray);
+		largestComponentSizeFraction = new NodeValueList("FRAGMENTATION_LARGEST_COMPONENT_SIZE_FRACTION", largestComponentSizeFractionArray);
 	}
 
 	private int[] getCriticalPointThreshold() {
@@ -245,19 +257,19 @@ public abstract class Fragmentation extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(this.isolatedComponentSizeAvg,
+		success &= DataWriter.writeWithIndex(this.isolatedComponentSizeAvg.getValues(),
 				"FRAGMENTATION_ISOLATED_COMPONENT_SIZE_AVG", folder);
-		success &= DataWriter.writeWithIndex(this.isolatedComponentSizeMax,
+		success &= DataWriter.writeWithIndex(this.isolatedComponentSizeMax.getValues(),
 				"FRAGMENTATION_ISOLATED_COMPONENT_SIZE_MAX", folder);
-		success &= DataWriter.writeWithIndex(this.isolatedComponentSizeMed,
+		success &= DataWriter.writeWithIndex(this.isolatedComponentSizeMed.getValues(),
 				"FRAGMENTATION_ISOLATED_COMPONENT_SIZE_MED", folder);
-		success &= DataWriter.writeWithIndex(this.isolatedComponentSizeMin,
+		success &= DataWriter.writeWithIndex(this.isolatedComponentSizeMin.getValues(),
 				"FRAGMENTATION_ISOLATED_COMPONENT_SIZE_MIN", folder);
-		success &= DataWriter.writeWithIndex(this.numberOfIsolatedComponents,
+		success &= DataWriter.writeWithIndex(this.numberOfIsolatedComponents.getValues(),
 				"FRAGMENTATION_NUMBER_OF_ISOLATED_COMPONENTS", folder);
-		success &= DataWriter.writeWithIndex(this.largestComponentSize,
+		success &= DataWriter.writeWithIndex(this.largestComponentSize.getValues(),
 				"FRAGMENTATION_LARGEST_COMPONENT_SIZE", folder);
-		success &= DataWriter.writeWithIndex(this.largestComponentSizeFraction,
+		success &= DataWriter.writeWithIndex(this.largestComponentSizeFraction.getValues(),
 				"FRAGMENTATION_LARGEST_COMPONENT_SIZE_FRACTION", folder);
 		return success;
 	}
@@ -273,7 +285,65 @@ public abstract class Fragmentation extends Metric {
 		}
 		return singles;
 	}
+	
+	
+	@Override
+	public Distribution[] getDistributions(){
+		return new Distribution[0];
+	}
+	
+	@Override
+	public NodeValueList[] getNodeValueLists(){
+		return new NodeValueList[]{isolatedComponentSizeAvg, isolatedComponentSizeMax, isolatedComponentSizeMed, isolatedComponentSizeMin,
+				numberOfIsolatedComponents, largestComponentSize, largestComponentSizeFraction };
+	}
 
+	
+	@Override
+	public boolean readData(String folder){
+		ArrayList<Double> cpointsList = new ArrayList<Double>();
+		ArrayList<Integer> cptsList = new ArrayList<Integer>();
+		/* SINGLES */
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+				if("FRAGMENTATION_CRITICAL_POINT".equals(single[0])){
+					this.criticalPoint = (int) Math.round(Double.valueOf(single[1]));
+				} else if((single[0].startsWith("FRAGMENTATION_CRITICAL_POINT_"))){
+					cptsList.add(Integer.parseInt(single[0].replace("FRAGMENTATION_CRITICAL_POINT_", "")));
+					cpointsList.add(Double.valueOf(single[1])); // Index important?
+				}  
+			}
+		}
+		
+		if(cptsList.size() != cpointsList.size())
+			return false;
+		
+		this.criticalPoints = new double[cpointsList.size()];
+		this.cpts = new int[cptsList.size()];
+		for(int i = 0; i < criticalPoints.length; i++){
+			this.criticalPoints[i] = cpointsList.get(i);
+			this.cpts[i] = cptsList.get(i);
+		}
+		
+		
+		
+		
+		/* Node-value list */
+		
+		this.isolatedComponentSizeAvg = new NodeValueList("FRAGMENTATION_ISOLATED_COMPONENT_SIZE_AVG", readDistribution(folder, "FRAGMENTATION_ISOLATED_COMPONENT_SIZE_AVG"));
+		this.isolatedComponentSizeMax = new NodeValueList("FRAGMENTATION_ISOLATED_COMPONENT_SIZE_MAX" , readDistribution(folder, "FRAGMENTATION_ISOLATED_COMPONENT_SIZE_MAX"));
+		this.isolatedComponentSizeMed = new NodeValueList("FRAGMENTATION_ISOLATED_COMPONENT_SIZE_MED" , readDistribution(folder, "FRAGMENTATION_ISOLATED_COMPONENT_SIZE_MED"));
+		this.isolatedComponentSizeMin = new NodeValueList("FRAGMENTATION_ISOLATED_COMPONENT_SIZE_MIN" , readDistribution(folder, "FRAGMENTATION_ISOLATED_COMPONENT_SIZE_MIN"));
+		this.numberOfIsolatedComponents = new NodeValueList("FRAGMENTATION_NUMBER_OF_ISOLATED_COMPONENTS" , readDistribution(folder, "FRAGMENTATION_NUMBER_OF_ISOLATED_COMPONENTS"));
+		this.largestComponentSize = new NodeValueList("FRAGMENTATION_LARGEST_COMPONENT_SIZE" , readDistribution(folder, "FRAGMENTATION_LARGEST_COMPONENT_SIZE"));
+		this.largestComponentSizeFraction = new NodeValueList("FRAGMENTATION_LARGEST_COMPONENT_SIZE_FRACTION" , readDistribution(folder, "FRAGMENTATION_LARGEST_COMPONENT_SIZE_FRACTION"));
+		
+		return true;
+	}
+	
+	
 	protected abstract Partition partition(Graph g, Node[] sorted,
 			boolean[] exclude);
 

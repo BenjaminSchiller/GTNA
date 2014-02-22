@@ -26,18 +26,21 @@
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
  *
- * Original Author: Tim;
+ * Original Author: Tim Grube;
  * Contributors:    -;
  *
- * Changes since 2011-05-17
+ * Changes since 2013-07-17
  * ---------------------------------------
+ * 2014-02-03 : readData, getNodeValueList(), getDistributions() (Tim Grube)
  *
  */
 package gtna.metrics.centrality;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -51,10 +54,17 @@ import java.util.HashMap;
  * 
  */
 public class PageRank extends Metric {
+	// TODO: PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION is a NV-List, but not a distribution
+	
+	private NodeValueList pageRank;
+	
+	private static final int ITERATIONS = 10;
 
 	private double alpha = 0.85; // initialized with the Brin/Page proposed
 									// value
 
+	
+	
 	private double[][] H; // hyperlink matrix
 	private double[][] A;
 	private double[][] S;
@@ -64,8 +74,6 @@ public class PageRank extends Metric {
 	private double[][] G;
 
 	private double[] prVector;
-
-	private Distribution pr;
 
 	private double nodes;
 
@@ -104,13 +112,13 @@ public class PageRank extends Metric {
 		prVector = initVector(G.length);
 
 		double[] prOld = initVector(G.length);
-		for (int j = 0; j < 50; j++) {
+		for (int j = 0; j < ITERATIONS; j++) {
 			prOld = prVector;
 			prVector = calculateMatrixVectorProduct(G, prVector);
 			prVector = normalizeVector(prVector);
 		}
-		Arrays.sort(prVector);
-		pr = new Distribution(prVector);
+//		Arrays.sort(prVector);
+		pageRank = new NodeValueList("PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION", prVector);
 		nodes = g.getNodeCount();
 		edges = g.getEdges().size();
 
@@ -175,7 +183,7 @@ public class PageRank extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(this.pr.getDistribution(),
+		success &= DataWriter.writeWithIndex(this.pageRank.getValues(),
 				"PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION", folder);
 		return success;
 
@@ -353,6 +361,51 @@ public class PageRank extends Metric {
 		}
 
 		return median;
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#readData(java.lang.String)
+	 */
+	@Override
+	public boolean readData(String folder) {
+		/* SINGLES */
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+				if("PAGERANK_DISTRIBUTION_NODES".equals(single[0])){
+					this.nodes = (int) Math.round(Double.valueOf(single[1]));
+				} else if("PAGERANK_DISTRIBUTION_EDGES".equals(single[0])){
+					this.edges = (int) Math.round(Double.valueOf(single[1]));
+				} else if("PAGERANK_DISTRIBUTION_MIN".equals(single[0])){
+					this.prMin = Double.valueOf(single[1]);
+				} else if("PAGERANK_DISTRIBUTION_MED".equals(single[0])){
+					this.prMed = Double.valueOf(single[1]);
+				} else if("PAGERANK_DISTRIBUTION_AVG".equals(single[0])){
+					this.prAvg = Double.valueOf(single[1]);
+				} else if("PAGERANK_DISTRIBUTION_MAX".equals(single[0])){
+					this.prMax = Double.valueOf(single[1]);
+				} 
+			}
+		}
+		
+		
+		/* NodeValue Lists */
+		
+		pageRank = new NodeValueList("PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION", readDistribution(folder, "PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION"));
+		
+		
+		return true;
+	}
+
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[0];
+	}
+
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[] {pageRank};
 	}
 
 }

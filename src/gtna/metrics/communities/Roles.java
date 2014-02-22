@@ -31,6 +31,7 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-03 : readData (Tim Grube)
  *
  */
 package gtna.metrics.communities;
@@ -38,6 +39,7 @@ package gtna.metrics.communities;
 import gtna.communities.Role;
 import gtna.communities.Role.RoleType;
 import gtna.communities.RoleList;
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
@@ -47,6 +49,7 @@ import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.util.ArrayUtils;
 import gtna.util.Config;
+import gtna.util.Distribution;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
@@ -251,6 +254,32 @@ public class Roles extends Metric {
 	public Single[] getSingles() {
 		return new Single[] {};
 	}
+	
+	@Override
+	public Distribution[] getDistributions(){
+		return new Distribution[] {};
+	}
+	
+	@Override
+	public NodeValueList[] getNodeValueLists(){
+		return new NodeValueList[] {};
+	}
+	
+	@Override
+	public boolean readData(String folder){
+		
+		/* 2D Values */
+		for (Role role : this.roles) {
+			this.rolesMaxPerNode[role.toIndex()] = readDistribution(folder, 
+					"ROLES_" + this.type.toString() + "_ROLES_MAX_PER_NODE_"
+							+ role.getKey());
+			this.rolesMaxFraction[role.toIndex()] = readDistribution(folder, "ROLES_" + this.type.toString() + "_ROLES_MAX_FRACTION_"
+							+ role.getKey());
+		}
+		return true;
+	}
+	
+	
 
 	private ArrayList<String> dataKeys;
 

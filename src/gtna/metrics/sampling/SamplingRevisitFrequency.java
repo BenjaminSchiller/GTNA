@@ -31,12 +31,14 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- *
+ *	2014-02-05: readData, getDistributions, getNodeValueLists (Tim Grube)
  */
 package gtna.metrics.sampling;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
+import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -57,11 +59,11 @@ import java.util.Set;
 public class SamplingRevisitFrequency extends Metric {
 
 	private int samplingIndex = 0;
-	private Distribution revisitFrequency;
+	private NodeValueList revisitFrequency;
 	private int numberOfRounds;
 	private int edges;
 	private int nodes;
-	private Distribution samplingEfficiency;
+	private NodeValueList samplingEfficiency; 
 	private double rfMax;
 	private double rfMin;
 	private double rfAvg;
@@ -122,8 +124,8 @@ public class SamplingRevisitFrequency extends Metric {
 		
 		
 		
-		samplingEfficiency = new Distribution(efficiency);
-		revisitFrequency = new Distribution(rounds);
+		samplingEfficiency = new NodeValueList("SAMPLING_REVISIT_FREQUENCY_EFFICIENCY", efficiency);
+		revisitFrequency = new NodeValueList("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION", rounds);
 		nodes = g.getNodes().length;
 		edges = g.getEdges().size();
 		numberOfRounds = s.getSample().getNumberOfRounds();
@@ -141,9 +143,9 @@ public class SamplingRevisitFrequency extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(this.revisitFrequency.getDistribution(),
+		success &= DataWriter.writeWithIndex(this.revisitFrequency.getValues(),
 				"SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(this.samplingEfficiency.getDistribution(), 
+		success &= DataWriter.writeWithIndex(this.samplingEfficiency.getValues(), 
 			"SAMPLING_REVISIT_FREQUENCY_EFFICIENCY", folder);
 		
 		return success;
@@ -166,6 +168,53 @@ public class SamplingRevisitFrequency extends Metric {
 		return new Single[] { 
 				nodes, edges, rounds, 
 				rfMin, rfMed, rfAvg, rfMax };
+	}
+	
+	@Override
+	public Distribution[] getDistributions(){
+		return new Distribution[]{};
+	}
+	
+	@Override
+	public NodeValueList[] getNodeValueLists(){
+		return new NodeValueList[]{revisitFrequency, samplingEfficiency};
+	}
+	
+	@Override
+	public boolean readData(String folder){
+		/* SINGLES */
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+				if("SAMPLING_REVISIT_FREQUENCY_NODES".equals(single[0])){
+					this.nodes = (int) Math.round(Double.valueOf(single[1]));
+				} else if("SAMPLING_REVISIT_FREQUENCY_EDGES".equals(single[0])){
+					this.edges = (int) Math.round(Double.valueOf(single[1]));
+				}else if("SAMPLING_REVISIT_FREQUENCY_ROUNDS".equals(single[0])){
+						this.numberOfRounds = (int) Math.round(Double.valueOf(single[1]));
+					
+					// derived from NV-List biasd, delete if recovered differently
+				} else if("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MIN".equals(single[0])){
+					this.rfMin = Double.valueOf(single[1]);
+				}  else if("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MED".equals(single[0])){
+					this.rfMed = Double.valueOf(single[1]);
+				} else if("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_AVG".equals(single[0])){
+					this.rfAvg = Double.valueOf(single[1]);
+				} else if("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION_MAX".equals(single[0])){
+					this.rfMax = Double.valueOf(single[1]);
+				}
+			}
+		}
+		
+		
+		/* NODE VALUE LIST */
+		
+		revisitFrequency = new NodeValueList("SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION", readDistribution(folder, "SAMPLING_REVISIT_FREQUENCY_DISTRIBUTION"));
+		samplingEfficiency = new NodeValueList("SAMPLING_REVISIT_FREQUENCY_EFFICIENCY", readDistribution(folder, "SAMPLING_REVISIT_FREQUENCY_EFFICIENCY"));	
+		
+		
+		return true;
 	}
 
 	/* (non-Javadoc)

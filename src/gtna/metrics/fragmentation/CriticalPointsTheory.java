@@ -32,15 +32,19 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-03 readData, getDistributions, getNodeValueLists (Tim Grube)
  *
  */
 package gtna.metrics.fragmentation;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.io.DataReader;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Distribution;
 import gtna.util.Timer;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.Parameter;
@@ -190,6 +194,36 @@ public class CriticalPointsTheory extends Metric {
 		Single pR = new Single("CRITICAL_POINTS_CP", this.p);
 		Single degR = new Single("CRITICAL_POINTS_DEG", this.deg);
 		return new Single[] { pR, degR };
+	}
+	
+	@Override
+	public Distribution[] getDistributions(){
+		return new Distribution[0];
+	}
+	
+	@Override
+	public NodeValueList[] getNodeValueLists(){
+		return new NodeValueList[0];
+	}
+	
+	@Override
+	public boolean readData(String folder){
+		/* SINGLES */
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+				if("CRITICAL_POINTS_CP".equals(single[0])){
+					this.p = (int) Math.round(Double.valueOf(single[1]));
+				} else if("CRITICAL_POINTS_DEG".equals(single[0])){
+					this.deg = (int) Math.round(Double.valueOf(single[1]));
+				}  
+			}
+		}
+		
+		
+		
+		return true;
 	}
 
 	/*

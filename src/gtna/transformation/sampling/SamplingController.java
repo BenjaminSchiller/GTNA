@@ -43,6 +43,7 @@ import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.sample.NetworkSample;
 import gtna.util.DeterministicRandom;
+import gtna.util.Timer;
 import gtna.util.parameter.BooleanParameter;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.IntParameter;
@@ -67,6 +68,13 @@ public class SamplingController extends Transformation {
 	private boolean revisiting;
 	private Node[] startNodes;
 	private Random rng;
+	private double deriveSamplingRuntime;
+	private double runSamplingRuntime;
+	private double runtimeSOS;
+	private double runtimeWOS;
+	private double runtimeRB;
+	private int round;
+	private double runtimeAddingNode;
 
 	public SamplingController(String algorithm, AWalkerController awc,
 			ASampler as, StartNodeSelector asns, NetworkSample ns, double scaledown,
@@ -137,16 +145,56 @@ public class SamplingController extends Transformation {
 			return g;
 		} else {
 			this.setGraph(g);
+			
+			Timer tSampling = new Timer();
 			sampleGraph(g);
+			tSampling.end();
+			runSamplingRuntime = tSampling.getMsec();
 			int[] sn = collectStartNodeIndices();
 
+			Timer tDerive = new Timer();
 			Sample s = new Sample(networkSample, sn, rng);
+			tDerive.end();
+			deriveSamplingRuntime = tDerive.getRuntime(); // TODO
+			
 			g.addProperty(g.getNextKey("SAMPLE"), s);
 
+			
+			printRuntimes();
+			
+			
 			networkSample = networkSample.cleanInstance();
 			this.setGraph(null);
+			
+			
+			
 			return g;
 		}
+		
+		
+		
+	}
+
+	/**
+	 * 
+	 */
+	private void printRuntimes() { // TODO
+//		walkerController.printRuntimes();
+//		sampler.printRuntimes();
+//		
+//		System.out.println("Running the sampling loop: " + runtimeSOS + "s");
+//		System.out.println("Adding nodes to the sample: " + runtimeAddingNode + "s");
+//		System.out.println("Running the walking loop: " + runtimeWOS + "s");
+//		System.out.println("Running the budget loop: " + runtimeRB + "s");
+//		
+//		System.out.println("Running the complete sampling took: " + runSamplingRuntime + "s");
+//		System.out.println("Deriving the sample graph property took: " + deriveSamplingRuntime + "s");
+//		System.out.println("Sampling of "+ networkSample.getSampleSize() + " Nodes took " + round + " rounds");
+		
+		
+		
+		
+		
 	}
 
 	/**
@@ -228,7 +276,7 @@ public class SamplingController extends Transformation {
 
 		int targetSampleSize = (int) Math.ceil(g.getNodeCount() * scaledown);
 		int maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
-		int round = 0;
+		round = 0; // TODO make local variable again
 		walkerController.initialize(startNodes); // place walker(s) on start
 		// node(s)
 		Collection<Node> s = sampler.initialize(g, targetSampleSize, round); // initialize
@@ -237,14 +285,24 @@ public class SamplingController extends Transformation {
 		boolean running = true;
 		// walk -> sample loop as long new nodes are sampled
 		do {
+			Timer tSOS = new Timer(); // TODO 
 			// eventually sample
 			sampleOneStep(g, maxNodesInThisRound, round);
-
+			tSOS.end(); // TODO
+			runtimeSOS += tSOS.getRuntime();
+//			System.out.println("Round (" + round + ") took " + runtimeSOS + " ms to sample so far");
+			
+			Timer tWOS = new Timer();
 			// walk
 			walkerController.walkOneStep();
-
+			tWOS.end(); // TODO
+			runtimeWOS += tWOS.getRuntime();
+			
+			Timer tRB = new Timer(); // TODO 
 			// calculate residual budget
 			maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
+			tRB.end();
+			runtimeRB += tRB.getRuntime();
 			running = (maxNodesInThisRound > 0) ? true : false;
 			round++;
 		} while (running);
@@ -264,11 +322,19 @@ public class SamplingController extends Transformation {
 	 * @return true if at least one node is sampled, else false
 	 */
 	private boolean sampleOneStep(Graph g, int maxNodesInThisRound, int round) {
+		
 		Collection<Node> chosenNodes = sampler.sampleOneStep(
 				maxNodesInThisRound, round);
-		if (chosenNodes.size() > 0)
-			return networkSample.addNodeToSample(chosenNodes, round);
-
+		
+		
+		if (chosenNodes.size() > 0){
+			Timer tAddToSample = new Timer();
+			boolean added = networkSample.addNodeToSample(chosenNodes, round);
+			tAddToSample.end();
+			runtimeAddingNode += tAddToSample.getRuntime();
+			return added;
+		}
+		
 		return false;
 	}
 

@@ -9,7 +9,7 @@
  *
  * GTNA is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, ors
  * (at your option) any later version.
  *
  * GTNA is distributed in the hope that it will be useful,
@@ -31,15 +31,18 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-03 : readData, getNodeValueLists(), getDistributions() (Tim Grube)
  *
  */
 package gtna.metrics.communities;
 
 import gtna.communities.Community;
 import gtna.communities.CommunityList;
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -56,9 +59,9 @@ import java.util.Set;
  * 
  */
 public class Communities extends Metric {
-	private double[] communitySize;
+	private NodeValueList communitySize;
 
-	private double[] communitySizeFraction;
+	private NodeValueList communitySizeFraction;
 
 	private Distribution sizeDistribution;
 
@@ -70,9 +73,9 @@ public class Communities extends Metric {
 
 	public Communities() {
 		super("COMMUNITIES");
-		this.communitySize = new double[] { -1 };
-		this.sizeDistribution = new Distribution(new double[] { -1 });
-		this.adjacentCommunities = new Distribution(new double[] { -1 });
+		this.communitySize = new NodeValueList("COMMUNITIES_COMMUNITY_SIZE", new double[] { -1 });
+		this.sizeDistribution = new Distribution("COMMUNITIES_SIZE_DISTRIBUTION", new double[] { -1 });
+		this.adjacentCommunities = new Distribution("COMMUNITIES_ADJACENT_COMMUNITIES", new double[] { -1 });
 		this.modularity = -1;
 		this.communityCount = -1;
 	}
@@ -87,10 +90,10 @@ public class Communities extends Metric {
 		CommunityList communities = (CommunityList) g
 				.getProperty("COMMUNITIES_0");
 
-		this.communitySize = this.computeCommunitySize(communities);
-		this.communitySizeFraction = this.communitySize.clone();
-		ArrayUtils.divide(this.communitySizeFraction, g.getNodes().length);
-
+		this.communitySize = new NodeValueList("COMMUNITIES_COMMUNITY_SIZE", this.computeCommunitySize(communities));
+		this.communitySizeFraction = new NodeValueList("COMMUNITIES_COMMUNITY_SIZE_FRACTION", this.communitySize.getValues());
+		divideArray(this.communitySizeFraction.getValues(), g.getNodes().length);
+		
 		this.sizeDistribution = this.computeSizeDistribution(communities);
 
 		this.adjacentCommunities = this.computeAdjacentCommunities(g,
@@ -99,6 +102,11 @@ public class Communities extends Metric {
 		this.modularity = this.calculateModularity(g, communities);
 		this.communityCount = communities.getCommunities().length;
 		
+	}
+	
+	private double[] divideArray(double[] array, double divisor) {
+		ArrayUtils.divide(array, divisor);	
+		return array;
 	}
 
 	/**
@@ -142,7 +150,7 @@ public class Communities extends Metric {
 			sd[i] /= communities.getCommunities().length;
 		}
 
-		return new Distribution(sd);
+		return new Distribution("COMMUNITIES_SIZE_DISTRIBUTION", sd);
 	}
 
 	/**
@@ -171,7 +179,7 @@ public class Communities extends Metric {
 		for (int i = 0; i < ac.length; i++) {
 			ac[i] = ac[i] / (double) g.getNodes().length;
 		}
-		return new Distribution(ac);
+		return new Distribution("COMMUNITIES_ADJACENT_COMMUNITIES", ac);
 	}
 
 	/**
@@ -242,9 +250,9 @@ public class Communities extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 
-		success &= DataWriter.writeWithIndex(this.communitySize,
+		success &= DataWriter.writeWithIndex(this.communitySize.getValues(),
 				"COMMUNITIES_COMMUNITY_SIZE", folder);
-		success &= DataWriter.writeWithIndex(this.communitySizeFraction,
+		success &= DataWriter.writeWithIndex(this.communitySizeFraction.getValues(),
 				"COMMUNITIES_COMMUNITY_SIZE_FRACTION", folder);
 
 		success &= DataWriter.writeWithIndex(
@@ -292,6 +300,54 @@ public class Communities extends Metric {
 
 		return new Single[] { mod, com, size_min, size_med, size_avg, size_max,
 				adjacent_min, adjacent_med, adjacent_avg, adjacent_max };
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#readData(java.lang.String)
+	 */
+	@Override
+	public boolean readData(String folder) {
+		/* SINGLES */
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+				if("COMMUNITIES_MODULARITY".equals(single[0])){
+					this.modularity = (int) Math.round(Double.valueOf(single[1]));
+				} else if("COMMUNITIES_COMMUNITY_COUNT".equals(single[0])){
+					this.communityCount = (int) Math.round(Double.valueOf(single[1]));
+				}  
+			}
+		}
+		
+		
+		/* DISTRIBUTIONS */
+		
+		this.sizeDistribution = new Distribution("COMMUNITIES_SIZE_DISTRIBUTION", readDistribution(folder, "COMMUNITIES_SIZE_DISTRIBUTION"));
+		this.adjacentCommunities = new Distribution("COMMUNITIES_ADJACENT_COMMUNITIES", readDistribution(folder, "COMMUNITIES_ADJACENT_COMMUNITIES"));
+		
+		/* Node-Value list */
+		this.communitySize = new NodeValueList("COMMUNITIES_COMMUNITY_SIZE", readDistribution(folder, "COMMUNITIES_COMMUNITY_SIZE"));
+		this.communitySizeFraction = new NodeValueList("COMMUNITIES_COMMUNITY_SIZE_FRACTION", readDistribution(folder, "COMMUNITIES_COMMUNITY_SIZE_FRACTION"));
+		
+		
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getDistributions()
+	 */
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[] {sizeDistribution, adjacentCommunities};
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getNodeValueLists()
+	 */
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[]{communitySize, communitySizeFraction};
 	}
 
 }

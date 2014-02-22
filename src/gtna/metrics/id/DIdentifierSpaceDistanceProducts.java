@@ -31,10 +31,11 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- *
+ * 2014-02-05: readData, getDistributions, getNodeValueLists (Tim Grube)
  */
 package gtna.metrics.id;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -45,6 +46,7 @@ import gtna.id.Partition;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Distribution;
 import gtna.util.Statistics;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
@@ -158,6 +160,32 @@ public class DIdentifierSpaceDistanceProducts extends Metric {
 	@Override
 	public Single[] getSingles() {
 		return new Single[] {};
+	}
+	
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[]{};
+	}
+
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[]{};
+	}
+	
+	@Override
+	public boolean readData(String folder) {
+		/* 2D Values */
+		
+		this.neighborDistanceProductDistribution = read2DValues(folder, "D_IDENTIFIER_SPACE_DISTANCE_PRODUCTS_"
+						+ "NEIGHBORS_DISTANCE_PRODUCT_DISTRIBUTION");
+		this.neighborDistanceProductDistributionCdf = read2DValues(folder, "D_IDENTIFIER_SPACE_DISTANCE_PRODUCTS_"
+								+ "NEIGHBORS_DISTANCE_PRODUCT_DISTRIBUTION_CDF");
+		this.neighborDistanceProductRootDistribution = read2DValues(folder, "D_IDENTIFIER_SPACE_DISTANCE_PRODUCTS_"
+						+ "NEIGHBORS_DISTANCE_PRODUCT_ROOT_DISTRIBUTION");
+		this.neighborDistanceProductRootDistributionCdf = read2DValues(folder, "D_IDENTIFIER_SPACE_DISTANCE_PRODUCTS_"
+						+ "NEIGHBORS_DISTANCE_PRODUCT_ROOT_DISTRIBUTION_CDF");
+		
+		return true;
 	}
 
 	@Override

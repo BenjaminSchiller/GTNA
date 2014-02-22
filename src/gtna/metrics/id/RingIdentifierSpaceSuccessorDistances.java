@@ -31,10 +31,12 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-05: readData, getNodeValueList, getDistributions (Tim Grube)
  *
  */
 package gtna.metrics.id;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -45,6 +47,7 @@ import gtna.id.ring.RingIdentifierSpace;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Distribution;
 import gtna.util.Statistics;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
@@ -125,6 +128,31 @@ public class RingIdentifierSpaceSuccessorDistances extends Metric {
 	@Override
 	public Single[] getSingles() {
 		return new Single[0];
+	}
+	
+	@Override
+	public Distribution[] getDistributions(){
+		return new Distribution[0];
+	}
+
+	@Override
+	public NodeValueList[] getNodeValueLists(){
+		return new NodeValueList[0];
+	}
+
+	@Override
+	public boolean readData(String folder) {
+
+		
+		/* 2D values */
+		
+		this.successorDistanceDistribution = read2DValues(folder, "RING_IDENTIFIER_SPACE_SUCCESSOR_DISTANCES_"
+				+ "SUCCESSOR_DISTANCE_DISTRIBUTION");
+		this.successorDistanceDistributionCdf = read2DValues(folder, "RING_IDENTIFIER_SPACE_SUCCESSOR_DISTANCES_"
+						+ "SUCCESSOR_DISTANCE_CDF");
+		
+				
+		return true;
 	}
 
 	@Override

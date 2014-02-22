@@ -45,6 +45,8 @@ import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.Clique;
 import gtna.networks.model.CondonAndKarp;
 import gtna.networks.model.ErdosRenyi;
+import gtna.networks.model.PFP1;
+import gtna.networks.model.PositiveFeedbackPreference;
 import gtna.networks.model.Regular;
 import gtna.networks.model.WattsStrogatz;
 import gtna.networks.model.ZhouMondragon;
@@ -61,7 +63,7 @@ import java.util.Collection;
 public class WFNetworkGen {
 
     private enum EnumNetworks {
-	ER, BA, CK, RC, WS, REG, CL, RING
+	ER, BA, CK, RC, WS, REG, CL, RING, PFP
     };
 
     private static EnumNetworks net;
@@ -89,6 +91,12 @@ public class WFNetworkGen {
     private static int successors = 10;
 
     private static double p = 0.3;
+    
+    private static double q = 0.1;
+    
+    private static double delta = 0.048;
+    
+    private static int initialsize = 10;
 
     /**
      * @param args
@@ -152,6 +160,9 @@ public class WFNetworkGen {
 	case RC:
 	    n = new ZhouMondragon(size, p, edgespernode, null);
 	    break;
+	case PFP:
+		n = new PositiveFeedbackPreference(size, initialsize, p, q, delta, null);
+		break;
 	case REG: 
 	    if(size == 0 || degree == 0) throw new IllegalArgumentException("For initializing a regular network the parameters size and degree have to be set!");
 	    n = new Regular(size, degree, false, !uni, null);
@@ -190,6 +201,12 @@ public class WFNetworkGen {
 	    net = matchNetwork(sn);
 	} else if (s.startsWith("size=")) {
 	    size = Integer.parseInt(s.substring(5));
+	} else if (s.startsWith("initialsize=")) {
+	    initialsize = Integer.parseInt(s.substring(12));
+	} else if (s.startsWith("delta=")) {
+	    delta = Double.parseDouble(s.substring(6));
+	}else if (s.startsWith("q=")) {
+	    q = Double.parseDouble(s.substring(2));
 	} else if (s.startsWith("p=")) {
 	    p = Double.parseDouble(s.substring(2));
 	} else if (s.startsWith("pin=")) {

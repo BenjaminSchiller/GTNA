@@ -31,14 +31,17 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-03 : readData, getDistributions, getNodeValueLists (Tim Grube)
  *
  */
 package gtna.metrics;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.networks.Network;
 import gtna.util.Config;
+import gtna.util.Distribution;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.ParameterList;
 
@@ -149,10 +152,27 @@ public class MetricDescriptionWrapper extends Metric {
 	public Single[] getSingles() {
 		return this.metric.getSingles();
 	}
+	
+	@Override
+	public Distribution[] getDistributions() {
+		return this.metric.getDistributions();
+	}
+
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return this.metric.getNodeValueLists();
+	}
 
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 		return this.metric.applicable(g, n, m);
 	}
+	
+	@Override
+	public boolean readData(String folder){
+		return this.metric.readData(folder);
+	}
+
+	
 
 }
