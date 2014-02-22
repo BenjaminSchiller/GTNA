@@ -31,10 +31,11 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- *
+ * 2014-02-05: readData, getDistributions, getNodeValueLists (Tim Grube)
  */
 package gtna.metrics.routing;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.id.data.DataStore;
@@ -58,7 +59,7 @@ public class DataStorageMetric extends Metric {
 	public DataStorageMetric() {
 		super("DATA_STORAGE_METRIC");
 
-		this.dataItemsDistribution = new Distribution(new double[] { -1 });
+		this.dataItemsDistribution = new Distribution("DATA_STORAGE_METRIC_DATA_ITEM_DISTRIBUTION", new double[] { -1 });
 	}
 
 	@Override
@@ -79,7 +80,7 @@ public class DataStorageMetric extends Metric {
 		}
 		ArrayUtils.divide(distr, dsl.getList().length);
 
-		this.dataItemsDistribution = new Distribution(distr);
+		this.dataItemsDistribution = new Distribution("DATA_STORAGE_METRIC_DATA_ITEM_DISTRIBUTION", distr);
 	}
 
 	@Override
@@ -103,6 +104,25 @@ public class DataStorageMetric extends Metric {
 				+ "NUMBER_OF_DATA_ITEMS_MED",
 				this.dataItemsDistribution.getMedian());
 		return new Single[] { avg, med };
+	}
+	
+	@Override
+	public Distribution[] getDistributions(){
+		return new Distribution[] {dataItemsDistribution};
+	}
+	
+	@Override
+	public NodeValueList[] getNodeValueLists(){
+		return new NodeValueList[] {};
+	}
+	
+	@Override
+	public boolean readData(String folder) {
+		
+		/* DISTRIBUTION */
+		this.dataItemsDistribution = new Distribution("DATA_STORAGE_METRIC_DATA_ITEM_DISTRIBUTION", readDistribution(folder, "DATA_STORAGE_METRIC_DATA_ITEM_DISTRIBUTION"));
+		
+		return true;
 	}
 
 	@Override

@@ -42,6 +42,7 @@ import java.util.Random;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.util.Timer;
 import gtna.util.parameter.Parameter;
 
 /**
@@ -53,6 +54,8 @@ public abstract class ASampler extends Parameter {
     private AWalkerController walkerController;
     private Graph graph;
     private SamplingController samplingController;
+	private double runtime = 0;
+	private int calls = 0;
 
     /**
      * 
@@ -118,6 +121,9 @@ public abstract class ASampler extends Parameter {
      * @return
      */
     public Collection<Node> sampleOneStep(int maxNodes, int round) {
+    	
+    	Timer t = new Timer(); // TODO
+    	
 	Collection<AWalker> walkers = walkerController.getActiveWalkers();
 	LinkedList<Node> sampled = new LinkedList<Node>();
 
@@ -133,6 +139,14 @@ public abstract class ASampler extends Parameter {
 		int i = r.nextInt(sampled.size()-1);
 		sampled.remove(i);
 	}
+	
+	// TODO
+		t.end();
+		runtime += t.getRuntime();
+		calls++;
+//		System.out.println("Sampling took " + runtime + " ms (" + t.getMsec() + ") in " + calls + " calls");
+		
+		
 	return sampled;
 
     }
@@ -177,6 +191,17 @@ public abstract class ASampler extends Parameter {
 	this.samplingController = sc;
 	
     }
+
+
+
+
+	/**
+	 * 
+	 */
+	public void printRuntimes() {
+		System.out.println("Collecting nodes took: " + runtime + "ms");
+		
+	}
 
 
 }

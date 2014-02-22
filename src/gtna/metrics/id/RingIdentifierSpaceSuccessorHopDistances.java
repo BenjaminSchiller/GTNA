@@ -31,10 +31,12 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-05: readData, getDistributions, getNodeValueLists (Tim Grube)
  *
  */
 package gtna.metrics.id;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
@@ -60,7 +62,7 @@ public class RingIdentifierSpaceSuccessorHopDistances extends Metric {
 	public RingIdentifierSpaceSuccessorHopDistances() {
 		super("RING_IDENTIFIER_SPACE_SUCCESSOR_HOP_DISTANCES");
 
-		this.successorHopDistanceDistribution = new Distribution(
+		this.successorHopDistanceDistribution = new Distribution("RING_IDENTIFIER_SPACE_SUCCESSOR_HOP_DISTANCES_DISTRIBUTION", 
 				new double[] { -1 });
 	}
 
@@ -123,7 +125,7 @@ public class RingIdentifierSpaceSuccessorHopDistances extends Metric {
 		}
 
 		ArrayUtils.divide(distr, nodes.length);
-		return new Distribution(distr);
+		return new Distribution("RING_IDENTIFIER_SPACE_SUCCESSOR_HOP_DISTANCES_DISTRIBUTION", distr);
 	}
 
 	@Override
@@ -143,11 +145,36 @@ public class RingIdentifierSpaceSuccessorHopDistances extends Metric {
 	public Single[] getSingles() {
 		return new Single[0];
 	}
+	
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[]{successorHopDistanceDistribution};
+	}
+
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[0];
+	}
+	
+	@Override
+	public boolean readData(String folder) {
+		
+		/* Distribution */
+		
+		this.successorHopDistanceDistribution = new Distribution("RING_IDENTIFIER_SPACE_SUCCESSOR_HOP_DISTANCES_DISTRIBUTION", readDistribution(folder, "RING_IDENTIFIER_SPACE_SUCCESSOR_HOP_DISTANCES_DISTRIBUTION"));
+		
+		
+		return true;
+	}
+	
+	
 
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 		return g.hasProperty("ID_SPACE_0")
 				&& g.getProperty("ID_SPACE_0") instanceof RingIdentifierSpace;
 	}
+
+	
 
 }

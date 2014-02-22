@@ -31,6 +31,7 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-03 : key field and toString() - Tim Grube
  *
  */
 package gtna.util;
@@ -40,6 +41,9 @@ package gtna.util;
  * 
  */
 public class Distribution {
+	
+	private String key;
+	
 	private double[] distribution;
 
 	private double[] cdf;
@@ -52,15 +56,16 @@ public class Distribution {
 
 	private double max;
 
-	public Distribution(long[] values, long sum) {
-		this(Distribution.computeDistributionLong(values, sum));
+	public Distribution(String key, long[] values, long sum) {
+		this(key, Distribution.computeDistributionLong(values, sum));
 	}
 
-	public Distribution(int[] values, int sum) {
-		this(Distribution.computeDistributionInt(values, sum));
+	public Distribution(String key, int[] values, int sum) {
+		this(key, Distribution.computeDistributionInt(values, sum));
 	}
 
-	public Distribution(double[] distribution) {
+	public Distribution(String key, double[] distribution) {
+		this.setKey(key);
 		this.distribution = distribution;
 		this.cdf = this.computeCdf();
 		this.min = this.computeMin();
@@ -77,6 +82,7 @@ public class Distribution {
 		for (int i = 0; i < values.length; i++) {
 			distribution[i] = (double) values[i] / (double) sum;
 		}
+				
 		return distribution;
 	}
 
@@ -88,6 +94,7 @@ public class Distribution {
 		for (int i = 0; i < values.length; i++) {
 			distribution[i] = (double) values[i] / (double) sum;
 		}
+			
 		return distribution;
 	}
 
@@ -169,5 +176,31 @@ public class Distribution {
 	 */
 	public double getMax() {
 		return this.max;
+	}
+
+	/**
+	 * @return the key
+	 */
+	public String getKey() {
+		return key;
+	}
+
+	/**
+	 * @param key the key to set
+	 */
+	public void setKey(String key) {
+		this.key = key;
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append(this.key);
+		sb.append("\n");
+		for(double d : distribution){
+			sb.append(d); sb.append("; ");
+		}
+		
+		return sb.toString();
 	}
 }

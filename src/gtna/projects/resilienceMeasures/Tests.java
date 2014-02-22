@@ -31,6 +31,7 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-07: removed dependency on metric.EffectiverDiameter - is correct implemented in ShortestPaths (Tim Grube)
  *
  */
 package gtna.projects.resilienceMeasures;
@@ -44,11 +45,10 @@ import gtna.graph.sorting.ClosenessCentralityNodeSorter;
 import gtna.graph.sorting.EigenvectorCentralityNodeSorter;
 import gtna.graph.sorting.NodeSorter;
 import gtna.graph.sorting.NodeSorter.NodeSorterMode;
-import gtna.graph.sorting.RandomNodeSorter;
 import gtna.graph.sorting.algorithms.ResilienceMetrics;
-import gtna.metrics.EffectiveDiameter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.DegreeDistribution;
+import gtna.metrics.basic.ShortestPaths;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.GLP;
@@ -361,7 +361,7 @@ public class Tests {
 		Network nw = new ErdosRenyi(1000, 6, true, null);
 		Network[] networks = new Network[] { nw };
 
-		Metric m = new EffectiveDiameter(128, 7, new RandomNodeSorter());
+		Metric m = new ShortestPaths();
 		Metric[] metrics = new Metric[] { m };
 		Series[] s = Series.generate(networks, metrics, 1);
 		Plotting.multi(s, metrics, "EFFECTIVE_DIAMETER/");

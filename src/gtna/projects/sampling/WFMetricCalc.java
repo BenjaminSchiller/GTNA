@@ -156,8 +156,8 @@ public class WFMetricCalc {
 			else if (s.startsWith("loaddir=")) {
 				dirs.add(s.substring(8));
 			} else {
-				printHelp();
-				System.exit(0);
+				System.err.println("Parameter not recognized: " + s);
+				System.exit(1);
 			}
 		}
 
@@ -168,7 +168,7 @@ public class WFMetricCalc {
 					+ scaledown.get(i);
 			ReadableFolder rf = new ReadableFolder(name, net.get(0), d, suffix, null);
 			
-//			System.out.println("RF: " + d + " - size:" + rf.getFiles().length);
+			System.out.println("RF: " + d + " - size:" + rf.getFiles().length);
 			
 			DescriptionWrapper dwrf = new DescriptionWrapper(rf, name);
 			rfc.add(dwrf);
@@ -215,8 +215,8 @@ public class WFMetricCalc {
 						metrics.toArray(new Metric[0]), startIndex.get(i),
 						endIndex.get(i));
 				
-//				System.out.println(series[i].getFolder());
-//				System.out.println(Arrays.toString(series[i].getRunFolders()));
+				System.out.println(series[i].getFolder());
+				System.out.println(Arrays.toString(series[i].getRunFolders()));
 			}
 			
 			
@@ -233,6 +233,8 @@ public class WFMetricCalc {
 			
 			Config.overwrite("MAIN_PLOT_FOLDER", plotdir + "plots/");
 			Config.overwrite("TEMP_FOLDER", plotdir + "temp/");
+			Config.overwrite("RUNTIME_PLOTS_GENERATE", "false");
+			Config.overwrite("ETC_PLOTS_GENERATE", "false");
 			
 			Plotting.single(series, metrics.toArray(new Metric[0]), "single/",
 					Type.confidence1, Style.candlesticks); // main path to plots

@@ -31,19 +31,22 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- *
+ * 2014-02-05: readData, getDistributions, getNodeValueLists (Tim Grube)
  */
 package gtna.metrics.placement;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.id.Partition;
 import gtna.id.plane.PlaneIdentifier;
 import gtna.id.plane.PlaneIdentifierSpaceSimple;
+import gtna.io.DataReader;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.networks.model.placementmodels.connectors.RangeProperty;
 import gtna.util.Config;
+import gtna.util.Distribution;
 
 import java.util.HashMap;
 
@@ -134,9 +137,35 @@ public class Coverage extends Metric {
 	public Single[] getSingles() {
 		return new Single[] { new Single("COVERAGE_PERCENTAGE", percentage) };
 	}
+	
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[] {};
+	}
+
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[] {};
+	}
 
 	@Override
 	public boolean writeData(String folder) {
+		return true;
+	}
+	
+	@Override
+	public boolean readData(String folder){
+		/* SINGLES */
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+				if("COVERAGE_PERCENTAGE".equals(single[0])){
+					this.percentage = Double.valueOf(single[1]);
+				} 
+			}
+		}
+		
 		return true;
 	}
 

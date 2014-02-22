@@ -44,6 +44,7 @@ import java.util.Random;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.sample.NetworkSample;
+import gtna.util.Timer;
 import gtna.util.parameter.Parameter;
 
 /**
@@ -55,6 +56,7 @@ public abstract class AWalkerController extends Parameter {
 	CandidateFilter candidateFilter;
 	private SamplingController samplingController;
 	Collection<AWalker> walkers;
+	private double runtime;
 
 	/**
 	 * Instantiate the walker controller
@@ -209,11 +211,16 @@ public abstract class AWalkerController extends Parameter {
 			throw new IllegalStateException(
 					"You have to initialize the WalkerController first.");
 		}
-
+		
+		Timer t = new Timer(); // TODO
 		Collection<AWalker> activeWalkers = this.getActiveWalkers();
 		for (AWalker w : activeWalkers) {
 			w.takeAStep(this.getGraph(), this.getNetworkSample());
 		}
+		
+		// TODO
+		t.end();
+		runtime += t.getRuntime();
 	}
 
 	public Collection<Node> filterCandidates(Collection<Node> candidates) {
@@ -225,6 +232,16 @@ public abstract class AWalkerController extends Parameter {
 	 */
 	public Random getRNG() {
 	    return samplingController.getRng();
+	}
+
+	/**
+	 * 
+	 */
+	public void printRuntimes() {
+		System.out.println("Filtering took: " + candidateFilter.getRuntime() + " ms");
+		
+		System.out.println("Walking took: " + runtime + " ms");
+		
 	}
 
 }

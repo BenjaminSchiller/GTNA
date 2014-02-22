@@ -31,13 +31,16 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-03 : readData, getNodeValueLists, getDistributions (Tim Grube)
  *
  */
 package gtna.metrics.centrality;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -65,7 +68,7 @@ import java.util.Stack;
 public class BetweennessCentrality extends Metric {
 
 	private int[] cbs;
-	private Distribution BC;
+	private NodeValueList betweennessCentrality;
 	private int edges;
 	private int nodes;
 	private double bcMed;
@@ -109,8 +112,8 @@ public class BetweennessCentrality extends Metric {
 		// for(int i = 0; i < cb.length; i++) {
 		// cb[i] /= (double)g.getNodes().length;
 		// }
-		Arrays.sort(cb);
-		BC = new Distribution(cb);
+//		Arrays.sort(cb);
+		betweennessCentrality = new NodeValueList("BETWEENNESS_CENTRALITY_DISTRIBUTION", cb);
 		this.nodes = g.getNodes().length;
 		this.edges = g.getEdges().size();
 
@@ -140,7 +143,7 @@ public class BetweennessCentrality extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(this.BC.getDistribution(),
+		success &= DataWriter.writeWithIndex(this.betweennessCentrality.getValues(),
 				"BETWEENNESS_CENTRALITY_DISTRIBUTION", folder);
 
 		return success;
@@ -315,6 +318,58 @@ public class BetweennessCentrality extends Metric {
 		}
 
 		return median;
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#readData(java.lang.String)
+	 */
+	@Override
+	public boolean readData(String folder) {
+		
+		/* SINGLES */
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+				if("BETWEENNESS_CENTRALITY_NODES".equals(single[0])){
+					this.nodes = (int) Math.round(Double.valueOf(single[1]));
+				} else if("BETWEENNESS_CENTRALITY_EDGES".equals(single[0])){
+					this.edges = (int) Math.round(Double.valueOf(single[1]));
+				} else if("BETWEENNESS_CENTRALITY_MIN".equals(single[0])){
+					this.bcMin = Double.valueOf(single[1]);
+				} else if("BETWEENNESS_CENTRALITY_MED".equals(single[0])){
+					this.bcMed = Double.valueOf(single[1]);
+				} else if("BETWEENNESS_CENTRALITY_AVG".equals(single[0])){
+					this.bcAvg = Double.valueOf(single[1]);
+				} else if("BETWEENNESS_CENTRALITY_MAX".equals(single[0])){
+					this.bcMax = Double.valueOf(single[1]);
+				} 
+			}
+		}
+		
+		
+		/* Node Value List */
+		
+		betweennessCentrality = new NodeValueList("BETWEENNESS_CENTRALITY_DISTRIBUTION", readDistribution(folder, "BETWEENNESS_CENTRALITY_DISTRIBUTION"));
+		
+		
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getDistributions()
+	 */
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[0];
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getNodeValueLists()
+	 */
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[] {betweennessCentrality};
 	}
 
 }

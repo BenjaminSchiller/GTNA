@@ -31,13 +31,15 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- *
+ * 2014-02-05: readData, getDistributions, getNodeValueList (Tim Grube)
  */
 package gtna.metrics.sampling;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
+import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -56,7 +58,7 @@ public class SamplingBias extends Metric {
 
 	private Integer edges;
 	private Integer nodes;
-	private Distribution biasd;
+	private NodeValueList biasd;
 	private double sbAvg;
 	private double sbMed;
 	private double sbMin;
@@ -97,7 +99,7 @@ public class SamplingBias extends Metric {
 		
 		
 		Arrays.sort(nodesampling);
-		biasd = new Distribution(nodesampling);
+		biasd = new NodeValueList("SAMPLING_BIAS_DISTRIBUTION", nodesampling);
 		nodes = g.getNodeCount();
 		edges = g.getEdges().size();
 		
@@ -115,7 +117,7 @@ public class SamplingBias extends Metric {
 		boolean success = true;
 		
 		success &= DataWriter.writeWithIndex(
-				this.biasd.getDistribution(), 
+				this.biasd.getValues(), 
 				"SAMPLING_BIAS_DISTRIBUTION", 
 				folder);
 
@@ -137,6 +139,42 @@ public class SamplingBias extends Metric {
 		Single sbMax = new Single("SAMPLING_BIAS_MAX", this.sbMax);
 		
 		return new Single[] { nodes, edges, sbMin, sbMed, sbAvg, sbMax };
+	}
+	
+	@Override
+	public boolean readData(String folder){
+		/* SINGLES */
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+				if("SAMPLING_BIAS_NODES".equals(single[0])){
+					this.nodes = (int) Math.round(Double.valueOf(single[1]));
+				} else if("SAMPLING_BIAS_EDGES".equals(single[0])){
+					this.edges = (int) Math.round(Double.valueOf(single[1]));
+					
+					// derived from NV-List biasd, delete if recovered differently
+				} else if("SAMPLING_BIAS_MIN".equals(single[0])){
+					this.sbMin = Double.valueOf(single[1]);
+				}  else if("SAMPLING_BIAS_MED".equals(single[0])){
+					this.sbMed = Double.valueOf(single[1]);
+				} else if("SAMPLING_BIAS_AVG".equals(single[0])){
+					this.sbAvg = Double.valueOf(single[1]);
+				} else if("SAMPLING_BIAS_MAX".equals(single[0])){
+					this.sbMax = Double.valueOf(single[1]);
+				}
+			}
+		}
+		
+		
+		/* NODE VALUE LIST */
+		
+		biasd = new NodeValueList("SAMPLING_BIAS_DISTRIBUTION", readDistribution(folder, "SAMPLING_BIAS_DISTRIBUTION"));
+		
+		
+		
+		
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -199,6 +237,24 @@ public class SamplingBias extends Metric {
 		}
 
 		return median;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getDistributions()
+	 */
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[]{};
+	}
+
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getNodeValueLists()
+	 */
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[] {biasd};
 	}
 
 }

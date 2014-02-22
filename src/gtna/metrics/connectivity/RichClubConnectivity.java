@@ -32,9 +32,11 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-03 : readData, getNodeValueList, getDistributions (Tim Grube)
  */
 package gtna.metrics.connectivity;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
@@ -42,12 +44,13 @@ import gtna.graph.sorting.NodeSorting;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Distribution;
 
 import java.util.HashMap;
 import java.util.Random;
 
 public class RichClubConnectivity extends Metric {
-	private double[] rcc;
+	private NodeValueList rcc;
 
 	public RichClubConnectivity() {
 		super("RICH_CLUB_CONNECTIVITY");
@@ -62,7 +65,7 @@ public class RichClubConnectivity extends Metric {
 		int[] order = NodeSorting.byDegreeDesc(g.getNodes(), new Random());
 		Edges edges = g.getEdges();
 		int edgeCount = 0;
-		this.rcc = new double[order.length + 1];
+		double[] rccArray = new double[order.length + 1];
 		for (int p = 2; p <= order.length; p++) {
 			int newNode = order[p - 1];
 			for (int i = 0; i < p - 1; i++) {
@@ -74,17 +77,39 @@ public class RichClubConnectivity extends Metric {
 					edgeCount++;
 				}
 			}
-			this.rcc[p] = (double) edgeCount / (double) (p * (p - 1));
+			rccArray[p] = (double) edgeCount / (double) (p * (p - 1));
 		}
+		
+		this.rcc = new NodeValueList("RICH_CLUB_CONNECTIVITY_RICH_CLUB_CONNECTIVITY", rccArray); 
 	}
 
 	public Single[] getSingles() {
 		return new Single[0];
 	}
+	
+	@Override
+	public Distribution[] getDistributions(){
+		return new Distribution[0];
+	}
+	
+	@Override
+	public NodeValueList[] getNodeValueLists(){
+		return new NodeValueList[]{rcc};
+	}
 
 	public boolean writeData(String folder) {
-		DataWriter.writeWithIndex(this.rcc,
+		DataWriter.writeWithIndex(this.rcc.getValues(),
 				"RICH_CLUB_CONNECTIVITY_RICH_CLUB_CONNECTIVITY", folder);
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#readData(java.lang.String)
+	 */
+	@Override
+	public boolean readData(String folder) {
+		rcc = new NodeValueList("RICH_CLUB_CONNECTIVITY_RICH_CLUB_CONNECTIVITY", readDistribution(folder, "RICH_CLUB_CONNECTIVITY_RICH_CLUB_CONNECTIVITY"));
+		
 		return true;
 	}
 

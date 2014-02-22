@@ -32,12 +32,15 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-05: readData, getDistributions, getNodeValueLists (Tim Grube)
  */
 package gtna.metrics.routing;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.id.Identifier;
+import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -67,7 +70,7 @@ public class Routing extends Metric {
 	private Distribution hopDistribution;
 	private Distribution hopDistributionAbsolute;
 
-	private double[] betweennessCentrality;
+	private NodeValueList betweennessCentrality;
 
 	private double successRate;
 	private double failureRate;
@@ -101,9 +104,9 @@ public class Routing extends Metric {
 	}
 
 	private void init() {
-		this.hopDistribution = new Distribution(new double[] { -1 });
-		this.hopDistributionAbsolute = new Distribution(new double[] { -1 });
-		this.betweennessCentrality = new double[] { -1 };
+		this.hopDistribution = new Distribution("ROUTING_HOP_DISTRIBUTION", new double[] { -1 });
+		this.hopDistributionAbsolute = new Distribution("ROUTING_HOP_DISTRIBUTION_ABSOLUTE", new double[] { -1 });
+		this.betweennessCentrality = new NodeValueList("ROUTING_BETWEENNESS_CENTRALITIY", new double[] { -1 });
 		this.routes = new Route[0];
 		this.successRate = -1;
 		this.failureRate = -1;
@@ -185,7 +188,7 @@ public class Routing extends Metric {
 		return (double) success / (double) this.routes.length;
 	}
 
-	private double[] computeBetweennessCentrality(int nodes) {
+	private NodeValueList computeBetweennessCentrality(int nodes) {
 		double[] bc = new double[nodes];
 		for (Route route : this.routes) {
 			for (int i = 1; i < route.getRoute().length - 1; i++) {
@@ -196,7 +199,7 @@ public class Routing extends Metric {
 		for (int i = 0; i < bc.length; i++) {
 			bc[i] /= (double) this.routes.length;
 		}
-		return bc;
+		return new NodeValueList("ROUTING_BETWEENNESS_CENTRALITIY", bc);
 	}
 
 	private Distribution computeHopDistribution() {
@@ -208,7 +211,7 @@ public class Routing extends Metric {
 				counter++;
 			}
 		}
-		return new Distribution(hops, counter);
+		return new Distribution("ROUTING_HOP_DISTRIBUTION", hops, counter);
 	}
 
 	private Distribution computeHopDistributionAbsolute() {
@@ -218,7 +221,7 @@ public class Routing extends Metric {
 				hops = this.inc(hops, route.getHops());
 			}
 		}
-		return new Distribution(hops, this.routes.length);
+		return new Distribution("ROUTING_HOP_DISTRIBUTION_ABSOLUTE", hops, this.routes.length);
 	}
 
 	private long[] inc(long[] values, int index) {
@@ -251,7 +254,7 @@ public class Routing extends Metric {
 		success &= DataWriter.writeWithIndex(
 				this.hopDistributionAbsolute.getCdf(),
 				"ROUTING_HOP_DISTRIBUTION_ABSOLUTE_CDF", folder);
-		success &= DataWriter.writeWithIndex(this.betweennessCentrality,
+		success &= DataWriter.writeWithIndex(this.betweennessCentrality.getValues(),
 				"ROUTING_BETWEENNESS_CENTRALITY", folder);
 		return success;
 	}
@@ -272,6 +275,45 @@ public class Routing extends Metric {
 
 		return new Single[] { averageHops, medianHops, maximumHops,
 				successRate, failureRate };
+	}
+	
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[] {hopDistribution, hopDistributionAbsolute};
+	}
+
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[] {betweennessCentrality};
+	}
+	
+	
+	@Override
+	public boolean readData(String folder){
+		/* SINGLES */
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+				if("ROUTING_SUCCESS_RATE".equals(single[0])){
+					this.successRate = Double.valueOf(single[1]);
+				} else if("ROUTING_FAILURE_RATE".equals(single[0])){
+					this.failureRate = Double.valueOf(single[1]);
+				} 
+			}
+		}
+		
+		
+		/* DISTRIBUTIONS */
+		
+		hopDistribution = new Distribution("ROUTING_HOP_DISTRIBUTION", readDistribution(folder, "ROUTING_HOP_DISTRIBUTION"));
+		hopDistributionAbsolute = new Distribution("ROUTING_HOP_DISTRIBUTION_ABSOLUTE", readDistribution(folder, "ROUTING_HOP_DISTRIBUTION_ABSOLUTE"));
+		
+		/* Node-Value List */
+		betweennessCentrality = new NodeValueList("ROUTING_BETWEENNESS_CENTRALITIY", readDistribution(folder, "ROUTING_BETWEENNESS_CENTRALITY"));
+		
+		
+		return true;
 	}
 
 	private class RoutingThread extends Thread {

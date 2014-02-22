@@ -31,14 +31,16 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- *
+ * 2014-02-04: readData, getDistributions, getNodeValueLists (Tim Grube)
  */
 package gtna.metrics.sampling;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.graph.GraphProperty;
 import gtna.graph.Node;
+import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -61,7 +63,7 @@ public class SamplingModularity extends Metric {
 	private int edges;
 	private int sampleNodes;
 	private int nodes;
-	private Distribution samplemodularity;
+	private NodeValueList samplemodularity;
 	private double smMax;
 	private double smMin;
 	private double smMed;
@@ -115,7 +117,7 @@ public class SamplingModularity extends Metric {
 
 		}
 
-		this.samplemodularity = new Distribution(sm);
+		this.samplemodularity = new NodeValueList("SAMPLING_MODULARITY_DISTRIBUTION", sm);
 		this.smMax = getMax(sm);
 		this.smMin = getMin(sm);
 		this.smMed = getMed(sm);
@@ -195,7 +197,7 @@ public class SamplingModularity extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(
-				this.samplemodularity.getDistribution(),
+				this.samplemodularity.getValues(),
 				"SAMPLING_MODULARITY_DISTRIBUTION", folder);
 		return success;
 	}
@@ -218,6 +220,37 @@ public class SamplingModularity extends Metric {
 
 		return new Single[] { smMax, smMin, smAvg, smMed };
 	}
+	
+	@Override
+	public boolean readData(String folder){
+		/* SINGLES */
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+					// derived from NV-List biasd, delete if recovered differently
+				if("SAMPLING_MODULARITY_MAX".equals(single[0])){
+					this.smMax = Double.valueOf(single[1]);
+				}  else if("SAMPLING_MODULARITY_MIN".equals(single[0])){
+					this.smMin = Double.valueOf(single[1]);
+				} else if("SAMPLING_MODULARITY_AVG".equals(single[0])){
+					this.smAvg = Double.valueOf(single[1]);
+				} else if("SAMPLING_MODULARITY_MED".equals(single[0])){
+					this.smMed = Double.valueOf(single[1]);
+				}
+			}
+		}
+		
+		
+		/* NODE VALUE LIST */
+		
+		samplemodularity = new NodeValueList("SAMPLING_MODULARITY_DISTRIBUTION", readDistribution(folder, "SAMPLING_MODULARITY_DISTRIBUTION"));
+		
+		
+		
+		
+		return true;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -232,6 +265,22 @@ public class SamplingModularity extends Metric {
 		} else {
 			return false;
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getDistributions()
+	 */
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[]{};
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getNodeValueLists()
+	 */
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[]{samplemodularity};
 	}
 
 }

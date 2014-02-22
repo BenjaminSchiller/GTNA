@@ -37,6 +37,7 @@ package gtna.transformation.sampling;
 
 import gtna.graph.Node;
 import gtna.transformation.sampling.sample.NetworkSample;
+import gtna.util.Timer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +49,7 @@ import java.util.Collection;
 public class CandidateFilter {
 
     private boolean revisiting = false;
+	private long runtime;
 
     /**
      * instantiate the candidate filter
@@ -57,7 +59,7 @@ public class CandidateFilter {
      *            removes visited nodes
      */
     public CandidateFilter(boolean revisiting) {
-	this.revisiting = revisiting;
+    	this.revisiting = revisiting;
     }
 
     /**
@@ -91,13 +93,18 @@ public class CandidateFilter {
      */
     public Collection<Node> filterCandidatesSelfAware(Collection<Node> c,
 	    NetworkSample ns) {
+    	
+    	Timer t = new Timer();
 	Collection<Node> filtered = new ArrayList<Node>();
 
 	for (Node n : c) {
 	    if (!ns.contains(n))
-		filtered.add(n);
+	    	filtered.add(n);
 	}
 
+	t.end();
+	runtime += t.getRuntime();
+	
 	return filtered;
     }
 
@@ -114,6 +121,20 @@ public class CandidateFilter {
      */
     public Collection<Node> filterCandidatesRevisiting(Collection<Node> c,
 	    NetworkSample ns) {
-	return c;
+    	return c;
     }
+
+	/**
+	 * @return the runtime
+	 */
+	public long getRuntime() {
+		return runtime;
+	}
+
+	/**
+	 * @param runtime the runtime to set
+	 */
+	public void setRuntime(long runtime) {
+		this.runtime = runtime;
+	}
 }

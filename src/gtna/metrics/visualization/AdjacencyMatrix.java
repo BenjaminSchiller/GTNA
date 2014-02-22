@@ -35,12 +35,14 @@
  */
 package gtna.metrics.visualization;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Edge;
 import gtna.graph.Graph;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Distribution;
 
 import java.util.HashMap;
 
@@ -82,10 +84,35 @@ public class AdjacencyMatrix extends Metric {
 	public Single[] getSingles() {
 		return new Single[] {};
 	}
-
+	
+	@Override
+	public boolean readData(String folder){
+		
+		/* 2D Value List */
+		
+		adjacencyMatrix = read2DValues(folder, "ADJACENCY_MATRIX_ADJACENCY_MATRIX");
+		
+		return true;
+	}
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getDistributions()
+	 */
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[] {};
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getNodeValueLists()
+	 */
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[] {};
 	}
 
 }

@@ -37,16 +37,20 @@
  *              computations, should be faster especially on 
  *              low-degree graphs (BS);
  * 2011-05-24 : all config parameters starting with CC (BS);
+ * 2014-02-03 : readData, getNodeValuelists, getDistribution (Tim Grube)
  */
 package gtna.metrics.basic;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
+import gtna.io.DataReader;
 import gtna.io.networks.googlePlus.Statistics;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Distribution;
 import gtna.util.Util;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
@@ -230,4 +234,33 @@ public class ClusteringCoefficient extends Metric {
 				this.transitivity);
 		return new Single[] { clusteringCoefficient, transitivity };
 	}
+	
+
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[0];
+	}
+
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[0];
+	}
+
+	@Override
+	public boolean readData(String folder) {
+		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
+		
+		for(String[] single : singles){
+			if(single.length == 2){
+				if("CLUSTERING_COEFFICIENT_CLUSTERING_COEFFICIENT".equals(single[0])){
+					this.clusteringCoefficient = Double.valueOf(single[1]);
+				} else if ("CLUSTERING_COEFFICIENT_CLUSTERING_COEFFICIENT".equals(single[0])){
+					this.transitivity = Double.valueOf(single[1]);
+				}
+			}
+		}
+		
+		return true;
+	}
+
 }

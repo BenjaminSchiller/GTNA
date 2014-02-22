@@ -35,14 +35,17 @@
  */
 package gtna.metrics.id;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
 import gtna.id.ring.RingIdentifier;
 import gtna.id.ring.RingIdentifierSpace;
+import gtna.io.DataReader;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Distribution;
 import gtna.util.Statistics;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
@@ -233,6 +236,39 @@ public class RingIdentifierSpaceVisualzation extends Metric {
 	public Single[] getSingles() {
 		return new Single[0];
 	}
+	
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getDistributions()
+	 */
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[0];
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#getNodeValueLists()
+	 */
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[0];
+	}
+	
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#readData(java.lang.String)
+	 */
+	@Override
+	public boolean readData(String folder) {
+
+		
+		/* 2D values */
+		
+		this.ring = read2DValues(folder, "RING_IDENTIFIER_SPACE_VISUALIZATION_RING");
+		this.line = read2DValues(folder, "RING_IDENTIFIER_SPACE_VISUALIZATION_LINE");
+		this.horizontalLine = read2DValues(folder, "RING_IDENTIFIER_SPACE_VISUALIZATION_HORIZONTAL_LINE");
+		this.sorted = read2DValues(folder, "RING_IDENTIFIER_SPACE_VISUALIZATION_SORTED");
+				
+		return true;
+	}
 
 	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
@@ -245,4 +281,6 @@ public class RingIdentifierSpaceVisualzation extends Metric {
 		IdentifierSpace ids = (IdentifierSpace) g.getProperty("ID_SPACE_0");
 		return (ids instanceof RingIdentifierSpace);
 	}
+
+	
 }

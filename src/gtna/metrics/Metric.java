@@ -32,16 +32,22 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2014-02-03 : readData, getDistributions(), getNodeValueLists() (Tim Grube)
  */
 package gtna.metrics;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
+import gtna.io.DataReader;
+import gtna.io.DataWriter;
 import gtna.networks.Network;
 import gtna.util.Config;
+import gtna.util.Distribution;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.ParameterList;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public abstract class Metric extends ParameterList {
@@ -106,6 +112,14 @@ public abstract class Metric extends ParameterList {
 	 * @return true if operation is successful
 	 */
 	public abstract boolean writeData(String folder);
+	
+	/**
+	 * reads all persisted data from the specified folder
+	 * 
+	 * @param folder
+	 * @return true if operation is successful
+	 */
+	public abstract boolean readData(String folder);
 
 	/**
 	 * all single-scalar values generated / computed by this metric
@@ -115,10 +129,75 @@ public abstract class Metric extends ParameterList {
 	 */
 	public abstract Single[] getSingles();
 	
+	/**
+	 * all distributions (multi-values) generated / computed by this metric
+	 * @return distributions
+	 * 
+	 */
+	public abstract Distribution[] getDistributions();
+	
+	/**
+	 * 
+	 * all node-value lists (multi-values) generated / computed by this metric
+	 * @return node-value lists
+	 */
+	public abstract NodeValueList[] getNodeValueLists();
+	
 	public String getRuntimeSingleName(){
 		return this.getFolderName() + "_RUNTIME";
 	}
 
 	public abstract boolean applicable(Graph g, Network n,
 			HashMap<String, Metric> m);
+
+	/**
+	 * @param folder
+	 * @param run
+	 * @return
+	 */
+	protected String pathForRun(String folder, String run) {
+		String[] path = folder.trim().split(Config.get("FILESYSTEM_FOLDER_DELIMITER"));
+		ArrayList<String> p = new ArrayList<String>();
+		for(String s : path){
+			p.add(s);
+			p.add(Config.get("FILESYSTEM_FOLDER_DELIMITER"));
+		}
+		
+		
+		p.add(p.size()-2, run);
+		p.add(p.size()-2, Config.get("FILESYSTEM_FOLDER_DELIMITER"));		
+		StringBuilder sb = new StringBuilder();
+		
+		for(String s : p){
+			sb.append(s);
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * @param folder
+	 * @param metrickey
+	 * @return
+	 */
+	protected double[] readDistribution(String folder, String metrickey) {
+		String filename = DataWriter.filename(metrickey, folder);		
+		double[][] distributionValues = DataReader.readDouble2D(filename);		
+		double[] distribution = new double[distributionValues.length];
+		for(int i = 0; i < distributionValues.length; i++){
+			distribution[i] = distributionValues[i][1];
+		}
+		return distribution;
+	}
+
+	/**
+	 * @param folder
+	 * @param metrickey
+	 * @return
+	 */
+	protected double[][] read2DValues(String folder, String metrickey) {
+		String filename = DataWriter.filename(metrickey, folder);		
+		double[][] val2D = DataReader.readDouble2D(filename);
+		
+		return val2D;
+	}
 }

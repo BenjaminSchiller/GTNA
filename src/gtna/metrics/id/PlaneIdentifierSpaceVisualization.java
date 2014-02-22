@@ -31,10 +31,11 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- *
+ * 2014-02-05: readData, getDistributions, getNodeValueLists (Tim Grube)
  */
 package gtna.metrics.id;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
@@ -45,6 +46,7 @@ import gtna.id.plane.PlanePartitionSimple;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Distribution;
 
 import java.util.HashMap;
 
@@ -90,9 +92,31 @@ public class PlaneIdentifierSpaceVisualization extends Metric {
 	}
 
 	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[0];
+	}
+
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[0];
+	}
+	
+	@Override
+	public boolean readData(String folder){
+		/* 2D Values*/
+		
+		this.points = read2DValues(folder, "PLANE_IDENTIFIER_SPACE_VISUALIZATION_POINTS");
+		
+		
+		return true;
+	}
+
+	@Override
 	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
 		return g.hasProperty("ID_SPACE_0")
 				&& g.getProperty("ID_SPACE_0") instanceof PlaneIdentifierSpaceSimple;
 	}
+
+	
 
 }

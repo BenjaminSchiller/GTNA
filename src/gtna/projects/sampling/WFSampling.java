@@ -66,7 +66,7 @@ import java.util.Date;
 public class WFSampling {
 
 	private enum EnumNetworks {
-		ER, BA, CK, RC, WS, REG, CL, RING
+		ER, BA, CK, RC, WS, REG, CL, RING, PFP
 	};
 
 	private static EnumNetworks net;

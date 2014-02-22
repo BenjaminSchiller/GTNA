@@ -31,10 +31,11 @@
  *
  * Changes since 2011-05-17
  * ---------------------------------------
- *
+ * 2014-02-05: readData, getDistributions, getNodeValueLists (Tim Grube)
  */
 package gtna.metrics.id;
 
+import gtna.data.NodeValueList;
 import gtna.data.Single;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
@@ -46,6 +47,7 @@ import gtna.id.Partition;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Distribution;
 import gtna.util.Statistics;
 import gtna.util.parameter.DoubleParameter;
 import gtna.util.parameter.Parameter;
@@ -119,6 +121,26 @@ public class DIdentifierSpaceDistances extends Metric {
 	@Override
 	public Single[] getSingles() {
 		return new Single[] {};
+	}
+	
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[] {};
+	}
+
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[] {};
+	}
+	
+	@Override
+	public boolean readData(String folder) {
+		/* 2D Values */
+		
+		this.edgesDistanceDistribution = read2DValues(folder, "D_IDENTIFIER_SPACE_DISTANCES_EDGES_DISTANCE_DISTRIBUTION");
+		this.edgesDistanceDistributionCdf = read2DValues(folder, "D_IDENTIFIER_SPACE_DISTANCES_EDGES_DISTANCE_DISTRIBUTION_CDF");
+		
+		return true;
 	}
 
 	@Override
