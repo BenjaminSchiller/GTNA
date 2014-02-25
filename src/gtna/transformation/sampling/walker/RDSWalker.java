@@ -35,19 +35,11 @@
  */
 package gtna.transformation.sampling.walker;
 
+import gtna.graph.Node;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
-
-import gtna.graph.Graph;
-import gtna.graph.Node;
-import gtna.transformation.sampling.AWalker;
-import gtna.transformation.sampling.sample.NetworkSample;
 
 /**
  * @author Tim

@@ -38,18 +38,15 @@ package gtna.transformation.sampling.subgraph;
 import gtna.graph.Edge;
 import gtna.graph.Edges;
 import gtna.graph.Graph;
-import gtna.graph.GraphProperty;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.Sample;
-import gtna.util.Timer;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -79,8 +76,7 @@ public class ExtractSampledSubgraph extends Transformation {
 
 		Sample sample = (Sample) g.getProperty("SAMPLE_" + this.index);
 
-		
-		
+
 		HashSet<Integer> sampledIds = new HashSet<Integer>();
 		sampledIds.addAll(sample.getSampledIds()); // old Ids
 		
@@ -117,8 +113,8 @@ public class ExtractSampledSubgraph extends Transformation {
 //		
 //		
 //		t.end();
-//		System.out.println("Adding edges: " + t.getSec() + "s");
-		
+//		System.out.println("Adding edges: " + t.getMsec() + "ms");
+//		
 		
 		
 		

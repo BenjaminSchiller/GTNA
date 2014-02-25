@@ -35,18 +35,12 @@
  */
 package gtna.transformation.sampling.walker;
 
+import gtna.graph.Node;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import gtna.graph.Graph;
-import gtna.graph.Node;
-import gtna.transformation.sampling.AWalker;
-import gtna.transformation.sampling.sample.NetworkSample;
 
 /**
  * @author Tim
@@ -67,7 +61,12 @@ public class BFSWalker extends BFSBaseWalker {
 	 */
 	@Override
 	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> toFilter) {
-		return toFilter; // all nodes are added.
+		List<Node> all = new ArrayList<Node>(toFilter.size());
+		
+		// shuffling as the neighbor lists are not sorted in real life networks
+		Collections.shuffle(all);
+		
+		return all;
 	}
 
     

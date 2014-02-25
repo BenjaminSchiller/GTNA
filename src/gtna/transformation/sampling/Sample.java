@@ -38,12 +38,12 @@ package gtna.transformation.sampling;
 import gtna.graph.GraphProperty;
 import gtna.io.Filereader;
 import gtna.io.Filewriter;
-import gtna.transformation.sampling.sample.NetworkSample;
+import gtna.transformation.sampling.sample.INetworkSample;
+import gtna.transformation.sampling.sample.NetworkSampleFull;
 import gtna.util.DeterministicRandom;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -54,7 +54,7 @@ import java.util.Set;
  * 
  */
 public class Sample extends GraphProperty {
-    private NetworkSample sample;
+    private INetworkSample sample;
     private int[] startnodes;
     private Random rng;
 
@@ -62,14 +62,14 @@ public class Sample extends GraphProperty {
 	 * 
 	 */
     public Sample() {
-	this.setSample(new NetworkSample());
+    	this.setSample(new NetworkSampleFull());
     }
 
     /**
      * @param s
      * @param startNodeIndices
      */
-    public Sample(NetworkSample s, int[] startNodeIndices) {
+    public Sample(INetworkSample s, int[] startNodeIndices) {
 	this.setSample(s);
 	this.startnodes = startNodeIndices;
     }
@@ -79,7 +79,7 @@ public class Sample extends GraphProperty {
      * @param startNodeIndices
      * @param rng
      */
-    public Sample(NetworkSample s, int[] startNodeIndices, Random rng) {
+    public Sample(INetworkSample s, int[] startNodeIndices, Random rng) {
 	this.setSample(s);
 	this.startnodes = startNodeIndices;
 	this.rng = rng;
@@ -137,7 +137,7 @@ public class Sample extends GraphProperty {
 	int[] startnodes = this.readIntArray(fr);
 	rng = this.readRNG(fr);
 
-	setSample(new NetworkSample(algorithm, scaledown, dimension, revisiting));
+	setSample(new NetworkSampleFull(algorithm, scaledown, dimension, revisiting));
 	for (int i = 0; i < size; i++) {
 	    String l = fr.readLine();
 
@@ -249,14 +249,14 @@ public class Sample extends GraphProperty {
 	/**
 	 * @return the sample
 	 */
-	public NetworkSample getSample() {
+	public INetworkSample getSample() {
 		return sample;
 	}
 
 	/**
 	 * @param sample the sample to set
 	 */
-	public void setSample(NetworkSample sample) {
+	public void setSample(INetworkSample sample) {
 		this.sample = sample;
 	}
 

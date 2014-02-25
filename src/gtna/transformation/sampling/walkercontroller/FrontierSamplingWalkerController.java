@@ -38,6 +38,7 @@ package gtna.transformation.sampling.walkercontroller;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -56,7 +57,7 @@ public class FrontierSamplingWalkerController extends AWalkerController {
     public CandidateFilter cf;
     Collection<AWalker> walkers;
 
-    public FrontierSamplingWalkerController(Collection<AWalker> w,
+	public FrontierSamplingWalkerController(Collection<AWalker> w,
 	    CandidateFilter cf) {
 	super(w.size() + "x_" + w.toArray(new AWalker[0])[0].getValue(), w, cf);
 
@@ -106,32 +107,32 @@ public class FrontierSamplingWalkerController extends AWalkerController {
 	    }
 	    wp.put(w, maxD);
 	}
-	int sumOfCurrentDegrees = 0;
-	for (Integer i : wp.values()) {
-	    sumOfCurrentDegrees += i;
-	}
-
+	
 	AWalker active = null;
-	int attempts = walkers.size() * 25;
-	while (attempts > 0) { // TODO try reset of nodes (new start nodes)
-			       // after x attemps!
-	    for (Entry<AWalker, Integer> w : wp.entrySet()) {
-		double currentP = (double) w.getValue()
-			/ (double) sumOfCurrentDegrees;
-
-		if (currentP < p) {
-		    active = w.getKey();
-//		    System.err.println("Found active walker! " + w.getKey().getCurrentCandidates().keySet().toString()); // TODO remove
-		}
-	    }
-	    if (active == null) {
-		p = r.nextDouble();
-//		System.err.println("No active Walker found! new p = " + p); // TODO remove
-	    } else {
-		break;
-	    }
+	
+	double sumP = 0;
+	for(Integer i : wp.values()){
+		sumP += i;
 	}
-
+	
+	double currentP = 0.0;
+	for(Iterator<Entry<AWalker, Integer>> iter = wp.entrySet().iterator(); iter.hasNext();){
+		Entry<AWalker, Integer> w = iter.next();
+		currentP += w.getValue()/sumP;
+		if(currentP > p){
+			active = w.getKey();
+			break;
+		}
+	}
+	
+	// should never happen
+	if(active==null){
+		int cd = -1;
+		for(AWalker w : walkers){
+			active = (cd > w.getCurrentNodes().toArray(new Node[0])[0].getDegree()) ? active : w;
+		}
+	}
+	
 	Collection<AWalker> activeWalker = new ArrayList<AWalker>();
 	activeWalker.add(active);
 

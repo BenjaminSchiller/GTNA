@@ -35,17 +35,12 @@
  */
 package gtna.transformation.sampling.walkercontroller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
-import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
 import gtna.transformation.sampling.AWalkerController;
 import gtna.transformation.sampling.CandidateFilter;
-import gtna.transformation.sampling.StartNodeSelector;
-import gtna.transformation.sampling.sample.NetworkSample;
+
+import java.util.Collection;
 
 /**
  * @author Tim
@@ -67,7 +62,7 @@ public class UniformSamplingWalkerController extends AWalkerController {
 		super(w.size() + "x_" + w.toArray(new AWalker[0])[0].getValue(), w, cf);
 		if (w.size() != 1) {
 			throw new IllegalArgumentException(
-					"This Walker Controller is defined for single dimensional usage.");
+					"This Walker Controller is defined for single dimensional usage only.");
 		}
 		this.walkers = w;
 		this.cf = cf;

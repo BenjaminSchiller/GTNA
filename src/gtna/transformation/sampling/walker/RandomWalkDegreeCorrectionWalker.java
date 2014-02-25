@@ -35,13 +35,13 @@
  */
 package gtna.transformation.sampling.walker;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Random;
-
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Random;
 
 /**
  * @author Tim
@@ -61,7 +61,7 @@ public class RandomWalkDegreeCorrectionWalker extends AWalker {
 	 */
 	@Override
 	protected Node selectNextNode(Collection<Node> candidates) {
-		Random r = super.getRNG();
+		Random r = this.getRNG();
 		ArrayList<Node> can = new ArrayList<Node>();
 		can.addAll(candidates);
 		

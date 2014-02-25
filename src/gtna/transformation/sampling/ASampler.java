@@ -51,157 +51,143 @@ import gtna.util.parameter.Parameter;
  */
 public abstract class ASampler extends Parameter {
 
-    private AWalkerController walkerController;
-    private Graph graph;
-    private SamplingController samplingController;
-	private double runtime = 0;
-	private int calls = 0;
-
-    /**
-     * 
-     * @param sampler
-     */
-    public ASampler(String sampler) {
-	super("SAMPLER", sampler);
-    }
-    
-    
+	private AWalkerController walkerController;
+	private Graph graph;
+	private SamplingController samplingController;
+	private double runtime = 0; // TODO REMOVE
 
 
-    /**
-     * Initializes the ASampler implementation
-     * 
-     * This default implementation calls sampleOneStepNodes to sample the
-     * startnode(s)!
-     * 
-     * This default implementation calls setGraph, you don't have to take care about
-     * setting the graph after calling this method.
-     * 
-     * @param targetSampleSize
-     *            max nodes sampled in this round
-     * @param walkerController
-     * 
-     */
-    public Collection<Node> initialize(Graph g, int maxNodes, int round) {
-    	this.setGraph(g);
-    	return sampleOneStep(maxNodes, round);
-    }
-
-    /**
-     * Set the used walker controller instance
-     * 
-     * @param awc
-     */
-    public void setWalkerController(AWalkerController awc) {
-	this.walkerController = awc;
-    }
-
-    /**
-     * Checks the initialization of the sampler instance
-     * 
-     * @return true if ok, else false
-     */
-    public boolean isInitialized() {
-	if (walkerController == null) {
-	    return false;
+	/**
+	 * 
+	 * @param sampler
+	 */
+	public ASampler(String sampler) {
+		super("SAMPLER", sampler);
 	}
 
-	return true;
-    }
-
-    /**
-     * Sample nodes of the current step
-     * 
-     * @param g
-     *            graph
-     * @param ns
-     *            current network sample
-     * @param maxNodes
-     *            sample max maxNodes nodes in this step
-     * @return
-     */
-    public Collection<Node> sampleOneStep(int maxNodes, int round) {
-    	
-    	Timer t = new Timer(); // TODO
-    	
-	Collection<AWalker> walkers = walkerController.getActiveWalkers();
-	LinkedList<Node> sampled = new LinkedList<Node>();
-
-	for (AWalker w : walkers) {
-	    Map<Node, Collection<Node>> wcc = w.getCurrentCandidates();
-	    Map<Node, Collection<Node>> fc = walkerController.filterCandidates(
-		    wcc);
-	    sampled.addAll(sampleNodes(fc, round));
+	/**
+	 * Initializes the ASampler implementation
+	 * 
+	 * This default implementation calls sampleOneStepNodes to sample the
+	 * startnode(s)!
+	 * 
+	 * This default implementation calls setGraph, you don't have to take care
+	 * about setting the graph after calling this method.
+	 * 
+	 * @param targetSampleSize
+	 *            max nodes sampled in this round
+	 * @param walkerController
+	 * 
+	 */
+	public Collection<Node> initialize(Graph g, int maxNodes, int round) {
+		this.setGraph(g);
+		return sampleOneStep(maxNodes, round);
 	}
-	
-	Random r = samplingController.getRng();
-	while(sampled.size() > maxNodes){
-		int i = r.nextInt(sampled.size()-1);
-		sampled.remove(i);
+
+	/**
+	 * Set the used walker controller instance
+	 * 
+	 * @param awc
+	 */
+	public void setWalkerController(AWalkerController awc) {
+		this.walkerController = awc;
 	}
-	
-	// TODO
+
+	/**
+	 * Checks the initialization of the sampler instance
+	 * 
+	 * @return true if ok, else false
+	 */
+	public boolean isInitialized() {
+		if (walkerController == null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Sample nodes of the current step
+	 * 
+	 * @param g
+	 *            graph
+	 * @param ns
+	 *            current network sample
+	 * @param maxNodes
+	 *            sample max maxNodes nodes in this step
+	 * @return
+	 */
+	public Collection<Node> sampleOneStep(int maxNodes, int round) {
+
+		Timer t = new Timer(); // TODO
+
+		Collection<AWalker> walkers = walkerController.getActiveWalkers();
+		LinkedList<Node> sampled = new LinkedList<Node>();
+
+		for (AWalker w : walkers) {
+			Map<Node, Collection<Node>> wcc = w.getCurrentCandidates();
+			Map<Node, Collection<Node>> fc = walkerController
+					.filterCandidates(wcc);
+			sampled.addAll(sampleNodes(fc, round));
+		}
+
+		if (sampled.size() > maxNodes) {
+			Random r = samplingController.getRng();
+			while (sampled.size() > maxNodes) {
+				int i = r.nextInt(sampled.size() - 1);
+				sampled.remove(i);
+			}
+		}
+		// TODO
 		t.end();
-		runtime += t.getRuntime();
-		calls++;
-//		System.out.println("Sampling took " + runtime + " ms (" + t.getMsec() + ") in " + calls + " calls");
-		
-		
-	return sampled;
+		runtime += t.getMsec();
 
-    }
+		// System.out.println("Sampling took " + runtime + " ms (" + t.getMsec()
+		// + ") in " + calls + " calls");
 
-    /**
-     * Select the sampled node out of the filtered candidates
-     * 
-     * @param filteredCandidates
-     *            candidate nodes
-     * @return collection of selected nodes
-     */
-    protected abstract Collection<Node> sampleNodes(
-	    Map<Node, Collection<Node>> filteredCandidates, int round);
+		return sampled;
 
+	}
 
+	/**
+	 * Select the sampled node out of the filtered candidates
+	 * 
+	 * @param filteredCandidates
+	 *            candidate nodes
+	 * @return collection of selected nodes
+	 */
+	protected abstract Collection<Node> sampleNodes(
+			Map<Node, Collection<Node>> filteredCandidates, int round);
 
+	/**
+	 * @return the graph
+	 */
+	public Graph getGraph() {
+		return graph;
+	}
 
-    /**
-     * @return the graph
-     */
-    public Graph getGraph() {
-	return graph;
-    }
+	/**
+	 * @param graph
+	 *            the graph to set
+	 */
+	public void setGraph(Graph graph) {
+		this.graph = graph;
+	}
 
+	/**
+	 * @param sc
+	 */
+	public void setSamplingController(SamplingController sc) {
+		this.samplingController = sc;
 
-
-
-    /**
-     * @param graph the graph to set
-     */
-    public void setGraph(Graph graph) {
-	this.graph = graph;
-    }
-
-
-
-
-    /**
-     * @param sc
-     */
-    public void setSamplingController(SamplingController sc) {
-	this.samplingController = sc;
-	
-    }
-
-
-
+	}
 
 	/**
 	 * 
 	 */
 	public void printRuntimes() {
 		System.out.println("Collecting nodes took: " + runtime + "ms");
-		
-	}
 
+	}
 
 }

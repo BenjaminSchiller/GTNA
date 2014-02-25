@@ -35,7 +35,9 @@
  */
 package gtna.transformation.sampling;
 
-import gtna.transformation.sampling.sample.NetworkSample;
+import gtna.transformation.sampling.sample.NetworkSampleFull;
+import gtna.transformation.sampling.sample.INetworkSample;
+import gtna.transformation.sampling.sample.NetworkSampleFast;
 import gtna.transformation.sampling.sampler.RoundBasedVisitedNodeSampler;
 import gtna.transformation.sampling.sampler.VisitedNodeSampler;
 import gtna.transformation.sampling.walker.BFSWalker;
@@ -78,6 +80,7 @@ public class SamplingAlgorithmFactory {
     	DFS
     }
 
+
     /**
      * build an instance of a default sampling transformation
      * 
@@ -90,6 +93,24 @@ public class SamplingAlgorithmFactory {
      */
     public static SamplingController getInstanceOf(SamplingAlgorithm sg,
 	    double scaledown, boolean revisiting, int dimension, Long randomSeed) {
+    	
+    	return getInstanceOf(sg, scaledown, revisiting, dimension, randomSeed, false);
+    }
+    
+    
+    /**
+     * build an instance of a default sampling transformation
+     * 
+     * @param sg
+     * @param revisiting
+     * @param dimension
+     *            IGNORED BY SINGLEDIMENSIONAL SAMPLING ALGORITHMS!
+     * @param randomSeed - can be <b>null</b> to use a standard RNG
+     * @param fast - fast or completely logged sampling
+     * @return
+     */
+    public static SamplingController getInstanceOf(SamplingAlgorithm sg,
+	    double scaledown, boolean revisiting, int dimension, Long randomSeed, boolean fast) {
 	SamplingController sc;
 	ASampler as;
 	AWalker aw;
@@ -99,7 +120,7 @@ public class SamplingAlgorithmFactory {
 	StartNodeSelector sns;
 	String algorithm;
 	@SuppressWarnings("unused")
-	NetworkSample ns;
+	INetworkSample ns;
 
 	switch (sg) {
 		case UNIFORMSAMPLING:
@@ -254,7 +275,7 @@ public class SamplingAlgorithmFactory {
 			break;
 		case RESPONDENTDRIVENSAMPLING:
 			as = new VisitedNodeSampler();
-			aw = new RDSWalker(3);
+			aw = new RDSWalker(8);
 			cf = new CandidateFilter(revisiting);
 			sns = new StartNodeSelector("RANDOM");
 			cw = new ArrayList<AWalker>();
@@ -296,8 +317,13 @@ public class SamplingAlgorithmFactory {
 	}
 	
 	
-	ns = new NetworkSample(algorithm, scaledown, dimension,
+	if(fast){
+		ns = new NetworkSampleFast(algorithm, scaledown, dimension,
 			revisiting);
+	}else{
+		ns = new NetworkSampleFull(algorithm, scaledown, dimension,
+			revisiting);
+	}
 	sc = new SamplingController(algorithm, awc, as, sns, ns, scaledown,
 		dimension, revisiting, randomSeed);
 	
