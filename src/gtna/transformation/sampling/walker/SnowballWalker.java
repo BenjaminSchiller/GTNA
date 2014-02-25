@@ -35,18 +35,12 @@
  */
 package gtna.transformation.sampling.walker;
 
+import gtna.graph.Node;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import gtna.graph.Graph;
-import gtna.graph.Node;
-import gtna.transformation.sampling.AWalker;
-import gtna.transformation.sampling.sample.NetworkSample;
 
 /**
  * @author Tim
@@ -80,11 +74,12 @@ public class SnowballWalker extends BFSBaseWalker {
 	 */
 	@Override
 	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> cn) {
-		Collection<Node> q = new ArrayList<Node>();
+		List<Node> q = new ArrayList<Node>();
 		ArrayList<Node> temp = new ArrayList<Node>();
 		Collection<Node> temp1 = new ArrayList<Node>();
 
 		temp.addAll(cn);
+		Collections.shuffle(temp); // shuffle because the neighbor lists are not sorted in real life networks
 		temp1 = this.filterCandidates(temp);
 		if (temp1.size() <= amountOfAddedNodesPerStep) {
 			q.addAll(temp1);

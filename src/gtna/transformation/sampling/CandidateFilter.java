@@ -36,11 +36,12 @@
 package gtna.transformation.sampling;
 
 import gtna.graph.Node;
-import gtna.transformation.sampling.sample.NetworkSample;
+import gtna.transformation.sampling.sample.INetworkSample;
 import gtna.util.Timer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Tim
@@ -74,7 +75,7 @@ public class CandidateFilter {
      * @return filtered set of candidates
      */
     public Collection<Node> filterCandidates(Collection<Node> c,
-	    NetworkSample ns) {
+	    INetworkSample ns) {
 	if (revisiting)
 	    return filterCandidatesRevisiting(c, ns);
 	else
@@ -92,18 +93,21 @@ public class CandidateFilter {
      * @return c without ns.nodes
      */
     public Collection<Node> filterCandidatesSelfAware(Collection<Node> c,
-	    NetworkSample ns) {
+	    INetworkSample ns) {
     	
     	Timer t = new Timer();
+    	
 	Collection<Node> filtered = new ArrayList<Node>();
+	
+	Set<Integer> seen = ns.getSampleNodeMapping().keySet();
 
 	for (Node n : c) {
-	    if (!ns.contains(n))
+	    if (!seen.contains(n.getIndex()))
 	    	filtered.add(n);
 	}
 
 	t.end();
-	runtime += t.getRuntime();
+	runtime += t.getMsec();
 	
 	return filtered;
     }
@@ -120,7 +124,7 @@ public class CandidateFilter {
      * @return == c
      */
     public Collection<Node> filterCandidatesRevisiting(Collection<Node> c,
-	    NetworkSample ns) {
+	    INetworkSample ns) {
     	return c;
     }
 

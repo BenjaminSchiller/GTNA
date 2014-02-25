@@ -67,12 +67,16 @@ public class SampleGeneration {
 	public static final String[] topologies = new String[] { "spi", "wot", "er" };
 
 	public static final SamplingAlgorithm[] algorithms = new SamplingAlgorithm[] {
-			SamplingAlgorithm.RANDOMWALK };
-
-	public static final int[] percents = new int[] { 10, 20, 30, 40, 50, 60,
-			70, 80, 90 };
+			SamplingAlgorithm.FRONTIERSAMPLING };
 	
-//	public static final int[] percents = new int[] { 90 };
+//	public static final SamplingAlgorithm[] algorithms = SamplingAlgorithm.values();
+
+	
+	
+//	public static final int[] percents = new int[] { 10, 20, 30, 40, 50, 60,
+//			70, 80, 90 };
+	
+	public static final int[] percents = new int[] { 10, 20 };
 
 	public static final int times = 1;
 
@@ -89,44 +93,60 @@ public class SampleGeneration {
 
 	public static void generateSamples(String name, int times) {
 		System.out.println("generating samples for " + name);
-		GraphWriter writer = new GtnaGraphWriter();
+		
 		Transformation subgraph = new ExtractSampledSubgraph();
 		Network nw = getNetwork(name);
 		for (SamplingAlgorithm algorithm : algorithms) {
 			for (int percent : percents) {
 				for (int t = 0; t < times; t++) {
-					System.out.println(name + " / " + algorithm + " @ "
-							+ percent + "%");
-					String filename = getSampleFilename(name, algorithm,
-							percent, t);
-					if ((new File(filename)).exists()) {
-						System.out.println("  skipping " + filename);
-						continue;
-					}
-					Graph g = nw.generate();
-					// System.out.println("   " + g);
-					Transformation sampling = SamplingAlgorithmFactory
-							.getInstanceOf(algorithm, (double) percent / 100.0,
-									false, 1, System.currentTimeMillis());
-					Transformation weak = new LargestWeaklyConnectedComponent();
-					Transformation strong = new LargestStronglyConnectedComponent();
-
-					Timer t1 = new Timer();
-//					g = strong.transform(g);
-					t1.end();
-					Timer t2 = new Timer();
-					g = sampling.transform(g);
-					t2.end();
-					Timer t3 = new Timer();
-					g = subgraph.transform(g);
-					t3.end();
-					
-//					writer.writeWithProperties(g, filename); // TODO
-
-					System.out.println("=> " + filename + "\tSTRONG: " + t1.getSec() + "s / SAMPLING: " + t2.getSec() + "s / SUBGRAPH: " + t3.getSec() + "s");
+					boolean fast = true;
+					System.out.println("------------------------------------------ (fast=" + fast +")");
+					sample(name, algorithm, percent, t, fast, subgraph, nw);
+					fast = false;
+					System.out.println("------------------------------------------ (fast=" + fast +")");
+					sample(name, algorithm, percent, t, fast, subgraph, nw);
 				}
 			}
 		}
+	}
+	
+	private static void sample(String name, SamplingAlgorithm algorithm, int percent, int t, boolean fast, Transformation subgraph, Network nw){
+		GraphWriter writer = new GtnaGraphWriter();
+		System.out.println(name + " / " + algorithm + " @ "
+				+ percent + "%");
+		String filename = getSampleFilename(name, algorithm,
+				percent, t, fast);
+		
+//		if ((new File(filename)).exists()) {
+//			System.out.println("  skipping " + filename);
+//			return;
+//		}
+		
+		Graph g = nw.generate();
+		// System.out.println("   " + g);
+		Transformation sampling = SamplingAlgorithmFactory
+				.getInstanceOf(algorithm, (double) percent / 100.0,
+						false, 1, System.currentTimeMillis(), fast);
+		Transformation weak = new LargestWeaklyConnectedComponent();
+		Transformation strong = new LargestStronglyConnectedComponent();
+
+		Timer t1 = new Timer();
+		g = strong.transform(g);
+		System.out.print("STRONG done");
+		t1.end();
+		Timer t2 = new Timer();
+		g = sampling.transform(g);
+		System.out.print("\t Sampling done");
+		t2.end();
+		Timer t3 = new Timer();
+		g = subgraph.transform(g);
+		System.out.print("\t subgraphing done\n");
+		t3.end();
+		
+		writer.writeWithProperties(g, filename); // TODO
+
+		System.out.println("=> " + filename + "\nSTRONG: " + t1.getSec() + "s \nSAMPLING: " + t2.getSec() + "s \nSUBGRAPH: " + t3.getSec() + "s");
+//		System.out.println("STRONG: " + t1.getMsec() + "ms \nSAMPLING: " + t2.getMsec() + "ms \nSUBGRAPH: " + t3.getMsec() + "ms");
 	}
 
 	public static String getFilename(String name) {
@@ -139,8 +159,13 @@ public class SampleGeneration {
 	}
 
 	public static String getSampleFilename(String name,
-			SamplingAlgorithm algorithm, int percent, int number) {
-		return getSampleFolder(name, algorithm, percent) + number + ".gtna";
+			SamplingAlgorithm algorithm, int percent, int number, boolean fast) {
+		
+		String f = "";
+		if(fast){
+			f = "-fast";
+		}
+		return getSampleFolder(name, algorithm, percent) + number + f + ".gtna";
 	}
 
 	public static Network getNetwork(String name) {

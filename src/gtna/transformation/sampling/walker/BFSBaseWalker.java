@@ -35,19 +35,17 @@
  */
 package gtna.transformation.sampling.walker;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.sampling.AWalker;
-import gtna.transformation.sampling.sample.NetworkSample;
+import gtna.transformation.sampling.sample.INetworkSample;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Tim
@@ -58,14 +56,13 @@ import gtna.transformation.sampling.sample.NetworkSample;
 public abstract class BFSBaseWalker extends AWalker {
 
 	Deque<Node> nextQ;
-	private int restartcounter = 0;
-
+	
 	/**
 	 * @param walker
 	 */
 	public BFSBaseWalker(String key) {
 		super(key);
-		nextQ = new LinkedList<Node>();
+		nextQ = new ArrayDeque<Node>();
 	}
 
 	/*
@@ -87,10 +84,6 @@ public abstract class BFSBaseWalker extends AWalker {
 					n = cc.toArray(new Node[0])[0];
 				}
 			} else {
-
-//				System.err.println("NextQ empty, need a restart! ("
-//						+ restartcounter + ")");
-				restartcounter += 1;
 				cc = super.getRestartNodes();
 				n = cc.toArray(new Node[0])[0];
 
@@ -101,7 +94,7 @@ public abstract class BFSBaseWalker extends AWalker {
 	}
 
 	@Override
-	public void takeAStep(Graph g, NetworkSample ns) {
+	public void takeAStep(Graph g, INetworkSample ns) {
 		Map<Node, Collection<Node>> cc = this.getCurrentCandidates();
 		Collection<Node> c = new ArrayList<Node>();
 

@@ -37,7 +37,7 @@ package gtna.transformation.sampling;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.transformation.sampling.sample.NetworkSample;
+import gtna.transformation.sampling.sample.INetworkSample;
 import gtna.util.parameter.Parameter;
 
 import java.util.ArrayList;
@@ -46,7 +46,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * @author Tim
@@ -103,8 +102,9 @@ public abstract class AWalker extends Parameter {
     /**
      * Move walker one step
      */
-    public void takeAStep(Graph g, NetworkSample ns) {
+    public void takeAStep(Graph g, INetworkSample ns) {
 	Map<Node, Collection<Node>> cc = this.getCurrentCandidates();
+	
 	Collection<Node> c;
 
 	// TODO

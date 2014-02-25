@@ -43,7 +43,7 @@ import java.util.Random;
 
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.transformation.sampling.sample.NetworkSample;
+import gtna.transformation.sampling.sample.INetworkSample;
 import gtna.util.Timer;
 import gtna.util.parameter.Parameter;
 
@@ -126,7 +126,7 @@ public abstract class AWalkerController extends Parameter {
 	 * 
 	 * @return
 	 */
-	public NetworkSample getNetworkSample() {
+	public INetworkSample getNetworkSample() {
 		return getSamplingController().getNetworkSample();
 	}
 
@@ -220,7 +220,7 @@ public abstract class AWalkerController extends Parameter {
 		
 		// TODO
 		t.end();
-		runtime += t.getRuntime();
+		runtime += t.getMsec();
 	}
 
 	public Collection<Node> filterCandidates(Collection<Node> candidates) {

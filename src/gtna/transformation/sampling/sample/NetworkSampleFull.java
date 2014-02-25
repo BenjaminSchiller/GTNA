@@ -35,19 +35,14 @@
  */
 package gtna.transformation.sampling.sample;
 
+import gnu.trove.THashMap;
 import gtna.graph.Node;
-import gtna.util.Timer;
 import gtna.util.parameter.Parameter;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -55,24 +50,22 @@ import java.util.Map.Entry;
  * @author Tim
  * 
  */
-public class NetworkSample extends Parameter {
+public class NetworkSampleFull extends Parameter implements INetworkSample {
 
-	Map<Integer, List<Integer>> revisitFrequency;
-	HashMap<Integer, Integer> sampleNodeMapping;
-	Deque<Integer> sampleNodeMapping1;
+	THashMap<Integer, List<Integer>> revisitFrequency;
+	THashMap<Integer, Integer> sampleNodeMapping;
 	String algorithm;
 	double scaledown;
 	int dimension;
 	boolean revisiting;
 	int numberOfRounds = 0;
 	String type;
-	private double addingRuntime;
 
 	/**
 	 * @param key
 	 * @param value
 	 */
-	public NetworkSample() {
+	public NetworkSampleFull() {
 		this("standard");
 	}
 
@@ -82,7 +75,7 @@ public class NetworkSample extends Parameter {
 	 * @param dimension
 	 * @param revisiting
 	 */
-	public NetworkSample(String algorithm, double scaledown, int dimension,
+	public NetworkSampleFull(String algorithm, double scaledown, int dimension,
 			boolean revisiting) {
 		this("standard", algorithm, scaledown, dimension, revisiting);
 	}
@@ -93,12 +86,11 @@ public class NetworkSample extends Parameter {
 	 * @param dimension
 	 * @param revisiting
 	 */
-	public NetworkSample(String type, String algorithm, double scaledown, int dimension,
+	public NetworkSampleFull(String type, String algorithm, double scaledown, int dimension,
 			boolean revisiting) {
-		super("Network_SAMPLE", type);
-		sampleNodeMapping = new HashMap<Integer, Integer>();
-		sampleNodeMapping1 = new ArrayDeque<Integer>(25000); // TODO
-		revisitFrequency = new HashMap<Integer, List<Integer>>();
+		super("NETWORK_SAMPLE", type);
+		sampleNodeMapping = new THashMap<Integer, Integer>();
+		revisitFrequency = new THashMap<Integer, List<Integer>>();
 		this.type = type;
 		this.algorithm = algorithm;
 		this.scaledown = scaledown;
@@ -111,26 +103,20 @@ public class NetworkSample extends Parameter {
 	/**
 	 * @param type
 	 */
-	public NetworkSample(String type) {
+	public NetworkSampleFull(String type) {
 		super("NETWORK_SAMPLE", type);
 		this.type = type;
-		sampleNodeMapping = new HashMap<Integer, Integer>();
-		sampleNodeMapping1 = new ArrayDeque<Integer>(25000); // TODO
-		revisitFrequency = new HashMap<Integer, List<Integer>>();
+		sampleNodeMapping = new THashMap<Integer, Integer>();
+		revisitFrequency = new THashMap<Integer, List<Integer>>();
 
 	}
 
-	/**
-	 * Add the given node in the given round to the sample
-	 * 
-	 * @param n
-	 *            Nodes, added to the sample
-	 * @param round
-	 *            Round in which the node is sampled
-	 * @return true if added
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#addNodeToSample(java.util.Collection, int)
 	 */
+	@Override
 	public boolean addNodeToSample(Collection<Node> nodes, int round) {
-		Timer t = new Timer();
+		
 		if (!initialized()) {
 			throw new IllegalStateException("NetworkSample is not initialized!");
 		}
@@ -142,16 +128,14 @@ public class NetworkSample extends Parameter {
 
 		
 		for (Node n : nodes) {
-			if (!sampleNodeMapping1.contains(n.getIndex())) {
-//			if (!sampleNodeMapping.containsKey(n.getIndex())) { // TODO
+			if (!sampleNodeMapping.containsKey(n.getIndex())) {
 				// add node to the sample and initialize the RF for this node
-//				int newId = sampleNodeMapping.size();
-//				sampleNodeMapping.put(n.getIndex(), newId); // TODO
-				sampleNodeMapping1.add(n.getIndex()); // add old index, the new index is the index within the list
+				int newId = sampleNodeMapping.size();
+				sampleNodeMapping.put(n.getIndex(), newId);
 
-//				List<Integer> rF = new LinkedList<Integer>();
-//				rF.add(round);
-//				revisitFrequency.put(n.getIndex(), rF);
+				List<Integer> rF = new LinkedList<Integer>();
+				rF.add(round);
+				revisitFrequency.put(n.getIndex(), rF);
 			} else {
 				// no need to add the node to the sample again, just add it to
 				// the RF
@@ -163,48 +147,36 @@ public class NetworkSample extends Parameter {
 
 		numberOfRounds++;
 		
-		t.end();
-		addingRuntime += t.getMsec();
-//		System.out.println("This adding took " + t.getRuntime() + "s, all in all: " + addingRuntime + "s");
-//		System.out.println("Adding of a node took " + addingRuntime/numberOfRounds + "ms/node (Round: " + numberOfRounds + ")");
-
 		return true;
 	}
 
-	/**
-	 * Checks if a node is already sampled
-	 * 
-	 * @param n
-	 *            node
-	 * @return true if contained, else false
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#contains(gtna.graph.Node)
 	 */
+	@Override
 	public boolean contains(Node n) {
-//		if (sampleNodeMapping.containsKey(n.getIndex())) { // TODO
-		if (sampleNodeMapping1.contains(n.getIndex())) {
+		if (sampleNodeMapping.containsKey(n.getIndex())) { 
+
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	/**
-	 * Return the RevisitFrequency-Map for the whole sampling Key = nodeID (from
-	 * the node in the original graph) Value = List of the rounds in which the
-	 * node was visited
-	 * 
-	 * 
-	 * @return
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#getRevisitFrequency()
 	 */
-	public Map<Integer, List<Integer>> getRevisitFrequency() {
-		return revisitFrequency;
+	@Override
+	public HashMap<Integer, List<Integer>> getRevisitFrequency() {
+		HashMap<Integer, List<Integer>> hm = new HashMap<Integer, List<Integer>>();
+		hm.putAll(revisitFrequency);
+		return hm;
 	}
 
-	/**
-	 * Return the revisitFrequency for the given nodeId
-	 * 
-	 * @param nodeId
-	 * @return List of rounds in which the given node is visited.
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#getRevisitFrequency(int)
 	 */
+	@Override
 	public List<Integer> getRevisitFrequency(int nodeId) {
 		if (revisitFrequency.containsKey(nodeId)) {
 			return revisitFrequency.get(nodeId);
@@ -213,40 +185,22 @@ public class NetworkSample extends Parameter {
 		return new LinkedList<Integer>();
 	}
 
-	/**
-	 * Return the sample as Map of: Key = nodeID in the original graph Value =
-	 * nodeID in the subgraph induced by the sampling
-	 * 
-	 * @return
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#getSampleNodeMapping()
 	 */
-	public Map<Integer, Integer> getSampleNodeMapping() {
-		
-		Map<Integer, Integer> map = new HashMap<Integer, Integer>(sampleNodeMapping1.size());
-		
-		Iterator<Integer> li = sampleNodeMapping1.iterator();
-		int i = 0;
-		while(li.hasNext()){
-			int newIndex = i;
-			int oldIndex = li.next();
-			
-			map.put(oldIndex, newIndex);
-			i++;
-		}
-		
-		
-		return map;
-		
-//		return sampleNodeMapping; // TODO
+	@Override
+	public HashMap<Integer, Integer> getSampleNodeMapping() {
+		HashMap<Integer, Integer> hm = new HashMap<Integer, Integer>();
+		hm.putAll(sampleNodeMapping);
+		return hm;
 	}
 
-	/**
-	 * returns the current size of the sample
-	 * 
-	 * @return
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#getSampleSize()
 	 */
+	@Override
 	public int getSampleSize() {
-		return sampleNodeMapping1.size();
-//		return sampleNodeMapping.size(); // TODO
+		return sampleNodeMapping.size();
 	}
 
 	/**
@@ -255,8 +209,7 @@ public class NetworkSample extends Parameter {
 	 * @return
 	 */
 	private boolean initialized() {
-		if (sampleNodeMapping1 != null && revisitFrequency != null) {
-//			if (sampleNodeMapping != null && revisitFrequency != null) {
+			if (sampleNodeMapping != null && revisitFrequency != null) {
 			return true;
 		}
 
@@ -280,44 +233,26 @@ public class NetworkSample extends Parameter {
 		return true;
 	}
 
-	/**
-	 * Returns the new Id of the sampled node
-	 * 
-	 * @param n
-	 *            node in the original graph
-	 * @return nodeId in the sampled graph
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#getNewIndexOfSampledNode(gtna.graph.Node)
 	 */
+	@Override
 	public int getNewIndexOfSampledNode(Node n) {
 		return getNewIndexOfSampledNode(n.getIndex());
 	}
 
-	/**
-	 * Returns the new Id of the sampled node
-	 * 
-	 * @param n
-	 *            nodeId in the original graph
-	 * @return nodeId in the sampled graph
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#getNewIndexOfSampledNode(int)
 	 */
+	@Override
 	public int getNewIndexOfSampledNode(int n) {
-		
-		Iterator<Integer> li = sampleNodeMapping1.iterator();
-		int i = 0;
-		while(li.hasNext()){
-			if(li.next() == n){
-				return i;
-			}
-			i++;
-		}
-		
-		return -1;
-		
-		
-//		return sampleNodeMapping.get(n); // TODO
+		return sampleNodeMapping.get(n); 
 	}
 
-	/**
-	 * returns a string representing the sampled mapping of nodes.
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#toString()
 	 */
+	@Override
 	public String toString() {
 		return printMapping();
 	}
@@ -325,24 +260,12 @@ public class NetworkSample extends Parameter {
 	private String printMapping() {
 		StringBuilder sb = new StringBuilder();
 		
-		Iterator<Integer> li = sampleNodeMapping1.iterator();
-		int i = 0;
-		while(li.hasNext()){
-			int newId = i;
-			int oldId = li.next();
-			
-			String rf = getRevisitFrequencyString(revisitFrequency.get(oldId));
-			
-			sb.append(oldId + ";" + newId + ";" + rf + "\n");
-			i++;
+		for (int n : sampleNodeMapping.keySet()) {
+			Integer newId = sampleNodeMapping.get(n);
+			String rf = getRevisitFrequencyString(revisitFrequency.get(n));
+
+			sb.append(n + ";" + newId + ";" + rf + "\n");
 		}
-		
-//		for (int n : sampleNodeMapping.keySet()) {
-//			Integer newId = sampleNodeMapping.get(n);
-//			String rf = getRevisitFrequencyString(revisitFrequency.get(n));
-//
-//			sb.append(n + ";" + newId + ";" + rf + "\n");
-//		}
 
 		return sb.toString();
 	}
@@ -366,81 +289,84 @@ public class NetworkSample extends Parameter {
 		return rf;
 	}
 
-	/**
-	 * @return the algorithm
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#getAlgorithm()
 	 */
+	@Override
 	public String getAlgorithm() {
 		return this.algorithm;
 	}
 
-	/**
-	 * @param algorithm
-	 *            the algorithm to set
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#setAlgorithm(java.lang.String)
 	 */
+	@Override
 	public void setAlgorithm(String algorithm) {
 		this.algorithm = algorithm;
 	}
 
-	/**
-	 * @return the scaledown
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#getScaledown()
 	 */
+	@Override
 	public double getScaledown() {
 		return this.scaledown;
 	}
 
-	/**
-	 * @param scaledown
-	 *            the scaledown to set
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#setScaledown(double)
 	 */
+	@Override
 	public void setScaledown(double scaledown) {
 		this.scaledown = scaledown;
 	}
 
-	/**
-	 * @return the dimension
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#getDimension()
 	 */
+	@Override
 	public int getDimension() {
 		return this.dimension;
 	}
 
-	/**
-	 * @param dimension
-	 *            the dimension to set
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#setDimension(int)
 	 */
+	@Override
 	public void setDimension(int dimension) {
 		this.dimension = dimension;
 	}
 
-	/**
-	 * @return the revisiting
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#isRevisiting()
 	 */
+	@Override
 	public boolean isRevisiting() {
 		return this.revisiting;
 	}
 
-	/**
-	 * @param revisiting
-	 *            the revisiting to set
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#setRevisiting(boolean)
 	 */
+	@Override
 	public void setRevisiting(boolean revisiting) {
 		this.revisiting = revisiting;
 	}
 
-	/**
-	 * @param oldId
-	 * @param newId
-	 * @param rf
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#addNodeEntry(int, int, java.util.List)
 	 */
+	@Override
 	public void addNodeEntry(int oldId, int newId, List<Integer> rf) {
-//		sampleNodeMapping.put(oldId, newId); // TODO
-		sampleNodeMapping1.add(oldId);
+		sampleNodeMapping.put(oldId, newId);
 		revisitFrequency.put(oldId, rf);
 
 	}
 
-	/**
-	 * @return the numberOfRounds
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#getNumberOfRounds()
 	 */
+	@Override
 	public int getNumberOfRounds() {
 		
 		int nor = 0;
@@ -458,11 +384,12 @@ public class NetworkSample extends Parameter {
 	}
 
 
-	/**
-	 * @return
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.NetworkSample1#cleanInstance()
 	 */
-	public NetworkSample cleanInstance() {
-		return new NetworkSample(type, algorithm, scaledown, dimension, revisiting);
+	@Override
+	public INetworkSample cleanInstance() {
+		return new NetworkSampleFull(type, algorithm, scaledown, dimension, revisiting);
 		
 	}
 
@@ -471,9 +398,8 @@ public class NetworkSample extends Parameter {
 	 */
 	private void clear() {
 
-//		sampleNodeMapping = new HashMap<Integer, Integer>(); // TODO
-		sampleNodeMapping1 = new LinkedList<Integer>();
-		revisitFrequency = new HashMap<Integer, List<Integer>>();
+		sampleNodeMapping = new THashMap<Integer, Integer>(); 
+		revisitFrequency = new THashMap<Integer, List<Integer>>();
 		numberOfRounds = 0;
 		
 	}

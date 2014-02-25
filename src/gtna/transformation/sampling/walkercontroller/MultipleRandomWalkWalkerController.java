@@ -83,7 +83,7 @@ public class MultipleRandomWalkWalkerController extends AWalkerController {
 	 */
 	@Override
 	protected Collection<AWalker> getActiveWalkers() {
-		return walkers; // by definition only one walker
+		return walkers; // by definition all walkers
 	}
 
 }

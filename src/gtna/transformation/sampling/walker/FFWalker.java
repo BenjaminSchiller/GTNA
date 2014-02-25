@@ -35,18 +35,12 @@
  */
 package gtna.transformation.sampling.walker;
 
+import gtna.graph.Node;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
-
-import gtna.graph.Graph;
-import gtna.graph.Node;
-import gtna.transformation.sampling.AWalker;
-import gtna.transformation.sampling.sample.NetworkSample;
 
 /**
  * @author Tim
@@ -54,43 +48,49 @@ import gtna.transformation.sampling.sample.NetworkSample;
  */
 public class FFWalker extends BFSBaseWalker {
 
-	
-    private double probability = 0.7;
+	private double probability = 0.7;
 
-    /**
-     * @param walker
-     */
-    public FFWalker() {
-	super("FF_WALKER");
-	nextQ = new LinkedList<Node>();
-    }
-    
-    /**
-     * Returns an instance of a ForestFire Walker, adding nodes with the given probability to the Q
-     * @param probability	probability of adding the neighbor-nodes to the Q, if 1.0 this is a BFSWalker	
-     */
-    public FFWalker(double probability){
-    	this();
-    	this.probability = probability;
-    }
+	/**
+	 * @param walker
+	 */
+	public FFWalker() {
+		super("FF_WALKER");
+		nextQ = new LinkedList<Node>();
+	}
 
-	/* (non-Javadoc)
-	 * @see gtna.transformation.sampling.walker.BFSBaseWalker#chooseNodesToAddToQ(java.util.Collection)
+	/**
+	 * Returns an instance of a ForestFire Walker, adding nodes with the given
+	 * probability to the Q
+	 * 
+	 * @param probability
+	 *            probability of adding the neighbor-nodes to the Q, if 1.0 this
+	 *            is a BFSWalker
+	 */
+	public FFWalker(double probability) {
+		this();
+		this.probability = probability;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.transformation.sampling.walker.BFSBaseWalker#chooseNodesToAddToQ
+	 * (java.util.Collection)
 	 */
 	@Override
 	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> toFilter) {
 		Random r = this.getRNG();
-    	Collection<Node> filtered = new ArrayList<Node>();
-    	double pn = 0.0;
-    	for(Node n : toFilter){
-    		pn = r.nextDouble();
-    		if(pn <= probability){
-    			filtered.add(n);
-    		}
-    	}
-    	
-    	return filtered;
-	}
+		Collection<Node> filtered = new ArrayList<Node>();
+		double pn = 0.0;
+		for (Node n : toFilter) {
+			pn = r.nextDouble();
+			if (pn <= probability) {
+				filtered.add(n);
+			}
+		}
 
+		return filtered;
+	}
 
 }

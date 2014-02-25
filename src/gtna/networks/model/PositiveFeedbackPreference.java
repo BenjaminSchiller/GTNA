@@ -111,11 +111,10 @@ public class PositiveFeedbackPreference extends Network {
 			}
 		}
 
-		System.out.println(">>> INITIAL NETWORK DONE"); // TODO
-		System.out.println(">>> START NETWORK GROWTH"); // TODO
+
 		// grow network to add the missing nodes
 		for (int newNodeIndex = INITIAL; newNodeIndex < nodes.length; newNodeIndex++) {
-//			System.out.print(">>> ADD NODE " + newNodeIndex + ": "); // TODO
+
 
 			double pi = rand.nextDouble();
 			Timer t = new Timer();
@@ -142,8 +141,7 @@ public class PositiveFeedbackPreference extends Network {
 				nodeDegree[h]++;
 				nodeDegree[peer]++;
 
-//				System.out.print(newNodeIndex + " -> (" + h1 + ", " + h2
-//						+ "), " + h + " -> " + peer); // TODO
+
 
 			} else if (pi <= 1 - P) {
 				// new node: 1 link to a host node
@@ -170,8 +168,7 @@ public class PositiveFeedbackPreference extends Network {
 					nodeDegree[h]++;
 					nodeDegree[peer]++;
 				}
-//				System.out.print(newNodeIndex + " -> " + h + ", " + h + " -> ("
-//						+ peer1 + ", " + peer2 + ")"); // TODO
+
 			} else if (pi <= 1) {
 				// new node: 1 link to a host node
 				// host node: 1 links to a peer
@@ -190,12 +187,10 @@ public class PositiveFeedbackPreference extends Network {
 				nodeDegree[h]++;
 				nodeDegree[peer]++;
 
-//				System.out.print(newNodeIndex + " -> " + h + ", " + h + " -> "
-//						+ peer); // TODO
+
 			}
 			t.end();
-//			System.out.println("\t Selected new Node. Took " + t.getMsec()
-//					+ "ms.");
+
 		}
 
 		edges.fill();
