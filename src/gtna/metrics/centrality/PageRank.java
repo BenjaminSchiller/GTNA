@@ -54,11 +54,11 @@ import java.util.HashMap;
  * 
  */
 public class PageRank extends Metric {
-	// TODO: PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION is a NV-List, but not a distribution
 	
 	private NodeValueList pageRank;
 	
-	private static final int ITERATIONS = 10;
+	private static final int ITERATIONS = 50;
+	private int bins = 20;
 
 	private double alpha = 0.85; // initialized with the Brin/Page proposed
 									// value
@@ -87,6 +87,19 @@ public class PageRank extends Metric {
 
 	private double prAvg;
 
+	
+	
+	public PageRank(double alpha, int bins){
+		super("PAGERANK_DISTRIBUTION");
+		this.alpha = alpha;
+		this.bins = bins;
+	}
+	
+	public PageRank(int bins){
+		super("PAGERANK_DISTRIBUTION");
+		this.bins = bins;
+	}
+	
 	/**
 	 * @param key
 	 */
@@ -168,10 +181,7 @@ public class PageRank extends Metric {
 	 */
 	private double[] initVector(int length) {
 		double[] t = new double[length];
-		Arrays.fill(t, 0.0);
-
-		t[0] = 1000.0;
-
+		Arrays.fill(t, length);
 		return t;
 	}
 
@@ -184,6 +194,8 @@ public class PageRank extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(this.pageRank.getValues(),
+				"PAGERANK_DISTRIBUTION_PAGERANK_NVL", folder);
+		success &= DataWriter.writeWithoutIndex(this.pageRank.toDistribution(bins).getDistribution(),
 				"PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION", folder);
 		return success;
 
@@ -392,7 +404,7 @@ public class PageRank extends Metric {
 		
 		/* NodeValue Lists */
 		
-		pageRank = new NodeValueList("PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION", readDistribution(folder, "PAGERANK_DISTRIBUTION_PAGERANK_DISTRIBUTION"));
+		pageRank = new NodeValueList("PAGERANK_DISTRIBUTION_PAGERANK_NVL", readDistribution(folder, "PAGERANK_DISTRIBUTION_PAGERANK_NVL"));
 		
 		
 		return true;

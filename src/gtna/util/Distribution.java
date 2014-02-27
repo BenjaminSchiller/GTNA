@@ -44,9 +44,9 @@ public class Distribution {
 	
 	private String key;
 	
-	private double[] distribution;
+	private double[][] distribution;
 
-	private double[] cdf;
+	private double[][] cdf;
 
 	private double min;
 
@@ -66,12 +66,34 @@ public class Distribution {
 
 	public Distribution(String key, double[] distribution) {
 		this.setKey(key);
+		this.distribution = withIndex(distribution);
+		this.cdf = this.computeCdf();
+		this.min = this.computeMin();
+		this.median = this.computeMedian();
+		this.average = this.computeAverage();
+		this.max = this.computeMax();
+	}
+	
+	public Distribution(String key, double[][] distribution) {
+		this.setKey(key);
 		this.distribution = distribution;
 		this.cdf = this.computeCdf();
 		this.min = this.computeMin();
 		this.median = this.computeMedian();
 		this.average = this.computeAverage();
 		this.max = this.computeMax();
+	}
+	
+	
+	
+	
+	private static double[][] withIndex(double[] d){
+		double[][] di = new double[d.length][2];		
+		for(int i = 0; i < d.length; i++){
+			di[i][0] = i;
+			di[i][1] = d[i];
+		}		
+		return di;
 	}
 
 	private static double[] computeDistributionLong(long[] values, long sum) {
@@ -98,18 +120,31 @@ public class Distribution {
 		return distribution;
 	}
 
-	private double[] computeCdf() {
-		double[] cdf = new double[this.distribution.length];
-		cdf[0] = this.distribution[0];
-		for (int i = 1; i < cdf.length; i++) {
-			cdf[i] = cdf[i - 1] + this.distribution[i];
+	private double[][] computeCdf() {
+		
+		
+		double[][] cdf = new double[this.distribution.length][2];
+		
+		cdf[0][0] = this.distribution[0][0];
+		cdf[0][1] = this.distribution[0][1];
+		
+		for(int i = 1; i < cdf.length; i++){
+			cdf[i][0] = this.distribution[i][0];
+			cdf[i][1] = cdf[i-1][1] + this.distribution[i][1];
 		}
+		
+		
+//		double[] cdf = new double[this.distribution.length];
+//		cdf[0] = this.distribution[0];
+//		for (int i = 1; i < cdf.length; i++) {
+//			cdf[i] = cdf[i - 1] + this.distribution[i];
+//		}
 		return cdf;
 	}
 
 	private double computeMin() {
 		int index = 0;
-		while (index < this.distribution.length && this.distribution[index] == 0) {
+		while (index < this.distribution.length && this.distribution[index][1] == 0) {
 			index++;
 		}
 		return index;
@@ -121,8 +156,8 @@ public class Distribution {
 
 	private double computeMedian() {
 		int index = 0;
-		double threshold = this.cdf[this.cdf.length - 1] / 2.0;
-		while (index < this.cdf.length && this.cdf[index] <= threshold) {
+		double threshold = this.cdf[this.cdf.length - 1][1] / 2.0;
+		while (index < this.cdf.length && this.cdf[index][1] <= threshold) {
 			index++;
 		}
 		return index;
@@ -131,7 +166,7 @@ public class Distribution {
 	private double computeAverage() {
 		double avg = 0;
 		for (int i = 0; i < this.distribution.length; i++) {
-			avg += (double) i * this.distribution[i];
+			avg += (double) i * this.distribution[i][1];
 		}
 		return avg;
 	}
@@ -139,14 +174,14 @@ public class Distribution {
 	/**
 	 * @return the distribution
 	 */
-	public double[] getDistribution() {
+	public double[][] getDistribution() {
 		return this.distribution;
 	}
 
 	/**
 	 * @return the cdf
 	 */
-	public double[] getCdf() {
+	public double[][] getCdf() {
 		return this.cdf;
 	}
 
@@ -197,8 +232,8 @@ public class Distribution {
 		
 		sb.append(this.key);
 		sb.append("\n");
-		for(double d : distribution){
-			sb.append(d); sb.append("; ");
+		for(double[] d : distribution){
+			sb.append(d[0] + ":" + d[1]); sb.append("; ");
 		}
 		
 		return sb.toString();

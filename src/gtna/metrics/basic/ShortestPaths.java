@@ -115,10 +115,10 @@ public class ShortestPaths extends Metric {
      *            reachable quantile
      * @return
      */
-    private double calculateEccentricity(double[] spCdf, Graph graph, double q) {
+    private double calculateEccentricity(double[][] spCdf, Graph graph, double q) {
 	for (int i = 0; i < spCdf.length; i++) {
-	    if (spCdf[i] >= q) {
-		return i;
+	    if (spCdf[i][1] >= q) {
+	    	return spCdf[i][0];
 	    }
 	}
 
@@ -206,22 +206,22 @@ public class ShortestPaths extends Metric {
     @Override
     public boolean writeData(String folder) {
 	boolean success = true;
-	success &= DataWriter.writeWithIndex(this.hopPlot.getDistribution(),
+	success &= DataWriter.writeWithoutIndex(this.hopPlot.getDistribution(),
 		"SHORTEST_PATHS_HOP_PLOT", folder);
-	success &= DataWriter.writeWithIndex(this.hopPlot.getCdf(),
+	success &= DataWriter.writeWithoutIndex(this.hopPlot.getCdf(),
 		"SHORTEST_PATHS_HOP_PLOT_CDF", folder);
-	success &= DataWriter.writeWithIndex(
+	success &= DataWriter.writeWithoutIndex(
 		this.shortestPathLengthDistribution.getDistribution(),
 		"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION", folder);
-	success &= DataWriter.writeWithIndex(
+	success &= DataWriter.writeWithoutIndex(
 		this.shortestPathLengthDistribution.getCdf(),
 		"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_CDF", folder);
-	success &= DataWriter.writeWithIndex(
+	success &= DataWriter.writeWithoutIndex(
 		this.shortestPathLengthDistributionAbsolute.getDistribution(),
 		"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE",
 		folder);
 	success &= DataWriter
-		.writeWithIndex(
+		.writeWithoutIndex(
 			this.shortestPathLengthDistributionAbsolute.getCdf(),
 			"SHORTEST_PATHS_SHORTEST_PATH_LENGTH_DISTRIBUTION_ABSOLUTE_CDF",
 			folder);

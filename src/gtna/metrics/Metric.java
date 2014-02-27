@@ -179,7 +179,7 @@ public abstract class Metric extends ParameterList {
 	 * @param metrickey
 	 * @return
 	 */
-	protected double[] readDistribution(String folder, String metrickey) {
+	protected double[] readDistribution(String folder, String metrickey) { // TODO replace by read 2D Vals?
 		String filename = DataWriter.filename(metrickey, folder);		
 		double[][] distributionValues = DataReader.readDouble2D(filename);		
 		double[] distribution = new double[distributionValues.length];

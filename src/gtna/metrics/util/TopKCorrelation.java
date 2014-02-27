@@ -57,17 +57,13 @@ import com.itextpdf.text.List;
  * @author Tim
  * 
  */
-public class ErrorComparison extends Metric {
+public class TopKCorrelation extends Metric {
 
 	private Metric metric;
 	private Series[] series2;
 	private Series[] series1;
 	private Series seriesMy;
 
-	private ArrayList<Distribution> distributions = new ArrayList<Distribution>();
-	private ArrayList<Distribution> nodevaluelists = new ArrayList<Distribution>();
-	private ArrayList<Single> singles = new ArrayList<Single>();
-	
 	public static final int RUNWITHRUN = 0;
 	public static final int BASEWITHRUN = 1;
 	
@@ -76,18 +72,18 @@ public class ErrorComparison extends Metric {
 	/**
 	 * @param key
 	 */
-	public ErrorComparison(Metric comparedMetric, Series[] base,
+	public TopKCorrelation(Metric comparedMetric, Series[] base,
 			Series[] changed, int type) {
-		super(base[0].getNetwork().getNameShort() + "_COMP_" + comparedMetric.getDescriptionShort());
-		String metricKey = base[0].getNetwork().getNameShort() + "_COMP_" + comparedMetric.getDescriptionShort();
+		super("TOPK_" + comparedMetric.getDescriptionShort());
+		String metricKey = "TOPK_" + comparedMetric.getDescriptionShort();
 
 		this.type = type;
 		
 		
 		
-		Config.appendToList(metricKey, "Error Comparison");
-		Config.appendToList(metricKey + "_NAME_LONG", "ErrorComparison");
-		Config.appendToList(metricKey + "_NAME_SHORT", "ec");
+		Config.appendToList(metricKey, "Top K Correlation");
+		Config.appendToList(metricKey + "_NAME_LONG", "TopK");
+		Config.appendToList(metricKey + "_NAME_SHORT", "tk");
 
 		Config.appendToList(metricKey + "_DATA_KEYS", "");
 		Config.appendToList(metricKey + "_DATA_PLOTS", "");
@@ -114,9 +110,9 @@ public class ErrorComparison extends Metric {
 					"No computation possible! The given Series are not containing the specified metric.");
 		}
 		
-		distributions = new ArrayList<Distribution>();
-		nodevaluelists = new ArrayList<Distribution>();
-		singles = new ArrayList<Single>();
+//		distributions = new ArrayList<Distribution>();
+//		nodevaluelists = new ArrayList<Distribution>();
+//		singles = new ArrayList<Single>();
 
 		
 		Metric b = getMetric(series1[0].getMetrics(), metric);
@@ -150,178 +146,13 @@ public class ErrorComparison extends Metric {
 		/*
 		 * Compare Metric values
 		 */
-		compareSingles(b.getSingles(), c.getSingles());
-		compareDistributions(b.getDistributions(), c.getDistributions());
-		compareNodeValueLists(b.getNodeValueLists(), c.getNodeValueLists());
+//		compareSingles(b.getSingles(), c.getSingles());
+//		compareDistributions(b.getDistributions(), c.getDistributions());
+//		compareNodeValueLists(b.getNodeValueLists(), c.getNodeValueLists());
 
 	}
 
-	/**
-	 * @param baseNVL
-	 * @param changedNVL
-	 */
-	private void compareNodeValueLists(NodeValueList[] baseNVL,
-			NodeValueList[] changedNVL) {
-		
-		for(NodeValueList bNvl : baseNVL){
-			for(NodeValueList cNvl : changedNVL){
-				if(bNvl.getKey().equalsIgnoreCase(cNvl.getKey())){
-					nodevaluelists.addAll(Arrays.asList(compareNodeValueList(bNvl, cNvl)));
-				}
-			}
-		}
-
-	}
 	
-	private Distribution[] compareNodeValueList(NodeValueList base, NodeValueList changed){
-		// assume: base.length == changed.length
-		
-		
-		double[] borders = computeBorders(base, changed);
-		
-		return this.compareDistribution(base.toDistribution(10, borders ), changed.toDistribution(10, borders));
-		
-		
-//		double[] bV = base.getValues();
-//		double[] cV = changed.getValues();
-//		
-//		double[] compared = new double[bV.length];
-//		double[] comparedAbsolute = new double[bV.length];
-//		
-//		for(int i = 0; i<bV.length; i++){
-//			compared[i] = (cV[i] - bV[i]) / bV[i];
-//			comparedAbsolute[i] = (cV[i] - bV[i]);
-//		}
-//		
-//		
-//		return new NodeValueList[]{
-//				new NodeValueList(base.getKey() + "-relative", compared),
-//				new NodeValueList(base.getKey() + "-absolute", comparedAbsolute)
-//		};
-//		
-//		return new NodeValueList[0];
-		
-	}
-	
-	
-
-	/**
-	 * @param base
-	 * @param changed
-	 * @return
-	 */
-	private double[] computeBorders(NodeValueList base, NodeValueList changed) {
-		double max = Double.MIN_VALUE;
-		double min = Double.MAX_VALUE;
-		
-		for(double d : base.getValues()){
-			max = (d > max) ? d : max;
-			min = (d < min) ? d : min;
-		}
-		
-		for(double d : changed.getValues()){
-			max = (d > max) ? d : max;
-			min = (d < min) ? d : min;
-		}
-				
-		return new double[] {min, max};
-				
-	}
-
-	/**
-	 * @param baseDistributions
-	 * @param changedDistributions
-	 */
-	private void compareDistributions(Distribution[] baseDistributions,
-			Distribution[] changedDistributions) {
-	
-		// find the corresponding Distributions:
-		for (Distribution bD : baseDistributions) {
-			for (Distribution cD : changedDistributions) {
-				if (bD.getKey().equalsIgnoreCase(cD.getKey())) {
-					distributions.addAll(Arrays.asList(compareDistribution(bD,
-							cD)));
-				}
-			}
-		}
-	}
-
-	/**
-	 * @param bD
-	 *            base Distribution
-	 * @param cD
-	 *            changed Distribution
-	 * @return
-	 */
-	private Distribution[] compareDistribution(Distribution bD, Distribution cD) {
-
-		ArrayList<Distribution> compared = new ArrayList<Distribution>();
-
-		double[][] baseValues = bD.getDistribution();
-		double[][] changedValues = cD.getDistribution();
-
-		int range = Math.max(baseValues.length, changedValues.length);
-		double[][] comparedValues = new double[range][2];
-		double[][] absoluteValues = new double[range][2];
-
-		double b; // value of base distribution
-		double c; // value of changed distribution
-		for (int i = 0; i < range; i++) {
-
-			// get values or set to zero
-			if (i < baseValues.length)
-				b = baseValues[i][1];
-			else
-				b = 0;
-
-			if (i < changedValues.length)
-				c = changedValues[i][1];
-			else
-				c = 0;
-
-			comparedValues[i][0] = baseValues[i][0];
-			absoluteValues[i][0] = baseValues[i][0];
-			comparedValues[i][1] = b - c;
-			absoluteValues[i][1] = Math.abs(b-c);
-		}
-
-		return new Distribution[] {
-			new Distribution(bD.getKey(), comparedValues),
-			new Distribution(bD.getKey() + "-absolute", absoluteValues)
-		};
-	}
-
-	/**
-	 * @param bSingles
-	 *            - Singles of the metric on the base graph
-	 * @param cSingles
-	 *            - Singles of the metric on the changed graphs
-	 */
-	private void compareSingles(Single[] bSingles, Single[] cSingles) {
-
-		// compare single by single by iterating over the base graph singles and
-		// searching the changed graph single
-		for (Single s1 : bSingles) {
-			for (Single s2 : cSingles) {
-				if (s1.getKey().equalsIgnoreCase(s2.getKey())) {
-					singles.addAll(Arrays.asList(compareSingle(s1, s2)));
-					break;
-				}
-			}
-		}
-
-	}
-
-	private Single[] compareSingle(Single s1, Single s2) {
-		double v1 = s1.getValue();
-		double v2 = s2.getValue();
-
-		Single[] compared = new Single[2];
-		compared[0] = new Single(s1.getKey() + "_COMP_R", (v2 - v1) / v1);
-		compared[1] = new Single(s1.getKey() + "_COMP_A", v2 - v1);
-
-		return compared;
-	}
 
 	/**
 	 * @param metrics
@@ -344,7 +175,7 @@ public class ErrorComparison extends Metric {
 	 * 
 	 * @return
 	 */
-	private boolean applicable() {
+	private boolean applicable() { //TODO
 		Metric[] m1 = series1[0].getMetrics();
 		Metric[] m2 = series2[0].getMetrics();
 
@@ -388,71 +219,32 @@ public class ErrorComparison extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 
-		for (Distribution d : distributions) {
-			String distrKey = this.key + "_" + d.getKey();
-			// add Config for distribution on the fly
-			writeDistributionConfig(d.getKey().replace("-absolute", ""), distrKey);
-			success &= DataWriter.writeWithoutIndex(d.getDistribution(), distrKey,
-					folder);
-
-			// add Config for cdf distribution on the fly
-			// writeDistributionCDFConfig(d.getKey(), distrKey);
-			// success &= DataWriter.writeWithIndex(d.getCdf(), distrKey +
-			// "_CDF", folder);
-		}
-		
-		for (Distribution nvl : nodevaluelists){
-			String nvlKey = this.key + "_" + nvl.getKey();
-			// add Config for distribution on the fly
-//			writeNodeValueListConfig(nvl.getKey().replace("-absolute", "").replace("-relative", ""), nvlKey);
-			writeDistributionConfig(nvl.getKey().replace("-absolute", "").replace("-relative", "").replace("-distribution", ""), nvlKey);
-			success &= DataWriter.writeWithoutIndex(nvl.getDistribution(), nvlKey,
-					folder);
-		}
+//		for (Distribution d : distributions) {
+//			String distrKey = this.key + "_" + d.getKey();
+//			// add Config for distribution on the fly
+//			writeDistributionConfig(d.getKey().replace("-absolute", ""), distrKey);
+//			success &= DataWriter.writeWithoutIndex(d.getDistribution(), distrKey,
+//					folder);
+//
+//			// add Config for cdf distribution on the fly
+//			// writeDistributionCDFConfig(d.getKey(), distrKey);
+//			// success &= DataWriter.writeWithIndex(d.getCdf(), distrKey +
+//			// "_CDF", folder);
+//		}
+//		
+//		for (Distribution nvl : nodevaluelists){
+//			String nvlKey = this.key + "_" + nvl.getKey();
+//			// add Config for distribution on the fly
+////			writeNodeValueListConfig(nvl.getKey().replace("-absolute", "").replace("-relative", ""), nvlKey);
+//			writeDistributionConfig(nvl.getKey().replace("-absolute", "").replace("-relative", "").replace("-distribution", ""), nvlKey);
+//			success &= DataWriter.writeWithoutIndex(nvl.getDistribution(), nvlKey,
+//					folder);
+//		}
 
 		return success;
 	}
 
-	/**
-	 * @param distrKey
-	 */
-	private void writeDistributionCDFConfig(String dKey, String distrKey) {
-		if (Config.get(this.key + "_DATA_KEYS") == null
-				|| Config.get(this.key + "_DATA_KEYS").equalsIgnoreCase("null")) {
-			Config.appendToList(this.key + "_DATA_KEYS", distrKey + "_CDF");
-		} else {
-			Config.overwrite(
-					this.key + "_DATA_KEYS",
-					Config.get(this.key + "_DATA_KEYS")
-							+ Config.get("CONFIG_LIST_SEPARATOR") + " "
-							+ distrKey + "_CDF");
-		}
-		if (Config.get(this.key + "_DATA_PLOTS") == null
-				|| Config.get(this.key + "_DATA_PLOTS")
-						.equalsIgnoreCase("null")) {
-			Config.appendToList(this.key + "_DATA_PLOTS", distrKey + "_CDF");
-		} else {
-			Config.overwrite(
-					this.key + "_DATA_PLOTS",
-					Config.get(this.key + "_DATA_PLOTS")
-							+ Config.get("CONFIG_LIST_SEPARATOR") + " "
-							+ distrKey + "_CDF");
-		}
-		Config.appendToList(distrKey + "_CDF_DATA_NAME", dKey + " comparison");
-		Config.appendToList(distrKey + "_CDF_DATA_FILENAME",
-				Config.get(dKey + "_DATA_FILENAME") + "-comparison"); // replace
-																		// _COMP?
-		Config.appendToList(distrKey + "_CDF_DATA_IS_CDF", "true");
-
-		Config.appendToList(distrKey + "_CDF_PLOT_DATA", distrKey + "_CDF");
-		Config.appendToList(distrKey + "_CDF_PLOT_FILENAME",
-				Config.get(dKey + "_CDF_PLOT_FILENAME") + "-comparison");
-		Config.appendToList(distrKey + "_CDF_PLOT_TITLE",
-				Config.get(dKey + "_CDF_PLOT_TITLE") + " Comparison");
-		Config.appendToList(distrKey + "_CDF_PLOT_X",
-				Config.get(dKey + "_CDF_PLOT_X"));
-		Config.appendToList(distrKey + "_CDF_PLOT_Y", "Difference");
-	}
+	
 
 	/**
 	 * @param d
@@ -576,40 +368,41 @@ public class ErrorComparison extends Metric {
 	@Override
 	public Single[] getSingles() {
 
-		for (Single s : singles) {
-			String cleanKey = s.getKey().replace("_COMP_A", "")
-					.replace("_COMP_R", "");
-
-			if (Config.get(cleanKey + "_PLOT_FILENAME") == null) {
-				System.out.println("! " + cleanKey + " - " + s.getKey());
-			}
-			writeSingleConfigGeneral(s);
-			writeSingleConfig(s, cleanKey);
-		}
-		
-		ArrayList<Single> combined = new ArrayList<Single>();
-		combined.addAll(singles);	
-		
-		// add derived Singles (min/max/med/avg of distributions)
-		for(Distribution d : distributions){
-			
-			Single dMax = new Single(d.getKey() + "-max", d.getMax());
-			Single dMin = new Single(d.getKey() + "-min", d.getMin());
-			Single dMed = new Single(d.getKey() + "-med", d.getMedian());
-			Single dAvg = new Single(d.getKey() + "-avg", d.getAverage());
-			
-			writeSingleConfigForDerivedSingle(d, dMax, "max");
-			writeSingleConfigForDerivedSingle(d, dMin, "min");
-			writeSingleConfigForDerivedSingle(d, dMed, "med");
-			writeSingleConfigForDerivedSingle(d, dAvg, "avg");
-			
-			combined.add(dMax);
-			combined.add(dMin);
-			combined.add(dMed);
-			combined.add(dAvg);
-		}
-		
-		return combined.toArray(new Single[0]);
+//		for (Single s : singles) {
+//			String cleanKey = s.getKey().replace("_COMP_A", "")
+//					.replace("_COMP_R", "");
+//
+//			if (Config.get(cleanKey + "_PLOT_FILENAME") == null) {
+//				System.out.println("! " + cleanKey + " - " + s.getKey());
+//			}
+//			writeSingleConfigGeneral(s);
+//			writeSingleConfig(s, cleanKey);
+//		}
+//		
+//		ArrayList<Single> combined = new ArrayList<Single>();
+//		combined.addAll(singles);	
+//		
+//		// add derived Singles (min/max/med/avg of distributions)
+//		for(Distribution d : distributions){
+//			
+//			Single dMax = new Single(d.getKey() + "-max", d.getMax());
+//			Single dMin = new Single(d.getKey() + "-min", d.getMin());
+//			Single dMed = new Single(d.getKey() + "-med", d.getMedian());
+//			Single dAvg = new Single(d.getKey() + "-avg", d.getAverage());
+//			
+//			writeSingleConfigForDerivedSingle(d, dMax, "max");
+//			writeSingleConfigForDerivedSingle(d, dMin, "min");
+//			writeSingleConfigForDerivedSingle(d, dMed, "med");
+//			writeSingleConfigForDerivedSingle(d, dAvg, "avg");
+//			
+//			combined.add(dMax);
+//			combined.add(dMin);
+//			combined.add(dMed);
+//			combined.add(dAvg);
+//		}
+//		
+//		return combined.toArray(new Single[0]);
+		return new Single[]{};
 	}
 
 	private void writeSingleConfigForDerivedSingle(Distribution d, Single s, String type){
@@ -716,7 +509,7 @@ public class ErrorComparison extends Metric {
 	 */
 	@Override
 	public Distribution[] getDistributions() {
-		return distributions.toArray(new Distribution[0]);
+		return new Distribution[0];
 	}
 
 	/*
@@ -726,7 +519,7 @@ public class ErrorComparison extends Metric {
 	 */
 	@Override
 	public NodeValueList[] getNodeValueLists() {
-		return nodevaluelists.toArray(new NodeValueList[0]);
+		return new NodeValueList[0];
 	}
 
 }
