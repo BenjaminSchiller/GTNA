@@ -243,15 +243,15 @@ public class Routing extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.hopDistribution.getDistribution(),
 				"ROUTING_HOP_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(this.hopDistribution.getCdf(),
+		success &= DataWriter.writeWithoutIndex(this.hopDistribution.getCdf(),
 				"ROUTING_HOP_DISTRIBUTION_CDF", folder);
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.hopDistributionAbsolute.getDistribution(),
 				"ROUTING_HOP_DISTRIBUTION_ABSOLUTE", folder);
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.hopDistributionAbsolute.getCdf(),
 				"ROUTING_HOP_DISTRIBUTION_ABSOLUTE_CDF", folder);
 		success &= DataWriter.writeWithIndex(this.betweennessCentrality.getValues(),

@@ -410,16 +410,16 @@ public class EdgeCrossings extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.completeCrossingDistribution.getDistribution(),
 				"EDGE_CROSSINGS_COMPLETE_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.completeCrossingDistribution.getCdf(),
 				"EDGE_CROSSINGS_COMPLETE_DISTRIBUTION_CDF", folder);
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.crossingsOnlyDistribution.getDistribution(),
 				"EDGE_CROSSINGS_CROSSINGSONLY_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.crossingsOnlyDistribution.getCdf(),
 				"EDGE_CROSSINGS_CROSSINGSONLY_DISTRIBUTION_CDF", folder);
 		return success;

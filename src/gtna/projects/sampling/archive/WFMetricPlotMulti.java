@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.projects.sampling;
+package gtna.projects.sampling.archive;
 
 import gtna.data.Series;
 import gtna.metrics.Metric;
@@ -43,8 +43,6 @@ import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
 import gtna.metrics.centrality.BetweennessCentrality;
 import gtna.metrics.centrality.PageRank;
-import gtna.metrics.sampling.SamplingBias;
-import gtna.metrics.sampling.SamplingModularity;
 import gtna.networks.Network;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.networks.util.ReadableFolder;
@@ -66,8 +64,7 @@ import java.util.Set;
  * @author Tim
  * 
  */
-public class WFMetricPlotPerSize {
-
+public class WFMetricPlotMulti {
 	private static String suffix = ".gtna";
 	private static String name;
 	private static LinkedList<Integer> startIndex = new LinkedList<Integer>();
@@ -78,6 +75,7 @@ public class WFMetricPlotPerSize {
 	private static LinkedList<Integer> size = new LinkedList<Integer>();
 	private static LinkedList<Double> scaledown = new LinkedList<Double>();
 	private static LinkedList<String> sampling = new LinkedList<String>();
+	private static LinkedList<String> instances = new LinkedList<String>();	
 	private static LinkedList<String> net = new LinkedList<String>();
 	private static String plotdir;
 	private static String skipping="false";
@@ -97,7 +95,7 @@ public class WFMetricPlotPerSize {
 	    }
 	}
 
-	System.out.println("> PARAMS: " + Arrays.toString(args));
+//	System.out.println("> PARAMS: " + Arrays.toString(args));
 
 	for (String s : args) {
 //		System.out.println(s);
@@ -131,6 +129,8 @@ public class WFMetricPlotPerSize {
 			String[] se = seq.split("-");
 			startIndex.add(Integer.parseInt(se[0]));
 			endIndex.add(Integer.parseInt(se[1]));
+		}else if (s.startsWith("instance=")) {
+			instances.add(s.substring(9));
 		} else if (s.startsWith("dstDir=")) {
 			targetdir = s.substring(7);
 			File f = new File(targetdir);
@@ -172,7 +172,7 @@ public class WFMetricPlotPerSize {
 	String[] dir = dirs.toArray(new String[0]);
 	for (int i = 0; i < dir.length; i++) {
 		String d = dirs.get(i);
-		name = net.get(i) + "-" + sampling.get(i).trim() + "-" + size.get(i) + "-"
+		name = net.get(i) + "-" + sampling.get(i).trim() + "-" + instances.get(i) + "-"
 				+ scaledown.get(i);
 		ReadableFolder rf = new ReadableFolder(name, net.get(0), d, suffix, null);
 		
@@ -192,7 +192,7 @@ public class WFMetricPlotPerSize {
 	    Series[] series = new Series[rfa.length];
 	    Series[][] s = new Series[1][rfa.length];
 	    for (int i = 0; i < rfa.length; i++) {
-	    	Config.overwrite("MAIN_DATA_FOLDER", targetdir  + sampling.get(i) + "/" + rfa[i].getNodes()
+	    	Config.overwrite("MAIN_DATA_FOLDER", targetdir  + instances.get(i) + "/" + sampling.get(i) + "/" + rfa[i].getNodes()
 					+ "/data/");
 		series[i] = Series.generate(rfa[i],
 			metrics.toArray(new Metric[0]), startIndex.get(i), endIndex.get(i));
@@ -202,11 +202,6 @@ public class WFMetricPlotPerSize {
 	    
 	    
 	    Plotting.multi(s, metrics.toArray(new Metric[0]), "/multi/",
-		    Type.confidence1, Style.candlesticks); // main path to plots
-							   // is set by
-							   // Config.overwrite
-	    
-	    Plotting.single(s, metrics.toArray(new Metric[0]), "/single/",
 		    Type.confidence1, Style.candlesticks); // main path to plots
 							   // is set by
 							   // Config.overwrite

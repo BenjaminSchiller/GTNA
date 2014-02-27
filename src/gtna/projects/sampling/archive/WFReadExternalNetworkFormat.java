@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.projects.sampling;
+package gtna.projects.sampling.archive;
 
 import gtna.graph.Graph;
 import gtna.io.graphReader.CaidaGraphReader;

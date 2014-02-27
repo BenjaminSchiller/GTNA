@@ -169,21 +169,21 @@ public class DegreeDistribution extends Metric {
 
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.degreeDistribution.getDistribution(),
 				"DEGREE_DISTRIBUTION_DEGREE_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(this.degreeDistribution.getCdf(),
+		success &= DataWriter.writeWithoutIndex(this.degreeDistribution.getCdf(),
 				"DEGREE_DISTRIBUTION_DEGREE_DISTRIBUTION_CDF", folder);
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.inDegreeDistribution.getDistribution(),
 				"DEGREE_DISTRIBUTION_IN_DEGREE_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.inDegreeDistribution.getCdf(),
 				"DEGREE_DISTRIBUTION_IN_DEGREE_DISTRIBUTION_CDF", folder);
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.outDegreeDistribution.getDistribution(),
 				"DEGREE_DISTRIBUTION_OUT_DEGREE_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.outDegreeDistribution.getCdf(),
 				"DEGREE_DISTRIBUTION_OUT_DEGREE_DISTRIBUTION_CDF", folder);
 		return success;

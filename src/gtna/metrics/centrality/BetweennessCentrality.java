@@ -75,12 +75,24 @@ public class BetweennessCentrality extends Metric {
 	private double bcAvg;
 	private double bcMin;
 	private double bcMax;
+	
+	
+	private int bins = 10;
 
 	/**
 	 * @param key
 	 */
 	public BetweennessCentrality() {
 		super("BETWEENNESS_CENTRALITY");
+	}
+	
+	/**
+	 * 
+	 * @param bins - number of bins for the binned distribution
+	 */
+	public BetweennessCentrality(int bins) {
+		super("BETWEENNESS_CENTRALITY");
+		this.bins = bins;
 	}
 
 	/**
@@ -144,6 +156,9 @@ public class BetweennessCentrality extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 		success &= DataWriter.writeWithIndex(this.betweennessCentrality.getValues(),
+				"BETWEENNESS_CENTRALITY_NVL", folder);
+		
+		success &= DataWriter.writeWithoutIndex(this.betweennessCentrality.toDistribution(bins, new double[] {0, 1}).getDistribution(),
 				"BETWEENNESS_CENTRALITY_DISTRIBUTION", folder);
 
 		return success;
@@ -350,7 +365,7 @@ public class BetweennessCentrality extends Metric {
 		
 		/* Node Value List */
 		
-		betweennessCentrality = new NodeValueList("BETWEENNESS_CENTRALITY_DISTRIBUTION", readDistribution(folder, "BETWEENNESS_CENTRALITY_DISTRIBUTION"));
+		betweennessCentrality = new NodeValueList("BETWEENNESS_CENTRALITY_NVL", readDistribution(folder, "BETWEENNESS_CENTRALITY_NVL"));
 		
 		
 		return true;

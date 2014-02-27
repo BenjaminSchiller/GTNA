@@ -33,7 +33,7 @@
  * ---------------------------------------
  *
  */
-package gtna.projects.sampling;
+package gtna.projects.sampling.archive;
 
 import gtna.data.Series;
 import gtna.metrics.Metric;
@@ -43,8 +43,6 @@ import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
 import gtna.metrics.centrality.BetweennessCentrality;
 import gtna.metrics.centrality.PageRank;
-import gtna.metrics.sampling.SamplingBias;
-import gtna.metrics.sampling.SamplingModularity;
 import gtna.networks.Network;
 import gtna.networks.util.DescriptionWrapper;
 import gtna.networks.util.ReadableFolder;
@@ -66,9 +64,9 @@ import java.util.Set;
  * @author Tim
  * 
  */
-public class WFSamplingMetricCalc {
+public class WFMetricCalc {
 
-	private static String suffix = "";
+	private static String suffix = ".gtna";
 	private static String name;
 	private static LinkedList<Integer> startIndex = new LinkedList<Integer>();
 	private static LinkedList<Integer> endIndex = new LinkedList<Integer>();
@@ -80,10 +78,7 @@ public class WFSamplingMetricCalc {
 	private static LinkedList<String> sampling = new LinkedList<String>();
 	private static LinkedList<String> net = new LinkedList<String>();
 	private static String plotdir;
-	private static String skipping = "false";
-	private static boolean samplingBias;
-	private static boolean samplingModularity;
-	private static boolean samplingRevisitFrequency;
+	private static String skipping="false";
 
 	/**
 	 * @param args
@@ -93,15 +88,15 @@ public class WFSamplingMetricCalc {
 
 		Set<Metric> metrics = new HashSet<Metric>();
 
-//		if (args.length == 1) {
-//			if (args[0].equalsIgnoreCase("help")) {
-//				printHelp();
-//				System.exit(0);
-//			}
-//		}
+		if (args.length == 1) {
+			if (args[0].equalsIgnoreCase("help")) {
+				printHelp();
+				System.exit(0);
+			}
+		}
 
 		for (String s : args) {
-//			 System.out.println(s);
+//			System.out.println(s);
 			// parse network generation details
 			if (s.startsWith("sampling=")) {
 				sampling.add(s.substring(9));
@@ -112,27 +107,19 @@ public class WFSamplingMetricCalc {
 				scaledown.add(Double.parseDouble(s.substring(10)));
 			} else if (s.startsWith("size=")) {
 				size.add(Integer.parseInt(s.substring(5)));
-			} else if (s.equalsIgnoreCase("SB")) { // has to be computed in an
-													// extra run as it needs the
-													// original graph with
-													// sampling properties
-
-				samplingBias = true;
-
-			} else if (s.equalsIgnoreCase("SM")) { // has to be computed in an
-													// extra run as it needs the
-													// original graph with
-													// sampling properties
-
-				samplingModularity = true;
-
-			} else if (s.equalsIgnoreCase("SRF")) { // has to be computed in an
-													// extra run as it needs the
-													// original graph with
-													// sampling properties
-
-				samplingRevisitFrequency = true;
-
+			} else if (s.equalsIgnoreCase("DD")) {
+				metrics.add(new DegreeDistribution());
+			} else if (s.equalsIgnoreCase("CC")) {
+				metrics.add(new ClusteringCoefficient());
+			} else if (s.equalsIgnoreCase("HP") || s.equalsIgnoreCase("DIAM")
+					|| s.equalsIgnoreCase("ECC")) {
+				metrics.add(new ShortestPaths());
+			} else if (s.equalsIgnoreCase("BC")) {
+				metrics.add(new BetweennessCentrality());
+			} else if (s.equalsIgnoreCase("PR")) {
+				metrics.add(new PageRank());
+			} else if (s.equalsIgnoreCase("ASS")) {
+				metrics.add(new Assortativity());
 			} else if (s.startsWith("suffix=")) {
 				suffix = s.substring(7);
 			} else if (s.startsWith("seq=")) {
@@ -158,7 +145,7 @@ public class WFSamplingMetricCalc {
 				} else {
 					aggregate = false;
 				}
-			} else if (s.startsWith("skip=")) {
+			}else if (s.startsWith("skip=")) {
 				if (s.equals("skip=true")) {
 					skipping = "true";
 				} else {
@@ -169,34 +156,22 @@ public class WFSamplingMetricCalc {
 			else if (s.startsWith("loaddir=")) {
 				dirs.add(s.substring(8));
 			} else {
-				printHelp();
-				System.exit(0);
+				System.err.println("Parameter not recognized: " + s);
+				System.exit(1);
 			}
 		}
 
 		Collection<Network> rfc = new ArrayList<Network>();
 		for (int i = 0; i < dirs.size(); i++) {
 			String d = dirs.get(i);
-			name = net.get(i) + "-" + sampling.get(i).trim() + "-"
-					+ size.get(i) + "-" + scaledown.get(i);
-			ReadableFolder rf = new ReadableFolder(name, net.get(0), d, suffix,
-					null);
-
-			// System.out.println("RF: " + d + " - size:" +
-			// rf.getFiles().length);
-
+			name = net.get(i) + "-" + sampling.get(i).trim() + "-" + size.get(i) + "-"
+					+ scaledown.get(i);
+			ReadableFolder rf = new ReadableFolder(name, net.get(0), d, suffix, null);
+			
+			System.out.println("RF: " + d + " - size:" + rf.getFiles().length);
+			
 			DescriptionWrapper dwrf = new DescriptionWrapper(rf, name);
 			rfc.add(dwrf);
-		}
-
-		if (samplingBias)
-
-			metrics.add(new SamplingBias());
-
-		if (samplingModularity) {
-
-			metrics.add(new SamplingModularity());
-
 		}
 
 		Network[] rfa = rfc.toArray(new Network[0]);
@@ -207,9 +182,8 @@ public class WFSamplingMetricCalc {
 			Series[] series = new Series[rfa.length];
 
 			for (int i = 0; i < rfa.length; i++) {
-				Config.overwrite("MAIN_DATA_FOLDER",
-						targetdir + sampling.get(i) + "/" + rfa[i].getNodes()
-								+ "/data/");
+				Config.overwrite("MAIN_DATA_FOLDER", targetdir  + sampling.get(i) + "/" + rfa[i].getNodes()
+						+ "/data/");
 				series[i] = Series.generate(rfa[i],
 						metrics.toArray(new Metric[0]), startIndex.get(i),
 						endIndex.get(i));
@@ -218,47 +192,50 @@ public class WFSamplingMetricCalc {
 			}
 
 		} else {
-			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
+			Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
 			Series[] series = new Series[rfa.length];
 			for (int i = 0; i < rfa.length; i++) {
-				String path = targetdir + sampling.get(i) + "/"
-						+ rfa[i].getNodes() + "/data/";
-
-				// System.out.println(path);
+				String path = targetdir + sampling.get(i)
+						+ "/" + rfa[i].getNodes() + "/data/";
+				
+//				System.out.println(path);
 				Config.overwrite("MAIN_DATA_FOLDER", path);
-
-				// if(rfa[i].getNodes() == size.get(i)){
-				// path = targetdir + sampling.get(i)
-				// + "/" + rfa[i].getNodes() + "/data/";
-				// Config.overwrite("MAIN_DATA_FOLDER",
-				// path);
-				// System.out.println("Changed path: " + path);
-				//
-				// }
-
+		
+				
+//				if(rfa[i].getNodes() == size.get(i)){
+//					path = targetdir + sampling.get(i)
+//					+ "/" + rfa[i].getNodes() + "/data/";
+//					Config.overwrite("MAIN_DATA_FOLDER",
+//							path);
+//					System.out.println("Changed path: " + path);
+//					
+//				}
+				
 				series[i] = Series.generate(rfa[i],
 						metrics.toArray(new Metric[0]), startIndex.get(i),
 						endIndex.get(i));
-
-//				System.out.println(series[i].getFolder());
-//				System.out.println(Arrays.toString(series[i].getRunFolders()));
+				
+				System.out.println(series[i].getFolder());
+				System.out.println(Arrays.toString(series[i].getRunFolders()));
 			}
-
-			File p = new File(plotdir + scaledown.get(0) + "/" + "plots/");
-			File t = new File(plotdir + scaledown.get(0) + "/"  +"temp/");
-
-			if (!p.isDirectory()) {
+			
+			
+			File p = new File(plotdir+"plots/");
+			File t = new File(plotdir+"temp/");
+			
+			if(!p.isDirectory()){
 				p.mkdirs();
 			}
-			if (!t.isDirectory()) {
+			if(!t.isDirectory()){
 				t.mkdirs();
 			}
-
-			Config.overwrite("MAIN_PLOT_FOLDER", plotdir + scaledown.get(0) + "/" + "plots/");
-			Config.overwrite("TEMP_FOLDER", plotdir + scaledown.get(0) + "/" + "temp/");
-
 			
-			System.out.println(plotdir + scaledown.get(0) + "/" + "plots/");
+			
+			Config.overwrite("MAIN_PLOT_FOLDER", plotdir + "plots/");
+			Config.overwrite("TEMP_FOLDER", plotdir + "temp/");
+			Config.overwrite("RUNTIME_PLOTS_GENERATE", "false");
+			Config.overwrite("ETC_PLOTS_GENERATE", "false");
+			
 			Plotting.single(series, metrics.toArray(new Metric[0]), "single/",
 					Type.confidence1, Style.candlesticks); // main path to plots
 															// is set by

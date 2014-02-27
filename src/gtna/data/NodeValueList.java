@@ -35,57 +35,109 @@
  */
 package gtna.data;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.ListIterator;
+
+import gtna.util.ArrayUtils;
+import gtna.util.Distribution;
+import gtna.util.Statistics;
+
 /**
  * @author Tim
- *
+ * 
  */
 public class NodeValueList {
 	private String key;
 	public double[] nodes;
 	public double[] values;
-	
-	public NodeValueList(String key, double[] values){
+
+	public NodeValueList(String key, double[] values) {
 		this(key, null, values);
 	}
 
-	public NodeValueList(String key, double[] nodes, double[] values){
+	public NodeValueList(String key, double[] nodes, double[] values) {
 		this.key = key;
-		if(nodes != null)
+		if (nodes != null)
 			this.nodes = nodes;
-		else{
+		else {
 			this.nodes = new double[values.length];
-			for(int i = 0; i < values.length; i++){
+			for (int i = 0; i < values.length; i++) {
 				this.nodes[i] = i;
 			}
 		}
 		this.values = values;
 	}
-	
-	public String getKey(){
+
+	public String getKey() {
 		return this.key;
 	}
-	
-	public double[] getValues(){
+
+	public double[] getValues() {
 		return this.values;
 	}
-	
-	public double[] getNodes(){
+
+	public double[] getNodes() {
 		return this.nodes;
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		
+
 		sb.append(this.key);
 		sb.append("\n");
-		
-		for(int i = 0; i < this.values.length; i++){
+
+		for (int i = 0; i < this.values.length; i++) {
 			sb.append(this.nodes[i] + " -> " + this.values[i]);
 			sb.append("\n");
 		}
-		
+
 		return sb.toString();
 	}
-	
-	
+
+	/**
+	 * 
+	 * @param nob
+	 *            Number of Bins
+	 * @return
+	 */
+	public Distribution toDistribution(int nob) {
+
+		double min = Double.MAX_VALUE;
+		double max = Double.MIN_VALUE;
+
+		for (double d : this.values) {
+			min = (min > d) ? d : min;
+			max = (max < d) ? d : max;
+		}
+
+		return this.toDistribution(nob, new double[] {min, max});
+
+	}
+
+	public Distribution toDistribution(int nob, double[] borders) {
+		double[][] binned;
+
+		double up = (borders[0] >= borders[1]) ? borders[0] : borders[1];
+		double down = (borders[0] >= borders[1]) ? borders[1] : borders[0];
+		
+		double step = (up - down) / (double) nob;
+
+		if(step <= 2E-20){
+			return new Distribution(this.key + "-distribution", new double[]{0.0});
+		}
+		binned = Statistics.binning(this.values, down, up, step);
+		double[][] distribution = new double[nob][2];
+		for (int i = 0; i < nob; i++) {
+			distribution[i][0] = (double) i * step;
+			distribution[i][1] = binned[i].length;
+		}
+		ArrayUtils.divide(distribution, 1, values.length);
+
+		Distribution d = new Distribution(this.key + "-distribution",
+				distribution);
+		return d;
+
+	}
+
 }

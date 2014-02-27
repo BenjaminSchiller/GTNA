@@ -255,16 +255,16 @@ public class Communities extends Metric {
 		success &= DataWriter.writeWithIndex(this.communitySizeFraction.getValues(),
 				"COMMUNITIES_COMMUNITY_SIZE_FRACTION", folder);
 
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.sizeDistribution.getDistribution(),
 				"COMMUNITIES_SIZE_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(this.sizeDistribution.getCdf(),
+		success &= DataWriter.writeWithoutIndex(this.sizeDistribution.getCdf(),
 				"COMMUNITIES_SIZE_DISTRIBUTION_CDF", folder);
 
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.adjacentCommunities.getDistribution(),
 				"COMMUNITIES_ADJACENT_COMMUNITIES", folder);
-		success &= DataWriter.writeWithIndex(this.adjacentCommunities.getCdf(),
+		success &= DataWriter.writeWithoutIndex(this.adjacentCommunities.getCdf(),
 				"COMMUNITIES_ADJACENT_COMMUNITIES_CDF", folder);
 
 		return success;

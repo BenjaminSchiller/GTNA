@@ -86,10 +86,10 @@ public class DataStorageMetric extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.dataItemsDistribution.getDistribution(),
 				"DATA_STORAGE_METRIC_DATA_ITEM_DISTRIBUTION", folder);
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.dataItemsDistribution.getCdf(),
 				"DATA_STORAGE_METRIC_DATA_ITEM_DISTRIBUTION_CDF", folder);
 		return success;

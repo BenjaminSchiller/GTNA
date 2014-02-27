@@ -45,6 +45,7 @@ import gtna.metrics.basic.ClusteringCoefficient;
 import gtna.metrics.basic.DegreeDistribution;
 import gtna.metrics.basic.ShortestPaths;
 import gtna.metrics.centrality.BetweennessCentrality;
+import gtna.metrics.centrality.PageRank;
 import gtna.metrics.util.ErrorComparison;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
@@ -85,7 +86,7 @@ public class Exploring {
 		 Runtime.getRuntime().exec(new String[]{"rm", "-rf",  "plots/"});
 
 
-		int times = 100; // how many generations?
+		int times = 2; // how many generations?
 
 		
 		SamplingAlgorithm a = SamplingAlgorithm.RANDOMWALK;
@@ -98,35 +99,36 @@ public class Exploring {
 
 		
 		
-		Network nw = new ErdosRenyi(100, 10, false, null);
-		Network nw2 = new ErdosRenyi(100, 50, false, null);
+		Network nw = new PositiveFeedbackPreference(1000, 50, 0.1, 0.1, 0.2, null);
+//		Network nw = new ErdosRenyi(2000, 50, false, null);
+		Network nw2 = new ZhouMondragon(1000, 0.3, 50, null);
 		
 		Network[] n = new Network[] { nw };
 		Network[] n2 = new Network[] { nw2 };
 		
 		Metric[] metrics = new Metric[] {
-		 new DegreeDistribution(),
-		 new ClusteringCoefficient(),
-		 new ShortestPaths(),
+//		 new DegreeDistribution(),
+//		 new ClusteringCoefficient(),
+//		 new ShortestPaths(),
 //		new BetweennessCentrality()
-		 new BetweennessCentrality(),
-		 new Assortativity()
+				new BetweennessCentrality(10),
+//		 new Assortativity(),
 		// new SamplingBias()
-		// new PageRank(),
+				new PageRank(10),
 		// new SamplingModularity(),
 		// new DegreeDistributionComparator(m),
 		// new SamplingRevisitFrequency()
 		};
 		
 		Metric[] metrics2 = new Metric[] {
-				 new DegreeDistribution(),
-				 new ClusteringCoefficient(),
-				 new ShortestPaths(),
+//				 new DegreeDistribution(),
+//				 new ClusteringCoefficient(),
+//				 new ShortestPaths(),
 				new BetweennessCentrality(),
 				// new BetweennessCentrality(),
-				 new Assortativity()
+//				 new Assortativity(),
 				// new SamplingBias()
-				// new PageRank(),
+				 new PageRank(),
 				// new SamplingModularity(),
 				// new DegreeDistributionComparator(m),
 				// new SamplingRevisitFrequency()
@@ -136,35 +138,42 @@ public class Exploring {
 		Timer timer = new Timer();
 		
 		Series[] s = Series.generate(n, metrics, times);
-		Series[] s2 = Series.generate(n2, metrics2, 1);
+		Series[] s2 = Series.generate(n2, metrics2, times);
 		
 		
 		
 		Metric[] compM = {
-				new ErrorComparison(new DegreeDistribution(), s2, s, ErrorComparison.BASEWITHRUN),
+//				new ErrorComparison(new DegreeDistribution(), s2, s, ErrorComparison.BASEWITHRUN),
 //				new ErrorComparison(new ClusteringCoefficient(), s2, s, ErrorComparison.BASEWITHRUN),
 //				new ErrorComparison(new ShortestPaths(), s2, s, ErrorComparison.BASEWITHRUN),
 //				new ErrorComparison(new Assortativity(), s2, s, ErrorComparison.BASEWITHRUN),
-//				new ErrorComparison(new BetweennessCentrality(), s2, s, ErrorComparison.BASEWITHRUN)
+				new ErrorComparison(new BetweennessCentrality(), s, s2, ErrorComparison.RUNWITHRUN),
+				new ErrorComparison(new PageRank(), s2, s, ErrorComparison.RUNWITHRUN)
 		};
 		
-		Series[] sComp = Series.generate(new Network[] {new EmptyNetwork(nw2, "TEST")}, compM, times);
+		Series[] sComp = Series.generate(new Network[] {new EmptyNetwork(nw, "TEST")}, compM, times);
 //		Series[] s = Series.get(n, metrics);
 		timer.end();
 		System.out.println("Gen: " + timer.getMsec() + "ms");
 		
 		
-		Style st = Style.candlesticks;
-		Type ty = Type.confidence2;
+		Style st = Style.linespoint; // Style.candlesticks;
+		Type ty = Type.average; // Type.confidence2;
 		
 		
 //		Config.appendToList("GNUPLOT_CONFIG_1", "set logscale x");
 		Config.appendToList("GNUPLOT_CONFIG_2", "set boxwidth 0.1");
 
-		Config.overwrite("GNUPLOT_LW", "2");
+		Config.overwrite("GNUPLOT_LW", "1");
 		
 		Plotting.single(sComp, compM, "s/" + nw.getNameShort() + "/", ty, st);
 		Plotting.multi(sComp, compM, "m/" + nw.getNameShort() + "/", ty, st);
+
+		Plotting.single(s, metrics, "s1/" + nw.getNameShort() + "/", ty, st);
+		Plotting.multi(s, metrics, "m1/" + nw.getNameShort() + "/", ty, st);
+		Plotting.single(s2, metrics2, "s2/" + nw2.getNameShort() + "/", ty, st);
+		Plotting.multi(s2, metrics2, "m2/" + nw2.getNameShort() + "/", ty, st);
+		
 		
 		Runtime.getRuntime().exec(new String[]{"open",  "plots/"});
 

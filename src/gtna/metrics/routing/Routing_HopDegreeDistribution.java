@@ -272,11 +272,11 @@ public class Routing_HopDegreeDistribution extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 		for (int i = 0; i <= hopSteps; i++) {
-			success &= DataWriter.writeWithIndex(
+			success &= DataWriter.writeWithoutIndex(
 					this.hopDegree[i].getDistribution(),
 					"ROUTING_HOP_DEGREE_DISTRIBUTION_DISTRIBUTION_HOP_" + i,
 					folder);
-			success &= DataWriter.writeWithIndex(this.hopDegree[i].getCdf(),
+			success &= DataWriter.writeWithoutIndex(this.hopDegree[i].getCdf(),
 					"ROUTING_HOP_DEGREE_DISTRIBUTION_DISTRIBUTION_HOP_" + i
 							+ "_CDF", folder);
 		}

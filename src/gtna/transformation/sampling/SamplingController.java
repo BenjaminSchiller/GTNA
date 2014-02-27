@@ -160,7 +160,7 @@ public class SamplingController extends Transformation {
 			g.addProperty(g.getNextKey("SAMPLE"), s);
 
 			
-			printRuntimes(); //TODO
+//			printRuntimes(); //TODO
 			
 			
 			networkSample = networkSample.cleanInstance();

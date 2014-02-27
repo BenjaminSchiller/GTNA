@@ -131,11 +131,11 @@ public class RingIdentifierSpaceSuccessorHopDistances extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.successorHopDistanceDistribution.getDistribution(),
 				"RING_IDENTIFIER_SPACE_SUCCESSOR_HOP_DISTANCES_DISTRIBUTION",
 				folder);
-		success &= DataWriter.writeWithIndex(
+		success &= DataWriter.writeWithoutIndex(
 				this.successorHopDistanceDistribution.getCdf(),
 				"RING_IDENTIFIER_SPACE_SUCCESSOR_HOP_DISTANCES_CDF", folder);
 		return success;
