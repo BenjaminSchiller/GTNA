@@ -47,6 +47,7 @@ import gtna.metrics.basic.ShortestPaths;
 import gtna.metrics.centrality.BetweennessCentrality;
 import gtna.metrics.centrality.PageRank;
 import gtna.metrics.util.ErrorComparison;
+import gtna.metrics.util.TopKCorrelation;
 import gtna.networks.Network;
 import gtna.networks.model.ErdosRenyi;
 import gtna.networks.model.PFP;
@@ -79,7 +80,7 @@ import java.util.Arrays;
 public class Exploring {
 	public static void main(String[] args) throws IOException {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
-		 Config.overwrite("GNUPLOT_PRINT_ERRORS", "false");
+		 Config.overwrite("GNUPLOT_PRINT_ERRORS", "true");
 		 
 		 
 		 Runtime.getRuntime().exec(new String[]{"rm", "-rf",  "data/"});
@@ -99,9 +100,9 @@ public class Exploring {
 
 		
 		
-		Network nw = new PositiveFeedbackPreference(1000, 50, 0.1, 0.1, 0.2, null);
+		Network nw = new ErdosRenyi(50, 3, false, null);
 //		Network nw = new ErdosRenyi(2000, 50, false, null);
-		Network nw2 = new ZhouMondragon(1000, 0.3, 50, null);
+		Network nw2 = new ErdosRenyi(100, 10, false, null);
 		
 		Network[] n = new Network[] { nw };
 		Network[] n2 = new Network[] { nw2 };
@@ -111,10 +112,10 @@ public class Exploring {
 //		 new ClusteringCoefficient(),
 //		 new ShortestPaths(),
 //		new BetweennessCentrality()
-				new BetweennessCentrality(10),
+				new BetweennessCentrality(),
 //		 new Assortativity(),
 		// new SamplingBias()
-				new PageRank(10),
+//				new PageRank(10),
 		// new SamplingModularity(),
 		// new DegreeDistributionComparator(m),
 		// new SamplingRevisitFrequency()
@@ -128,7 +129,7 @@ public class Exploring {
 				// new BetweennessCentrality(),
 //				 new Assortativity(),
 				// new SamplingBias()
-				 new PageRank(),
+//				 new PageRank(),
 				// new SamplingModularity(),
 				// new DegreeDistributionComparator(m),
 				// new SamplingRevisitFrequency()
@@ -147,8 +148,10 @@ public class Exploring {
 //				new ErrorComparison(new ClusteringCoefficient(), s2, s, ErrorComparison.BASEWITHRUN),
 //				new ErrorComparison(new ShortestPaths(), s2, s, ErrorComparison.BASEWITHRUN),
 //				new ErrorComparison(new Assortativity(), s2, s, ErrorComparison.BASEWITHRUN),
-				new ErrorComparison(new BetweennessCentrality(), s, s2, ErrorComparison.RUNWITHRUN),
-				new ErrorComparison(new PageRank(), s2, s, ErrorComparison.RUNWITHRUN)
+//				new ErrorComparison(new BetweennessCentrality(), s, s2, ErrorComparison.RUNWITHRUN),
+//				new ErrorComparison(new PageRank(), s2, s, ErrorComparison.RUNWITHRUN)
+				new TopKCorrelation(new BetweennessCentrality(), s, s2, 
+						TopKCorrelation.Type.NETWORK, TopKCorrelation.Mode.RUNWITHRUN)
 		};
 		
 		Series[] sComp = Series.generate(new Network[] {new EmptyNetwork(nw, "TEST")}, compM, times);
@@ -169,10 +172,10 @@ public class Exploring {
 		Plotting.single(sComp, compM, "s/" + nw.getNameShort() + "/", ty, st);
 		Plotting.multi(sComp, compM, "m/" + nw.getNameShort() + "/", ty, st);
 
-		Plotting.single(s, metrics, "s1/" + nw.getNameShort() + "/", ty, st);
-		Plotting.multi(s, metrics, "m1/" + nw.getNameShort() + "/", ty, st);
-		Plotting.single(s2, metrics2, "s2/" + nw2.getNameShort() + "/", ty, st);
-		Plotting.multi(s2, metrics2, "m2/" + nw2.getNameShort() + "/", ty, st);
+//		Plotting.single(s, metrics, "s1/" + nw.getNameShort() + "/", ty, st);
+//		Plotting.multi(s, metrics, "m1/" + nw.getNameShort() + "/", ty, st);
+//		Plotting.single(s2, metrics2, "s2/" + nw2.getNameShort() + "/", ty, st);
+//		Plotting.multi(s2, metrics2, "m2/" + nw2.getNameShort() + "/", ty, st);
 		
 		
 		Runtime.getRuntime().exec(new String[]{"open",  "plots/"});

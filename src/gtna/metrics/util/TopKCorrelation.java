@@ -42,13 +42,17 @@ import gtna.graph.Graph;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.transformation.sampling.Sample;
 import gtna.util.Config;
 import gtna.util.Distribution;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.StringParameter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import com.itextpdf.text.List;
@@ -64,34 +68,52 @@ public class TopKCorrelation extends Metric {
 	private Series[] series1;
 	private Series seriesMy;
 
-	public static final int RUNWITHRUN = 0;
-	public static final int BASEWITHRUN = 1;
-	
-	private int type;
+	private double[] fraction;
+
+	private double[] sorted1;
+
+	private double[] sorted2;
+
+	private double correlationCoefficient;
+
+	public static enum Mode {
+		RUNWITHRUN, BASEWITHRUN
+	};
+
+	/**
+	 * Type <b>SAMPLE</b> compares:<br>
+	 * - metric of base series<br>
+	 * - with metric of changed series.<br>
+	 * > nodes are mapped using the SAMPLE property saved at the base series<br>
+	 * <br>
+	 * Type <b>NETWORK</b> compares:<br>
+	 * - metric of base series <br>
+	 * - metric of changed series<br>
+	 * > nodes are compared by ids without any mapping<br>
+	 * 
+	 * @author Tim
+	 * 
+	 */
+	public static enum Type {
+		SAMPLE, NETWORK
+	};
+
+	private Type type;
+	private Mode mode;
+	private Sample sampleProperty;
 
 	/**
 	 * @param key
 	 */
 	public TopKCorrelation(Metric comparedMetric, Series[] base,
-			Series[] changed, int type) {
-		super("TOPK_" + comparedMetric.getDescriptionShort());
-		String metricKey = "TOPK_" + comparedMetric.getDescriptionShort();
-
-		this.type = type;
+			Series[] changed, Type t, Mode m) {
+		super("TOPK", new Parameter[]{
+				new StringParameter("METRIC", comparedMetric.getDescriptionShort())
+		});
 		
+		this.type = t;
+		this.mode = m;
 		
-		
-		Config.appendToList(metricKey, "Top K Correlation");
-		Config.appendToList(metricKey + "_NAME_LONG", "TopK");
-		Config.appendToList(metricKey + "_NAME_SHORT", "tk");
-
-		Config.appendToList(metricKey + "_DATA_KEYS", "");
-		Config.appendToList(metricKey + "_DATA_PLOTS", "");
-
-		Config.appendToList(metricKey + "_SINGLES_KEYS", "");
-		Config.appendToList(metricKey + "_SINGLES_PLOTS", "");
-		Config.appendToList(metricKey + "_TABLE_KEYS", "");
-
 		this.metric = comparedMetric;
 		this.series1 = base;
 		this.series2 = changed;
@@ -109,14 +131,9 @@ public class TopKCorrelation extends Metric {
 			throw new IllegalArgumentException(
 					"No computation possible! The given Series are not containing the specified metric.");
 		}
-		
-//		distributions = new ArrayList<Distribution>();
-//		nodevaluelists = new ArrayList<Distribution>();
-//		singles = new ArrayList<Single>();
 
-		
 		Metric b = getMetric(series1[0].getMetrics(), metric);
-		
+
 		Metric c = getMetric(series2[0].getMetrics(), metric);
 
 		if (b == null) {
@@ -131,28 +148,155 @@ public class TopKCorrelation extends Metric {
 		/*
 		 * Read Metric values from files.
 		 */
-		// TODO how to get the correct folder? RUN!
 		@SuppressWarnings("static-access")
 		int r = seriesMy.getCurrentRun();
-		if(this.type == RUNWITHRUN){
+		if (this.mode == Mode.RUNWITHRUN) {
 			b.readData(series1[0].getMetricFolder(r, b));
-		} else if (this.type == BASEWITHRUN){
+		} else if (this.mode == Mode.BASEWITHRUN) {
 			b.readData(series1[0].getFolder(b));
 		} else {
-			throw new IllegalArgumentException("Comparison Type not accepted: " + this.type);
+			throw new IllegalArgumentException("Comparison Type not accepted: "
+					+ this.type);
 		}
 		c.readData(series2[0].getMetricFolder(r, c));
 
 		/*
 		 * Compare Metric values
 		 */
-//		compareSingles(b.getSingles(), c.getSingles());
-//		compareDistributions(b.getDistributions(), c.getDistributions());
-//		compareNodeValueLists(b.getNodeValueLists(), c.getNodeValueLists());
+
+		// TODO: provide metric.getTopKNodeValueList()?
+		calculateTopK(b.getNodeValueLists(), c.getNodeValueLists());
 
 	}
 
-	
+	/**
+	 * @param base
+	 * @param changed
+	 */
+	private void calculateTopK(NodeValueList[] base, NodeValueList[] changed) {
+
+		int s1count = (series1[0].getNetwork().generate()).getNodeCount();
+		int s2count = (series2[0].getNetwork().generate()).getNodeCount();
+
+		int nc = Math.max(s1count, s2count);
+
+		this.fraction = new double[nc + 1];
+		this.fraction[0] = 1;
+
+		HashSet<Integer> s1 = new HashSet<Integer>(s1count);
+		HashSet<Integer> s2 = new HashSet<Integer>(s2count);
+
+		SortableElement[] e1 = SortableElement.convert(base[0].getValues());
+		SortableElement[] e2 = SortableElement.convert(changed[0].getValues());
+
+		double sum_xy = sumOfProducts(e1, e2);
+		double sum_x = sum(e1);
+		double sum_y = sum(e2);
+		double sum_xx = sumOfProducts(e1, e1);
+		double sum_yy = sumOfProducts(e2, e2);
+		double n_ = nc;
+
+		double c_numerator = n_ * sum_xy - sum_x * sum_y;
+		double c_denominator = (n_ * sum_xx - sum_x * sum_x)
+				* (n_ * sum_yy - sum_y * sum_y);
+
+		this.correlationCoefficient = c_numerator / Math.sqrt(c_denominator);
+
+		Arrays.sort(e1);
+		Arrays.sort(e2);
+
+		double denominator = 0;
+		double count = 0;
+		for (int i = 0; i < nc; i++) {
+			denominator++;
+			s1.add(e1[(i >= e1.length) ? e1.length - 1 : i].getIndex());
+			s2.add(e2[(i >= e2.length) ? e2.length - 1 : i].getIndex());
+			if (e1[(i >= e1.length) ? e1.length - 1 : i].getIndex() == e2[(i >= e2.length) ? e2.length - 1
+					: i].getIndex()) {
+				count++;
+			} else {
+				if (s1.contains(this
+						.mapBackward(e2[(i >= e2.length) ? e2.length - 1 : i]
+								.getIndex()))) {
+					count++;
+				}
+				if (s2.contains(this
+						.mapForward(e1[(i >= e1.length) ? e1.length - 1 : i]
+								.getIndex()))) {
+					count++;
+				}
+			}
+			this.fraction[i + 1] = count / denominator;
+		}
+
+		this.sorted1 = new double[nc];
+		this.sorted2 = new double[nc];
+		for (int i = 0; i < nc; i++) {
+			int e1i = (i >= e1.length) ? e1.length - 1 : i;
+			int e2i = (i >= e2.length) ? e2.length - 1 : i;
+			
+			int e1ii = (e2[e2i].getIndex() >= e1.length-1) ? e1.length-1 : e2[e2i].getIndex();
+			int e2ii = (e2[e1i].getIndex() >= e2.length-1) ? e2.length-1 : e1[e1i].getIndex();
+			this.sorted1[i] = e2[e2ii].getValue();
+			this.sorted2[i] = e1[e1ii].getValue();
+		}
+	}
+
+	/**
+	 * @param index
+	 * @return
+	 */
+	private int mapForward(int index) {
+		if (type == Type.NETWORK) {
+			return index;
+		} else {
+			if (sampleProperty == null)
+				initProperty();
+
+			return sampleProperty.getOldNodeId(index);
+		}
+	}
+
+	/**
+	 * @param index
+	 * @return
+	 */
+	private int mapBackward(int index) {
+		if (type == Type.NETWORK) {
+			return index;
+		} else {
+			if (sampleProperty == null)
+				initProperty();
+
+			return sampleProperty.getNewNodeId(index);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void initProperty() {
+		sampleProperty = (Sample) series1[0].getNetwork().generate()
+				.getProperty("SAMPLE_0"); // TODO use variable to set property
+											// index
+	}
+
+	private static double sum(SortableElement[] values) {
+		double sum = 0;
+		for (SortableElement value : values) {
+			sum += value.getValue();
+		}
+		return sum;
+	}
+
+	private static double sumOfProducts(SortableElement[] v1,
+			SortableElement[] v2) {
+		double product = 0;
+		for (int i = 0; i < v1.length; i++) {
+			product += v1[i].getValue() * v2[i].getValue();
+		}
+		return product;
+	}
 
 	/**
 	 * @param metrics
@@ -175,7 +319,8 @@ public class TopKCorrelation extends Metric {
 	 * 
 	 * @return
 	 */
-	private boolean applicable() { //TODO
+	private boolean applicable() { // TODO: figure out if metric is comparable
+									// with TopK
 		Metric[] m1 = series1[0].getMetrics();
 		Metric[] m2 = series2[0].getMetrics();
 
@@ -219,287 +364,31 @@ public class TopKCorrelation extends Metric {
 	public boolean writeData(String folder) {
 		boolean success = true;
 
-//		for (Distribution d : distributions) {
-//			String distrKey = this.key + "_" + d.getKey();
-//			// add Config for distribution on the fly
-//			writeDistributionConfig(d.getKey().replace("-absolute", ""), distrKey);
-//			success &= DataWriter.writeWithoutIndex(d.getDistribution(), distrKey,
-//					folder);
-//
-//			// add Config for cdf distribution on the fly
-//			// writeDistributionCDFConfig(d.getKey(), distrKey);
-//			// success &= DataWriter.writeWithIndex(d.getCdf(), distrKey +
-//			// "_CDF", folder);
-//		}
-//		
-//		for (Distribution nvl : nodevaluelists){
-//			String nvlKey = this.key + "_" + nvl.getKey();
-//			// add Config for distribution on the fly
-////			writeNodeValueListConfig(nvl.getKey().replace("-absolute", "").replace("-relative", ""), nvlKey);
-//			writeDistributionConfig(nvl.getKey().replace("-absolute", "").replace("-relative", "").replace("-distribution", ""), nvlKey);
-//			success &= DataWriter.writeWithoutIndex(nvl.getDistribution(), nvlKey,
-//					folder);
-//		}
+		success &= DataWriter.writeWithIndex(this.fraction, "TOPK_FRACTION",
+				folder);
+
+		success &= DataWriter.writeWithIndex(this.sorted1, "TOPK_SORTED1",
+				folder);
+		success &= DataWriter.writeWithIndex(this.sorted2, "TOPK_SORTED2",
+				folder);
 
 		return success;
 	}
 
 	
-
-	/**
-	 * @param d
-	 * @param distrKey
-	 */
-	private void writeNodeValueListConfig(String originalNvlKey, String nvlKey) {
-		if (Config.get(this.key + "_DATA_KEYS") == null
-				|| Config.get(this.key + "_DATA_KEYS").equalsIgnoreCase("")) {
-			Config.appendToList(this.key + "_DATA_KEYS", nvlKey);
-		} else {
-			Config.overwrite(this.key + "_DATA_KEYS",
-					getExtendedKeyString("_DATA_KEYS", nvlKey));
-
-		}
-		if (Config.get(this.key + "_DATA_PLOTS") == null
-				|| Config.get(this.key + "_DATA_PLOTS").equalsIgnoreCase("")) {
-			Config.appendToList(this.key + "_DATA_PLOTS", nvlKey);
-		} else {
-			Config.overwrite(this.key + "_DATA_PLOTS",
-					getExtendedKeyString("_DATA_PLOTS", nvlKey));
-		}
-		Config.appendToList(nvlKey + "_DATA_NAME", originalNvlKey + " comparison");
-
-		if(nvlKey.contains("absolute")){
-		Config.appendToList(nvlKey + "_DATA_FILENAME",
-				Config.get(originalNvlKey + "_DATA_FILENAME") + "-absolute-comparison");
-		} else {
-			Config.appendToList(nvlKey + "_DATA_FILENAME",
-					Config.get(originalNvlKey + "_DATA_FILENAME") + "-comparison");
-		}
-
-		Config.appendToList(nvlKey + "_PLOT_DATA", nvlKey);
-		
-		if(nvlKey.contains("absolute")){
-			Config.appendToList(nvlKey + "_PLOT_FILENAME",
-					Config.get(originalNvlKey + "_PLOT_FILENAME") + "-absolute-comparison");
-			} else {
-				Config.appendToList(nvlKey + "_PLOT_FILENAME",
-						Config.get(originalNvlKey + "_PLOT_FILENAME") + "-comparison");
-			}
-		
-		Config.appendToList(nvlKey + "_PLOT_TITLE",
-				Config.get(originalNvlKey + "_PLOT_TITLE") + " Comparison");
-		Config.appendToList(nvlKey + "_PLOT_X", Config.get(nvlKey + "_PLOT_X"));
-		Config.appendToList(nvlKey + "_PLOT_Y", "Difference");
-
-	}
-
-	/**
-	 * @param d
-	 * @param distrKey
-	 */
-	private void writeDistributionConfig(String dKey, String distrKey) {
-		if (Config.get(this.key + "_DATA_KEYS") == null
-				|| Config.get(this.key + "_DATA_KEYS").equalsIgnoreCase("")) {
-			Config.appendToList(this.key + "_DATA_KEYS", distrKey);
-		} else {
-			Config.overwrite(this.key + "_DATA_KEYS",
-					getExtendedKeyString("_DATA_KEYS", distrKey));
-
-		}
-		if (Config.get(this.key + "_DATA_PLOTS") == null
-				|| Config.get(this.key + "_DATA_PLOTS").equalsIgnoreCase("")) {
-			Config.appendToList(this.key + "_DATA_PLOTS", distrKey);
-		} else {
-			Config.overwrite(this.key + "_DATA_PLOTS",
-					getExtendedKeyString("_DATA_PLOTS", distrKey));
-		}
-		Config.appendToList(distrKey + "_DATA_NAME", dKey + " comparison");
-
-		if(distrKey.contains("absolute")){
-		Config.appendToList(distrKey + "_DATA_FILENAME",
-				Config.get(dKey + "_DATA_FILENAME") + "-absolute-comparison");
-		} else {
-			Config.appendToList(distrKey + "_DATA_FILENAME",
-					Config.get(dKey + "_DATA_FILENAME") + "-comparison");
-		}
-
-		Config.appendToList(distrKey + "_PLOT_DATA", distrKey);
-		
-		if(distrKey.contains("absolute")){
-			Config.appendToList(distrKey + "_PLOT_FILENAME",
-					Config.get(dKey + "_PLOT_FILENAME") + "-absolute-comparison");
-			} else {
-				Config.appendToList(distrKey + "_PLOT_FILENAME",
-						Config.get(dKey + "_PLOT_FILENAME") + "-comparison");
-			}
-		
-		Config.appendToList(distrKey + "_PLOT_TITLE",
-				Config.get(dKey + "_PLOT_TITLE") + " Comparison");
-		Config.appendToList(distrKey + "_PLOT_X", Config.get(dKey + "_PLOT_X"));
-		Config.appendToList(distrKey + "_PLOT_Y", "Difference");
-
-	}
-	
-	
-	
-	/**
-	 * @param testKey
-	 * @return
-	 */
-	private String getExtendedKeyString(String param, String testKey) {
-		String oldKeys = Config.get(this.key + param);
-		if (oldKeys.contains(testKey)) {
-			return oldKeys;
-		} else {
-			return oldKeys + Config.get("CONFIG_LIST_SEPARATOR") + " "
-					+ testKey;
-		}
-	}
-
 	/**
 	 * The ErrorComparison Metric does not read persisted values.
 	 */
 	@Override
 	public boolean readData(String folder) {
-		// TODO currently no reading of values
-		return false;
+		return true;
 	}
 
 	@Override
 	public Single[] getSingles() {
-
-//		for (Single s : singles) {
-//			String cleanKey = s.getKey().replace("_COMP_A", "")
-//					.replace("_COMP_R", "");
-//
-//			if (Config.get(cleanKey + "_PLOT_FILENAME") == null) {
-//				System.out.println("! " + cleanKey + " - " + s.getKey());
-//			}
-//			writeSingleConfigGeneral(s);
-//			writeSingleConfig(s, cleanKey);
-//		}
-//		
-//		ArrayList<Single> combined = new ArrayList<Single>();
-//		combined.addAll(singles);	
-//		
-//		// add derived Singles (min/max/med/avg of distributions)
-//		for(Distribution d : distributions){
-//			
-//			Single dMax = new Single(d.getKey() + "-max", d.getMax());
-//			Single dMin = new Single(d.getKey() + "-min", d.getMin());
-//			Single dMed = new Single(d.getKey() + "-med", d.getMedian());
-//			Single dAvg = new Single(d.getKey() + "-avg", d.getAverage());
-//			
-//			writeSingleConfigForDerivedSingle(d, dMax, "max");
-//			writeSingleConfigForDerivedSingle(d, dMin, "min");
-//			writeSingleConfigForDerivedSingle(d, dMed, "med");
-//			writeSingleConfigForDerivedSingle(d, dAvg, "avg");
-//			
-//			combined.add(dMax);
-//			combined.add(dMin);
-//			combined.add(dMed);
-//			combined.add(dAvg);
-//		}
-//		
-//		return combined.toArray(new Single[0]);
-		return new Single[]{};
-	}
-
-	private void writeSingleConfigForDerivedSingle(Distribution d, Single s, String type){
-		// GENERAL PART - add s.key into the lists
-		if (Config.get(this.key + "_SINGLES_KEYS") == null
-				|| Config.get(this.key + "_SINGLES_KEYS").equalsIgnoreCase(
-						"")) {
-			Config.appendToList(this.key + "_SINGLES_KEYS", s.getKey());
-		} else {
-			Config.overwrite(this.key + "_SINGLES_KEYS",
-					getExtendedKeyString("_SINGLES_KEYS", s.getKey()));
-		}
-		if (Config.get(this.key + "_SINGLES_PLOTS") == null
-				|| Config.get(this.key + "_SINGLES_PLOTS").equalsIgnoreCase(
-						"")) {
-			Config.appendToList(this.key + "_SINGLES_PLOTS", s.getKey());
-		} else {
-			Config.overwrite(this.key + "_SINGLES_PLOTS",
-					getExtendedKeyString("_SINGLES_PLOTS", s.getKey()));
-		}
-		if (Config.get(this.key + "_TABLE_KEYS") == null
-				|| Config.get(this.key + "_TABLE_KEYS")
-						.equalsIgnoreCase("")) {
-			Config.appendToList(this.key + "_TABLE_KEYS", s.getKey());
-		} else {
-			Config.overwrite(this.key + "_TABLE_KEYS",
-					getExtendedKeyString("_TABLE_KEYS", s.getKey()));
-		}
-		
-		// single specific properties
-		Config.appendToList(s.getKey() + "_PLOT_DATA", s.getKey());
-	
-//		Config.appendToList(s.getKey() + "_PLOT_FILENAME", s.getKey());
-		if(d.getKey().contains("-absolute")){
-		Config.appendToList(s.getKey() + "_PLOT_FILENAME", Config.get(d.getKey().replace("-absolute", "") + "_PLOT_FILENAME") + "-abs-" + type);
-		} else {Config.appendToList(s.getKey() + "_PLOT_FILENAME", Config.get(d.getKey().replace("-absolute", "") + "_PLOT_FILENAME") + "-" + type);
-			
-		}
-		Config.appendToList(s.getKey() + "_PLOT_TITLE", Config.get(d.getKey().replace("-absolute", "") + "_PLOT_TITLE") + " Comparison");
-		
-		Config.appendToList(s.getKey() + "_PLOT_Y", "");
-		
-		
-	}
-	
-	/**
-	 * @param s
-	 * @param cleanKey
-	 */
-	private void writeSingleConfig(Single s, String cleanKey) {
-		Config.appendToList(s.getKey() + "_PLOT_DATA", s.getKey());
-		if (s.getKey().contains("_COMP_R")) {
-			Config.appendToList(s.getKey() + "_PLOT_FILENAME",
-					Config.get(cleanKey + "_PLOT_FILENAME")
-							+ "-relative-comparison");
-		} else {
-			Config.appendToList(s.getKey() + "_PLOT_FILENAME",
-					Config.get(cleanKey + "_PLOT_FILENAME")
-							+ "-absolute-comparison");
-		}
-		Config.appendToList(s.getKey() + "_PLOT_TITLE",
-				Config.get(cleanKey + "_PLOT_TITLE") + " Comparison");
-		if (s.getKey().contains("_COMP_R")) {
-			Config.appendToList(s.getKey() + "_PLOT_Y", "Relative Difference");
-		} else {
-			Config.appendToList(s.getKey() + "_PLOT_Y", "Absolute Difference");
-		}
-	}
-
-	/**
-	 * @param s
-	 */
-	private void writeSingleConfigGeneral(Single s) {
-		if (Config.get(this.key + "_SINGLES_KEYS") == null
-				|| Config.get(this.key + "_SINGLES_KEYS").equalsIgnoreCase(
-						"")) {
-			Config.appendToList(this.key + "_SINGLES_KEYS", s.getKey());
-		} else {
-			Config.overwrite(this.key + "_SINGLES_KEYS",
-					getExtendedKeyString("_SINGLES_KEYS", s.getKey()));
-		}
-		if (Config.get(this.key + "_SINGLES_PLOTS") == null
-				|| Config.get(this.key + "_SINGLES_PLOTS").equalsIgnoreCase(
-						"")) {
-			Config.appendToList(this.key + "_SINGLES_PLOTS", s.getKey());
-		} else {
-			Config.overwrite(this.key + "_SINGLES_PLOTS",
-					getExtendedKeyString("_SINGLES_PLOTS", s.getKey()));
-		}
-		if (Config.get(this.key + "_TABLE_KEYS") == null
-				|| Config.get(this.key + "_TABLE_KEYS")
-						.equalsIgnoreCase("")) {
-			Config.appendToList(this.key + "_TABLE_KEYS", s.getKey());
-		} else {
-			Config.overwrite(this.key + "_TABLE_KEYS",
-					getExtendedKeyString("_TABLE_KEYS", s.getKey()));
-		}
+		Single cc = new Single("TOPK_CORRELATION_COEFFICIENT",
+				this.correlationCoefficient);
+		return new Single[] { cc };
 	}
 
 	/*
@@ -519,7 +408,59 @@ public class TopKCorrelation extends Metric {
 	 */
 	@Override
 	public NodeValueList[] getNodeValueLists() {
-		return new NodeValueList[0];
+		return new NodeValueList[] {
+				new NodeValueList("TOPK_SORTED1", sorted1),
+				new NodeValueList("TOPK_SORTED2", sorted2) };
+	}
+
+	public static class SortableElement implements Comparable<SortableElement> {
+
+		private int index;
+
+		private double value;
+
+		public SortableElement(int index, double value) {
+			this.index = index;
+			this.value = value;
+		}
+
+		public int getIndex() {
+			return this.index;
+		}
+
+		public double getValue() {
+			return this.value;
+		}
+
+		@Override
+		public int compareTo(SortableElement o) {
+			if (o.getValue() - this.getValue() < 0) {
+				return -1;
+			} else if (o.getValue() - this.getValue() > 0) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+
+		public static SortableElement[] convert(double[] values) {
+			SortableElement[] array = new SortableElement[values.length];
+			for (int i = 0; i < values.length; i++) {
+				array[i] = new SortableElement(i, values[i]);
+			}
+			return array;
+		}
+
+		public static void print(SortableElement[] elements) {
+			for (SortableElement element : elements) {
+				System.out.println(element.getValue() + " ("
+						+ element.getIndex() + ")");
+			}
+		}
+
+		public String toString() {
+			return this.value + "(" + this.index + ")";
+		}
 	}
 
 }
