@@ -216,12 +216,12 @@ public class TopKCorrelation extends Metric {
 				count++;
 			} else {
 				if (s1.contains(this
-						.mapBackward(e2[(i >= e2.length) ? e2.length - 1 : i]
+						.mapForward(e2[(i >= e2.length) ? e2.length - 1 : i]
 								.getIndex()))) {
 					count++;
 				}
 				if (s2.contains(this
-						.mapForward(e1[(i >= e1.length) ? e1.length - 1 : i]
+						.mapBackward(e1[(i >= e1.length) ? e1.length - 1 : i]
 								.getIndex()))) {
 					count++;
 				}
@@ -235,8 +235,21 @@ public class TopKCorrelation extends Metric {
 			int e1i = (i >= e1.length) ? e1.length - 1 : i;
 			int e2i = (i >= e2.length) ? e2.length - 1 : i;
 			
-			int e1ii = (e2[e2i].getIndex() >= e1.length-1) ? e1.length-1 : e2[e2i].getIndex();
-			int e2ii = (e2[e1i].getIndex() >= e2.length-1) ? e2.length-1 : e1[e1i].getIndex();
+			int e1ii;
+			int index = e2[e2i].getIndex();
+			if (index < e1.length-1)
+				e1ii = index;
+			else
+				e1ii = e1.length-1;
+			
+			int e2ii;
+			int index2 = e1[e1i].getIndex();
+			if (index2 < e2.length-1)
+				e2ii = index2;
+			else
+				e2ii = e2.length-1;
+			
+			
 			this.sorted1[i] = e2[e2ii].getValue();
 			this.sorted2[i] = e1[e1ii].getValue();
 		}
@@ -292,8 +305,8 @@ public class TopKCorrelation extends Metric {
 	private static double sumOfProducts(SortableElement[] v1,
 			SortableElement[] v2) {
 		double product = 0;
-		for (int i = 0; i < v1.length; i++) {
-			product += v1[i].getValue() * v2[i].getValue();
+		for (int i = 0; i < Math.max(v1.length, v2.length); i++) {
+			product += v1[i%v1.length].getValue() * v2[i%v2.length].getValue(); //TODO!!!
 		}
 		return product;
 	}
