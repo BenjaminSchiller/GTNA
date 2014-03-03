@@ -233,7 +233,19 @@ public class Sample extends GraphProperty {
      *         integer < 0 if not sampled
      */
     public int getNewNodeId(int oldId) {
-	return getSample().getNewIndexOfSampledNode(oldId);
+//    	return getSample().getNewIndexOfSampledNode(oldId);
+    	
+    	Map<Integer, Integer> nodeIdMapping = getSample().getSampleNodeMapping();
+
+    	if (nodeIdMapping.containsKey(oldId)) {
+    	    for (Map.Entry<Integer, Integer> e : nodeIdMapping.entrySet()) {
+    	    	if (e.getKey() == oldId) {
+    		    return e.getValue();
+    	    	}
+    	    }
+    	}
+
+    	return -1;
 
     }
 

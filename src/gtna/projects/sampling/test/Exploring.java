@@ -39,6 +39,8 @@ import gtna.data.Series;
 import gtna.drawing.Gephi;
 import gtna.graph.Graph;
 import gtna.id.IdentifierSpace;
+import gtna.io.graphReader.GtnaGraphReader;
+import gtna.io.graphWriter.GtnaGraphWriter;
 import gtna.metrics.Metric;
 import gtna.metrics.basic.Assortativity;
 import gtna.metrics.basic.ClusteringCoefficient;
@@ -55,6 +57,7 @@ import gtna.networks.model.PositiveFeedbackPreference;
 import gtna.networks.model.Regular;
 import gtna.networks.model.ZhouMondragon;
 import gtna.networks.util.EmptyNetwork;
+import gtna.networks.util.ReadableFile;
 import gtna.plot.Plotting;
 import gtna.plot.Gnuplot.Style;
 import gtna.plot.data.Data.Type;
@@ -80,23 +83,16 @@ import java.util.Arrays;
 public class Exploring {
 	public static void main(String[] args) throws IOException {
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "false");
-		 Config.overwrite("GNUPLOT_PRINT_ERRORS", "true");
+		 Config.overwrite("GNUPLOT_PRINT_ERRORS", "false");
 		 
 		 
 		 Runtime.getRuntime().exec(new String[]{"rm", "-rf",  "data/"});
 		 Runtime.getRuntime().exec(new String[]{"rm", "-rf",  "plots/"});
 
 
-		int times = 2; // how many generations?
+		int times = 1; // how many generations?
 
 		
-		SamplingAlgorithm a = SamplingAlgorithm.RANDOMWALK;
-		double sc = 0.2;
-		//
-		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true,
-				1, null);
-		// 
-		Transformation[] t = new Transformation[0];
 
 		
 		
@@ -104,60 +100,63 @@ public class Exploring {
 //		Network nw = new ErdosRenyi(2000, 50, false, null);
 		Network nw2 = new ErdosRenyi(100, 10, false, null);
 		
-		Network[] n = new Network[] { nw };
-		Network[] n2 = new Network[] { nw2 };
+
 		
 		Metric[] metrics = new Metric[] {
-//		 new DegreeDistribution(),
-//		 new ClusteringCoefficient(),
-//		 new ShortestPaths(),
-//		new BetweennessCentrality()
 				new BetweennessCentrality(),
-//		 new Assortativity(),
-		// new SamplingBias()
-//				new PageRank(10),
-		// new SamplingModularity(),
-		// new DegreeDistributionComparator(m),
-		// new SamplingRevisitFrequency()
+
 		};
 		
 		Metric[] metrics2 = new Metric[] {
-//				 new DegreeDistribution(),
-//				 new ClusteringCoefficient(),
-//				 new ShortestPaths(),
+
 				new BetweennessCentrality(),
-				// new BetweennessCentrality(),
-//				 new Assortativity(),
-				// new SamplingBias()
-//				 new PageRank(),
-				// new SamplingModularity(),
-				// new DegreeDistributionComparator(m),
-				// new SamplingRevisitFrequency()
+
 				};
 
 		
-		Timer timer = new Timer();
 		
-		Series[] s = Series.generate(n, metrics, times);
-		Series[] s2 = Series.generate(n2, metrics2, times);
+		
+		Graph g = nw.generate();
+		
+		(new GtnaGraphWriter()).write(g, "/Users/Tim/Documents/Projekte/gtna/source/graphs/test.gtna");
+	
+		Network n = new ReadableFile("test", "/Users/Tim/Documents/Projekte/gtna/source/graphs/", "/Users/Tim/Documents/Projekte/gtna/source/graphs/test.gtna", null);
+		
+		Series[] s = Series.generate(new Network[]{n}, metrics, times);
+		
+		
+		
+		
+		/* SAMPLING */
+
+		SamplingAlgorithm a = SamplingAlgorithm.RANDOMWALK;
+		double sc = 0.9;
+		Transformation sa = SamplingAlgorithmFactory.getInstanceOf(a, sc, true,
+				1, null);
+		
+		Graph gsampled = sa.transform(g);
+		
+		(new GtnaGraphWriter()).writeWithProperties(g, "/Users/Tim/Documents/Projekte/gtna/source/graphs/test.gtna");
+		gsampled = (new ExtractSampledSubgraph()).transform(gsampled);
+		
+		(new GtnaGraphWriter()).write(gsampled, "/Users/Tim/Documents/Projekte/gtna/source/graphs/sampled.gtna");
+		
+		Network n2 = new ReadableFile("sampled", "/Users/Tim/Documents/Projekte/gtna/source/graphs/", "/Users/Tim/Documents/Projekte/gtna/source/graphs/sampled.gtna", null);
+		
+		
+		
+		Series[] s2 = Series.generate(new Network[]{n2}, metrics2, times);
 		
 		
 		
 		Metric[] compM = {
-//				new ErrorComparison(new DegreeDistribution(), s2, s, ErrorComparison.BASEWITHRUN),
-//				new ErrorComparison(new ClusteringCoefficient(), s2, s, ErrorComparison.BASEWITHRUN),
-//				new ErrorComparison(new ShortestPaths(), s2, s, ErrorComparison.BASEWITHRUN),
-//				new ErrorComparison(new Assortativity(), s2, s, ErrorComparison.BASEWITHRUN),
-//				new ErrorComparison(new BetweennessCentrality(), s, s2, ErrorComparison.RUNWITHRUN),
-//				new ErrorComparison(new PageRank(), s2, s, ErrorComparison.RUNWITHRUN)
 				new TopKCorrelation(new BetweennessCentrality(), s, s2, 
-						TopKCorrelation.Type.NETWORK, TopKCorrelation.Mode.RUNWITHRUN)
+						TopKCorrelation.Type.SAMPLE, TopKCorrelation.Mode.RUNWITHRUN)
 		};
 		
 		Series[] sComp = Series.generate(new Network[] {new EmptyNetwork(nw, "TEST")}, compM, times);
 //		Series[] s = Series.get(n, metrics);
-		timer.end();
-		System.out.println("Gen: " + timer.getMsec() + "ms");
+
 		
 		
 		Style st = Style.linespoint; // Style.candlesticks;
@@ -169,18 +168,31 @@ public class Exploring {
 
 		Config.overwrite("GNUPLOT_LW", "1");
 		
-		Plotting.single(sComp, compM, "s/" + nw.getNameShort() + "/", ty, st);
-		Plotting.multi(sComp, compM, "m/" + nw.getNameShort() + "/", ty, st);
+		Plotting.single(sComp, compM, "s/" + "topk" + "/", ty, st);
+		Plotting.multi(sComp, compM, "m/" + "topk" + "/", ty, st);
 
-//		Plotting.single(s, metrics, "s1/" + nw.getNameShort() + "/", ty, st);
-//		Plotting.multi(s, metrics, "m1/" + nw.getNameShort() + "/", ty, st);
-//		Plotting.single(s2, metrics2, "s2/" + nw2.getNameShort() + "/", ty, st);
-//		Plotting.multi(s2, metrics2, "m2/" + nw2.getNameShort() + "/", ty, st);
+		Plotting.single(s, metrics, "s/original" + "/", ty, st);
+		Plotting.multi(s, metrics, "m/original" + "/", ty, st);
+		Plotting.single(s2, metrics2, "s/sampled" + "/", ty, st);
+		Plotting.multi(s2, metrics2, "m/sampled" + "/", ty, st);
 		
 		
 		Runtime.getRuntime().exec(new String[]{"open",  "plots/"});
 
 }
+
+	/**
+	 * @param g
+	 * @param dir
+	 * @param filename
+	 * @param times
+	 * @param t
+	 */
+	private static void plot(Graph g, String dir, String filename, int times,
+			Object t) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	public static void plot(Network nw, String dir, String filename, int times,
 			Transformation[] t) {
