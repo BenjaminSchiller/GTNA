@@ -91,8 +91,8 @@ public class UniformRandomWalker extends AWalker {
 	 * @return List of candidates
 	 */
 	@Override
-	public Collection<Node> resolveCandidates(Graph g, Node n) {
-		Collection<Node> c = new ArrayList<Node>();
+	public List<Node> resolveCandidates(Graph g, Node n) {
+		List<Node> c = new ArrayList<Node>();
 
 		List<Node> a = Arrays.asList(g.getNodes());
 		Collections.shuffle(a);
@@ -114,11 +114,11 @@ public class UniformRandomWalker extends AWalker {
 	 *         <b>value</b>: neighbors of the current node
 	 */
 	@Override
-	public Map<Node, Collection<Node>> getCurrentCandidates() {
-		Map<Node, Collection<Node>> cn = new HashMap<Node, Collection<Node>>();
+	public Map<Node, List<Node>> getCurrentCandidates() {
+		Map<Node, List<Node>> cn = new HashMap<Node, List<Node>>();
 
 		for (Node n : currents) {
-			Collection<Node> nn = new ArrayList<Node>();
+			List<Node> nn = new ArrayList<Node>();
 //			Collection<Node> nn = resolveCandidates(this.getGraph(), n);
 			cn.put(n, nn);
 		}

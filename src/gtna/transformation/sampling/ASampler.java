@@ -37,6 +37,7 @@ package gtna.transformation.sampling;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -125,8 +126,8 @@ public abstract class ASampler extends Parameter {
 		LinkedList<Node> sampled = new LinkedList<Node>();
 
 		for (AWalker w : walkers) {
-			Map<Node, Collection<Node>> wcc = w.getCurrentCandidates();
-			Map<Node, Collection<Node>> fc = walkerController
+			Map<Node, List<Node>> wcc = w.getCurrentCandidates();
+			Map<Node, List<Node>> fc = walkerController
 					.filterCandidates(wcc);
 			sampled.addAll(sampleNodes(fc, round));
 		}
@@ -156,8 +157,8 @@ public abstract class ASampler extends Parameter {
 	 *            candidate nodes
 	 * @return collection of selected nodes
 	 */
-	protected abstract Collection<Node> sampleNodes(
-			Map<Node, Collection<Node>> filteredCandidates, int round);
+	protected abstract List<Node> sampleNodes(
+			Map<Node, List<Node>> filteredCandidates, int round);
 
 	/**
 	 * @return the graph

@@ -66,7 +66,7 @@ import java.util.Set;
  * @author Tim
  * 
  */
-public class CalculateMetrics {
+public class PlotsMulti {
 
 	private static String suffix = ".gtna";
 	private static String name;
@@ -81,7 +81,6 @@ public class CalculateMetrics {
 
 	private static Set<Metric> metrics = new HashSet<Metric>();
 	private static int times;
-	private static boolean withOriginal = false;
 
 	/**
 	 * @param args
@@ -108,30 +107,33 @@ public class CalculateMetrics {
 							fs[0].getName().lastIndexOf("-"));
 				}
 
+				// System.out.println("Recognized name: " + name); // TODO
+				// REMOVE
 
 				ReadableFolder rf = new ReadableFolder(name, name, p, suffix,
 						null);
 
+				// System.out.println("RF: " + d + " - size:" +
+				// rf.getFiles().length); // TODO
+				// REMOVE
 
 				DescriptionWrapper dwrf = new DescriptionWrapper(rf, name + "-"
 						+ scaledown.get(j) + "%");
 				rfc.add(dwrf);
 			}
-
-			if(withOriginal){
 			// add original network
 			String d = dirs.get(i);
+
 			ReadableFile rf = new ReadableFile(net, net, d + net + suffix, null);
 			DescriptionWrapper dwrf = new DescriptionWrapper(rf, name + "-"
 					+ "100%");
 			rfc.add(dwrf);
-			}
 		}
 
 		Network[] rfa = rfc.toArray(new Network[0]);
 
 		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
-																
+		
 
 		Series[] series = new Series[rfa.length];
 		for (int i = 0; i < rfa.length; i++) {
@@ -141,8 +143,7 @@ public class CalculateMetrics {
 			} else {
 				path = targetdir + sampling + "/" + scaledown.get(i) + "/data";
 			}
-			// System.out.println("Setting MAIN_DATA_FOLDER=" + path); // TODO
-			// remove
+
 			Config.overwrite("MAIN_DATA_FOLDER", path);
 
 			series[i] = Series.generate(rfa[i], metrics.toArray(new Metric[0]),
@@ -152,38 +153,32 @@ public class CalculateMetrics {
 			System.out.println(Arrays.toString(series[i].getRunFolders()));
 		}
 
+		File p = new File(plotdir + "plots/");
+		File t = new File(plotdir + "temp/");
+
+		if (!p.isDirectory()) {
+			p.mkdirs();
+		}
+		if (!t.isDirectory()) {
+			t.mkdirs();
+		}
+
+		Config.overwrite("MAIN_PLOT_FOLDER", plotdir + "plots/");
+		Config.overwrite("TEMP_FOLDER", plotdir + "temp/");
+		Config.overwrite("RUNTIME_PLOTS_GENERATE", "false");
+		Config.overwrite("ETC_PLOTS_GENERATE", "false");
+
 		
-		// no plotting in calculation jar
-		
-//		File p = new File(plotdir + "plots/");
-//		File t = new File(plotdir + "temp/");
-//
-//		if (!p.isDirectory()) {
-//			p.mkdirs();
-//		}
-//		if (!t.isDirectory()) {
-//			t.mkdirs();
-//		}
-//
-//		Config.overwrite("MAIN_PLOT_FOLDER", plotdir + "plots/");
-//		Config.overwrite("TEMP_FOLDER", plotdir + "temp/");
-//		Config.overwrite("RUNTIME_PLOTS_GENERATE", "false");
-//		Config.overwrite("ETC_PLOTS_GENERATE", "false");
-//
 //		Config.appendToList("GNUPLOT_CONFIG_1", "set logscale x");
-//
-//		Type plotType = Type.average; // Type.confidence1;
-//		Style plotStyle = Style.linespoint; // Style.candlesticks;
-//
-//		Plotting.single(series, metrics.toArray(new Metric[0]), "single/",
-//				plotType, plotStyle); // main path to plots
-//										// is set by
-//										// Config.overwrite
-//
-//		Plotting.multi(series, metrics.toArray(new Metric[0]), "multi/",
-//				plotType, plotStyle); // main path to plots
-//										// is set by
-//										// Config.overwrite
+
+		Type plotType = Type.average; // Type.confidence1;
+		Style plotStyle = Style.linespoint; // Style.candlesticks;
+		
+
+		Plotting.multi(series, metrics.toArray(new Metric[0]), "multi/",
+				plotType, plotStyle); // main path to plots
+										// is set by
+										// Config.overwrite
 
 	}
 
@@ -209,8 +204,6 @@ public class CalculateMetrics {
 				metrics.addAll(matchMetrics(s.substring(8)));
 			} else if (s.startsWith("suffix=")) {
 				suffix = s.substring(7);
-			} else if (s.startsWith("withOriginal=")) {
-				withOriginal = (s.equalsIgnoreCase("withOriginal=true")) ? true : false;
 			} else if (s.startsWith("dstDir=")) {
 				targetdir = s.substring(7);
 				File f = new File(targetdir);

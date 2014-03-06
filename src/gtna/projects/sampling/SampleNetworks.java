@@ -124,8 +124,12 @@ public class SampleNetworks {
 	private static void createSample(String p, String name, int sd) {
 		String network = p + name + fileending;
 
+		Timer tread = new Timer();
 		Graph g = new GtnaGraphReader().read(network);
-
+		tread.end();
+		System.out.println("Reading the original network took " + tread.getSec() + "s");
+		
+		
 		if (samplingClasses != algorithms.SPECIFIED) {
 			samplingAlgorithms.clear();
 			if (samplingClasses == algorithms.ALL) {
@@ -178,10 +182,16 @@ public class SampleNetworks {
 						.getInstanceOf(a, (double) sd / 100.0, false, 1,
 								System.currentTimeMillis(), true);
 				Transformation subgraph = new ExtractSampledSubgraph();
+				
+				((ExtractSampledSubgraph) subgraph).setIndex(i);
 
+				Timer t1 = new Timer();
 				Graph sampled = sampling.transform(g);
+				t1.end();
+				Timer t2 = new Timer();
 				sampled = subgraph.transform(sampled);
-
+				t2.end();
+				
 				writeGraphToFile(sampled, sp + ".gtna");
 				writeGraphToFile(g, p + name + "/" + String.valueOf(sd) + "/"
 						+ a.toString().toLowerCase() + "/"
@@ -199,7 +209,7 @@ public class SampleNetworks {
 				t.end();
 				System.out.println("Sampled " + name + " using "
 						+ a.toString().toLowerCase() + " @ " + sd + "% in "
-						+ t.getMsec() + "ms (" + (run+1) + " of " + times + ")");
+						+ t.getSec() + "s (sampling: " + t1.getSec() + "s, subgraph: " + t2.getSec() + "s) (" + (run+1) + " of " + times + ")");
 			}
 
 			g = (new RemoveGraphProperty(RemoveType.ALL_OF_TYPE, "SAMPLE"))

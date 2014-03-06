@@ -95,15 +95,15 @@ public abstract class BFSBaseWalker extends AWalker {
 
 	@Override
 	public void takeAStep(Graph g, INetworkSample ns) {
-		Map<Node, Collection<Node>> cc = this.getCurrentCandidates();
-		Collection<Node> c = new ArrayList<Node>();
+		Map<Node, List<Node>> cc = this.getCurrentCandidates();
+		List<Node> c = new ArrayList<Node>();
 
 		// add new neighbors to the q
 		if (cc.size() > 0) {
-			c = cc.keySet();
+			c.addAll(cc.keySet());
 		}
 
-		Collection<Collection<Node>> toQ = cc.values();
+		Collection<List<Node>> toQ = cc.values();
 		for (Collection<Node> cn : toQ) {
 			Collection<Node> a = chooseNodesToAddToQ(cn);
 			for(Node ai : a){
@@ -131,7 +131,7 @@ public abstract class BFSBaseWalker extends AWalker {
 	 * @return List of candidates
 	 */
 	@Override
-	public Collection<Node> resolveCandidates(Graph g, Node n) {
+	public List<Node> resolveCandidates(Graph g, Node n) {
 		int[] nids = n.getOutgoingEdges();
 		ArrayList<Node> nn = new ArrayList<Node>();
 		for (int i : nids) {

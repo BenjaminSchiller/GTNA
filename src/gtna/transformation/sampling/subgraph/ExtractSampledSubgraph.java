@@ -41,13 +41,19 @@ import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.Sample;
+import gtna.util.Timer;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import com.sun.xml.internal.bind.v2.runtime.reflect.ListIterator;
 
 /**
  * @author Tim
@@ -72,7 +78,11 @@ public class ExtractSampledSubgraph extends Transformation {
 	 */
 	@Override
 	public Graph transform(Graph g) {
+		
+		Timer tPrepare = new Timer();
 		Graph gi = new Graph(g.getName() + " (SAMPLED)");
+		
+		
 
 		Sample sample = (Sample) g.getProperty("SAMPLE_" + this.index);
 
@@ -84,118 +94,76 @@ public class ExtractSampledSubgraph extends Transformation {
 		Edges e = new Edges(ni, g.computeNumberOfEdges());
 
 		gi.setNodes(ni);
-
-
-//		List<Node> sampledNodes = new ArrayList<Node>();
-//
-//		
-//		
-//		for(Integer i : sampledIds){ // sampled Ids = old ids
-//			Node giN = gi.getNode(sample.getNewNodeId(i));
-//			setNewOutgoingEdges(gi, sample, sampledIds, g.getNode(i), giN);
-//			setNewIncomingEdges(gi, sample, sampledIds, g.getNode(i), giN);
-//		}
-//		
+		tPrepare.end();
 		
+		int c1 = 0;
+		int c2 = 0;
+		Timer tEdges2 = new Timer();
+		Iterator<Integer> sit = sampledIds.iterator();
+		boolean[] sampled = new boolean[g.getNodeCount()];
+		while(sit.hasNext()){
+			sampled[sit.next()]=true;
+		}
 		
-//		Timer t = new Timer();
-		for(Edge oldE : g.getEdges().getEdges()){
-			int sourceOld = oldE.getSrc();
-			int destinationOld = oldE.getDst();
-			if(sampledIds.contains(sourceOld) && sampledIds.contains(destinationOld)){
-				int sourceNew = sample.getNewNodeId(sourceOld);
-				int destinationNew = sample.getNewNodeId(destinationOld);
-				e.add(sourceNew, destinationNew);
-				ni[sourceNew].addOut(destinationNew);
-				ni[destinationNew].addIn(sourceNew);
+		sit = sampledIds.iterator();
+		while(sit.hasNext()){
+			Node src = g.getNode(sit.next());
+			int srcNew = sample.getNewNodeId(src.getIndex());
+			for(int i: src.getOutgoingEdges()){
+				if(sampled[i]){
+					int dstNew = sample.getNewNodeId(i);
+					e.add(srcNew, dstNew);
+					c1++; // TODO 
+				}
 			}
 		}
-//		
-//		
-//		t.end();
-//		System.out.println("Adding edges: " + t.getMsec() + "ms");
-//		
+		
+		tEdges2.end();
+		
+		
+		/* new */
+		
+		Timer tEdges3 = new Timer();
+		Iterator<Integer> sit1 = sampledIds.iterator();
+		boolean[] sampled1 = new boolean[g.getNodeCount()];
+		while(sit1.hasNext()){
+			sampled1[sit1.next()]=true;
+		}
+		
+		LinkedList<Edge> oldedges = new LinkedList<Edge>();
+		oldedges.addAll(g.getEdges().getEdges());
+		
+		java.util.ListIterator<Edge> lit = oldedges.listIterator();
+		
+		while(lit.hasNext()){
+			Edge c = lit.next();
+			if(!sampled1[c.getSrc()] || !sampled1[c.getDst()]){
+				lit.remove();
+			}
+		}
+		
+		while(lit.hasPrevious()){
+			Edge p = lit.previous();
+			e.add(sample.getNewNodeId(p.getSrc()), sample.getNewNodeId(p.getDst()));
+			c2++;
+		}
+		
+		tEdges3.end();
 		
 		
 		
-//		// get Sampled nodes
-//		for (Integer i : sampledIds) {
-//			sampledNodes.add(g.getNode(i));
-//		}
-//
-//		for (Node n : sampledNodes) {
-//			Node giN = gi.getNode(sample.getNewNodeId(n.getIndex()));
-//			setNewOutgoingEdges(gi, sample, sampledIds, n, giN);
-//			setNewIncomingEdges(gi, sample, sampledIds, n, giN);
-//			// n.setIndex(sample.getNewNodeId(n.getIndex()));
-//		}
-//
-//		for (Node nin : ni) {
-//			for (int i : nin.getOutgoingEdges()) {
-//				e.add(nin.getIndex(), i);
-//			}
-//		}
-
-		gi.setNodes(ni);
+		
 		e.fill();
+		
+		
+		System.out.println("subgraph: \t(0) Collecting Edges took "+  tEdges2.getSec() 
+				+ "s \n\t\t(1) Collecting Edges took "+ tEdges3.getSec() + "\n\t\tAdded " + c1 + "/" + c2 + "edges");
+		
 		gi.setName(g.getName() + " (SAMPLED)");
 
 		return gi;
 	}
 
-	/**
-	 * @param g
-	 * @param sample
-	 * @param oldIds
-	 * @param n
-	 */
-	private void setNewIncomingEdges(Graph g, Sample sample,
-			Set<Integer> oldIds, Node n, Node newN) {
-		int[] nIn = n.getIncomingEdges();
-		List<Integer> newIn = new ArrayList<Integer>();
-
-		// collect sampled edges and calculate new ids
-		for (int i : nIn) {
-			if (oldIds.contains(i)) {
-				newIn.add(sample.getNewNodeId(i));
-			}
-		}
-
-		// set new incoming edges
-		nIn = new int[newIn.size()];
-		for (int i = 0; i < newIn.size(); i++) {
-			nIn[i] = newIn.get(i);
-		}
-
-		newN.setIncomingEdges(nIn);
-
-	}
-
-	/**
-	 * @param g
-	 * @param sample
-	 * @param oldIds
-	 * @param n
-	 */
-	private void setNewOutgoingEdges(Graph g, Sample sample,
-			Set<Integer> oldIds, Node n, Node newN) {
-		int[] nOut = n.getOutgoingEdges();
-		List<Integer> newOut = new ArrayList<Integer>();
-
-		// collect sampled edges and calculate new ids
-		for (int i : nOut) {
-			if (oldIds.contains(i)) {
-				newOut.add(sample.getNewNodeId(i));
-			}
-		}
-
-		// set new outgoing edges
-		nOut = new int[newOut.size()];
-		for (int i = 0; i < newOut.size(); i++) {
-			nOut[i] = newOut.get(i);
-		}
-		newN.setOutgoingEdges(nOut);
-	}
 
 	/*
 	 * (non-Javadoc)

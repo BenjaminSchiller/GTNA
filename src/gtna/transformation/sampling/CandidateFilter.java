@@ -41,6 +41,7 @@ import gtna.util.Timer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -74,7 +75,7 @@ public class CandidateFilter {
      *            current network sample
      * @return filtered set of candidates
      */
-    public Collection<Node> filterCandidates(Collection<Node> c,
+    public List<Node> filterCandidates(List<Node> c,
 	    INetworkSample ns) {
 	if (revisiting)
 	    return filterCandidatesRevisiting(c, ns);
@@ -92,24 +93,10 @@ public class CandidateFilter {
      *            current network sample
      * @return c without ns.nodes
      */
-    public Collection<Node> filterCandidatesSelfAware(Collection<Node> c,
+    public List<Node> filterCandidatesSelfAware(List<Node> c,
 	    INetworkSample ns) {
     	
-    	Timer t = new Timer();
-    	
-	Collection<Node> filtered = new ArrayList<Node>();
-	
-	Set<Integer> seen = ns.getSampleNodeMapping().keySet();
-
-	for (Node n : c) {
-	    if (!seen.contains(n.getIndex()))
-	    	filtered.add(n);
-	}
-
-	t.end();
-	runtime += t.getMsec();
-	
-	return filtered;
+	return ns.filterContainedNodes(c);
     }
 
     /**
@@ -123,7 +110,7 @@ public class CandidateFilter {
      *            current networksample
      * @return == c
      */
-    public Collection<Node> filterCandidatesRevisiting(Collection<Node> c,
+    public List<Node> filterCandidatesRevisiting(List<Node> c,
 	    INetworkSample ns) {
     	return c;
     }

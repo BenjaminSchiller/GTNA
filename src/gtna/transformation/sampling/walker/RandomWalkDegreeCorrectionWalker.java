@@ -41,6 +41,7 @@ import gtna.transformation.sampling.AWalker;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -95,7 +96,7 @@ public class RandomWalkDegreeCorrectionWalker extends AWalker {
      * @return List of candidates
      */
 	@Override
-    public Collection<Node> resolveCandidates(Graph g, Node n) {
+    public List<Node> resolveCandidates(Graph g, Node n) {
     	int[] nids = n.getOutgoingEdges();
     	ArrayList<Node> nn = new ArrayList<Node>();
     	for (int i : nids) {

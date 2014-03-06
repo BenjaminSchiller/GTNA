@@ -37,6 +37,7 @@ package gtna.transformation.sampling.sampler;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import gtna.graph.Node;
@@ -60,10 +61,10 @@ public class VisitedNodeSampler extends ASampler {
      * @see gtna.transformation.sampling.ASampler#sampleNodes(java.util.Map)
      */
     @Override
-    protected Collection<Node> sampleNodes(
-	    Map<Node, Collection<Node>> filteredCandidates, int round) {
+    protected List<Node> sampleNodes(
+	    Map<Node, List<Node>> filteredCandidates, int round) {
 	
-	Collection<Node> selected = new ArrayList<Node>();
+    	List<Node> selected = new ArrayList<Node>();
 	
 	// add keySet as we sample all visited nodes!
 	selected.addAll(filteredCandidates.keySet());
