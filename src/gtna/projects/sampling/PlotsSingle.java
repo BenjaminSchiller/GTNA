@@ -50,6 +50,7 @@ import gtna.networks.util.ReadableFolder;
 import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
 import gtna.plot.data.Data.Type;
+import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.util.Config;
 
 import java.io.File;
@@ -66,7 +67,7 @@ import java.util.Set;
  * @author Tim
  * 
  */
-public class CalculateMetrics {
+public class PlotsSingle {
 
 	private static String suffix = ".gtna";
 	private static String name;
@@ -74,14 +75,13 @@ public class CalculateMetrics {
 
 	private static LinkedList<String> dirs = new LinkedList<String>();
 	private static ArrayList<Integer> scaledown = new ArrayList<Integer>();
-	private static String sampling = "samplingalgorithm";
+	private static ArrayList<String> sampling = new ArrayList<String>();
 	private static String net;
 	// private static ArrayList<Integer> sizes = new ArrayList<Integer>();
 	private static String plotdir;
 
 	private static Set<Metric> metrics = new HashSet<Metric>();
 	private static int times;
-	private static boolean withOriginal = false;
 
 	/**
 	 * @param args
@@ -94,44 +94,50 @@ public class CalculateMetrics {
 		Collection<Network> rfc = new ArrayList<Network>();
 		for (int i = 0; i < dirs.size(); i++) {
 			// add scaled networks
-			for (int j = 0; j < scaledown.size(); j++) {
+			for (String sam : sampling) {
+				for (int j = 0; j < scaledown.size(); j++) {
+					String d = dirs.get(i);
+
+					String p = d + net + "/" + scaledown.get(j) + "/"
+							+ sampling + "/";
+
+					System.out.println("Reading directory: " + p);
+					File dir = new File(p);
+					File[] fs = dir.listFiles();
+					if (fs.length > 0) {
+						name = fs[0].getName().substring(0,
+								fs[0].getName().lastIndexOf("-"));
+					}
+
+					// System.out.println("Recognized name: " + name); // TODO
+					// REMOVE
+
+					ReadableFolder rf = new ReadableFolder(name, name, p,
+							suffix, null);
+
+					// System.out.println("RF: " + d + " - size:" +
+					// rf.getFiles().length); // TODO
+					// REMOVE
+
+					DescriptionWrapper dwrf = new DescriptionWrapper(rf, name
+							+ "-" + sam);
+					rfc.add(dwrf);
+				}
+				// add original network
 				String d = dirs.get(i);
 
-				String p = d + net + "/" + scaledown.get(j) + "/" + sampling
-						+ "/";
-				
-				System.out.println("Reading directory: " + p);
-				File dir = new File(p);
-				File[] fs = dir.listFiles();
-				if (fs.length > 0) {
-					name = fs[0].getName().substring(0,
-							fs[0].getName().lastIndexOf("-"));
-				}
-
-
-				ReadableFolder rf = new ReadableFolder(name, name, p, suffix,
+				ReadableFile rf = new ReadableFile(net, net, d + net + suffix,
 						null);
-
-
 				DescriptionWrapper dwrf = new DescriptionWrapper(rf, name + "-"
-						+ scaledown.get(j) + "%");
+						+ sam);
 				rfc.add(dwrf);
-			}
-
-			if(withOriginal){
-			// add original network
-			String d = dirs.get(i);
-			ReadableFile rf = new ReadableFile(net, net, d + net + suffix, null);
-			DescriptionWrapper dwrf = new DescriptionWrapper(rf, name + "-"
-					+ "100%");
-			rfc.add(dwrf);
 			}
 		}
 
 		Network[] rfa = rfc.toArray(new Network[0]);
 
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true");
-																
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true"); // TODO really?
+																// idk
 
 		Series[] series = new Series[rfa.length];
 		for (int i = 0; i < rfa.length; i++) {
@@ -139,7 +145,9 @@ public class CalculateMetrics {
 			if (i >= scaledown.size()) {
 				path = targetdir + "original" + "/" + 100 + "/data";
 			} else {
-				path = targetdir + sampling + "/" + scaledown.get(i) + "/data";
+				String s = getSamplingAlgorithm(rfa[i].getDescription());
+				path = targetdir + s + "/" + scaledown.get(i)
+						+ "/data";
 			}
 			// System.out.println("Setting MAIN_DATA_FOLDER=" + path); // TODO
 			// remove
@@ -152,39 +160,44 @@ public class CalculateMetrics {
 			System.out.println(Arrays.toString(series[i].getRunFolders()));
 		}
 
-		
-		// no plotting in calculation jar
-		
-//		File p = new File(plotdir + "plots/");
-//		File t = new File(plotdir + "temp/");
-//
-//		if (!p.isDirectory()) {
-//			p.mkdirs();
-//		}
-//		if (!t.isDirectory()) {
-//			t.mkdirs();
-//		}
-//
-//		Config.overwrite("MAIN_PLOT_FOLDER", plotdir + "plots/");
-//		Config.overwrite("TEMP_FOLDER", plotdir + "temp/");
-//		Config.overwrite("RUNTIME_PLOTS_GENERATE", "false");
-//		Config.overwrite("ETC_PLOTS_GENERATE", "false");
-//
-//		Config.appendToList("GNUPLOT_CONFIG_1", "set logscale x");
-//
-//		Type plotType = Type.average; // Type.confidence1;
-//		Style plotStyle = Style.linespoint; // Style.candlesticks;
-//
-//		Plotting.single(series, metrics.toArray(new Metric[0]), "single/",
-//				plotType, plotStyle); // main path to plots
-//										// is set by
-//										// Config.overwrite
-//
-//		Plotting.multi(series, metrics.toArray(new Metric[0]), "multi/",
-//				plotType, plotStyle); // main path to plots
-//										// is set by
-//										// Config.overwrite
+		File p = new File(plotdir + "plots/");
+		File t = new File(plotdir + "temp/");
 
+		if (!p.isDirectory()) {
+			p.mkdirs();
+		}
+		if (!t.isDirectory()) {
+			t.mkdirs();
+		}
+
+		Config.overwrite("MAIN_PLOT_FOLDER", plotdir + "plots/");
+		Config.overwrite("TEMP_FOLDER", plotdir + "temp/");
+		Config.overwrite("RUNTIME_PLOTS_GENERATE", "false");
+		Config.overwrite("ETC_PLOTS_GENERATE", "false");
+
+		Config.appendToList("GNUPLOT_CONFIG_1", "set logscale x");
+
+		Type plotType = Type.average; // Type.confidence1;
+		Style plotStyle = Style.linespoint; // Style.candlesticks;
+
+		Plotting.single(series, metrics.toArray(new Metric[0]), "single/",
+				plotType, plotStyle); // main path to plots
+										// is set by
+										// Config.overwrite
+
+	}
+
+	/**
+	 * @param description
+	 * @return
+	 */
+	private static String getSamplingAlgorithm(String description) {
+		for(SamplingAlgorithm sa : SamplingAlgorithm.values()){
+			if(description.contains(sa.toString().toLowerCase()) || description.contains(sa.toString().toLowerCase()))
+				return sa.toString().toLowerCase();
+		}
+		
+		return "not-recognized";
 	}
 
 	/**
@@ -195,7 +208,7 @@ public class CalculateMetrics {
 			// System.out.println(s);
 			// parse network generation details
 			if (s.startsWith("sampling=")) {
-				sampling = s.substring(9);
+				sampling.addAll(matchSampling(s.substring(9)));
 				// parse network generation details
 			} else if (s.startsWith("network=")) {
 				net = s.substring(8);
@@ -209,8 +222,6 @@ public class CalculateMetrics {
 				metrics.addAll(matchMetrics(s.substring(8)));
 			} else if (s.startsWith("suffix=")) {
 				suffix = s.substring(7);
-			} else if (s.startsWith("withOriginal=")) {
-				withOriginal = (s.equalsIgnoreCase("withOriginal=true")) ? true : false;
 			} else if (s.startsWith("dstDir=")) {
 				targetdir = s.substring(7);
 				File f = new File(targetdir);
@@ -232,6 +243,23 @@ public class CalculateMetrics {
 				System.exit(1);
 			}
 		}
+	}
+
+	/**
+	 * @param substring
+	 * @return
+	 */
+	private static Collection<? extends String> matchSampling(String s) {
+		ArrayList<String> recognized = new ArrayList<String>();
+		for (String m : s.split(",")) {
+			for (SamplingAlgorithm sa : SamplingAlgorithm.values()) {
+				if (sa.toString().equalsIgnoreCase(m)) {
+					recognized.add(sa.toString().toLowerCase());
+				}
+			}
+		}
+
+		return recognized;
 	}
 
 	/**

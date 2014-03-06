@@ -67,16 +67,16 @@ public class SampleGeneration {
 	public static final String[] topologies = new String[] { "spi", "wot", "er" };
 
 	public static final SamplingAlgorithm[] algorithms = new SamplingAlgorithm[] {
-			SamplingAlgorithm.FRONTIERSAMPLING };
+			SamplingAlgorithm.BFS };
 	
 //	public static final SamplingAlgorithm[] algorithms = SamplingAlgorithm.values();
 
 	
 	
-//	public static final int[] percents = new int[] { 10, 20, 30, 40, 50, 60,
-//			70, 80, 90 };
+	public static final int[] percents = new int[] { 10, 20, 30, 40, 50, 60,
+			70, 80, 90 };
 	
-	public static final int[] percents = new int[] { 10, 20 };
+//	public static final int[] percents = new int[] { 10, 20 };
 
 	public static final int times = 1;
 
@@ -123,7 +123,7 @@ public class SampleGeneration {
 //		}
 		
 		Graph g = nw.generate();
-		// System.out.println("   " + g);
+
 		Transformation sampling = SamplingAlgorithmFactory
 				.getInstanceOf(algorithm, (double) percent / 100.0,
 						false, 1, System.currentTimeMillis(), fast);
@@ -131,7 +131,7 @@ public class SampleGeneration {
 		Transformation strong = new LargestStronglyConnectedComponent();
 
 		Timer t1 = new Timer();
-		g = strong.transform(g);
+//		g = strong.transform(g);
 		System.out.print("STRONG done");
 		t1.end();
 		Timer t2 = new Timer();
@@ -143,7 +143,7 @@ public class SampleGeneration {
 		System.out.print("\t subgraphing done\n");
 		t3.end();
 		
-		writer.writeWithProperties(g, filename); // TODO
+		writer.writeWithProperties(g, filename);
 
 		System.out.println("=> " + filename + "\nSTRONG: " + t1.getSec() + "s \nSAMPLING: " + t2.getSec() + "s \nSUBGRAPH: " + t3.getSec() + "s");
 //		System.out.println("STRONG: " + t1.getMsec() + "ms \nSAMPLING: " + t2.getMsec() + "ms \nSUBGRAPH: " + t3.getMsec() + "ms");

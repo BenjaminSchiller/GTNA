@@ -147,6 +147,7 @@ public class SamplingController extends Transformation {
 			this.setGraph(g);
 			
 			Timer tSampling = new Timer();
+			networkSample.initialize(g.getNodeCount());
 			sampleGraph(g);
 			tSampling.end();
 			runSamplingRuntime = tSampling.getMsec();

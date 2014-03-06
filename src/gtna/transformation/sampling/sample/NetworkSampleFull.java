@@ -39,10 +39,12 @@ import gnu.trove.THashMap;
 import gtna.graph.Node;
 import gtna.util.parameter.Parameter;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -60,6 +62,7 @@ public class NetworkSampleFull extends Parameter implements INetworkSample {
 	boolean revisiting;
 	int numberOfRounds = 0;
 	String type;
+	private boolean[] contained;
 
 	/**
 	 * @param key
@@ -110,6 +113,11 @@ public class NetworkSampleFull extends Parameter implements INetworkSample {
 		revisitFrequency = new THashMap<Integer, List<Integer>>();
 
 	}
+	
+	public void initialize(int targetsize){
+		contained = new boolean[targetsize];
+		Arrays.fill(contained, false);
+	}
 
 	/* (non-Javadoc)
 	 * @see gtna.transformation.sampling.sample.NetworkSample1#addNodeToSample(java.util.Collection, int)
@@ -128,7 +136,7 @@ public class NetworkSampleFull extends Parameter implements INetworkSample {
 
 		
 		for (Node n : nodes) {
-			if (!sampleNodeMapping.containsKey(n.getIndex())) {
+			if (!contains(n)) {
 				// add node to the sample and initialize the RF for this node
 				int newId = sampleNodeMapping.size();
 				sampleNodeMapping.put(n.getIndex(), newId);
@@ -136,6 +144,8 @@ public class NetworkSampleFull extends Parameter implements INetworkSample {
 				List<Integer> rF = new LinkedList<Integer>();
 				rF.add(round);
 				revisitFrequency.put(n.getIndex(), rF);
+				
+				contained[n.getIndex()]=true;
 			} else {
 				// no need to add the node to the sample again, just add it to
 				// the RF
@@ -155,12 +165,7 @@ public class NetworkSampleFull extends Parameter implements INetworkSample {
 	 */
 	@Override
 	public boolean contains(Node n) {
-		if (sampleNodeMapping.containsKey(n.getIndex())) { 
-
-			return true;
-		} else {
-			return false;
-		}
+		return contained[n.getIndex()];
 	}
 
 	/* (non-Javadoc)
@@ -209,7 +214,7 @@ public class NetworkSampleFull extends Parameter implements INetworkSample {
 	 * @return
 	 */
 	private boolean initialized() {
-			if (sampleNodeMapping != null && revisitFrequency != null) {
+			if (sampleNodeMapping != null && revisitFrequency != null && contained != null) {
 			return true;
 		}
 
@@ -360,6 +365,7 @@ public class NetworkSampleFull extends Parameter implements INetworkSample {
 	public void addNodeEntry(int oldId, int newId, List<Integer> rf) {
 		sampleNodeMapping.put(oldId, newId);
 		revisitFrequency.put(oldId, rf);
+		contained[oldId]=true;
 
 	}
 
@@ -401,7 +407,27 @@ public class NetworkSampleFull extends Parameter implements INetworkSample {
 		sampleNodeMapping = new THashMap<Integer, Integer>(); 
 		revisitFrequency = new THashMap<Integer, List<Integer>>();
 		numberOfRounds = 0;
+		Arrays.fill(contained, false);
 		
+	}
+	
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.INetworkSample#filterContainedNodes(java.util.List)
+	 */
+	@Override
+	public List<Node> filterContainedNodes(List<Node> toFilter) {
+		
+		LinkedList<Node> filtered = new LinkedList<Node>();
+		
+		ListIterator<Node> lit = toFilter.listIterator();
+		while(lit.hasNext()){
+			Node n = lit.next();
+			if(!contained[n.getIndex()]){
+				filtered.add(n);
+			}
+		}
+		
+		return filtered;
 	}
 	
 

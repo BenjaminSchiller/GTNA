@@ -184,5 +184,14 @@ public interface INetworkSample {
 	 * @return
 	 */
 	public abstract INetworkSample cleanInstance();
+	
+	/**
+	 * 
+	 */
+	public abstract List<Node> filterContainedNodes(List<Node> toFilter);
 
+	/**
+	 * @param targetSize
+	 */
+	public abstract void initialize(int targetSize);
 }

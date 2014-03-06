@@ -81,17 +81,17 @@ public abstract class AWalker extends Parameter {
      * @return Map: 	<br><b>key</b>: current node 
      * 			<br><b>value</b>: neighbors of the current node
      */
-    public Map<Node, Collection<Node>> getCurrentCandidates() {
-	Map<Node, Collection<Node>> cn = new HashMap<Node, Collection<Node>>();
+    public Map<Node, List<Node>> getCurrentCandidates() {
+	Map<Node, List<Node>> cn = new HashMap<Node, List<Node>>();
 
 	for (Node n : currents) {
-	    Collection<Node> nn = resolveCandidates(this.getGraph(), n);
+	    List<Node> nn = resolveCandidates(this.getGraph(), n);
 	    cn.put(n, nn);
 	}
 	return cn;
     }
 
-   public abstract Collection<Node> resolveCandidates(Graph g, Node n);
+   public abstract List<Node> resolveCandidates(Graph g, Node n);
 
     /**
      * @param candidates
@@ -103,13 +103,13 @@ public abstract class AWalker extends Parameter {
      * Move walker one step
      */
     public void takeAStep(Graph g, INetworkSample ns) {
-	Map<Node, Collection<Node>> cc = this.getCurrentCandidates();
+	Map<Node, List<Node>> cc = this.getCurrentCandidates();
 	
-	Collection<Node> c;
+	List<Node> c = new ArrayList<Node>();
 
 	// TODO
 	if (cc.size() > 0) {
-	    c = cc.keySet();
+	    c.addAll(cc.keySet());
 	} else {
 //		System.err.println("Candidate Set is empty! catching restart nodes");
 	    c = getRestartNodes();
@@ -143,7 +143,7 @@ public abstract class AWalker extends Parameter {
      * 
      * @return collection of new start nodes
      */
-    protected Collection<Node> getRestartNodes() {
+    protected List<Node> getRestartNodes() {
 	return this.controller.getRestartNodes();
     }
 

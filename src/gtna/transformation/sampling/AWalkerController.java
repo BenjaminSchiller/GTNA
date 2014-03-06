@@ -38,6 +38,7 @@ package gtna.transformation.sampling;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -96,10 +97,10 @@ public abstract class AWalkerController extends Parameter {
 	 *            current networksamples
 	 * @return subset of candidates
 	 */
-	public Map<Node, Collection<Node>> filterCandidates(
-			Map<Node, Collection<Node>> candidates) {
-		Map<Node, Collection<Node>> filtered = new HashMap<Node, Collection<Node>>();
-		Collection<Node> f;
+	public Map<Node, List<Node>> filterCandidates(
+			Map<Node, List<Node>> candidates) {
+		Map<Node, List<Node>> filtered = new HashMap<Node, List<Node>>();
+		List<Node> f;
 		for (Node n : candidates.keySet()) {
 			f = this.filterCandidates(candidates.get(n));
 			filtered.put(n, f);
@@ -135,9 +136,10 @@ public abstract class AWalkerController extends Parameter {
 	 * 
 	 * @return collection of new start nodes
 	 */
-	public Collection<Node> getRestartNodes() {
+	public List<Node> getRestartNodes() {
 		Node[] rn;
-		Collection<Node> frn, c;
+		List<Node> c;
+		List<Node> frn;
 		do {
 			rn = samplingController.getStartNodeSelector().selectStartNodes(
 					this.getGraph(), 1, samplingController.getRng());
@@ -223,7 +225,7 @@ public abstract class AWalkerController extends Parameter {
 		runtime += t.getMsec();
 	}
 
-	public Collection<Node> filterCandidates(Collection<Node> candidates) {
+	public List<Node> filterCandidates(List<Node> candidates) {
 		return candidateFilter.filterCandidates(candidates, this.getNetworkSample());
 	}
 
