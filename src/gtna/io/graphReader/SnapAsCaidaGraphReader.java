@@ -35,42 +35,40 @@
  */
 package gtna.io.graphReader;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ListIterator;
-
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.io.Filereader;
 import gtna.io.Filewriter;
 import gtna.util.Config;
 
-/**
- * @author Tim
- * 
- */
-public class SnapGraphReader extends GraphReader {
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
+/**
+ * The SNAP AS-Caida graph file contains some additional information about the relation of two connected nodes. These information are ignored and lost afterwards.
+ * @author Tim
+ *
+ */
+public class SnapAsCaidaGraphReader extends GraphReader {
+	
 	public enum graphtype {
 		DIRECTED, UNDIRECTED
 	}
 
-	/**
-	 * @param key
-	 */
-	public SnapGraphReader() {
-		super("SNAP_standard");
-	}
+	
+    /**
+     * @param key
+     */
+    public SnapAsCaidaGraphReader() {
+    	super("SNAP_as-caida");
+    }
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see gtna.io.graphReader.GraphReader#read(java.lang.String)
@@ -148,6 +146,7 @@ public class SnapGraphReader extends GraphReader {
 			}
 			int src = Integer.parseInt(temp[0]);
 			int dst = Integer.parseInt(temp[1]);
+			int relation = Integer.parseInt(temp[2]); // TODO currently not used, prepared for later usage
 
 			int gtnaSrc;
 			int gtnaDst;
@@ -255,5 +254,3 @@ public class SnapGraphReader extends GraphReader {
 	}
 
 }
-
-
