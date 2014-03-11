@@ -45,7 +45,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
@@ -84,8 +83,6 @@ public class SnapAsCaidaGraphReader extends GraphReader {
 
 			Graph graph = new Graph(name);
 
-			Map<Integer, List<Integer>> outgoing = new HashMap<Integer, List<Integer>>();
-			Map<Integer, List<Integer>> incoming = new HashMap<Integer, List<Integer>>();
 
 			Map<Integer, Integer> idMapping = new HashMap<Integer, Integer>();
 			int nodecounter = 0;
@@ -146,6 +143,7 @@ public class SnapAsCaidaGraphReader extends GraphReader {
 			}
 			int src = Integer.parseInt(temp[0]);
 			int dst = Integer.parseInt(temp[1]);
+			@SuppressWarnings("unused")
 			int relation = Integer.parseInt(temp[2]); // TODO currently not used, prepared for later usage
 
 			int gtnaSrc;
@@ -170,10 +168,8 @@ public class SnapAsCaidaGraphReader extends GraphReader {
 			
 			// directed
 			edges.add(gtnaSrc + "-" + gtnaDst);
-//				addEdge(outgoing, incoming, src, dst);
 			if (type == graphtype.UNDIRECTED)
 				edges.add(gtnaDst + "-" + gtnaSrc);
-//					addEdge(outgoing, incoming, dst, src);
 		}
 		return nodecounter;
 	}
@@ -186,7 +182,7 @@ public class SnapAsCaidaGraphReader extends GraphReader {
 	@Override
 	public int nodes(String filename) {
 		String sep1 = Config.get("SNAP_SEPARATOR_1");
-		String ffd = Config.get("FILESYSTEM_FOLDER_DELIMITER");
+
 		SNAPFileReader fr = new SNAPFileReader(filename);
 		
 		String line = fr.readLine();

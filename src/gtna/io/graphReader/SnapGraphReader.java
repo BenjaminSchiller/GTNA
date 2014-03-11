@@ -35,23 +35,18 @@
  */
 package gtna.io.graphReader;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ListIterator;
-
 import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
-import gtna.io.Filereader;
 import gtna.io.Filewriter;
 import gtna.util.Config;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.Map;
 
 /**
  * @author Tim
@@ -85,9 +80,6 @@ public class SnapGraphReader extends GraphReader {
 			String name = filename.substring(filename.lastIndexOf(ffd) + 1);
 
 			Graph graph = new Graph(name);
-
-			Map<Integer, List<Integer>> outgoing = new HashMap<Integer, List<Integer>>();
-			Map<Integer, List<Integer>> incoming = new HashMap<Integer, List<Integer>>();
 
 			Map<Integer, Integer> idMapping = new HashMap<Integer, Integer>();
 			int nodecounter = 0;
@@ -171,10 +163,8 @@ public class SnapGraphReader extends GraphReader {
 			
 			// directed
 			edges.add(gtnaSrc + "-" + gtnaDst);
-//				addEdge(outgoing, incoming, src, dst);
 			if (type == graphtype.UNDIRECTED)
 				edges.add(gtnaDst + "-" + gtnaSrc);
-//					addEdge(outgoing, incoming, dst, src);
 		}
 		return nodecounter;
 	}
@@ -187,7 +177,6 @@ public class SnapGraphReader extends GraphReader {
 	@Override
 	public int nodes(String filename) {
 		String sep1 = Config.get("SNAP_SEPARATOR_1");
-		String ffd = Config.get("FILESYSTEM_FOLDER_DELIMITER");
 		SNAPFileReader fr = new SNAPFileReader(filename);
 		
 		String line = fr.readLine();
