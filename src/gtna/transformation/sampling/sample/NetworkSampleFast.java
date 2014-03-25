@@ -401,4 +401,22 @@ public class NetworkSampleFast extends Parameter implements INetworkSample {
 		return filtered;
 	}
 	
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.INetworkSample#setRevisitFrequency()
+	 */
+	@Override
+	public void setRevisitFrequency(HashMap<Integer, List<Integer>> rf) {
+		// do nothing as we do not save a revisit frequency in the fast sampling	
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.INetworkSample#setSampleNodeMapping()
+	 */
+	@Override
+	public void setSampleNodeMapping(HashMap<Integer, Integer> snm) {
+		this.sampleNodeMapping = new THashMap<Integer, Integer>();
+		this.sampleNodeMapping.putAll(snm);
+		
+	}
+	
 }

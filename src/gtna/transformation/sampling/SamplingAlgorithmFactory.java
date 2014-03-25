@@ -56,6 +56,7 @@ import gtna.transformation.sampling.walkercontroller.RandomWalkWalkerController;
 import gtna.transformation.sampling.walkercontroller.UniformSamplingWalkerController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -92,7 +93,7 @@ public class SamplingAlgorithmFactory {
      * @return
      */
     public static SamplingController getInstanceOf(SamplingAlgorithm sg,
-	    double scaledown, boolean revisiting, int dimension, Long randomSeed) {
+	    double[] scaledown, boolean revisiting, int dimension, Long randomSeed) {
     	
     	return getInstanceOf(sg, scaledown, revisiting, dimension, randomSeed, false);
     }
@@ -110,7 +111,7 @@ public class SamplingAlgorithmFactory {
      * @return
      */
     public static SamplingController getInstanceOf(SamplingAlgorithm sg,
-	    double scaledown, boolean revisiting, int dimension, Long randomSeed, boolean fast) {
+	    double[] scaledown, boolean revisiting, int dimension, Long randomSeed, boolean fast) {
 	SamplingController sc;
 	ASampler as;
 	AWalker aw;
@@ -316,12 +317,13 @@ public class SamplingAlgorithmFactory {
 			throw new IllegalArgumentException("Not supported algorithm");
 	}
 	
+	Arrays.sort(scaledown);
 	
 	if(fast){
-		ns = new NetworkSampleFast(algorithm, scaledown, dimension,
+		ns = new NetworkSampleFast(algorithm, scaledown[scaledown.length-1], dimension,
 			revisiting);
 	}else{
-		ns = new NetworkSampleFull(algorithm, scaledown, dimension,
+		ns = new NetworkSampleFull(algorithm, scaledown[scaledown.length-1], dimension,
 			revisiting);
 	}
 	sc = new SamplingController(algorithm, awc, as, sns, ns, scaledown,

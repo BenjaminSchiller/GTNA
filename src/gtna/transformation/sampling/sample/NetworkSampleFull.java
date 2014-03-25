@@ -429,6 +429,26 @@ public class NetworkSampleFull extends Parameter implements INetworkSample {
 		
 		return filtered;
 	}
+
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.INetworkSample#setRevisitFrequency()
+	 */
+	@Override
+	public void setRevisitFrequency(HashMap<Integer, List<Integer>> rf) {
+		this.revisitFrequency = new THashMap<Integer, List<Integer>>();
+		this.revisitFrequency.putAll(rf);
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.transformation.sampling.sample.INetworkSample#setSampleNodeMapping()
+	 */
+	@Override
+	public void setSampleNodeMapping(HashMap<Integer, Integer> snm) {
+		this.sampleNodeMapping = new THashMap<Integer, Integer>();
+		this.sampleNodeMapping.putAll(snm);
+		
+	}
 	
 
 }
