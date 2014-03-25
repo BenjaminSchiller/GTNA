@@ -77,6 +77,7 @@ public interface INetworkSample {
 	 * @return
 	 */
 	public abstract HashMap<Integer, List<Integer>> getRevisitFrequency();
+	public abstract void setRevisitFrequency(HashMap<Integer, List<Integer>> rf);
 
 	/**
 	 * Return the revisitFrequency for the given nodeId
@@ -93,6 +94,7 @@ public interface INetworkSample {
 	 * @return
 	 */
 	public abstract HashMap<Integer, Integer> getSampleNodeMapping();
+	public abstract void setSampleNodeMapping(HashMap<Integer, Integer> snm);
 
 	/**
 	 * returns the current size of the sample

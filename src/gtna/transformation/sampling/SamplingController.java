@@ -35,13 +35,20 @@
  */
 package gtna.transformation.sampling;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
+import java.util.TreeSet;
 
+import sun.security.util.ManifestDigester.Entry;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.transformation.Transformation;
 import gtna.transformation.sampling.sample.INetworkSample;
+import gtna.transformation.sampling.sample.NetworkSampleFast;
+import gtna.transformation.sampling.sample.NetworkSampleFull;
 import gtna.util.DeterministicRandom;
 import gtna.util.Timer;
 import gtna.util.parameter.BooleanParameter;
@@ -75,9 +82,11 @@ public class SamplingController extends Transformation {
 	private double runtimeRB;
 	private int round;
 	private double runtimeAddingNode;
+	private TreeSet<Double> intermediateSizes;
+	private String algorithm;
 
 	public SamplingController(String algorithm, AWalkerController awc,
-			ASampler as, StartNodeSelector asns, INetworkSample ns, double scaledown,
+			ASampler as, StartNodeSelector asns, INetworkSample ns, double[] scaledown,
 			int dimension, boolean revisiting, Long randomSeed) {
 		this(algorithm, awc, as, asns, ns, scaledown, dimension, revisiting);
 		if (randomSeed != null)
@@ -102,11 +111,11 @@ public class SamplingController extends Transformation {
 	 *            revisiting algorithm
 	 */
 	public SamplingController(String algorithm, AWalkerController awc,
-			ASampler as, StartNodeSelector asns, INetworkSample ns, double scaledown,
+			ASampler as, StartNodeSelector asns, INetworkSample ns, double[] scaledown,
 			int dimension, boolean revisiting) {
 		super("SAMPLING", new Parameter[] {
 				new StringParameter("ALGORITHM", algorithm), awc, as, asns,
-				new DoubleParameter("SCALEDOWN", scaledown),
+				new StringParameter("SCALEDOWN", Arrays.toString(scaledown)),
 				new IntParameter("DIMENSIONS", dimension),
 				new BooleanParameter("REVISITING", revisiting) });
 
@@ -118,13 +127,18 @@ public class SamplingController extends Transformation {
 
 		// a scaledown has to be a float between 0.0 and 1.0 representing the
 		// percentage of the original size
-		if (scaledown < 0.0 || scaledown > 1.0) {
-			throw new IllegalArgumentException(
-					"Scaledown has to be in [0,1] but is: " + scaledown);
-		}
-
+//		if (scaledown < 0.0 || scaledown > 1.0) {
+//			throw new IllegalArgumentException(
+//					"Scaledown has to be in [0,1] but is: " + scaledown);
+//		}
+		
+		this.intermediateSizes = new TreeSet<Double>(); // TODO
+		this.intermediateSizes = checkAndAddScaledowns(scaledown);
+		this.scaledown = this.intermediateSizes.pollLast(); // returns the largest/highest scaledown
+		
+		this.algorithm = algorithm;
 		this.setRng(new Random());
-		this.scaledown = scaledown;
+//		this.scaledown = scaledown;
 		this.dimension = dimension;
 		this.revisiting = revisiting;
 		this.sampler = as;
@@ -132,6 +146,24 @@ public class SamplingController extends Transformation {
 		this.startNodeSelector = asns;
 		this.networkSample = ns;
 
+	}
+
+	/**
+	 * @param scaledown2
+	 * @return
+	 */
+	private TreeSet<Double> checkAndAddScaledowns(double[] scaledown2) {
+		TreeSet<Double> sizes = new TreeSet<Double>();
+		
+		for(double d : scaledown2){
+			if(d > 0d && d <= 1d)
+				sizes.add(d);
+		}
+		
+		if(sizes.size() > 0)
+			return sizes;
+		
+		throw new IllegalArgumentException("At least one scaledown has to be in [0,1] but all are: " + Arrays.toString(scaledown2));
 	}
 
 	/*
@@ -146,57 +178,27 @@ public class SamplingController extends Transformation {
 		} else {
 			this.setGraph(g);
 			
-			Timer tSampling = new Timer();
 			networkSample.initialize(g.getNodeCount());
+
+			// run Sampling Loop
 			sampleGraph(g);
-			tSampling.end();
-			runSamplingRuntime = tSampling.getMsec();
-			int[] sn = collectStartNodeIndices();
 
-			Timer tDerive = new Timer();
-			Sample s = new Sample(networkSample, sn, rng);
-			tDerive.end();
-			deriveSamplingRuntime = tDerive.getMsec(); // TODO
-			
-			g.addProperty(g.getNextKey("SAMPLE"), s);
+			addSampleGraphProperty(g, networkSample);
 
-			
-//			printRuntimes(); //TODO
-			
-			
 			networkSample = networkSample.cleanInstance();
 			this.setGraph(null);
-			
-			
-			
+		
 			return g;
-		}
-		
-		
-		
+		}	
 	}
 
-	/**
-	 * 
-	 */
-	private void printRuntimes() { // TODO
-		walkerController.printRuntimes();
-		sampler.printRuntimes();
-		
-		System.out.println("Running the sampling loop: " + runtimeSOS + "ms");
-		System.out.println("Adding nodes to the sample: " + runtimeAddingNode + "ms");
-		System.out.println("Running the walking loop: " + runtimeWOS + "ms");
-		System.out.println("Running the budget loop: " + runtimeRB + "ms");
-		
-		System.out.println("Running the complete sampling took: " + runSamplingRuntime + "ms");
-		System.out.println("Deriving the sample graph property took: " + deriveSamplingRuntime + "ms");
-	
-		
-		
-		
-		
-		
+	private void addSampleGraphProperty(Graph g, INetworkSample ns) {
+		int[] sn = collectStartNodeIndices();
+		Sample s = new Sample(ns, sn, rng);
+		g.addProperty(g.getNextKey("SAMPLE"), s);
 	}
+
+	
 
 	/**
 	 * @return
@@ -242,7 +244,8 @@ public class SamplingController extends Transformation {
 	private boolean initialized() {
 		if (dimension <= 0 || networkSample == null || walkerController == null
 				|| !walkerController.isInitialized() || sampler == null
-				|| !sampler.isInitialized() || startNodeSelector == null) {
+				|| !sampler.isInitialized() || startNodeSelector == null
+				|| intermediateSizes == null || intermediateSizes.size()==0) {
 			return false;
 		}
 
@@ -283,40 +286,108 @@ public class SamplingController extends Transformation {
 		Collection<Node> s = sampler.initialize(g, targetSampleSize, round); // initialize
 																				// Sampler
 
-//		System.out.println(""); // TODO 
+
 		boolean running = true;
 		// walk -> sample loop as long new nodes are sampled
 		do {
-			Timer tSOS = new Timer(); // TODO 
-			// eventually sample
 			sampleOneStep(g, maxNodesInThisRound, round);
-			tSOS.end(); // TODO
-			runtimeSOS += tSOS.getMsec();
-//			System.out.println("Round (" + round + ") took " + runtimeSOS + " ms to sample so far");
-			
-			Timer tWOS = new Timer();
 			// walk
 			walkerController.walkOneStep();
-			tWOS.end(); // TODO
-			runtimeWOS += tWOS.getMsec();
-			
-			Timer tRB = new Timer(); // TODO 
+
 			// calculate residual budget
 			maxNodesInThisRound = calculateResidualBudget(targetSampleSize);
-			tRB.end();
-			runtimeRB += tRB.getMsec();
+
+			// TODO
+			if (intermediateSizes.size() > 0 && intermediateSize()) 
+				createIntermediateSample(g);
+			
+			
+			// next round necessary?
 			running = (maxNodesInThisRound > 0) ? true : false;
 			round++;
-			
-//			System.out.print(" \n >>" + networkSample.getSampleSize());
 		} while (running);
-		
-//		System.out.println(""); // TODO 
 		
 		return true;
 	}
 
 	
+
+	/**
+	 * @param graph2 
+	 * 
+	 */
+	private void createIntermediateSample(Graph graph2) {
+		double intermediateScaleDown = getSmallesSamplingSize();
+		
+		int intermediateSampleNodeCount = (int) Math.floor(graph2.getNodeCount()*intermediateScaleDown);
+		
+		INetworkSample ins;
+		if(networkSample instanceof NetworkSampleFast)
+			ins = new NetworkSampleFast(this.algorithm, intermediateScaleDown, this.dimension, this.revisiting);
+		else
+			ins = new NetworkSampleFull(this.algorithm, intermediateScaleDown, this.dimension, this.revisiting);
+		
+		HashMap<Integer, Integer> snm = networkSample.getSampleNodeMapping();
+		HashMap<Integer, List<Integer>> rf = networkSample.getRevisitFrequency();
+		
+		// only possible with multidimensional sampling algorithms
+		// extremely expensive
+		while(snm.size() > intermediateSampleNodeCount){
+			removeLastSampledNode(snm, rf);
+		}
+		
+		// TODO
+		ins.setRevisitFrequency(rf);
+		ins.setSampleNodeMapping(snm);
+		
+		addSampleGraphProperty(graph2, ins);
+		
+		intermediateSizes.remove(intermediateScaleDown);
+		
+		return;
+	}
+
+	/**
+	 * @param snm
+	 * @param rf
+	 */
+	private void removeLastSampledNode(HashMap<Integer, Integer> snm,
+			HashMap<Integer, List<Integer>> rf) {
+		
+		// TODO efficient implementation?
+		int last = 0;
+		int oldIndex = 0;
+		for(java.util.Map.Entry<Integer, Integer> e : snm.entrySet()){
+			if(e.getValue() > last){
+				last = e.getValue();
+				oldIndex = e.getKey();
+			}		
+		}
+		
+		snm.remove(oldIndex);
+		rf.remove(oldIndex);		
+	}
+
+	/**
+	 * @return
+	 */
+	private boolean intermediateSize() {
+		if(networkSample.getSampleSize() >= getSmallesSamplingSize()*this.graph.getNodeCount())
+			return true;
+		
+		return false;
+	}
+
+	/**
+	 * @return
+	 */
+	private Double getSmallesSamplingSize() {
+		
+		if(intermediateSizes.size() > 0)
+			return intermediateSizes.first();
+		
+		return 0d;
+	}
 
 	/**
 	 * Sample eventually nodes in the specified round

@@ -62,6 +62,7 @@ public class BFSWalker extends BFSBaseWalker {
 	@Override
 	protected Collection<Node> chooseNodesToAddToQ(Collection<Node> toFilter) {
 		List<Node> all = new ArrayList<Node>(toFilter.size());
+		all.addAll(toFilter);
 		
 		// shuffling as the neighbor lists are not sorted in real life networks
 		Collections.shuffle(all);
