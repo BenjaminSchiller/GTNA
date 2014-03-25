@@ -50,6 +50,7 @@ import gtna.networks.util.ReadableFolder;
 import gtna.plot.Gnuplot.Style;
 import gtna.plot.Plotting;
 import gtna.plot.data.Data.Type;
+import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.util.Config;
 
 import java.io.File;
@@ -66,7 +67,7 @@ import java.util.Set;
  * @author Tim
  * 
  */
-public class PlotsMulti {
+public class LocalPlotsMulti {
 
 	private static String suffix = ".gtna";
 	private static String name;
@@ -88,9 +89,49 @@ public class PlotsMulti {
 	 * @throws ParseException
 	 */
 	public static void main(String[] args) throws ParseException {
+		Config.overwrite("GNUPLOT_CONFIG_1", "unset logscale x");
 
-		matchArguments(args);
+		metrics.add(new ShortestPaths());
+//		metrics.add(new ClusteringCoefficient());
+//		metrics.add(new Assortativity());
+		metrics.add(new DegreeDistribution());
+		
+		times=10;
+		scaledown.add(1);scaledown.add(2);scaledown.add(3);scaledown.add(4);scaledown.add(5);scaledown.add(6);
+		scaledown.add(7);scaledown.add(8);scaledown.add(9);scaledown.add(10);scaledown.add(15);
+		
+		String[] networks = {"ca-GrQc", "cit-HepPh", "p2p-Gnutella31"};
+		
+		String b = "/Users/Tim/Documents/Projekte/sampling/rm/";
+		
+		String pd=b+"mplots/";
+		String td=b+"mmetrics/";
+		
+		withOriginal=true;
+		
+		dirs.add(b+"mgraphs/");
+		for(String n : networks){
+			net = n;
+			for(SamplingAlgorithm sa : SamplingAlgorithm.values()){
+				
+//				if(sa != SamplingAlgorithm.RANDOMWALK_METROPOLIZED){
+					targetdir = td + net + "/" + "data/";
+					plotdir = pd + net + "/" + sa.name() + "/";
+				
+					sampling = sa.name();
+					
+					try{
+						plot();
+					}catch (RuntimeException e){}
+//				}
+			}
+		}
+	}
 
+	/**
+	 * 
+	 */
+	private static void plot() {
 		Collection<Network> rfc = new ArrayList<Network>();
 		for (int i = 0; i < dirs.size(); i++) {
 			// add scaled networks
@@ -118,7 +159,7 @@ public class PlotsMulti {
 				// rf.getFiles().length); // TODO
 				// REMOVE
 
-				DescriptionWrapper dwrf = new DescriptionWrapper(rf, name + "-"
+				DescriptionWrapper dwrf = new DescriptionWrapper(rf, sampling + "-"
 						+ scaledown.get(j) + "%");
 				rfc.add(dwrf);
 			}
@@ -151,8 +192,8 @@ public class PlotsMulti {
 
 			series[i] = Series.get(rfa[i], metrics.toArray(new Metric[0]));
 
-			System.out.println(series[i].getFolder());
-			System.out.println(Arrays.toString(series[i].getRunFolders()));
+//			System.out.println(series[i].getFolder());
+//			System.out.println(Arrays.toString(series[i].getRunFolders()));
 		}
 
 		File p = new File(plotdir + "plots/");
@@ -173,22 +214,39 @@ public class PlotsMulti {
 		Config.overwrite("GNUPLOT_TERMINAL", "pdf dashed");
 		
 //		Config.appendToList("GNUPLOT_CONFIG_1", "set logscale x");
+		
+		Config.overwrite("GNUPLOT_LW", "3");
+		
+		Config.overwrite("GNUPLOT_CONFIG_1", "unset logscale x");
 
-		Type plotType = Type.average; // Type.confidence1;
-		Style plotStyle = Style.linespoint; // Style.candlesticks;
+
+		Type plotType_average = Type.average; // Type.confidence1;
+		Style plotStyle_linespoint = Style.linespoint; // Style.candlesticks;
+		
+		Type plotType_conf1 = Type.confidence2; // Type.confidence1;
+		Style plotStyle_candle = Style.candlesticks; // Style.candlesticks;
+		
 		
 
 		Plotting.multi(series, metrics.toArray(new Metric[0]), "multi/",
-				plotType, plotStyle); // main path to plots
+				plotType_average, plotStyle_linespoint); // main path to plots
 										// is set by
 										// Config.overwrite
 		
-		Config.appendToList("GNUPLOT_CONFIG_1", "set logscale x");
-		Plotting.multi(series, metrics.toArray(new Metric[0]), "multi-log/",
-				plotType, plotStyle); // main path to plots
+		Plotting.multi(series, metrics.toArray(new Metric[0]), "multi-conf/",
+				plotType_conf1, plotStyle_candle); // main path to plots
 										// is set by
 										// Config.overwrite
-
+		
+		Config.overwrite("GNUPLOT_CONFIG_1", "set logscale x");
+		Plotting.multi(series, metrics.toArray(new Metric[0]), "multi-log/",
+				plotType_average, plotStyle_linespoint); // main path to plots
+										// is set by
+										// Config.overwrite
+		Plotting.multi(series, metrics.toArray(new Metric[0]), "multi-log-conf/",
+				plotType_conf1, plotStyle_candle); // main path to plots
+										// is set by
+										// Config.overwrite
 	}
 
 	/**

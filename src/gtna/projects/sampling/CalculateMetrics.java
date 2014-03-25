@@ -136,7 +136,7 @@ public class CalculateMetrics {
 		Series[] series = new Series[rfa.length];
 		for (int i = 0; i < rfa.length; i++) {
 			String path;
-			if (i >= scaledown.size()) {
+			if (withOriginal && i%(scaledown.size()+1) ==0) {
 				path = targetdir + "original" + "/" + 100 + "/data";
 			} else {
 				path = targetdir + sampling + "/" + scaledown.get(i) + "/data";
@@ -148,8 +148,8 @@ public class CalculateMetrics {
 			series[i] = Series.generate(rfa[i], metrics.toArray(new Metric[0]),
 					times);
 
-			System.out.println(series[i].getFolder());
-			System.out.println(Arrays.toString(series[i].getRunFolders()));
+//			System.out.println(series[i].getFolder());
+//			System.out.println(Arrays.toString(series[i].getRunFolders()));
 		}
 
 		
