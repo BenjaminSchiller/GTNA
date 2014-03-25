@@ -52,6 +52,7 @@ import gtna.plot.Plotting;
 import gtna.plot.data.Data.Type;
 import gtna.transformation.sampling.SamplingAlgorithmFactory.SamplingAlgorithm;
 import gtna.util.Config;
+import gtna.util.parameter.IntParameter;
 
 import java.io.File;
 import java.text.ParseException;
@@ -82,6 +83,8 @@ public class PlotsSingle {
 
 	private static Set<Metric> metrics = new HashSet<Metric>();
 	private static int times;
+	private static boolean withOriginal = false;
+	private static boolean ex;
 
 	/**
 	 * @param args
@@ -96,19 +99,20 @@ public class PlotsSingle {
 			// add scaled networks
 			for (String sam : sampling) {
 				for (int j = 0; j < scaledown.size(); j++) {
+					int scale = scaledown.get(j);
 					String d = dirs.get(i);
 
-					String p = d + net + "/" + scaledown.get(j) + "/"
-							+ sampling + "/";
+					String p = d + net + "/" + scale + "/"
+							+ sam + "/";
 
-					System.out.println("Reading directory: " + p);
+					
 					File dir = new File(p);
 					File[] fs = dir.listFiles();
 					if (fs.length > 0) {
 						name = fs[0].getName().substring(0,
 								fs[0].getName().lastIndexOf("-"));
 					}
-
+					System.out.println("Reading directory: " + p + " for Network: " + name + ", " + sam + ", " + scale);
 					// System.out.println("Recognized name: " + name); // TODO
 					// REMOVE
 
@@ -120,46 +124,62 @@ public class PlotsSingle {
 					// REMOVE
 
 					DescriptionWrapper dwrf = new DescriptionWrapper(rf, name
-							+ "-" + sam);
+							+ "-" + sam, new IntParameter("SIZE", scale));
 					rfc.add(dwrf);
 				}
-				// add original network
-				String d = dirs.get(i);
+				if(withOriginal){
+					// add original network
+					String d = dirs.get(i);
 
-				ReadableFile rf = new ReadableFile(net, net, d + net + suffix,
-						null);
-				DescriptionWrapper dwrf = new DescriptionWrapper(rf, name + "-"
-						+ sam);
-				rfc.add(dwrf);
+					ReadableFile rf = new ReadableFile(net, net, d + net + suffix,
+							null);
+					DescriptionWrapper dwrf = new DescriptionWrapper(rf, name + "-"
+							+ sam, new IntParameter("SIZE", 30));
+					rfc.add(dwrf);
+				}
+				
 			}
+			
 		}
 
 		Network[] rfa = rfc.toArray(new Network[0]);
 
-		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true"); // TODO really?
-																// idk
+		Config.overwrite("SKIP_EXISTING_DATA_FOLDERS", "true"); 
 
-		Series[] series = new Series[rfa.length];
+		
+		int first = sampling.size();
+		int second = (withOriginal) ? scaledown.size()+1 : scaledown.size();
+		
+		Series[][] series = new Series[first][second];
+		System.out.println("Initialized array: (" + first + "x" + second + ")");
 		for (int i = 0; i < rfa.length; i++) {
 			String path;
-			if (i >= scaledown.size()) {
+			if (withOriginal && i%second == second-1) { // TODO
 				path = targetdir + "original" + "/" + 100 + "/data";
 			} else {
 				String s = getSamplingAlgorithm(rfa[i].getDescription());
-				path = targetdir + s + "/" + scaledown.get(i)
+				path = targetdir + s + "/" + scaledown.get(i%(scaledown.size()))
 						+ "/data";
 			}
+			
+
 			// System.out.println("Setting MAIN_DATA_FOLDER=" + path); // TODO
 			// remove
 			Config.overwrite("MAIN_DATA_FOLDER", path);
 
-			series[i] = Series.generate(rfa[i], metrics.toArray(new Metric[0]),
-					times);
-
-			System.out.println(series[i].getFolder());
-			System.out.println(Arrays.toString(series[i].getRunFolders()));
+			int a1 = (int)Math.floor((double)i/(double)second);
+			int a2 = i%second;
+			System.out.println(">>> \n\nTrying to add data at: " + a1 + "x" + a2 + "\n >>> and limits are: " + series.length+1 + "x" + series[a1].length);
+			try{
+			series[a1][a2] = Series.get(rfa[i], metrics.toArray(new Metric[0]));
+			}catch (Exception e){
+				
+				ex = true;
+			}
 		}
 
+		if(ex)
+			return;
 		File p = new File(plotdir + "plots/");
 		File t = new File(plotdir + "temp/");
 
@@ -174,13 +194,24 @@ public class PlotsSingle {
 		Config.overwrite("TEMP_FOLDER", plotdir + "temp/");
 		Config.overwrite("RUNTIME_PLOTS_GENERATE", "false");
 		Config.overwrite("ETC_PLOTS_GENERATE", "false");
-
-		Config.appendToList("GNUPLOT_CONFIG_1", "set logscale x");
+		
+		Config.overwrite("GNUPLOT_TERMINAL", "pdf dashed");
 
 		Type plotType = Type.average; // Type.confidence1;
 		Style plotStyle = Style.linespoint; // Style.candlesticks;
-
+		
+		
+		
 		Plotting.single(series, metrics.toArray(new Metric[0]), "single/",
+				plotType, plotStyle); // main path to plots
+										// is set by
+										// Config.overwrite
+		
+		Config.appendToList("GNUPLOT_CONFIG_1", "set logscale x");
+
+		
+
+		Plotting.single(series, metrics.toArray(new Metric[0]), "single-log/",
 				plotType, plotStyle); // main path to plots
 										// is set by
 										// Config.overwrite
@@ -210,6 +241,8 @@ public class PlotsSingle {
 			if (s.startsWith("sampling=")) {
 				sampling.addAll(matchSampling(s.substring(9)));
 				// parse network generation details
+			} else if (s.startsWith("withOriginal=")) {
+				withOriginal = (s.equalsIgnoreCase("withOriginal=true")) ? true : false;
 			} else if (s.startsWith("network=")) {
 				net = s.substring(8);
 			} else if (s.startsWith("scaledown=")) {
