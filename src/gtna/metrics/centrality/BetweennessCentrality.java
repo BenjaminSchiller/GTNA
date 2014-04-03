@@ -47,15 +47,13 @@ import gtna.networks.Network;
 import gtna.util.Distribution;
 import gtna.util.parameter.Parameter;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.Map.Entry;
 
 /**
  * 
@@ -67,8 +65,9 @@ import java.util.Stack;
  */
 public class BetweennessCentrality extends Metric {
 
-	private int[] cbs;
+	private double[] cbs;
 	private NodeValueList betweennessCentrality;
+	private Distribution binnedBetwennessCentrality;
 	private int edges;
 	private int nodes;
 	private double bcMed;
@@ -77,7 +76,8 @@ public class BetweennessCentrality extends Metric {
 	private double bcMax;
 	
 	
-	private int bins = 10;
+	private double binSize = 0.01;
+	private int spSum=0;
 
 	/**
 	 * @param key
@@ -88,11 +88,11 @@ public class BetweennessCentrality extends Metric {
 	
 	/**
 	 * 
-	 * @param bins - number of bins for the binned distribution
+	 * @param binsize - size of a bin
 	 */
-	public BetweennessCentrality(int bins) {
+	public BetweennessCentrality(double binsize) {
 		super("BETWEENNESS_CENTRALITY");
-		this.bins = bins;
+		this.binSize = binsize;
 	}
 
 	/**
@@ -114,37 +114,24 @@ public class BetweennessCentrality extends Metric {
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		this.calculateBC(g);
 
-		int sumSP = getSumSP(cbs);
-		double[] cb = new double[cbs.length]; // was max + 1
+		// normalization for binned distribution
+		double[] cb = new double[cbs.length]; 
 		for (int i = 0; i < cbs.length; i++) {
-			// System.out.println("BC: " + i + " : " + cbs[i] + " : " + sumSP +
-			// " = " + cbs[i]/sumSP);
-			cb[i] = (double) cbs[i] / (double) sumSP;
+			cb[i] = (double) cbs[i]/(double) this.spSum;
 		}
-		// for(int i = 0; i < cb.length; i++) {
-		// cb[i] /= (double)g.getNodes().length;
-		// }
-//		Arrays.sort(cb);
-		betweennessCentrality = new NodeValueList("BETWEENNESS_CENTRALITY_DISTRIBUTION", cb);
+		
+		double[][] binned = gtna.util.Statistics.binnedDistribution(cb, 0d, 1d, 100);
+	
+		betweennessCentrality = new NodeValueList("BETWEENNESS_CENTRALITY_NVL", cbs);
+		binnedBetwennessCentrality = new Distribution("BETWEENNESS_CENTRALITY_DISTRIBUTION", binned);
 		this.nodes = g.getNodes().length;
 		this.edges = g.getEdges().size();
 
-		this.bcMax = getMax(cb);
-		this.bcMin = getMin(cb);
-		this.bcAvg = getAvg(cb);
-		this.bcMed = getMed(cb);
+		this.bcMax = getMax(cbs);
+		this.bcMin = getMin(cbs);
+		this.bcAvg = getAvg(cbs);
+		this.bcMed = getMed(cbs);
 
-	}
-
-	private int getSumSP(int[] cbs2) {
-		int m = 0;
-
-		for (int i = 0; i < cbs2.length; i++) {
-			if (cbs2[i] > m)
-				m += cbs2[i];
-		}
-
-		return m;
 	}
 
 	/*
@@ -158,9 +145,9 @@ public class BetweennessCentrality extends Metric {
 		success &= DataWriter.writeWithIndex(this.betweennessCentrality.getValues(),
 				"BETWEENNESS_CENTRALITY_NVL", folder);
 		
-		success &= DataWriter.writeWithoutIndex(this.betweennessCentrality.toDistribution(bins, new double[] {0, 1}).getDistribution(),
-				"BETWEENNESS_CENTRALITY_DISTRIBUTION", folder);
-
+		// binned Distribution
+		success &= DataWriter.writeWithoutIndex(binnedBetwennessCentrality.getDistribution(),"BETWEENNESS_CENTRALITY_DISTRIBUTION", folder);
+		
 		return success;
 	}
 
@@ -203,71 +190,86 @@ public class BetweennessCentrality extends Metric {
 	 * @param g
 	 */
 	private void calculateBC(Graph g) {
-		cbs = new int[g.getNodeCount()];
+		cbs = new double[g.getNodeCount()];
+		spSum = 0;
 		Arrays.fill(cbs, 0); // initialize with 0 as the nodes are initially
 								// included in 0 shortest paths
 
 		Node[] V = g.getNodes();
 
 		for (Node s : V) {
-			Stack<Node> S = new Stack<Node>();
-			Map<Node, List<Node>> PredecessorsOnShortestPaths = new HashMap<Node, List<Node>>();
-			int[] sigma = new int[V.length];
-			Arrays.fill(sigma, 0);
-			sigma[s.getIndex()] = 1;
-			int[] distance = new int[V.length];
-			Arrays.fill(distance, -1);
-			distance[s.getIndex()] = 0;
-
-			Queue<Node> Q = new LinkedList<Node>();
+			// stage 1: local init
+			ArrayDeque<Node> S = new ArrayDeque<Node>();
+			ArrayDeque<Node> Q = new ArrayDeque<Node>();
+			HashMap<Node, List<Node>> P = new HashMap<Node, List<Node>>();
+			HashMap<Node, Integer> sigma = new HashMap<Node, Integer>();
+			HashMap<Node, Integer> distance = new HashMap<Node, Integer>();
+			for(Node v : V){
+				P.put(v, new ArrayList<Node>());
+				if(v.getIndex() == s.getIndex()){
+					sigma.put(v, 1);
+					distance.put(v, Integer.MAX_VALUE);
+				} else {
+					sigma.put(v, 0);
+					distance.put(v, Integer.MAX_VALUE);
+				}
+			}
 			Q.offer(s);
-
-			while (!Q.isEmpty()) {
-				Node v = Q.poll();
+			
+			// stage 2: BFS traversal
+			while(!Q.isEmpty()){
+				Node v = Q.pollFirst();
 				S.push(v);
-				Node[] vNeighbors = getNeighborNodes(v, g);
-				for (Node w : vNeighbors) {
-					// w found first time?
-					if (distance[w.getIndex()] < 0) {
+				
+				for(int wIndex : v.getOutgoingEdges()){
+					Node w = g.getNode(wIndex);
+					
+					// w found for the first time:
+					if(distance.get(w) == Integer.MAX_VALUE){
 						Q.offer(w);
-						distance[w.getIndex()] = distance[v.getIndex()] + 1;
+						distance.put(w, distance.get(v)+1);
 					}
-					// shortest path to w via v?
-					if (distance[w.getIndex()] == (distance[v.getIndex()] + 1)) {
-						sigma[w.getIndex()] = sigma[w.getIndex()]
-								+ sigma[v.getIndex()];
-						List<Node> pw = PredecessorsOnShortestPaths.get(w);
-						if (pw == null) {
-							pw = new LinkedList<Node>();
-						}
-						pw.add(v);
-						PredecessorsOnShortestPaths.put(w, pw);
+					
+					// new/additional shortest path to w
+					if(distance.get(w) == distance.get(v)+1){
+						sigma.put(w, sigma.get(w) + sigma.get(v));
+						P.get(w).add(v);
 					}
 				}
 			}
-
-			int[] delta = new int[V.length];
-			Arrays.fill(delta, 0);
-			// S returns nodes in order of non-increasing distance from s
-			while (!S.isEmpty()) {
-				Node x = S.pop(); // = w in the paper
-				List<Node> pw = PredecessorsOnShortestPaths.get(x);
-				if (pw != null) {
-					for (Node y : pw) { // = v in the paper
-						delta[y.getIndex()] = delta[y.getIndex()]
-								+ ((sigma[y.getIndex()] / sigma[x.getIndex()]) 
-										* (1 + delta[x.getIndex()]));
-					}
-					if (x.getIndex() != s.getIndex()) {
-						cbs[x.getIndex()] = cbs[x.getIndex()]
-								+ delta[x.getIndex()];
-					}
-
+			
+			// stage 3: dependency accumulation
+			HashMap<Node, Double> delta = new HashMap<Node, Double>();
+			for(Node v : V){
+				delta.put(v, 0d);
+			}
+			while(!S.isEmpty()){
+				Node w = S.pop();
+				for(Node v : P.get(w)){
+					delta.put(v, delta.get(v) + sigma.get(v)/sigma.get(w)*(1+delta.get(w)));
+				}
+				if(w.getIndex() != s.getIndex()){
+					cbs[w.getIndex()] = cbs[w.getIndex()] + delta.get(w);
 				}
 			}
-
+			spSum += sumSps(sigma);
+			
 		}
 
+	}
+
+	/**
+	 * @param sigma
+	 * @return
+	 */
+	private int sumSps(HashMap<Node, Integer> sigma) {
+		int s = 0;
+		
+		for(Entry<Node, Integer> e : sigma.entrySet()){
+			s+=e.getValue();
+		}
+		
+		return s-2; // -1 since sigma(root)=1 but this is not a shortest path in our sense of shortest path counting
 	}
 
 	/**
