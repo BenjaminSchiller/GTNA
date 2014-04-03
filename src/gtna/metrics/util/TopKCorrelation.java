@@ -43,19 +43,13 @@ import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
 import gtna.transformation.sampling.Sample;
-import gtna.util.Config;
 import gtna.util.Distribution;
 import gtna.util.parameter.Parameter;
 import gtna.util.parameter.StringParameter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-
-import com.itextpdf.text.List;
 
 /**
  * @author Tim
