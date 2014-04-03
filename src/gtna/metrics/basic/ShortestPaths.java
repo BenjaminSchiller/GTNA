@@ -32,7 +32,9 @@
  * 
  * Changes since 2011-05-17
  * ---------------------------------------
+ * 2013-07-xx : added effective diameter, hop plot (Tim Grube)
  * 2014-02-03 : readData, getDistributions, getNodeValueLists (Tim Grube)
+ * 2014-04-03 : removed rel. effective diameter (Tim Grube)
  */
 package gtna.metrics.basic;
 
@@ -70,8 +72,6 @@ public class ShortestPaths extends Metric {
 
     private double ecc90;
 
-    private double eccRelative90;
-
     public ShortestPaths() {
 	super("SHORTEST_PATHS");
     }
@@ -96,8 +96,9 @@ public class ShortestPaths extends Metric {
 
 	this.hopPlot = new Distribution("SHORTEST_PATHS_HOP_PLOT", computeHP(SPL, graph));
 
-	this.ecc90 = calculateEccentricity(this.shortestPathLengthDistributionAbsolute.getCdf(), graph, 0.90);
-	this.eccRelative90 = calculateEccentricity(this.shortestPathLengthDistribution.getCdf(), graph, 0.90);
+	// ecc is calculated using the connected pairs of nodes only! do not use the "absolute" spld here!
+	this.ecc90 = calculateEccentricity(this.shortestPathLengthDistribution.getCdf(), graph, 0.90); 
+
 
     }
 
@@ -243,11 +244,9 @@ public class ShortestPaths extends Metric {
 		this.connectivity);
 	Single ecc = new Single(
 		"SHORTEST_PATHS_EFFECTIVE_DIAMETER_ECC_90QUANTIL", this.ecc90);
-	Single eccRel = new Single(
-		"SHORTEST_PATHS_RELATIVE_EFFECTIVE_DIAMETER_ECC_90QUANTIL", this.eccRelative90);
 	return new Single[] { averageShortestPathLength,
 		medianShortestPathLength, maximumShortestPathLength,
-		connectivity, ecc, eccRel };
+		connectivity, ecc };
     }
     
     @Override
@@ -303,8 +302,6 @@ public class ShortestPaths extends Metric {
 					this.connectivity = Double.valueOf(single[1]);
 				} else if("SHORTEST_PATHS_EFFECTIVE_DIAMETER_ECC_90QUANTIL".equals(single[0])){
 					this.ecc90 = Double.valueOf(single[1]);
-				} else if("SHORTEST_PATHS_RELATIVE_EFFECTIVE_DIAMETER_ECC_90QUANTIL".equals(single[0])){
-					this.eccRelative90 = Double.valueOf(single[1]);
 				} 
 			}
 		}
