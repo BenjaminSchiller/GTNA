@@ -101,7 +101,7 @@ public class NodeValueList {
 	 *            Number of Bins
 	 * @return
 	 */
-	public Distribution toDistribution(int nob) {
+	public Distribution toDistribution(double binsize) {
 
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
@@ -111,31 +111,23 @@ public class NodeValueList {
 			max = (max < d) ? d : max;
 		}
 
-		return this.toDistribution(nob, new double[] {min, max});
+		return this.toDistribution(binsize, new double[] {min, max});
 
 	}
 
-	public Distribution toDistribution(int nob, double[] borders) {
+	public Distribution toDistribution(double binsize, double[] borders) {
 		double[][] binned;
 
 		double up = (borders[0] >= borders[1]) ? borders[0] : borders[1];
 		double down = (borders[0] >= borders[1]) ? borders[1] : borders[0];
 		
-		double step = (up - down) / (double) nob;
 
-		if(step <= 2E-20){
-			return new Distribution(this.key + "-distribution", new double[]{0.0});
-		}
-		binned = Statistics.binning(this.values, down, up, step);
-		double[][] distribution = new double[nob][2];
-		for (int i = 0; i < nob; i++) {
-			distribution[i][0] = (double) i * step;
-			distribution[i][1] = binned[i].length;
-		}
-		ArrayUtils.divide(distribution, 1, values.length);
+		binned = Statistics.binnedDistribution(this.values, down, up, (int)Math.floor((up-down)/binsize));
+		
+	
 
 		Distribution d = new Distribution(this.key + "-distribution",
-				distribution);
+				binned);
 		return d;
 
 	}
