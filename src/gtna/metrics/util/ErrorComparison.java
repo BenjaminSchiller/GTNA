@@ -135,7 +135,6 @@ public class ErrorComparison extends Metric {
 		/*
 		 * Read Metric values from files.
 		 */
-		// TODO how to get the correct folder? RUN!
 		@SuppressWarnings("static-access")
 		int r = seriesMy.getCurrentRun();
 		if(this.type == RUNWITHRUN){
@@ -177,9 +176,11 @@ public class ErrorComparison extends Metric {
 		// assume: base.length == changed.length
 		
 		
-		double[] borders = computeBorders(base, changed);
+		return new Distribution[]{};
 		
-		return this.compareDistribution(base.toDistribution(10, borders ), changed.toDistribution(10, borders));
+//		double[] borders = computeBorders(base, changed);
+//		
+//		return this.compareDistribution(base.toDistribution(0.01, borders ), changed.toDistribution(0.01, borders));
 		
 		
 //		double[] bV = base.getValues();
