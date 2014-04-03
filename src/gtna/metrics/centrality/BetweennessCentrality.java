@@ -114,14 +114,18 @@ public class BetweennessCentrality extends Metric {
 	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
 		this.calculateBC(g);
 
+		double[][] binned = new double[][]{{}};
+		
+		if(this.spSum!=0){
 		// normalization for binned distribution
 		double[] cb = new double[cbs.length]; 
 		for (int i = 0; i < cbs.length; i++) {
 			cb[i] = (double) cbs[i]/(double) this.spSum;
 		}
 		
-		double[][] binned = gtna.util.Statistics.binnedDistribution(cb, 0d, 1d, 100);
-	
+		binned = gtna.util.Statistics.binnedDistribution(cb, 0d, 1d, 100);
+		}
+		
 		betweennessCentrality = new NodeValueList("BETWEENNESS_CENTRALITY_NVL", cbs);
 		binnedBetwennessCentrality = new Distribution("BETWEENNESS_CENTRALITY_DISTRIBUTION", binned);
 		this.nodes = g.getNodes().length;
