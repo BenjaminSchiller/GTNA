@@ -47,11 +47,7 @@ import gtna.util.Distribution;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-
-import com.itextpdf.text.List;
 
 /**
  * @author Tim
