@@ -36,9 +36,9 @@
 package gtna.transformation.partition;
 
 import gtna.graph.Graph;
+import gtna.graph.Node;
 import gtna.graph.partition.Partition;
 import gtna.transformation.Transformation;
-import gtna.util.Util;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -68,51 +68,67 @@ public class StrongConnectivityPartition extends Transformation {
 
 	public static Partition getStrongPartition(Graph g) {
 		ArrayList<ArrayList<Integer>> components = new ArrayList<ArrayList<Integer>>();
-		int[] indexes = Util.initIntArray(g.getNodes().length, -1);
-		int[] lowlink = new int[g.getNodes().length];
-		Stack<Integer> S = new Stack<Integer>();
-		index = 0;
+		boolean[] found = new boolean[g.getNodeCount()];
 
-		for (int v = 0; v < g.getNodes().length; v++) {
-			if (indexes[v] == -1) {
-				strongConnect(v, g, indexes, lowlink, S, components);
+		for (int i = 0; i < g.getNodeCount(); i++) {
+			if (found[i]) {
+				continue;
 			}
+			ArrayList<Integer> component = getStronglyConnectedNodes(
+					g.getNode(i), g, found);
+			components.add(component);
+			// if (component.size() == 111881) {
+			// break;
+			// }
 		}
 
 		return new Partition(components);
 	}
 
-	private static void strongConnect(int v, Graph g, int[] indexes,
-			int[] lowlink, Stack<Integer> S,
-			ArrayList<ArrayList<Integer>> components) {
-		// Set the depth index for v to the smallest unused index
-		indexes[v] = index;
-		lowlink[v] = index;
-		index++;
-		S.push(v);
+	private static ArrayList<Integer> getStronglyConnectedNodes(Node n,
+			Graph g, boolean[] found) {
+		ArrayList<Integer> nodes = new ArrayList<Integer>();
+		nodes.add(n.getIndex());
+		found[n.getIndex()] = true;
 
-		// Consider successors of v
-		for (int w : g.getNode(v).getOutgoingEdges()) {
-			if (indexes[w] == -1) {
-				// Successor w has not yet been visited; recurse on it
-				strongConnect(w, g, indexes, lowlink, S, components);
-				lowlink[v] = Math.min(lowlink[v], lowlink[w]);
-			} else if (S.contains(w)) {
-				// Successor w is in stack S and hence in the current SCC
-				lowlink[v] = Math.min(lowlink[v], indexes[w]);
+		boolean[] forward = new boolean[g.getNodeCount()];
+		Stack<Node> stack = new Stack<Node>();
+
+		stack.push(n);
+		forward[n.getIndex()] = true;
+
+		while (!stack.isEmpty()) {
+			Node current = stack.pop();
+			for (int out : current.getOutgoingEdges()) {
+				if (forward[out] == true) {
+					continue;
+				}
+				forward[out] = true;
+				stack.push(g.getNode(out));
 			}
 		}
 
-		// If v is a root node, pop the stack and generate an SCC
-		if (lowlink[v] == indexes[v]) {
-			ArrayList<Integer> newComponent = new ArrayList<Integer>();
-			int w = -1;
-			while (w != v) {
-				w = S.pop();
-				newComponent.add(w);
+		boolean[] backward = new boolean[g.getNodeCount()];
+
+		stack.push(n);
+		backward[n.getIndex()] = true;
+
+		while (!stack.isEmpty()) {
+			Node current = stack.pop();
+			for (int in : current.getIncomingEdges()) {
+				if (backward[in] == true) {
+					continue;
+				}
+				backward[in] = true;
+				stack.push(g.getNode(in));
+				if (forward[in]) {
+					found[in] = true;
+					nodes.add(in);
+				}
 			}
-			components.add(newComponent);
 		}
+
+		return nodes;
 	}
 
 	@Override
