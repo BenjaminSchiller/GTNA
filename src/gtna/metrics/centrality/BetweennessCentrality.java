@@ -382,7 +382,7 @@ public class BetweennessCentrality extends Metric {
 	 */
 	@Override
 	public Distribution[] getDistributions() {
-		return new Distribution[0];
+		return new Distribution[]{binnedBetwennessCentrality};
 	}
 
 	/* (non-Javadoc)
