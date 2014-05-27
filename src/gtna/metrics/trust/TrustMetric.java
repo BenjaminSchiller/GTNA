@@ -1,0 +1,298 @@
+/* ===========================================================
+ * GTNA : Graph-Theoretic Network Analyzer
+ * ===========================================================
+ *
+ * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
+ * and Contributors
+ *
+ * Project Info:  http://www.p2p.tu-darmstadt.de/research/gtna/
+ *
+ * GTNA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GTNA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * ---------------------------------------
+ * TrustMetric.java
+ * ---------------------------------------
+ * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
+ * and Contributors 
+ *
+ * Original Author: Dirk;
+ * Contributors:    -;
+ *
+ * Changes since 2011-05-17
+ * ---------------------------------------
+ *
+ */
+package gtna.metrics.trust;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+
+import gtna.data.NodeValueList;
+import gtna.data.Single;
+import gtna.graph.Graph;
+import gtna.graph.Node;
+import gtna.io.DataWriter;
+import gtna.metrics.Metric;
+import gtna.networks.Network;
+import gtna.util.Distribution;
+import gtna.util.parameter.IntParameter;
+import gtna.util.parameter.Parameter;
+import gtna.util.parameter.ParameterList;
+import gtna.util.parameter.StringParameter;
+
+/**
+ * @author Dirk
+ *
+ */
+public abstract class TrustMetric extends Metric {
+	
+	private Distribution trustedNodesDistribution;
+	private Distribution edgesInSubtreeDistribution;
+	
+	private int sampleSize;
+	
+	private long runtimeAvg;
+	private long runtimeTrustedAvg;
+	private long runtimeUntrustedAvg;
+	
+	private long runtimeGraphPreparation;
+	
+	private Random rnd;
+	
+	public TrustMetric(String metricCode, int sampleSize, Parameter[] parameters) {
+		super("TRUST_METRIC", ParameterList.append(parameters, new Parameter[] { new StringParameter("METRIC_CODE", metricCode), new IntParameter("SAMPLE_SIZE", sampleSize) }));
+		
+		this.sampleSize = sampleSize;
+		
+		rnd = new Random(System.currentTimeMillis());
+	}
+
+	/* (non-Javadoc)
+	 * @see gtna.metrics.Metric#computeData(gtna.graph.Graph, gtna.networks.Network, java.util.HashMap)
+	 */
+	@Override
+	public void computeData(Graph g, Network n, HashMap<String, Metric> m) {
+		long t0 = System.nanoTime();
+		prepareGraph(g);
+		long t1 = System.nanoTime();
+		runtimeGraphPreparation = t1 - t0;
+		
+		computeTrustDistributions(g);
+		computeRuntimes(g);
+		
+	}
+	
+	private void computeTrustDistributions(Graph g) {
+
+		int[] trustedNodes = new int[sampleSize];
+		int[] edgesInSubtree = new int[sampleSize];
+
+		int maxTrustedNodes = 0;
+		int maxEdges = 0;
+
+		for (int i = 0; i < sampleSize; i++) {
+			
+			Node n = getRandomNode(g);
+			
+			prepareNode(n);
+
+			trustedNodes[i] = getNoOfTrustedNodes(n);
+			edgesInSubtree[i] = getNoOfEdgesInSubtree(n);
+
+			if (trustedNodes[i] > maxTrustedNodes)
+				maxTrustedNodes = trustedNodes[i];
+			if (edgesInSubtree[i] > maxEdges)
+				maxEdges = edgesInSubtree[i];
+		}
+
+		double trustedDist[] = new double[maxTrustedNodes + 1];
+		for (int c : trustedNodes)
+			trustedDist[c]++;
+		for (int i = 0; i < trustedDist.length; i++)
+			trustedDist[i] /= sampleSize;
+
+		double subtreeEdgesDist[] = new double[maxEdges + 1];
+		for (int c : edgesInSubtree)
+			subtreeEdgesDist[c]++;
+		for (int i = 0; i < subtreeEdgesDist.length; i++)
+			subtreeEdgesDist[i] /= sampleSize;
+
+		trustedNodesDistribution = new Distribution(
+				"TRUST_METRIC_TRUSTED_NODES_DISTRIBUTION", trustedDist);
+
+		edgesInSubtreeDistribution = new Distribution(
+				"TRUST_METRIC_EDGES_IN_SUBTREE_DISTRIBUTION",
+				subtreeEdgesDist);
+
+	}
+	
+	private void computeRuntimes(Graph g) {		
+		long sumRuntime=0;
+		long sumTrustedRuntime=0;
+		long sumUntrustedRuntime=0;
+		
+		int countTrusted=0;
+		int countUntrusted=0;
+		
+		for (int i = 0; i < sampleSize; i++) {
+			long t0 = System.nanoTime();
+			boolean b = computeTrust(getRandomNode(g),getRandomNode(g));
+			long t1 = System.nanoTime();
+			
+			long t = (t1-t0);
+			
+			sumRuntime+=t;
+			
+			if (b) {
+				countTrusted++;
+				sumTrustedRuntime+=t;
+			} else {
+				countUntrusted++;
+				sumUntrustedRuntime+=t;
+			}
+		}
+		
+		runtimeAvg = sumRuntime / (countTrusted+countUntrusted);
+		
+		if (countTrusted > 0)
+			runtimeTrustedAvg = sumTrustedRuntime / (countTrusted);
+		if (countUntrusted > 0)
+			runtimeUntrustedAvg = sumUntrustedRuntime / (countUntrusted);
+		
+	}
+	
+	private Node getRandomNode(Graph g) {
+		
+		
+		return g.getNodes()[rnd.nextInt(g.getNodeCount())];
+	}
+
+	@Override
+	public boolean writeData(String folder) {
+		boolean success = true;
+		success &= DataWriter.writeWithoutIndex(
+				this.trustedNodesDistribution.getDistribution(),
+				"TRUST_METRIC_TRUSTED_NODES_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithoutIndex(
+				this.trustedNodesDistribution.getCdf(),
+				"TRUST_METRIC_TRUSTED_NODES_DISTRIBUTION_CDF", folder);
+		success &= DataWriter.writeWithoutIndex(
+				this.edgesInSubtreeDistribution.getDistribution(),
+				"TRUST_METRIC_EDGES_IN_SUBTREE_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithoutIndex(
+				this.edgesInSubtreeDistribution.getCdf(),
+				"TRUST_METRIC_EDGES_IN_SUBTREE_DISTRIBUTION_CDF", folder);
+		return success;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#readData(java.lang.String)
+	 */
+	@Override
+	public boolean readData(String folder) {
+		trustedNodesDistribution = new Distribution(
+				"TRUST_METRIC_TRUSTED_NODES_DISTRIBUTION",
+				readDistribution(folder,
+						"TRUST_METRIC_TRUSTED_NODES_DISTRIBUTION"));
+		edgesInSubtreeDistribution = new Distribution(
+				"TRUST_METRIC_EDGES_IN_SUBTREE_DISTRIBUTION", readDistribution(
+						folder, "TRUST_METRIC_EDGES_IN_SUBTREE_DISTRIBUTION"));
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#getSingles()
+	 */
+	@Override
+	public Single[] getSingles() {
+		Single trustedNodesMin = new Single(
+				"TRUST_METRIC_TRUSTED_NODES_MIN",
+				this.trustedNodesDistribution.getMin());
+		Single trustedNodesMed = new Single(
+				"TRUST_METRIC_TRUSTED_NODES_MED",
+				this.trustedNodesDistribution.getMedian());
+		Single trustedNodesAvg = new Single(
+				"TRUST_METRIC_TRUSTED_NODES_AVG",
+				this.trustedNodesDistribution.getAverage());
+		Single trustedNodesMax = new Single(
+				"TRUST_METRIC_TRUSTED_NODES_MAX",
+				this.trustedNodesDistribution.getMax());
+		
+		Single edgesMin = new Single("TRUST_METRIC_EDGES_IN_SUBTREE_MIN",
+				this.edgesInSubtreeDistribution.getMin());
+		Single edgesMed = new Single("TRUST_METRIC_EDGES_IN_SUBTREE_MED",
+				this.edgesInSubtreeDistribution.getMedian());
+		Single edgesAvg = new Single("TRUST_METRIC_EDGES_IN_SUBTREE_AVG",
+				this.edgesInSubtreeDistribution.getAverage());
+		Single edgesMax = new Single("TRUST_METRIC_EDGES_IN_SUBTREE_MAX",
+				this.edgesInSubtreeDistribution.getMax());
+		
+		
+		Single runtimeAvg = new Single("TRUST_METRIC_RUNTIME_AVG",
+				this.runtimeAvg);
+		Single runtimeTrustedAvg = new Single("TRUST_METRIC_RUNTIME_TRUSTED_AVG",
+				this.runtimeTrustedAvg);
+		Single runtimeUntrustedAvg = new Single("TRUST_METRIC_RUNTIME_UNTRUSTED_AVG",
+				this.runtimeUntrustedAvg);
+		
+		Single runtimeGraphPreparation = new Single("TRUST_METRIC_RUNTIME_GRAPH_PREP", this.runtimeGraphPreparation);
+
+		return new Single[] { trustedNodesMin, trustedNodesMed,
+				trustedNodesAvg, trustedNodesMax,
+				runtimeAvg, runtimeTrustedAvg, runtimeUntrustedAvg, edgesMin, edgesMed, edgesAvg, edgesMax, runtimeGraphPreparation };
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#getDistributions()
+	 */
+	@Override
+	public Distribution[] getDistributions() {
+		return new Distribution[] { trustedNodesDistribution,
+				edgesInSubtreeDistribution };
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.Metric#getNodeValueLists()
+	 */
+	@Override
+	public NodeValueList[] getNodeValueLists() {
+		return new NodeValueList[0];
+	}
+
+	@Override
+	public boolean applicable(Graph g, Network n, HashMap<String, Metric> m) {
+		return true;
+	}
+	
+	public abstract void prepareGraph(Graph g);
+	
+	public abstract void prepareNode(Node n);
+	
+	public abstract int getNoOfTrustedNodes(Node n);
+	
+	public abstract int getNoOfEdgesInSubtree(Node n);
+	
+	public abstract boolean computeTrust(Node n1, Node n2);
+	
+}
