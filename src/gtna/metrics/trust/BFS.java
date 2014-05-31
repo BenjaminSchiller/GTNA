@@ -81,6 +81,8 @@ public class BFS {
 		this.k = k;
 		this.g = g;
 		this.e = e;
+		
+		closedNodes = new ArrayList<Integer>();
 	}
 
 	public void search(int srcNode) {

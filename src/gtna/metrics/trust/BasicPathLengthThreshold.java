@@ -66,7 +66,7 @@ public class BasicPathLengthThreshold extends TrustMetric {
 	 * @see gtna.metrics.trust.TrustMetric#prepareGraph(gtna.graph.Graph)
 	 */
 	@Override
-	public void prepareGraph(Graph g) {
+	public void prepareGraph(Graph g) {		
 		bfs = new BFS(g, maxPathLength);
 	}
 
