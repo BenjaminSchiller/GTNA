@@ -159,7 +159,7 @@ public class WoTModelSingleCommunity extends Network {
 	 * Creates a small star graph to start with.
 	 */
 	private void initStartGraph() {// TODO gut schlecht ?!
-		System.out.println("INIT_START_GRAPH");
+		//System.out.println("INIT_START_GRAPH");
 
 		int n0 = 2 * m + 2;
 
@@ -177,7 +177,7 @@ public class WoTModelSingleCommunity extends Network {
 	 * Generates the graph.
 	 */
 	public void growGraph() {
-		System.out.println("GROW_GRAPH");
+		//System.out.println("GROW_GRAPH");
 		while (nodeCounter < getNodes()) {
 			// Add one Node per Step
 			addNode();
@@ -300,7 +300,7 @@ public class WoTModelSingleCommunity extends Network {
 			bNode = getRandomNode();
 		}
 
-		System.out.println("   -> edges: " + inserted);
+		//System.out.println("   -> edges: " + inserted);
 
 		nodeCounter++;
 	}
@@ -363,7 +363,7 @@ public class WoTModelSingleCommunity extends Network {
 			inserted2 += copyFromOutNeighbors(node, 1);
 
 			// TODO quatsch?!
-			
+			/*
 			if (!c2c)
 				// if no edge inserted -> new random link
 				if (inserted2 == 0 && dOut[node] < getMaxOutDegree()) {
@@ -371,6 +371,7 @@ public class WoTModelSingleCommunity extends Network {
 					inserted2++;
 					inserted2 += copyFromOutNeighbors(node, 1);
 				}
+			*/
 			
 
 			inserted += inserted2;
@@ -557,7 +558,7 @@ public class WoTModelSingleCommunity extends Network {
 	}
 
 	private int addRandomOutEdge(int src) {
-		System.out.println("     ADD_RANDOM_OUT_EDGE");
+		//System.out.println("     ADD_RANDOM_OUT_EDGE");
 		while (!addEdge(src, getRandomNode())) {
 		}
 		return 1;
@@ -579,7 +580,7 @@ public class WoTModelSingleCommunity extends Network {
 	 * initializes required fields
 	 */
 	private void initFields() {
-		System.out.println("INIT_FIELDS");
+		//System.out.println("INIT_FIELDS");
 		bidEdges = 0;
 		unidEdges = 0;
 

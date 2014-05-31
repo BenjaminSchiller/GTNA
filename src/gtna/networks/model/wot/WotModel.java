@@ -60,14 +60,10 @@ import gtna.util.parameter.StringParameter;
 public class WotModel extends Network {
 
 	private int m;
-	private double b;
 	private int z;
 	private int min;
 	private int max;
 	private double ple;
-
-	private Graph[] communities;
-
 	private Graph g;
 	private Node[] nodes;
 	private Edges edges;
@@ -78,6 +74,7 @@ public class WotModel extends Network {
 	private int bridgeNode[];
 
 	Random rnd;
+	private double lc;
 
 	/**
 	 * @param key
@@ -85,17 +82,18 @@ public class WotModel extends Network {
 	 * @param parameters
 	 * @param transformations
 	 */
-	public WotModel(int nodes, int m, double b, int min, int max, double ple,
+	public WotModel(int nodes, int m, double b, int min, int max, double ple, int z, double lc,
 			Transformation[] t) {
 		super("WOTMODEL", nodes, new Parameter[] { new IntParameter("M", m),
 				new DoubleParameter("BIDIRECTIONALITY", b),
-				new IntParameter("MIN", min), new IntParameter("MAX", max), new DoubleParameter("PLE", ple) }, t);
+				new IntParameter("MIN", min), new IntParameter("MAX", max), new DoubleParameter("PLE", ple), new IntParameter("Z", z), new DoubleParameter("LC",lc) }, t);
 
-		this.b = b;
 		this.m = m;
 		this.min = min;
 		this.max = max;
 		this.ple = ple;
+		this.z = z;
+		this.lc = lc;
 	}
 
 	/*
@@ -126,12 +124,6 @@ public class WotModel extends Network {
 			int size = communitySizes[i];
 
 			Graph c = new WoTModelSingleCommunity(size, 8, 0, 1, 0.52, "C2", null).generate();
-			
-			ShortestPaths sp = new ShortestPaths();//TODO
-			sp.computeData(c, null, null);
-			System.out.println("*****" + sp.getConnectivity());
-			if (sp.getConnectivity() < 1.0)
-				System.exit(0);
 
 			// Copy
 			for (Node n : c.getNodes()) {
@@ -161,18 +153,36 @@ public class WotModel extends Network {
 		// Connect Communites
 		for (int i = 0; i < communitySizes.length; i++) {
 			
+			// Connect all Communites to largest Component
+			int c = 0;
 			
-			int c = drawPACommunity(i);
+			int a = drawPANode(firstNode[i], lastNode[i]);
+			int b = drawPANode(firstNode[c], lastNode[c]);
 			
-			int a = bridgeNode[i];
-			int b = 0; //bridgeNode[c];
+			edges.add(a, b);
+			edges.add(b, a);
 			
-			edges.add(a, bridge);
-			edges.add(bridge, a);
-			
-			System.out.println(a + "-> " + b);
+			//System.out.println(a + "-> " + b);
 			
 			//System.out.println(i + " -> " + c + " (" + communitySizes[c] + ")");
+		}
+		
+		// Additional links b/w communities
+		int addedEdges = 0;
+		while (addedEdges < z*communitySizes.length) {
+
+			int c1 = drawPACommunity(-1);
+			int c2 = drawPACommunity(c1);
+
+			int n1 = drawPANode(firstNode[c1], lastNode[c1]);
+			int n2 = drawPANode(firstNode[c2], lastNode[c2]);
+			
+			if (!edges.contains(n1, n2) && !edges.contains(n2, n1)) {
+				edges.add(n1, n2);
+				edges.add(n2,n1);
+				addedEdges++;
+			}
+
 		}
 
 		edges.fill();
@@ -183,13 +193,27 @@ public class WotModel extends Network {
 	private void generateCommunitiySizes() {
 		double[] sizeDist = generateSizeDistribution(min, max, ple);
 
-		int nodeSum = 0;
-
+		
+		
 		List<Integer> sizes = new ArrayList<Integer>();
+		
+		int largestC = (int) (lc*getNodes());
+		
+		if (largestC > 0)
+			sizes.add(largestC);
+		
+		int nodeSum = largestC;
+		/*
+		double lcs[] = new double[] {0.35, 0.3, 0.25};
+		
+		for (double d : lcs) {
+			sizes.add((int) (getNodes()*d));
+			nodeSum+=(int) (getNodes()*d);
+		}
+		*/
 
 		while (nodeSum < getNodes()) {
 			int size = min;
-			double sum = sizeDist[min];
 			double z = rnd.nextDouble();
 
 			while (z > sizeDist[size]) {
@@ -199,7 +223,6 @@ public class WotModel extends Network {
 			if ((getNodes() - nodeSum) < size || (getNodes() - nodeSum - size) < min)
 				size = (getNodes() - nodeSum);
 			
-
 			sizes.add(size);
 
 			nodeSum += size;
@@ -271,7 +294,6 @@ public class WotModel extends Network {
 		} while (c == excluded);
 		
 		return c;
-
 	}
 	
 	private int getNodeWithMaxDegree() {
@@ -285,8 +307,7 @@ public class WotModel extends Network {
 			}
 		}
 		
-		return n;
-		
+		return n;	
 	}
 
 }
