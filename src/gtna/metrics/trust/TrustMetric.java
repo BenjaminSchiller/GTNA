@@ -108,7 +108,7 @@ public abstract class TrustMetric extends Metric {
 		long t1 = System.nanoTime();
 		runtimeGraphPreparation = t1 - t0;
 
-		//computeTrustDistributions(g);
+		computeTrustDistributions(g);
 		computeRuntimes(g);
 
 	}
@@ -121,6 +121,7 @@ public abstract class TrustMetric extends Metric {
 		int maxTrustedNodes = 0;
 		int maxEdges = 0;
 
+		/*
 		for (int i = 0; i < sampleSize; i++) {
 
 			Node n = getRandomNode(g);
@@ -135,7 +136,7 @@ public abstract class TrustMetric extends Metric {
 			if (edgesInSubtree[i] > maxEdges)
 				maxEdges = edgesInSubtree[i];
 		}
-
+		*/
 		double trustedDist[] = new double[maxTrustedNodes + 1];
 		for (int c : trustedNodes)
 			trustedDist[c]++;
