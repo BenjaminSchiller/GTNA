@@ -108,7 +108,7 @@ public abstract class TrustMetric extends Metric {
 		long t1 = System.nanoTime();
 		runtimeGraphPreparation = t1 - t0;
 
-		computeTrustDistributions(g);
+		//computeTrustDistributions(g);
 		computeRuntimes(g);
 
 	}
