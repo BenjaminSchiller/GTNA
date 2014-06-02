@@ -55,11 +55,9 @@ public class BasicPathLengthThreshold extends TrustMetric {
 	
 	BFS bfs;
 	
-	public BasicPathLengthThreshold(int sampleSize, int maxPathLength) {
-		super("BASIC", sampleSize, new Parameter[] {new IntParameter("K", maxPathLength)});
+	public BasicPathLengthThreshold(int sampleSize, boolean computeDistributions, boolean plotMulti, int maxPathLength) {
+		super("BASIC", sampleSize, computeDistributions, plotMulti, new Parameter[] {new IntParameter("K", maxPathLength)});
 		this.maxPathLength = maxPathLength;
-		
-		
 	}
 
 	/* (non-Javadoc)

@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * ---------------------------------------
- * DisjunctPaths.java
+ * DegreeCentralityBased.java
  * ---------------------------------------
  * (C) Copyright 2009-2011, by Benjamin Schiller (P2P, TU Darmstadt)
  * and Contributors 
@@ -35,9 +35,6 @@
  */
 package gtna.metrics.trust;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.util.parameter.IntParameter;
@@ -45,102 +42,93 @@ import gtna.util.parameter.Parameter;
 
 /**
  * @author Dirk
- *
+ * 
  */
-public class DisjunctPaths extends TrustMetric {
-	
-	private int maxPathLength;
-	private int minPaths;
-	
+public class DegreeCentralityBasedInverse extends TrustMetric {
+
+	int maxPathLength;
+
 	BFS bfs;
 
 	/**
+	 * @param metricCode
 	 * @param sampleSize
 	 * @param parameters
 	 */
-	public DisjunctPaths(int sampleSize,boolean computeDistributions, boolean plotMulti, int maxPathLength, int minPaths) {
-		super("DP", sampleSize, computeDistributions, plotMulti, new Parameter[] {new IntParameter("K", maxPathLength), new IntParameter("L", minPaths) });
+	public DegreeCentralityBasedInverse(int sampleSize, boolean computeDistributions, boolean plotMulti,int maxPathLength) {
+		super("DCI", sampleSize, computeDistributions, plotMulti, new Parameter[] { new IntParameter("K",
+				maxPathLength) });
 		this.maxPathLength = maxPathLength;
-		this.minPaths = minPaths;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.metrics.trust.TrustMetric#prepareGraph(gtna.graph.Graph)
 	 */
 	@Override
 	public void prepareGraph(Graph g) {
-		bfs = new BFS(g, maxPathLength);
+		long sumDegree = 0;
+
+		for (Node n : g.getNodes())
+			sumDegree += n.getDegree();
+
+		final double avgDegree = (double) sumDegree / g.getNodeCount();
+
+		EdgeValuator e = new EdgeValuator() {
+
+			@Override
+			public double getEdgeValue(Graph g, int src, int dst) {
+				return avgDegree / g.getNode(dst).getDegree();
+			}
+
+		};
+
+		bfs = new BFS(g, maxPathLength, e);
+
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.metrics.trust.TrustMetric#prepareNode(gtna.graph.Node)
 	 */
 	@Override
 	public void prepareNode(Node n) {
 		bfs.search(n.getIndex());
+
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see gtna.metrics.trust.TrustMetric#getNoOfTrustedNodes(gtna.graph.Node)
 	 */
 	@Override
 	public int getNoOfTrustedNodes(Node n) {
-		//System.out.println("--- GET_NO_OF_TRUSTED_NODES (" + n.getIndex() + "---");
-		List<Integer> possibleNodes = bfs.getVisitedNodes();
-		
-		int counter = 0;		
-		
-		for (int i : possibleNodes)
-			if (computeTrust(n.getIndex(), i))
-				counter++;
-		
-		
-		//System.out.println("--- " + counter +  " ---");
-		return counter;
+		return bfs.getNodesCounter();
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.metrics.trust.TrustMetric#getNoOfEdgesInSubtree(gtna.graph.Node)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * gtna.metrics.trust.TrustMetric#getNoOfEdgesInSubtree(gtna.graph.Node)
 	 */
 	@Override
 	public int getNoOfEdgesInSubtree(Node n) {
-		// TODO
-		return 0;
+		return bfs.getEdgesCounter();
 	}
 
-	/* (non-Javadoc)
-	 * @see gtna.metrics.trust.TrustMetric#computeTrust(gtna.graph.Node, gtna.graph.Node)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gtna.metrics.trust.TrustMetric#computeTrust(gtna.graph.Node,
+	 * gtna.graph.Node)
 	 */
 	@Override
 	public boolean computeTrust(Node n1, Node n2) {
-		return computeTrust(n1.getIndex(), n2.getIndex());
+		return bfs.bidirectionalSearch(n1.getIndex(), n2.getIndex());
 	}
-	
-	public boolean computeTrust(int node1, int node2) {
-		//System.out.println("COMPUTE_TRUST (" +  node1 + ", " + node2 + ")");//TODO
-		int noPaths = 0;
-		List<Integer> closedNodes = new ArrayList<Integer>();
-		
-		List<Integer> path;
-		
-		bfs.setClosedNodes(closedNodes);
-		
-		path = bfs.getPath(node1, node2);
-		
-		if (path != null && path.size() == 0)
-			return true;
-		
-		while (path != null) {
-			
-			 noPaths++;
-			 //System.out.println(" -> " + noPaths + " paths found.");//TODO
-			 if (noPaths >= minPaths)
-				 return true;
-			 closedNodes.addAll(path);
-			 //System.out.println(" -> " + closedNodes.size() + " closes nodes.");//TODO
-			 bfs.setClosedNodes(closedNodes);
-			 path = bfs.getPath(node1, node2);
-		}
-		return noPaths >= minPaths;
-	}
+
 }

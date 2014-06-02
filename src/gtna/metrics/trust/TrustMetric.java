@@ -49,6 +49,7 @@ import gtna.graph.Node;
 import gtna.io.DataWriter;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
+import gtna.util.Config;
 import gtna.util.Distribution;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
@@ -84,15 +85,42 @@ public abstract class TrustMetric extends Metric {
 	private long runtimeGraphPreparation;
 
 	private Random rnd;
+	private boolean computeDistributions;
+	private boolean plotMulti;
 
-	public TrustMetric(String metricCode, int sampleSize, Parameter[] parameters) {
+	public TrustMetric(String metricCode, int sampleSize, boolean computeDistributions,
+			boolean plotMulti,
+			Parameter[] parameters) {
 		super("TRUST_METRIC", ParameterList.append(parameters, new Parameter[] {
 				new StringParameter("METRIC_CODE", metricCode),
 				new IntParameter("SAMPLE_SIZE", sampleSize) }));
 
 		this.sampleSize = sampleSize;
+		this.computeDistributions = computeDistributions;
+		this.plotMulti = plotMulti;
+
+		config();
 
 		rnd = new Random(System.currentTimeMillis());
+	}
+
+	private void config() {
+		if (!computeDistributions)
+			plotMulti = false;
+
+		if (!plotMulti) {
+			Config.overwrite("TRUST_METRIC_DATA_KEYS", "");
+			Config.overwrite("TRUST_METRIC_DATA_PLOTS", "");
+		}
+
+		if (!computeDistributions) {
+			Config.overwrite(
+					"TRUST_METRIC_SINGLES_KEYS",
+					"TRUST_METRIC_RUNTIME_GRAPH_PREP, TRUST_METRIC_RUNTIME_AVG, TRUST_METRIC_RUNTIME_TRUSTED_AVG, TRUST_METRIC_RUNTIME_UNTRUSTED_AVG,TRUST_METRIC_RUNTIME_MED, TRUST_METRIC_RUNTIME_TRUSTED_MED, TRUST_METRIC_RUNTIME_UNTRUSTED_MED,TRUST_METRIC_RUNTIME_MAX, TRUST_METRIC_RUNTIME_TRUSTED_MAX, TRUST_METRIC_RUNTIME_UNTRUSTED_MAX,TRUST_METRIC_RUNTIME_MIN, TRUST_METRIC_RUNTIME_TRUSTED_MIN, TRUST_METRIC_RUNTIME_UNTRUSTED_MIN");
+			Config.overwrite(
+					"TRUST_METRIC_SINGLES_PLOTS",
+					"TRUST_METRIC_RUNTIME_GRAPH_PREP, TRUST_METRIC_RUNTIME_AVG, TRUST_METRIC_RUNTIME_TRUSTED_AVG, TRUST_METRIC_RUNTIME_UNTRUSTED_AVG,TRUST_METRIC_RUNTIME_MED, TRUST_METRIC_RUNTIME_TRUSTED_MED, TRUST_METRIC_RUNTIME_UNTRUSTED_MED,TRUST_METRIC_RUNTIME_MAX, TRUST_METRIC_RUNTIME_TRUSTED_MAX, TRUST_METRIC_RUNTIME_UNTRUSTED_MAX,TRUST_METRIC_RUNTIME_MIN, TRUST_METRIC_RUNTIME_TRUSTED_MIN, TRUST_METRIC_RUNTIME_UNTRUSTED_MIN");
+		}
 	}
 
 	/*
@@ -108,7 +136,9 @@ public abstract class TrustMetric extends Metric {
 		long t1 = System.nanoTime();
 		runtimeGraphPreparation = t1 - t0;
 
-		computeTrustDistributions(g);
+		if (computeDistributions)
+			computeTrustDistributions(g);
+		
 		computeRuntimes(g);
 
 	}
@@ -121,7 +151,6 @@ public abstract class TrustMetric extends Metric {
 		int maxTrustedNodes = 0;
 		int maxEdges = 0;
 
-		/*
 		for (int i = 0; i < sampleSize; i++) {
 
 			Node n = getRandomNode(g);
@@ -136,7 +165,6 @@ public abstract class TrustMetric extends Metric {
 			if (edgesInSubtree[i] > maxEdges)
 				maxEdges = edgesInSubtree[i];
 		}
-		*/
 		double trustedDist[] = new double[maxTrustedNodes + 1];
 		for (int c : trustedNodes)
 			trustedDist[c]++;
@@ -232,10 +260,10 @@ public abstract class TrustMetric extends Metric {
 		Arrays.sort(runtimes);
 		if (runtimes.length % 2 == 0) {
 			runtimeMed = (runtimes[runtimes.length / 2] + runtimes[runtimes.length / 2 - 1]) / 2;
-			
+
 		} else {
 			runtimeMed = runtimes[runtimes.length / 2];
-			
+
 		}
 
 		if (countUntrusted > 0) {
@@ -271,7 +299,7 @@ public abstract class TrustMetric extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
-		/*
+		if (plotMulti) {
 			success &= DataWriter.writeWithoutIndex(
 					this.trustedNodesDistribution.getDistribution(),
 					"TRUST_METRIC_TRUSTED_NODES_DISTRIBUTION", folder);
@@ -284,7 +312,7 @@ public abstract class TrustMetric extends Metric {
 			success &= DataWriter.writeWithoutIndex(
 					this.edgesInSubtreeDistribution.getCdf(),
 					"TRUST_METRIC_EDGES_IN_SUBTREE_DISTRIBUTION_CDF", folder);
-		*/
+		}
 		return success;
 	}
 
@@ -295,7 +323,7 @@ public abstract class TrustMetric extends Metric {
 	 */
 	@Override
 	public boolean readData(String folder) {
-		/*
+		if (plotMulti) {
 			trustedNodesDistribution = new Distribution(
 					"TRUST_METRIC_TRUSTED_NODES_DISTRIBUTION",
 					readDistribution(folder,
@@ -304,8 +332,8 @@ public abstract class TrustMetric extends Metric {
 					"TRUST_METRIC_EDGES_IN_SUBTREE_DISTRIBUTION",
 					readDistribution(folder,
 							"TRUST_METRIC_EDGES_IN_SUBTREE_DISTRIBUTION"));
-							
-			*/
+
+		}
 		return true;
 	}
 
@@ -316,23 +344,7 @@ public abstract class TrustMetric extends Metric {
 	 */
 	@Override
 	public Single[] getSingles() {
-		Single trustedNodesMin = new Single("TRUST_METRIC_TRUSTED_NODES_MIN",
-				this.trustedNodesDistribution.getMin());
-		Single trustedNodesMed = new Single("TRUST_METRIC_TRUSTED_NODES_MED",
-				this.trustedNodesDistribution.getMedian());
-		Single trustedNodesAvg = new Single("TRUST_METRIC_TRUSTED_NODES_AVG",
-				this.trustedNodesDistribution.getAverage());
-		Single trustedNodesMax = new Single("TRUST_METRIC_TRUSTED_NODES_MAX",
-				this.trustedNodesDistribution.getMax());
-
-		Single edgesMin = new Single("TRUST_METRIC_EDGES_IN_SUBTREE_MIN",
-				this.edgesInSubtreeDistribution.getMin());
-		Single edgesMed = new Single("TRUST_METRIC_EDGES_IN_SUBTREE_MED",
-				this.edgesInSubtreeDistribution.getMedian());
-		Single edgesAvg = new Single("TRUST_METRIC_EDGES_IN_SUBTREE_AVG",
-				this.edgesInSubtreeDistribution.getAverage());
-		Single edgesMax = new Single("TRUST_METRIC_EDGES_IN_SUBTREE_MAX",
-				this.edgesInSubtreeDistribution.getMax());
+		Single trustedNodesMin, trustedNodesMed, trustedNodesAvg, trustedNodesMax, edgesMin, edgesMed, edgesAvg, edgesMax;
 
 		Single runtimeAvg = new Single("TRUST_METRIC_RUNTIME_AVG",
 				this.runtimeAvg);
@@ -366,13 +378,41 @@ public abstract class TrustMetric extends Metric {
 		Single runtimeGraphPreparation = new Single(
 				"TRUST_METRIC_RUNTIME_GRAPH_PREP", this.runtimeGraphPreparation);
 
-		return new Single[] { trustedNodesMin, trustedNodesMed,
-				trustedNodesAvg, trustedNodesMax, runtimeAvg,
-				runtimeTrustedAvg, runtimeUntrustedAvg, runtimeMed,
-				runtimeTrustedMed, runtimeUntrustedMed, runtimeMin,
-				runtimeTrustedMin, runtimeUntrustedMin, runtimeMax,
-				runtimeTrustedMax, runtimeUntrustedMax, edgesMin, edgesMed,
-				edgesAvg, edgesMax, runtimeGraphPreparation };
+		if (computeDistributions) {
+			trustedNodesMin = new Single("TRUST_METRIC_TRUSTED_NODES_MIN",
+					this.trustedNodesDistribution.getMin());
+			trustedNodesMed = new Single("TRUST_METRIC_TRUSTED_NODES_MED",
+					this.trustedNodesDistribution.getMedian());
+			trustedNodesAvg = new Single("TRUST_METRIC_TRUSTED_NODES_AVG",
+					this.trustedNodesDistribution.getAverage());
+			trustedNodesMax = new Single("TRUST_METRIC_TRUSTED_NODES_MAX",
+					this.trustedNodesDistribution.getMax());
+
+			edgesMin = new Single("TRUST_METRIC_EDGES_IN_SUBTREE_MIN",
+					this.edgesInSubtreeDistribution.getMin());
+			edgesMed = new Single("TRUST_METRIC_EDGES_IN_SUBTREE_MED",
+					this.edgesInSubtreeDistribution.getMedian());
+			edgesAvg = new Single("TRUST_METRIC_EDGES_IN_SUBTREE_AVG",
+					this.edgesInSubtreeDistribution.getAverage());
+			edgesMax = new Single("TRUST_METRIC_EDGES_IN_SUBTREE_MAX",
+					this.edgesInSubtreeDistribution.getMax());
+
+			return new Single[] { trustedNodesMin, trustedNodesMed,
+					trustedNodesAvg, trustedNodesMax, runtimeAvg,
+					runtimeTrustedAvg, runtimeUntrustedAvg, runtimeMed,
+					runtimeTrustedMed, runtimeUntrustedMed, runtimeMin,
+					runtimeTrustedMin, runtimeUntrustedMin, runtimeMax,
+					runtimeTrustedMax, runtimeUntrustedMax, edgesMin, edgesMed,
+					edgesAvg, edgesMax, runtimeGraphPreparation };
+
+		} else {
+			return new Single[] { runtimeAvg, runtimeTrustedAvg,
+					runtimeUntrustedAvg, runtimeMed, runtimeTrustedMed,
+					runtimeUntrustedMed, runtimeMin, runtimeTrustedMin,
+					runtimeUntrustedMin, runtimeMax, runtimeTrustedMax,
+					runtimeUntrustedMax, runtimeGraphPreparation };
+		}
+
 	}
 
 	/*
