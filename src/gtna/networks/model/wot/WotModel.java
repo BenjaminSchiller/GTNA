@@ -124,7 +124,7 @@ public class WotModel extends Network {
 			int size = communitySizes[i];
 
 			Graph c = new WoTModelSingleCommunity(size, 8, 0, 1, 0.52, "C2", null).generate();
-
+			//System.out.println("GEN\t" + i);
 			// Copy
 			for (Node n : c.getNodes()) {
 				int out[] = n.getOutgoingEdges();
@@ -142,19 +142,23 @@ public class WotModel extends Network {
 
 		// Find Bridgung-Nodes
 		
+		/*
 		bridgeNode = new int[communitySizes.length];
 		for (int i = 0; i < communitySizes.length; i++) {
 			bridgeNode[i] = drawPANode(firstNode[i], lastNode[i]);
 			//System.out.println(i +  ": [" + firstNode[i] +  " " +lastNode[i] + "]" + " B: " + bridgeNode[i]);
 		}
+		*/
 		
-		int bridge = getNodeWithMaxDegree();
+		//int bridge = getNodeWithMaxDegree();
 		
 		// Connect Communites
 		for (int i = 0; i < communitySizes.length; i++) {
 			
 			// Connect all Communites to largest Component
 			int c = 0;
+			
+			//System.out.println("CON\t" + i);
 			
 			int a = drawPANode(firstNode[i], lastNode[i]);
 			int b = drawPANode(firstNode[c], lastNode[c]);
@@ -176,6 +180,9 @@ public class WotModel extends Network {
 
 			int n1 = drawPANode(firstNode[c1], lastNode[c1]);
 			int n2 = drawPANode(firstNode[c2], lastNode[c2]);
+			
+			//int n1 = drawRandomNode(firstNode[c1], lastNode[c1]);
+			//int n2 = drawRandomNode(firstNode[c2], lastNode[c2]);
 			
 			if (!edges.contains(n1, n2) && !edges.contains(n2, n1)) {
 				edges.add(n1, n2);
@@ -240,7 +247,7 @@ public class WotModel extends Network {
 				firstNode[i] = firstNode[i-1] + communitySizes[i - 1];
 			communitySizes[i] = sizes.get(i);
 			lastNode[i] = firstNode[i] + communitySizes[i] - 1;
-			System.out.println(i + ": " + firstNode[i] + " " + lastNode[i]);
+			//System.out.println(i + ": " + firstNode[i] + " " + lastNode[i]);
 		}
 
 	}
@@ -263,8 +270,8 @@ public class WotModel extends Network {
 	private int drawPANode(int a, int b) {
 		int sum1 = 0;
 
-		for (int i = a; i <= b; i++)
-			sum1 += g.getNode(a).getDegree();
+		for (int i = a; i <= b; i++) 
+			sum1 += g.getNode(i).getDegree();
 
 		int zz = rnd.nextInt(sum1);
 
@@ -273,10 +280,14 @@ public class WotModel extends Network {
 
 		while (zz > sum2) {
 			node++;
-			sum2 = sum2 + g.getNode(a).getDegree();
+			sum2 = sum2 + g.getNode(node).getDegree();
 		}
 
 		return node;
+	}
+	
+	private int drawRandomNode(int a, int b) {
+		return rnd.nextInt(b - a + 1) + a;
 	}
 
 	private int drawPACommunity(int excluded) {
