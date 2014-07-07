@@ -61,7 +61,7 @@ public class WoTModelSimple extends Network {
 	 */
 	@Override
 	public Graph generate() {
-		Graph g = new WotModel(getNodes(), 8, 0.5, 100, 1000, 3.0, 16, 0.45, null).generate();
+		Graph g = new WotModel(getNodes(), 8, 1, 1, 0.5, 100, 1000, 3.0, 3, 0.45, null).generate();
 		
 		return g;
 	}
