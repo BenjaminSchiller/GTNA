@@ -77,6 +77,7 @@ public class LaTex {
 		 */
 		LaTex.writeHeader(fw, title, author);
 		for (Metric metric : metrics) {
+			fw.writeln("\\FloatBarrier");
 			fw.writeln("\\section{" + metric.getDescriptionLong() + "}");
 			for (String key : metric.getSingleKeys()) {
 				fw.writeln(LaTex.getLaTeXTable(s, metric, key));
@@ -84,29 +85,34 @@ public class LaTex {
 		}
 		LaTex.writeFooter(fw);
 
-		/*
-		 * generate file from latex
-		 */
-		boolean success = fw.close();
-		String cmd = Config.get("LATEX_PATH") + " --jobname=" + folder
-				+ filename + " -enable-write18 " + folder + filename
-				+ Config.get("LATEX_EXTENSION");
-		success &= Execute.exec(cmd, true);
+		fw.close();
 
-		/*
-		 * delete auxiliary files
-		 */
-		String[] aux = Config.keys("LATEX_AUXILIARY_EXTENSIONS");
-		for (String extension : aux) {
-			String fn = folder + filename + extension;
-			if ((new File(fn)).exists()) {
-				success &= (new File(fn)).delete();
-			}
-		}
+		System.out.println("done...");
 
-		timer.end();
-
-		return success;
+		// /*
+		// * generate file from latex
+		// */
+		// boolean success = fw.close();
+		// String cmd = Config.get("LATEX_PATH") + " --jobname=" + folder
+		// + filename + " -enable-write18 " + folder + filename
+		// + Config.get("LATEX_EXTENSION");
+		// success &= Execute.exec(cmd, true);
+		//
+		// /*
+		// * delete auxiliary files
+		// */
+		// String[] aux = Config.keys("LATEX_AUXILIARY_EXTENSIONS");
+		// for (String extension : aux) {
+		// String fn = folder + filename + extension;
+		// if ((new File(fn)).exists()) {
+		// success &= (new File(fn)).delete();
+		// }
+		// }
+		//
+		// timer.end();
+		//
+		// return success;
+		return true;
 	}
 
 	private static void writeHeader(Filewriter fw, String title, String author) {
@@ -115,6 +121,7 @@ public class LaTex {
 		fw.writeln("\\usepackage{tabularx}");
 		fw.writeln("\\usepackage{multirow}");
 		fw.writeln("\\usepackage{booktabs}");
+		fw.writeln("\\usepackage{placeins}");
 
 		fw.writeln("\\title{" + title + "}");
 		fw.writeln("\\author{" + author + "}");
