@@ -59,11 +59,15 @@ import gtna.util.parameter.StringParameter;
  */
 public class WotModel extends Network {
 
-	private int m;
 	private int z;
+
+	/*
+	 * Power Law Community Size Distribution
+	 */
 	private int min;
 	private int max;
 	private double ple;
+
 	private Graph g;
 	private Node[] nodes;
 	private Edges edges;
@@ -74,9 +78,17 @@ public class WotModel extends Network {
 
 	Random rnd;
 	private double lc;
-	private double alpha;
+	private double alpha1; // Preferential Attachement Node Selection (Join)
+	private double alpha2; // Preferential Attachement Node Selection (Copying)
+	private double alpha3; // Preferential Attachement Node Selection (Neighbor)
+	private double alpha4; // Preferential Attachement Node Selection
+							// (Communities)
+	private double alpha5; // Preferential Attachement Community Selection
+
 	private double beta;
 	private double b;
+
+	private double m;
 
 	/**
 	 * @param key
@@ -84,16 +96,26 @@ public class WotModel extends Network {
 	 * @param parameters
 	 * @param transformations
 	 */
-	public WotModel(int nodes, int m, double alpha, double beta, double b, int min, int max,
-			double ple, int z, double lc, Transformation[] t) {
-		super("WOTMODEL", nodes, new Parameter[] {
-				new IntParameter("M", m), new DoubleParameter("ALPHA", alpha), new DoubleParameter("BETA", beta),
+	public WotModel(int nodes, double m, double alpha1, double alpha2,
+			double alpha3, double alpha4, double alpha5, double beta, double b,
+			int min, int max, double ple, int z, double lc, Transformation[] t) {
+		super("WOTMODEL", nodes, new Parameter[] { new DoubleParameter("M", m),
+				new DoubleParameter("ALPHA1", alpha1),
+				new DoubleParameter("ALPHA2", alpha2),
+				new DoubleParameter("ALPHA3", alpha3),
+				new DoubleParameter("ALPHA4", alpha4),
+				new DoubleParameter("ALPHA5", alpha5),
+				new DoubleParameter("BETA", beta),
 				new DoubleParameter("BIDIRECTIONALITY", b),
 				new IntParameter("MIN", min), new IntParameter("MAX", max),
 				new DoubleParameter("PLE", ple), new IntParameter("Z", z),
 				new DoubleParameter("LC", lc) }, t);
 
-		this.alpha = alpha;
+		this.alpha1 = alpha1;
+		this.alpha2 = alpha2;
+		this.alpha3 = alpha3;
+		this.alpha4 = alpha4;
+		this.alpha5 = alpha5;
 		this.beta = beta;
 		this.m = m;
 		this.b = b;
@@ -102,6 +124,7 @@ public class WotModel extends Network {
 		this.ple = ple;
 		this.z = z;
 		this.lc = lc;
+
 	}
 
 	/*
@@ -116,21 +139,17 @@ public class WotModel extends Network {
 
 		generateCommunitiySizes();
 
-		/*
-		 * for (int size : communitySizes) { System.out.println(size); }
-		 */
-
 		g = new Graph(this.getDescription());
 		nodes = Node.init(this.getNodes(), g);
-		edges = new Edges(nodes, m * getNodes() + 2 * z);
+		edges = new Edges(nodes, (int) (m * getNodes()) + 2 * z);
 
 		// Create and Copy Communites
 		for (int i = 0; i < communitySizes.length; i++) {
 			int size = communitySizes[i];
-			
-			Graph c = new WoTModelSingleCommunity(size, 8, alpha, beta, b,  null).generate();
-			
-			// System.out.println("GEN\t" + i);
+
+			Graph c = new WoTModelSingleCommunity(size, 8, alpha1, alpha2,
+					alpha3, beta, b, null).generate();
+
 			// Copy
 			for (Node n : c.getNodes()) {
 				int out[] = n.getOutgoingEdges();
@@ -140,52 +159,63 @@ public class WotModel extends Network {
 
 			}
 
-			// System.out.println("COPY DONE!");
 		}
 
 		edges.fill();
 		g.setNodes(nodes);
 
-		// Connect Communites
-		for (int i = 0; i < communitySizes.length; i++) {
+		if (lc < 1) {
+			// Connect Communites
+			for (int i = 0; i < communitySizes.length; i++) {
 
-			// Connect all Communites to largest Component
-			int c = 0;
+				// Connect all Communites to largest Component
+				int c = 0;
 
+				int a, b;
 
-			int a = drawPANode(firstNode[i], lastNode[i]);
-			int b = drawPANode(firstNode[c], lastNode[c]);
+				if (rnd.nextDouble() < alpha4) {
+					a = drawPANode(firstNode[i], lastNode[i]);
+					b = drawPANode(firstNode[c], lastNode[c]);
+				} else {
+					a = drawRandomNode(firstNode[i], lastNode[i]);
+					b = drawRandomNode(firstNode[c], lastNode[c]);
+				}
 
-			edges.add(a, b);
-			edges.add(b, a);
+				edges.add(a, b);
+				edges.add(b, a);
 
-		}
-
-		// Additional links b/w communities
-		int addedEdges = 0;
-		while (addedEdges < z * communitySizes.length) {
-
-			int c1 = drawPACommunity(-1);
-			int c2 = drawPACommunity(c1);
-
-			// TODO Alpha
-			
-			int n1,n2;
-			
-			if (rnd.nextDouble() < alpha) {
-				n1 = drawPANode(firstNode[c1], lastNode[c1]);
-				n2 = drawPANode(firstNode[c2], lastNode[c2]);
-			} else {
-				n1 = drawRandomNode(firstNode[c1], lastNode[c1]);
-				n2 = drawRandomNode(firstNode[c2], lastNode[c2]);
-			} 
-
-			if (!edges.contains(n1, n2) && !edges.contains(n2, n1)) {
-				edges.add(n1, n2);
-				edges.add(n2, n1);
-				addedEdges++;
 			}
 
+			// Additional links b/w communities
+			int addedEdges = 0;
+			while (addedEdges < z * communitySizes.length) {
+
+				int c1, c2;
+				if (rnd.nextDouble() < alpha5) {
+					c1 = drawPACommunity(-1);
+					c2 = drawPACommunity(c1);
+				} else {
+					c1 = drawRandomCommunity(-1);
+					c2 = drawRandomCommunity(c1);
+				}
+
+				int n1, n2;
+
+				if (rnd.nextDouble() < alpha4) {
+					n1 = drawPANode(firstNode[c1], lastNode[c1]);
+					n2 = drawPANode(firstNode[c2], lastNode[c2]);
+				} else {
+					n1 = drawRandomNode(firstNode[c1], lastNode[c1]);
+					n2 = drawRandomNode(firstNode[c2], lastNode[c2]);
+				}
+
+				if (!edges.contains(n1, n2) && !edges.contains(n2, n1)) {
+					edges.add(n1, n2);
+					edges.add(n2, n1);
+					addedEdges++;
+				}
+
+			}
 		}
 
 		edges.fill();
@@ -193,6 +223,9 @@ public class WotModel extends Network {
 		return g;
 	}
 
+	/*
+	 * Generates the community size distribution
+	 */
 	private void generateCommunitiySizes() {
 		double[] sizeDist = generateSizeDistribution(min, max, ple);
 
@@ -203,24 +236,26 @@ public class WotModel extends Network {
 		if (largestC > 0)
 			sizes.add(largestC);
 
-		int nodeSum = largestC;
+		if (lc < 1) {
+			int nodeSum = largestC;
 
-		while (nodeSum < getNodes()) {
-			int size = min;
-			double z = rnd.nextDouble();
+			while (nodeSum < getNodes()) {
+				int size = min;
+				double z = rnd.nextDouble();
 
-			while (z > sizeDist[size]) {
-				size++;
+				while (z > sizeDist[size]) {
+					size++;
+				}
+
+				if ((getNodes() - nodeSum) < size
+						|| (getNodes() - nodeSum - size) < min)
+					size = (getNodes() - nodeSum);
+
+				sizes.add(size);
+
+				nodeSum += size;
+
 			}
-
-			if ((getNodes() - nodeSum) < size
-					|| (getNodes() - nodeSum - size) < min)
-				size = (getNodes() - nodeSum);
-
-			sizes.add(size);
-
-			nodeSum += size;
-
 		}
 
 		communitySizes = new int[sizes.size()];
@@ -232,11 +267,13 @@ public class WotModel extends Network {
 				firstNode[i] = firstNode[i - 1] + communitySizes[i - 1];
 			communitySizes[i] = sizes.get(i);
 			lastNode[i] = firstNode[i] + communitySizes[i] - 1;
-			// System.out.println(i + ": " + firstNode[i] + " " + lastNode[i]);
 		}
 
 	}
 
+	/*
+	 * Returns a power law distribution
+	 */
 	public double[] generateSizeDistribution(int min, int max, double ple) {
 		double[] probs = new double[max + 1];
 		double norm = 0;
@@ -252,6 +289,9 @@ public class WotModel extends Network {
 		return probs;
 	}
 
+	/*
+	 * Draws a node according to degree
+	 */
 	private int drawPANode(int a, int b) {
 		int sum1 = 0;
 
@@ -271,10 +311,16 @@ public class WotModel extends Network {
 		return node;
 	}
 
+	/*
+	 * Draws a random node
+	 */
 	private int drawRandomNode(int a, int b) {
 		return rnd.nextInt(b - a + 1) + a;
 	}
 
+	/*
+	 * Draws a community according to size
+	 */
 	private int drawPACommunity(int excluded) {
 		int c = 0;
 		do {
@@ -287,6 +333,18 @@ public class WotModel extends Network {
 				c++;
 				sum += communitySizes[c];
 			}
+		} while (c == excluded);
+
+		return c;
+	}
+
+	/*
+	 * Draws a random community
+	 */
+	private int drawRandomCommunity(int excluded) {
+		int c = 0;
+		do {
+			c = rnd.nextInt(communitySizes.length);
 		} while (c == excluded);
 
 		return c;
