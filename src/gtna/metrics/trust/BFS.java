@@ -124,10 +124,10 @@ public class BFS {
 
 	}
 
+	/*
+	 * Performs a bidrectional BFS
+	 */
 	public boolean bidirectionalSearch(int srcNode, int dstNode) {
-
-		////System.out.println("   BID_SEARCH (" + srcNode + ", " + dstNode + ")");
-
 		boolean[] visitedA = new boolean[g.getNodeCount()];
 		double[] distanceA = new double[g.getNodeCount()];
 		Queue<Integer> queueA = new LinkedList<Integer>();
@@ -162,11 +162,7 @@ public class BFS {
 
 			
 			if (!queueA.isEmpty()) {
-				// Von der einen Seite
 				int currentNodeA = queueA.poll();
-
-				//System.out.println("   A: " + currentNodeA);
-
 			
 				if (visitedB[currentNodeA]) {
 					queueA.clear();
@@ -180,27 +176,20 @@ public class BFS {
 						if (!visitedA[neighbor]
 								&& !closedNodes.contains(neighbor)) {
 
-							//System.out.print("    n_A: " + neighbor);
-
 							distanceA[neighbor] = distanceA[currentNodeA]
 									+ e.getEdgeValue(g, currentNodeA, neighbor);
 							if (distanceA[neighbor] <= kA) {
-								//System.out.print(" TRUE\n");
 								visitedA[neighbor] = true;
 								predA[neighbor] = currentNodeA;
 								queueA.add(neighbor);
-							} //else
-								//System.out.print(" FALSE\n");
+							} 
 						}
 					}
 				}
 			}
 
-			// Von der anderen Seite
 			if (!queueB.isEmpty()) {
 				int currentNodeB = queueB.poll();
-
-				//System.out.println("   B: " + currentNodeB);
 
 				if (visitedA[currentNodeB]) {
 					queueA.clear();
@@ -214,19 +203,13 @@ public class BFS {
 						if (!visitedB[neighbor]
 								&& !closedNodes.contains(neighbor)) {
 
-							//System.out.print("    n_B: " + neighbor);
-
 							distanceB[neighbor] = distanceB[currentNodeB]
 									+ e.getEdgeValue(g, currentNodeB, neighbor);
 							if (distanceB[neighbor] <= kB) {
 
-								//System.out.print(" TRUE\n");
-
 								visitedB[neighbor] = true;
 								succB[neighbor] = currentNodeB;
 								queueB.add(neighbor);
-							} else {
-								//System.out.print(" FALSE\n");
 							}
 						}
 					}
@@ -237,11 +220,10 @@ public class BFS {
 	}
 
 	public List<Integer> getPath(int src, int dst) {
-		//System.out.println(" GET_PATH (" + src + " -> " + dst + ")");
+
 
 		boolean exists = bidirectionalSearch(src, dst);
 
-		//System.out.println("  -> " + exists);
 
 		if (exists) {
 			int current = rendevouz;
@@ -249,13 +231,11 @@ public class BFS {
 			LinkedList<Integer> path = new LinkedList<Integer>();
 
 			if (rendevouz != dst && rendevouz != src) {
-				// Erster Teil: src -> rendevouz
 				while (current != src) {
 					path.addFirst(current);
 					current = predA[current];
 				}
 
-				// Zweiter Teil: rendevouz -> dst
 				current = succB[rendevouz];
 
 				while (current != dst) {
@@ -263,11 +243,6 @@ public class BFS {
 					current = succB[current];
 				}
 			}
-
-			//System.out.print("  -> ");// TODO
-			//for (int i : path)
-				//System.out.print(i + " - ");
-			//System.out.println();
 
 			return path;
 		}
