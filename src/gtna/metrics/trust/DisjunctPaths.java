@@ -93,9 +93,6 @@ public class DisjunctPaths extends TrustMetric {
 		for (int i : possibleNodes)
 			if (computeTrust(n.getIndex(), i))
 				counter++;
-		
-		
-		//System.out.println("--- " + counter +  " ---");
 		return counter;
 	}
 
@@ -117,7 +114,6 @@ public class DisjunctPaths extends TrustMetric {
 	}
 	
 	public boolean computeTrust(int node1, int node2) {
-		//System.out.println("COMPUTE_TRUST (" +  node1 + ", " + node2 + ")");//TODO
 		int noPaths = 0;
 		List<Integer> closedNodes = new ArrayList<Integer>();
 		
@@ -133,11 +129,9 @@ public class DisjunctPaths extends TrustMetric {
 		while (path != null) {
 			
 			 noPaths++;
-			 //System.out.println(" -> " + noPaths + " paths found.");//TODO
 			 if (noPaths >= minPaths)
 				 return true;
 			 closedNodes.addAll(path);
-			 //System.out.println(" -> " + closedNodes.size() + " closes nodes.");//TODO
 			 bfs.setClosedNodes(closedNodes);
 			 path = bfs.getPath(node1, node2);
 		}
