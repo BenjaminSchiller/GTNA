@@ -58,7 +58,7 @@ import java.util.Random;
  * 
  */
 public class WoTModelSingleCommunity extends Network {
-	private double alpha;
+	private double alpha1; // Join
 	private double beta;
 	private double m;
 	private double b;
@@ -79,15 +79,13 @@ public class WoTModelSingleCommunity extends Network {
 	private int bidEdges;
 	private int unidEdges;
 
-	private List<Integer> specialNodes;
-
-	private double BID_TOLERANCE = 0.03;
-
 	Random rnd;
+	private double alpha2; // Copying
+	private double alpha3;
 
 	/**
 	 * @param nodes
-	 * 			  number of nodes
+	 *            number of nodes
 	 * @param m
 	 *            edges per step
 	 * @param alpha
@@ -98,17 +96,23 @@ public class WoTModelSingleCommunity extends Network {
 	 *            bidirectionality factor
 	 * @param transformations
 	 */
-	public WoTModelSingleCommunity(int nodes, double m, double alpha, double beta,
-			double b, Transformation[] t) {
-		super("WOTMODELSC", nodes, new Parameter[] { new DoubleParameter("M", m),
-				new DoubleParameter("ALPHA", alpha),
+	public WoTModelSingleCommunity(int nodes, double m, double alpha1,
+			double alpha2, double alpha3, double beta, double b,
+			Transformation[] t) {
+		super("WOTMODELSC", nodes, new Parameter[] {
+				new DoubleParameter("M", m),
+				new DoubleParameter("ALPHA1", alpha1),
+				new DoubleParameter("ALPHA2", alpha2),
+				new DoubleParameter("ALPHA3", alpha2),
 				new DoubleParameter("BETA", beta),
 				new DoubleParameter("BIDIRECTIONALITY", b) }, t);
 
-		this.alpha = alpha;
+		this.alpha1 = alpha1;
 		this.beta = beta;
 		this.m = m;
 		this.b = b;
+		this.alpha2 = alpha2;
+		this.alpha3 = alpha3;
 
 	}
 
@@ -123,22 +127,20 @@ public class WoTModelSingleCommunity extends Network {
 		edges.fill();
 		g.setNodes(nodes);
 		return g;
-	}	
-	
+	}
+
 	/*
 	 * Creates a small random graph to start with.
 	 */
 	private void initStartGraph() {
-		// System.out.println("INIT_START_GRAPH");
-
 		int n0 = (int) m;
 
 		LargestStronglyConnectedComponent scc = new LargestStronglyConnectedComponent();
-		ErdosRenyi er = new ErdosRenyi(n0, m+2, false,
+		ErdosRenyi er = new ErdosRenyi(n0, m + 2, false,
 				new Transformation[] { scc });
 
 		Graph initGraph = scc.transform(er.generate());
-		
+
 		nodeCounter = initGraph.getNodeCount();
 
 		// Copy
@@ -155,7 +157,6 @@ public class WoTModelSingleCommunity extends Network {
 	 * Generates the graph.
 	 */
 	public void growGraph() {
-		// System.out.println("GROW_GRAPH");
 		while (nodeCounter < getNodes()) {
 			// Add one Node per Step
 			addNode();
@@ -167,9 +168,7 @@ public class WoTModelSingleCommunity extends Network {
 	 * Adds a node.
 	 */
 	private void addNode() {
-		// System.out.println(" ADD_NODE");
-
-		if (rnd.nextDouble() < alpha)
+		if (rnd.nextDouble() < alpha1)
 			addPrefAttachementNode(1);
 		else
 			addNodeWithRandomLinks(1);
@@ -179,11 +178,9 @@ public class WoTModelSingleCommunity extends Network {
 	 * Adds edges.
 	 */
 	private void addEdges() {
-		// System.out.println(" ADD_EDGES");
-
 		int mm = (int) m;
 		double z = rnd.nextDouble();
-		if (z <  m - mm)
+		if (z < m - mm)
 			mm++;
 
 		if (rnd.nextDouble() < beta) {
@@ -196,7 +193,6 @@ public class WoTModelSingleCommunity extends Network {
 	 * Adds a new node with given number of preferential attachement edges.
 	 */
 	private void addPrefAttachementNode(int edges) {
-		// System.out.println("  ADD_PREFERENTIAL_ATTACHEMENT_NODE");
 		for (int i = 0; i < edges; i++)
 			addBidPrefAttachementEdge(nodeCounter);
 		nodeCounter++;
@@ -206,8 +202,6 @@ public class WoTModelSingleCommunity extends Network {
 	 * Adds a new node with given number of random edges.
 	 */
 	private void addNodeWithRandomLinks(int edges) {
-		// System.out.println("  ADD_NODE_WITH_RANDOM_LINKS");
-
 		int firstNode = rnd.nextInt(nodeCounter);
 
 		addEdge(firstNode, nodeCounter);
@@ -216,7 +210,7 @@ public class WoTModelSingleCommunity extends Network {
 		for (int i = 0; i < edges; i++) {
 			int randNode = rnd.nextInt(nodeCounter);
 			addEdge(nodeCounter, randNode);
-			if (mustInsertBidirectional()) {
+			if (shouldInsertBidirectional()) {
 				addEdge(randNode, nodeCounter);
 				i++;
 			}
@@ -225,12 +219,20 @@ public class WoTModelSingleCommunity extends Network {
 		nodeCounter++;
 	}
 
+	/*
+	 * Adds edges using copying
+	 */
 	private void doClustering(int edges) {
-		// System.out.println("  DO_CLUSTERING");
 		int inserted = 0;
 
 		while (inserted < edges) {
-			int node = getRandomNode();
+
+			int node = -1;
+			if (rnd.nextDouble() < alpha2)
+				node = getPANode();
+			else
+				node = getRandomNode();
+
 			int inserted2 = 0;
 
 			inserted2 += copyFromOutNeighbors(node, 1);
@@ -239,50 +241,52 @@ public class WoTModelSingleCommunity extends Network {
 		}
 	}
 
+	/*
+	 * Copys edges from random out-neighbors
+	 */
 	private int copyFromOutNeighbors(int src, int edges) {
-		// System.out.println("   COPY_FROM_OUT_NEIGHBOR [src=" + src +
-		// ", edges="
-		// + edges + "]");
 		int inserted = 0;
 		List<Integer> visited = new ArrayList<Integer>();
 		while (inserted < edges && visited.size() < dOut[src]) {
-			int neighbor = getRandomOutNeighbor(src);
+			int neighbor = -1;
+
+			if (rnd.nextDouble() < alpha3)
+				neighbor = getPAOutNeighbor(src);
+			else
+				neighbor = getRandomOutNeighbor(src);
 			visited.add(neighbor);
-			if (!isSpecialNode(neighbor)) {
-				inserted += copyEdges(src, neighbor, edges);
-			}
+
+			inserted += copyEdges(src, neighbor, edges);
 		}
 		return inserted;
 	}
 
+	/*
+	 * Coypys edges from given neighbor
+	 */
 	private int copyEdges(int src, int neighbor, int edges) {
-		// System.out.println("   COPY_EDGES [src=" + src + ", neighbor="
-		// + neighbor + "]");
 		int inserted = 0;
 		List<Integer> visited = new ArrayList<Integer>();
-		while (inserted < edges
-				&& visited.size() < (/* dIn[neighbor] */+dOut[neighbor])) {
+		while (inserted < edges && visited.size() < (dOut[neighbor])) {
 			int dst = getRandomOutNeighbor(neighbor);
 			visited.add(dst);
-			if (!isSpecialNode(dst))
-				inserted += copyEdge(src, neighbor, dst);
+
+			inserted += copyEdge(src, neighbor, dst);
 		}
 		return inserted;
 	}
 
+	/*
+	 * Coypys a single edge
+	 */
 	private int copyEdge(int src, int neighbor, int dst) {
-		// System.out.println("    COPY_EDGE [src=" + src + ", neighbor="
-		// + neighbor + ", dst=" + dst + "]");
-
 		int inserted = 0;
 
 		if (addEdge(src, dst)) {
 			inserted++;
-			// TODO gut???
-			if (mayInsertBidirectional()) {
-				if (edges.contains(dst, neighbor))
-					if (addEdge(dst, src))
-						inserted++;
+			if (shouldInsertBidirectional()) {
+				if (addEdge(dst, src))
+					inserted++;
 
 			}
 
@@ -297,11 +301,30 @@ public class WoTModelSingleCommunity extends Network {
 		return outNeighbors[node].get(rnd.nextInt(dOut[node]));
 	}
 
+	private int getPAOutNeighbor(int node) {
+		int sumAll = 0;
+
+		for (int n : outNeighbors[node])
+			sumAll += dOut[n];
+
+		int z = rnd.nextInt(sumAll);
+
+		int nId = 0;
+		int sum = dOut[outNeighbors[node].get(nId)];
+
+		while (z > sum) {
+			nId++;
+			sum += dOut[outNeighbors[node].get(nId)];
+		}
+
+		return outNeighbors[node].get(nId);
+
+	}
+
 	/*
 	 * Adds a bidirectional preferential attachement edge to src.
 	 */
 	private void addBidPrefAttachementEdge(int src) {
-		// System.out.println("   ADD_PREFERENTIAL_ATTACHEMENT_EDGE");
 		int dst;
 		int sum;
 
@@ -312,8 +335,7 @@ public class WoTModelSingleCommunity extends Network {
 
 			int zz;
 			if (edgeCounter > 0)
-				zz = rnd.nextInt(edgeCounter * 2); // z <- [0; sum of node
-			// degrees)
+				zz = rnd.nextInt(edgeCounter * 2);
 			else
 				zz = 0;
 
@@ -326,7 +348,7 @@ public class WoTModelSingleCommunity extends Network {
 				sum += dIn[dst] + dOut[dst];
 			}
 
-		} while (addEdgeIfNotSpecial(src, dst) == 0);
+		} while (addNewEdge(src, dst) == 0);
 		addEdge(dst, src);
 	}
 
@@ -334,7 +356,6 @@ public class WoTModelSingleCommunity extends Network {
 	 * Adds m random edges
 	 */
 	private void addRandomEdges(int m) {
-		// System.out.println("  ADD_RANDOM_EDGES");
 		int inserted = 0;
 		while (inserted < m) {
 			inserted += addRandomEdge();
@@ -345,19 +366,40 @@ public class WoTModelSingleCommunity extends Network {
 	 * Adds a random edge
 	 */
 	private int addRandomEdge() {
-		// System.out.println("   ADD_RANDOM_EDGE");
 		int i;
-		while ((i = addEdgeIfNotSpecial(rnd.nextInt(nodeCounter),
+		while ((i = addNewEdge(rnd.nextInt(nodeCounter),
 				rnd.nextInt(nodeCounter))) == 0) {
 		}
 		return i;
 	}
 
+	/*
+	 * Returns a rondom node
+	 */
 	private int getRandomNode() {
 		int node;
-		do {
-			node = rnd.nextInt(nodeCounter);
-		} while (isSpecialNode(node));
+		node = rnd.nextInt(nodeCounter);
+		return node;
+	}
+
+	/*
+	 * Returns a node using preferential attachement
+	 */
+	private int getPANode() {
+		int node = 0;
+		int sum = dOut[0];
+
+		int zz;
+		if (edgeCounter > 0)
+			zz = rnd.nextInt(edgeCounter);
+		else
+			zz = 0;
+
+		while (zz > sum) {
+			node++;
+			sum += dOut[node];
+		}
+
 		return node;
 	}
 
@@ -365,7 +407,6 @@ public class WoTModelSingleCommunity extends Network {
 	 * initializes required fields
 	 */
 	private void initFields() {
-		// System.out.println("INIT_FIELDS");
 		bidEdges = 0;
 		unidEdges = 0;
 
@@ -384,39 +425,27 @@ public class WoTModelSingleCommunity extends Network {
 		nodes = Node.init(this.getNodes(), g);
 		edges = new Edges(nodes, (int) (m * getNodes()) + 1);
 
-		specialNodes = new ArrayList<Integer>();
-
 		rnd = new Random(System.currentTimeMillis());
 	}
 
-	private int addEdgeIfNotSpecial(int src, int dst) {
-		if (!isSpecialNode(src) && !isSpecialNode(dst)) {
-			if (addEdge(src, dst))
-				if (mustInsertBidirectional() && addEdge(dst, src))
-					return 2;
+	/*
+	 * Adds a new edge and (possibly) its inverse
+	 */
+	private int addNewEdge(int src, int dst) {
+
+		if (addEdge(src, dst)) {
+			if (shouldInsertBidirectional() && addEdge(dst, src))
+				return 2;
 			return 1;
 		}
 		return 0;
 	}
 
-	private boolean isSpecialNode(int node) {
-		return specialNodes.contains(node);
-	}
-
 	/*
-	 * Checks whether an edge may be inserted bidirectional
+	 * Determines wether an edge should be inserted bidirectional
 	 */
-	private boolean mayInsertBidirectional() {
-		return ((((double) bidEdges / (bidEdges + unidEdges) < b
-				+ BID_TOLERANCE)));
-	}
-
-	/*
-	 * Checks whether an edge must be inserted bidirectional
-	 */
-	private boolean mustInsertBidirectional() {
-		return ((((double) bidEdges / (bidEdges + unidEdges) < b
-				- BID_TOLERANCE)));
+	private boolean shouldInsertBidirectional() {
+		return ((double) bidEdges / (bidEdges + unidEdges)) < b;
 	}
 
 	/*
