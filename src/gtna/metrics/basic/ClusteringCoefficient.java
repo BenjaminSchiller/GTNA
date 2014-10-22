@@ -47,6 +47,7 @@ import gtna.graph.Edges;
 import gtna.graph.Graph;
 import gtna.graph.Node;
 import gtna.io.DataReader;
+import gtna.io.DataWriter;
 import gtna.io.networks.googlePlus.Statistics;
 import gtna.metrics.Metric;
 import gtna.networks.Network;
@@ -64,6 +65,8 @@ public class ClusteringCoefficient extends Metric {
 	// TODO add distribution of LCC?!?
 
 	private double[] localClusteringCoefficient;
+
+	private Distribution binned;
 
 	private double clusteringCoefficient;
 
@@ -130,6 +133,11 @@ public class ClusteringCoefficient extends Metric {
 					.avg(this.localClusteringCoefficient);
 			this.transitivity = (double) closedTriplets / triplets;
 		}
+
+		double[][] binned = gtna.util.Statistics.binnedDistribution(
+				this.localClusteringCoefficient, 0.0, 1.0, 100);
+		this.binned = new Distribution("CLUSTERING_COEFFICIENT_DISTRIBUTION",
+				binned);
 	}
 
 	private Set<Integer> getNeighborhoodDirected(Node node) {
@@ -222,6 +230,10 @@ public class ClusteringCoefficient extends Metric {
 	@Override
 	public boolean writeData(String folder) {
 		boolean success = true;
+		success &= DataWriter.writeWithoutIndex(this.binned.getDistribution(),
+				"CLUSTERING_COEFFICIENT_DISTRIBUTION", folder);
+		success &= DataWriter.writeWithIndex(this.localClusteringCoefficient,
+				"CLUSTERING_COEFFICIENT_LCC", folder);
 		return success;
 	}
 
@@ -234,32 +246,36 @@ public class ClusteringCoefficient extends Metric {
 				this.transitivity);
 		return new Single[] { clusteringCoefficient, transitivity };
 	}
-	
 
 	@Override
 	public Distribution[] getDistributions() {
-		return new Distribution[0];
+		return new Distribution[] { this.binned };
 	}
 
 	@Override
 	public NodeValueList[] getNodeValueLists() {
-		return new NodeValueList[0];
+		NodeValueList lcc = new NodeValueList("",
+				this.localClusteringCoefficient);
+		return new NodeValueList[] { lcc };
 	}
 
 	@Override
 	public boolean readData(String folder) {
-		String[][] singles = DataReader.readSingleValues(folder + "_singles.txt");
-		
-		for(String[] single : singles){
-			if(single.length == 2){
-				if("CLUSTERING_COEFFICIENT_CLUSTERING_COEFFICIENT".equals(single[0])){
+		String[][] singles = DataReader.readSingleValues(folder
+				+ "_singles.txt");
+
+		for (String[] single : singles) {
+			if (single.length == 2) {
+				if ("CLUSTERING_COEFFICIENT_CLUSTERING_COEFFICIENT"
+						.equals(single[0])) {
 					this.clusteringCoefficient = Double.valueOf(single[1]);
-				} else if ("CLUSTERING_COEFFICIENT_CLUSTERING_COEFFICIENT".equals(single[0])){
+				} else if ("CLUSTERING_COEFFICIENT_CLUSTERING_COEFFICIENT"
+						.equals(single[0])) {
 					this.transitivity = Double.valueOf(single[1]);
 				}
 			}
 		}
-		
+
 		return true;
 	}
 
