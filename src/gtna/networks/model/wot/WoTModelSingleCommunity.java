@@ -41,6 +41,7 @@ import gtna.graph.Node;
 import gtna.networks.Network;
 import gtna.networks.model.BarabasiAlbert;
 import gtna.networks.model.ErdosRenyi;
+import gtna.networks.util.ReadableFile;
 import gtna.transformation.Transformation;
 import gtna.transformation.partition.LargestStronglyConnectedComponent;
 import gtna.util.parameter.DoubleParameter;
@@ -58,7 +59,7 @@ import java.util.Random;
  * 
  */
 public class WoTModelSingleCommunity extends Network {
-	private double alpha1; // Join
+	private double alpha; // Join
 	private double beta;
 	private double m;
 	private double b;
@@ -67,8 +68,8 @@ public class WoTModelSingleCommunity extends Network {
 	private Node[] nodes;
 	private Edges edges;
 
-	private int nodeCounter;
-	private int edgeCounter;
+	protected int nodeCounter;
+	protected int edgeCounter;
 
 	private int[] dIn;
 	private int[] dOut;
@@ -80,13 +81,19 @@ public class WoTModelSingleCommunity extends Network {
 	private int unidEdges;
 
 	Random rnd;
-	private double alpha2; // Copying
-	private double alpha3;
+	private double beta1; // Copying
+	private double beta2;
+	private double bAlpha;
+	private double beta3;
+	
+	static final int NODES1 = 25487;
+
+	final static String origfolder = "./wot-graphs-original/";
 
 	/**
 	 * @param nodes
 	 *            number of nodes
-	 * @param m
+	 * @param d
 	 *            edges per step
 	 * @param alpha
 	 *            Preferential attachement propability
@@ -96,23 +103,27 @@ public class WoTModelSingleCommunity extends Network {
 	 *            bidirectionality factor
 	 * @param transformations
 	 */
-	public WoTModelSingleCommunity(int nodes, double m, double alpha1,
-			double alpha2, double alpha3, double beta, double b,
-			Transformation[] t) {
+	public WoTModelSingleCommunity(int nodes, double d, double b,
+			double bAlpha, double alpha, double beta, double beta1,
+			double beta2, double beta3, Transformation[] t) {
 		super("WOTMODELSC", nodes, new Parameter[] {
-				new DoubleParameter("M", m),
-				new DoubleParameter("ALPHA1", alpha1),
-				new DoubleParameter("ALPHA2", alpha2),
-				new DoubleParameter("ALPHA3", alpha2),
+				new DoubleParameter("D", d),
+				new DoubleParameter("BIDIRECTIONALITY", b),
+				new DoubleParameter("BALPHA", bAlpha),
+				new DoubleParameter("ALPHA", alpha),
 				new DoubleParameter("BETA", beta),
-				new DoubleParameter("BIDIRECTIONALITY", b) }, t);
+				new DoubleParameter("BETA1", beta1),
+				new DoubleParameter("BETA2", beta2),
+				new DoubleParameter("BETA3", beta3) }, t);
 
-		this.alpha1 = alpha1;
+		this.alpha = alpha;
 		this.beta = beta;
-		this.m = m;
+		this.m = d;
 		this.b = b;
-		this.alpha2 = alpha2;
-		this.alpha3 = alpha3;
+		this.beta1 = beta1;
+		this.beta2 = beta2;
+		this.bAlpha = bAlpha;
+		this.beta3 = beta3;
 
 	}
 
@@ -132,7 +143,7 @@ public class WoTModelSingleCommunity extends Network {
 	/*
 	 * Creates a small random graph to start with.
 	 */
-	private void initStartGraph() {
+	protected void initStartGraph() {
 		int n0 = (int) m;
 
 		LargestStronglyConnectedComponent scc = new LargestStronglyConnectedComponent();
@@ -151,6 +162,8 @@ public class WoTModelSingleCommunity extends Network {
 				addEdge(n.getIndex(), dst);
 
 		}
+
+		// System.out.println("\nStart Graph initialized!");
 	}
 
 	/*
@@ -168,25 +181,66 @@ public class WoTModelSingleCommunity extends Network {
 	 * Adds a node.
 	 */
 	private void addNode() {
-		if (rnd.nextDouble() < alpha1)
-			addPrefAttachementNode(1);
+		System.out.println(nodeCounter);
+		// System.out.println("Add node (" + nodeCounter + ")");
+		// New Bootstrapping procedure
+		int u;
+		int v = nodeCounter;
+		int w;
+
+		w = getPANode();
+
+		if (rnd.nextDouble() < alpha)
+			w = getPANode();
 		else
-			addNodeWithRandomLinks(1);
+			w = getRandomNode();
+
+		if (rnd.nextDouble() < bAlpha)
+			u = w;
+		else if (rnd.nextDouble() < alpha)
+			u = getPANode();
+		else
+			u = getRandomNode();
+
+		addEdge(w, v);
+		addEdge(v, u);
+
+		nodeCounter++;
+		// System.out.println("OK");
+
+		/*
+		 * if (rnd.nextDouble() < alpha) addPrefAttachementNode(1); else
+		 * addNodeWithRandomLinks(1);
+		 */
+
 	}
 
 	/*
 	 * Adds edges.
 	 */
 	private void addEdges() {
+		// System.out.println("ADD EDGES");
 		int mm = (int) m;
 		double z = rnd.nextDouble();
 		if (z < m - mm)
 			mm++;
 
-		if (rnd.nextDouble() < beta) {
-			doClustering(mm);
-		} else
-			addRandomEdges(mm);
+		int addedEdges = 0;
+
+		while (addedEdges < mm) {
+			// System.out.println(addedEdges);
+			if (rnd.nextDouble() < beta) {
+				addedEdges += doClustering(1);
+			} else {
+				addedEdges += addRandomEdge2();
+			}
+		}
+
+		// System.out.println("OK (" + addedEdges + ")");
+		/*
+		 * if (rnd.nextDouble() < beta) { doClustering(mm); } else
+		 * addRandomEdges(mm);
+		 */
 	}
 
 	/*
@@ -222,13 +276,13 @@ public class WoTModelSingleCommunity extends Network {
 	/*
 	 * Adds edges using copying
 	 */
-	private void doClustering(int edges) {
+	private int doClustering(int edges) {
 		int inserted = 0;
 
 		while (inserted < edges) {
 
 			int node = -1;
-			if (rnd.nextDouble() < alpha2)
+			if (rnd.nextDouble() < beta1)
 				node = getPANode();
 			else
 				node = getRandomNode();
@@ -239,6 +293,7 @@ public class WoTModelSingleCommunity extends Network {
 
 			inserted += inserted2;
 		}
+		return inserted;
 	}
 
 	/*
@@ -250,7 +305,7 @@ public class WoTModelSingleCommunity extends Network {
 		while (inserted < edges && visited.size() < dOut[src]) {
 			int neighbor = -1;
 
-			if (rnd.nextDouble() < alpha3)
+			if (rnd.nextDouble() < beta2)
 				neighbor = getPAOutNeighbor(src);
 			else
 				neighbor = getRandomOutNeighbor(src);
@@ -268,7 +323,11 @@ public class WoTModelSingleCommunity extends Network {
 		int inserted = 0;
 		List<Integer> visited = new ArrayList<Integer>();
 		while (inserted < edges && visited.size() < (dOut[neighbor])) {
-			int dst = getRandomOutNeighbor(neighbor);
+			int dst = -1;
+			if (rnd.nextDouble() < beta3)
+				dst = getPAOutNeighbor(neighbor);
+			else
+				dst = getRandomOutNeighbor(neighbor);
 			visited.add(dst);
 
 			inserted += copyEdge(src, neighbor, dst);
@@ -355,11 +414,28 @@ public class WoTModelSingleCommunity extends Network {
 	/*
 	 * Adds m random edges
 	 */
-	private void addRandomEdges(int m) {
+	private int addRandomEdges(int m) {
 		int inserted = 0;
+
 		while (inserted < m) {
 			inserted += addRandomEdge();
 		}
+		return inserted;
+	}
+
+	private int addRandomEdge2() {
+		int inserted = 0;
+		int v;
+
+		if (rnd.nextDouble() < beta1)
+			v = getPANode();
+		else
+			v = getRandomNode();
+
+		int u = getRandomNode();
+
+		inserted = addNewEdge(v, u);
+		return inserted;
 	}
 
 	/*
@@ -451,7 +527,7 @@ public class WoTModelSingleCommunity extends Network {
 	/*
 	 * Adds an Edge
 	 */
-	private boolean addEdge(int src, int dst) {
+	protected boolean addEdge(int src, int dst) {
 		if (src != dst && !edges.contains(src, dst)) {
 			edges.add(src, dst);
 
