@@ -59,15 +59,6 @@ import gtna.util.parameter.StringParameter;
  */
 public class WotModel extends Network {
 
-	private int z;
-
-	/*
-	 * Power Law Community Size Distribution
-	 */
-	private int min;
-	private int max;
-	private double ple;
-
 	private Graph g;
 	private Node[] nodes;
 	private Edges edges;
@@ -77,18 +68,39 @@ public class WotModel extends Network {
 	private int lastNode[];
 
 	Random rnd;
-	private double lc;
-	private double alpha1; // Preferential Attachement Node Selection (Join)
-	private double alpha2; // Preferential Attachement Node Selection (Copying)
-	private double alpha3; // Preferential Attachement Node Selection (Neighbor)
-	private double alpha4; // Preferential Attachement Node Selection
-							// (Communities)
-	private double alpha5; // Preferential Attachement Community Selection
 
 	private double beta;
 	private double b;
 
 	private double m;
+
+	private double d;
+
+	private double bAlpha;
+
+	private double alpha;
+
+	private double beta1;
+
+	private double beta2;
+
+	private double beta3;
+
+	private double cC;
+
+	private double cExp;
+
+	private int cMin;
+
+	private int cMax;
+
+	private int cd;
+
+	private double gamma1;
+
+	private double gamma2;
+
+	private double gamma3;
 
 	/**
 	 * @param key
@@ -96,34 +108,42 @@ public class WotModel extends Network {
 	 * @param parameters
 	 * @param transformations
 	 */
-	public WotModel(int nodes, double m, double alpha1, double alpha2,
-			double alpha3, double alpha4, double alpha5, double beta, double b,
-			int min, int max, double ple, int z, double lc, Transformation[] t) {
-		super("WOTMODEL", nodes, new Parameter[] { new DoubleParameter("M", m),
-				new DoubleParameter("ALPHA1", alpha1),
-				new DoubleParameter("ALPHA2", alpha2),
-				new DoubleParameter("ALPHA3", alpha3),
-				new DoubleParameter("ALPHA4", alpha4),
-				new DoubleParameter("ALPHA5", alpha5),
+	public WotModel(int nodes, double d, double b, double bAlpha, double alpha, double beta,
+			double beta1, double beta2, double beta3, double cC, double cExp, int cMin, int cMax, int cd, double gamma1, double gamma2, double gamma3, Transformation[] t) {
+		super("WOTMODEL", nodes, new Parameter[] { new DoubleParameter("d", d),
+				new DoubleParameter("B", b),
+				new DoubleParameter("BALPHA", bAlpha),
+				new DoubleParameter("ALPHA", alpha),
 				new DoubleParameter("BETA", beta),
-				new DoubleParameter("BIDIRECTIONALITY", b),
-				new IntParameter("MIN", min), new IntParameter("MAX", max),
-				new DoubleParameter("PLE", ple), new IntParameter("Z", z),
-				new DoubleParameter("LC", lc) }, t);
+				new DoubleParameter("BETA1", beta1),
+				new DoubleParameter("BETA2", beta2),
+				new DoubleParameter("BETA3", beta3),
+				new DoubleParameter("BETA3", beta3),
+				new DoubleParameter("CC", cC),
+				new DoubleParameter("CEXP", cExp),
+				new DoubleParameter("CMIN", cMin),
+				new DoubleParameter("CMAX", cMax),
+				new DoubleParameter("CD", cd),
+				new DoubleParameter("GAMMA1", gamma1),
+				new DoubleParameter("GAMMA2", gamma2),
+				new DoubleParameter("GAMMA3", gamma3)}, t);
 
-		this.alpha1 = alpha1;
-		this.alpha2 = alpha2;
-		this.alpha3 = alpha3;
-		this.alpha4 = alpha4;
-		this.alpha5 = alpha5;
-		this.beta = beta;
-		this.m = m;
+		this.d = d;
 		this.b = b;
-		this.min = min;
-		this.max = max;
-		this.ple = ple;
-		this.z = z;
-		this.lc = lc;
+		this.bAlpha = bAlpha;
+		this.alpha = alpha;
+		this.beta = beta;
+		this.beta1 = beta1;
+		this.beta2 = beta2;
+		this.beta3 = beta3;
+		this.cC = cC;
+		this.cExp = cExp;
+		this.cMin =cMin;
+		this.cMax = cMax;
+		this.cd = cd;
+		this.gamma1 = gamma1;
+		this.gamma2 = gamma2;
+		this.gamma3 = gamma3;
 
 	}
 
@@ -141,14 +161,14 @@ public class WotModel extends Network {
 
 		g = new Graph(this.getDescription());
 		nodes = Node.init(this.getNodes(), g);
-		edges = new Edges(nodes, (int) (m * getNodes()) + 2 * z);
+		edges = new Edges(nodes, (int) (m * getNodes()) + 2 * cd);
 
 		// Create and Copy Communites
 		for (int i = 0; i < communitySizes.length; i++) {
 			int size = communitySizes[i];
-
-			Graph c = new WoTModelSingleCommunity(size, 8, alpha1, alpha2,
-					alpha3, beta, b, null).generate();
+			
+			Graph c = new WoTModelSingleCommunity(size, d, b, bAlpha, alpha, beta,
+					 beta1, beta2, beta3, null).generate();
 
 			// Copy
 			for (Node n : c.getNodes()) {
@@ -160,11 +180,12 @@ public class WotModel extends Network {
 			}
 
 		}
+		System.out.println("Communities created!");
 
 		edges.fill();
 		g.setNodes(nodes);
 
-		if (lc < 1) {
+		if (cC < 1) {
 			// Connect Communites
 			for (int i = 0; i < communitySizes.length; i++) {
 
@@ -173,7 +194,7 @@ public class WotModel extends Network {
 
 				int a, b;
 
-				if (rnd.nextDouble() < alpha4) {
+				if (rnd.nextDouble() < gamma1) {
 					a = drawPANode(firstNode[i], lastNode[i]);
 					b = drawPANode(firstNode[c], lastNode[c]);
 				} else {
@@ -188,10 +209,10 @@ public class WotModel extends Network {
 
 			// Additional links b/w communities
 			int addedEdges = 0;
-			while (addedEdges < z * communitySizes.length) {
+			while (addedEdges < cd * communitySizes.length) {
 
 				int c1, c2;
-				if (rnd.nextDouble() < alpha5) {
+				if (rnd.nextDouble() < gamma2) {
 					c1 = drawPACommunity(-1);
 					c2 = drawPACommunity(c1);
 				} else {
@@ -201,7 +222,7 @@ public class WotModel extends Network {
 
 				int n1, n2;
 
-				if (rnd.nextDouble() < alpha4) {
+				if (rnd.nextDouble() < gamma3) {
 					n1 = drawPANode(firstNode[c1], lastNode[c1]);
 					n2 = drawPANode(firstNode[c2], lastNode[c2]);
 				} else {
@@ -227,20 +248,20 @@ public class WotModel extends Network {
 	 * Generates the community size distribution
 	 */
 	private void generateCommunitiySizes() {
-		double[] sizeDist = generateSizeDistribution(min, max, ple);
+		double[] sizeDist = generateSizeDistribution(cMin, cMax, cExp);
 
 		List<Integer> sizes = new ArrayList<Integer>();
 
-		int largestC = (int) (lc * getNodes());
+		int largestC = (int) (cC * getNodes());
 
 		if (largestC > 0)
 			sizes.add(largestC);
 
-		if (lc < 1) {
+		if (cC < 1) {
 			int nodeSum = largestC;
 
 			while (nodeSum < getNodes()) {
-				int size = min;
+				int size = cMin;
 				double z = rnd.nextDouble();
 
 				while (z > sizeDist[size]) {
@@ -248,7 +269,7 @@ public class WotModel extends Network {
 				}
 
 				if ((getNodes() - nodeSum) < size
-						|| (getNodes() - nodeSum - size) < min)
+						|| (getNodes() - nodeSum - size) < cMin)
 					size = (getNodes() - nodeSum);
 
 				sizes.add(size);
