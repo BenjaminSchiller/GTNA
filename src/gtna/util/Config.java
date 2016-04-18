@@ -39,13 +39,15 @@ package gtna.util;
 import gtna.metrics.Metric;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Vector;
 
-public class Config {
+public class Config extends PropertiesHolder {
 	private static Properties properties;
 
 	private static HashMap<String, String> overwrite;
@@ -133,20 +135,20 @@ public class Config {
 		overwrite = new HashMap<String, String>();
 	}
 
-	public static void addFile(String file) throws IOException {
-		if (properties == null) {
-			// System.out.println("initializing with " + file);
-			properties = new java.util.Properties();
-			FileInputStream in = new FileInputStream(file);
-			properties.load(in);
-		} else {
-			// System.out.println("adding " + file);
-			Properties temp = new java.util.Properties();
-			FileInputStream in = new FileInputStream(file);
-			temp.load(in);
-			properties.putAll(temp);
-		}
-	}
+	// public static void addFile(String file) throws IOException {
+	// if (properties == null) {
+	// // System.out.println("initializing with " + file);
+	// properties = new java.util.Properties();
+	// FileInputStream in = new FileInputStream(file);
+	// properties.load(in);
+	// } else {
+	// // System.out.println("adding " + file);
+	// Properties temp = new java.util.Properties();
+	// FileInputStream in = new FileInputStream(file);
+	// temp.load(in);
+	// properties.putAll(temp);
+	// }
+	// }
 
 	public static void initWithFiles(String[] file) throws IOException {
 		properties = null;
@@ -171,26 +173,49 @@ public class Config {
 		initWithFiles(Util.toStringArray(v));
 	}
 
-	public static void initWithFile(String file) throws IOException {
-		initWithFiles(new String[] { file });
-	}
+	// public static void initWithFile(String file) throws IOException {
+	// initWithFiles(new String[] { file });
+	// }
 
-	public static void initWithFolder(String folder) throws IOException {
-		initWithFolders(new String[] { folder });
-	}
+	// public static void initWithFolder(String folder) throws IOException {
+	// initWithFolders(new String[] { folder });
+	// }
 
 	public static void init() throws IOException {
-		// initWithFolder(defaultConfigFolder);
-		Vector<String> v = new Vector<String>();
-		File folder = new File(defaultConfigFolder);
-		File[] list = folder.listFiles();
-		v.add(folder.getAbsolutePath());
-		for (int j = 0; j < list.length; j++) {
-			if (list[j].isDirectory() && !list[j].getName().startsWith(".")) {
-				v.add(list[j].getAbsolutePath());
+		Vector<File> folders = new Vector<File>();
+		folders.add(new File(defaultConfigFolder));
+
+		try {
+			Path pPath = Paths.get(Config.class.getProtectionDomain()
+					.getCodeSource().getLocation().toURI());
+			if (pPath.getFileName().toString().endsWith(".jar")) {
+				folders.add(pPath.toFile());
 			}
+
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
 		}
-		initWithFolders(Util.toStringArray(v));
+
+		loadFromProperties(initFromFolders(folders));
+
+		// initWithFolder(defaultConfigFolder);
+		// Vector<String> v = new Vector<String>();
+		// File folder = new File(defaultConfigFolder);
+		// File[] list = folder.listFiles();
+		// v.add(folder.getAbsolutePath());
+		// for (int j = 0; j < list.length; j++) {
+		// if (list[j].isDirectory() && !list[j].getName().startsWith(".")) {
+		// v.add(list[j].getAbsolutePath());
+		// }
+		// }
+		// initWithFolders(Util.toStringArray(v));
+	}
+
+	public static void loadFromProperties(Properties in) {
+		if (properties == null) {
+			properties = new java.util.Properties();
+		}
+		properties.putAll(in);
 	}
 
 	public static boolean containsKey(String key) {
