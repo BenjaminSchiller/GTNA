@@ -15,11 +15,8 @@ import gtna.networks.util.ReadableFolder;
 import gtna.plot.Plotting;
 import gtna.transformation.Transformation;
 import gtna.util.Config;
-import gtna.util.Execute;
 import gtna.util.parameter.IntParameter;
 import gtna.util.parameter.Parameter;
-
-import java.io.File;
 
 public class BCM extends Network {
 
